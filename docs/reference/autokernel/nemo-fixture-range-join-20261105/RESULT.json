@@ -1,0 +1,4093 @@
+{
+  "dependencies_sha256": {
+    "/mnt/raid0/llm/tmp/akagg/filing-20261105/nemo-sdk-roctx-marker-compare-r2-20261105/nemo-fixture-clock-join-20261105/fixture_clock_join.py": "a44ca3cc0a22b9d24e3597fccafe0aafc031168b148f92c38c167b125cd5e4b3",
+    "/mnt/raid0/llm/tmp/akagg/filing-20261105/nemo-sdk-roctx-marker-compare-r2-20261105/nemo-marker-csv-adapter-20261105/marker_csv.py": "3630ad137abe4b0574554d103d724fa7b45bce6c46871d389bcda4f4c6979ff4"
+  },
+  "run_count": 80,
+  "runs": {
+    "0-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          200
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1365616,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "302bc018579571e25595d3d948686a4ab505a9d21ffda592d24191ecf89ab3c7",
+        "fixture-trace/probe_kernel_trace.csv": "4335dc8c21a47e91b0810be7231e61e2f6167a9b2752c6fec19e516158074c7b",
+        "fixture-trace/probe_marker_api_trace.csv": "d85324719952fa100fbdfceb4f613b6f3421134435d6364ea8aa14e9361cc146",
+        "fixture.log": "cb9d776774b95984e76e2c3ba3d0fbfb862ba7d24387cefe09e9a6982a1fefde"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "1-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          240
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 560
+      },
+      "fixture_pid": 1365652,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "d2addec170beedf543d4bd8deda2cc92b07c0b7a76c04471d956480aacfc884e",
+        "fixture-trace/probe_kernel_trace.csv": "0795588c2d659f53e0943f75fa00204cb84bba399d45dad97580a827af2b20f9",
+        "fixture-trace/probe_marker_api_trace.csv": "72af99a1654e24cfe45f8eebd6bffd017da5746b81be4597d4c7d2b659238c89",
+        "fixture.log": "56d7e2d98d242f9068ac6d82ac150113f46c442fadb9f5bc70566da788ae9a1b"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "10-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          220
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 550
+      },
+      "fixture_pid": 1367097,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "d6eec2542803b7a4b87de18dcb3c73bc3b9eef538d981391d267ddfb713af292",
+        "fixture-trace/probe_kernel_trace.csv": "c94b1721b7155ac49950ab12cd62c02787ab680ae0c7c6d32d31595634f2123d",
+        "fixture-trace/probe_marker_api_trace.csv": "996e3d15a1fb8a7e7415478d349e845235f07b87d5ade0b482b910376df3c2ca",
+        "fixture.log": "4e7b13e6fce5bce963ab10a1f80cc0b2e136ee7f681d3b21e526e377b25d4178"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "11-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -360,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1367219,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "dafc5d7ffe040b0acb3a81477e80bb078f932adbdab6b152607cba2548ddc599",
+        "fixture-trace/probe_kernel_trace.csv": "d97d3559037c9f8212604a9c6ed8ffc0bc0bd21b9b4433c6c9d33c3bca04717b",
+        "fixture-trace/probe_marker_api_trace.csv": "ec725c4daa44d4d72a0e71e611989499ed79152e2003e5b3446c205bfcdfbc57",
+        "fixture.log": "241330be13f98de121939d4a9ec3ddaed038830538431812abc78124fb87394a"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "12-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -300,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1367563,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "8c8748f14b3fc269275a19e6bde78d39f145a2026f6ccf40f2e6c870a771ead2",
+        "fixture-trace/probe_kernel_trace.csv": "9e3c4e0531b2c410d915164573d5dde74d4c6a18de11bdf63c4c766bd5df6e68",
+        "fixture-trace/probe_marker_api_trace.csv": "cf3f88077a69ff69ac674c52055503dea44e6de3c0a0e191ec6777ecb9089b20",
+        "fixture.log": "3909d6da8f16dc93c2e198d284e002edbe21d6c3f66f98fdf2f38f1e1d3a7687"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "13-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 470
+      },
+      "fixture_pid": 1367691,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "f8ada9ac97e6baa19bb953716f7a23ece5a946850bbacde2615276bd9cfcaacf",
+        "fixture-trace/probe_kernel_trace.csv": "3b2e469b3c299b0a6f183c4479a5321e336c51c51ea9dde23da273cdb5b79773",
+        "fixture-trace/probe_marker_api_trace.csv": "e026b6fc75fd319c9949e54a7fee497f72311b52369a96cc9def8cec715ce49b",
+        "fixture.log": "aaa7671197f95dafbf7185519a03d7d735650fa940bc5ca13f74227a52bb25ce"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "14-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -370,
+          210
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 580
+      },
+      "fixture_pid": 1368045,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "d9ebd24b0a831cdd7a308dc6b130095d8b0bb2affc2255af222430be9bf5d8a6",
+        "fixture-trace/probe_kernel_trace.csv": "931adaeb153572273f880a89cd663b422e1aabc1cf3c9428ab20726b096ed2c7",
+        "fixture-trace/probe_marker_api_trace.csv": "6361638ddbad23475e8dfd2c63241e250bc84e0c5c64434ecaa78b61cbad3bfb",
+        "fixture.log": "2b7dc2ad605a7b67df509c3086bae4b7f0e8ba842994ca131be6ac6a4def66b4"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "15-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          150
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1368159,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "73fb5feb8448d7ac1e795acb62f1d146e4a1c7ee60d5b0530e064b58b163cedc",
+        "fixture-trace/probe_kernel_trace.csv": "c143dfe4d29516b67a9c6009ab20b6299754c650cfc197e2983f33e9027a1ce4",
+        "fixture-trace/probe_marker_api_trace.csv": "8eb0c7dddfd20f392240cd15ee8ff354efd45bd59fd9155dfe217cab025c7203",
+        "fixture.log": "cdfddf34f3f98bf11d7f4c166f146c7d1878819e2cc44305696c539a4056b728"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "16-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1368495,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "d2b2aa8437298a718953df34e10a517821dbe98abd538d76c47e2cb78e91e879",
+        "fixture-trace/probe_kernel_trace.csv": "23d1f618d295027af08d3818502e1ae24445dcd34482d007869f83ae2d0780a8",
+        "fixture-trace/probe_marker_api_trace.csv": "e8b1068413f55ac343042aeea4dc10582624f2319833964f0b056e51f950af65",
+        "fixture.log": "d35bc21d1eaa190253de9b40110d70c1c526fad7276aef77279c86b711fd61bb"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "17-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          150
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1368609,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "0a0f1b146162936f1a7ee980253433b3d904840d930f5272798bd362d245deef",
+        "fixture-trace/probe_kernel_trace.csv": "7b451f5ce9ab5422203afbba8b404b46f62daa6ab259b7cb35fc14bfc7c9cd24",
+        "fixture-trace/probe_marker_api_trace.csv": "a85ac73e0c7edeb157eb82ddff6423efaefa095c3d03e61183dd7c6aef38ab8a",
+        "fixture.log": "232fc6320597d2bd4d8db0543200413c01982669309bdaa0f803fad857d84533"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "18-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1368963,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "073a94d393e38f08a680304746a1f1bfde9dc6e6fca20a644051df3b25e83345",
+        "fixture-trace/probe_kernel_trace.csv": "20f264ded82717f5567ef61c39a3f3806c1ae67719ac6ba0635ac74850eeacdd",
+        "fixture-trace/probe_marker_api_trace.csv": "ce86960bd1e955e2da54c86fb1dbc2a3a3d842e1c3d2b0aa234ebab59320dbf7",
+        "fixture.log": "53a1f63600551d1f200c7bb89b0bda8f14a152ba61aceee6a54cfc61e82cf1bd"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "19-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1369075,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "2f6d289e2756edb547aea01ede8f0c67b8c5ddbca5d0575dd17e3a97631c62f0",
+        "fixture-trace/probe_kernel_trace.csv": "bb5ca860efbdeaad9a0499da4d12772a03650e0f2957d539cea812f7e5992881",
+        "fixture-trace/probe_marker_api_trace.csv": "07f4eb401d58667b05a203ce74a374774fbeda24da2cd455c680f8d747df9ffc",
+        "fixture.log": "39f740cd49029a630a8146f41d7e1342d5d26cb31031fe5f66e209ba3a27515c"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "2-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1365739,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "d07769b01ef175a1a6c4d57049289ace713564aa0f3f7913808291b7795b617c",
+        "fixture-trace/probe_kernel_trace.csv": "911ce986ec23bac59935353931b8e53398bb80b2be5c5e33c8ab5ad89002a17c",
+        "fixture-trace/probe_marker_api_trace.csv": "f7c7d2873243d6e7aaeda52b76e0b2989be694afbb518fdcdd7049af592c3833",
+        "fixture.log": "a52937f7baa4726b26d350715f6bcc983905e90aa108a696645f456ee0fe9029"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "20-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          220
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 570
+      },
+      "fixture_pid": 1369398,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "4647043f12e019cad078052d3b4f14d9d3f5c3df86f25f11e38d801c03380aee",
+        "fixture-trace/probe_kernel_trace.csv": "1bcb869257cde38d5725ce2e03f5bdc55a73402bc2bb043d3e188640e0598fbc",
+        "fixture-trace/probe_marker_api_trace.csv": "4c2db9fd8d6cab442ec23e17a0c1db5c150ccbc6288118ed755e3c819b0d3025",
+        "fixture.log": "9093e1b24fabeb405f18b6be497e6b468a4c446853b5834c16a88cc4991ea7c5"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "21-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1369513,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "9a1c0c7e39d85501bd39d0a187595240899348d635e7e19ee2a4b777f2ba6642",
+        "fixture-trace/probe_kernel_trace.csv": "2343c1ee05a6eaca7c8015a906493a30a143e5445d6123d4ff1bddb46dd05885",
+        "fixture-trace/probe_marker_api_trace.csv": "3cc657283903d5f27ff3132990358b85540ac86978180e0aa0f8855e0b7fe9e4",
+        "fixture.log": "0b1f83a9136c5dbcd611c1513fe63fd383e1dd3bb7d4bc60d0920d14ed7bc336"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "22-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -360,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 550
+      },
+      "fixture_pid": 1369846,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "f883447e4a8285a5ac92db0dfcfa5c72cb27047dfe77ca8a9edde9831ad10d11",
+        "fixture-trace/probe_kernel_trace.csv": "690e098aa5496ac09ba45138f1c6a7d815dfb53011a5b979ce1f806c251219dc",
+        "fixture-trace/probe_marker_api_trace.csv": "0cd09f55ffb68649f714ce951d9273113407b5c74e8d6746df4f0509c00e9a68",
+        "fixture.log": "07a2aecae54f81ac1d98cd48285435330739a224957187cc08d8548dcba6fb94"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "23-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1369961,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "11d5402e7ac48a87b97c00cf19134ca0d20c201803a8ca9b2d67ed9dea31ae4a",
+        "fixture-trace/probe_kernel_trace.csv": "f5b79221efa1049fd9ba7a5fc242883fe0f514b1a12966aa3975a5654987d415",
+        "fixture-trace/probe_marker_api_trace.csv": "9fc11f090f6798f4adf3dc8f753bb3a441b4874b78015af69f57023faf41e14c",
+        "fixture.log": "b18ba31d9edebf796d8e714c7f2b7f49aec303a924243b80feb482ffc6bb9279"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "24-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1370347,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "4097eea673efef7a6547521edcb705217b833bf4e06731dacaff736339d7f9d8",
+        "fixture-trace/probe_kernel_trace.csv": "551e2284b0f28f40459397af5a24d8499eda8da503697c7c055acc5265447d5d",
+        "fixture-trace/probe_marker_api_trace.csv": "e2209ab255c734d5e312a4f224e9214940e672c040ae151a72f8d06d2dbabe59",
+        "fixture.log": "a64285ea1452996155b0368b6415de03aacc41540df9ea1636f4a4c5e9c67e59"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "25-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -300,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1370460,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "8fd4d7893d0cc570655755c0a60bce4e42f74e835c9be2ffd9adc5cd8bc6223f",
+        "fixture-trace/probe_kernel_trace.csv": "c03d36ecb361474349b637a09c63169b5ca7fef6060a8f9ad0a942d38d0fdfaf",
+        "fixture-trace/probe_marker_api_trace.csv": "7176f3241669699561bd853e33cd59771e4096ff2391a4fa02f4d174473970ba",
+        "fixture.log": "2388ea73b85e67902a9e0de1fd0b2e19e4f64a858a421b5662150a0f3ddd06c6"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "26-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1370797,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "f8578ac736a0fb20334564da9415b9a6f8381abf7029b577de4aa0f073630457",
+        "fixture-trace/probe_kernel_trace.csv": "e612f6299f98eaa7dfa2948c43250e02625b61c67ba34c89f857da71945939bc",
+        "fixture-trace/probe_marker_api_trace.csv": "1dd056424e810ae7a4cd57f00ee7333f1f6a6f98cce910f401d0b679c5ccfbcb",
+        "fixture.log": "ff82deac1ec26a32108421442cd384138aa5d6e6974cfcff9014ab39f3dda028"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "27-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1370904,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "42bd7b1cd62a8b131d336440852c35c36caab85f0b3b5489bf42a5782154ec9c",
+        "fixture-trace/probe_kernel_trace.csv": "165d28f6a39da0fabc9ac49f9c9ab46f3e5dd14416e3570c26b956b1da8fa08b",
+        "fixture-trace/probe_marker_api_trace.csv": "371890c096ca4385d146bf8d235c310162c09141146e248814badf31a6d62e4d",
+        "fixture.log": "a29478fda79c43986cf3c1ea54c279a70dfad776946216ca799e9081dbe159fd"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "28-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1371199,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "258453df7c49e4c36a413c2f2853dbc04c135f4f867165269b2dc7c358d217b8",
+        "fixture-trace/probe_kernel_trace.csv": "394b9fcaf2d2468547dfe0db74fda1b5690f8c8380f48268884f02b47fc7fbd4",
+        "fixture-trace/probe_marker_api_trace.csv": "3bfbdeab28490a86a3a9b99cb143c23b57df0d04ef1c0e242c0bd0882dc30d95",
+        "fixture.log": "e6f66271e12fd309776d6058f79d66ecc9695ada575a5ca4cf6bb4bed0449ea0"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "29-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          200
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 530
+      },
+      "fixture_pid": 1371387,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "fe4cbb05a224e7830dde423426e0f1654a6030225586a6e7fb2c022453601cf8",
+        "fixture-trace/probe_kernel_trace.csv": "40862370c435b15ffe819c41bd11febc33dd3147d2edc2770be0698b232d6edd",
+        "fixture-trace/probe_marker_api_trace.csv": "f38aeaf7349006690c858c74e40d155a20e9e129341560cdfccccb71b5c8232f",
+        "fixture.log": "693dac228a2431b6ca46aff85fe55a5d5122db4695940580dcd400dc592a434d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "3-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1365750,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "18bd4a3f222fa61cd5c717451e591a7a2d6eeb580538ffa5cebe4bc5cba84612",
+        "fixture-trace/probe_kernel_trace.csv": "608edd329d6c9b7f61b12b258da24ad5ede23b07db3f7eafc173c2f8ce561540",
+        "fixture-trace/probe_marker_api_trace.csv": "943b91b841a4b20ac82e7716a5a00e8ee58be840b2102574ce3fd6004012ffd3",
+        "fixture.log": "16b2398e578cb032bc34c838c67823a1a1b54500287a760d8ca00d6bf26d1186"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "30-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          210
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1371582,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "67fd85a4d764c82716f85678149b071b4fd5ca77313c2b0bd7c336edc5cfc211",
+        "fixture-trace/probe_kernel_trace.csv": "606a2602adfab4a134d39e95de64e56d406395524359e9b25b054763b648b928",
+        "fixture-trace/probe_marker_api_trace.csv": "68ff29004bbee5849959943bb275d98f1001f1ef4bae45e0257776204a008b1b",
+        "fixture.log": "583f8f9f1a01ac92d8bf2359a0054fb57c4a4bfe0ae5f0aaf7fcdc04d7891dac"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "31-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -290,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 460
+      },
+      "fixture_pid": 1371691,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "b8d98db57a1fbb6ee0c5c786f2f9350fee6d011a0a3d78ffb0973f58d0a2ace1",
+        "fixture-trace/probe_kernel_trace.csv": "4f84cda56cf43fd776ceaf4d5dd34be68eb0a2b0701d80eb7f5f64aa0a6261b6",
+        "fixture-trace/probe_marker_api_trace.csv": "2817a2464e1f3554313da7f91af35565895602d45a137ea1b4f013886de86874",
+        "fixture.log": "54f15bdb3a8d2e42f4baaa4b02e17d9ddf6faadf39962bdf9491616a0b9b5616"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "32-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 530
+      },
+      "fixture_pid": 1371847,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "ed88de250564602257608daa66799c92aaddb1c8c2b78f8dd4e7ca3d9dd0503e",
+        "fixture-trace/probe_kernel_trace.csv": "8e4013df1e8aa7875249243bd27441abcb97c7067ef282e8bb7025a7e7ae38a5",
+        "fixture-trace/probe_marker_api_trace.csv": "208f116ba25d01e0afe61739c3c0c2e0835d80d52951780d7f54a0623a3e64a7",
+        "fixture.log": "1822052ea0bb96fd662822615c29bcd9aba9a9d1596238ebb21b51c9b7532308"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "33-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1371958,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "6fdd542dbc36952dc3fa6a973165cb14387f46029554574d49bdd62851aab321",
+        "fixture-trace/probe_kernel_trace.csv": "91a086aaeb17e3969bc227a51e0400757ecd4ad041717d1a935b483c81cf9a4a",
+        "fixture-trace/probe_marker_api_trace.csv": "ddafccaf5defcc10e5d14795a0ca7020998022160964c3904f7888164efd43c6",
+        "fixture.log": "bacc81d3a0861dafab2383b2c5c09b5f394c91befd4f9064c4601595760470eb"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "34-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1372060,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "36ee46f6032f1fa7cfe1ed4b27d409584fad7e94a416a4a9c679e323fe4f5b61",
+        "fixture-trace/probe_kernel_trace.csv": "7477aebe9aadc4eacc97aa979b817c2bf78e4c5c118ba66148fa5ed4bdfed2d7",
+        "fixture-trace/probe_marker_api_trace.csv": "ee23e07e9d2fc3f352157d834766c75cfbdc98bd6663a693f91a7c2a72eccd8e",
+        "fixture.log": "5197b31fb6015e03d4a417a344aeeb0bb288262d128c63398c37d9ce26d999ee"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "35-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          210
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 530
+      },
+      "fixture_pid": 1372077,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "1d0183d6174c4dd3264c3372d9ee19339de5625bd76fb2560480606e6d98c54b",
+        "fixture-trace/probe_kernel_trace.csv": "2716253dc70e0bea6248dbfa04404110c7a23ebbefe1d4e77519cbac9b64fb46",
+        "fixture-trace/probe_marker_api_trace.csv": "b0768bb70392506c44bfe79922d421d34fdc795682b4dddd2a7b880368301c22",
+        "fixture.log": "28e0f630908d45ad941df71e21c5a1eb3ed5cf94b138cc4be05e999eac90c369"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "36-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          210
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 550
+      },
+      "fixture_pid": 1372132,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "2d62939899a06835068b72f6d62b62a0eb6db116e1e1f37014cea248cd7b8080",
+        "fixture-trace/probe_kernel_trace.csv": "33f9fe7919de0c9eb943eb97996b79628500d4811b94368b4ff84674d4141d2b",
+        "fixture-trace/probe_marker_api_trace.csv": "a2b7e0bbd841bf1c685ee3fbe32d84dd60877f6a72d90f7366ae402d0d38d467",
+        "fixture.log": "00e1a044532d37efef31b41ebcb45d6ee94ad560fce4c6dc7e22cef453c92d9a"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "37-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1372150,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "006c740d2d1289c189c599d75334a4380c695766e2e93a030849e1c7f16636bc",
+        "fixture-trace/probe_kernel_trace.csv": "2b1738a41eda64aaed5ac2d84670df30de41b0c7b6840b7f020e3f3f34d9cb10",
+        "fixture-trace/probe_marker_api_trace.csv": "ac6ddf9f836c692bd7612be6e81dc812f76a4d04a6226a9f7cffa170d862bd85",
+        "fixture.log": "13be1d58ff157cce597b758b0429fdd82434d3320ed484727e2a08ca10056a89"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "38-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1372185,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "a167e2685cd04db32d94d1ab62c90704ce518d0e04fb3bc8bdaa08781ceefc03",
+        "fixture-trace/probe_kernel_trace.csv": "d1e3d5b6ee9063c7c524f0b5a4994b42c2b045ef43d80934f0d2cd9f6dd012f2",
+        "fixture-trace/probe_marker_api_trace.csv": "9d9b6c86513d57e508af5ca6a6d6a290f5b127473a44147d930023f3b3c4dfdb",
+        "fixture.log": "bb73d4923174a50920956d03f1291de77102060a2f144f685bda4e6a3d687d2d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "39-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1372199,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "01af71c234a311d98e00c2e56fa290c3017a32830dc59da990afb054f10afe3a",
+        "fixture-trace/probe_kernel_trace.csv": "b5c18d60ef6ff2251b7fed20aef9c013bf3f7643e995809084511f1bd0c38ee8",
+        "fixture-trace/probe_marker_api_trace.csv": "7b5dc8ca78d115571ff3e50c3744f0fcaef520040f467f2043bd50f42c225145",
+        "fixture.log": "773369b0537f887f73ccca93ddab52f488184847a2a5720bb36a8606c3ee7330"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "4-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -300,
+          200
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1365859,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "57da24e5271ba31b55286592e7478e79d8563b96752f63cd5665e04e544faa30",
+        "fixture-trace/probe_kernel_trace.csv": "afe2235f22e21341f96e29e1b045d757899fe785cc14b1feda32854fcd51da3b",
+        "fixture-trace/probe_marker_api_trace.csv": "4addbcdc76cb6631ffab4a684f6494e9f7b4e1056e02f8d0d0d67620c2803d85",
+        "fixture.log": "527d3df112675a05a51a5d048e89bd8059665bbc4472f36f9551ec04b7dbb200"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "40-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1372256,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "694bfad096c54de0ce5e079a6f9ea4d5f2d4a33030034f9b27174be7d1dd886c",
+        "fixture-trace/probe_kernel_trace.csv": "a1906c511b6376a6db7dc65ffa6dd695bc226b69a41f196beba358c024186091",
+        "fixture-trace/probe_marker_api_trace.csv": "7a21f93aabea5a4ba9da4335f57ab0ca488dce7a79de9c7432009068b5b3bff9",
+        "fixture.log": "3bf9e8dbec6b6f89c34fbc47eb60e6ecfe8661e5388aa3d1d9adc6027160175a"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "41-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -370,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1372269,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "ad5ea06b79bc2920082b3c4efb2b92c2215c242535e4cecba39982a0d399405a",
+        "fixture-trace/probe_kernel_trace.csv": "6ec29713b2fba0559715368ac5d468b7e729ae708267c71434f469548b093d05",
+        "fixture-trace/probe_marker_api_trace.csv": "711d389e21aa4e4ec82c7556b0fb25b0bf41811b5e5cb254cee0759046b05873",
+        "fixture.log": "0cb1acec89e76d69197fa4f701a89958884ed7c739a4b6c2978cd6ec59f70e11"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "42-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1372314,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "db2204ee6c2090c3d4c75ecb0c42c2e7feed9379afd12cfe7d0bdbb81b0cb6ef",
+        "fixture-trace/probe_kernel_trace.csv": "2f228955b0ca37dc28c5b4d1bdcc9a6d3ad7aed5b8cf0ee9b96fb5904d90a738",
+        "fixture-trace/probe_marker_api_trace.csv": "98ddf16694b9804053d90bd368f9e6dcbe0bc8607047fa7586536ec499e2b91b",
+        "fixture.log": "299e3fb5004b587d5a024c4c02462ee0f7237f175b1cb5e7fa58cbca2a885c89"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "43-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1372326,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "5f18989adafff0d1a47db4fb01069fc32419a74d8962ba6c20ae07f0854b0a93",
+        "fixture-trace/probe_kernel_trace.csv": "3166841e70741cd36747eab0ef2b95dc113763c35466a94af8f6954013636b1b",
+        "fixture-trace/probe_marker_api_trace.csv": "40a2066491dcdec4be4bed22be2b9d5ec9ed21d2b7c143d3842e6c6d4b674b38",
+        "fixture.log": "4a3e83809ac3e9489054682e865216e11d51a81c9f494ac2139facd7b529bb8d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "44-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1372370,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "2c018eb533e69b895874245b6b12e93c808fa768233f93188d238b9c6fcdc6b0",
+        "fixture-trace/probe_kernel_trace.csv": "9f8a776216d96dc46df5c11225cd3480d433e63f9bda673f22652bf989a9dcee",
+        "fixture-trace/probe_marker_api_trace.csv": "5f1f7c9edbc84b1bebb8aebfbebdb40a12c97e279ddddcc2f4b68b62e233375e",
+        "fixture.log": "1e5a2e7695fa255e1b5640ee1e82e9cf3cf16c3fe057ce070ffb1cb1d4d1b027"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "45-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 470
+      },
+      "fixture_pid": 1372384,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "0ead0832b76e6ba34a59542eded01b7fb6a434a506afb6579d38a830866a9db5",
+        "fixture-trace/probe_kernel_trace.csv": "83f9c20b2a6acb7e13b3fa12ab8ec25776dedc314aa46b6b89e55c63c42d1a19",
+        "fixture-trace/probe_marker_api_trace.csv": "36c0c356f72ae59bb5fcb87747830f5930c72947d1d16300b1cc9742be22e167",
+        "fixture.log": "e731b7c045374bb3ad55f9a810be85cc6f6bf7438b637f8fa7dffc9d3cd180a4"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "46-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -370,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 560
+      },
+      "fixture_pid": 1372431,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "a08a9fa24af8849bd14ccdc256adf155d04085298465a8ffee5bc1a274caf85a",
+        "fixture-trace/probe_kernel_trace.csv": "75e4d968ec592b3ca17ecfbe2aa2e537e4dfcdcef22e68420bc272c1755e6ead",
+        "fixture-trace/probe_marker_api_trace.csv": "2961a10ef1ee3ad2a2c21c98f69305e6485b113d0eac1d370ef4d1e4cd8e9348",
+        "fixture.log": "15278efce819b1aa4ed3509a8e17e1622d9a3c985d7bc9b9335c6beebcbe8901"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "47-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -360,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1372449,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "4aebccd4501c7445554dbbdec72a3bcef81583401992d2cb5177d8db9fdae111",
+        "fixture-trace/probe_kernel_trace.csv": "91b3f70d05879abb750c53759dc822c5c1737771e79a308b50399101ba5d6687",
+        "fixture-trace/probe_marker_api_trace.csv": "481cb4d5f15a2118a87f8b50979e46413d8359b9c1498019b1cd33963c07bb2f",
+        "fixture.log": "4e7f37bd9b3cb78f233afab39a84f607e4dfd1d18775dac705decce8460839c9"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "48-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1372520,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "509a7e87f972bf4144dabd4b2e8138eae355273a83d8df19a684160848a6667c",
+        "fixture-trace/probe_kernel_trace.csv": "efe17a6bad3695a1f9bcf84f1a16626ef46174dbbb3c48e793d120ef15cc4761",
+        "fixture-trace/probe_marker_api_trace.csv": "50f66c2338786d2f0051ebb83ead8bf71c0cf169617111be2aa93b0da07c64c3",
+        "fixture.log": "8bfb8447421041e3c61828b64af8f4e58fe0f20333493d861f60fb85c18ddaa9"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "49-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1372548,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "a80f28b5ca20facf93532d911881215de29f5d7d57198c8c9c5b3377016e6716",
+        "fixture-trace/probe_kernel_trace.csv": "e50316de7553536bf0981c3ab5a7d1b34598f2dab6d34786f40ec624a15f644e",
+        "fixture-trace/probe_marker_api_trace.csv": "a2a76eefcf05efc5a3243a6ad5ba31fae4bc0d5f0b2995812a601210fad251f7",
+        "fixture.log": "a3216454adf76956644badddc433d232d10249fefb3b712cb8b26041f777a816"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "5-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1365912,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "527f95d9b59c838b56fc66e6df640829929eecf381d67538b28256e1382d7f7e",
+        "fixture-trace/probe_kernel_trace.csv": "17ff9252d8b232654221f1993b5bc067dfd911db0f7311d1dddebc067c41a53c",
+        "fixture-trace/probe_marker_api_trace.csv": "01a6e26444b77ce5354eb4e500840be288f8f5dca27d03b38b703f35aa38c96a",
+        "fixture.log": "3884d53e477e9a7db0474011b17bc5a874c35cf562556e5e8e9fd1931b7ec38c"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "50-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1372607,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "440d3375454198a93879b546d1e76a0e3de793badeae3f1cfabf4c4b2ac0b195",
+        "fixture-trace/probe_kernel_trace.csv": "a1e12c2231c535308002a325a81bf93c21e0a215afc6331f2db9f3ec6ecabc30",
+        "fixture-trace/probe_marker_api_trace.csv": "6e9ca278af234ba536ca1cd9078232b91a91fda7c16bef452489514c31cfb2e4",
+        "fixture.log": "abed0831114be3baa10d1de7758eebd0bdb7ed82dab4467d462f3dcb8dfbafc9"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "51-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1372625,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "4a83799b29462ee64a9be9a054a96170eb80b253c4a929d74263843888ff494d",
+        "fixture-trace/probe_kernel_trace.csv": "2fe1a0f0560d5928e7e5de60e4b9402e90ecbb6f8107a09cf2517a31269771c0",
+        "fixture-trace/probe_marker_api_trace.csv": "8ac41651594d4e58e28d8e598f991e54f7c3a910a79aa8adaedbcdb8a415bf89",
+        "fixture.log": "7f42cea0148f64f4a79ec7bf20c77c1f7b11d7787be556e22d37563571ee88a2"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "52-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1372665,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "df29483b7a9ab9b474a4bd79868bfc604419e67e84b40f657a5c1bc4ca5b4056",
+        "fixture-trace/probe_kernel_trace.csv": "45b025bc6289f4654b158bff81733751f9cd1394726cefd87ff526f64f085b49",
+        "fixture-trace/probe_marker_api_trace.csv": "1a37e96334ab2c887e5d64f990ca2aa21fafd4806252dad0f7d41f4af504239a",
+        "fixture.log": "7714ed1476c83b98d6373e7cf1c09f0c80c4d7217117641637072c2574a748af"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "53-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1372679,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "894b1af2f958c2cedf6315edd6171d2b0c10160dd43e09fd337a69c18c0b3e8f",
+        "fixture-trace/probe_kernel_trace.csv": "bff200b35e55ae694c032bdaa80a2b236026a955b556556818b5c7b7a5f9becf",
+        "fixture-trace/probe_marker_api_trace.csv": "9afbf2148bc420dd69c5fdc6052a36fa40544b5459baa3cd03fe79136e0045bf",
+        "fixture.log": "36e9c4266cb297215e0ebc64b17675b35778ac053c660fe18a4217c7f6f179dd"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "54-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1372732,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "963e771ac798d9c50c78b28a7303e1055afec2ab73986680933306828bb4f0cd",
+        "fixture-trace/probe_kernel_trace.csv": "2d6e261848c7dfae5d60d06760d8fe65fb74515d2a12e6ea0563e3f53382a700",
+        "fixture-trace/probe_marker_api_trace.csv": "d6156b254b7e872dd6cdf1428c5c6081f6d6aee858973b35805e5cd813a769cd",
+        "fixture.log": "d6c68fa733b7f5bd2d61512a841fc628ff6317f32a5e774bdf9d205851de35c5"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "55-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -300,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 470
+      },
+      "fixture_pid": 1372762,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "3e31f3911ed8d62848425aa8437c26fb85b142173c6b00a297bdb1806a2a831f",
+        "fixture-trace/probe_kernel_trace.csv": "79cd8c9c2fa44c66d6b61fcd2c3020ac64d6127f6f38d85bb36e33dc8eea4c08",
+        "fixture-trace/probe_marker_api_trace.csv": "1bace7a1970e4fcc11f42b22c49e69d58a2b14703a1c4f1f1c0eaeb5bea92663",
+        "fixture.log": "70ba6303eea664af2c29243772f4fa7c5550da3fc8574b0651bf2ad4275d31c4"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "56-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 530
+      },
+      "fixture_pid": 1372822,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "9beffc8e3bf0647a141ae80798aeeee5f00cc724baefe9baae61165b1f5ba509",
+        "fixture-trace/probe_kernel_trace.csv": "50e9be8c0956535dc9a7045073264d0c4d02bb0945a1fc4f85030bd2364cbd0c",
+        "fixture-trace/probe_marker_api_trace.csv": "f8c064ff94be9529f36007f573f3f939f482ac1c6d415c28ed5afcd5b82e451f",
+        "fixture.log": "3b75f028d3759474904b04014e837ebb184c0c033c0b4ee7a39f4e18f1a6ab5d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "57-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1372833,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "4a05ba17296d808b9082530540ef033ab9a86d0c9f8dbc864044df1741538ede",
+        "fixture-trace/probe_kernel_trace.csv": "ce891e15090a4728fc292c2c6994007d0a7bb01980da29fcae1fc6e27d50b948",
+        "fixture-trace/probe_marker_api_trace.csv": "850a012b3327145a935bad2f10f90ea8e435aafb529d3f05b726eda6e126e406",
+        "fixture.log": "fd1a0cfe93926ee44274be16a669dda02aea32919181b986c4551753c7b77cc1"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "58-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1372886,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "b13c58c4fbbd579b1011d4009b79c611a3edb6f6a5e7282a424822b15f30cc48",
+        "fixture-trace/probe_kernel_trace.csv": "8505c2f83c26b8ed8d00afa2d6ada3474bd0167f09d7050a7e3cc2f147c0b1c1",
+        "fixture-trace/probe_marker_api_trace.csv": "5f0ccad846a63ef7b52605cd580e40833a080ac19354fc0db56f1b7da20ae169",
+        "fixture.log": "8de85abcff5451fe09621d76e899e6ac04011616542859355cbe2f5822d5c6ca"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "59-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1372900,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "48c1e9118c3f54c493235c3bb35a124459ec1b6a44468b2fae2f3a86ae0cbf71",
+        "fixture-trace/probe_kernel_trace.csv": "d4d8a5bb233d25c3500f2b2ca51ca42436b50725dc07e7a443552026430cf042",
+        "fixture-trace/probe_marker_api_trace.csv": "c7c77abf1706015856027f168f20df660fd490acb42eb80135ee46695d2f0e0b",
+        "fixture.log": "de3a382bc3a7bc0d4ef071cbade6b2fc658400ef166f45ebaaa046eac39cbb4e"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "6-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1366126,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "c0792bd8b88bba45ec78a13346c1bce99cbd574c8dfb7ee386b687ab2f9e46c5",
+        "fixture-trace/probe_kernel_trace.csv": "7c719ef8a9d72c125738c60859fa8e82252d11445fdada39be8d29fa8a48c6ff",
+        "fixture-trace/probe_marker_api_trace.csv": "0873e9557c88aff1405a72bab8b01c6ba0e21943224b6d42026533337b6b63a3",
+        "fixture.log": "57577b54e28435ca5c5edad1c9706aa1d43d18a29116e69f4754551224b64278"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "60-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -360,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1372951,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "dc1ebe8f41b5d7fefe38527efe905d060aae37057a5a7149acb21261e59191d5",
+        "fixture-trace/probe_kernel_trace.csv": "d0a0b43459a91a89a9a3a170ff726b38df3384659a6aea76462339a8a53aa4ec",
+        "fixture-trace/probe_marker_api_trace.csv": "10b101d849e24d864d5377f334db8a6ffc2e58cd0ee128c048789a6061f1fa09",
+        "fixture.log": "72ffa50658ae46a19dc07d0e2c9a55b44d65045aff9f06f545066a3f89260716"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "61-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1372978,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "acea8022084f678f5edee824c69edc187917dcc0a38a16888ad65fc220a977df",
+        "fixture-trace/probe_kernel_trace.csv": "54c514ad3e4aa1bdaae2fec7ac8181bad39e80b3c020bf065c888c905ba3e11b",
+        "fixture-trace/probe_marker_api_trace.csv": "8012576ecd897865cbe43fea9d26b981ee61654d3efd68810fea2ac7f469dcd5",
+        "fixture.log": "e99d2129ce3553e48b39106ccdd511d4028d579c7b4b1db7775805cc293fd400"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "62-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1373023,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "7717edeca72589ebd6476e96817b777ea216d5a6264ceb1f420a0bb9fb08d41b",
+        "fixture-trace/probe_kernel_trace.csv": "783fc7dfaf413ce4eef72c66e21bbd719635ac271302a861a961bb10c6831e40",
+        "fixture-trace/probe_marker_api_trace.csv": "122a6f1fed757e65cfe2a53cc8e8c9a843f2a2d91362365fbdd085e2a2c0c6c2",
+        "fixture.log": "1bf6e18a6963bcac5e46a3d7f528be9b46bcb5343bee536c3fd1e277adf529dd"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "63-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1373035,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "573f1a04f6fdf6a34e5978d20218e2d443bf8e5cf5971ae1893c3009d44e16ce",
+        "fixture-trace/probe_kernel_trace.csv": "1a0ae1adaf1468956308f643290b6539ac17dc7c068dcfb69e0c5ac647dd33ea",
+        "fixture-trace/probe_marker_api_trace.csv": "3264984f35189ea040c5e9e3e08cb861c04af3cd0acaf36ae1a820703bfe554c",
+        "fixture.log": "2c672f7d31e1b51cfa6851dfb5f60d36c34499bdb42fb3991cc36fccb34cb147"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "64-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          220
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 550
+      },
+      "fixture_pid": 1373096,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "71a3e62c60f6723b7c8b8f14c84f96d6839650d3070de9075174cc57453a65e7",
+        "fixture-trace/probe_kernel_trace.csv": "54e6af68617ece417e7ebec1d447842855556aee8ab763902d32fcebad3d002b",
+        "fixture-trace/probe_marker_api_trace.csv": "fd95031883c9d9daa1ff314f0a7fb0c50e4f9554debaec47a83b3bd7eb2ee6bb",
+        "fixture.log": "9f649ad0486058b64a2b29aaa46d078a172b19908c71708902f9f80c08f0cfde"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "65-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1373116,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "80a8051d9ca9a6574a8716bdb451658d0975e76f788a6a23978fbee453b2f935",
+        "fixture-trace/probe_kernel_trace.csv": "606503a01acb3ab5dee4e666c6f6b68f42d9aadaf3c13fafa27e897304d9d9e9",
+        "fixture-trace/probe_marker_api_trace.csv": "261aed7ac162ed5d2bf13c37c868a8d63865a31fe810ec222d74b1c8bcc2f09d",
+        "fixture.log": "4e0cd9f8c475c5afd37152377e513c5631e271202673eab69ea1a4889265d036"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "66-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -300,
+          150
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 450
+      },
+      "fixture_pid": 1373174,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "af60d799befa3f982748d752d71dadcd110b3a820d12dbdc16cc23c5b82ce9c2",
+        "fixture-trace/probe_kernel_trace.csv": "f094cb3b8194555f95eb268c6c37bf5b6875e58781d0b71a4c400272aa077d75",
+        "fixture-trace/probe_marker_api_trace.csv": "ab2270ca36ce916ec3ae463b431a039af1b1b0ba480d4b2df3ddd2152c3ab40f",
+        "fixture.log": "ca393dafd6e99dff52c28653f8141708d127dc30ff284f16e97345aca21ac54d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "67-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 530
+      },
+      "fixture_pid": 1373193,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "668dd93cc94a86454c182b4cd9ee1f18082cd21d7ea1a2857971eed3a92808cb",
+        "fixture-trace/probe_kernel_trace.csv": "987e349544eb7b98b4a3ca3a52f00147f9f0ad2a75f69aebe3bb5dea6d1897d9",
+        "fixture-trace/probe_marker_api_trace.csv": "38b69a1d5a275868f8d22bb049cbc06dd468e8ffd6f0b838630fe7cee0040175",
+        "fixture.log": "befea9dce5dd692d773b5c400d13b15c3d996eebc2ddad28db2ae3e44019e32f"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "68-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1373239,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "2be83d15525fd1999232030fbc45600758312006269ed531e1d4bc5d774c5ee7",
+        "fixture-trace/probe_kernel_trace.csv": "d3db498a518416b7589456c027265544e1dc4b23600fa75c0fdd54664e884127",
+        "fixture-trace/probe_marker_api_trace.csv": "59f0a877753221297b23db2e7801d72b975c8980e8ff2ad587b98f7534300f25",
+        "fixture.log": "4b0b4b0d858e5231a0d6d8947f3b9d1707d4d1999776b7132bcc2e0ea53d994b"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "69-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 530
+      },
+      "fixture_pid": 1373250,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "4e6266444a8ff5b5895da3a66e7817a13f3b37b53ebfad3e92ede05851b0131d",
+        "fixture-trace/probe_kernel_trace.csv": "06fa9a37183213b1e02416021a3d2632cc6fc3bdf847eec8f030d0e6cb7b54cd",
+        "fixture-trace/probe_marker_api_trace.csv": "4f343db3c68c9340b44fc233b18ba28fea2e63b3892b638dc3cf74f5992faed8",
+        "fixture.log": "cded7293921d1d2182363680a2e47cfb7ac0981600aa149ce6c2b3b940d3a659"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "7-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -290,
+          200
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 490
+      },
+      "fixture_pid": 1366153,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "7967c34610af15ef26f86a83d20b9925c921858fa71aaa8a0ab0ad0bef29a740",
+        "fixture-trace/probe_kernel_trace.csv": "b5b3138743205e488493abea78cea197db13c000db2e2cfff1e5fe9079d68da1",
+        "fixture-trace/probe_marker_api_trace.csv": "412556c5e88021faf155e8259bc74a91e09e3122adb33073a52fdec5144e6e9c",
+        "fixture.log": "a1b0ee9eef3a0cadc216e73ec54cafdbee667bdd01b2e049460fa4615a3d5a0d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "70-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -330,
+          150
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1373310,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "00d1cb35fd2d808c7601364fad4c6928b73d45a75e54342bb4da2831bf398ae1",
+        "fixture-trace/probe_kernel_trace.csv": "baf6b5a567afdf45b9a8c5e439d86061bd92be8c3b4877fb5d59cbcd109909b3",
+        "fixture-trace/probe_marker_api_trace.csv": "cf3aaebc16ca488e450e05c648a89e8dc07b96a2e920bb71db0ea6bfb38df9c2",
+        "fixture.log": "59177d8ef0c7a028dd8fd838d424925b21fa28227c1ad33895f2e015d9be0182"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "71-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1373350,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "3b4d0891bfd2cbeec9a77a79ea0d5d0138b3042b79174a11b0fe1b10ad7d90f9",
+        "fixture-trace/probe_kernel_trace.csv": "f40078c554008bb6d0619122c3d2f3d51a50c8f820c2fa961d683414e55be46d",
+        "fixture-trace/probe_marker_api_trace.csv": "36d8feef17f1dd68d53495cba60440c391b16eb8acf268bf8f1bfc8fe5d71108",
+        "fixture.log": "a16036ff8d34872a282ff430ec6d25cce9d1ba861c8a1618f74516b60432c8ca"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "72-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -360,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 550
+      },
+      "fixture_pid": 1373415,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "82eef491c0ec6e8b92c9a2e148cba45e58af3be5aba76915eea320d1491a921c",
+        "fixture-trace/probe_kernel_trace.csv": "7f298fb7d9d6552f3d431dce188457af360a3b844a73c70ce30f682e8319de4d",
+        "fixture-trace/probe_marker_api_trace.csv": "7f8452d743a0b92b7521d4f46da01fa013b754855bcd4a75c9b9fbeaa39b349b",
+        "fixture.log": "304d1df9d66772da09175ad4c6585a34227a3b8cc94179b00e0cb52e34147dfd"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "73-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1373433,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "949293914293f77ef616d3ccb55e97615a0fcacc7450bc2df3cd58e92428d376",
+        "fixture-trace/probe_kernel_trace.csv": "99f4ae682437abee46820c76bb65e2dd4d11558eb990bcd98fc987419b840b50",
+        "fixture-trace/probe_marker_api_trace.csv": "89e915fbd337d8600a0f6844cbeda7f6110bdb0b99d51b777265341a61cbbcd8",
+        "fixture.log": "42e93c03291fbfe6f983eeb044d75f3a2ce622c1f67e2d10ceef1ef330ba48e2"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "74-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          190
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1373506,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "d54c1ffa58bfeacad13c9c6160afc5fc6fc27e473253099d70c0995c92007000",
+        "fixture-trace/probe_kernel_trace.csv": "a5649f059b33adc51f9a618cd6994c9edf9a415fa0e8dc96adedc45e9cc3c421",
+        "fixture-trace/probe_marker_api_trace.csv": "6e7a63890b65dbaa97d1cbd62a340df5dd3ab83b6985be114317d93c5e9bdec2",
+        "fixture.log": "7f2dfd4bc01a9644d3d009f1caa265dd7d1430f85e79d591843c8ff2c72f8a34"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "75-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -310,
+          200
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1373518,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "27ec20351b3e1b2cb4923de5ad9dedc0d59dee59e5c5e31d0b70e95020554d53",
+        "fixture-trace/probe_kernel_trace.csv": "cd34b7c65f2820a29599a2864d0bee3d09bff7b7e78c20f99c9ceae6ee3ebd5f",
+        "fixture-trace/probe_marker_api_trace.csv": "1aee73605b6aec067e01c7a4945475113d78328a69056855d7564fb0cc8c36f4",
+        "fixture.log": "cc9e4f4522c8eeb55a877673675d3a9b4fa15610713fe1e59627426896ca78b8"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "76-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 500
+      },
+      "fixture_pid": 1373575,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "8f1f2d71888e0f2b48b440b87e80d6f207508a4952d8c5a317419b7874b74d9d",
+        "fixture-trace/probe_kernel_trace.csv": "88fb0f47630f709dfcb2be0cb33df23d34345e6a741bf7742ffea2cb1215d38b",
+        "fixture-trace/probe_marker_api_trace.csv": "87044860b0134204c1b90a4201b17652aec352d740be61a135ceb6d934ad6f08",
+        "fixture.log": "d82c7185543a653f92d9e3a104b294e55e897ec7f0eade17d83ae86583001f8d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "77-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -290,
+          170
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 460
+      },
+      "fixture_pid": 1373595,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "7b6b4456cd020ebb7e6faaa3d429a8b01d52715a2c63300bbf9f8ca6ef92cdd1",
+        "fixture-trace/probe_kernel_trace.csv": "b9663bb11929153f7c93ca2695c07399178c90b94675ac00b4635eb2402e3bc5",
+        "fixture-trace/probe_marker_api_trace.csv": "d45c8b7416cc1a26c97128c13c2486d29374e58f8e6bc4a5423c9e884168946c",
+        "fixture.log": "d0b49d07a47676f38bc9310e07e2d5245b7a156fa32e3eddbbec2b659ec62eb5"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "78-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -350,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 510
+      },
+      "fixture_pid": 1373712,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "8d210a771e331169edcb48817e5752c23c6fcb79205194f3cd94450374e99793",
+        "fixture-trace/probe_kernel_trace.csv": "4b6ff52a7285ea5646e979792092fd901e802b6205b34c3ead36fba13eb800e6",
+        "fixture-trace/probe_marker_api_trace.csv": "01e19ffe2135b152b8e5e12adde129e26420f3baede6d5e0692871a4a892d8f6",
+        "fixture.log": "9e2de05aeb0bf7f7ae92cd979e2baa4b9e1fe43a845c922fa43b43ef742d52d7"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "79-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -320,
+          160
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 480
+      },
+      "fixture_pid": 1373748,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "5ba44780221409f9e4a1c9e2a79abc9dc7d069f7397467a021ebf33987d14c7a",
+        "fixture-trace/probe_kernel_trace.csv": "8c178e35b1763f20a2945df1b0eea9cdcc43554960079678ba1c93626a2437db",
+        "fixture-trace/probe_marker_api_trace.csv": "3993bc7fa1919e8b8758bc18b7f1cfaec2a307c5f90b93ff1cff277abe5a3125",
+        "fixture.log": "ccdd837e8455502aaaa0350221162a9f240dcdc1d4f95d3a9de6b6b076ea0a85"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "8-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          200
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 540
+      },
+      "fixture_pid": 1366460,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "5a1a35b8cc8736f4e0b6c8b96f93ae58728f7e7acd204847f9e49d12102cd241",
+        "fixture-trace/probe_kernel_trace.csv": "436df85e8f2ea45115e147de6cdf441ac434c715666d7b7ac4ee83645f576fa5",
+        "fixture-trace/probe_marker_api_trace.csv": "64f51a80683992f8a3f1736739d29edbd715a579a4a7ae20d3df5d5775f3877a",
+        "fixture.log": "039ed484fa25f12e35c01ce3d32c1395e284ed424a54a981bc5d512b24a59f7d"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    },
+    "9-sdk": {
+      "clock_constraint": {
+        "host_minus_profiler_offset_ns": [
+          -340,
+          180
+        ],
+        "limitations": "No clock identity, drift bound, graph-to-token attribution or historical boundary established.",
+        "matched_markers": 2,
+        "status": "CONSISTENT_CONDITIONAL_ON_CONSTANT_OFFSET",
+        "width_ns": 520
+      },
+      "fixture_pid": 1366706,
+      "input_sha256": {
+        "fixture-trace/probe_hip_api_trace.csv": "9507d8e680f6c51d0eb463908e3e286608f36355b429b94c54430288714bfbf8",
+        "fixture-trace/probe_kernel_trace.csv": "566d182a434c5ffe3c151477aec69691d474fb98d99b68d5e76491ccf2cbc67b",
+        "fixture-trace/probe_marker_api_trace.csv": "04b93fe6aeec1a9df9f027950884e11bf7a0ed256888efb36cf9c6ad3a43022f",
+        "fixture.log": "99fd296b4343a8e5b0905e19ba51b3d76f562cb66f536fa8d14ac07d093e3c30"
+      },
+      "joins": [
+        {
+          "graph_correlation_id": "16",
+          "kernel_count": 2,
+          "launch_identity": "launch--1"
+        },
+        {
+          "graph_correlation_id": "20",
+          "kernel_count": 2,
+          "launch_identity": "launch-0"
+        },
+        {
+          "graph_correlation_id": "24",
+          "kernel_count": 2,
+          "launch_identity": "launch-1"
+        },
+        {
+          "graph_correlation_id": "28",
+          "kernel_count": 2,
+          "launch_identity": "launch-2"
+        },
+        {
+          "graph_correlation_id": "32",
+          "kernel_count": 2,
+          "launch_identity": "launch-3"
+        },
+        {
+          "graph_correlation_id": "36",
+          "kernel_count": 2,
+          "launch_identity": "launch-4"
+        }
+      ]
+    }
+  },
+  "schema": "nemo.fixture.offline-join.v1",
+  "scope": "SDK fixture traces only; no historical boundaries, server tokens, clock identity or GPU claim",
+  "source_result_sha256": "7d6db4dea6dfed738f1fc2f223a9d9333630e86d4ec4f2bb486da781971fff1e",
+  "validator_sha256": "b29252b752b37738467d83e350a8f7d233753770cf794675c1f1f429abc4346d"
+}

@@ -1,0 +1,13 @@
+test_changed_log_identity (test_audit.Controls.test_changed_log_identity) ... ok
+test_duplicate_graph (test_audit.Controls.test_duplicate_graph) ... ok
+test_marker_outside_graph (test_audit.Controls.test_marker_outside_graph) ... ok
+test_missing_kernel (test_audit.Controls.test_missing_kernel) ... ok
+test_missing_marker (test_audit.Controls.test_missing_marker) ... ok
+test_positive (test_audit.Controls.test_positive) ... ok
+test_wrong_graph_correlation (test_audit.Controls.test_wrong_graph_correlation) ... ok
+test_wrong_graph_pid (test_audit.Controls.test_wrong_graph_pid) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.008s
+
+OK

@@ -1,0 +1,3 @@
+# Retained fixture range join
+
+Offline replay of the retained SDK fixture packet, not a new GPU capture. Eight controls passed; 80 SDK runs each joined six same-PID/TID marker ranges to graph APIs and two correlated kernels. Marker digests, graph IDs and fixture PIDs are checked against the prior receipt; API, kernel and log digests were recorded at replay, not captured as original hashes. Result SHA-256 `7be96d7bcb9cfe02e9afc6ebe54eb87c99ad524a5052ed1003f7016ffdb34eb8`. The fixed external input location and dependencies are in `audit.py`; the input packet is retained under `/mnt/raid0/llm/tmp/akagg/filing-20261105/`. Clock intersection remains conditional. This establishes no server-token attribution or historical boundary.
