@@ -15,3 +15,7 @@ GPU BF16 one-hot oracle baseline matched 27,262,976 outputs exactly; reverse-slo
 ## 02:56Z — File and retain the pre-b4 matched control build
 
 c6-preb4-matched-build-20261105 completed the build-only control; retained and SHA-256 checked its executable and libraries at /mnt/raid0/llm/tmp/akagg/retained-c6-preb4-matched-build-20261105. Toolchain/header closure and corrected-image comparison remain prerequisites for attribution.
+
+## 02:57Z — File refused v39 floor calibration
+
+Floor v39 result REFUSED after 24 anchor and 24 candidate main-surface units; no completed long-context floor and no floor decision. Retained result, units, log and receipts at /mnt/raid0/llm/tmp/akagg/retained-akxall8-floor-v39-20261105. Native runner returned rc1; successor repair is underway.
