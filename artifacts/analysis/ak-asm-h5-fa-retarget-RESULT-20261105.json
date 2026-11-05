@@ -1,0 +1,282 @@
+{
+ "at": "2026-11-05T16:45:52Z",
+ "row": "ak-asm-h5-fa-retarget-20261105",
+ "handoff_task": "handoffs/active/autokernel-loop.md:AK-ASM-H5",
+ "verdict": "CORRECT+FASTER",
+ "reason": "",
+ "complete": true,
+ "question": "does the gfx90a retarget of AITER gfx942 FA-v3 fwd hd128 bf16 asm run correctly on MI210, and how fast vs torch SDPA?",
+ "summary": {
+  "kind": "summary",
+  "verdict": "CORRECT+FASTER",
+  "geomean_speedup_vs_sdpa": 1.2201998487149095,
+  "gqa_used": true,
+  "cells": [
+   {
+    "tag": "time/B1/S8192/H32/KV8/full",
+    "kernel_ms_median": 9.432339668273926,
+    "kernel_tflops": 116.56828172486769,
+    "sdpa_ms_median": 11.449623107910156,
+    "sdpa_tflops": 96.03037736817595,
+    "speedup_vs_sdpa": 1.2138688290055382,
+    "sdpa_mode": "enable_gqa"
+   },
+   {
+    "tag": "time/B1/S8192/H32/KV8/causal",
+    "kernel_ms_median": 4.9052910804748535,
+    "kernel_tflops": 112.07404512165694,
+    "sdpa_ms_median": 6.28065299987793,
+    "sdpa_tflops": 87.53163307998149,
+    "speedup_vs_sdpa": 1.2803833446046866,
+    "sdpa_mode": "enable_gqa"
+   },
+   {
+    "tag": "time/B1/S32768/H32/KV8/full",
+    "kernel_ms_median": 153.22227478027344,
+    "kernel_tflops": 114.81480789685351,
+    "sdpa_ms_median": 177.0567169189453,
+    "sdpa_tflops": 99.35904353444843,
+    "speedup_vs_sdpa": 1.1555546814120294,
+    "sdpa_mode": "enable_gqa"
+   },
+   {
+    "tag": "time/B1/S32768/H32/KV8/causal",
+    "kernel_ms_median": 77.43585205078125,
+    "kernel_tflops": 113.59199633316692,
+    "sdpa_ms_median": 95.57926177978516,
+    "sdpa_tflops": 92.02930487655595,
+    "speedup_vs_sdpa": 1.2343024483943914,
+    "sdpa_mode": "enable_gqa"
+   }
+  ],
+  "at": "2026-11-05T16:45:51Z"
+ },
+ "cases": [
+  {
+   "tag": "corr/B1/S128/H8/KV8/full",
+   "ok": true,
+   "err": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.0027049779891967773,
+    "mean_abs": 0.00022602092940360308,
+    "max_rel": 0.7598649859428406,
+    "viol_frac": 0.0,
+    "ok": true
+   },
+   "error": null,
+   "kernel_ms_median": null,
+   "kernel_tflops": null,
+   "sdpa_ms_median": null,
+   "sdpa_tflops": null,
+   "speedup_vs_sdpa": null,
+   "sdpa_mode": null,
+   "sanity_vs_sdpa_bf16": null
+  },
+  {
+   "tag": "corr/B1/S128/H8/KV8/causal",
+   "ok": true,
+   "err": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.007313966751098633,
+    "mean_abs": 0.00035545637365430593,
+    "max_rel": 0.7309740781784058,
+    "viol_frac": 0.0,
+    "ok": true
+   },
+   "error": null,
+   "kernel_ms_median": null,
+   "kernel_tflops": null,
+   "sdpa_ms_median": null,
+   "sdpa_tflops": null,
+   "speedup_vs_sdpa": null,
+   "sdpa_mode": null,
+   "sanity_vs_sdpa_bf16": null
+  },
+  {
+   "tag": "corr/B1/S1024/H8/KV8/full",
+   "ok": true,
+   "err": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.0019315481185913086,
+    "mean_abs": 8.674176933709532e-05,
+    "max_rel": 0.2702769935131073,
+    "viol_frac": 0.0,
+    "ok": true
+   },
+   "error": null,
+   "kernel_ms_median": null,
+   "kernel_tflops": null,
+   "sdpa_ms_median": null,
+   "sdpa_tflops": null,
+   "speedup_vs_sdpa": null,
+   "sdpa_mode": null,
+   "sanity_vs_sdpa_bf16": null
+  },
+  {
+   "tag": "corr/B1/S1024/H8/KV8/causal",
+   "ok": true,
+   "err": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.008029460906982422,
+    "mean_abs": 0.00015409727348014712,
+    "max_rel": 0.7444255948066711,
+    "viol_frac": 0.0,
+    "ok": true
+   },
+   "error": null,
+   "kernel_ms_median": null,
+   "kernel_tflops": null,
+   "sdpa_ms_median": null,
+   "sdpa_tflops": null,
+   "speedup_vs_sdpa": null,
+   "sdpa_mode": null,
+   "sanity_vs_sdpa_bf16": null
+  },
+  {
+   "tag": "corr/B1/S1024/H32/KV8/full",
+   "ok": true,
+   "err": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.0010695159435272217,
+    "mean_abs": 8.750763663556427e-05,
+    "max_rel": 0.30603116750717163,
+    "viol_frac": 0.0,
+    "ok": true
+   },
+   "error": null,
+   "kernel_ms_median": null,
+   "kernel_tflops": null,
+   "sdpa_ms_median": null,
+   "sdpa_tflops": null,
+   "speedup_vs_sdpa": null,
+   "sdpa_mode": null,
+   "sanity_vs_sdpa_bf16": null
+  },
+  {
+   "tag": "corr/B1/S1024/H32/KV8/causal",
+   "ok": true,
+   "err": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.007815122604370117,
+    "mean_abs": 0.00015369593165814877,
+    "max_rel": 0.9091519117355347,
+    "viol_frac": 0.0,
+    "ok": true
+   },
+   "error": null,
+   "kernel_ms_median": null,
+   "kernel_tflops": null,
+   "sdpa_ms_median": null,
+   "sdpa_tflops": null,
+   "speedup_vs_sdpa": null,
+   "sdpa_mode": null,
+   "sanity_vs_sdpa_bf16": null
+  },
+  {
+   "tag": "time/B1/S8192/H32/KV8/full",
+   "ok": true,
+   "err": null,
+   "error": null,
+   "kernel_ms_median": 9.432339668273926,
+   "kernel_tflops": 116.56828172486769,
+   "sdpa_ms_median": 11.449623107910156,
+   "sdpa_tflops": 96.03037736817595,
+   "speedup_vs_sdpa": 1.2138688290055382,
+   "sdpa_mode": "enable_gqa",
+   "sanity_vs_sdpa_bf16": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.00048828125,
+    "mean_abs": 2.787051926134154e-06,
+    "max_rel": 0.06772099435329437,
+    "viol_frac": 0.0,
+    "ok": true
+   }
+  },
+  {
+   "tag": "time/B1/S8192/H32/KV8/causal",
+   "ok": true,
+   "err": null,
+   "error": null,
+   "kernel_ms_median": 4.9052910804748535,
+   "kernel_tflops": 112.07404512165694,
+   "sdpa_ms_median": 6.28065299987793,
+   "sdpa_tflops": 87.53163307998149,
+   "speedup_vs_sdpa": 1.2803833446046866,
+   "sdpa_mode": "enable_gqa",
+   "sanity_vs_sdpa_bf16": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.00390625,
+    "mean_abs": 2.5813969841692597e-05,
+    "max_rel": 0.8170199394226074,
+    "viol_frac": 0.0,
+    "ok": true
+   }
+  },
+  {
+   "tag": "time/B1/S32768/H32/KV8/full",
+   "ok": true,
+   "err": null,
+   "error": null,
+   "kernel_ms_median": 153.22227478027344,
+   "kernel_tflops": 114.81480789685351,
+   "sdpa_ms_median": 177.0567169189453,
+   "sdpa_tflops": 99.35904353444843,
+   "speedup_vs_sdpa": 1.1555546814120294,
+   "sdpa_mode": "enable_gqa",
+   "sanity_vs_sdpa_bf16": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.000244140625,
+    "mean_abs": 8.33289618640265e-07,
+    "max_rel": 0.017135806381702423,
+    "viol_frac": 0.0,
+    "ok": true
+   }
+  },
+  {
+   "tag": "time/B1/S32768/H32/KV8/causal",
+   "ok": true,
+   "err": null,
+   "error": null,
+   "kernel_ms_median": 77.43585205078125,
+   "kernel_tflops": 113.59199633316692,
+   "sdpa_ms_median": 95.57926177978516,
+   "sdpa_tflops": 92.02930487655595,
+   "speedup_vs_sdpa": 1.2343024483943914,
+   "sdpa_mode": "enable_gqa",
+   "sanity_vs_sdpa_bf16": {
+    "finite": true,
+    "nan_count": 0,
+    "max_abs": 0.00390625,
+    "mean_abs": 1.2390175470500253e-05,
+    "max_rel": 0.5920062065124512,
+    "viol_frac": 0.0,
+    "ok": true
+   }
+  }
+ ],
+ "co_sha256_loaded": {
+  "False": "404c2bf2bc814f068f6604c48416e27819061f7e49ac796dae7fb820c22661b3",
+  "True": "f4cc9fce6c6cbc4cad4a5fd355f5b641dfde02c2ba99c383e8f9e4708d42725c"
+ },
+ "image": "vllm/vllm-openai-rocm@sha256:4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba",
+ "env": {
+  "torch": "2.13.0+rocm10.0.0",
+  "hip": "7.15.26333",
+  "device": "AMD Instinct MI210",
+  "arch": "gfx90a:sramecc+:xnack-",
+  "cu": 104,
+  "libamdhip64": "/usr/local/lib/python3.12/dist-packages/_rocm_sdk_devel/lib/libamdhip64.so.7.16.26361-25e14349f2"
+ },
+ "gpu_residency_proven": true,
+ "kfd_foreign_pid_count": 0,
+ "timing_contaminated": false
+}

@@ -659,7 +659,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T16:36:50Z",
+  "generated_at": "2026-11-05T16:57:13Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1482,7 +1482,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5826,
+          "line": 5827,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1491,7 +1491,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5906,
+          "line": 5907,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1510,7 +1510,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6203,
+          "line": 6204,
           "name": "autokernel-rebuild-program",
           "open": 19,
           "readiness": "blocked"
@@ -1527,7 +1527,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9418,
+          "line": 9419,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1540,7 +1540,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13768,
+          "line": 13769,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1574,7 +1574,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 13980,
+          "line": 13981,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2147,7 +2147,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 275,
+      "closed": 276,
       "dispatchable": 122,
       "domain": "inference-research",
       "guarded": 0,
@@ -2205,7 +2205,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1576,
+          "line": 1579,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2214,7 +2214,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1700,
+          "line": 1703,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2223,7 +2223,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2027,
+          "line": 2030,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2232,7 +2232,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2166,
+          "line": 2169,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2241,7 +2241,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2719,
+          "line": 2722,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2258,7 +2258,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2856,
+          "line": 2859,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2281,7 +2281,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3750,
+          "line": 3753,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
@@ -3165,14 +3165,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 102,
+      "dispatchable": 103,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-02",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 102,
+      "open": 103,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3246,11 +3246,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
           "line": 2010,
           "name": "repo-readiness-scorer",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         }
       ]
@@ -3575,7 +3575,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1746,
+          "line": 1749,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3590,7 +3590,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2169,
+          "line": 2172,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"

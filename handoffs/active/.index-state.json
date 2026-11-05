@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 493
+      "open": 494
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -76,7 +76,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5826,
+          "line": 5827,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5906,
+          "line": 5907,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6203,
+          "line": 6204,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9418,
+          "line": 9419,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13768,
+          "line": 13769,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 13980,
+          "line": 13981,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -733,7 +733,7 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 102,
+      "open": 103,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -742,7 +742,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 341,
+      "total": 342,
       "tracks": [
         {
           "blocked": 0,
@@ -812,7 +812,7 @@
           "line": 2010,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 4
+          "open": 5
         }
       ]
     },
@@ -1114,7 +1114,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 275,
+      "closed": 276,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 122,
@@ -1126,11 +1126,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 399,
+      "total": 400,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 128,
+          "closed": 129,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1576,
+          "line": 1579,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1700,
+          "line": 1703,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2027,
+          "line": 2030,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2166,
+          "line": 2169,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2719,
+          "line": 2722,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2856,
+          "line": 2859,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3750,
+          "line": 3753,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 60
@@ -1339,7 +1339,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1746,
+          "line": 1749,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1352,7 +1352,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2169,
+          "line": 2172,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
