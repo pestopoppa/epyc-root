@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T11:39:09Z",
+  "generated_at": "2026-11-05T11:50:41Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1985,7 +1985,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 117,
@@ -1994,7 +1994,7 @@
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "open": 32,
       "priority": 0.9769,
@@ -3248,15 +3248,15 @@
       "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 339,
-      "dispatchable": 51,
+      "closed": 340,
+      "dispatchable": 50,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-03",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
-      "open": 51,
+      "open": 50,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3380,7 +3380,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor",
             "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3390,7 +3390,7 @@
           ],
           "line": 5839,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 9,
+          "open": 8,
           "readiness": "blocked"
         }
       ]
@@ -3399,15 +3399,15 @@
       "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 120,
-      "dispatchable": 30,
+      "closed": 121,
+      "dispatchable": 29,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "last_advanced": "2026-11-02",
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
-      "open": 31,
+      "open": 30,
       "priority": 0.1387,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): SCG-PRIORS-WARM \u2014 `stack_priors` must not classify WARM-tier roles as `live_stack`. (filed",
@@ -3493,11 +3493,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 2019,
           "name": "standardized-stack-update-pipeline-finalization",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {

@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 490
+      "open": 488
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -520,10 +520,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 339,
+      "closed": 340,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 51,
+      "open": 50,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -623,7 +623,7 @@
         },
         {
           "blocked": 0,
-          "closed": 20,
+          "closed": 21,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -635,7 +635,7 @@
           "line": 5839,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 9
+          "open": 8
         }
       ]
     },
@@ -2423,7 +2423,7 @@
       "blocked": 1,
       "closed": 117,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-05",
       "open": 31,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2500,10 +2500,10 @@
     },
     "stack-lifecycle-program.md": {
       "blocked": 1,
-      "closed": 120,
+      "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 30,
+      "open": 29,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2576,13 +2576,13 @@
         },
         {
           "blocked": 0,
-          "closed": 9,
+          "closed": 10,
           "gates": [],
           "guarded": 0,
           "line": 2019,
           "markers": 1,
           "name": "standardized-stack-update-pipeline-finalization",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
