@@ -1,0 +1,11 @@
+Temporary breakpoint 1 at 0x1131: file /mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104/out/full-attempt-kvfork17-gdb-continue-qual-r2-20261104-7f3a91c6/kpf17-gdb-qual-32_hriue/mutation.c, line 2.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Temporary breakpoint 1, main () at /mnt/raid0/llm/tmp/kvfork/kpf17-gdb-continue-qual-r2-20261104/out/full-attempt-kvfork17-gdb-continue-qual-r2-20261104-7f3a91c6/kpf17-gdb-qual-32_hriue/mutation.c:2
+2	int main(void){ volatile int x=7; return (x==7)?23:99; }
+KPF17Q_PID=1350397
+KPF17Q_BIRTH=195857424
+[Inferior 1 (process 1350397) exited with code 027]
+KPF17Q_POST_PID=0
+KPF17Q_EXITCODE=23
