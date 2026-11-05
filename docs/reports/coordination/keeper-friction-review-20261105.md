@@ -878,3 +878,81 @@ measured (pinned GPU threads: CPU decode −1 %, prefill −4.8 %).
   `test_dryrun_without_dryrun_dir_exits_64`; `test_rowflow_contract.py::test_sudo_preserve_env_missing_grants_dir_refused`
   (the exact `launch.sh:33` line as fixture) and `test_preserve_env_complete_admitted`;
   `test_rowflow_dryrun_deadline.py::test_wrong_grants_dir_in_launcher_out_fails_fast`.
+
+## P2.10 D11 — `auto_file.py` cannot tell a live owner from a dead one: no join key between a row and a session
+
+- **Verified.** `ready/npd1-step5-20261105.json`: `owner: "ws58"`, `publisher.session:
+  "73998e9f-8009-47d6-bac6-2835f05c3e04"`, `handoff_task: handoffs/active/mi210-serving-program.md:NPD1-STEP5`. The
+  row is in `filing-owner-less.jsonl` although its owner (the INF-22 main) was live and filed it at 11:35Z
+  (`4eee3159f`). `owner_live()` (`churn/auto_file.py`) looks up the literal owner string (plus `h-`/`handoff-`
+  prefixes) in three places: `handoff-sessions.json` sessions (71 slugs like `mi210-big-model-and-acceleration-roadmap`;
+  no `ws58`), `session-bus/heartbeats/<owner>.json` (no `ws58.json`; the `mainA-D.json` that exist are dated
+  **2026-08-13/25** — birth certificates, exactly the stale-heartbeat hazard `CLAUDE.md` warns about), and
+  `outbox/<owner>.jsonl` mtime. None of the three is keyed by anything a row carries. `ws58` is a historical alias of
+  the calendar-owner session; the Claude session id in `publisher.session` is written to no registry at all.
+- **Root cause.** Same pattern: the row *declares* an owner string; liveness is *observed* in registries keyed by other
+  names; nothing reconciles the two. The question auto_file actually needs answered is not "is the owner alive" but
+  "**has anyone claimed this filing**".
+- **Fix — a claim, then a mapping (in that order).**
+  1. **Filing claim (authoritative, cheap).** When a session is resumed for a run end (dispatcher `end_prompt`) or an
+     interactive owner reads a row alert (`rowflow.py alerts --ack`), it touches `filing-claims/<id>.json {session,
+     roster_id, at}`. `auto_file.py` routes a prose-rule row to `filing-owner-less.jsonl` **only** if no claim exists
+     after `OWNERLESS_AFTER_S` (1200) *and* the mapping below says no candidate owner is live; a claim older than
+     `CLAIM_TTL_S` (7200) without a `.FILED` re-opens the row. `rowflow.py alerts --ack` already exists — the claim is
+     a one-line side effect of acking a `row-ended` alert.
+  2. **Owner → liveness mapping (`resolve_owner_sessions(row) -> set[candidate]`)** in `auto_file.py`, tried in
+     order, each returning `(live, why)`:
+     - `publisher.session` → `session-bus/heartbeats/by-session/<session-id>.json`: the mailbox watcher every
+       publisher must arm (SKILL.md 2026-11-05 note) writes this heartbeat on every pass, so an interactive owner
+       that is actually watching its rows is live by construction; `ts` fresh ≤ 1800 s **and** `state != idle`.
+     - `handoff_task` → slug = basename of the handoff file without `.md` → `handoff-sessions.json[slug]`
+       `status == running` and `ps -o pid=` alive (the headless-owner case; `mi210-serving-program` would resolve).
+     - `owner` → roster alias → `coordination/session-bus/roster.json` (or `config.yaml` aliases) → heartbeat as
+       above. A heartbeat is evidence only if fresh **and** `state ∈ {working, draining}`; an `idle` or stale one is
+       "unknown", never "live" (`SESSION_LIFECYCLE.md` → three states).
+     - Fallback: any session whose outbox wrote a line naming the row id within `max_age_s` is live for that row.
+  3. **Publish writes the join key.** `publish()` already records `publisher.session`; add `owner_roster_id`
+     (from `$EPYC_ROSTER_ID` / bus `--agent`) and refuse `owner: "?"`. A row with no resolvable owner at publish is
+     routed to the standing filer *at publish time*, not discovered at filing time.
+- **Tests.** `scripts/coordination/tests/test_auto_file_owner_map.py`:
+  `test_claim_present_never_ownerless`; `test_publisher_session_heartbeat_working_is_live` (npd1-step5 fixture +
+  `by-session/73998e9f….json {ts: now, state: working}` → live);
+  `test_handoff_slug_running_pid_is_live` (`mi210-serving-program` running, pid alive → live);
+  `test_roster_alias_idle_heartbeat_is_unknown_not_live` (`mainB.json` dated 2026-08-13 → not live);
+  `test_stale_claim_without_filed_reopens`; `test_owner_question_mark_refused_at_publish`;
+  regression: npd1-step5 at 11:35Z with the owner's heartbeat fresh → **not** in `filing-owner-less.jsonl`.
+
+## P2.11 D12 — Two filing paths that do not reconcile: the handoff tick and the `.FILED` record
+
+- **Verified.** `4eee3159f` ("mi210-serving: NPD1-STEP5 V11_ITEM_STANDS …") ticked `handoffs/active/mi210-serving-program.md`
+  and the master index at ~11:35Z; `filing-done/` has **0** files for `npd1-step5-20261105`; `filing-owner-less.jsonl`
+  has 1 entry for it. The watcher, the alarm and `auto_file.py` all key on `filing-done/<id>.FILED`, so a row filed
+  the way `SESSION_LIFECYCLE.md` tells an owner to file (tick + evidence + commit) is "unfiled" forever to the machine,
+  and every automation downstream (alarm, standing filer, reaper's "superseded+filed" skip, dashboard) is wrong about it.
+- **Root cause.** The filing *record* (`.verdict.json` + `.FILED`, schema `epyc.filed.verdict.v1`) and the filing
+  *act the owner performs* (a committed checkbox tick with `[belief: …]`) were designed separately; `file_result.py`
+  writes the record and *optionally* flips the box, but flipping the box never writes the record. Two writers, one
+  fact, no reconciler — the P2.1 pattern applied to filing.
+- **Fix — one sanctioned path, plus a reconciler for the transition.**
+  1. **The sanctioned path is `file_result.py`, and it is the only thing that ticks a row's box.** An owner files by
+     `file_result.py <id> --verdict-json V` (or the auto path); `file_result.py` writes `.verdict.json`, `.FILED`,
+     flips the checkbox via `flip_checkbox` and stages the handoff edit — the owner then commits. Direct editing of a
+     row's checkbox is a lint failure: `scripts/hooks/` pre-commit (`commit_hygiene`) refuses a diff that flips a
+     checkbox whose task text cites a row id (`[a-z0-9-]+-2026[01][0-9][0-3][0-9](-r[0-9]+|-v[0-9]+)?` or a
+     `FILLERS:`/`ready/` reference) when no `filing-done/<id>.FILED` exists, printing the `file_result.py` command.
+     `SESSION_LIFECYCLE.md` → *Two axioms* gets one sentence: "a compute row's tick goes through `file_result.py`".
+  2. **Reconciler (`filing_watch`/keeper step 7): recognise a committed result tick.** For each due row without
+     `.FILED`: `git -C <repo> log origin/main --since=<grant start> -S<row-id> --format=%H -- <handoff_task file>`;
+     if a commit flips the row's box (the diff adds `- [x]` on a line containing the row id or its handoff token), write
+     `filing-done/<id>.verdict.json {outcome_class: SCIENCE-VERDICT|PARTIAL-VERDICT (from the tick's
+     pass/fail/inconclusive word), filed_by: "handoff-commit:<sha>", rationale: <commit subject>}` and `.FILED`. This
+     closes npd1-step5 today and every historical row filed by commit, and it stays as the backstop after step 1.
+  3. **One query, one answer.** `rowflow.py status <id>` reports `filed_by` from the record; the dashboard, alarm,
+     reaper and auto_file read only that. `filing-due.jsonl` becomes a derived view (P2.4 #5).
+- **Tests.** `scripts/coordination/tests/test_filing_reconcile.py`:
+  `test_committed_tick_citing_row_id_writes_filed_record` (fixture repo: one commit flipping `NPD1-STEP5` box →
+  `.verdict.json filed_by handoff-commit:<sha>`, `.FILED` present, row leaves `filing-due`);
+  `test_tick_without_row_id_does_not_file`; `test_file_result_flip_and_record_are_atomic` (either both or neither);
+  `tests/hooks/test_commit_hygiene_row_tick.py::test_checkbox_flip_citing_row_without_filed_is_refused` and
+  `::test_flip_after_file_result_admitted`; regression: today's `4eee3159f` + `grants/npd1-step5-20261105.ended` →
+  reconciler files it, `auto_file.py` no longer lists it owner-less.
