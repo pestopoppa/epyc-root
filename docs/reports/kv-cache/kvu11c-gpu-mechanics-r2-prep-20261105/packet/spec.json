@@ -1,0 +1,35 @@
+{
+  "id": "kvu11c-gpu-mechanics-smoke-r2-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r2-20261105/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-187",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r2-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Pass bounded GPU mechanics only if source-bound candidate starts with --threads, fixed-voice registration and one TTS request succeed with nonempty mono 24kHz audio, own PID GPU residency and candidate library mapping, model identity unchanged, and captured server cleanup verified. Stop on identity, residency, HTTP, audio, cleanup, STOP or deadline failure. No quality, parity, speed or promotion verdict. PASS is atomically published only after PID/birth/pidfd-owned subreaper drain and final STOP/deadline checks; failure record or STOP refuses completion. Only selected MI210 VRAM counts.",
+  "estimate_s": 900,
+  "ram_gib": 12,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-11c",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_timeout_s": 180,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r2-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kvu11c-gpu-mechanics",
+  "notes": "Isolated successor of r1 with reviewed KFD gpu_id lookup correction. Prior attempt is preserved; publisher smoke is model-free.",
+  "model_preverify_file_sha256": "74cf44448eac10724eb71427707d8194824080e2997e28e2ed44ac33ae0b9d4d",
+  "model_preverify_body_sha256": "805a3cae59ceb47677ce9d3845f9bc25cd858cd30c36e26da36ccf1de0e2f012",
+  "reference_wav": {
+    "path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-gpu-mechanics-smoke-r2-20261105/reference.wav",
+    "sha256": "84e1801ec61153c2b40d1bb05f01492f8d5873d46ae33435cf968cc6cb552bca"
+  },
+  "runtime_seals": {
+    "job.py": "df1edf33ebd95897311f2cb28653f0bc379184371f2575e388f437158ca90279",
+    "pins.json": "e4def906c359e3d2533da02f70ac30da7fc49f28bf2f9fa4e72723e2c283359f",
+    "model-preverify.json": "74cf44448eac10724eb71427707d8194824080e2997e28e2ed44ac33ae0b9d4d",
+    "reference.wav": "84e1801ec61153c2b40d1bb05f01492f8d5873d46ae33435cf968cc6cb552bca"
+  }
+}

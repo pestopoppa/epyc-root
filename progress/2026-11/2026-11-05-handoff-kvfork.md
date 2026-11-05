@@ -15,3 +15,7 @@ Published kpf18-g3-rowflow-socket-qual-20261105 after its four-CPU publisher smo
 ## 00:24Z — Publish the group-3 rowflow socket deadline qualification
 
 Published kpf18-g3-rowflow-socket-qual-20261105 after its four-CPU publisher smoke passed six real-socket controls. The full qualification is pending; this does not establish native cancellation, task release, GPU admission or the group-3 layout verdict. Removed the superseded clean KPF-64 r2 source worktree (about 2.1 GiB); retained referenced row inputs and evidence.
+
+## 00:28Z — Repair the GPU mechanics launcher resource claim
+
+KVU-11c: corrected the existing r2 launcher to declare CPUs 184-187 after the GPU-exclusive admission refusal. Publisher accepted the resubmission but queued its model-free smoke because the GPU was busy; no smoke PASS, ready row or TTS result is claimed. Three superseded KPF-50 scratch attempts could not be removed because execution policy rejected the removal.
