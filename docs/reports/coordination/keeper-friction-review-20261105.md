@@ -531,3 +531,350 @@ git -C /workspace branch -a --contains 62bcc3eb5; git -C /workspace rev-parse --
 Code references were taken from `origin/main` at `7381fb878` (`scripts/coordination/rowflow/rowflow.py` line
 numbers), the deployed `/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh`, and
 `/workspace/scripts/coordination/{handoff_sessions.py,filing_watch.sh,filing_takeover_alarm.py,churn/file_result.py}`.
+
+---
+---
+
+# Pass 2 (2026-11-05, 12:00Z) — why it keeps happening one bug at a time, and the smallest change that ends the class
+
+**Operator ask:** "more pipeline bugs/inefficiencies." Since pass 1 (`66c924949`, 10:53Z) seven more fixes were
+deployed in 48 minutes — `4a4b8e2e3` 11:01, `fa00623d5` 11:03, `71d92b3e9` 11:15, `2134ef303` 11:20, `0dd38919e`
+11:31, `0efbd47c8` 11:37, `d756221e8` 11:43, plus `c61a7430e` 11:49 — and eight new defects surfaced meanwhile. All
+eight are verified below against the keeper log (10:40–11:57Z) and the code on `origin/main` (= deployed `bin/`,
+byte-identical for `rowflow.py`, `publish_row.py`, `filler_run15.sh`, `auto_file.py`). Read-only; nothing live touched.
+
+## P2.1 The pattern, with numbers
+
+| Fact | Value |
+|---|---|
+| `rowflow.py` age | **5 days** (first commit 2026-11-01) |
+| Size / functions / module tunables | 3,395 lines / 155 top-level `def` / **52 ALL_CAPS constants** |
+| `plan()` rule branches | 25 `if/elif` on row attributes (47 with its helpers `:1644-1870`) |
+| Commits touching `rowflow.py` | **59 in 5 days** (19 / 13 / 13 / 3 / **11 today**) |
+| Deploy latency | minutes: the git copy *is* the deployed copy, swapped under running pollers (that is defect 3) |
+| Tests | 29 files, 240 `def test_`, **zero** replay a real snapshot sequence; the three "replay" tests are hand-built single-snapshot candidate lists |
+| Places that read a row's *declared* `shape` | 6 (`publish:739`, `shape_of:1333`, `coexist_host:1458`, `spec_from_legacy:878`, `status:2628`, `plan` cands `:3076`) |
+| Live-measurement hooks that may **act** | **0** — `idle_held:2911` "never kills, never de-grants", `underused:2865` "never killed", `busy_flag:2234` annotates only |
+| Operator alarm channel | **broken**: `ALERT-ROUTE … alarm_channel.py missing; alert only in ws58-keeper-alerts.jsonl` ×9 in the window |
+
+**Why one bug at a time.** Every defect today has the same anatomy: a row *declares* something (`shape`, `regions`,
+`busy_fraction`, `coexist_quiet_host`, a sealed digest), rowflow *trusts* it, holds are *computed once* at grant time
+from the declaration, and nothing *compares* the declaration to the job's actual footprint or lock during the run. When
+a declaration is wrong, the symptom shows up in whichever `plan()` branch that row type hits, the fix is a new
+`need(...)` or a new `if` keyed on the same declared fields, and the next row type finds the next combination. The
+fixes are correct as far as they go — and they are all **publish-time predicates over declared fields**, so they
+cannot see what they are not told. Three structural facts make this permanent unless changed:
+
+1. **Three resource models, no reconciliation.** *Declared* (manifest: `shape`, `regions`, `busy_fraction`,
+   `declared_threads`), *reserved* (grant `holds=`, computed by `row_shape` once), *actual* (the region-lock flock the
+   job takes — `GLOBAL.q3 EX` — plus `taskset`, `OMP`, VRAM, `/proc/stat`). rowflow infers the flock from argv
+   (`parse_launcher` + the `GRANT_CPUS` marker, `:1250`) and never observes it; `host_snapshot` *does* measure actual
+   CPU% / GPU% / VRAM each tick (`measure_util:2906`, `cpu_sample:2852`, `vram_used_bytes:2081`) and then only logs.
+2. **Declared fields are the API.** `shape:` in the spec "wins" (`shape_of:1333`). The evidence gate added at 11:15
+   (`:743-748`) fires for `host`/`quiet-host` only; `gpu`, `quarter`, `multi-quarter(n)` are still taken on faith, and
+   `check_shape_evidence:1581` validates the *format* of `baseline_ref`, never the shape. Owners and agents keep
+   over-declaring (defect 7) because nothing refuses them unless they hit exactly the gated string.
+3. **The feedback loop is advisory.** `IDLE-HELD`, `UNDERUSED`, `OVER-DECLARED`, `IDLE-VIOLATION` all exist and all
+   fired correctly today — and were disarmed on 11-03 after a single false positive (an engine spin-up de-granted r3,
+   `:3071`). The alarm route they fall back to is missing (`alarm_channel.py`), so even the *advisory* path ends in a
+   jsonl nobody reads. The system knows it is idle and tells no one who can act.
+
+## P2.2 The eight new defects — verified
+
+| # | Defect | Verified evidence | Deployed fix | Fix closes class? |
+|---|---|---|---|---|
+| 1 | Whole-host grant blocked new rows' smokes | `npd1-step5` GRANT 10:41:08Z `holds=gpu-quiet,q0-q3`, ran 2,453 s of a 3,900 s window. **Partly supported**: 10 `PASS.json` landed 10:41–10:59 on `WS58_REGIONS=0-3` *while q0 was held*; the two named victims failed on `smoke_predicate … never exited 0` (2,751 s wait for pareval) and `job-rc-1`, not on a slot. After the fix, pareval's requeued smoke waited 150 s (`SMOKE-WAIT` ×2). | `0efbd47c8` queue + WAIT | **No**: during a whole-host grant nothing is carved out, so a smoke waits the grant's whole window (`place_smokes:3002`); and `run_queued_smoke` (publish_row.py:269) turns *any* exception into FAIL + dequeue |
+| 2 | Coexist rows beside a whole-host CPU row waited on `GLOBAL.q3` | 8 GRANTs 11:06:08Z on c72-87; kpf17-sq3 961 s, kpf41-sq3 955 s, both rc=1 within 1 s of npd1's `.ended` 11:22:05Z | `d756221e8` `coexist_host()` | **No**: still inferred from `declared_threads < 48`; a `quiet-host` gpu-lane row admitted via `baseline_ref`/`shape_override` with no parsable thread knob (`None < 48`) is coexist-eligible while its lock takes `GLOBAL.qN EX` → same 950 s wait |
+| 3 | Sealed engine sha + mid-run redeploy killed jobs at start | poller.out `AssertionError: …/filler_run15.sh` (kpf17), `runtime helper digest mismatch: rowflow` (kpf41) | `0dd38919e` refuse packet | **No, wrong side**: it scans only the launcher dir for the *current* digest (`:1552-1578`), so a packet sealed to an *older* engine passes and still asserts; rowflow itself seals `engine.sha256` into the manifest (`:693`) and `PASS.json` (`:2625`). The redeploy under queued rows is the defect; sealing is the reproducibility feature |
+| 4 | `inf34 A2 v15` (20 min GPU qual) published `mi210_0,0-95` + `shape: gpu` → drains GPU + q0-q3 to 01:50Z | 12× `DRAIN … (gpu) until 2026-11-06T01:50Z`, 5× IDLE-WHY `needs gpu-quiet,q0,q1,q2,q3`; withdrawn 11:54:35Z, v16 republished as `gpu-q3`. GPU was then taken by `kvu16g2-decstep` 11:54:43Z (util 100 %) | hand republish | **No**: `shape:` bypasses both gates; without it `shape_of` would have derived `gpu-q3` (`:1343-1348`). No test covers explicit `shape:` + wide regions |
+| 5 | GPU row held gpu-quiet at 0 % for CPU post-processing | `hsf5p-profile6-q3-r1`: last non-zero util 11:41:56Z, `.ended` 11:50:38Z → **8.7 min 0 % tail**, 9× `IDLE-HELD gpu-quiet … 0%`, 2 ALERTs — nothing acted | none | **Open class**: no release path exists (`heal_grants:2822` only acts on a dead poller or a pre-START conflict) |
+| 6 | Low-busy rows RANK-SKIP while q0 cores free | 14 lines: spec-gram3 (bf 0.3) ×8 at 11:06, kpf30-r9-sq3 (0.05) ×3, inf75 census (0.01) ×3; `free=` showed `q0,q1,q2` whole at 11:22:31 and partial q3 cores | none | **Semantics OK** (`own_block:1704`: a whole-quarter option needs 24 free cores; `_fits` is token-level) but a low-busy row never gets `rank_reservation` (`:1708-1737`) → can be starved indefinitely and logs RANK-SKIP every tick. spec-gram3 got q0 16 min later |
+| 7 | 1-thread revival rows on whole-host bookings | xgrammar r3: `0-95`, 262 s, rc=1 (10:33); r4 republished `any-cpu-quarter`, bf 0.05, `declared_threads null`, est 7200 | `71d92b3e9` | **Partly**: `host` refusal works when derived; still nothing refuses `quarter` for a 1-thread job (est 7200 s on 24 cores for ~1 core of work) |
+| 8 | kpf41 ignored STOP mid-analyze; gitnexus rebooked 5× | no STOP semantics lines for kpf41 in 10:40–11:30 (pre-fix); 24 manifests republished since 10:40, 9 suffixed `-sq3/-sq3b/-rN` | `2134ef303` | **Partly** — see P2.3 #8 |
+
+Idle in the window (IDLE-HELD-based, floor): **0.94 gpu-quiet-hours** (npd1-step5 22 ticks, hsf5p 9 ticks) and
+**~0.8 CPU quarter-hours**. Note npd1-step5's gpu-quiet 0 % is *correct* — it is a CPU-serving timing row that needs
+the GPU *quiet*, not *used* — so the live audit also cannot yet tell *hold-for-quiet* from *hold-for-use*. That
+distinction is the heart of the fix in P2.4 #1.
+
+## P2.3 What is wrong in the deployed fixes themselves
+
+1. **`71d92b3e9` evidence gate is bypassable by `shape:`** (defect 4) and gates two of five shapes. DEFECT.
+2. **`71d92b3e9` supersede/withdraw + `2134ef303` STOP poll contradict each other.** `withdraw:764-797` touches the
+   predecessor's STOP and returns PENDING "nothing is killed" (`:768`, `test_running_predecessor_not_killed_but_pending`);
+   since `2134ef303` the filler polls STOP every 3 s and TERMs the job, so publishing `-rN` now **kills a running
+   `-rN-1` within seconds**. The docstring and test describe pre-11:20 behaviour. Also: withdrawing an ARMED row (no
+   grant) leaves its poller alive forever. DEFECT.
+3. **`2134ef303` mid-job STOP kills only two process groups** (`$CUR` setsid group + recorded inner pgid); a
+   `setsid`/`nohup` grandchild (llama-server from `job.sh`) survives unless registered in `$PIDFILE`, and `.ended rc=75
+   reason=stopped` is written anyway. `gone()` uses `kill -0 -- -pgid`, which this sandbox cannot see
+   (`feedback_kill0_blind_use_ps_for_liveness`). The "finish the current item" contract is gone (TERM immediately,
+   KILL after 60 s) while `rowflow.py:100` still documents `STOP_GRACE_S = 600`. DEFECT.
+4. **`0dd38919e` refuses the wrong side** (defect 3 row above). The right fix is a per-row engine snapshot under
+   `scratch_root` (the launcher snapshot already does this for `snapshot: true`, `a41ff7610`) or asserting against the
+   row's own `PASS.json` digest — and, structurally, **never redeploying the engine while a grant is open** (a deploy
+   step that waits for `grants/*.grant` to be empty or snapshots per row). DEFECT.
+5. **`fa00623d5`/`d756221e8` coexist criterion is a self-declaration.** `busy_fraction ≤ 0.1` (declared; hsf5p declared
+   0.5, measured 0.019 — logged OVER-DECLARED, nothing else) and `declared_threads < 48` answer "does it perturb a CPU
+   measurement", not "does its lock cover 72-87"; and they ignore L3 / memory-bandwidth interference on the shared NUMA
+   node, which is the thing a *timing* row cares about. INCOMPLETE.
+6. **`0efbd47c8` keeper smoke** has no carve-out under a whole-host grant (hours of SMOKE-WAIT), can take c72-75 and
+   block a pending coexist row (COEXIST_Q3 reserved only while a quiet grant is open, `:3056`), and FAILs on any
+   harness exception. INCOMPLETE.
+7. **`auto_file.py` runs from `/workspace`** via the $0-relative `filing_watch.sh` (pid 798883, started 11:21:59 from
+   the devcontainer tree) — the pass-1 B4 class, still open: nothing under `compute-flags/bin` carries the watcher.
+8. **The alarm route is missing.** Every `ALERT` today ended as `ALERT-ROUTE … alarm_channel.py missing`. The
+   escalation path pass 1 relied on for (e) and (f) does not exist on this host.
+
+## P2.4 The smallest architectural change that ends the class — ranked by idle hours avoided
+
+The five candidate changes the main session listed are not alternatives; four of them are one change seen from
+different sides. **The one change: a single `Contract` per row, derived only from evidence, enforced at three points
+(publish, start, every tick), with acting — not advisory — reconciliation.** The replay harness is how it is proved
+before deploy. Everything else today is a special case of that.
+
+### #1 Live reconciliation that acts: holds follow measured use (and declared phases) — ~1.5–2 gpu-h + ~1 q-h per day
+
+- **Where.** `rowflow.py`: `idle_held:2911`, `underused:2865`, `heal_grants:2822`, `host_snapshot:2936`,
+  `write_grant` holds (`:2783`); `filler_run15.sh` (phase file); the row manifest schema (`holds` gains a `purpose`).
+- **Rule.**
+  1. Every hold carries a **purpose**: `use` (the job runs on it) or `quiet` (the job needs it *idle*). `row_shape`
+     emits it: GPU timing → `gpu-quiet:quiet`, `t184-191:use`, `c72-95:quiet`; CPU-serving timing (npd1-step5) →
+     `q0-q3:use`, `gpu-quiet:quiet`; correctness → everything `use`. A `quiet` hold measuring 0 % is *healthy*; a
+     `use` hold measuring < `IDLE_PCT` for `IDLE_HELD_AFTER_S` is **reclaimable**. This alone removes the npd1-step5
+     false positive that disarmed the audit on 11-03 and the 22 IDLE-HELD ticks today.
+  2. **Reclaim, never kill.** For a `use` hold idle for 2 consecutive samples ≥ 120 s (the two-sample rule in
+     `INVARIANTS.md`), the keeper **shrinks the grant**: rewrites `holds=` without that region, logs
+     `RECLAIM <region> from <id> (measured 0 % for Ns)`, frees it for `plan()` this tick, and writes
+     `dryrun/<id>/RECLAIMED.json` for the owner. The job keeps running; its own flock is untouched (region-lock holds
+     are the job's, keeper holds are the keeper's — reclaiming the keeper's reservation does not break the job). The
+     next tenant's region-lock will wait if the old job still holds a flock, which is the existing, correct behaviour.
+     GPU: `gpu-quiet` is reclaimed when VRAM-used < 1 GiB and util 0 % for two samples **and** the hold purpose is
+     `use` (hsf5p's 8.7-min tail; `kvu16g2` would have started ~9 min earlier).
+  3. **Release-on-phase (cooperative, preferred).** The job may write `<scratch_root>/PHASE` (`gpu-done`,
+     `cpu-done`, `postprocess`); `filler_run15.sh` relays it to `grants/<id>.phase`; the keeper releases the holds the
+     manifest maps to that phase (`phases: {gpu-done: [gpu-quiet, t184-191]}`). Measured reclaim is the fallback for
+     jobs that do not declare phases.
+  4. **Over-booked windows shrink too.** A grant past `estimate_s × 1.5` with measured use still high is an alarm
+     (already "a failure to explain"); a grant past its estimate with *zero* use on every `use` hold is ended
+     (`.ended rc=75 reason=idle-reclaimed`) — this is the only kill, and it needs two samples plus a 10-min floor.
+- **Tests.** `test_rowflow_reconcile.py`: `test_quiet_hold_at_zero_is_healthy` (npd1-step5 fixture: no IDLE-HELD);
+  `test_use_hold_idle_two_samples_reclaims_region` (hsf5p fixture: gpu-quiet freed at sample 2, grant rewritten,
+  job pid untouched); `test_phase_file_releases_mapped_holds`; `test_reclaim_never_before_two_samples`
+  (one 0 % sample → nothing); `test_engine_spinup_not_reclaimed` (the 11-03 false positive: 45 s at 0 % then 90 %
+  → no action); replay (see #4): today's trace → gpu-quiet idle-held hours drop from 0.94 to < 0.2.
+
+### #2 One `Contract`, derived only from evidence; declared shape advisory; refuse on mismatch — ~1 q-h/day + every "rebook ×5" and "drains until tomorrow"
+
+- **Where.** `rowflow.py`: new `contract_of(spec, launcher, job, pass_json) -> Contract` replacing the six readers
+  of `shape`; `publish:739-753`, `shape_of:1333`, `row_shape:1360`, `coexist_host:1449`, `is_coexist:1476`,
+  `check_shape_evidence:1581`; `publish_row.py`; `scripts/gitnexus-guard.py admit`; `dashboard/pipeline_status.py`.
+- **Rule.**
+  1. `Contract = {cpus: set, gpu: bool, gpu_threads: set, quiet: set, purpose: {region: use|quiet}, threads: int,
+     busy: float, ram_gib, est_s, phases}` is computed **only** from: launcher argv (`--class`, `--claim-cpus`,
+     `--gpu-quiet`, `--no-fold-siblings`, `-t/--threads/--workers`, `OMP_NUM_THREADS`, `taskset`), `job.sh`, the
+     region-lock claim the engine will take (`GRANT_CPUS` marker, else the parsed cpu list → `GLOBAL.qN EX` rule), and
+     — after the smoke — `PASS.json` `measured_threads` / `measured_busy_fraction`.
+  2. **The spec's `shape`, `regions`, `busy_fraction` become advisory**: `publish` computes the Contract, derives the
+     shape from it, and if the spec disagrees prints both and **refuses** (`rc 65`) unless the spec carries
+     `shape_override: "operator: <who> <date>: <why>"` — the override is logged in the manifest and in the keeper's
+     GRANT line (`override=`). A `baseline_ref` admits `quiet-host` only when the Contract's `threads ≥ 48` *or* the
+     referenced floor file names a CPU-serving measurement (`purpose q0-q3 = use`). `shape: gpu` + `--claim-cpus 0-95`
+     → Contract says gpu-q3 → refuse with the right-sized spec printed. inf34 v15 would have been refused at 10:5x.
+  3. **Width follows threads for every shape**, not only host: `threads ≤ 4` → a 4-core sub-quarter option (`c<n>-<n+3>`
+     + siblings), `≤ 24` → quarter, `≤ 48` → multi-quarter(2). A 1-thread profile is a 4-core row; xgrammar r4's 24-core,
+     7,200-s quarter booking becomes 4 cores.
+  4. **Coexist is decided by the Contract's lock, not by `busy_fraction`:** a row may coexist on c72-87 beside a hold
+     H iff `Contract.lock ∩ H.exclusive_lock = ∅` and `H.purpose[c72-87] ≠ quiet-for-cpu-timing`. That is a set test
+     over two Contracts, replacing `is_coexist`/`coexist_host`/`QUIET_SHAPES`/the `coexist_quiet_host` marker.
+  5. The gitnexus guard, the dashboard and `rowflow.py status` read the Contract (`rowflow.py contract <id> --json`);
+     the guard's `admit_one_quarter`/`admit_whole_host` become `admit(contract.cpus)`.
+- **Tests.** `test_rowflow_contract.py`: `test_spec_shape_gpu_with_claim_0_95_refused_contract_says_gpu_q3` (inf34
+  v15 fixture); `test_omp1_quarter_spec_refused_contract_says_4_cores` (xgrammar r4); `test_override_admits_and_is_logged`;
+  `test_coexist_is_lock_set_test` (npd1-step5 Contract vs kpf17-sq3 Contract → not coexist; gpu-q3 vs kpf17-sq3 →
+  coexist); `test_six_shape_readers_gone` (grep guard: no `d.get("shape")` outside `contract_of`); replay: today's 24
+  republished manifests → every `-sq3/-sq3b/-q2..-q5` republish is produced by `publish` itself as the right-sized
+  shape, zero human rebooks.
+
+### #3 Deploy = atomic, grant-aware; the engine a row ran its smoke on is the engine it runs on — removes defect 3's class and the "fix landed but not running" class (B4)
+
+- **Where.** New `scripts/coordination/rowflow/deploy.sh`; `filler_run15.sh` engine resolution; `rowflow.py publish:693`
+  (`engine.sha256`), `dryrun_run:2625`; `check_engine_not_sealed:1552` (delete).
+- **Rule.** `deploy.sh <commit>` copies the pinned set into `bin/rowflow/<sha>/`, flips a `bin/rowflow/current`
+  symlink, writes `DEPLOYED.json`. A row's manifest records `engine_dir=bin/rowflow/<sha>` at publish (it already
+  records the sha); the poller and job use *that* dir, so a redeploy never changes a queued or running row's engine. Old
+  engine dirs are reaped when no manifest references them. `check_engine_not_sealed` is deleted (sealing is now
+  harmless). Every long-running script (`filing_watch.sh`, dispatcher, keeper) resolves `ROOT` from `DEPLOYED.json`.
+- **Tests.** `test_deploy_pinned_engine.py`: `test_redeploy_does_not_change_queued_rows_engine`;
+  `test_job_asserting_engine_sha_passes_after_redeploy`; `test_deploy_check_fails_on_unpinned_bin` (today's `bin/`);
+  shell test: watcher started from a worktree, worktree removed, watcher's next pass still finds the alarm script.
+
+### #4 Replay harness over the real keeper trace — prevents the next eight
+
+- **Where.** `rowflow.py allocate` already builds one snapshot per tick; add `--trace <path>` that appends
+  `{ts, free, cands, grants, util, vram}` as one JSON line per tick to `compute-flags/keeper-trace.jsonl` (≈ 2 KB/tick,
+  ~15 MB/day, rotated with the log). New `scripts/coordination/tests/replay/replay_allocator.py` feeds a trace through
+  `plan()` (pure since `db43f9dab`) and `reconcile()` and asserts **invariants**, not outcomes.
+- **Invariants to assert** (each is one of today's defects): no id granted twice without an `.ended` between (F4);
+  no `IDLE-VIOLATION` ≥ 3 ticks (a grantable row fits free regions and is not placed); no `use` hold at 0 % for
+  > 2 samples without a RECLAIM (defect 5); no smoke queued > 600 s while ≥ 4 cores are free or reclaimable
+  (defect 1); no coexist grant whose Contract lock intersects a live exclusive lock (defect 2); no drain promoted for a
+  row whose Contract width < the drained region (defect 4); no RANK-SKIP of the same row > 30 consecutive ticks while
+  a sub-option fits (defect 6); declared vs measured busy ratio > 5 flagged once, not per tick (defect 7).
+- **Gate.** `deploy.sh` runs the replay over the last 24 h trace and refuses to flip `current` on an invariant failure.
+  Cost: a few seconds (today's day is 805 snapshots).
+- **Tests.** The harness is the test; seed it with today's trace reconstructed from the log (`SNAPSHOT` + `GRANT` +
+  `IDLE-HELD` lines are enough for a coarse trace) and check in that fixture as
+  `tests/replay/fixtures/2026-11-05.jsonl.gz`; `test_replay_2026_11_05_pre_fix_fails_four_invariants`;
+  `test_replay_2026_11_05_post_fix_passes`.
+
+### #5 One state model; everything else is a view — removes the F5/F7/B2 class
+
+- **Where.** `rowflow.py` already is the state machine (`status:2540-2649` knows ready/armed/running/parked/stopped/
+  withdrawn/ended/filed). Make its store authoritative: one `compute-flags/rows/<id>/` directory holding `spec.json`,
+  `contract.json`, `events.jsonl` (publish, smoke, grant, start, phase, reclaim, ended, filed — append-only), with
+  `ready/`, `grants/`, `dryrun/`, `filing-due.jsonl`, `filing-done/` and FILLERS.md **generated** from it or deleted.
+- **Rule.** `rowflow.py status --json` is the only reader for the dashboard (`pipeline_status.py:_rows` deleted), the
+  gitnexus guard, `backlog_priority.py`, `auto_file.py`, the alarm. Filing becomes an event (`filed_by: keeper |
+  standing-filer | owner`), so "unfiled" is a query, not a second file. FILLERS.md is rendered read-only for humans.
+- **Tests.** `test_rows_store.py`: `test_every_transition_appends_one_event`; `test_status_json_is_the_dashboard`
+  (parked → "parked"); `test_no_second_writer` (grep guard: nothing outside rowflow writes under `rows/`).
+
+### #6 "Idle with candidates" SLO that names the rule — smallest change, biggest visibility gain
+
+- **Where.** `rowflow.py` `IDLE-VIOLATION` (`:3160-3227`) already computes "free regions + a grantable row fits + no
+  grant this tick"; `IDLE-WHY` already names the reason per region. Join them: the alert line carries the `IDLE-WHY`
+  reason of the blocking rule and the `plan()` branch name (add a `why` field to each refusal in `plan()`'s helpers:
+  `own_block`, `rank_reservation`, `drain`, `coexist_host`), e.g. `IDLE-SLO q0 idle 14 min: rule=own_block
+  (busy_fraction<0.5) row=spec-gram3`. SLO: any region idle with a fitting candidate > 10 min, or gpu-quiet held by a
+  `use` hold at 0 % > 5 min, alerts **once** and escalates to the operator route.
+- **Fix the route first**: `alarm_channel.py` is missing on this host; until it exists every alert is a jsonl line.
+  `ALERT-ROUTE` must fail loudly (one `route-missing` operator mailbox entry per boot), not per tick.
+- **Tests.** `test_idle_slo.py`: `test_slo_alert_names_blocking_rule_and_row`; `test_alert_once_per_episode`;
+  `test_missing_route_is_one_mailbox_entry_not_per_tick`.
+
+## P2.5 What NOT to do next
+
+- **No more publish-time predicates on declared fields.** Each one is correct and each one leaves the next shape open.
+  After #2 there is exactly one predicate: *spec ≠ Contract → refuse*.
+- **No more `if shape == ...` branches in `plan()`.** `plan()` reads Contracts and purposes; the shape string is a
+  display label.
+- **No more same-hour deploys under live grants** until #3 lands; today's engine redeploy at 11:20 cost two 16-min
+  jobs and produced a fix (`0dd38919e`) that forbids a legitimate reproducibility feature.
+- **Do not re-arm `UNDERUSED`/`IDLE-HELD` as kills.** Re-arm them as *reclaims of `use` holds* (#1); the 11-03 false
+  positive was a `use` hold during spin-up, and the two-sample + purpose rule handles it.
+
+## P2.6 Expected effect
+
+| Change | Idle avoided / day | Interventions avoided / day | Defects it would have prevented today |
+|---|---|---|---|
+| #1 reconcile (purpose + reclaim + phase) | ~1.5–2 gpu-h, ~1 q-h | 2–3 | 5, F6 tail, the 22 npd1 false IDLE-HELDs |
+| #2 Contract from evidence | ~1 q-h + the "until tomorrow" drains | **all rebooks** (24 republishes today) | 4, 7, 2 (lock set test), F3, F6 |
+| #3 pinned engine per row | 0 direct; 2 × 16-min jobs today | 1–2 | 3, B4 |
+| #4 replay harness | prevention | the next eight | all eight, before deploy |
+| #5 one state model | 0 direct | 3–5 (dashboard, FILLERS.md, filing) | F5, F7, B2 |
+| #6 idle SLO + fixed route | makes the rest visible | — | silent 0.94 gpu-h today |
+
+Of these, **#1 and #2 are the change**; #4 is how it is deployed safely; #3, #5, #6 are the hygiene that stops the
+instance-fix treadmill from restarting. The order matters: #6's route fix is a one-hour job and should go first because
+every other change reports through it.
+
+## P2.7 Evidence commands (pass 2)
+
+```
+L=/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log
+W() { grep -E '^2026-11-05T1[01]' $L | awk '$1>="2026-11-05T10:40"'; }
+W | awk '{print $2}' | sort | uniq -c | sort -rn | head                    # IDLE-HELD 61, ALERT-ROUTE 9, IDLE-VIOLATION 0
+W | grep 'ALERT-ROUTE' | head -2                                           # alarm_channel.py missing
+W | grep hsf5p | grep -oE 'gpu=[0-9]+|IDLE-HELD.*' | head -20               # 0 % tail 11:44 -> 11:50
+W | grep 'inf34' | grep -c DRAIN                                           # 12 drains to 01:50Z
+grep -oE 'shape": "[a-z0-9()-]+' /mnt/raid0/llm/tmp/compute-flags/ready/.withdrawn/refactor-inf34-a2-gpu-qual-v15-20261105.json
+cat /mnt/raid0/llm/tmp/compute-flags/grants/kpf17-*-sq3-*.ended            # 961 s, rc=1 (digest)
+git -C /workspace log origin/main --since=7.days --format=%ad --date=short -- scripts/coordination/rowflow/rowflow.py | sort | uniq -c
+git -C /workspace show origin/main:scripts/coordination/rowflow/rowflow.py | grep -c '^[A-Z_]* = '     # 52 tunables
+cmp /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/rowflow.py <(git -C /workspace show origin/main:scripts/coordination/rowflow/rowflow.py)
+```
+
+## P2.8 Operator refinement (12:0xZ, folded into #1 and #2): q3 is quiet ONLY for GPU timing rows
+
+Operator, watching btop with the GPU at 100 % and q3 cores 88-95 at ~1 %, verbatim: "when not performing timing work
+on the GPU/CPU and, most importantly, in production we should totally allow q3 CPU use to take place in parallel with
+the GPU use." This sharpens pass-1 fact 2 and fact 5 and is what `feedback_gpu_cpu_coresidency_policy.md` already
+measured (pinned GPU threads: CPU decode −1 %, prefill −4.8 %).
+
+**Invariant (replaces pass-1 §6 facts 2 and 5):**
+
+- A GPU row's Contract has **two** forms, chosen by its *class*, never by its declared shape:
+  - `gpu-timing` (bench/qual rows whose `decision_rule` is a GPU latency/throughput metric, or `role == bench`): holds
+    `gpu-quiet:use`, `t184-191:use`, **`c72-95:quiet`** — q3 cores idle, q0-q2 free (shape `gpu-q3`).
+  - `gpu-work` (everything else: correctness, builds, qualification by output, **and production serving**): holds
+    `gpu-quiet:use`, `t184-191:use` **only**. q3 cores are ordinary CPU capacity; the only co-residency rule left is
+    that a *CPU timing* row is not placed on c88-95 while a GPU job runs (the −9.6 % SMT channel), which the lock-set
+    test in #2.4 expresses as `purpose[c88-95] = quiet-for-cpu-timing` on the *CPU* row, not on the GPU row.
+- Today's `hsf5p-profile6-q3-r1` (`regions=mi210_0,88-95,184-191`, `holds=c88-95,gpu-quiet,t184-191`) and
+  `kvu16g2-decstep` (`holds=gpu-quiet,t184-191`) are the two forms; the first is right only if it is a timing row, and
+  the Contract decides that from its `decision_rule`, not from the owner's `regions:` string.
+- SKILL.md §2 wording (supersedes the pass-1 diff's first bullet): "**A GPU timing run needs a quiet q3; a GPU work
+  run needs nothing but its own threads.** `gpu-timing` holds gpu-quiet + t184-191 + c72-95 quiet. `gpu-work`
+  (correctness, builds, output-qualified runs, production serving) holds gpu-quiet + t184-191 only, and q3 cores are
+  scheduled normally; CPU *timing* rows alone avoid c88-95 while the GPU is busy."
+- Test additions to `test_rowflow_contract.py`: `test_gpu_qual_by_output_is_gpu_work_holds_threads_only` (inf34 v16
+  fixture → `holds={gpu-quiet, t184-191}`); `test_gpu_latency_rule_is_gpu_timing_holds_q3_quiet`;
+  `test_cpu_timing_row_avoids_c88_95_under_gpu_work`; `test_cpu_correctness_row_placed_on_c88_95_under_gpu_work`.
+
+## P2.9 Two more defects (INF-22 session), verified
+
+### D9 — No deadline on a dry run; a stuck smoke holds its cores for 20 h with holder `?`
+
+- **Verified.** `codex-ifbench-cj6a-27b-v4-20261104`: `dryrun/<id>/grants/*.grant` says `regions=0-3 start=15:29Z
+  end=2026-11-04T16:04Z`; pid 3114401 (`sudo -n --preserve-env=… setpriv …`) started 2026-11-04 15:30:02 and is **still
+  alive at 20 h 33 m**; `RUNNING.json` (15:30) is still present, no `FAIL-*.json`, no ALERT; a `stop` file was touched
+  12:00Z today by hand. `dry_running:2967` feeds `RUNNING.json` cpus into the busy set, so c0-3 (and whole-q0 options)
+  were blocked with no grant to point at. The dry-run grant's own `end=` is never enforced by anything.
+- **Root cause.** The dry run's timer is the Python harness's `first_progress_s` wait (`dryrun_run:2452`); when the
+  harness exits or the engine never reaches START, nothing else owns the deadline — the grant's `end=`, `RUNNING.json`
+  and the child process group are three facts with no reconciler (the P2.1 pattern again). `0efbd47c8` made it
+  **worse** for this case: the timer now starts at engine START, and "never reached START" is WAIT, not FAIL, so a smoke
+  whose engine polls the wrong grants dir (D10) waits forever by design.
+- **Fix.** `rowflow.py`: `dryrun_run` writes `deadline = start + max(first_progress_s, 300) + LOCK_WAIT_MAX_S (600)`
+  into `RUNNING.json` and the dry-run grant; new keeper step in `allocate` (`reconcile_dryruns`, beside `heal_grants`)
+  — for every `RUNNING.json` past `deadline`: `kill -TERM -- -<pgid>` (the pgid recorded in `RUNNING.json`; the engine
+  already `setsid`s), 30 s, `-KILL`, verify with `ps -o pid= -p`, write `FAIL-n.json {reason: deadline, phase:
+  pre-START|post-START}` **or** `WAIT.json` if the engine never reached START *and* its lock wait is observable, remove
+  `RUNNING.json`, release the cpus the same tick, alert once. Status shows `dryrun-stale` instead of `dryrun-running`
+  when `deadline` has passed and the process is gone. A WAIT is re-queued at most `SMOKE_MAX_WAITS` (3) times, then FAIL
+  with `reason: never-started` — "waiting is WAIT, never FAIL" must have a ceiling.
+- **Tests.** `test_rowflow_dryrun_deadline.py`: `test_running_json_carries_deadline`;
+  `test_past_deadline_pre_start_kills_pgid_and_requeues_as_wait`; `test_past_deadline_post_start_is_fail`;
+  `test_three_waits_then_fail_never_started`; `test_stale_running_json_without_process_is_cleared_and_cpus_freed`;
+  replay invariant (P2.4 #4): no `RUNNING.json` older than `deadline + 120 s`.
+
+### D10 — Dry-run env lost across `sudo --preserve-env`; the engine polls the MAIN grants dir
+
+- **Verified.** `/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/launch.sh:33`:
+  `exec sudo -n --preserve-env=WS58_REGIONS,FILLER_CPUS,FILLER_SMOKE,FILLER_DRYRUN,FILLER_DRYRUN_DIR,FILLER_DRYRUN_RESULT_PATH …`
+  — no `FILLER_GRANTS_DIR`, `FILLER_FLAGS_DIR`, `FILLER_STATE_DIR`, `FILLER_STOPFILE`. `dryrun_run` passes
+  `FILLER_GRANTS_DIR=<dryrun dir>/grants` (`rowflow.py:2465`); `filler_run15.sh:81` reads
+  `GRANTS=${FILLER_GRANTS_DIR:-$FLAGS/grants}`, so the engine fell back to the main dir: `launcher.out` 15:30:03Z
+  `grants=/mnt/raid0/llm/tmp/compute-flags/grants`. It polled for a grant the keeper writes into a different directory
+  — forever (D9).
+- **Root cause.** The dry-run contract is carried as a *set of env vars across a privilege boundary that the row author
+  controls*; one omitted name silently changes the engine's world. Same pattern: a declaration (`--preserve-env` list)
+  trusted, never checked against the receiver's needs.
+- **Fix (three layers, all small).**
+  1. `filler_run15.sh:94` — when `FILLER_DRYRUN=1`, **derive** the whole family from the one variable that did
+     survive: `GRANTS=$FILLER_DRYRUN_DIR/grants`, `STATE=$FILLER_DRYRUN_DIR/state`, `FLAGS_DIR` from the dry-run dir's
+     parent, and refuse (`exit 64`, `.ended rc=64 reason=dryrun-env-incomplete`) if `FILLER_DRYRUN_DIR` is unset or
+     the grants dir does not exist. A dry run must never be able to read the main grants dir.
+  2. `rowflow.py parse_launcher` — detect `sudo … --preserve-env=LIST` (and `env -i`, `setpriv`) wrappers; the
+     Contract records `env_passthrough`; `publish` refuses when a required name
+     (`FILLER_DRYRUN FILLER_DRYRUN_DIR FILLER_GRANTS_DIR FILLER_STOPFILE WS58_REGIONS FILLER_CPUS`) is missing, printing
+     the corrected `--preserve-env=` line. Simplest robust form to recommend to authors: pass **one** variable
+     (`FILLER_DRYRUN_DIR`) and let layer 1 derive the rest.
+  3. `dryrun_run` launcher.out check — after START the harness greps `grants=` from `launcher.out` and FAILs the smoke
+     immediately with `reason: wrong-grants-dir` if it is not the dry-run dir (a 5-second failure instead of a 20-hour
+     hang).
+- **Tests.** `test_filler_dryrun_env.py`: `test_dryrun_derives_grants_dir_from_dryrun_dir`;
+  `test_dryrun_without_dryrun_dir_exits_64`; `test_rowflow_contract.py::test_sudo_preserve_env_missing_grants_dir_refused`
+  (the exact `launch.sh:33` line as fixture) and `test_preserve_env_complete_admitted`;
+  `test_rowflow_dryrun_deadline.py::test_wrong_grants_dir_in_launcher_out_fails_fast`.
