@@ -198,7 +198,7 @@ Same `gfx90a` predicts **compile compatibility, not performance equivalence** �
 
 The C4 row above is scored HIGH risk for "CDNA2 counter taxonomy unproven". That is only half of it:
 **the profilers themselves are absent.** `rocprofv2`, `rocprof` and `omniperf` were all missing as of
-2026-07-20 ([`mi210-big-model-and-acceleration-roadmap.md:205`](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap));
+2026-07-20 ([`mi210-big-model-and-acceleration-roadmap.md:205`](../completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap));
 `rocprof` v1's SQ/TA counters read zero on this box and it aborts at init on graph-enabled builds;
 `rocm-bandwidth-test` is not installed; and QuixiCore's timing recipe — otherwise worth copying — assumes
 `rocprofv3`, also absent.
@@ -1757,7 +1757,7 @@ attempt into the panel.
 - [`exl3-cpu-mi210-implementation.md`](quantization-and-low-bit.md) — `INF-80` consumer of the
   gfx90a verify/profile substrate; EXL3 implementation and acceptance remain owned there
 - [`gpu-drafter-mi200-investigation.md`](../archived/gpu-drafter-mi200-investigation.md) — MI210-gated; consumes the kernels this loop produces
-- [`gpu-acceleration-path.md`](mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm kernel-library hand-port path this automates
+- [`gpu-acceleration-path.md`](../completed/mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm kernel-library hand-port path this automates
 - [`llama-cpp-dsa-contribution.md`](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) / [`cpu-shape-specialized-gemv-decode.md`](../completed/cpu-shape-specialized-gemv-decode.md) — the hand-HIP endgame + the CPU ukernel loop this rhymes with
 
 ---
@@ -3484,7 +3484,7 @@ K32/K33 external-draft path; K24 base-decode "regression" ruled a host artifact 
   rotation and routing-table quant exclusion were already covered locally.
 
 **K28** (GDN long-prefill recurrence kernel, GPU, `gated_delta_net.cu:191`) is owned as a `- [ ]`
-task in [mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap).
+task in [mi210-big-model-and-acceleration-roadmap.md](../completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap).
 2026-07-18 source-readiness sidecar verdict: do not patch blindly. Functional chunking already
 exists in `delta-net-base.cpp`; the open target is the serial token scan in
 `ggml/src/ggml-cuda/gated_delta_net.cu`. Next step is an operator-window `rocprofv2`

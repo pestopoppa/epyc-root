@@ -1,6 +1,6 @@
 # P3-4: native MTP versus DFlash2 serving comparison — design proposal
 
-Status: **design only; not execution-ready**. The champion promotion decision and an operator grant precede compute. P3-4 in `handoffs/active/mi210-serving-program.md` asks about the serving duty mix and the cost of launch-bound mode changes. This proposal does not select a kernel, tenant, launch recipe, protocol amendment, threshold, or winner.
+Status: **design only; not execution-ready**. The champion promotion decision and an operator grant precede compute. P3-4 in `handoffs/completed/mi210-serving-program.md` asks about the serving duty mix and the cost of launch-bound mode changes. This proposal does not select a kernel, tenant, launch recipe, protocol amendment, threshold, or winner.
 
 ## Comparison and eligibility
 

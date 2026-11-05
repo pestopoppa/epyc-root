@@ -5065,7 +5065,7 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 **Priority**: MEDIUM-HIGH (likely the cheaper architectural win compared to CPU16 NUMA-disagg, and likely obsoletes it)
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`inference-research-index.md`](inference-research-index.md) (CPU17)
-**Related**: [`numa-prefill-decode-disaggregation.md`](mi210-serving-program.md#track-numa-prefill-decode-disaggregation) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](numa-placement-and-contention.md#track-dynamic-stack-concurrency) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling), [`cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) (CPU23 — context/interference matrix gate), [`cpu-benchmark-rigor-and-revalidation.md`](../completed/cpu-benchmark-rigor-and-revalidation.md) (historical CPU20 protocol record; living gate = `/workspace/MEASUREMENT.md`)
+**Related**: [`numa-prefill-decode-disaggregation.md`](../completed/mi210-serving-program.md#track-numa-prefill-decode-disaggregation) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](numa-placement-and-contention.md#track-dynamic-stack-concurrency) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling), [`cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) (CPU23 — context/interference matrix gate), [`cpu-benchmark-rigor-and-revalidation.md`](../completed/cpu-benchmark-rigor-and-revalidation.md) (historical CPU20 protocol record; living gate = `/workspace/MEASUREMENT.md`)
 
 > **Fable 5 review (2026-06-12)**: the reopen gate ("workload shift to multi-tenant/prefill-heavy") is expected to FIRE from [batched-decode-measurement.md](numa-placement-and-contention.md#track-batched-decode-measurement) E1/E2 — the eval-batch serving class is exactly the named trigger (fable5-findings-06 §2).
 
@@ -5682,7 +5682,7 @@ operator-approved profile window.
   CPU kernel)** in [llama-cpp-dsa-contribution.md](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) — both are
   prefill/long-context levers; coordinate profiling.
 - GPU sibling for hybrid models = **K28 GDN long-prefill recurrence kernel**
-  ([mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)).
+  ([mi210-big-model-and-acceleration-roadmap.md](../completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)).
 
 #### Reporting
 
@@ -5809,7 +5809,7 @@ MoE-Spec Phase 0
 - If a `GGML_EP_*` flag disposition changes, update [`cpu-kernel-env-flags-inventory.md`](../completed/cpu-kernel-env-flags-inventory.md) in the same commit.
 
 ## Track: moe-routing-tap-and-locality-measurement
-<!-- gate: INF-22, INF-70#cpu-decode-roofline-program -->
+<!-- gate: INF-70#cpu-decode-roofline-program -->
 
 > Folded from `handoffs/active/moe-routing-tap-and-locality-measurement.md` @ `e424d56114f9` on 2026-11-03 (BRF-T7-F9, route 1b, operator D1/D5; retired row INF-72 → INF-70). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -5818,7 +5818,7 @@ MoE-Spec Phase 0
 **Status**: stub
 **Created**: 2026-09-07 (research intake, operator-approved plan)
 **Categories**: moe, gpu_acceleration, benchmark_methodology
-**Related**: [mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (INF-34) · [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) (INF-70) · [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) (SC66)
+**Related**: [mi210-big-model-and-acceleration-roadmap.md](../completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (INF-34) · [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) (INF-70) · [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) (SC66)
 
 #### Objective
 

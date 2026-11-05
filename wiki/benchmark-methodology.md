@@ -22,7 +22,7 @@ Sources: [canonical-judge-suite progress](../progress/2026-11/2026-11-04-handoff
 Verdicts are screens (n=1, no CI), recorded as OBSERVATIONs in the owner handoffs; none is ticked as a result. Read the cause, not the status:
 - **EXP-09 (tool-output compression): REVISE, confounded futility.** The run was valid (control unchanged, planted mismatch rejected 9/9, linkage inside the v10 store). The futility look fired at 37 of 48 cells, but all 5 parse failures were answers truncated at exactly 256 completion tokens. On items where verified-quote parsed it scored 0.824 against the control's 0.808. Raise the answer budget before expanding. Source: [context-and-token-economy](../handoffs/active/context-and-token-economy.md).
 - **CAP-04 (reasoning-budget curve): REVISE, derivation invalid.** All 76 units ran and every validity check passed, but the 8k/16k cells were derived from one 32k generation and 0 of 4 fresh 8192 generations matched the base as a prefix: non-greedy sampling plus speculative decoding does not reproduce across launches. No sub-32k cell counts, so the budget knee is UNCOVERED, not "covered (screen)". Nested-prefix derivation needs greedy decoding or a fresh generation per budget. Source: [context-and-token-economy](../handoffs/active/context-and-token-economy.md).
-- **EXP-04 (CPU/GPU prefill crossover): REVISE, invalid on every GPU arm, twice.** r1 failed on a wrong bench flag (`-cmoe`; `llama-bench` spells it `-ncmoe N`, and the summary mislabelled that as a residency failure) and on an unlisted library in the store. r4 fixed argv, residency and identity but failed the placement proof on 0/6 GPU cells (node 0 held 40.9-42.5% against a 40% cap on `-ngl 0` runs; A2 had no in-window sample). Apparent 1.9x GPU speedups are placement- and identity-invalid and carry no claim. Source: [mi210-serving-program](../handoffs/active/mi210-serving-program.md).
+- **EXP-04 (CPU/GPU prefill crossover): REVISE, invalid on every GPU arm, twice.** r1 failed on a wrong bench flag (`-cmoe`; `llama-bench` spells it `-ncmoe N`, and the summary mislabelled that as a residency failure) and on an unlisted library in the store. r4 fixed argv, residency and identity but failed the placement proof on 0/6 GPU cells (node 0 held 40.9-42.5% against a 40% cap on `-ngl 0` runs; A2 had no in-window sample). Apparent 1.9x GPU speedups are placement- and identity-invalid and carry no claim. Source: [mi210-serving-program](../handoffs/completed/mi210-serving-program.md).
 - **EXP-01 (trellis quant): valid screen, EXPAND the IQ4_KT arm only (2026-11-03, `d326111a7`).** Proxy Qwen3.6-35B-A3B, one CPU quarter, 4 arms x 3 launches, 48 quality items. IQ4_KT/Q4_K_M tg = 0.955x excluding the Q4_K_M cold first launch (34.9 vs 36.5 t/s; band incl. it 0.80-1.41); IQ2_KT/IQ2_XXS tg = 0.93x (band 0.89-0.97), slower. Quality 14/24 vs 12/24 is n too small. Earlier REVISE runs (r1-r3) were harness faults; fixes that made r5 valid: imatrix run with `-no-fug`/`-no-fmoe` so shared-expert tensors are recorded, a numpy interpreter for identity.py, a strict completion predicate. Lesson kept: on MoE models check imatrix coverage of every tensor class (routed AND shared experts) before quantizing very-low-bit arms. Screen only, not decision-grade; EXP01-IMATRIX-SHEXP closed.
 
 Planning lesson from the backlog-refactor second-pass audit: nearby text is not task-specific evidence (a source citation proves location, not applicability), regex execution-type classification misrouted both ways, and one experiment can feed several tasks only if each task keeps its own acceptance criterion. Source: [second-pass audit](../docs/design/backlog-refactor-2026-11/reviews/backlog-refactor-second-pass-audit-20261102.md); principle in [measurement sufficiency](../docs/guides/agent-workflows/measurement-sufficiency.md).
@@ -230,7 +230,7 @@ Sources: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md) · [2026
 - **Read the rule's own gate before the headline.** LB7.1 read `NOT_REPRODUCED` because the ON median gap fell outside 0.5x-2x of the original (`PROBE_PERTURBATION`); an ORACLE_CULPRIT (G10 case 25: FP16 CPU reference 127/128 FAIL, FP32 oracle with the same GPU kernel 22/22 OK) means a long-kv F16-V FA FAIL on v10 needs the FP32-oracle arm before it is read as a backend defect. SPEC-RNG.1.2: DO-NOT-CARRY rests on the N-independent probe (net_gain 0/48); the N=300 cut bounds only the primary test.
 - **Processes: `kill -0` is blind in this sandbox**; use `ps` for liveness.
 
-Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
+Sources: [autokernel-champion-aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention), [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md), [progress 3c4ca599](../progress/2026-10/2026-10-24-3c4ca599.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 22, workspace-f8): five measurement-design lessons from the 10-24 read-outs
 
@@ -264,7 +264,7 @@ general rules drawn from them are design guidance and are **inferred**.
   takes SIGPIPE, and pipefail reports the match as a failure. The job predates `scripts/lint/check_pipefail_early_exit.py`,
   and a strict repo test now holds `scripts/` at zero findings (7 reviewed exceptions).
 
-Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (M4.2 / M4.2a, PB-QCOST-1
+Sources: [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) (M4.2 / M4.2a, PB-QCOST-1
 confirm and confirm-R), [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention)
 (KPF-18-S1.7g, KPF-19.1a side finding), [speculative-decoding-mtp-refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh)
 (SPEC-RNG.1.2 scope note), [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.md) (LINT-SIGPIPE-STRINGS-GREP-Q,
@@ -414,7 +414,7 @@ Sources: [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-pr
 
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — AK-HR-1/2 gates, census counts, ranked-recall audit.
 - [All-devices program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — frozen-prediction scoring and AKX-ALL-26 halves.
-- [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay, sample-size arithmetic, parity contract.
+- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — per-class replay, sample-size arithmetic, parity contract.
 - [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — HIL-2 checklist.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — retrieval eval result table and caveats.
 - [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — DF2-17/18/19, thread sweep, embedder pilot.
@@ -3056,7 +3056,7 @@ because neither campaign has produced one.
   from main, and a validator that cannot validate the segmented resume provenance the
   live collection actually produces. Test count is not signability.
   [autopilot-decision-plane-audit](../handoffs/active/autopilot-program.md#track-autopilot-decision-plane-audit-2026-07-22),
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **E5's grading discipline survived the pause, including the parts that are
   inconvenient.** W0 ran under `--allow-host-health-warning` at 20-day uptime and is
@@ -3121,7 +3121,7 @@ because neither campaign has produced one.
 - [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E5
   scout-vs-Stage-B grading, the artifact-republication rules for a grade change, and the
   Gemma capture invalidity.
-- [gpu-serving-tie-in-program.md](../handoffs/active/mi210-serving-program.md) — the
+- [gpu-serving-tie-in-program.md](../handoffs/completed/mi210-serving-program.md) — the
   FIX-FIRST ratification-wrapper verdict and the program-wide rule that bench observations
   inform design but never gate promotion alone.
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — FG-4b decision-grade/
@@ -6974,7 +6974,7 @@ are complete; any selector-effect claim now requires prospective capture during 
 ### Source References
 
 - [non-inference-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) — HYG-4 (checker fix), NIB2-86 (hollow gates; filed as NIB2-80), NIB2-87 (research venv lacks pytest; filed as NIB2-81).
-- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — PF1-pre (runner retired in place).
+- [mi210-big-model-and-acceleration-roadmap.md](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — PF1-pre (runner retired in place).
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final.
 - epyc-root `scripts/validate/check_ratification_receipts.py`, `scripts/validate/ratification_receipt_exemptions.json`.
 
@@ -7307,7 +7307,7 @@ The [DP-F gate record](../progress/2026-10/2026-10-21-dpf-gates.md) reports nati
   - **Consequence.** The RUS-1 length row is now diagnostic only, and RUS-3 (K>=4 samples at a recorded temperature) is filed.
 - **ECR-EB-1: a predeclared EdgeBench slice.** The rule was committed before ranking. The join matched 51 of 51 tasks, and 254 paper 12 h cells were checked against the card with 0 mismatches. The funnel ran 51 → 40 (Python or C++) → 39 (no internet; the CPU-only, 2 h non-saturation and headroom filters each kept all 39) → 33 after the predeclared SD > 15 exclusion, giving 8 CPU-only tasks for a 2 h budget. The paper SD is a 12 h SD.
 
-Sources: [YaRN context extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [DeepSeek V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [Eval tower verification](../handoffs/active/eval-tower-program.md), [Progress ev19-era](../progress/2026-10/2026-10-21-ev19-era.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Eval benchmark cost reduction](../handoffs/active/eval-tower-program.md#track-eval-benchmark-cost-reduction), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md)
+Sources: [YaRN context extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [Qwen3.8-27B replace Qwen3.6](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [DeepSeek V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [Eval tower verification](../handoffs/active/eval-tower-program.md), [Progress ev19-era](../progress/2026-10/2026-10-21-ev19-era.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Eval benchmark cost reduction](../handoffs/active/eval-tower-program.md#track-eval-benchmark-cost-reduction), [Progress dpf-sample-yarn](../progress/2026-10/2026-10-21-dpf-sample-yarn.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
@@ -7382,7 +7382,7 @@ Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): pair inside one window when the host drifts
 
-- **M4.2b: judge a candidate against its champion inside the same window, A-B-A-B.** M4.2a failed its C2 band at 25.23x while the candidate's off path was unchanged, because the whole window had slowed (C-solo went from 282 to 885 ms). The paired design takes the geometric mean of candidate/champion C2 over adjacent pairs against the unchanged ±10% band. That cancels drift common to both arms, and the drift check only flags a pair. Its first run read PASS (read-out by rule pending). (Sources: `/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/AMENDMENT-M4.2b-paired.md`; M4.2a/M4.2b in `handoffs/active/mi210-serving-program.md`; the 10-24 progress shard.)
+- **M4.2b: judge a candidate against its champion inside the same window, A-B-A-B.** M4.2a failed its C2 band at 25.23x while the candidate's off path was unchanged, because the whole window had slowed (C-solo went from 282 to 885 ms). The paired design takes the geometric mean of candidate/champion C2 over adjacent pairs against the unchanged ±10% band. That cancels drift common to both arms, and the drift check only flags a pair. Its first run read PASS (read-out by rule pending). (Sources: `/mnt/raid0/llm/tmp/f8-launchers-20261024/m4-2b-champion-control/AMENDMENT-M4.2b-paired.md`; M4.2a/M4.2b in `handoffs/completed/mi210-serving-program.md`; the 10-24 progress shard.)
 - **A job must never take compute outside the calendar.** A helper agent ran an acceptance runner under a self-taken region-lock with no grant and blocked another session's champion build. Rule: subagents take no claims of any kind and report their compute needs instead; the main thread registers the row. (Sources: the 10-24 progress shard (Incident); `progress/2026-10/2026-10-24-3c4ca599.md` C5 timeline; the f8 handover file.)
 
 ## Compiled Update — 2026-10-26 (wrap-up, workspace-58): week outcomes, fold gates, and what the week's compute did not buy
@@ -7424,11 +7424,11 @@ Sources: [INF-75](../handoffs/active/kernel-champion-and-promotion.md#track-auto
 
 **Confidence: verified** for the recorded events and the explicit limits of the observations.
 
-- **A narrow paired throughput observation is not a fold decision.** The M4 quarter used five fresh-server pairs on one worker role and 22 cores; +1.77% relative median is indicative, while the fold still requires all roles, their best recipes and quality. The timing's priority-order deviation is retained alongside the result. ([campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [M4 owning handoff](../handoffs/active/mi210-serving-program.md))
+- **A narrow paired throughput observation is not a fold decision.** The M4 quarter used five fresh-server pairs on one worker role and 22 cores; +1.77% relative median is indicative, while the fold still requires all roles, their best recipes and quality. The timing's priority-order deviation is retained alongside the result. ([campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [M4 owning handoff](../handoffs/completed/mi210-serving-program.md))
 - **Partial windows and process errors remain evidence, not final verdicts.** CT21 preserves its raw files before resumption; HIL15b's second window ended on an errored replay and join failure with ten units complete. The q2-v3 repair is ready with same-entry preflight, exact zero-step failed-replay identity, negative cases and the correct sidecar; it preserves the ten completed units and retries unit 11. A single-task AUC does not support pooled AUC. ([campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [measurement constitution](../MEASUREMENT.md))
-- **A build, preflight or staged image proves only its own scope.** M4 GPU v1 failed on a removed CLI argument and v2 passed parser controls before backend/model loading; no v2 load or performance result follows. XGrammar stays stopped while its known graph caller edge is repaired. ([campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [M4 owning handoff](../handoffs/active/mi210-serving-program.md); [benchmark policy digest](../agents/shared/MEASUREMENT_POLICY.md))
+- **A build, preflight or staged image proves only its own scope.** M4 GPU v1 failed on a removed CLI argument and v2 passed parser controls before backend/model loading; no v2 load or performance result follows. XGrammar stays stopped while its known graph caller edge is repaired. ([campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [M4 owning handoff](../handoffs/completed/mi210-serving-program.md); [benchmark policy digest](../agents/shared/MEASUREMENT_POLICY.md))
 
-Sources: [campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md), [M4 owning handoff](../handoffs/active/mi210-serving-program.md), [measurement constitution](../MEASUREMENT.md), [benchmark policy digest](../agents/shared/MEASUREMENT_POLICY.md).
+Sources: [campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md), [M4 owning handoff](../handoffs/completed/mi210-serving-program.md), [measurement constitution](../MEASUREMENT.md), [benchmark policy digest](../agents/shared/MEASUREMENT_POLICY.md).
 
 ## Compiled Update — 2026-10-27 (incremental full wrap, 16:26:29Z): keep preparation distinct from results
 
@@ -7440,7 +7440,7 @@ Sources: [campaign checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-
 - **Treat source and control passes as their own boundary.** The XGRAMMAR candidate native tests passed, but no baseline test or performance comparison ran. The GitNexus split proposal is still preparation-only until its parse capsule is produced and reviewed.
 - **Partial corpus runs stay partial.** CT21 slice 2 was recorded at 1,176/2,352 responses with rc75 at the 16:05Z harvest; slice 3 was then running. No final corpus or competence conclusion is present in that receipt. HIL15b's partial pilot likewise supplies no aggregate result.
 
-Sources: [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving handoff](../handoffs/active/mi210-serving-program.md); [INF-75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate); [C5 handoff](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh); [WS58 results](../progress/2026-10/2026-10-27-workspace-58.md); [refactor checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [backlog prep](../progress/2026-10/2026-10-27-backlog-prep-01a16fc3.md); [CT21 handoff](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation); [HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
+Sources: [AutoKernel champion handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate); [GPU serving handoff](../handoffs/completed/mi210-serving-program.md); [INF-75 handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate); [C5 handoff](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh); [WS58 results](../progress/2026-10/2026-10-27-workspace-58.md); [refactor checkpoint](../progress/2026-10/2026-10-27-refactor-campaign-wrap.md); [backlog prep](../progress/2026-10/2026-10-27-backlog-prep-01a16fc3.md); [CT21 handoff](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation); [HIL handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop); [Codex full wrap](../progress/2026-10/2026-10-27-codex-ni-full-wrap-1625.md)
 
 ## Compiled Update — 2026-10-27 (periodic documentation checkpoint)
 
@@ -7548,7 +7548,7 @@ The EVL historical dependency freeze was recovered with 3,253 non-GGUF hashes ve
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- PB-QCOST confirm-q r2 is a harness FAILED-RUN (rc=1): the wrapper emitted a `+00:00` deadline the native parser rejects. Verdict `INCOMPLETE`/`NOT_RUN`, not a q-coefficient result; the fix (Research `ba4a037d`) normalizes to UTC-Z. [gpu-serving](../handoffs/active/mi210-serving-program.md)
+- PB-QCOST confirm-q r2 is a harness FAILED-RUN (rc=1): the wrapper emitted a `+00:00` deadline the native parser rejects. Verdict `INCOMPLETE`/`NOT_RUN`, not a q-coefficient result; the fix (Research `ba4a037d`) normalizes to UTC-Z. [gpu-serving](../handoffs/completed/mi210-serving-program.md)
 - Namespace lesson from AKX-ALL8 C5 r4 (rc=127): a launcher path valid in the container (`/workspace/repos/...`) was absent in the host namespace, leaving `runs/` empty. [all-devices](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions)
 - SEQ rate-axis era fence: prior rate statistics use the ratified speed-era cutoff and require a typed witness of both cutoffs; historical values are never retrofitted. SEQ-QUALITY-ERA-PROVENANCE records the actual quality cutoff only once a finite statistic is computed. [SEQ](../handoffs/active/autopilot-program.md#track-autopilot-sequential-allocation)
 - UFH14-A6: harness experiments run under Landlock (`sandbox3.py`); a Gemma 1B CPU canary under ABI 6 denied planted live/future reads while keeping its own paths reachable. The full-27B packet stays DRAFT. [UFH](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
@@ -7714,8 +7714,8 @@ Sources: [codex-gen shard](../progress/2026-11/2026-11-04-handoff-codex-gen.md) 
 
 ## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
 
-- **GPU A/A noise floor** (4 same-build A/A pairs + r8; C5, np4, 65536 ctx, 27B Q8 + DFlash2, fresh server per arm): A2/A1 has n=5 mean 0.968, **SD 0.025**, range 0.945-1.010. The second arm is biased about 3 % low, so GPU A/B **must use ABBA ordering**. Source: [mi210-serving-program.md:65-66](../handoffs/active/mi210-serving-program.md).
-- **Comparisons across runs or builds are invalid.** Two incidents on 2026-11-05: (1) the NPD1-STEP4 "2.3x 8k TTFT" compared a C6 run against a STEP2 number from another build and day, and was withdrawn, with STEP5 re-running it in one run; (2) the C5-vs-C6 slowdown read had no clean same-run evidence. Only same-run, same-session, ABBA comparisons support a ratio claim. Source: [mi210-serving-program.md:2894-2895](../handoffs/active/mi210-serving-program.md), `progress/2026-11/2026-11-05-inf22.md`.
+- **GPU A/A noise floor** (4 same-build A/A pairs + r8; C5, np4, 65536 ctx, 27B Q8 + DFlash2, fresh server per arm): A2/A1 has n=5 mean 0.968, **SD 0.025**, range 0.945-1.010. The second arm is biased about 3 % low, so GPU A/B **must use ABBA ordering**. Source: [mi210-serving-program.md:65-66](../handoffs/completed/mi210-serving-program.md).
+- **Comparisons across runs or builds are invalid.** Two incidents on 2026-11-05: (1) the NPD1-STEP4 "2.3x 8k TTFT" compared a C6 run against a STEP2 number from another build and day, and was withdrawn, with STEP5 re-running it in one run; (2) the C5-vs-C6 slowdown read had no clean same-run evidence. Only same-run, same-session, ABBA comparisons support a ratio claim. Source: [mi210-serving-program.md:2894-2895](../handoffs/completed/mi210-serving-program.md), `progress/2026-11/2026-11-05-inf22.md`.
 
 ## Compiled Update — 2026-11-05 (operator wiki sweep 2)
 

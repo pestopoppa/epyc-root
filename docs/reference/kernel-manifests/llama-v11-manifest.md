@@ -205,7 +205,7 @@ Stack changes that ride the v11 promotion as ONE change (kernel-promotion step 8
 
 **Rollback.** Revert items 1-2 (threads 96, drop the two env keys).
 
-Evidence: `handoffs/active/mi210-serving-program.md` → M4-Q38-RECIPE-COMPARISON (2026-11-03 result).
+Evidence: `handoffs/completed/mi210-serving-program.md` → M4-Q38-RECIPE-COMPARISON (2026-11-03 result).
 
 ## Not features, but v11 promotion-checklist items (kept here so they are not dropped)
 

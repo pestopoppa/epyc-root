@@ -133,7 +133,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 - **HIL-15d: `no_final_step` is CONFORMANCE-ONLY.** On 120 HIL-18a replays (32 failures) it fires 12 times, 11 on failures: precision 0.917 (CI 0.714-1.000) clears the floor, recall 0.344 (0.189-0.800) does not. It is not added to CATEGORIES, the report schema or the belief adapter. HIL-18a ranks four usable tasks, but only lcg5-hard (50 %) sits inside HIL-15b's 30-70 % pass band, so the box stays open and a second hard-task set targeting wrong-final-answer and tool-protocol failures is the next step.
 - **Eval-time speculation parity (Q38-T10.2):** `eval_batch_frontdoor` :18070 runs with spec ON (`--spec-type draft-mtp`, n-max 4). EvalTower generation gained an opt-in per-request `speculative.n_max: 0` via `AUTOPILOT_EVAL_BITWISE_GENERATION=1` for parity-gated runs (default unchanged); the :8199 argv is not discoverable from files and is covered by the per-request flag.
 
-Sources: [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
+Sources: [dev-harness-trace-mining](../handoffs/active/memory-program.md#track-dev-harness-trace-mining), [dev-harness mining results](../docs/design/dev-harness-mining-results-20261022.md), [harness-improvement-loop](../handoffs/active/harness-program.md#track-harness-improvement-loop), [qwen38-27b-replace-qwen36](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [workspace-f8 progress](../progress/2026-10/2026-10-24-workspace-f8.md).
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 14, 3c4ca599): first mining results over dev-harness traces; HIL-15a flag-on run is a null
 
@@ -226,7 +226,7 @@ The operator adopted EmbeddingGemma 2 BF16 at 256 dimensions as the REPL embedde
 
 - [Harness improvement loop handoff](../handoffs/active/harness-program.md#track-harness-improvement-loop) — HIL-1 to HIL-8 state and classification table.
 - [Harness improvement loop design](../docs/design/harness-improvement-loop-design-20261006.md) — objective axes, substrate extraction plan, option package.
-- [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T10 ruling, role table, gaps, T10.1.
+- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T10 ruling, role table, gaps, T10.1.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — seam, migration, gates, unknowns.
 - [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — spec-off-judges landing, embedder adoption prep.
 - [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — session lane context.
@@ -2862,7 +2862,7 @@ polarity lesson. Milestone acceptance state is quoted as-is — several items ar
 - [progress 2026-07-29](../progress/2026-07/2026-07-29.md) — the polarity arc across four
   subsystems, the activation-gap repetition, the coordinator-agent instantiation and close,
   the invisible-suite and whole-repo-pytest findings, and the bus-noise diagnosis.
-- [gpu-serving-tie-in-program.md](../handoffs/active/mi210-serving-program.md) — an
+- [gpu-serving-tie-in-program.md](../handoffs/completed/mi210-serving-program.md) — an
   operator decision (activation sequencing) routed and recorded *through* the bus as a task
   id, demonstrating the decision-package path the coordination plane exists to carry.
 

@@ -3124,7 +3124,7 @@ project's prior knowledge rather than an empty memory; no contaminated legacy ro
   six MI210/autokernel handoffs.** The consequence is immediate and needs no kernel work: **the GPU
   lane's host threads at 184–191 are already cross-node, and device-local placement has never been
   tried.** Placement evidence lives in
-  [`gpu-acceleration-path.md`](mi210-serving-program.md#track-gpu-acceleration-path).
+  [`gpu-acceleration-path.md`](../completed/mi210-serving-program.md#track-gpu-acceleration-path).
   ✅ 2026-08-10 — `substrate_facts.json` and the T1 recipes bind GPU NUMA node 1 versus host node 3;
   the validator refuses drift or mixed identity.
 

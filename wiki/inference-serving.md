@@ -16,7 +16,7 @@
 - **YARN-E1-MEM closed.** A single-server A1 chain 128k to 240k to 400k to 500k peaked at 47.632 GiB own-PID KFD, under the 55 GiB criterion; static A1-A0 KV sizing is ~10.5 GiB and no +15 GiB overshoot or W effect reproduced.
 - **Cross-cutting.** Many rows ended `rc75 disk-floor` one second after grant against the 150 GiB floor; each is INCONCLUSIVE and the floor was held, not relaxed.
 
-Sources: [window-2 MI210 progress](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md) · [GPU tie-in progress](../progress/2026-11/2026-11-04-handoff-gpu-serving-tie-in.md) · [MI210 serving program](../handoffs/active/mi210-serving-program.md) · [engineering-hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md)
+Sources: [window-2 MI210 progress](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md) · [GPU tie-in progress](../progress/2026-11/2026-11-04-handoff-gpu-serving-tie-in.md) · [MI210 serving program](../handoffs/completed/mi210-serving-program.md) · [engineering-hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md)
 
 ## Compiled Update — 2026-11-04 (operator wiki sweep, INF-22 main): np16 halves lose, the PF1 crossover is bracketed, and the M4 decode A/B measured the wrong mechanism
 
@@ -26,7 +26,7 @@ Sources: [window-2 MI210 progress](../progress/2026-11/2026-11-04-handoff-fable5
 - **Sufficiency closures.** The q8_1 requant kill L2 "30.5 %" was one probe cell (3.37 % whole-model, already cached); the wide-cache knob is unmeasured on `experimental/q81-requant-cache-20261104`. Q38-T7a (DFlash2 already measured), Q38-T10.1r (flag already live) and GPS-PIN-1b (applies at next stack bring-up) needed no new work.
 - **rowflow allocator.** A lower-ranked row no longer receives regions a better-ranked row is waiting for (`aacbd45b7`, live).
 
-Sources: [INF-22 main progress](../progress/2026-11/2026-11-04-inf22.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)
+Sources: [INF-22 main progress](../progress/2026-11/2026-11-04-inf22.md) · [MI210 program](../handoffs/completed/mi210-serving-program.md)
 
 ## Compiled Update — 2026-11-03 (evening): INF-22 results, t48 recipe bundle, v11 bench tooling
 
@@ -40,7 +40,7 @@ Sources: [INF-22 main progress](../progress/2026-11/2026-11-04-inf22.md) · [MI2
 - **A/A np4 control**: aggregate 136.73 vs 131.22 tok/s, A2/A1 = 0.960 (descriptive).
 - **Load-time tooling**: llama-bench now takes `--load-threads` (V11-120, champion branch `experimental/llama-bench-load-threads-20261103` @ `181483cfc`, pending fold into the v11 candidate) so bench loads match llama-server; champion kernels only, load threads set to the claimed cores.
 
-Sources: [mi210-serving-program](../handoffs/active/mi210-serving-program.md) · [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) · [INF-22 unblock progress](../progress/2026-11/2026-11-03-inf22-unblock.md)
+Sources: [mi210-serving-program](../handoffs/completed/mi210-serving-program.md) · [v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md) · [INF-22 unblock progress](../progress/2026-11/2026-11-03-inf22-unblock.md)
 
 ## Compiled Update — 2026-11-03: the EG2 embedder swap is folded into the v11 promotion
 
@@ -61,14 +61,14 @@ The CPU preparation binds aliases to their physical server recipes and distingui
 
 ### Source References (2026-11-02 M4 preparation)
 
-- [GPU serving tie-in handoff](../handoffs/active/mi210-serving-program.md)
+- [GPU serving tie-in handoff](../handoffs/completed/mi210-serving-program.md)
 - [M4 execution-readiness audit and plan](../docs/design/inf22-m4-execution-readiness-20261102/README.md)
 - [M4 progress and qualification record](../progress/2026-11/2026-11-02-inf22-m4-readiness.md)
 - [Prospective GPU provenance contract](../artifacts/engineering/m4-gpu-provenance-20261101/CONTRACT.md)
 
 ## Compiled Update — 2026-11-01 (PB-QCOST confirm-q)
 
-PB-QCOST's confirm-q diagnostic completed all three phases. The q-axis passed and the run was graded UNCONTENDED, but the confirm fit failed its 10% held-out MAPE limit: 8.98% at n=1 and 11.56% at n=4. The filed diagnostic is negative and does not approve budget adoption. The run result reports completion and cleanup, while the row's rc75 reflected a completion checker that omitted the `FAIL_MAPE` terminal label. This is distinct from the earlier r2 deadline failure, which did not run the measurement. Sources: [GPU serving handoff](../handoffs/active/mi210-serving-program.md), [session filing](../progress/2026-11/2026-11-01-codex-gen.md), [completion-source review](../artifacts/codex-gen/pbqcost-completion-source-20261101/README.md), and [earlier r2 failure record](../artifacts/compute/pbqcost-confirm-q-r2-20261101.md).
+PB-QCOST's confirm-q diagnostic completed all three phases. The q-axis passed and the run was graded UNCONTENDED, but the confirm fit failed its 10% held-out MAPE limit: 8.98% at n=1 and 11.56% at n=4. The filed diagnostic is negative and does not approve budget adoption. The run result reports completion and cleanup, while the row's rc75 reflected a completion checker that omitted the `FAIL_MAPE` terminal label. This is distinct from the earlier r2 deadline failure, which did not run the measurement. Sources: [GPU serving handoff](../handoffs/completed/mi210-serving-program.md), [session filing](../progress/2026-11/2026-11-01-codex-gen.md), [completion-source review](../artifacts/codex-gen/pbqcost-completion-source-20261101/README.md), and [earlier r2 failure record](../artifacts/compute/pbqcost-confirm-q-r2-20261101.md).
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
@@ -110,7 +110,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 ### Source References (2026-10-28 workspace-58 wrap)
 
-- [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md) — M4 recut, C2, quarter timings, preparation ticks
+- [handoffs/completed/mi210-serving-program.md](../handoffs/completed/mi210-serving-program.md) — M4 recut, C2, quarter timings, preparation ticks
 - [progress/2026-10/2026-10-28-refactor-m4-c2-native-audit.md](../progress/2026-10/2026-10-28-refactor-m4-c2-native-audit.md) — same-window C2 audit
 - [progress/2026-10/2026-10-28-m4-cpu-fold-topology.md](../progress/2026-10/2026-10-28-m4-cpu-fold-topology.md) — M4 fold topology
 
@@ -131,7 +131,7 @@ Sources: [request_prompt_usage](../progress/2026-10/2026-10-24-request_prompt_us
 
 - **M4.2b `PASS`, so M4.2 is PASS overall (C1 AND C2 AND C3).** M4.2a's cross-day band failure (25.227x) is attributed to band and window drift. The paired same-window ABAB run (champion vs candidate-off, 4 valid loads, no drift-flagged pair) gives pooled P = 0.9984 and C2 about 22.01-22.05, inside the 19.845-24.255 band; the champion's own C2 is also in band. The production gate is a separate, still-open step (re-cut on the current champion first); M4 stays open.
 
-Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (M4.2, M4.2b) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) (M4.2, M4.2b) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 22, 3c4ca599 delta): the cache-idle-slots penalty is restore transfer count, GPU-ZOS-2 gets a knob instead of async lag, and M4.2a fails against a cross-day band
 
@@ -143,7 +143,7 @@ Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.m
 - **GPU-ZOS-2: true one-step lag does not fit the np4 DFlash2 shape.** Every row of step k+1 starts with the token sampled when step k's drafts are verified, and the drafter needs it too; deferring response work is worth about 0.01% of a step (spec-OFF post_decode is 99.5% sampling). Ceiling: post_decode 5.17 ms of a 139.6 ms step = 3.71% (<= +3.85% tok/s), INDICATIVE. The design instead ships one default-off knob `LLAMA_ZOS2` with three gated tokens (`lazy-save`, `greedy-fast`, `overlap-process`); the .1 branch `experimental/gpu-zos-2-one-step-lag-20261024` @ `6af3192c7` passes `test-sampling-greedy-fast` 1296/1296. Production traffic never sends temperature 0 (registry 0.1-0.2, always top_k 40 / top_p 0.95 / repeat_penalty 1.1), so `greedy-fast` never engages there. Builds (.2) and the gate run (.3, >= 75 min exclusive MI210) are pending. Per intake-2116#record and intake-2126#record.
 - **M4.2a (SRPF + PB-HOL) returned FAIL on C2.** Under the amended validity predicate (a rep is valid if the long is still in flight when the short is sent) C1 and C3 PASS, but the off-path B/A median is 25.227x against the 19.845-24.255 band from PB-HOL-1's 22.05x; the off path is code-equivalent and the C-solo control drifted (282 to 885 ms) during the phase. M4.2b replaces the cross-day band with a same-window champion control. PB-QCOST-1 confirm (armed) stays INDICATIVE.
 
-Sources: [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md), [gpu-zos-2 design](../docs/design/gpu-zos-2-one-step-lag-design-20261024.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md), [within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine)
+Sources: [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md), [gpu-zos-2 design](../docs/design/gpu-zos-2-one-step-lag-design-20261024.md), [progress workspace-f8](../progress/2026-10/2026-10-24-workspace-f8.md), [within-role-placement-state-machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, workspace-58 delta): the prefill-budget enable is a draft package; compute-calendar defects
 
@@ -151,7 +151,7 @@ Sources: [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#t
 - **Four scheduler defects of 10-23/24 (all fixed).** An event watcher that re-touched its stamp at each re-arm lost a failure and idled the host 3.7 h; a launcher read the main thread's `Cpus_allowed_list` instead of the union of thread masks (false rc=68 under `OMP_PROC_BIND=spread`); region-lock prints a shared quiet as `SHRD`, which a runner matched only as `SHARED`; two finished rows stayed ARMED. Revoke an unfixed job's grant before its launcher polls.
 - **Open, each with a named blocker:** CH-27 awaits its registered row, ufh14 probes await the VRAM-drain fix, and every remaining CPU row needs the whole host quiet.
 
-Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Prefill budget :8083 stack-change package](../docs/design/prefill-budget-8083-stack-change-package.md), [Workspace-58 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Prefill budget :8083 stack-change package](../docs/design/prefill-budget-8083-stack-change-package.md), [Workspace-58 progress 2026-10-24](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ## Compiled Update — 2026-10-23 (wrap-up sweep 19, workspace-f8): the production :8083 argv does not leak, and how eval harnesses fence the scratch-shape leak
 
@@ -172,7 +172,7 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 
 ### Source References (2026-10-23 wrap-up sweep 19, workspace-f8)
 
-- [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (GPU-LEAK-1b/1d/1e, GPU-ZOS-1a)
+- [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) (GPU-LEAK-1b/1d/1e, GPU-ZOS-1a)
 - [kv-prefix-fork-and-paged-attention](../handoffs/active/kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) (KPF-13.1, KPF-17.4, KPF-18-S1, KPF-LB1.1 mitigations; KPF-GL1)
 - [agentic-serving-harness-fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes) (UFH14-LB7 guard)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) (GPU-LEAK-1d result)
@@ -190,7 +190,7 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 
 ### Source References (2026-10-23 wrap-up sweep 15)
 
-- [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) — GPU-LEAK-1a/1b/1c/1d
+- [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) — GPU-LEAK-1a/1b/1c/1d
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) — GPU-LEAK-1 root cause and exposure check
 - [workspace-f8 progress, 2026-10-23](../progress/2026-10/2026-10-23-workspace-f8.md) — earlier sweep context
 
@@ -199,12 +199,12 @@ Sources: [GPU serving tie-in program](../handoffs/active/mi210-serving-program.m
 
 **Confidence: verified** for the observation (own-PID VRAM samples and the failing allocation in the server log); the root cause is not yet isolated.
 
-- **GPU-LEAK-1.** On the YaRN gate's E1 scratch server (`-ub 2048 -np 1`, all layers on GPU, q8_0 KV, `--cache-ram 0`, FA on, ctx 262144 / 524288), the v10 GPU store build's own-PID VRAM rose 36.8 -> 63.8 GiB over 92 requests until OOM, about 0.33 GiB per request. The failing allocation was `ggml_cuda_pool_leg::alloc` from `ggml_cuda_mul_mat_cublas`. Workaround in place: the gate recycles its server at 60 GiB. A GPU probe to isolate it is the next step ([gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)).
+- **GPU-LEAK-1.** On the YaRN gate's E1 scratch server (`-ub 2048 -np 1`, all layers on GPU, q8_0 KV, `--cache-ram 0`, FA on, ctx 262144 / 524288), the v10 GPU store build's own-PID VRAM rose 36.8 -> 63.8 GiB over 92 requests until OOM, about 0.33 GiB per request. The failing allocation was `ggml_cuda_pool_leg::alloc` from `ggml_cuda_mul_mat_cublas`. Workaround in place: the gate recycles its server at 60 GiB. A GPU probe to isolate it is the next step ([gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)).
 - **Why it matters for serving (inferred, not measured on a serving role).** The leaking image is the v10 GPU store build, so a long-lived production GPU server with a similar request shape may show the same climb. Until the probe reports, a VRAM climb under long-context traffic on the v10 GPU build should be checked against this defect before it is read as KV growth.
 
 ### Source References (2026-10-23 wrap-up sweep 18, workspace-f8)
 
-- [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (GPU-LEAK-1)
+- [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) (GPU-LEAK-1)
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md)
 - [workspace-f8 progress, 2026-10-23 midday](../progress/2026-10/2026-10-23-workspace-f8.md)
 
@@ -265,7 +265,7 @@ Open questions: whether HSF-3 returns enough eligible pairs to fit any curve (a 
 
 ### Source References (2026-10-20 sweep 2)
 
-- [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md) — ratified D1-D11, GPU-ZOS-1, PB-QCOST-1.
+- [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md) — ratified D1-D11, GPU-ZOS-1, PB-QCOST-1.
 - [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — HSF-1..5, declines.
 - [Within-role placement state machine](../handoffs/active/numa-placement-and-contention.md#track-within-role-placement-state-machine) — WP-15, session-handover constraint.
 - [Speech v2 release manifest](../docs/reference/kernel-manifests/speech-v2-manifest.md) — must-carry patches, threadpool risk.
@@ -814,17 +814,17 @@ The 08-28 `rm -rf` incident (progress 08-28) deleted `models/Qwen3.8-Flash-Next-
 
 ### The Qwen fleet census (2026-09-07): all three Qwen MoE families carry a gated shared expert
 
-INF-63's stage-1 premise that Qwen is "group 1" (no shared experts) is FALSE. Qwen3.6-35B-A3B (qwen35moe, 256/8 + 1, 40 blocks), Qwen3.8-Flash-Next (qwen4exp, 512/10 + 1, 48 blocks) and Qwen3-Next-80B (qwen3next, 512/10 + 1) all carry a **gated shared expert** — metadata keys and tensor patterns recorded in `intake-1328#record` (`intake-1328#03`). Consequences for this fleet: the offload/caching question is OPEN because nothing on this axis has been measured here — NOT because the architecture is favourable — and the shared expert is resident by definition and enters no ρ budget. The routing-tap instrument (INF-72, compiled on [MoE Optimization](moe-optimization.md)) is what closes the axis with a local number; its port has a qwen4exp coverage gap on v9, noted there. Cross-ref [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path).
+INF-63's stage-1 premise that Qwen is "group 1" (no shared experts) is FALSE. Qwen3.6-35B-A3B (qwen35moe, 256/8 + 1, 40 blocks), Qwen3.8-Flash-Next (qwen4exp, 512/10 + 1, 48 blocks) and Qwen3-Next-80B (qwen3next, 512/10 + 1) all carry a **gated shared expert** — metadata keys and tensor patterns recorded in `intake-1328#record` (`intake-1328#03`). Consequences for this fleet: the offload/caching question is OPEN because nothing on this axis has been measured here — NOT because the architecture is favourable — and the shared expert is resident by definition and enters no ρ budget. The routing-tap instrument (INF-72, compiled on [MoE Optimization](moe-optimization.md)) is what closes the axis with a local number; its port has a qwen4exp coverage gap on v9, noted there. Cross-ref [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path).
 
 ### GPU-path state changes
 
-- **HIP offload-mode compatibility has its first independent AMD measurement**: the `-ot "exps=CPU"`-style offload mode runs on HIP (`CUDA0` → `HIP0`): Gemma-4-26B-A4B on an RX 9060 XT at **62–73 tok/s vs `--n-cpu-moe` 15.0** — an external observation (llama.cpp b10630; PCIe latency the bottleneck, not CPU compute speed), recorded via `intake-1343#03` in [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path). The closed-form miss-split framing that this path used to be justified with was overturned 09-07 — `T*(q*) = mS/B_H` means a split is worth zero latency and pays only in residency (compiled on [MoE Optimization](moe-optimization.md)) — so the datum stands as a HIP-compatibility fact, not a speed expectation for a split.
+- **HIP offload-mode compatibility has its first independent AMD measurement**: the `-ot "exps=CPU"`-style offload mode runs on HIP (`CUDA0` → `HIP0`): Gemma-4-26B-A4B on an RX 9060 XT at **62–73 tok/s vs `--n-cpu-moe` 15.0** — an external observation (llama.cpp b10630; PCIe latency the bottleneck, not CPU compute speed), recorded via `intake-1343#03` in [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path). The closed-form miss-split framing that this path used to be justified with was overturned 09-07 — `T*(q*) = mS/B_H` means a split is worth zero latency and pays only in residency (compiled on [MoE Optimization](moe-optimization.md)) — so the datum stands as a HIP-compatibility fact, not a speed expectation for a split.
 - DFlash2 experimental posture is unchanged; the serving-gate protocol updates (steps/s metric, n-max × p-min sweep, sustained-C8 cell) are compiled on [Speculative Decoding](speculative-decoding.md).
 
 ### Source References (2026-09-08, Qwen3.8-Flash-Next-FP8 state)
 
 - [`qwen38-flash-next-fp8-evaluation.md`](../handoffs/completed/qwen38-flash-next-fp8-evaluation.md) — BLOCKED status, artifact-deletion correction, the census half, and the re-acquisition checkbox.
-- [`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the 2026-09-07 HIP-offload measurement and the miss-split overturn record.
+- [`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — the 2026-09-07 HIP-offload measurement and the miss-split overturn record.
 - [`moe-routing-tap-and-locality-measurement.md`](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement) — the qwen4exp v9-coverage gap the tap port must close.
 
 ## Compiled Update — 2026-09-01: GLM-MoE-DSA is dense-mask on this fork, GLM-5.2 is KILLED, and a requant A/B fixed how a CPU headline is denominated
@@ -969,7 +969,7 @@ Sources: `handoffs/active/numa-placement-and-contention.md`,
 
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
-Sources: `handoffs/active/mi210-serving-program.md` (Q38-T6),
+Sources: `handoffs/completed/mi210-serving-program.md` (Q38-T6),
 `handoffs/active/harness-program.md` (CT-DEPLOY),
 `progress/2026-08/2026-08-22-research-intake.md`.
 
@@ -1000,7 +1000,7 @@ landed 2026-08-22 after the fixes.
 
 ## Compiled Update — 2026-08-22: four lifecycle defects from one pilot deployment — all the same shape
 
-Sources: `handoffs/active/mi210-serving-program.md` (Q38-T6),
+Sources: `handoffs/completed/mi210-serving-program.md` (Q38-T6),
 `handoffs/active/harness-program.md` (CT-DEPLOY),
 `progress/2026-08/2026-08-22-research-intake.md`.
 
@@ -1031,7 +1031,7 @@ landed 2026-08-22 after the fixes.
 
 ## Compiled Update — 2026-08-21: the registry has FOUR planes, and a swap is not live until the third one recompiles
 
-Sources: `handoffs/active/mi210-serving-program.md` (Q38-T2 + same-day correction),
+Sources: `handoffs/completed/mi210-serving-program.md` (Q38-T2 + same-day correction),
 `progress/2026-08/2026-08-21-research-intake.md`, ratification receipt
 `artifacts/operator/ratify_qwen38_registry_swap_20260821.json`.
 
@@ -1083,7 +1083,7 @@ is immutable pre-hook evidence and must not be upgraded by a read-side reconstru
 
 ### Source References (2026-08-20 Qwen3.8 DFlash2 serving candidate)
 
-- [Qwen3.8 replacement handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — production-successor context and existing registry boundary.
+- [Qwen3.8 replacement handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — production-successor context and existing registry boundary.
 - [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — matched metrics, build identity, and mandatory residual gates.
 - [AutoKernel research loop](../handoffs/active/autokernel-loop.md#track-autokernel-research-loop) — governed `experimental_runtime` stage/receipt chain and nonpromotion boundary.
 - [Root session progress](../progress/2026-08/2026-08-20-root.md) — exact branch, evidence hashes, cleanup, and carrier integration order.
@@ -1132,7 +1132,7 @@ withdraws it. Corrections must land in the cell being quoted, not in prose benea
 - [`gpu-candidates-surface-qwen38-update.md`](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update)
   — the "Coding ladder — WAS RUN" section with all rungs, the corrected axis table with its
   RETRACTED block, the 21-patches/19-empty split, and the parked re-run's exact next steps.
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the arm's
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the arm's
   verified identity and throughput evidence the ladder rows sit beside.
 - [`loop-owned-fleet-implementation.md`](../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) —
   the reconciliation-merge "instructive case" naming this exact table as why union is the worst
@@ -1230,7 +1230,7 @@ of scope for the coder/architect swap.
 
 ### Source References (2026-08-16 Qwen3.8 serving arm)
 
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — GGUF-header
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — GGUF-header
   verification and the embedded-MTP correction, load smoke (31.98 GB VRAM), the real-prompt
   flat-decode result and its explicit CORRECTION of the synthetic decline, prefill pp512, and the
   remaining registry-swap step.
@@ -1303,7 +1303,7 @@ A compute duty-cycle figure circulated at ~19–20% and is **~8–9% receipted**
 - [`reboot-gated-inventory-and-staging.md`](../handoffs/active/numa-placement-and-contention.md#track-reboot-gated-inventory-and-staging) — the 21-of-25 false-passing gate, the two-consumer polarity split, and the host-persistence premise correction.
 - [`capability-registry-and-promotion.md`](../handoffs/active/stack-lifecycle-program.md#track-capability-registry-and-promotion) — the applicator premise correction and the zero-coverage branch closed to 49 tests.
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — the port-8083 alias resolution and the fleet/binding recount.
-- [`gpu-serving-tie-in-program.md`](../handoffs/active/mi210-serving-program.md) — the Probe B role-attribution correction, applied append-only.
+- [`gpu-serving-tie-in-program.md`](../handoffs/completed/mi210-serving-program.md) — the Probe B role-attribution correction, applied append-only.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the duty-cycle scope and instrument corrections.
 
 ## Compiled Update — 2026-08-12: fixing only the cited line would have left every streaming client corrupted
@@ -1378,7 +1378,7 @@ Filed alongside and still **OPEN**: drift in the production-kernel attestation r
 - [`progress/2026-08/2026-08-11.md`](../progress/2026-08/2026-08-11.md) — mainB's HS-OD-2 fix narrative and the A4/P0-1 region-lock root-cause derivation
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-OD-2 closure
 - [`numa-topology-cutover-resume-20260730.md`](../handoffs/active/numa-placement-and-contention.md) — P0-0, the derived-priors `NUMA_FULL` drop
-- [`gpu-serving-tie-in-program.md`](../handoffs/active/mi210-serving-program.md) — P2-5l closure (`NUMA_NODE0`/`NUMA_NODE1` constant deletion, quarter-name attribution repair)
+- [`gpu-serving-tie-in-program.md`](../handoffs/completed/mi210-serving-program.md) — P2-5l closure (`NUMA_NODE0`/`NUMA_NODE1` constant deletion, quarter-name attribution repair)
 ## Compiled Update — 2026-07-29 GPU shadow lane: built, inert, NOT activated
 
 The MI210 acquired a *designed and largely implemented* serving lane during the
@@ -1403,7 +1403,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   loader sits behind a default-off `ORCHESTRATOR_FEATURE_GPU_SHADOW_LANE`; the
   preflight probe is plan-only and was never run. 170 lane tests pass across the
   four suites at integrated HEAD.
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **The inertness guarantee got *weaker* as the lane got more complete, and the
   handoff says so rather than letting it pass.** The original P0-7 witness was
@@ -1415,7 +1415,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   no data) to one (no data)**: a single data edit adding a `PORT_MAP`/`ROLE_LAUNCH_META`
   row now suffices to make live code fire. That is a deliberate tradeoff, named
   explicitly so a later reader does not assume the old, stronger property.
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **An idle MI210 does not imply a startable lane — measured, not inferred.** The
   lane's host threads pin to SMT siblings 184-191 → physical cores 88-95 → atomic
@@ -1425,7 +1425,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   and no KFD PIDs. The GPU was entirely idle and the lane was still not startable.
   Activation waits for the `q3` holder to quiesce-and-drain at its own boundary and is
   never forced (fabric axiom 4).
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **Tenant landing (P2-2) closed on two of three tenants, and P2-2 itself is NOT
   closed.** All three D2 tenants were already on disk, so the pass required zero
@@ -1460,9 +1460,9 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   placement is now owned by the conversation-stack program: CS-12 puts the cascade on the
   second MI210, and CS-9 measures co-residency. P2-9 carries a cross-reference for its owner to
   close. ([conversation-stack](../handoffs/active/speech-and-multimodal.md),
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md))
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md))
   [p2-2-tenant-landing-readiness](../docs/reference/p2-2-tenant-landing-readiness-20260729.md),
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **"One artifact = one tenant = one policy row; identity is (path, bytes, sha256),
   never a flag on a shared row."** The rule was adopted after a near-miss whose failure
@@ -1470,7 +1470,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   tensors = 851+15) from its non-MTP sibling (29,787,701,792 B, 851 tensors). Modelling
   MTP as a flag on one shared row would have sized the tenant at 27.74 instead of 28.16
   GiB — a wrong number with no error anywhere.
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **Lane admission priority orders admission, never eviction — and the shed-batch class
   is partially self-defeating.** §3.2 states explicitly that a higher class may be
@@ -1483,7 +1483,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   under CPU stress. Net benefit is `(GPU gained − q3 CPU lost)` and is **never measured**.
   Classes 3-4 flags are reserved but deliberately *not registered* in `src/features.py`,
   on the reasoning that a flag for an unbuilt feature reads as "someone can turn this on".
-  [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md)
+  [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md)
 
 - **The slot fabric is being amended by the program, not replaced — and it has a named
   hole.** The tie-in program is the ACTIVE execution vehicle; the heterogeneous-slot-fabric
@@ -1504,7 +1504,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
   and token economics) → the P2-5j placement sweep folding into the P2-5c campaign →
   placement + carve + residency decided *together* at the verdict → **P3-3 production
   sign-off last**. Both irreversible acts (minting a carve, production sign-off) sit after
-  the sweep. [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md),
+  the sweep. [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md),
   [progress 2026-07-29](../progress/2026-07/2026-07-29.md)
 
 ### Open Questions (2026-07-29)
@@ -1525,7 +1525,7 @@ never served a request. The Phase-3 bake-off that would produce one has not star
 
 ### Source References (2026-07-29)
 
-- [gpu-serving-tie-in-program.md](../handoffs/active/mi210-serving-program.md) — ratified
+- [gpu-serving-tie-in-program.md](../handoffs/completed/mi210-serving-program.md) — ratified
   decisions D1-D11, the shadow-only invariant and its structural enforcement, the P0-7→P2-1c
   witness degradation, the `q3` coupling, tenant/policy identity rule, admission-not-eviction
   contract, and the Phase-3 gates.
@@ -1655,7 +1655,7 @@ The serving layer gained a **live within-role placement state machine**, decisio
 - [batched-decode-measurement.md](../handoffs/active/numa-placement-and-contention.md#track-batched-decode-measurement) — E1/E2 batched-decode economics, eval-batch serving class, E5 spec.
 - [heterogeneous-slot-fabric-residency.md](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) — CPU×GPU slot-fabric design extending the live fabric.
 - [inference-batch-loop.md](../handoffs/active/eval-tower-program.md#track-inference-batch-loop) — single-writer campaign loop + quiet-window discipline.
-- [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — MI210 fleet-placement sequencing (residency → eval-engine → embedder → prefill offload → drafter farm).
+- [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — MI210 fleet-placement sequencing (residency → eval-engine → embedder → prefill offload → drafter farm).
 ## Summary
 
 The production inference serving stack runs 9+ llama-server instances plus 2-4 auxiliary services, organized into HOT/WARM/COLD memory tiers on a single AMD EPYC 9655 machine with 1.13 TB RAM. The architecture follows a hierarchical local-agent workflow: one model thinks (architect), many models work (workers), and tools decide who is right. This is speculative decoding applied at the system level -- a strong model sets the trajectory, cheap models propose artifacts in parallel, and correctness is enforced by gates rather than agreement.
@@ -1688,7 +1688,7 @@ Recent architectural improvements include REAP MoE expert-pruning evidence for t
 
 - **Userspace OOM protection must distinguish control plane from killable workload processes (2026-06-05).** The host earlyoom deployment protects long-lived orchestrator and AutoPilot processes by setting `oom_score_adj=-1000` after stack start, while leaving transient planner/eval subprocesses killable. Because uvicorn and AutoPilot appear as `comm=python`, process-name ignore rules are insufficient; the durable protection belongs in launcher code (`stack_processes.set_oom_score_adj` and the AutoPilot start path) plus a host-level earlyoom rule that ignores llama-server/sd-server and prefers disposable benchmark processes. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [earlyoom-oom-protection.md](../handoffs/completed/earlyoom-oom-protection.md).
 - **Three RAM-reclaim mechanisms are distinct and must not be conflated; the stack deliberately pre-warms rather than lazy-loads (2026-06-21).** The serving stack proactively pre-warms ~22 instances at ~653 GB resident with `mlock`, accepting the memory cost to eliminate cold-start latency for a single-user interactive workload. That makes wholesale on-demand lazy-loading (the drove model) an anti-pattern here, not an improvement. RAM is reclaimed by three orthogonal levers that operate at different scopes: (1) **earlyoom** is the reactive last-resort ceiling that kills disposable processes under pressure; (2) **DS-6 quarter-eviction** reassigns quarter cpusets on an idle timeout but does NOT free model weights (the process and its `mlock`'d pages stay resident); (3) the proposed **DS-7 idle-teardown profile** is the only mechanism that frees whole-process RAM, by tearing down COLD/RARE roles (e.g. `sd_server`, `document_formalizer`) after idle, and is explicitly never applied to hot pre-warmed roles. DS-7 idle-teardown is an optional, evidence-gated profile, not a default. Sources: [dynamic-stack-concurrency.md § Research Intake 2026-06-20](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency), [intake-701 (drove)](https://github.com/cleanunicorn/drove).
-- **A GPU serving tier is now live: the MI210 (gfx90a) is installed and the fork's HIP build leg is verified, opening a latency tier above the CPU stack (2026-07-02).** The MI210 (CDNA2, 64 GB HBM2e, ROCm 6.2 bind-mount) passed into the devcontainer and llama.cpp's HIP build works on gfx90a from an isolated `production-consolidated-v6` worktree (`-DGGML_HIP=ON -DAMDGPU_TARGETS=gfx90a`); one fp8-guard fix was required because ROCm 6.2 ships only `_fnuz` fp8 types (OCP landed in 6.3). The design intent is explicitly additive — the GPU lifts the hot frontdoor + drafter path into the 100+ t/s regime while architect and workers stay CPU-resident at their already-competitive 20-50 t/s baseline; the MI210 does not replace the NUMA CPU serving tiers. All first-pass GPU numbers are OBSERVATIONS (contended host), not decision-gating per MEASUREMENT.md. Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/archived/gpu-drafter-mi200-investigation.md), [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path).
+- **A GPU serving tier is now live: the MI210 (gfx90a) is installed and the fork's HIP build leg is verified, opening a latency tier above the CPU stack (2026-07-02).** The MI210 (CDNA2, 64 GB HBM2e, ROCm 6.2 bind-mount) passed into the devcontainer and llama.cpp's HIP build works on gfx90a from an isolated `production-consolidated-v6` worktree (`-DGGML_HIP=ON -DAMDGPU_TARGETS=gfx90a`); one fp8-guard fix was required because ROCm 6.2 ships only `_fnuz` fp8 types (OCP landed in 6.3). The design intent is explicitly additive — the GPU lifts the hot frontdoor + drafter path into the 100+ t/s regime while architect and workers stay CPU-resident at their already-competitive 20-50 t/s baseline; the MI210 does not replace the NUMA CPU serving tiers. All first-pass GPU numbers are OBSERVATIONS (contended host), not decision-gating per MEASUREMENT.md. Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/archived/gpu-drafter-mi200-investigation.md), [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path).
 - **The GPU story mirrors the CPU one-kernel discipline: llama.cpp-HIP is the production GPU binary; vLLM is a measurement instrument, not a second deployment engine (2026-07-02).** Just as the 2026-06-26 v6 cutover consolidated CPU inference onto one kernel, the GPU path is a single production binary (llama.cpp-HIP, native ggml-cuda + rocWMMA + MFMA, loads GGUF). vLLM is stood up only to answer one question — do its gfx90a kernels beat llama.cpp's roofline ceiling — because vLLM (0.10.1 and even current v0.22.0) does not support the 2026 `gemma4`/`qwen35` architectures and can never be the frontdoor/worker engine for current models. Matched-precision Qwen3-8B fp16 head-to-head: per-stream decode llama.cpp-HIP 62.45 t/s vs vLLM ~69 t/s (+11%); batched 32-way llama.cpp-HIP 909.8 gen tok/s vs vLLM 1129 out tok/s (+24%); both scale ~15-16x from single stream. vLLM's decisive edge is batched serving, not per-stream. Sources: [2026-07-02 ROCm MI210 vLLM deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md), [gpu-drafter-mi200-investigation.md § vLLM comparison](../handoffs/archived/gpu-drafter-mi200-investigation.md).
 - **GPU-side MTP speculative decoding is demonstrated end-to-end and qwen35 decodes clean on the HIP path, localizing the CPU spec-dec failures to the CPU codepath (2026-07-02).** gemma-4-31B-it-Q4_K_M plus its 514 MB NEXTN head both offloaded to ROCm0 via llama-server (`--spec-type draft-mtp -ngl 99 --spec-draft-ngl 99`) decoded at 43.25 t/s = 1.44x over plain (30.01 t/s) at 59.7% draft acceptance (mean accept length 2.79 of n_max=3) — direct Stage-4/head-on-GPU evidence. Separately, Qwen3.6-27B (arch `qwen35`, gated-delta-net + full attention) decoded clean at 28.69 t/s with `-ngl 99` and no M-RoPE/GDN failures, in sharp contrast to the CPU external-draft/tree-spec qwen35 crashes: the v6 fork's GPU delta-net kernels prove the qwen35 forward pass is fine and the failures live in the CPU speculative codepath. This does not by itself supply the frontdoor drafter α number (N5 gate). Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/archived/gpu-drafter-mi200-investigation.md).
 - **On gfx90a, the enabling kernel stack covers the card but the accelerator libraries do not — a gfx90a vLLM is a reference-kernel build, and Vulkan is impossible (2026-07-02).** Triton (`pytorch-triton-rocm`, first-class gfx90a), FlashAttention-2 (CK default + Triton opt-in, ROCm 6.0+), and vLLM's `PYTORCH_ROCM_ARCH` all include gfx90a; but AITER, MORI, and DeepEP are `gfx942;gfx950` only, so an MI210 vLLM falls back to reference Triton/CK kernels rather than AITER's hand-tuned CDNA3 paths — which is exactly the fair comparison against llama.cpp's own reference-maturity gfx90a kernels. Vulkan is definitively impossible on CDNA2 (RADV enumerates zero devices; no ICD targets the compute-only Instinct family), complementing the earlier GT 1030 falsification: HIP/ROCm is the only GPU path. Sources: [2026-07-02 ROCm MI210 vLLM deep-dive § gfx90a support matrix](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md), [gpu-drafter-mi200-investigation.md](../handoffs/archived/gpu-drafter-mi200-investigation.md).
@@ -1823,7 +1823,7 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/stack-lifecyc
 - [Dynamic Stack Concurrency](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency) -- prewarm footprint (~22 instances / ~653 GB / mlock), DS-6 quarter-eviction vs DS-7 whole-process idle-teardown profile distinction, earlyoom complementarity, DS-E1 evidence-packet gate (`dynamic_stack_evidence_packet.py`), and the clean-window KV harness.
 - [intake-701 — drove](https://github.com/cleanunicorn/drove) -- local model server manager (lazy-load OpenAI-compatible proxy for llama.cpp + ONNX ASR). External, tiny single-maintainer repo, observations only. Its `/v1/audio/transcriptions` ASR facade is already shipped here (`whisper_server.py` + `start_whisper`); surviving idea = optional DS-7 proactive idle-teardown of COLD/RARE roles. `verdict: adopt_patterns`.
 - [GPU-Drafter on MI200 investigation](../handoffs/archived/gpu-drafter-mi200-investigation.md) -- the 2026-07-02 MI210 advancement (HIP build verified on gfx90a, GPU-side gemma4-31B + NEXTN MTP at 43.25 t/s/1.44x/59.7% accept, clean qwen35 GPU decode, Qwen3-8B vLLM-vs-llama.cpp fp16 head-to-head), the additive latency-tier thesis (GPU lifts hot frontdoor/drafter path, CPU tiers stay), and the N5 frontdoor-drafter α gate that all GPU placements depend on.
-- [GPU Acceleration Path](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) -- CPU+GPU hybrid MoE serving survey and the MI210-install status header; establishes the GPU serving tier as additive to (not a replacement for) NUMA CPU serving, and the Fable-5 residency→eval-engine→drafter placement re-ranking.
+- [GPU Acceleration Path](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) -- CPU+GPU hybrid MoE serving survey and the MI210-install status header; establishes the GPU serving tier as additive to (not a replacement for) NUMA CPU serving, and the Fable-5 residency→eval-engine→drafter placement re-ranking.
 - [2026-07-02 ROCm MI210 vLLM / gfx90a deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md) -- the two-binary GPU discipline (llama.cpp-HIP production engine vs vLLM measurement instrument), the confirmed gfx90a support matrix (Triton/FA-2/vLLM-core cover the card; AITER/MORI/DeepEP do not → reference-kernel vLLM), and the ROCm-6.2 fp8/ABI build risks. Cites [intake-759 — ROCm/aiter](https://github.com/ROCm/aiter) (gfx90a absent from matrix; vendor ceiling ref only), [intake-760 — ROCm/triton](https://github.com/ROCm/triton) (first-class gfx90a), intake-761 (ROCm/flash-attention), intake-762 (vLLM Dockerfile.rocm), intake-763 (vLLM v0.6.5 ROCm docs).
 - [MoE-Spec CPU spec-dec integration](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration) -- [intake-491 (Mamba drafters)], the budgeted-expert verification mechanism (REAP-246B +15.2%/B=40, Coder-30B +7.3%/B=64), and the 2026-06-12 finding that the mechanism now has no live serving consumer (REAP removed, frontdoor spec-dec off). Cites [MoE-Spec arXiv:2602.16052](https://arxiv.org/html/2602.16052v1) and [REAP arXiv:2510.13999](https://arxiv.org/abs/2510.13999).
 - [Launcher NUMA-mode gating](../handoffs/completed/launcher-numa-mode-gating.md) -- `--numa-mode {full,quarter,both}` flag (COMPLETE 2026-07-05); default flipped to `quarter` (`01d14301`) so `start --only worker_general` no longer silently launches overlapping full+quarter instances (~1.5× oversubscription, measured 76.5→9 t/s collapse @ load-420 on 2026-05-08).
@@ -2100,7 +2100,7 @@ Current examples:
 ### Sources (2026-05-27)
 
 - [`handoffs/completed/handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — second-pass audit correction and outstanding domain-scoped dereferences
-- [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md#track-numa-prefill-decode-disaggregation), [`handoffs/completed/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/completed/qwen36-benchmark-fixes.md`](../handoffs/completed/qwen36-benchmark-fixes.md) — handoff notes
+- [`handoffs/completed/mi210-serving-program.md`](../handoffs/completed/mi210-serving-program.md#track-numa-prefill-decode-disaggregation), [`handoffs/completed/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/completed/qwen36-benchmark-fixes.md`](../handoffs/completed/qwen36-benchmark-fixes.md) — handoff notes
 - [`handoffs/completed/launcher-numa-mode-gating.md`](../handoffs/completed/launcher-numa-mode-gating.md) — partial status and default-decision gate
 - [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — owner-refresh and dereference queue
 ## 2026-05-28 — Dynamic-stack active gate clarified
@@ -2134,7 +2134,7 @@ The long-dormant GPU-acceleration workstream activated: an AMD Instinct **MI210 
 
 **Two serving-relevant unblocks.** (1) GPU-side MTP spec-dec works: gemma-4-31B + its NEXTN head both on ROCm0 → 43.25 t/s (1.44x, 59.7% accept), the first live evidence for the head-on-GPU / trunk split. (2) qwen35 (gated-delta-net) decodes clean on the GPU HIP path, localizing the persistent CPU spec-dec crashes (M-RoPE/GDN `GGML_ASSERT(logits != nullptr)`) to the CPU speculative codepath rather than the qwen35 forward pass. Neither supplies the N5 frontdoor-drafter acceptance-rate (α) number, which remains the single gating measurement for all GPU placements. The gfx90a support matrix is settled on paper: Triton/FlashAttention-2/vLLM-core cover the card; AITER/MORI/DeepEP are CDNA3-only; Vulkan is impossible on CDNA2 — HIP/ROCm is the only path.
 
-Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/archived/gpu-drafter-mi200-investigation.md), [gpu-acceleration-path.md](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path), [2026-07-02 ROCm MI210 vLLM / gfx90a deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md), [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration).
+Sources: [gpu-drafter-mi200-investigation.md § 2026-07-02 Advancement](../handoffs/archived/gpu-drafter-mi200-investigation.md), [gpu-acceleration-path.md](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path), [2026-07-02 ROCm MI210 vLLM / gfx90a deep-dive](../research/deep-dives/2026-07-02-rocm-mi210-vllm-gfx90a.md), [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/kernel-champion-and-promotion.md#track-moe-spec-cpu-spec-dec-integration).
 ## 2026-07-05 Update — Launcher NUMA Default Flip, DS-7 Profile Codified, Restart-Applicator Hardening, MoE-on-GPU Deployment Wins
 
 Five serving-plane threads advanced this window: the launcher now defaults to a single NUMA mode (no more silent full+quarter oversubscription), the dynamic-stack effort resolved its Phase E profile decision without touching the live stack, the capability-registry restart applicator gained strict-scope gates, the standardized stack-change pipeline caught and repaired source-fingerprint drift twice, and the MI210 campaign produced measured (observation-grade) config wins for MoE-on-GPU aggregate serving.
@@ -2434,12 +2434,12 @@ Two adjacent facts worth keeping with it:
   challenger from the lean, or promotes it into launch, is a defect.
 - **`guard_all_surfaces` carries pre-existing quarter-port drift** (frontdoor/worker/ingest
   `serving.ports` vs launch manifest, unchanged since 2026-03, 13 errors) — filed as Q38-T4 in
-  [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36). It blocks a
+  [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36). It blocks a
   fully-green check without blocking swap surfaces, i.e. a red guard is not necessarily YOUR red.
 
 ### Source References
 
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the swap, ratification v2 rationale, Q38-T4
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the swap, ratification v2 rationale, Q38-T4
 - `scripts/operator/ratify_qwen38_registry_swap_20260821.sh` — the phased recompile + its header's corrected audit trail
 - epyc-inference-research `b376dadd` (master swap), orchestrator `7483d7fb` (executed ratification) — direct commit reads
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the coordination record
@@ -2464,7 +2464,7 @@ hook filed before the first result (SC46). Remaining on operator sequence: Q38-T
 
 ### Source References
 
-- [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T4 ✅ closure with the mode-artifact diagnosis
+- [`handoffs/completed/mi210-serving-program.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T4 ✅ closure with the mode-artifact diagnosis
 - [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-1 A/B launch + SC46 wiring
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md), [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md)
 ## Compiled Update — 2026-08-22: the KV-migration path is live, but its "VERIFIED" state proves transport, not reuse — and on the hybrid frontdoor only strict continuations reuse a restored cache
@@ -2566,7 +2566,7 @@ scope, not their results.
 **Confidence: verified** — Q38-T5's five-point checklist was executed against the live :8083
 process (pid 896239), and the campaign posture is read from the handoff's receipt chain.
 
-Sources: `handoffs/active/mi210-serving-program.md` (Q38-T5/T6),
+Sources: `handoffs/completed/mi210-serving-program.md` (Q38-T5/T6),
 `handoffs/active/speculative-decoding.md`,
 `progress/2026-08/2026-08-21-operator.md`, `progress/2026-08/2026-08-21-research-intake.md`,
 `progress/2026-08/2026-08-21.md`.
@@ -2630,7 +2630,7 @@ DF2-2/DF2-5 are designed to catch.
 
 ### Source References (2026-08-23 Qwen3.8-27B stack + DFlash2 posture)
 
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T5 ✅ five-point live evidence + operator flag; Q38-T6 root cause and recovery path
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T5 ✅ five-point live evidence + operator flag; Q38-T6 root cause and recovery path
 - [`dflash2-block-drafter-experimental-build.md`](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — campaign state, predeclared comparator + decision rule, receipt chain, DF2-2/5/6 gates, #25117 negative
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — executed ratification `7483d7fb`, derived-layer verification, coordination sequence
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — fourth-pass ratification execution + validation, dFlash2 `challenger_under_evaluation` carried through the recompile
@@ -2664,7 +2664,7 @@ Decision basis = production behavior over ~18 h (2026-08-22 13:55Z → 2026-08-2
 
 ### Source References (2026-08-23 evening)
 
-- [`qwen38-27b-replace-qwen36.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T6 closure (`96498c3d`): fallback chain, help/docstring corrections, liveness-veto fix, recovery path
+- [`qwen38-27b-replace-qwen36.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T6 closure (`96498c3d`): fallback chain, help/docstring corrections, liveness-veto fix, recovery path
 - [`dynamic-stack-concurrency.md`](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency) — K4 (`-ub 8192` inert), the G4 scope correction + H20/H21 live reads (with timestamps), the `98061c6b` migration-state fix, the #25592 v10-candidate row, the strict-extension trace
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — the in-band `[ERROR: ...]` fail-open closure (502 / terminal SSE `error` / REPL pre-check)
 - [`qwen-chat-template-evaluation.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-9 decision lines with the calibration-only window evidence, CT-10/CT-11 follow-ups (template decision compiled in [Chat Templates](chat-templates.md))
@@ -2711,8 +2711,8 @@ This supersedes the example above that keeps the stub "active only for the Phase
 
 ### Source References
 
-- [NUMA prefill/decode disaggregation](../handoffs/active/mi210-serving-program.md#track-numa-prefill-decode-disaggregation) — correction note, re-scoped Phase 0, NPD-1 reopen trigger.
-- [MI210 big-model and acceleration roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — PF1, the 2026-09-26 research-intake section.
+- [NUMA prefill/decode disaggregation](../handoffs/completed/mi210-serving-program.md#track-numa-prefill-decode-disaggregation) — correction note, re-scoped Phase 0, NPD-1 reopen trigger.
+- [MI210 big-model and acceleration roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — PF1, the 2026-09-26 research-intake section.
 
 **Confidence:** verified (documentation state of the owning handoffs).
 
@@ -2896,7 +2896,7 @@ The next GPU serving work is still prospective: KVU-16g proposes first-prompt TT
 
 These updates identify what can be observed or measured; they do not show a fleet-wide latency improvement.
 
-Sources: [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
+Sources: [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [Heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate).
 
 ### Supplemental serving findings — Oct 3–6 changed files
 
@@ -2904,13 +2904,13 @@ Q38-T7 now has a bounded production-shape result: on the parked-role, 24-prompt 
 
 The residency audit adds a negative data-availability result: a 19-record serving-call journal census had no eligible keyed session pairs, so it yields no inter-call gap distribution. Synthetic source-boundary checks passed (21 fixtures in the NI10/NI32 sequence), but they validate schema/refusal behavior rather than live call joins. The region-lock follow-up found SMT siblings 160–183 were dropped from claims and could overlap a held 0–95 CPU window; a fix on an orchestrator branch passed 816 tests including 22 new tests and an end-to-end refusal, but had not merged or deployed. GPU tie-in updates add TTFT and YaRN memory-attribution tasks only; they contain no completed new serving measurement.
 
-Sources: [Qwen3.8-27B replacement](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [shape-keyed contention gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Oct 3 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).
+Sources: [Qwen3.8-27B replacement](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [heterogeneous slot fabric residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [shape-keyed contention gating](../handoffs/active/numa-placement-and-contention.md#track-shape-keyed-contention-gating), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [Oct 3 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).
 
 ## Incremental synthesis — 2026-10-06: :8083 batch-size and idle-slot stack change
 
 **Confidence: verified by a serving proof on the relaunched server (single run).** STACKCHG-8083BATCH-20261004 (operator-signed) relaunched :8083 at 08:02Z on 2026-10-05 with `-b 512 -ub 512 --no-cache-idle-slots` (KVU-16f, UFH14-B4j). Proof items all passed: attestation and promotion gate, load VRAM 48.54 GiB, turn-2 `cache_n` 2407, decode-during-prefill gap within fit (solo decode 28.5/28.2 tok/s), coherence 20/24 byte-identical with the other 4 judged equivalent on review, and q38_t7 with DFlash2 at 35.74 versus 15.7 tok/s no-draft. Operational lessons: the GPU-window restore must run after releasing the gpu-quiet exclusive (the executor refuses while the device is held; :8083 stayed parked about 15 minutes), and `prompt_save` log lines are TRACE level (4) in v10, so a B4g re-run needs `-lv 4`. The harness cleanup deployed with the API reload deleted `escalation_prewarmer` and the hot-prefix slot-save warming path while keeping `--slot-save-path`.
 
-Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [8083 bring-up evidence](../artifacts/stackchg-8083batch-20261004/bringup_summary.txt), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md).
+Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [8083 bring-up evidence](../artifacts/stackchg-8083batch-20261004/bringup_summary.txt), [Agentic serving harness fixes](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md).
 
 
 ## 2026-10-06 per-call reader source acceptance
@@ -2956,7 +2956,7 @@ Sources: [benchmark-analyst guide](../docs/guides/agent-workflows/benchmark-anal
 - **A GPU-only job claims only its own CPU quarter.** The MI210 runner's host threads (184-191) sit on q3, so a GPU job claims that quarter, never `0-95`; the quiet host is for baselines only. The DS41-1017 target-only baseline is the next baseline: a launcher armed for 2026-10-22 06:30Z, gated on a fresh `SMOKE_OK`.
 - **Dispatch logging.** The `dispatch.v1` write side (orchestrator `034113a4` fleet, `78f68032` passthrough and direct lanes) takes effect at the next stack start; WP-15 and HSF-3.1 stay open until two traffic windows exist. HSF-4's log half measured 16,087 requests (rho 1.325); WP-15 found 0 dispatch.v1 windows so far.
 
-Sources: [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [DeepSeek V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [Progress runner 3c4ca599](../progress/2026-10/2026-10-21-runner-3c4ca599.md), [Progress noninf-offline](../progress/2026-10/2026-10-21-noninf-offline.md), [Progress overnight GPU arm](../progress/2026-10/2026-10-21-overnight-gpu-arm.md)
+Sources: [Qwen3.8-27B replace Qwen3.6](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [DeepSeek V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md), [Progress runner 3c4ca599](../progress/2026-10/2026-10-21-runner-3c4ca599.md), [Progress noninf-offline](../progress/2026-10/2026-10-21-noninf-offline.md), [Progress overnight GPU arm](../progress/2026-10/2026-10-21-overnight-gpu-arm.md)
 
 ## Compiled Update — 2026-10-21 (sweep 5): the earlyoom session kills, the compute filler protocol, the C2 re-gate and the GPU-frontdoor ruling
 
@@ -2992,7 +2992,7 @@ Sources: [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.
 - **Corpus retrieval flag-off ratified** (RATIFY-CORPUS-RETRIEVAL-OFF-20261021; research `ab702eca6`, orchestrator `792955fc`). It takes effect at the next stack start and ends the failed per-request lookup against the 651 GB index deleted on 2026-07-04.
 - **Do not run operator commands or readers from the shared `/workspace` clone.** It is about 500 commits behind origin/main and carries dirty tracked files that conflict with upstream (NIB2-99). On 2026-10-21 a new ratify script was simply absent there. Operator bundles run from a fresh origin/main worktree.
 
-Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md), [Compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [Progress filler-queue](../progress/2026-10/2026-10-21-filler-queue.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress sg-verdict](../progress/2026-10/2026-10-21.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [llama v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [Qwen3.8-27B replace Qwen3.6](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
+Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/incidents/INC-20261021-earlyoom-session-kills/REPORT.md), [Compute fillers guide](../docs/guides/agent-workflows/compute-fillers.md), [Progress filler-queue](../progress/2026-10/2026-10-21-filler-queue.md), [Progress workspace-58](../progress/2026-10/2026-10-21-workspace-58.md), [Progress c2-regate](../progress/2026-10/2026-10-21-c2-regate.md), [Progress 3c4ca599](../progress/2026-10/2026-10-21-3c4ca599.md), [Progress sg-verdict](../progress/2026-10/2026-10-21.md), [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate), [llama v11 manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md), [Qwen3.8-27B replace Qwen3.6](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md), [REPL turn efficiency](../handoffs/active/harness-program.md#track-repl-turn-efficiency), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 8, workspace-f8 delta over sweep 7)
 
@@ -3007,7 +3007,7 @@ Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/inci
 
 ### Source References (2026-10-23 wrap-up sweep 19)
 
-- [handoffs/active/mi210-serving-program.md](../handoffs/active/mi210-serving-program.md) — GPU-LEAK-1b/1d/1e
+- [handoffs/completed/mi210-serving-program.md](../handoffs/completed/mi210-serving-program.md) — GPU-LEAK-1b/1d/1e
 - [progress/2026-10/2026-10-23-3c4ca599.md](../progress/2026-10/2026-10-23-3c4ca599.md) — GPU-LEAK-1d result
 - [progress/2026-10/2026-10-23-workspace-58.md](../progress/2026-10/2026-10-23-workspace-58.md) — section 19 (19.7)
 
@@ -3020,12 +3020,12 @@ Sources: [Incident report INC-20261021-earlyoom-session-kills](../artifacts/inci
 - **FD-DIV-1a: the GSQ IQ3_XXS fused-decode double free is fixed by `14c57cbe9`.** Fused ON is byte-identical to the graph path on 4 prompts (GSQ) and on UD-IQ4_XS; unpatched v10 still aborts (rc 134). On UD-IQ4_XS v10 fused-ON decode is about 1500-2000 ms/token versus 70-87 on the graph path (single runs); production keeps `GGML_FUSED_DECODE_OFF=1`. The ASAN repro port is FD-DIV-1b.
 - **Operational:** actors keep fan-out orchestrator-owned (OAB-33 closed, no seat-prompt change); `ram_admit` is now enforced before all four AutoKernel server launches (DS41 class needs 739 GiB).
 
-Sources: [GPU serving tie-in](../handoffs/active/mi210-serving-program.md), [heterogeneous slot fabric](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [HSF-4 results](../docs/design/hsf-4-results-20261023.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
+Sources: [GPU serving tie-in](../handoffs/completed/mi210-serving-program.md), [heterogeneous slot fabric](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency), [HSF-4 results](../docs/design/hsf-4-results-20261023.md), [CPU fused decoder blocks](../handoffs/active/kernel-champion-and-promotion.md#track-cpu-fused-decoder-blocks), [orchestrator actor backend](../handoffs/active/autokernel-loop.md#track-autokernel-orchestrator-actor-backend), [DS41 evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 23, workspace-f8): what the :8083 sampler settings rule out, and the host KV mirror cost
 
-- **GPU-ZOS-2's greedy fast path cannot engage on production :8083 traffic.** The orchestrator always sends temperature 0.1/0.2 with top_k 40, top_p 0.95 and repeat_penalty 1.1, and the penalty alone disqualifies greedy-fast. Only `lazy-save` and `overlap-process` of `LLAMA_ZOS2` can move production. The design ceiling is 3.71% of step time (INDICATIVE). (Sources: `docs/design/gpu-zos-2-one-step-lag-design-20261024.md`; the GPU-ZOS-2.1 note in `handoffs/active/mi210-serving-program.md`; the 10-24 progress shard.)
+- **GPU-ZOS-2's greedy fast path cannot engage on production :8083 traffic.** The orchestrator always sends temperature 0.1/0.2 with top_k 40, top_p 0.95 and repeat_penalty 1.1, and the penalty alone disqualifies greedy-fast. Only `lazy-save` and `overlap-process` of `LLAMA_ZOS2` can move production. The design ceiling is 3.71% of step time (INDICATIVE). (Sources: `docs/design/gpu-zos-2-one-step-lag-design-20261024.md`; the GPU-ZOS-2.1 note in `handoffs/completed/mi210-serving-program.md`; the 10-24 progress shard.)
 - **The host KV mirror (HSF-5) costing fired its prototype trigger.** The analytic KV tail is 0.44%/1.01% of a step in the worst case, so HSF-5.P was built behind `--kv-host-mirror` (default OFF). Its acceptance gates are predeclared: decode at most 3% slower, graph reuse at least 0.97, token-identical restores, replay at most 6 steps. (Sources: `docs/design/hsf-5-host-kv-mirror-costing-20261024.md`; HSF-5 / HSF-5.P in `handoffs/active/kv-cache-program.md`; `/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p/PREDECLARATION.md`.)
 - **HSF-4/5 source rates are quoted from the graphs-ON step-7 run.** For example, tmpfs restore is 8.58 / 8.50 / 7.29 GB/s. The difference from graphs-off is attributed jointly to graphs ON, the HSA knob and the fresh-load history, not to graphs alone. (Sources: `docs/design/hsf-4-results-20261023.md`; HSF-4.G in the HSF handoff; `/mnt/raid0/llm/tmp/f8-launchers-20261023/kpf18-s1-step7-graphs-on/PREDECLARATION.md`.)
 - **Lineup artifact pins are now strict at `start`.** All 16 lineup roles carry an HF revision and sha256, and a missing pin is fatal at `orchestrator_stack.py start` (not at `reload`). `start` reads the master registry from the shared research clone, so a stale clone refuses. The opt-out is `REGISTRY_ARTIFACT_PINS_STRICT=0`. (Sources: SEC-ART-1/1.1 in `handoffs/active/stack-lifecycle-program.md`; the 10-24 progress shard; orch main `1eff8145`.)
@@ -3076,13 +3076,13 @@ Packet evidence: `/mnt/raid0/llm/tmp/refactor-01a16fc3/ufh14-serving-calls-ready
 
 **Confidence: verified** for filed native results (ZOS serial tier, LEAK-1e) and source repairs; W5s census, HSF-13 profile and DS41 W5d1 are unrun; no speed, ship or serving-policy decision.
 
-- **GPU-ZOS-2.3 serial fallback passes correctness; ship stays unauthorized.** The np4 gate R3 was INCONCLUSIVE_SERIAL_REQUIRED (A1/A2 token mismatch 24/24, m_AA=24; B2 20/24, F3 4/8). The serial tier (SA1/SA2/SB/SO, eight prompts, max_tokens 256, np4/ctx 393216) then agreed token-for-token including draft and accepted-draft counts: correctness PASS with `ship_authorized=false`; speed and remaining gates are required, and the np4 result is unchanged. The release/debug images needed a root-cause fix (archive with no .git gave GGML_COMMIT=unknown; ROCm cuid derives from source/output) before qualification. ([source](../handoffs/active/mi210-serving-program.md))
-- **GPU-LEAK-1e: no single factor removes the per-request VRAM growth.** Varying -ub 512, -np 4 or --cache-ram 65536 from the pinned E1 shape (15 requests each) all left own-PID KFD growth at ~290.27 MiB/request over requests 5-15 versus 290.26 for E1. This is a descriptive factor table: no interaction mechanism, mitigation or production decision. ([source](../handoffs/active/mi210-serving-program.md))
+- **GPU-ZOS-2.3 serial fallback passes correctness; ship stays unauthorized.** The np4 gate R3 was INCONCLUSIVE_SERIAL_REQUIRED (A1/A2 token mismatch 24/24, m_AA=24; B2 20/24, F3 4/8). The serial tier (SA1/SA2/SB/SO, eight prompts, max_tokens 256, np4/ctx 393216) then agreed token-for-token including draft and accepted-draft counts: correctness PASS with `ship_authorized=false`; speed and remaining gates are required, and the np4 result is unchanged. The release/debug images needed a root-cause fix (archive with no .git gave GGML_COMMIT=unknown; ROCm cuid derives from source/output) before qualification. ([source](../handoffs/completed/mi210-serving-program.md))
+- **GPU-LEAK-1e: no single factor removes the per-request VRAM growth.** Varying -ub 512, -np 4 or --cache-ram 65536 from the pinned E1 shape (15 requests each) all left own-PID KFD growth at ~290.27 MiB/request over requests 5-15 versus 290.26 for E1. This is a descriptive factor table: no interaction mechanism, mitigation or production decision. ([source](../handoffs/completed/mi210-serving-program.md))
 - **Streamed-chat truncation and capacity gate repaired in source.** KVU-3a: streamed usage now drives the same context-limit classification as non-stream (209 tests across seven modules, orchestrator 61bf8518). KVU-13c: the capacity gate no longer runs at `stack_manifest` import; it runs explicitly in the pipeline check and start/reload handlers (152 controls). Separately, model-path validation now checks only files the stack launches (186 tests) and backend declarations require literal `verify_ggml_linkage: true`. No API reload or live config change. ([source](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout))
 - **Serving-shape qualification states (W5s, HSF-13, DS41 W5d1) are preparation only.** W5s r7 qualified native width 1 (decode 208.093 s; cutoff rc75 drained) and the W1 four-cold-request multi-sequence prefill is UNREACHABLE under the frozen protocol; W3 half-A witnessed prefill split 2044+4 at ubatch 2048 and verify draft width 4. HSF PROFILE-6 R13 exceeded its 16 GiB native-output cap (17.31 GB peak) with no attribution verdict. DS41 W5d1 (1 warmup + 6 fresh 1017 CPU processes) is READY, unrun. ([source](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency))
 - **Harness lesson: outer completion contracts, not native failures, caused most FAILED-RUNs.** Missing `--complete-cmd`, an absent host region-lock interpreter and launchers outside their declared scratch root withdrew or failed many packets (C6, KPF-18.1, FU-03, GNX R4) while native jobs returned rc0; GNX R4's required 37/37 native proof was still accepted. Disk-floor admission (150 GiB + reserve) also refused several FA4/HIL/KPF windows before native work. ([source](../progress/2026-10/2026-10-31-codex3-kpf181-fu03-results.md))
 
-Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) · [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) · [ZOS serial R4](../progress/2026-10/2026-10-31-zos23-serial-r4.md) · [GPU diagnostics](../progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md) · [numa-topology-cutover-resume](../handoffs/active/numa-placement-and-contention.md)
+Sources: [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) · [kv-unified-stack-rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) · [heterogeneous-slot-fabric-residency](../handoffs/active/kv-cache-program.md#track-heterogeneous-slot-fabric-residency) · [ZOS serial R4](../progress/2026-10/2026-10-31-zos23-serial-r4.md) · [GPU diagnostics](../progress/2026-10/2026-10-31-codex3-gpu-ds41-lex.md) · [numa-topology-cutover-resume](../handoffs/active/numa-placement-and-contention.md)
 
 ## Compiled Update — 2026-10-31 (evening wiki sweep, workspace-58)
 
@@ -3118,7 +3118,7 @@ Sources: [serving-harness fixes](../handoffs/active/harness-program.md#track-age
 - Opt-in machine frame drops only an equal duplicated alias; 143 API and 15 page controls passed. Fixture bytes reduced 47,524 to 24,580 and 91,652 to 46,835; no live bandwidth, producer-work or deployment outcome is claimed (APP ec6f8176; ROOT 8318ce32). [Source](../handoffs/active/coordination-and-churn-pipeline.md#track-dashboard-architecture-restructure)
 - Registry master ubatch default is corrected to 2048; both script executors do read it, contrary to the original premise. Lean compilation preserves 23 active roles; the separate shared full-registry target was still 8192 at observation, with no deployment claim. [Source](../handoffs/active/numa-placement-and-contention.md#track-dynamic-stack-concurrency)
 - The production llama-server log-retention hole remains open: prior append change was in an uncalled legacy script and did not diagnose production. A later wrapper default-path fix is separate and cannot establish the cause of the historical gap. [Source](../handoffs/active/autopilot-program.md#track-evidence-plane-instrument-repair)
-- GPU-ZOS atomic R6 captured 48 fresh responses with rc0 but decision is INCONCLUSIVE: the predeclared six-pass analysis equations are incomplete; prior S and NF are four-pass values. No SHIP. GPU-ZOS-2.2 is reopened because original kernel-store/independent-byte/GPU-test rule was not met. [Source](../handoffs/active/mi210-serving-program.md)
+- GPU-ZOS atomic R6 captured 48 fresh responses with rc0 but decision is INCONCLUSIVE: the predeclared six-pass analysis equations are incomplete; prior S and NF are four-pass values. No SHIP. GPU-ZOS-2.2 is reopened because original kernel-store/independent-byte/GPU-test rule was not met. [Source](../handoffs/completed/mi210-serving-program.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 
@@ -3223,7 +3223,7 @@ Sources: [claim-path design](../docs/design/gpu-serving-p25g-claim-path-20261104
 
 ## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
 
-- **P1-2 Stage-B (C1 saturation):** qwen36_q8_0 on `cpu-20261103-181483cfc-lbt`, one session with placement PASS. Aggregate decode was C1 np16 87.5 tok/s against C1b (halves) np16 60.5 (0.69); at np8 the halves reach 0.94. **The halves lose at every concurrency tested.** One full-machine interleaved server saturates at about 84-88 tok/s. The earlier 11-03 C1b np16 99.2 did not reproduce and is withdrawn. Grade: INDICATIVE, single rep. Source: [mi210-serving-program.md:148](../handoffs/active/mi210-serving-program.md), `/mnt/raid0/llm/tmp/p12-e5-stageb-20261103/out/RESULT.json`.
+- **P1-2 Stage-B (C1 saturation):** qwen36_q8_0 on `cpu-20261103-181483cfc-lbt`, one session with placement PASS. Aggregate decode was C1 np16 87.5 tok/s against C1b (halves) np16 60.5 (0.69); at np8 the halves reach 0.94. **The halves lose at every concurrency tested.** One full-machine interleaved server saturates at about 84-88 tok/s. The earlier 11-03 C1b np16 99.2 did not reproduce and is withdrawn. Grade: INDICATIVE, single rep. Source: [mi210-serving-program.md:148](../handoffs/completed/mi210-serving-program.md), `/mnt/raid0/llm/tmp/p12-e5-stageb-20261103/out/RESULT.json`.
 - **M4 SRPF:** folded in default-OFF. The M4-SRPF-ENABLE trigger has **not fired**. Over `serving_calls.jsonl` (195 calls, 10-03..11-02), architect_critic's pre-dispatch wait peaked at 187 ms (TTFT median 715 ms). Frontdoor's TTFT median was 2.0 s, and its 45-49 s outliers were the request's own prompt_ms, not queueing. Source: [kernel-champion-and-promotion.md:4802-4804](../handoffs/active/kernel-champion-and-promotion.md).
 
 ## Compiled Update — 2026-11-05 (operator-adhoc-ops wrap-up 3): GPU exclusivity and keeper friction

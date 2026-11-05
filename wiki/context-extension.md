@@ -51,7 +51,7 @@ Sources: [YaRN context-extension handoff](../handoffs/active/long-context-progra
 
 - [yarn-context-extension-research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research) — YARN-AGG-1e, YARN-AGG-1f
 - [3c4ca599 progress, 2026-10-23](../progress/2026-10/2026-10-23-3c4ca599.md) — gate FINAL and OOM root cause
-- [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) — GPU-LEAK-1
+- [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) — GPU-LEAK-1
 
 ---
 ## Compiled Update — 2026-10-22 (wrap-up sweep 10): a native-window answer change is not a quality regression, and the judge labels are agent-produced, not human
@@ -206,13 +206,13 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 
 The new CPU Qwen3.6-35B-A3B leg reached 323K with 5/5 retrieval; native and YaRN ×2 matched at 133K and 253K. At matched depth, YaRN's decode cost was at most 4%, while decode fell with depth in both arms and 8K append cost grew to about 600 seconds around 351K. DCA beat raw extrapolation in one-window 64K PPL runs, but DCA-vs-YaRN remains suggestive only and the CPU/GPU offset is unresolved.
 
-Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [AutoKernel all-devices/all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [AutoKernel all-devices/all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
 ### Supplemental changed-source coverage — Oct 3–6
 
 The post-manifest CPU YaRN progress distinguishes native-window cost from extension quality: Qwen3.6-35B-A3B reached 323K with 5/5 tested needles; native and static YaRN ×2 matched at 133K and 253K, while static ×2 failed the native-window inertness rule (decode loss 1.3% at depth 0 and 7.6% at 34K; MTP acceptance 53% to 48%). Dynamic per-request YaRN/DCA remains the acceptable direction in that test record; it does not establish a general context-extension quality win. The GPU tie-in handoff adds only an open memory-attribution task for the +15 GiB E1 overshoot already recorded here, not a new result.
 
-Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research).
+Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research).
 
 ## Incremental synthesis — 2026-10-06 workspace-ec wrap (native-window inertness, K-shift, Jet-Long)
 
@@ -225,7 +225,7 @@ Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-
 - **Jet-Long (cost not yet measured).** In-window exactness is reported by the paper on Qwen3, but the uncached correction costs roughly 5x the attention K+V bytes per decode step (derived estimate), the fused kernel is SM90-only, and there is no MTP or DFlash2 support. Decision gating: CTX-JETLONG-COST (arithmetic plus CPU microbenchmark; passes at <= 10% decode cost at 262K and <= 25% at 1M), then a bit-exact in-window prototype, with YARN-MSCALE-AB deciding how cheap inertness can be. The interim recommendation is a length-routed second server (D) with its RAM stated as a number, F as target, Jet-Long cached as the stretch; DCA is off the in-window path (identity only below chunk_size minus local window, refuses MTP in v1, roughly 2x attention cost).
 - **YaRN is not a short-context identity, and CPU YaRN is cost-neutral beyond that:** the same session's CPU leg (323K, 5/5 needles; decode cost at most 4% at matched depth) is recorded in the section above; its limit at depth is CPU attention cost, not the scaling method.
 
-Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [native-window summary](../artifacts/yarn-native-window-20261005/summary.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md). Study notes (scratch, not durable): `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/{OPTIONS,CTX2_KSHIFT,STAGE3_PLAN}.md`.
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [native-window summary](../artifacts/yarn-native-window-20261005/summary.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md). Study notes (scratch, not durable): `/mnt/raid0/llm/tmp/yarn-inert-design-20261006/{OPTIONS,CTX2_KSHIFT,STAGE3_PLAN}.md`.
 
 ## Incremental synthesis — 2026-10-06 evening (Jet-Long gate A PASS, the small-ubatch abort, CPU prefill scaling)
 
@@ -396,15 +396,15 @@ Sources: [YaRN session record](../progress/2026-11/2026-11-01-handoff-yarn.md) �
 
 The historical E1 (9a3f1392a) vs W (b0ba1d427) replay on the 27B Q8 found own-PID VRAM flat at every stage and identical between images: A0 (262k) 37.13 GiB, A1 (YaRN 524k) 47.63 GiB through 500k. The ~10.5 GiB A1−A0 gap is load-time KV sizing, not prefill growth. Caveat: the replay reset the server between the 128k/240k and 400k/500k groups, while the original E1 ran one unbroken chain, so cross-chain growth is still open (YARN-E1-MEM-CHAIN). Indicative np1 decode: ~33 tok/s at 3k, 17.2 at 128k, 12.3 at 240k, 8.3 at 400k, 7.0 at 500k.
 
-Sources: [INF-22 handoff, YARN-E1-MEM](../handoffs/active/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)
+Sources: [INF-22 handoff, YARN-E1-MEM](../handoffs/completed/mi210-serving-program.md#track-mi210-serving-program) · [session record](../progress/2026-11/2026-11-03-inf22-unblock.md)
 
 ## Compiled update — 2026-11-04 (wrap-up sweep): YARN E1-MEM chain
 
 - The single-server 128k→500k chain (r2) COMPLETED with a peak of 47.6 GiB, under the 55 GiB budget. The r1/r2 rows shared one RESULT path (an infra defect the owner must fix).
 - The Jet-Long 2048-token short-framing diagnostic was filed DIAGNOSTIC-RESULT/pass: exactly 2,048 evaluated tokens, zero cached, no truncation.
 
-Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [long-context program](../handoffs/active/long-context-program.md) · [MI210 program](../handoffs/active/mi210-serving-program.md)
+Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [long-context program](../handoffs/active/long-context-program.md) · [MI210 program](../handoffs/completed/mi210-serving-program.md)
 
 ## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
 
-- **YaRN E1-MEM chain PASS:** one unbroken A1 chain on one server (E1 image `9a3f1392a`, Qwen3.8-27B Q8_0, YaRN 524k), 128k→240k→400k→500k. The continuous own-PID peak was **47.63 GiB**, within the 55 GiB bar and identical to the split replay, which closes YARN-E1-MEM. Source: [mi210-serving-program.md:372-375](../handoffs/active/mi210-serving-program.md).
+- **YaRN E1-MEM chain PASS:** one unbroken A1 chain on one server (E1 image `9a3f1392a`, Qwen3.8-27B Q8_0, YaRN 524k), 128k→240k→400k→500k. The continuous own-PID peak was **47.63 GiB**, within the 55 GiB bar and identical to the split replay, which closes YARN-E1-MEM. Source: [mi210-serving-program.md:372-375](../handoffs/completed/mi210-serving-program.md).

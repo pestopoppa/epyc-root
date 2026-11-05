@@ -11274,7 +11274,7 @@
   {
    "order": 11,
    "plan_target": "mi210-serving-program.md",
-   "destination": "handoffs/active/mi210-serving-program.md",
+   "destination": "handoffs/completed/mi210-serving-program.md",
    "destination_is_rename": true,
    "anchor": "handoffs/active/gpu-serving-tie-in-program.md",
    "anchor_row_kept": "INF-22",
@@ -11291,7 +11291,7 @@
     "git mv handoffs/active/gpu-acceleration-path.md handoffs/completed/gpu-acceleration-path.md",
     "git mv handoffs/active/mi210-big-model-and-acceleration-roadmap.md handoffs/completed/mi210-big-model-and-acceleration-roadmap.md",
     "git mv handoffs/active/qwen38-27b-replace-qwen36.md handoffs/completed/qwen38-27b-replace-qwen36.md",
-    "git mv handoffs/active/gpu-serving-tie-in-program.md handoffs/active/mi210-serving-program.md"
+    "git mv handoffs/active/gpu-serving-tie-in-program.md handoffs/completed/mi210-serving-program.md"
    ],
    "sections": [
     {
@@ -11550,7 +11550,7 @@
     {
      "slug": "fable5-window2-findings-05c-mi210-lever",
      "handoff_from": "handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md",
-     "handoff_to": "handoffs/active/mi210-serving-program.md",
+     "handoff_to": "handoffs/completed/mi210-serving-program.md",
      "handoff_rows_to": [
       "INF-22"
      ]
@@ -11558,7 +11558,7 @@
     {
      "slug": "gpu-acceleration-path",
      "handoff_from": "handoffs/active/gpu-acceleration-path.md",
-     "handoff_to": "handoffs/active/mi210-serving-program.md",
+     "handoff_to": "handoffs/completed/mi210-serving-program.md",
      "handoff_rows_to": [
       "INF-22"
      ]
@@ -11566,7 +11566,7 @@
     {
      "slug": "gpu-serving-tie-in",
      "handoff_from": "handoffs/active/gpu-serving-tie-in-program.md",
-     "handoff_to": "handoffs/active/mi210-serving-program.md",
+     "handoff_to": "handoffs/completed/mi210-serving-program.md",
      "handoff_rows_to": [
       "INF-22"
      ]
@@ -11574,7 +11574,7 @@
     {
      "slug": "mi210-big-model-and-acceleration-roadmap",
      "handoff_from": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
-     "handoff_to": "handoffs/active/mi210-serving-program.md",
+     "handoff_to": "handoffs/completed/mi210-serving-program.md",
      "handoff_rows_to": [
       "INF-22"
      ]
@@ -11584,42 +11584,42 @@
     {
      "spec": "codex-gpu-serving-p5-adversarial-20261102.json",
      "from": "gpu-serving-tie-in-program.md:P5-1",
-     "to": "handoffs/active/mi210-serving-program.md:P5-1"
+     "to": "handoffs/completed/mi210-serving-program.md:P5-1"
     },
     {
      "spec": "codex-gpu-serving-p5-image-qual-20261102.json",
      "from": "gpu-serving-tie-in-program.md:P5-1",
-     "to": "handoffs/active/mi210-serving-program.md:P5-1"
+     "to": "handoffs/completed/mi210-serving-program.md:P5-1"
     },
     {
      "spec": "codex-gpu-serving-yarn-e1-a0-low-20261102.json",
      "from": "gpu-serving-tie-in-program.md:YARN-E1-MEM",
-     "to": "handoffs/active/mi210-serving-program.md:YARN-E1-MEM"
+     "to": "handoffs/completed/mi210-serving-program.md:YARN-E1-MEM"
     },
     {
      "spec": "codex-gpu-serving-zos22-native-r2-20261102.json",
      "from": "gpu-serving-tie-in-program.md:GPU-ZOS-2.2",
-     "to": "handoffs/active/mi210-serving-program.md:GPU-ZOS-2.2"
+     "to": "handoffs/completed/mi210-serving-program.md:GPU-ZOS-2.2"
     },
     {
      "spec": "codex-ni-gpu-zos22-c5-native-20261102.json",
      "from": "gpu-serving-tie-in-program.md:GPU-ZOS-2.2",
-     "to": "handoffs/active/mi210-serving-program.md:GPU-ZOS-2.2"
+     "to": "handoffs/completed/mi210-serving-program.md:GPU-ZOS-2.2"
     },
     {
      "spec": "inf22-m4-aa-np4-r6-20261102.json",
      "from": "gpu-serving-tie-in-program.md:M4-FOLD-GATE",
-     "to": "handoffs/active/mi210-serving-program.md:M4-FOLD-GATE"
+     "to": "handoffs/completed/mi210-serving-program.md:M4-FOLD-GATE"
     },
     {
      "spec": "inf22-m4-q38-recipe-r1-20261102.json",
      "from": "gpu-serving-tie-in-program.md:M4-FOLD-GATE",
-     "to": "handoffs/active/mi210-serving-program.md:M4-FOLD-GATE"
+     "to": "handoffs/completed/mi210-serving-program.md:M4-FOLD-GATE"
     },
     {
      "spec": "inf22-q38-custody-r1-20261102.json",
      "from": "gpu-serving-tie-in-program.md:M4-FOLD-GATE",
-     "to": "handoffs/active/mi210-serving-program.md:M4-FOLD-GATE"
+     "to": "handoffs/completed/mi210-serving-program.md:M4-FOLD-GATE"
     }
    ],
    "reconciliation": {},

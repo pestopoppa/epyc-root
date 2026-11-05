@@ -7,7 +7,7 @@
  "estimate_s": 1800,
  "first_progress_s": 300,
  "gib": 16,
- "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2a",
+ "handoff_task": "handoffs/completed/mi210-serving-program.md:P5-2a",
  "id": "codex-gpu-serving-p5-gold-offline-r3-20261104",
  "keep": [
   "*.py",

@@ -109,7 +109,7 @@ narrowed plan was adopted:
 Recorded in [harness-selection-and-integration.md](harness-program.md#track-harness-selection-and-integration) → HS-19d.
 OP-61 (OD-A, KTransformers) was DECIDED by the operator at the 2026-09-26 research-intake plan approval, before it
 reached the queue: KTransformers runtime declined for now; MI210 port investigation open. Recorded in
-[fable5-window2-findings-02-heterogeneous-gpu.md](mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) → R-A10; the follow-on is its F7.
+[fable5-window2-findings-02-heterogeneous-gpu.md](../completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) → R-A10; the follow-on is its F7.
 OP-TOC-RD-1A (DECIDED 2026-10-06, choice 1B: both credential fixtures stay scanned) and OP-80 (DECIDED 2026-10-07:
 wire `check_cpu_fa_real_mask_identity` into `run.py`) were pruned from the queue at the 2026-10-22 operator `/wrap-up`.
 OP-73 (APPLIED 2026-10-06, option 2A host activation) was pruned from the queue at the 2026-10-23 operator /wrap-up. Recorded in [non-inference-backlog.md](engineering-hygiene-backlog.md) → LR-6a.
@@ -140,7 +140,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 12 | 666 | 49 | 2026-11-03 |
+| inference-research | 11 | 666 | 49 | 2026-11-03 |
 | pipeline-integration | 1 | 20 | 3 | 2026-11-03 |
 | research-evaluation | 5 | 214 | 5 | 2026-11-02 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |

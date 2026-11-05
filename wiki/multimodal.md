@@ -1071,7 +1071,7 @@ already ruled out, which points **away from the VAE and at the DiT emitting
 non-finite latents**, and a failure threshold sitting between 896 and 960 is what
 accumulation overflow looks like. **This is a candidate fix, not a diagnosis** —
 and it needs no new model and no new weights.
-[`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) §2026-07-29 Stage-2 dive
+[`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) §2026-07-29 Stage-2 dive
 
 ### A durable control-selection rule: controls must be mitigation-matched
 
@@ -1082,7 +1082,7 @@ about the failing model's code path. If a second model is wanted as a control it
 must be **mitigation-matched** — here, the family member whose guard is
 Vulkan-only at our pin. Generalization: a control differing from the subject in
 *the very dimension under test* is not a control.
-[`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) §Control-probe note;
+[`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) §Control-probe note;
 [`ernie-image-turbo-evaluation.md`](../handoffs/active/model-evaluation-queue.md#track-ernie-image-turbo-evaluation) §2026-07-29 corrections
 
 ### A pre-deployment assessment ages badly in specific, predictable ways
@@ -1126,7 +1126,7 @@ either direction.
 - [`research/deep-dives/ernie-image-turbo-dit-text-to-image.md`](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md) — the pre-deployment assessment itself: the backend premise, the CPU latency forecast, the retired hardware extrapolation, the quantization-damage hypothesis, and the unresolved VAE identity
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the six folded corrections and the vendor-default-resolution sting (the GPU defect blanks the first resolution the vendor recommends)
 - [`multimodal-pipeline.md`](../handoffs/active/speech-and-multimodal.md#track-multimodal-pipeline) — Z-Image-Turbo scoped as a latency-only candidate; the distill-patch LoRA conversion mechanism and its untested assumptions
-- [`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
+- [`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — the ROCm f16-overflow campaign gap and the f32-precision candidate fix; the mitigation-matched-control rule
 
 ## Compiled Update — 2026-07-31: TTS is solved, and the fix was to stop writing our own codec
 
@@ -1539,7 +1539,7 @@ Sources: [conversation-stack handoff](../handoffs/active/speech-and-multimodal.m
 - **OD-A** is filed: the operator confirms the speech host card at the CS-9 readout.
 - **CS-8.L** is filed: the Italian listen check of the cascade G1 outputs needs a human ear, because agent QA of speech is circular.
 
-Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
+Sources: [Conversation stack](../handoffs/active/speech-and-multimodal.md), [Progress cs-rescope](../progress/2026-10/2026-10-21-cs-rescope.md), [Progress cs11-prep](../progress/2026-10/2026-10-21-cs11-prep.md), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout)
 
 ## Compiled Update — 2026-10-22 (wrap-up sweep 12, workspace-58): the Italian TTS re-listen kit is ready; the normalizer stays eval-only
 

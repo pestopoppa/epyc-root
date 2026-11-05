@@ -31,7 +31,7 @@
   },
   "source_manifest_sha256": "3f26e8c4c4b3a0bb30a45c0350e94c20e0b8e8ff43dc1463df33264174e596b1",
   "launch_sha256": "4c9a77a876c8e5a76f9391169d69a886eb1f6f3dcc37bf289734ba0a51d001a6",
-  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2c",
+  "handoff_task": "handoffs/completed/mi210-serving-program.md:P5-2c",
   "checks": {
     "synthetic_native_control_loop": "4 passed after ns-prefixed hexadecimal run-id fix; narrow q1 CPU24-27 build-role claim, timeout1",
     "exact_base_checkout_guard": "guard-proof.json; image HEAD equals base, blob trees match, clean tracked/nonignored untracked",

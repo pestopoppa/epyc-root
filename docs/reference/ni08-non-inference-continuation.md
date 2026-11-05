@@ -242,7 +242,7 @@ MAIN independently authenticated and reconstructed run37563431358 originals: fiv
 
 ## Hipify literature record accepted
 
-MAIN completed the existing [GPU acceleration recording task](../../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) with the [qualified source record](../../research/sources/intake-20261007/hawkeye-hipify-comparison.md), primary-index review, cached-PDF identity and explicit extraction limitations. No incentive analysis, universal ranking, causal or local performance/readiness claim. **NI08:93 completed scopes (56 existing flips+37 children)**; the task-level whole-backlog audit remains incomplete.
+MAIN completed the existing [GPU acceleration recording task](../../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) with the [qualified source record](../../research/sources/intake-20261007/hawkeye-hipify-comparison.md), primary-index review, cached-PDF identity and explicit extraction limitations. No incentive analysis, universal ranking, causal or local performance/readiness claim. **NI08:93 completed scopes (56 existing flips+37 children)**; the task-level whole-backlog audit remains incomplete.
 
 
 ## EXL3 teardown source/native acceptance

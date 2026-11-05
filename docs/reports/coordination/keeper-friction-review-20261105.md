@@ -882,7 +882,7 @@ measured (pinned GPU threads: CPU decode −1 %, prefill −4.8 %).
 ## P2.10 D11 — `auto_file.py` cannot tell a live owner from a dead one: no join key between a row and a session
 
 - **Verified.** `ready/npd1-step5-20261105.json`: `owner: "ws58"`, `publisher.session:
-  "73998e9f-8009-47d6-bac6-2835f05c3e04"`, `handoff_task: handoffs/active/mi210-serving-program.md:NPD1-STEP5`. The
+  "73998e9f-8009-47d6-bac6-2835f05c3e04"`, `handoff_task: handoffs/completed/mi210-serving-program.md:NPD1-STEP5`. The
   row is in `filing-owner-less.jsonl` although its owner (the INF-22 main) was live and filed it at 11:35Z
   (`4eee3159f`). `owner_live()` (`churn/auto_file.py`) looks up the literal owner string (plus `h-`/`handoff-`
   prefixes) in three places: `handoff-sessions.json` sessions (71 slugs like `mi210-big-model-and-acceleration-roadmap`;
@@ -924,7 +924,7 @@ measured (pinned GPU threads: CPU decode −1 %, prefill −4.8 %).
 
 ## P2.11 D12 — Two filing paths that do not reconcile: the handoff tick and the `.FILED` record
 
-- **Verified.** `4eee3159f` ("mi210-serving: NPD1-STEP5 V11_ITEM_STANDS …") ticked `handoffs/active/mi210-serving-program.md`
+- **Verified.** `4eee3159f` ("mi210-serving: NPD1-STEP5 V11_ITEM_STANDS …") ticked `handoffs/completed/mi210-serving-program.md`
   and the master index at ~11:35Z; `filing-done/` has **0** files for `npd1-step5-20261105`; `filing-owner-less.jsonl`
   has 1 entry for it. The watcher, the alarm and `auto_file.py` all key on `filing-done/<id>.FILED`, so a row filed
   the way `SESSION_LIFECYCLE.md` tells an owner to file (tick + evidence + commit) is "unfiled" forever to the machine,

@@ -663,7 +663,7 @@ thinking-vs-no-thinking deltas (budget + per-arm truncation rates, above).
 #### Source References (2026-08-23 Qwen3.8 template evaluation)
 
 - [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-2/CT-3/CT-5/CT-7 closures, CT-DEPLOY/CT-E7/CT-8 records, rendered proofs and artifact digests
-- [`handoffs/active/mi210-serving-program.md`](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T1/T3: reachability of the two Qwen3.8-only defects and the non-stock Unsloth template digest
+- [`handoffs/completed/mi210-serving-program.md`](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — Q38-T1/T3: reachability of the two Qwen3.8-only defects and the non-stock Unsloth template digest
 - [`progress/2026-08/2026-08-21-research-intake.md`](../progress/2026-08/2026-08-21-research-intake.md) — the intake dives, the fleet-sweep correction, CT-7 build/validation, CT-1/1b arms
 - [`progress/2026-08/2026-08-22-research-intake.md`](../progress/2026-08/2026-08-22-research-intake.md) — CT-DEPLOY end state, E-7 stamps and the voided/4096-rerun cells, CT-8 wiring, belief rows
 - [`progress/2026-08/2026-08-21-operator.md`](../progress/2026-08/2026-08-21-operator.md) — the coordination-day context (EVL-50 closure, four-agent fan-out) around the CT work

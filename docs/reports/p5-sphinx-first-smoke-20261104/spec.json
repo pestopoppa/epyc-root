@@ -8,7 +8,7 @@
   "decision_rule": "Second-repository instrument subset only: fresh exact-base offline Sphinx-8593 containers; official gold and independent valid no-op; all 2 named FAIL_TO_PASS and 1 PASS_TO_PASS explicit. Gold resolved with all passed, no-op unresolved with >=1 FTP failed and PTP passed; owned cleanup. Stop on answer or first failure; both smoke and full modes identically capped 270s. Smoke identical full two controls capped 270s, strict complete predicate; partial native logs retained, never count timeout as PASS. Not complete P5-2; no model execution.",
   "estimate_s": 300,
   "min_window_s": 300,
-  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2c",
+  "handoff_task": "handoffs/completed/mi210-serving-program.md:P5-2c",
   "priority_rank": 70,
   "kind": "compute",
   "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-sphinx-second-20261104",

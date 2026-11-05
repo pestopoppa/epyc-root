@@ -2828,7 +2828,7 @@ attention-matching P2
 | Static pre-warm is sufficient | Keep DS-6 as design-only; spend effort on DS-7 profile hygiene and monitoring. |
 | QuarterScheduler is triggered | Implement drain-first reassignment; no mid-request evictions except as retry-compatible defense-in-depth. |
 | KVCOMM q4_0 quality gate fails | Defer Phase F; keep AM compaction as the primary KV-size lever. |
-| Disaggregated serving appears attractive | Compare against [`numa-prefill-decode-disaggregation.md`](mi210-serving-program.md#track-numa-prefill-decode-disaggregation); prefer Sarathi-style chunked prefill before NUMA KV transfer unless measurements prove otherwise. |
+| Disaggregated serving appears attractive | Compare against [`numa-prefill-decode-disaggregation.md`](../completed/mi210-serving-program.md#track-numa-prefill-decode-disaggregation); prefer Sarathi-style chunked prefill before NUMA KV transfer unless measurements prove otherwise. |
 
 #### Key Files
 
@@ -3210,7 +3210,7 @@ E5 campaign**; its `⛔ SUSPENDED PENDING RE-MEASUREMENT (2026-07-30)` banner is
 suspension notice and this document is its root-cause backing · [within-role-placement-state-machine.md](numa-placement-and-contention.md#track-within-role-placement-state-machine)
 (consumes `NUMA_CONFIG`) · [heterogeneous-slot-fabric-residency.md](kv-cache-program.md#track-heterogeneous-slot-fabric-residency)
 (its `(N,K)` provisioning is parameterized by E5) · [inference-research-index.md](inference-research-index.md)
-(CPU14/CPU17/CPU18 rows) · [gpu-serving-tie-in-program.md](mi210-serving-program.md) P1-2
+(CPU14/CPU17/CPU18 rows) · [gpu-serving-tie-in-program.md](../completed/mi210-serving-program.md) P1-2
 (the E5 W1–W4 execution row and its published-artifact update requirement)
 
 ---
@@ -4355,7 +4355,7 @@ remain in *this* document:
    *different host topology* as well as a different kernel — they are not comparable and the
    2026-04-17 head-to-head in particular must not be cited (wrong topology **and** spec-dec off).
 
-6. **The GPU lane's coupling.** [gpu-serving-tie-in-program.md](mi210-serving-program.md)
+6. **The GPU lane's coupling.** [gpu-serving-tie-in-program.md](../completed/mi210-serving-program.md)
    P1-2 owns the E5 W1–W4 execution row and requires that the **published E5 results artifact be
    updated in place at its existing URL** rather than re-published to a new one. Any T3 re-run
    must honour that, and must rewrite the artifact's grade banner rather than leaving stale

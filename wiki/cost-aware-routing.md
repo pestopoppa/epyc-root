@@ -482,7 +482,7 @@ such, not a new measurement.
 - [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) — E-7 amendment (template_sha in the stamp), the CT-2 cross-handoff finding, the 2026-08-23 ledger-era correction and validator enforcement.
 - [qwen-chat-template-evaluation.md](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation) — CT-2 calibration-void inventory (4 expensive / 5 moderate / 2 cheap), CT-5c 16K result and truncation decomposition, CT-E7/CT-E7b live-path re-stamps at template `1443ea9ab4bb`.
 - [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — CT-E7b master-registry propagation, era-enforcement follow-up (instrument_eras `kernel_name`, `2746c652`, `7fe84d9c`).
-- [qwen38-27b-replace-qwen36.md](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
+- [qwen38-27b-replace-qwen36.md](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
 
 ## Related Categories
 
@@ -495,7 +495,7 @@ such, not a new measurement.
 
 - [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) -- EXTERNAL, credibility `3/6`, unrefereed preprint dive-verified 2026-08-15: the controlled target-harness swap (Table 3), the published per-suite noise floor and its reading rule, the 111-run normalized-gain comparison our dive derived, and the explicit warning that the `0.142` vs `0.079` headline varies the optimizer's coding agent rather than the target harness. Cite as `intake-1140#record`; it does not inherit `intake-1134`'s ICML venue credit
 - [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence) §*Research Intake Update — 2026-08-15* -- the record-only filing of the harness-as-routing-dimension finding and the correction attached to it
-- [qwen38-27b-replace-qwen36.md](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) -- the operator-declined quality gate ("quality will improve certainly"), the throughput step retained as a serving baseline rather than a decision gate, and the 2026-08-15 architect-bench ladders (mmlu_pro / gpqa letter-vs-CoT / aime25 / olympiadbench_hard; humaneval / BCB-hard / LCB-hard 52.8% vs stock 45.3% / SWE-oracle 39/40)
+- [qwen38-27b-replace-qwen36.md](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) -- the operator-declined quality gate ("quality will improve certainly"), the throughput step retained as a serving baseline rather than a decision gate, and the 2026-08-15 architect-bench ladders (mmlu_pro / gpqa letter-vs-CoT / aime25 / olympiadbench_hard; humaneval / BCB-hard / LCB-hard 52.8% vs stock 45.3% / SWE-oracle 39/40)
 - [gpu-candidates-surface-qwen38-update.md](../handoffs/active/model-evaluation-queue.md#track-gpu-candidates-surface-qwen38-update) -- the `operator-declined — deferred` cell convention, the deferred ladder recipe (LCB-hard n=53 / BCB-hard n=90 / SWE-40 n=40), and the presentation-vs-evidence-authority split
 - [reasoning-effort-levels.md](../handoffs/active/context-and-token-economy.md#track-reasoning-effort-levels) -- the measured effort ladder: +32pp prompt-CoT lever, native-`<think>` non-termination-tail failure mode + budget-cap fix, the per-model calibration invariant, and the §Token-budget study (`max_tokens` as a silent quality lever + TB-6-ROUTER admission-control design)
 - [architect-model-selection-bench.md](../handoffs/active/model-evaluation-queue.md) §R2 -- the R2a/R2b/R2c/R2d ablation runs the reasoning-effort ladder findings are measured from
@@ -559,7 +559,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - **PB-QCOST-1 confirm CONFIRMED; q axis PASS; grade INDICATIVE (per-phase rule).** Run-wide aggregate contention is UNCONTENDED, but the amended per-phase rule grades the run INDICATIVE because ub 1024 failed (sibling busy median 8.87% against the 5% bar). ub 512 (0.26%) and ub 256 are UNCONTENDED, and ub 512 decides the confirm: refit held-out MAPE 2.65% (n = 1) and 5.27% (n = 4), coefficients within the noise floor. confirm-q stays open: measured b = 1.457 / 1.357 ms/token does not agree with 0.9865.
 
-Sources: [gpu-serving-tie-in-program](../handoffs/active/mi210-serving-program.md) (PB-QCOST-1 confirm-R) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
+Sources: [gpu-serving-tie-in-program](../handoffs/completed/mi210-serving-program.md) (PB-QCOST-1 confirm-R) · [2026-10-24 workspace-58 progress](../progress/2026-10/2026-10-24-workspace-58.md)
 
 ### Compiled Update — 2026-10-24 (wrap-up sweep 9, delta over 2026-10-23)
 

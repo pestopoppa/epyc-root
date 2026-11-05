@@ -271,7 +271,7 @@ The same source's Table 5 records GICL at **9.1% / 0.4%** against forward-KL's
 **96.7% / 98.4%** — which rules out the currently fashionable on-policy-distillation
 approach for **context-dependent** capabilities. Filed as a standing guardrail on
 any future weight-space work rather than as a result we would cite forward.
-[`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) §2026-07-29 Stage-2 dive
+[`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) §2026-07-29 Stage-2 dive
 
 ### The weight-space RL training half is DECLINED, not bridged
 
@@ -333,7 +333,7 @@ relative to a baseline you can independently locate.
 ### Source References
 
 - [`swarm-dataset-distillation.md`](../handoffs/completed/swarm-dataset-distillation.md) — the inverted premise (Table 6 ~2pp objective vs Table 7 ~38pp prompting); same-task retention vs OOD transfer; the UNSIZED flag; the three importable data-construction levers
-- [`gpu-acceleration-path.md`](../handoffs/active/mi210-serving-program.md#track-gpu-acceleration-path) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
+- [`gpu-acceleration-path.md`](../handoffs/completed/mi210-serving-program.md#track-gpu-acceleration-path) — the reverse-KL / on-policy-distillation negative recorded as a weight-space guardrail
 - [`harness-selection-and-integration.md`](../handoffs/active/harness-program.md#track-harness-selection-and-integration) — HS-5: the weight-space RL training half declined on missing control endpoints and a hard vLLM dependency
 - [`architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) — byte-level LoRA merge structure and the zero-delta tensor set as free noise-floor instrumentation; the EXECUTED weight-delta geometry probe (~3,150× signal/noise separation, `cos(L)` vs scale-confounded `p(L)`, ThinkingCap's MTP-lineage tensor topology)
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — the vendor-baseline reconstruction that killed a published uplift claim

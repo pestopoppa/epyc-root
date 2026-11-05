@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 49,
-      "handoffs": 12,
+      "handoffs": 11,
       "oldest_advance": "2026-11-03",
       "open": 666
     },
@@ -701,7 +701,6 @@
           "blocked": 0,
           "closed": 9,
           "gates": [
-            "INF-22",
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
@@ -1117,7 +1116,7 @@
       "closed": 277,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 121,
+      "open": 122,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1125,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 400,
+      "total": 401,
       "tracks": [
         {
           "blocked": 1,
@@ -1222,7 +1221,7 @@
           "line": 3764,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 60
+          "open": 61
         }
       ]
     },
@@ -1488,101 +1487,6 @@
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
-        }
-      ]
-    },
-    "mi210-serving-program.md": {
-      "blocked": 0,
-      "closed": 205,
-      "guarded": 0,
-      "last_advanced": "2026-11-05",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-22",
-      "state": "active",
-      "total": 206,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 107,
-          "gates": [],
-          "guarded": 0,
-          "line": 23,
-          "markers": 1,
-          "name": "mi210-serving-program",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 9,
-          "gates": [],
-          "guarded": 0,
-          "line": 681,
-          "markers": 1,
-          "name": "fable5-window2-findings-02-heterogeneous-gpu",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 16,
-          "gates": [],
-          "guarded": 0,
-          "line": 1018,
-          "markers": 1,
-          "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 15,
-          "gates": [],
-          "guarded": 0,
-          "line": 1296,
-          "markers": 1,
-          "name": "gpu-acceleration-path",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 19,
-          "gates": [],
-          "guarded": 0,
-          "line": 1931,
-          "markers": 1,
-          "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 1
-        },
-        {
-          "blocked": 0,
-          "closed": 31,
-          "gates": [],
-          "guarded": 0,
-          "line": 2202,
-          "markers": 1,
-          "name": "qwen38-27b-replace-qwen36",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 8,
-          "gates": [
-            "INF-22#mi210-serving-program",
-            "INF-22#fable5-window2-findings-02-heterogeneous-gpu",
-            "INF-22#fable5-window2-findings-05c-mi210-lever-category-matrix",
-            "INF-22#gpu-acceleration-path",
-            "INF-22#mi210-big-model-and-acceleration-roadmap",
-            "INF-22#qwen38-27b-replace-qwen36"
-          ],
-          "guarded": 0,
-          "line": 2812,
-          "markers": 1,
-          "name": "numa-prefill-decode-disaggregation",
-          "open": 0
         }
       ]
     },
@@ -1951,9 +1855,7 @@
         {
           "blocked": 0,
           "closed": 10,
-          "gates": [
-            "INF-22"
-          ],
+          "gates": [],
           "guarded": 0,
           "line": 1437,
           "markers": 1,
@@ -2697,15 +2599,6 @@
       "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
       "track": "autokernel research loop"
     },
-    "INF-22": {
-      "deps": [],
-      "handoff": "mi210-serving-program.md",
-      "id": "INF-22",
-      "index": "inference-research-index.md",
-      "line": 21,
-      "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "track": "gpu serving tie in program"
-    },
     "INF-33": {
       "deps": [
         "INF-48"
@@ -2713,7 +2606,7 @@
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 22,
+      "line": 21,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2722,7 +2615,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 23,
+      "line": 22,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2733,7 +2626,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 24,
+      "line": 23,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2742,7 +2635,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2753,7 +2646,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
       "track": "yarn context extension research"
     },

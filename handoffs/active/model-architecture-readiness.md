@@ -474,7 +474,7 @@ What is new here, and what determines what G16 must actually add, is the 50-case
       algebraically equivalent to the per-token recurrence in exact arithmetic but not in floating
       point (intake-1290#record). Relaxing the threshold deletes the only signal this row carries.
       **Owner:** this handoff. **Named consumers:** `G15` and `B5` in
-      [mi210-big-model-and-acceleration-roadmap.md](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap);
+      [mi210-big-model-and-acceleration-roadmap.md](../completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap);
       neither may proceed on a chunked kernel this row has not cleared.
       Both compute planes were held by other sessions through this wave — **filed, not run**.
     - **Greedy diagnostic READY (2026-10-31):** the separate production-recipe-aligned HIP

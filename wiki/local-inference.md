@@ -107,7 +107,7 @@ Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.
 - [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — champion fold and lane state.
 - [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold ledger, builds, CH-18.
 - [All-devices program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — GPU queue results.
-- [Qwen3.8-27B handoff](../handoffs/active/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — throughput ratios used for serving.
+- [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — throughput ratios used for serving.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — launch recipe and gates.
 
 
@@ -123,16 +123,16 @@ Completed MI210 checklist detail moved into a historical ledger. That relocation
 
 ### Source References
 
-- [Heterogeneous GPU serving](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — prospective freeze correction.
+- [Heterogeneous GPU serving](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu) — prospective freeze correction.
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md) — retrieved support-status correction and audit requirements.
-- [Active MI210 roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — staged compatibility/upgrade gates.
+- [Active MI210 roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — staged compatibility/upgrade gates.
 - [Completed MI210 ledger](../handoffs/completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md) — relocated historical scope.
 
 ## Source References
 
-- [Heterogeneous GPU serving](../handoffs/active/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu)
+- [Heterogeneous GPU serving](../handoffs/completed/mi210-serving-program.md#track-fable5-window2-findings-02-heterogeneous-gpu)
 - [ROCm upgrade checklist](../docs/runbooks/rocm-upgrade-checklist.md)
-- [Active MI210 roadmap](../handoffs/active/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
+- [Active MI210 roadmap](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap)
 - [Completed MI210 ledger](../handoffs/completed/mi210-big-model-and-acceleration-roadmap-completed-through-2026-10-06.md)
 
 ## Compiled Update — 2026-09-23: DeepSeek-V4.1-Flash decodes on this stack — and two deltas that would have been silently wrong
@@ -650,7 +650,7 @@ Disk is the other constraint. The 2026-10-20 reclaim deleted the stock and Fable
 
 - [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — section W, DS41-W1..W8.
 - [DS41 1017 swap progress note](../progress/2026-10/2026-10-20-ds41-1017-swap.md) — rulings, the token-in-argv fix and deferrals with named blockers.
-- [GPU serving tie-in program](../handoffs/active/mi210-serving-program.md) — P3-5 and the deleted tenants.
+- [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md) — P3-5 and the deleted tenants.
 - [Non-inference backlog](../handoffs/active/engineering-hygiene-backlog.md) — NIB2-92 and NIB2-93.
 - [Retire IQ4_XS-uniform progress note](../progress/2026-10/2026-10-20-retire-iq4xs-uniform.md) — the other artifact retired the same day.
 

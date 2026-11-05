@@ -536,7 +536,7 @@ AXA-1, and open a registry-change note (do NOT edit the live registry — that's
 - Arm GGUFs: `/mnt/raid0/llm/models/` (paths in the Arms table).
 - Phase-2 dataset: `/mnt/raid0/llm/datasets/swe-bench-verified/` (FAIL_TO_PASS oracle).
 - Evidence: `docs/reference/architect-model-selection-2026-07-20.md`.
-- Related handoffs: [`mi210-big-model-and-acceleration-roadmap.md`](mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (AXA-1),
+- Related handoffs: [`mi210-big-model-and-acceleration-roadmap.md`](../completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) (AXA-1),
   [`reviewer-model-ablations.md`](reviewer-control-plane.md#track-reviewer-model-ablations) (H5, model-role selection sibling),
   [`v7-promotion.md`](../completed/v7-promotion.md) (gate 1), [`inference-batch-loop.md`](eval-tower-program.md#track-inference-batch-loop) (gate 2).
 
@@ -1435,7 +1435,7 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 - [ ] Add the intake-537 **open-source-hardened RLM system prompt** (tuned on Minimax-M2.7 / GLM-5.1 — the only RLM prompt in the corpus tuned for open-weight drivers) as a third A/B arm beside the promoted SkyRL child prompt. Its distinctive lever is a **verbatim-slice return** instruction that suppresses sub-agent decode.
 
 ## Track: gpu-candidates-surface-qwen38-update
-<!-- gate: INF-22 -->
+<!-- gate: none -->
 
 > Folded from `handoffs/active/gpu-candidates-surface-qwen38-update.md` @ `063fc7a23b98` on 2026-11-03 (BRF-T7-F8, route 1b, operator D1/D5; retired row INF-61 → EVL-02). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 

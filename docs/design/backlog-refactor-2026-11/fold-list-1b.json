@@ -964,9 +964,9 @@
    "box": "BRF-T7-F3",
    "plan_target": "mi210-serving-program.md",
    "target_name": "mi210-serving-program.md",
-   "destination": "handoffs/active/mi210-serving-program.md",
+   "destination": "handoffs/completed/mi210-serving-program.md",
    "destination_is_rename": false,
-   "anchor": "handoffs/active/mi210-serving-program.md",
+   "anchor": "handoffs/completed/mi210-serving-program.md",
    "anchor_row_kept": "INF-22",
    "members": [
     {
