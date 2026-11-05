@@ -183,3 +183,7 @@ C6 target-shape successor remains dependent on the running dual-image build rece
 ## 04:06Z — File paired target-shape image build and qualify GPU comparison
 
 Filed c6-targetshape-dual-build-20261105 rc0 as build-only with retained images, logs and inventories; result SHA-256 dbb5084bbf97faa772f9f321d58720f64dbd41229bbdb25b014262e32c7cdbcf. Published bound c6-targetshape-perf-successor-20261105 after publisher smoke; no GPU performance or correctness verdict follows.
+
+## 04:11Z — Clean superseded scratch and harden disabled C5 supervisor delivery
+
+Removed two superseded drafts (~182 MiB), retaining live and published row scratch for keeper reclamation. A disabled CH-26b supervisor copy now checks a 74-file seal and selected import bytes; five end-to-end tamper controls passed. Launcher/interpreter trust, remaining dependencies, placement and live qualification remain open; no row or floor follows. The C6 target-shape comparison remains running.
