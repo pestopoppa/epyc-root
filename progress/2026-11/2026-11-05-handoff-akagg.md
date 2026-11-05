@@ -11,3 +11,7 @@ The GDN CPU F32 r4 disk-floor event was already filed and documented; no full re
 ## 02:53Z — File the completed GPU BF16 one-hot oracle diagnostic
 
 GPU BF16 one-hot oracle baseline matched 27,262,976 outputs exactly; reverse-slot and key-row mutants mismatched 1,966,102 and 3,735,626 outputs. Each arm recorded at least 21 own-PID mapped VRAM samples and drained. CPU and GPU f32 remain separate.
+
+## 02:56Z — File and retain the pre-b4 matched control build
+
+c6-preb4-matched-build-20261105 completed the build-only control; retained and SHA-256 checked its executable and libraries at /mnt/raid0/llm/tmp/akagg/retained-c6-preb4-matched-build-20261105. Toolchain/header closure and corrected-image comparison remain prerequisites for attribution.
