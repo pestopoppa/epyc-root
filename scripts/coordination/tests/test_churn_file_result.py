@@ -353,5 +353,16 @@ class TestFileResult(Base):
                 fr.parse(bad)
 
 
+
+class TestWithdrawnManifest(unittest.TestCase):
+    def test_withdrawn_predecessor_manifest_is_found(self):
+        with tempfile.TemporaryDirectory() as flags:
+            w = os.path.join(flags, "ready", ".withdrawn")
+            os.makedirs(w)
+            Path(w, "old-r1.json").write_text(json.dumps({"id": "old-r1", "schema": "epyc.row.v3"}))
+            p, m = fr.load_manifest(flags, "old-r1")
+            self.assertEqual((os.path.basename(os.path.dirname(p)), m["id"]), (".withdrawn", "old-r1"))
+
+
 if __name__ == "__main__":
     unittest.main()

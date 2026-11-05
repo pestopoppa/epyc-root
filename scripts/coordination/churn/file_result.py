@@ -117,7 +117,9 @@ def evaluate(node, metrics, values):
 
 
 def load_manifest(flags, rid):
-    for p in [os.path.join(flags, "ready", rid + ".json")] + sorted(glob.glob(os.path.join(flags, "ready", "*", rid + ".json"))):
+    # ready/.withdrawn/ too: glob's * skips dot-dirs, and a superseded predecessor must stay fileable (2026-11-05)
+    for p in ([os.path.join(flags, "ready", rid + ".json")] + sorted(glob.glob(os.path.join(flags, "ready", "*", rid + ".json")))
+              + [os.path.join(flags, "ready", ".withdrawn", rid + ".json")]):
         if os.path.isfile(p):
             with open(p) as fh:
                 return p, json.load(fh)

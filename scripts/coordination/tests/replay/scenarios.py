@@ -381,6 +381,29 @@ def sc_gpu_foreign_vram(path):
     return write(path, ticks), check
 
 
+def sc_pass_is_terminal(path):
+    """q38p4c-cpu-int8-20261105: the smoke PASSed (12:52:12Z) but its queue record and a dead RUNNING.json remained; the
+    keeper reaped + requeued it and 'state grantable; nothing to do' counted as never-started -> FAIL-1 overrode the PASS.
+    A PASS for the current launcher is terminal: never re-smoked, never FAILed, the row is granted."""
+    rid = "q38p4c-cpu-int8-20261105"
+    r = row(rid, extra="python3 bench.py --workers 4", est=1800)
+    r["smoke_queued"] = {"id": rid, "queued_at": _iso(T0 - 300), "cpus": 4, "waits": 2}
+    r["running"] = {"id": rid, "started": _iso(T0 - 200), "regions": "72-75", "at": _iso(T0 - 200)}
+    r["running_alive"] = False
+    r["dry_grant"] = f"regions=72-75 start={_iso(T0 - 240)[:16]}Z end={_iso(T0 + 1800)[:16]}Z holds=c72,c73,c74,c75\n"
+
+    def check(d):
+        out = []
+        if any(rid in f for x in d for f in x["fails_new"]):
+            out.append("a FAIL was recorded after the row's PASS")
+        if any(l.startswith(f"SMOKE-PLACE {rid}") for x in d for l in x["lines"]):
+            out.append("a grantable (PASSed) row was re-smoked")
+        if not _granted(d, rid):
+            out.append("PASSed row never granted")
+        return out
+    return write(path, [({rid: r}, {})] * 4), check
+
+
 SCENARIOS = {
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,
@@ -398,6 +421,7 @@ SCENARIOS = {
     "subquarter-row-on-20-free-cores": sc_subquarter_free_cores,
     "gpu-exclusive-admits-no-kfd-holder": sc_gpu_exclusive_no_kfd,
     "gpu-foreign-vram-blocks-exclusive": sc_gpu_foreign_vram,
+    "smoke-pass-is-terminal": sc_pass_is_terminal,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)
@@ -453,7 +477,42 @@ def pub_npd1_step5(root):
     return spec, check
 
 
-PUBLISH_SCENARIOS = {"publish-npd1-step5-accepted": pub_npd1_step5}
+INF75_JOB = """import os, subprocess
+def helper():
+    env = dict(os.environ, OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1')
+    return subprocess.run(["python3", "census.py"], env=env)
+def serve(port):
+    return subprocess.Popen(["llama-server", "-t", "48", "--port", str(port)])
+"""
+
+
+def pub_inf75_helper_omp(root):
+    """inf75-c5-w3-halfb-census-c6-r2 (2026-11-05): llama-server -t 48 on 48-95,144-191 (cpu+gpu, gpu-quiet exclusive)
+    was refused as 'threads 1: OMP_NUM_THREADS 1' - the OMP knob belonged to a Python helper's env. Thread evidence is
+    the compute binary's own argv; a helper's OMP_NUM_THREADS is never evidence."""
+    rid = "inf75-c5-w3-halfb-census-c6-r2-20261105"
+    d = os.path.join(root, rid)
+    os.makedirs(d, exist_ok=True)
+    eng = os.path.join(root, "filler_run15.sh")
+    open(eng, "w").write("#!/bin/bash\n")
+    open(os.path.join(d, "job.py"), "w").write(INF75_JOB)
+    lp = os.path.join(d, "launch.sh")
+    open(lp, "w").write(f"#!/bin/bash\nset -euo pipefail\nD={d}\nexec /bin/bash {eng} --id {rid} --class cpu+gpu "
+                        "--gpu-quiet exclusive --claim-cpus 48-95,144-191 --min-window 3600 --cmd \"/usr/bin/python3 -B $D/job.py\" "
+                        "--complete-cmd \"true\" --stop \"$D/STOP\" --workdir \"$D\"\n")
+    spec = {"id": rid, "owner": "inf22", "launcher": lp, "lane": "gpu", "regions": "mi210_0,48-95,144-191",
+            "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:INF75", "ram_gib": 64, "first_progress_s": 900}
+
+    def check(row, err):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        return [] if row.get("declared_threads") == 48 else [f"threads {row.get('declared_threads')} != 48 (helper OMP taken as evidence)"]
+    return spec, check
+
+
+PUBLISH_SCENARIOS = {"publish-npd1-step5-accepted": pub_npd1_step5,
+                     "publish-helper-omp-not-thread-evidence": pub_inf75_helper_omp}
 
 
 def build_all(out_dir):

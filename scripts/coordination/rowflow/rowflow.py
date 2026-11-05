@@ -283,6 +283,8 @@ _THREAD_PATS = (
     ("--workers", re.compile(r"--workers[ =]+['\"]?(\d+)\b")),
     ("OMP_NUM_THREADS", re.compile(r"\bOMP_NUM_THREADS=['\"]?(\d+)\b")),
 )
+_OMP_SHELL = re.compile(r"(?:^|[\s;&|('\"])(?:export\s+)?OMP_NUM_THREADS=\d+(?:\s+[\w/.$]|\s*$)")   # the shell env of a command
+_COMPUTE_BIN = re.compile(r"llama-(?:server|bench|cli|perplexity|batched-bench)|ik_llama|whisper-|qwentts|\bbench\b")
 _TASKSET = re.compile(r"\btaskset\s+(?:-a\s+)?(?:-c|--cpu-list)\s+['\"]?([\d,-]+)")
 
 
@@ -312,7 +314,7 @@ def launcher_threads(text, assigns, o):
             t = re.sub(r"\$\{([A-Za-z_]\w*):-([^}]*)\}", lambda m: assigns.get(m.group(1), m.group(2)), t)
             t = re.sub(r"\$\{([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)", lambda m: assigns.get(m.group(1) or m.group(2), m.group(0)), t)
         return t
-    best, tsk, ev = None, None, []
+    best, tsk, omp, ev = None, None, None, []
     for t in texts:
         # python argv lists (["-t", THREADS] / ["taskset", "-c", CPUS]): the first literal a NAME = "..." assignment
         # gives (the production value; a conditional's smoke branch comes after `if`) becomes a plain argv token
@@ -329,16 +331,24 @@ def launcher_threads(text, assigns, o):
             if line.lstrip().startswith("#"):
                 continue
             for name, rx in _THREAD_PATS:
+                # OMP_NUM_THREADS counts only on a compute binary's own environment (same line), never a helper's
+                # (inf75-c5-w3-halfb-census 2026-11-05: job.py's helper env OMP_NUM_THREADS='1' refused -t 48 serving)
+                if name == "OMP_NUM_THREADS" and not (_COMPUTE_BIN.search(line) or _OMP_SHELL.search(line)):
+                    continue
                 for m in rx.finditer(line):
                     n = int(m.group(1))
                     if 0 < n <= 192:
-                        ev.append(f"{name} {n}"); best = max(best or 0, n)
+                        ev.append(f"{name} {n}")
+                        if name == "OMP_NUM_THREADS":
+                            omp = max(omp or 0, n)
+                        else:
+                            best = max(best or 0, n)
             for m in _TASKSET.finditer(line):
                 n = count_cpus(m.group(1))
                 if n:
                     ev.append(f"taskset {m.group(1)}"); tsk = max(tsk or 0, n)
     # an explicit thread knob wins over a taskset list (taskset 0-95 + -t 48 uses 48 threads); taskset alone bounds it
-    return (best if best is not None else tsk), sorted(set(ev))
+    return (best if best is not None else omp if omp is not None else tsk), sorted(set(ev))
 
 
 # the launcher's own `D=` idioms that name its directory (ws58 2026-11-05: 18 rows carried an unexpanded `$D/...STOP`)
@@ -768,7 +778,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              f"({compress_cpus(wide)}); a GPU run needs gpu-quiet + q3's host threads (shape gpu-q3: regions "
              "mi210_0,88-95,184-191, --class gpu --no-fold-siblings) unless it carries whole-host evidence")
         q3 = {t for x in c["options"] for t in expand(x) if t in COEXIST_Q3 or t in qcores("q3")}
-        need(not (c["gpu_use"] and not c["timing"] and q3), "non-timing GPU row books q3 cores: q3 CPU use runs in parallel "
+        need(not (c["gpu_use"] and not c["timing"] and q3 and not c["evidence"]), "non-timing GPU row books q3 cores: q3 CPU use runs in parallel "
              "with non-timing GPU work; use the plain gpu shape (regions mi210_0,184-191, --class gpu --no-fold-siblings). A "
              f"timing row declares it: --role bench, admission_class {'|'.join(GPU_TIMING_CLASSES)}, or timing: "
              f"{'|'.join(GPU_TIMING_KINDS)}; else shape_override")
@@ -3177,6 +3187,10 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
         pl = load_json(smoke_placed_path(flags, rid)) or {}
         if pl.get("pid") and alive(pl["pid"]):
             continue   # running; its cpus are already in busy
+        if smoke_passed(flags, rid):   # a PASS is terminal: never re-smoke a grantable row
+            _rm(q)
+            log(f"SMOKE-DONE {rid}: PASS already recorded for this launcher; queue record dropped")
+            continue
         want = int((load_json(q) or {}).get("cpus") or n)
         gt = gpu_touch(load_json(ready_path(flags, rid)) or {})
         if gt and GPU not in free:   # a /dev/kfd-capable smoke queues behind every GPU holder (exclusive grants first)
@@ -3268,10 +3282,28 @@ def _rm(path):
         return False
 
 
+def smoke_passed(flags, rid, d=None):
+    """A PASS for the row's CURRENT launcher exists: the smoke is terminal (q38p4c-cpu-int8 2026-11-05: PASS at 12:52:12Z,
+    then a reap-requeue + 'state grantable; nothing to do' counted as never-started and FAIL-1 overrode the PASS)."""
+    p = load_json(pass_path(flags, rid))
+    if not p:
+        return False
+    d = d or load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json")) or {}
+    try:
+        return p.get("launcher_sha256") == sha256(d["launcher"]["path"])
+    except (OSError, KeyError, TypeError):
+        return "launcher_sha256" not in p
+
+
 def smoke_wait_or_fail(flags, rid, d, why, log=print):
     """Count a never-started WAIT against the queued smoke; the SMOKE_MAX_WAITS-th one is FAIL reason=never-started.
-    Returns WAIT | FAIL."""
+    A PASS for the current launcher is terminal: the queue record is dropped, nothing is counted or failed.
+    Returns WAIT | FAIL | PASS."""
     q = smoke_queued_path(flags, rid)
+    if smoke_passed(flags, rid, d):
+        _rm(q)
+        log(f"SMOKE-DONE {rid}: PASS already recorded for this launcher; not re-smoked ({why[:120]})")
+        return "PASS"
     qd = load_json(q) or {}
     n = int(qd.get("waits") or 0) + 1
     if n >= SMOKE_MAX_WAITS:
