@@ -1254,3 +1254,10 @@ Sources: [EXP01 findings](../docs/findings/exp01-trellis-proxy-pilot-20261104.md
 - The EXP01 pilot r2 is invalid as a ratio: one 4-thread smoke sample was mixed into 11 official 24-thread samples. The post-hoc exclusion was withdrawn, and an isolated r3 rerun decides port/futility.
 
 Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-filing.md) · [quantization handoff](../handoffs/active/quantization-and-low-bit.md) · [MI210 lever](../progress/2026-11/2026-11-04-handoff-fable5-window2-findings-05c-mi210-lever.md)
+
+## Compiled update — 2026-11-05 (operator-adhoc-ops wrap-up 3): C6 q4_K MMVQ/MMQ numeric bug
+
+- **The C6 combined q4_K failures were a real numeric bug, not tolerance noise**: the min/offset term used the float sum of the activations instead of the quantized sum. Fixed in three places (`experimental/c6-q4-mmvq-mmq-fix` @ 0bccaa85d, folded with llguidance as 21232569a); the full GPU backend suite then had 0 failures. The fixed candidate is +77% slower on the q4_K n=4 case, so the fix is not free; the slowdown and the unsupported-set rule are open boxes.
+- **The C6 port35186 serving −4.75% "FAIL" was not significant** (CI −7.6%..+0.9%); a 24-pair re-measure is queued. The 27B identity mismatch was a harness sort-order bug (lexicographic arm serialization).
+
+Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md)

@@ -1998,3 +1998,9 @@ Sources: [autopilot handoff](../handoffs/active/autopilot-program.md) · [C6 han
 - EVL38's periodic candidate-gate workflow is deleted. The generic ROOT hermetic workflow remains manually dispatchable: run 41307788637 passed its only hermetic job on main at source commit 58737a05e8e6984620934eecc97691f522c52bb2. The earlier scheduled run 41223677301 captured its native receipt but failed full-candidate reference validation on nine host-local scratch paths. The manual pass verifies the shared CI path only; it does not restore the schedule, establish candidate readiness, or grant promotion authority. ([retirement report](../docs/reports/evl38-schedule-retirement-20261101.md); [CI capture](../artifacts/ci/evl38-manual-dispatch-20261101/README.md); [NI progress](../progress/2026-11/2026-11-01-codex-ni.md); [generic workflow](../.github/workflows/tests.yml))
 
 Sources: [EVL38 retirement report](../docs/reports/evl38-schedule-retirement-20261101.md) · [manual CI capture](../artifacts/ci/evl38-manual-dispatch-20261101/README.md) · [NI progress](../progress/2026-11/2026-11-01-codex-ni.md) · [shared ROOT tests workflow](../.github/workflows/tests.yml)
+
+## Compiled Update — 2026-11-05 (operator-adhoc-ops wrap-up 3): llguidance fold
+
+- llguidance folded onto the C5 champion (V11-122). Serving A/B: ~3% TPOT gain on tool-call grammar, none on json_schema. Production gain is zero today because `ORCHESTRATOR_TURN1_GRAMMAR` has been off since 10-23 — a landed speedup behind an off flag needs its own enable box (V11-122-PROMOTE-FLAG). GPU no-regression gate row queued.
+
+Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md)
