@@ -1,0 +1,32 @@
+{
+  "id": "hsf3-adjacency-impact-3a09-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "0-95",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+  "decision_rule": "At detached root 3a09b2fa1f21b398307f69c17bcd621eb1e5473d, tree 1200652d7898572348a701cfc28578b2699aac3b, capture native upstream impacts for native_call and extract in scripts/harness/session_gap_measure.py, and native_rows in scripts/vidya/adapters/session_intercall_gap.py. Require exact native target file/name/id, private registry path and graph lastCommit binding, complete pagination, all three impacts, and full verbose skipped-file coverage. HIGH/CRITICAL writes OWNER_WARNING and stops before source edits, even on partial output. Source drift, missing/ambiguous binding, parser failure, partial/truncated output, STOP or deadline is INCONCLUSIVE. Skipped/ignored source is unknown impact. Smoke source references remain partial. No fix application, tests, extraction, distribution or HSF-3 closure.",
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-3-BARRIER-IMPACT",
+  "priority_rank": 90,
+  "first_progress_s": 300,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-adjacency-impact-3a09-20261105",
+  "keep": [
+    "out/**",
+    "identity.json",
+    "seals.sha256",
+    "job.py",
+    "source_integrity.py",
+    "launch.sh",
+    "spec.json",
+    "README.md",
+    "gitnexus-guard.py"
+  ],
+  "lineage": "HSF-3-malformed-native-adjacency-impact",
+  "kind": "compute",
+  "notes": "Prepared only; untested and unpublished. Four-CPU source-reference smoke is partial, not native impact clearance. Full scan: 96 CPUs, 48 GiB RAM, 150 GiB disk floor."
+}

@@ -79,3 +79,7 @@ Filed kvu-kpf131-findslot-observer-20261104 PASS for the model-free observer fix
 ## 01:54Z — File the group-3 socket controls and ready distinct slot-query qualification
 
 Filed kpf18-g3-rowflow-socket-qual-20261105 PASS: the full run completed six socket controls on CPUs 72–95; the independent publisher smoke ran on four CPUs. Neither establishes native cancellation, model/GPU behavior or historical layout. Published later task-binding and postcancel-idle slot-query qualification; its four-CPU software smoke completed rc0. Full controls and native release remain pending.
+
+## 02:00Z — File the incremental matched-frontier census and advance the next independent qualification
+
+Filed hsf3-incremental-r2-20261105 PASS for its scoped scan: 124 matched prior progress frontiers, zero unmatched, zero appended bytes or records. SQLite and tap remain outside scope; no gap distribution or independent replicate follows. Published exact-source malformed-call adjacency impact analysis after four-CPU partial reference smoke; a separate under-five-minute synthetic fixture was not run or published. No live gap outcome or projection claim follows.

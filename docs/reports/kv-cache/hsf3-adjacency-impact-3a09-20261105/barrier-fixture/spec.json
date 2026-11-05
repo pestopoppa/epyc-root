@@ -1,0 +1,37 @@
+{
+  "id": "hsf3-native-barrier-qualification-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-native-barrier-qualification-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-native-barrier-qualification-20261105/out/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 120,
+  "ram_gib": 1,
+  "handoff_task": "HSF-3-NATIVE-BARRIER-QUAL",
+  "priority_rank": 90,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf3-native-barrier-qualification-20261105",
+  "unit_key": "cases",
+  "keep": [
+    "producer.py",
+    "job.py",
+    "launch.sh",
+    "runtime.sha256",
+    "spec.json",
+    "README.md",
+    "out/**",
+    "smoke/**"
+  ],
+  "question": "Can malformed native middle-call completion cause extraction to bridge nonadjacent same-session calls?",
+  "expected_effect_vs_sample_error": "Deterministic synthetic integrity qualification, no sample-size claim.",
+  "decision_rule": "PASS iff ordered/shuffled controls yield two adjacent pairs and missing/invalid middle completion never yields pair 0\u21922; controlled source refusal is acceptable for malformed cases. UNSAFE identifies a parser prerequisite and establishes no live data outcome.",
+  "stop_rule": "One bounded synthetic qualification; own SIGALRM at 120 seconds or earlier FILLER_DEADLINE/FILLER_END, with STOP and deadline checks per case. No process-group signals.",
+  "gate_class": "futility-only",
+  "source_binding": {
+    "path": "scripts/harness/session_gap_measure.py",
+    "sha256": "d8b1e6140c3de918e1335686cfd39a295a5f795fa5ecae5e7efb2a7de02d6eff"
+  },
+  "lineage": "hsf3-native-barrier-qualification"
+}
