@@ -31,3 +31,7 @@ Twenty matched q4_K synthetic pairs completed with all seven sizes per arm. For 
 ## 03:21Z — Started W5s successor publisher smoke; independent packet review identified stale draft manifests and prior qualification receipts requiring reconciliation.
 
 Started the W5s successor publisher smoke; independent review found draft manifests still refer to r7 and earlier receipts do not qualify r3. Await the smoke terminal evidence and reconcile packet custody before treating the row as ready. No census claim. [no-belief: preparation only]
+
+## 03:24Z — Filed the original-C6 versus corrected-image q4_0 paired performance result.
+
+Filed `c6-q40-original-c6-perf-20261105` rc0: 20 paired runs across seven q4_0 shapes, with raw logs and result retained; n=5 corrected time changed −8.222% (descriptive 95% interval −9.665% to −6.780%). Images differ in multiple ways, so no isolated-fix or promotion claim. [belief: cc]
