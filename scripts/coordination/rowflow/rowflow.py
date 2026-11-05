@@ -1656,6 +1656,8 @@ def contract_of(d, o=None, flags=None):
     gib = int(d.get("gib") or 0)
     abstract = regs == "any-cpu-quarter" or regs.startswith("any-of")
     decl_cpus = "" if abstract else ws58_cpus(regs)
+    if not abstract and not decl_cpus and re.fullmatch(r"q[0-3](,q[0-3])*", regs.replace(" ", "")):
+        decl_cpus = ",".join(cpu_list(q) for q in regs.replace(" ", "").split(","))   # regions "q2": that quarter
     whole = len(quarters_of(cc or decl_cpus, fold=True)) >= 4 and (evidence or gib > 3 * QUARTER_RAM_GIB)
     gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) and not cpu_declared(d, o) else set()
     lends, lock_tokens, floored = frozenset(), set(), False
@@ -1718,12 +1720,25 @@ def contract_of(d, o=None, flags=None):
                 within = [x.strip() for x in regs[len("any-of"):].split(",")] if regs.startswith("any-of") else QUARTERS
                 shape, opts = "quarter", [frozenset({q}) for q in within if q in QUARTERS]
         opts = [frozenset(x | gpu_tok) for x in opts]
+    # keeper classfix 2026-11-05 (iqk-q8-prefill-ab-r3 regions q2 + shape_override -> granted 80-83 on q3;
+    # inf75-c5-w3-halfb-census-c6-r2 mi210_0,48-95,144-191 + shape_override -> mi210_0,80-83): explicit concrete
+    # regions are honoured VERBATIM - never shrunk or moved - for a CPU row, and for any row carrying shape_override
+    explicit = (not whole and bool(decl_cpus) and (bool(str(d.get("shape_override") or "").strip())
+                                                   or (not gpu_row and len(quarters_of(decl_cpus, fold=True)) <= 1)))
+    if explicit:
+        et = cpu_tokens(decl_cpus, gpu_threads=gpu_row)
+        nq = len(et & set(QUARTERS))
+        opts = [frozenset(et | gpu_tok)]
+        cpu_extra = {t for t in et - set(QUARTERS) if t in CORES}
+        shape = ("sub-quarter" if not nq else "quarter" if nq == 1 and not cpu_extra else
+                 f"multi-quarter({min(nq, 3)})" if not cpu_extra else shape)
+        floored = True
     opts = [frozenset(compress(expand(x))) for x in opts if x] or [frozenset({q} | gpu_tok) for q in QUARTERS]
     held = max((len({t for t in expand(x) if t in CORES}) for x in opts), default=0)
     need_cores = held if (whole or gpu_use or threads is None or floored) else (SUB_CORES if threads <= SUB_CORES else 24 * -(-threads // 24))
     return {"shape": shape, "options": opts, "bench": gq == "exclusive", "threads": threads, "gpu_use": gpu_use,
             "timing": timing, "evidence": evidence, "lock": honours, "lends": lends, "need": need_cores, "held": held,
-            "claim": cc if cls != "gpu" else "",
+            "claim": cc if cls != "gpu" else "", "explicit_cpus": decl_cpus if explicit else "",
             "coexist": (not gpu_row and not timing and gq in ("", "none") and threads is not None
                         and threads <= COEXIST_MAX_THREADS)}
 
@@ -1751,6 +1766,10 @@ def grant_regions(d, option):
     """The regions= string of a grant for `option`: exactly the cpus the contract holds (a GPU row keeps its regions
     unless the contract clipped them; a concrete CPU region that matches the option is kept verbatim)."""
     regs = str(d.get("regions") or "")
+    if "mi210" in regs and str(d.get("shape_override") or "").strip():
+        return regs   # keeper classfix 2026-11-05: explicit regions + shape_override are honoured verbatim
+    if re.fullmatch(r"q[0-3](,q[0-3])*", regs.replace(" ", "")) and set(regs.replace(" ", "").split(",")) == {q for q in option if q in QUARTERS}:
+        return ",".join(cpu_list(q) for q in regs.replace(" ", "").split(","))
     if "mi210" in regs:
         cpus = _cpu_set(ws58_cpus(regs))
         held = {int(t[1:]) for t in expand(option) if re.fullmatch(r"[ct]\d+", t)}
@@ -3712,7 +3731,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
                     failed.append(rid); continue
                 # the engine's region-lock claim IS the contract: a CONTRACT_LOCK engine locks lock= instead of --claim-cpus
-                gl = write_grant(flags, rid, regions, opt, d["window_s"], lock_cpus(opt) if c.get("lock") and c.get("claim") else "")
+                gl = write_grant(flags, rid, regions, opt, d["window_s"], (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "")
                 atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
                 log(f"GRANT {rid} {gl} ({line[:160]})")
                 out.append(("grant", rid, regions))

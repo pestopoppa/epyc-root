@@ -655,11 +655,57 @@ def pub_iqk_declared_quarter_floor(root):
     return spec, check
 
 
+def pub_iqk_ab_r3_explicit_q2(root):
+    """iqk-q8-prefill-ab-r3-20261105: regions "q2", shape quarter, operator shape_override -> GRANTED 80-83,176-179
+    (4 cores on q3). Explicit regions + shape_override are honoured verbatim: exactly q2."""
+    rid = "iqk-q8-prefill-ab-r3-like"
+    d, lp = _mk_cpu_row(root, rid, "import os\nassert len(os.sched_getaffinity(0)) >= 24, 'not a whole quarter'\n")
+    spec = {"id": rid, "owner": "t", "launcher": lp, "lane": "cpu", "regions": "q2", "shape": "quarter",
+            "shape_override": "operator: op 2026-11-05: CPU timing A/B needs one whole quarter",
+            "result_path": os.path.join(d, "out", "r.json"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:IQK", "first_progress_s": 600}
+
+    def check(row, err, rf):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        c = rf.contract_of(dict(row, measured_threads=3.1))
+        bad = [] if [set(x) - {rf.GPU} for x in c["options"]] == [{"q2"}] else [f"options {c['options']} != [q2]"]
+        g = rf.grant_regions(row, c["options"][0])
+        if rf._cpu_set(g) != rf._cpu_set(rf.cpu_list("q2")):
+            bad.append(f"grant regions {g} != q2")
+        return bad
+    return spec, check
+
+
+def pub_inf75_c6_r2_explicit_override(root):
+    """inf75-c5-w3-halfb-census-c6-r2-20261105: regions mi210_0,48-95,144-191 + operator shape_override -> GRANTED
+    mi210_0,80-83,176-179; admission refused "missing q2". Granted regions and lock are the declared ones verbatim."""
+    spec, _ = pub_inf75_helper_omp(root)
+    spec["shape_override"] = "operator: op 2026-11-05: canonical INF-75 half-B placement"
+
+    def check(row, err, rf):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        c = rf.contract_of(dict(row, measured_threads=1.2, declared_threads=1))
+        bad = []
+        if len(c["options"]) != 1 or not {"q2", "q3", rf.GPU} <= set(c["options"][0]):
+            bad.append(f"options {c['options']} do not hold q2+q3+gpu")
+        g = rf.grant_regions(row, c["options"][0])
+        if g != row["regions"]:
+            bad.append(f"grant regions {g} != {row['regions']}")
+        if c.get("explicit_cpus") and rf._cpu_set(c["explicit_cpus"]) != rf._cpu_set("48-95,144-191"):
+            bad.append(f"lock {c['explicit_cpus']} != 48-95,144-191")
+        return bad
+    return spec, check
+
+
 PUBLISH_SCENARIOS = {"publish-npd1-step5-accepted": pub_npd1_step5,
                      "publish-helper-omp-not-thread-evidence": pub_inf75_helper_omp,
                      "publish-yarn-compute-process-threads-win": pub_yarn_job_side_threads,
                      "publish-stt5-cpu-declared-never-gpu-quiet": pub_stt5_cpu_declared_no_gpu,
-                     "publish-iqk-declared-quarter-never-shrunk": pub_iqk_declared_quarter_floor}
+                     "publish-iqk-declared-quarter-never-shrunk": pub_iqk_declared_quarter_floor,
+                     "publish-iqk-ab-r3-explicit-q2-verbatim": pub_iqk_ab_r3_explicit_q2,
+                     "publish-inf75-c6-r2-explicit-override-verbatim": pub_inf75_c6_r2_explicit_override}
 
 
 def build_all(out_dir):
