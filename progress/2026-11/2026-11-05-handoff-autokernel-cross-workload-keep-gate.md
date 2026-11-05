@@ -147,3 +147,7 @@ Published `c6-q40-perf-paired-20261105` with actual seven-shape paired performan
 ## 03:17Z — File completed matched q4_K synthetic performance comparison
 
 Filed `c6-q4k-matched-perf-20261105` rc0 against its descriptive rule; 20 matched pairs, n=4 +76.993% mean paired time (95% descriptive t interval 75.103–78.882%), with limitations and retained evidence recorded in the handoff. Full candidate qualification remains open; original-C6 q4_0 row is granted.
+
+## 03:23Z — Build and qualify an owned-task scheduler trace normalizer diagnostic
+
+Implemented the bounded scheduler trace normalizer, verified six synthetic controls and replayed four retained owned-child samples. Published the independent live decoder diagnostic after publisher smoke PASS; it does not establish continuous coverage or an admissible C5 noise floor. Two GPU diagnostic smokes are queued while the GPU is busy.
