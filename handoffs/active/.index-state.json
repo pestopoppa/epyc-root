@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 645
+      "open": 643
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -2421,10 +2421,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 116,
+      "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 33,
+      "open": 31,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2433,17 +2433,17 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 150,
+      "total": 149,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 74,
+          "closed": 75,
           "gates": [],
           "guarded": 0,
           "line": 13,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 19
+          "open": 17
         },
         {
           "blocked": 0,
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 707,
+          "line": 708,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
