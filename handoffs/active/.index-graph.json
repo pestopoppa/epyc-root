@@ -659,7 +659,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T16:59:32Z",
+  "generated_at": "2026-11-05T17:40:02Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2147,15 +2147,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 276,
-      "dispatchable": 121,
+      "closed": 277,
+      "dispatchable": 120,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 123,
+      "open": 122,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2189,7 +2189,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 42,
+          "dispatchable": 41,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2198,14 +2198,14 @@
           ],
           "line": 9,
           "name": "autokernel-champion-aggregate",
-          "open": 43,
+          "open": 42,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1580,
+          "line": 1587,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2214,7 +2214,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1704,
+          "line": 1711,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2223,7 +2223,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2031,
+          "line": 2038,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2232,7 +2232,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2170,
+          "line": 2177,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2241,7 +2241,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2723,
+          "line": 2730,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2258,7 +2258,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2860,
+          "line": 2867,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2281,7 +2281,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3754,
+          "line": 3761,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61,
           "readiness": "blocked"
@@ -3165,14 +3165,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 241,
-      "dispatchable": 104,
+      "dispatchable": 106,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-05",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 104,
+      "open": 106,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3192,18 +3192,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 56,
+          "dispatchable": 58,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 56,
+          "open": 58,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1151,
+          "line": 1153,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3212,7 +3212,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1190,
+          "line": 1192,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3221,7 +3221,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1297,
+          "line": 1299,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3230,7 +3230,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1397,
+          "line": 1399,
           "name": "loop-state-offraid-backup",
           "open": 5,
           "readiness": "ready"
@@ -3239,7 +3239,7 @@
           "blocked_by": [],
           "dispatchable": 35,
           "gates": [],
-          "line": 1443,
+          "line": 1445,
           "name": "refactoring-multirepo-2026-10",
           "open": 35,
           "readiness": "ready"
@@ -3248,7 +3248,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 2016,
+          "line": 2018,
           "name": "repo-readiness-scorer",
           "open": 5,
           "readiness": "ready"
