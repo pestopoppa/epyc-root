@@ -135,3 +135,7 @@ Filed eleven model-free G3 slot controls; this is not native cancellation. Filed
 ## 03:06Z — File native vocabulary census and ready bounded tokenizer observation
 
 Filed kpf623-byte-alignment-exploratory-20261105 under its own decision rule; broader empty-auxiliary enumeration was independently completed by r2. Filed the fresh kpf623-census-r2 native inventory: both 151,936-piece output hashes match the exploratory inputs. Mapping evidence is producer-reported and in-run model custody is stat-only. Published a source-bound, vocabulary-only auxiliary tokenizer observation over 256 uniquely decomposable target pieces after its four-CPU model-free smoke passed; full observation and contextual alignment remain open.
+
+## 03:12Z — File inherited-FD and KPF-41 supervisor evidence and publish group-3 entry qualification
+
+Filed the KPF-50 inherited-FD acquisition qualified for owned-child file-backed ranges; actual map_files and residency remain unproved and descendant verification is false. Filed KPF-41 r3 synthetic supervisor UNSAFE because its suffix marker was accepted, and r4 PASS on cleanup and all four exact-marker controls. Published the bounded KPF-18 group-3 receipt-backed entry qualification after its four-CPU smoke passed; full controls and actual receipt verification, native lifecycle and GPU admission remain pending.

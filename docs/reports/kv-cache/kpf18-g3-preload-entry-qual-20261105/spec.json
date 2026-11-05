@@ -1,0 +1,21 @@
+{
+  "id": "kpf18-g3-preload-entry-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf18-g3-preload-entry-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf18-g3-preload-entry-qual-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS requires four source-sealed fake-collaborator controls of the copied receipt-backed preload driver main. Stop on mismatch, source drift, STOP or deadline. No real receipt, native lifecycle or GPU conclusion.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.0d(item 3, group 3)",
+  "priority_rank": 46,
+  "first_progress_s": 30,
+  "dryrun_timeout_s": 60,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf18-g3-preload-entry-qual-20261105",
+  "keep": [
+    "**"
+  ]
+}

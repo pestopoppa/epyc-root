@@ -1,0 +1,39 @@
+{
+  "row_id": "kpf41-r4-supervisor-qual-20261105",
+  "status": "PROBED",
+  "source_sha256": "a47f44ff90986ef356276d90a665c4536035cd6e14044654e45d85f2feae45ae",
+  "cleanup_actual": "PASS",
+  "tests": [
+    {
+      "case": "f16",
+      "observed": true,
+      "expected": true,
+      "matched": true
+    },
+    {
+      "case": "q8",
+      "observed": true,
+      "expected": true,
+      "matched": true
+    },
+    {
+      "case": "wrong-type",
+      "observed": false,
+      "expected": false,
+      "matched": true
+    },
+    {
+      "case": "suffix-mutation",
+      "observed": false,
+      "expected": false,
+      "matched": true
+    }
+  ],
+  "exact_marker_safe": true,
+  "scope": "copied r4 actual cleanup_test and actual marker_ok function; synthetic only; no GPU, native fixture or whole lifecycle claim",
+  "progress": 5,
+  "boundary": {
+    "stop": "/mnt/raid0/llm/tmp/kvfork/kpf41-r4-supervisor-qual-20261105/STOP",
+    "end": 1793847450.0
+  }
+}
