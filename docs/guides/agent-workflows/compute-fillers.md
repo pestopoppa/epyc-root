@@ -9,6 +9,27 @@ Early-ending compute blocks leave gaps. Registered **fillers** use them, without
 
 Plan long measurements and intermediate decisions using [measurement sufficiency](measurement-sufficiency.md); a grant end is a resource boundary, not a scientific completion criterion.
 
+## Deploying rowflow: `deploy_rowflow.sh` is the ONLY sanctioned path (operator 2026-11-05)
+
+Nothing may copy files into `compute-flags/bin/rowflow/` by hand. The one path is
+`scripts/coordination/rowflow/deploy_rowflow.sh [--ref origin/main] [--check-only]`: it stages a detached worktree
+of `<ref>`, runs its unit tests (`tests/test_rowflow*.py`, `test_allocator.py`) **and the replay gate**
+(`scripts/coordination/tests/replay/test_replay_gate.py` against the staged `rowflow/`), refuses on any failure,
+refuses to swap `filler_run15.sh` under open grants, then backs up each changed file (`<f>.bak-<UTC>-deploy`), installs
+via `<f>.part` + `mv -f`, writes `bin/rowflow/DEPLOYED.json`, and requires a keeper `SNAPSHOT` with no traceback
+within 300 s, rolling back otherwise. Run `--check-only` before asking for a deploy.
+
+The replay harness (`scripts/coordination/tests/replay/`, design in `replay_lib.py`): `record_trace.py` writes
+`epyc.rowflow.trace.v1` traces read-only (`live` from the flags dir, `from-log` reconstructing a day from the keeper
+log); `replay_allocator.py` runs any `rowflow.py` (a dir, or `versions --commits`) through a trace in a sandboxed
+flags dir with a fake clock and simulated jobs, and checks invariants with its own oracle: no STOPped row granted, no
+regrant after a release without `.ended`, a <= 4-thread row never gets the whole host, no >= 2-quarter / whole-host
+booking without evidence (declared shape never bypasses it), GPU-timing keeps q3 quiet while GPU work leaves it
+grantable, whole-host CPU serving (npd1-step5) admitted, coexist decided by engine lock sets, a queued smoke under a
+whole-host grant WAITs, a wedged dry run is reaped past its deadline and a dead one frees its cpus within one tick,
+and every idle region names its blocking rule. Each replay reports idle quarter-hours and gpu-hours with candidates
+pending, so two versions can be compared on the same trace. A new incident class = a new scenario in `scenarios.py`.
+
 ## Protocol
 
 1. A block that ends before its booked end writes `/mnt/raid0/llm/tmp/compute-flags/<block>_FREED`. The calendar owner (workspace-58) consumes it.
