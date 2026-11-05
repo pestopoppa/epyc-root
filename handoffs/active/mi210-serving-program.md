@@ -38,6 +38,7 @@
 - [x] **M4-GPU-REAL-QUALIFICATION** — r6 real-device first-unit qualification passed with controlled STOP and verified empty owned cgroups; own-device peak VRAM 31,992,983,552 B. ✅ 2026-11-02 [no-belief: qualification-only load and request, not a timing measurement]
 - [x] **M4-GPU-AA-NP4** — run the same-frame A/A pair at np4/65536 on the MI210. [inference] Completed by `inf22-m4-aa-np4-r8-20261103` rc=0: same-source C5 target/draft recipes, two fresh-server arms, each 8/8 successful 256-token responses (2048 tokens/arm), with in-window own-PID KFD/VRAM and mapped HIP evidence. Aggregate decode: A1 136.7283 vs A2 131.2162 tok/s (higher better), A2/A1 0.959686. Descriptive only: no acceptance floor, fold, quality, or promotion decision; native decision_grade=false and gate_authorized=false. [Native evidence and contract checks](../../artifacts/compute/mi210-row-filings-20261104/inf22-m4-aa-np4-r8-20261103/VERIFICATION.md). ✅ 2026-11-04 [belief: cc]
 - [ ] **M4-SRPF-ENABLE** [inference] turn SRPF on for frontdoor (Qwen3.6-35B-A3B Q8_0, CPU) or architect_critic (Qwen3.8-27B Q8_0 + DFlash2, GPU) only if head-of-line queueing delay becomes a real serving complaint. Then: one np4 server, short-prompt TTFT with a concurrent 8k+ prefill collider, 2 ABBA pairs, ~30 min; quality via the R12 gate. stop-on-answer when the TTFT delta exceeds the A/A noise or is within it; stop-on-futility on STOP/deadline/server error; gate-class = futility-only.
+  - *(2026-11-05 triage)* Trigger NOT fired. serving_calls.jsonl (195 calls, 10-03..11-02): architect_critic 8/8 ok, pre-dispatch wait max 187 ms, TTFT median 715 ms; frontdoor 76 calls, TTFT median 2.0 s; its 45-49 s TTFTs (10-29) are each request's own prompt_ms (1433 tok), not queueing behind another slot; its 6 timeouts are dispatched=false (no server reached). PB-HOL-1/M4.2 show the mechanism under synthetic collision only. No serving complaint exists; stays conditional, no measurement. [no-belief: log audit, no measurement]
 - **M4-GPU-SPEED-CAPTURE** — implement and qualify the independently bound GPU native writer, reader and actual launcher; tracked by `VB-INF22-M4-GPU-SPEED-WRITE`. [declined: operator 2026-11-04 plan measured decode, which SRPF cannot move; default-OFF fold needs no A/B; greedy identity is unsound under batching]
 - **M4-CPU-QUALITY-CONTAINMENT** — complete current-role CPU/quality source binding and qualify owner-loss-safe execution and evidence checks. Done when the M4 CPU quality arm's packet records model sha256, build commit and recipe for every current role, and a second session can replay the evidence check from the packet alone (no owner present). [declined: operator 2026-11-04 plan measured decode, which SRPF cannot move; default-OFF fold needs no A/B; greedy identity is unsound under batching]
   - Prepared [standalone replay auditor and synthetic controls](../../data/mi210/m4-cpu-quality-replay-20261104/README.md); relocated test resolves its adjacent auditor and passes 12 checks. This does not qualify the arm: current role/model/image/recipe bindings, reviewed plan, owner-loss proof and paired quality captures are still required. [no-belief: engineering preparation, no measurement]
@@ -2077,59 +2078,7 @@ Source: control-plane planning session (audit `research/deep-dives/2026-07-16-ar
 
 #### Research Intake Update — 2026-08-21 (Stage-2b, intake-1279#record)
 
-- [ ] **B3 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — add a ≥20K-token greedy
-      coherence gate before `GGML_CUDA_GDN_STATE_BF16` is ever enabled in production.**
-      That lever is attractive (+17.7 % aggregate @B32 on the frontdoor) and it is **default OFF → F32
-      → byte-identical to upstream**, so nothing is broken today. The problem is its *gate*: it was
-      validated on PPL drift plus a **512-token** coherence check. If upstream #27442 turns out to be
-      recurrent-state precision loss over long prefill, **that gate is structurally incapable of
-      catching it** — a 512-token check cannot see a defect whose reported onset is 16.5–19.8K tokens.
-      **Blocked on G1** because G1 is what determines whether that failure mode exists on our paths at
-      all. Until G1 reports, do not enable this lever in production.
-
-#### Research Intake Update — 2026-08-22 (Stage-2b wave, intake-1281 / intake-1290)
-
-Row ids are **wave-2 plan ids** and do not continue the 2026-08-21 section above — `B5` here is
-unrelated to `B3` there. Classes: **Z** zero-compute, **G** compute-gated (names the measurement, the
-owning handoff, and the result that opens the gate), **B** blocked-on (names its upstream item).
-
-##### The ggml delta for a GDN-2-class update rule is one assert (Z — documentation; do NOT open a port branch)
-
-Read read-only from the frozen tree at `0db32c06e3e5` on 2026-08-23:
-
-| What a channel-wise erase/write rule would need | State in our tree |
-|---|---|
-| Channel-wise **decay** on the key axis | **Already ships.** `ggml/include/ggml.h:2578` documents `g` as `[1, H_v, n_tokens, n_seqs]` (scalar gate) **or** `[S_v, H_v, n_tokens, n_seqs]` (KDA); `ggml/src/ggml-cpu/ops.cpp:10851` asserts exactly that disjunction, and `:10864` sets `const bool kda = (neg0 == S_v)` |
-| Channel-wise **β** (the erase gate) | **`GGML_ASSERT(src_beta->ne[0] == 1);` at `ggml/src/ggml-cpu/ops.cpp:10852` — the only structural blocker**, and its per-backend counterparts |
-| gfx90a coverage | **Free.** `ggml/src/ggml-hip/CMakeLists.txt:63` is `file(GLOB GGML_SOURCES_ROCM "../ggml-cuda/*.cu")`, so any CUDA-side GDN change compiles for HIP with no separate port step |
-
-**This documents an existing capability. It is not a proposal, and it must not be read as one.**
-Porting GDN-2 is a standing **decline on evidence** — see `B9` in
-[log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness). The value of the row
-is that the next person to ask "how big is the ggml delta for a channel-wise gate?" gets the answer
-without re-deriving it, and gets the *right* answer: one assert, not a new op family. **Do not open a
-port branch on the strength of it** (intake-1281#record).
-
-##### #26001's `K == 1` gate can never fire on the production frontdoor (Z — hard selection constraint)
-
-**Mostly already recorded — point at it, do not restate it.** The full finding landed 2026-08-22 in
-commit `89049772` as *"Correction — 2026-08-22 (Stage-2b dive on llama.cpp PRs #26001 / #24561)"* in
-[k28-fused-chunked-gdn-kernel-research.md](../completed/k28-fused-chunked-gdn-kernel-research.md):
-the three selection constraints, the Amdahl re-derivation, and the numerics caveat. That handoff is
-**completed**, and `G15` below lives here — so only the operative rule belongs in the active plane:
-
-> **On this stack #24561 is the only candidate; #26001 is structurally unusable, not merely
-> unattractive.** We serve `--spec-type draft-mtp`, so `K = cparams.n_rs_seq + 1 > 1`
-> (`src/models/delta-net-base.cpp:570`, and again at `:502`), and #26001 requires `K == 1`; its
-> runtime dispatch is additionally `GGML_CUDA_CC_IS_NVIDIA(cc_dev)`, so it has no AMD runtime path at
-> all. **`keep_rs` support is a requirement, not a preference**, and any future "just take the merged
-> one" reasoning is wrong here. #24561 was closed unmerged on maintenance/authorship grounds, not on
-> merit.
-
-Re-verified independently against the frozen tree 2026-08-23 (intake-1290#record).
-
-##### Tasks
-
+- [ ] **B3 (B) — add a ≥20K-token greedy coherence gate before `GGML_CUDA_GDN_STATE_BF16` is ever enabled in production.** [inference] *(2026-11-05 re-triage)* No longer blocked: G1 closed 2026-08-27 NOT REPRODUCIBLE ([model-architecture-readiness.md → G1](model-architecture-readiness.md), F32 CPU path only, so it does not cover the bf16 HIP state). The knob is OFF everywhere: no orchestrator launch surface sets it (stack_topology / launch_manifest / model_registry grep = 0); C6 `729599d69` carries the getenv (`src/llama-model.cpp:2140`, string present in the GPU store's libllama.so). L20's "deployed" means "the GDN-hybrid models inherit the lever", not "enabled". Frontdoor is CPU, so the knob is moot there; exposure = the :8083 Qwen3.8-27B GDN hybrid only. Gate packet prepared, unpublished: `/mnt/raid0/llm/tmp/b3-20261105/` (G1's frozen 19.8K/24K prompts, greedy, ABBA knob off/on, 12 runs, ~45 min GPU; PASS = every bf16 run non-degenerate; FAIL = file a defect, knob stays OFF). Trigger: publish only when an enable of the knob is proposed. Until it passes, do not enable. [no-belief: source/config audit, no measurement]
 - **G15 (G) — is a chunked GDN kernel actually faster on our MI210, with our model?** On [declined: operator 2026-11-04 sufficiency: ~1 % at served -ub 512, below the 2.5 % GPU noise floor]
   - *(2026-11-04, main session)* Champion HIP GDN is the per-token recurrent kernel only. GDN ≈15 % of device time (K28 rocprof, 35B; 27B estimated similar). Served 27B GPU shape is -b/-ub 512, exactly the PR #24561 chunk floor where it measured 1.08× op speedup on gfx90a: ≈1.1 % full-model. Even at -ub 2048 (not served) ≈4-6 %, under this box's ≥8 % gate. Port kept: `experimental/g15-chunked-gdn-20261104` @ `9f0b61363` (F32 state only, kill switch + dispatch trace; unbuilt). Note: the 27B (48 v-heads) launches the chunked path at default occupancy, so G15a would not trigger. [no-belief: closed on expected effect < noise]
       `llama.cpp-experimental` branched from the **current production tip** (never v9; four-step
