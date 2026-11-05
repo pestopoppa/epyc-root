@@ -1,0 +1,13 @@
+Temporary breakpoint 1 at 0x23d1
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Temporary breakpoint 1, 0x00005555555563d1 in main ()
+Hardware assisted breakpoint 2 at 0x7ffff7b5a280
+READY 2647650
+RESULT PASS 2 3
+[New Thread 0x7ffeedbff6c0 (LWP 2647716)]
+[New Thread 0x7ffded1ff6c0 (LWP 2647717)]
+[Thread 0x7ffded1ff6c0 (LWP 2647717) exited]
+[Thread 0x7ffeedbff6c0 (LWP 2647716) exited]
+[Inferior 1 (process 2647650) exited normally]

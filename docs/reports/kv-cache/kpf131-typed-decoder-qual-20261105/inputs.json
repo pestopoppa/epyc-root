@@ -1,0 +1,354 @@
+[
+  {
+    "case": "honest",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "UNKNOWN",
+    "expected_structural": "CONSISTENT"
+  },
+  {
+    "case": "wrong-task",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 6,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "INVALID",
+    "expected_structural": null
+  },
+  {
+    "case": "empty-occupied",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": []
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "INVALID",
+    "expected_structural": null
+  },
+  {
+    "case": "missing-binding",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "UNKNOWN",
+    "expected_structural": null
+  },
+  {
+    "case": "wrong-source",
+    "input": {
+      "source_commit": "new-image",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "INVALID",
+    "expected_structural": null
+  },
+  {
+    "case": "claim-cannot-promote",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ],
+      "native_qualified": true
+    },
+    "expected_status": "UNKNOWN",
+    "expected_structural": "CONSISTENT"
+  },
+  {
+    "case": "bool-sequence-id",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            true
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "INVALID",
+    "expected_structural": null,
+    "expected_reason": "malformed ubatch membership"
+  },
+  {
+    "case": "negative-sequence-id",
+    "input": {
+      "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+      "schema": "kpf131.typed-native-snapshot.v1",
+      "stream": 0,
+      "slots": [
+        {
+          "id": 1,
+          "task_id": 5,
+          "request_id": "synth"
+        }
+      ],
+      "cells": [
+        {
+          "pos": 0,
+          "seq_ids": [
+            1
+          ]
+        },
+        {
+          "pos": -1,
+          "seq_ids": []
+        }
+      ],
+      "ubatch": [
+        {
+          "pos": 1,
+          "seq_ids": [
+            -1
+          ],
+          "tasks": [
+            {
+              "slot": 1,
+              "task_id": 5,
+              "request_id": "synth"
+            }
+          ]
+        }
+      ]
+    },
+    "expected_status": "INVALID",
+    "expected_structural": null,
+    "expected_reason": "malformed ubatch membership"
+  }
+]

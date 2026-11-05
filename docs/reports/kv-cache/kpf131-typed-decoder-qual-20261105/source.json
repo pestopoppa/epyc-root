@@ -1,0 +1,10 @@
+{
+  "source_commit": "a1f0c8cf9bd7102415a72577474f307b8ba94db9",
+  "files": {
+    "src/llama-kv-cells.h": "d9ab701ef4286b26bbd9ba8fc5de8162b647215cda7d4116b9caeae7a47b7d6d",
+    "src/llama-kv-cache.h": "027b89d0bb1ba53a6a97a177dec4f95f5969ed877a6fdd6755586a30ea2d45e6",
+    "src/llama-batch.h": "7000dfd8750e06c544642dd7b84c882191702ad46ced1a4d6ad109462d1a1013",
+    "tools/server/server-context.cpp": "880c382aa2d474bab5d80b6de5905f1278ec6ab4c470d415c5d26f7e9e94e2c0",
+    "tools/server/server-task.h": "035f07aecdd8befbf6eca73843e684277289a6ea21cfb26416238d038f486059"
+  }
+}

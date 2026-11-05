@@ -71,3 +71,7 @@ Filed kpf18-g3-slots-deadline-qual-20261105 inconclusive: same-attempt native RE
 ## 01:42Z — Acknowledge the allocator fixture and ready distinct historical source binding
 
 Filed kvu-kpf131-old-native-findslot-r2-20261104 PASS: the handoff already records the qualified fixture and before/after executable and five mapped DSO identities. First placement remains inferred from the sealed fixture guard and exit, with retrospective build provenance. This does not establish historical layout or task binding. Published a distinct historical find_slot/apply_ubatch read-only ELF inspection; corrected raw-symbol selection and four-CPU smoke passed rc0. Full inspection remains pending and supplies no native layout or historical-control verdict.
+
+## 01:48Z — File the find-slot observer and qualify typed snapshot decoding
+
+Filed kvu-kpf131-findslot-observer-20261104 PASS for the model-free observer fixture; both arms retain two pinned breakpoint events and zero child exits. Independent fixture mutation detection does not prove observer mutation detection or historical layout/task binding. Published corrected typed snapshot decoder qualification after four-CPU smoke rc0; eight synthetic controls include boolean and negative sequence ID refusals. Full controls and native layout remain pending.
