@@ -1,0 +1,6 @@
+{
+  "parent_row": "kpf18-g3-output-supervision-qual-20261105",
+  "successor_row": "kpf18-g3-output-supervision-qual-r2-20261105",
+  "reason": "original completion rejected authorized lowercase dryrun stop path; no qualification claim from rc75",
+  "parent_packet": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-g3-output-supervision-20261105/PACKET.sha256"
+}
