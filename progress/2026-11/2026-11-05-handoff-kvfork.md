@@ -95,3 +95,9 @@ Wrap-up retry after retaining the copied transport source compressed: the PII ho
 ## 01:33Z — Repair multi-clock qualification and file completed controls
 
 KVU-19b-gap: original GPU smoke failed rc1: verifier refused the observed 1 GHz HSA frequency due to an unsupported 400 MHz ceiling, before the remaining checks; original evidence retained in docs/reports/kv-cache/kvu19b-multi-clock-failed-smoke-20261105. Prepared r2 with positive uint64 and same-frequency bracket checks; publisher queued its GPU smoke because the GPU was busy. No PASS or ready row claimed; ready/failure events registered. KPF-13.1-FINDSLOT-OBSERVER r3 rc0: both arms hit twice, expected fixture outcomes, pinned before/after executable and five DSO identities, and cleanup passed. KPF-18-G3-SLOTS-QUAL r2 rc0: 11 model-free controls passed. KPF-60 extended checked arithmetic fixture rc0 passed within its model-free scope. These records are retained in docs/reports/kv-cache/kvfork-qualified-results-0130-20261105; no historical physical-layout, native cancellation or native byte-count claim follows.
+
+## 01:36Z — File KPF-13.1 native allocator fixture result and publish KPF-17 GDB timeout qualification successor.
+
+KPF-13.1-NATIVE-FINDSLOT: full row kvu-kpf131-old-native-findslot-r2-20261104 rc0 FIXTURE_PASS; honest placement 2,3 and skip-apply mutation 0,1 detected, both child exits 0 and executable/five mapped library identities matched before/after. First placement follows the sealed fixture assertion and exits; build manifest retrospective. No historical layout or task-binding conclusion. Native result SHA-256 5cda47abd97049cba6ab5d4f0bd03d63abf17924033a859a02418a7eedc940c0.
+
+KPF-17.GDB-CONTINUE: published kvfork17-gdb-continue-qual-r3-20261105 after four-CPU smoke PASS. Adds a captured direct-child timeout cleanup control; full result pending, descendant-tree cleanup not established.
