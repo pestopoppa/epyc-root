@@ -19,3 +19,7 @@ Published kpf18-g3-rowflow-socket-qual-20261105 after its four-CPU publisher smo
 ## 00:28Z — Repair the GPU mechanics launcher resource claim
 
 KVU-11c: corrected the existing r2 launcher to declare CPUs 184-187 after the GPU-exclusive admission refusal. Publisher accepted the resubmission but queued its model-free smoke because the GPU was busy; no smoke PASS, ready row or TTS result is claimed. Three superseded KPF-50 scratch attempts could not be removed because execution policy rejected the removal.
+
+## 00:33Z — Prepare and submit the immutable-plan qualification row
+
+KPF-17.4-PLAN-QUAL: adopted the sealed model-free native-judge adapter into this lane, retained its 120 s workload and 7 s cleanup limits, and submitted it with a 300 s reservation. Publisher was still running when the session proceeded; PASS and publication are not claimed. Registered ready and smoke-failure events for dispatcher resumption. KVU-11c GPU smoke remains queued.
