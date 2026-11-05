@@ -2359,6 +2359,8 @@ MAIN current-source review at APP `92cb0197e8e8e0b491909f669ed4b0c43c16f850` fin
 
 ✅ 2026-10-07 SSBENCH-SMT-SOURCE: [MAIN original81/81 custody and exact source publication](../../artifacts/ni08/ssbench-smt-success-acceptance-20261007/README.md). Source conformance only; runtime-owner activation and real isolation evidence remain independent.
 
+- [ ] **STACK-STOP-STALE-PID** [non-inference] `orchestrator_stack.py stop <role>` signals the PID recorded in the stack state file without checking that it is still that server (`stack_commands.py` ~2187 → `stack_processes.kill_process_tree`: no cmdline/port/start-time identity check). 2026-11-05: `stop architect_critic` acted on PID 2055785, recorded 10-27 and already stopped then; pid_max is 4194304, so a reused PID would receive SIGTERM and SIGKILL (this time nothing was alive under it: no stop banner, no SIGTERM alerts). Fix: verify the PID's port listener or cmdline (and start time ≥ `started_at`) before signalling; otherwise drop the state entry and report STALE. Done when a unit test covers a reused PID and stop leaves it alive. [no-belief: bug filing]
+
 ## Track: wp12-fleet-layer-design
 <!-- gate: none -->
 

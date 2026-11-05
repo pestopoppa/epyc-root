@@ -25,10 +25,10 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 15,
+      "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 489
+      "open": 490
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -523,7 +523,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 50,
+      "open": 51,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -532,7 +532,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 389,
+      "total": 390,
       "tracks": [
         {
           "blocked": 0,
@@ -635,7 +635,7 @@
           "line": 5839,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 8
+          "open": 9
         }
       ]
     },
@@ -1114,10 +1114,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 271,
+      "closed": 274,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 107,
+      "open": 109,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 380,
+      "total": 385,
       "tracks": [
         {
           "blocked": 1,
@@ -1209,7 +1209,7 @@
         },
         {
           "blocked": 1,
-          "closed": 64,
+          "closed": 67,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -1222,7 +1222,7 @@
           "line": 3719,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 58
+          "open": 60
         }
       ]
     },
@@ -1305,11 +1305,11 @@
       ]
     },
     "kv-cache-program.md": {
-      "blocked": 10,
-      "closed": 401,
+      "blocked": 9,
+      "closed": 403,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 99,
+      "open": 98,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1335,8 +1335,8 @@
           "open": 47
         },
         {
-          "blocked": 2,
-          "closed": 22,
+          "blocked": 1,
+          "closed": 23,
           "gates": [],
           "guarded": 0,
           "line": 1735,
@@ -1346,16 +1346,16 @@
         },
         {
           "blocked": 0,
-          "closed": 130,
+          "closed": 131,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2152,
+          "line": 2154,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 45
+          "open": 44
         }
       ]
     },
@@ -1493,10 +1493,10 @@
     },
     "mi210-serving-program.md": {
       "blocked": 1,
-      "closed": 202,
+      "closed": 199,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 4,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1505,24 +1505,24 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 207,
+      "total": 202,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 109,
+          "closed": 106,
           "gates": [],
           "guarded": 0,
           "line": 23,
           "markers": 1,
           "name": "mi210-serving-program",
-          "open": 3
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 686,
+          "line": 679,
           "markers": 1,
           "name": "fable5-window2-findings-02-heterogeneous-gpu",
           "open": 0
@@ -1532,7 +1532,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 1023,
+          "line": 1016,
           "markers": 1,
           "name": "fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 0
@@ -1542,7 +1542,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 1301,
+          "line": 1294,
           "markers": 1,
           "name": "gpu-acceleration-path",
           "open": 0
@@ -1552,7 +1552,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 1936,
+          "line": 1929,
           "markers": 1,
           "name": "mi210-big-model-and-acceleration-roadmap",
           "open": 1
@@ -1562,7 +1562,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2195,
+          "line": 2188,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2805,
+          "line": 2798,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0
@@ -2503,7 +2503,7 @@
       "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 29,
+      "open": 30,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2512,7 +2512,7 @@
       },
       "row_id": "RTG-36",
       "state": "active",
-      "total": 150,
+      "total": 151,
       "tracks": [
         {
           "blocked": 0,
@@ -2582,14 +2582,14 @@
           "line": 2019,
           "markers": 1,
           "name": "standardized-stack-update-pipeline-finalization",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 2362,
+          "line": 2364,
           "markers": 1,
           "name": "wp12-fleet-layer-design",
           "open": 1
