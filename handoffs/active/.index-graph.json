@@ -647,7 +647,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T12:36:54Z",
+  "generated_at": "2026-11-05T12:38:23Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1574,14 +1574,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 201,
-      "dispatchable": 2,
+      "dispatchable": 3,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "mi210-serving-program.md",
       "id": "INF-22",
       "last_advanced": "2026-11-05",
       "next_action": "File NPD1-STEP5, Q38P-4, INF34-A2-V15 and KVU-16g-2 A/B results; run GPS-PIN-1b check; then extract findings and archive",
-      "open": 2,
+      "open": 3,
       "priority": 0.9884,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep refactor-01a16fc3-m4-c2-off-ratio-20261027: harness fix",
@@ -1637,18 +1637,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
           "line": 1930,
           "name": "mi210-big-model-and-acceleration-roadmap",
-          "open": 1,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2192,
+          "line": 2194,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0,
           "readiness": "no_open"
@@ -1667,7 +1667,7 @@
             "INF-22#mi210-big-model-and-acceleration-roadmap",
             "INF-22#qwen38-27b-replace-qwen36"
           ],
-          "line": 2802,
+          "line": 2804,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0,
           "readiness": "no_open"
