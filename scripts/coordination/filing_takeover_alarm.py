@@ -35,6 +35,39 @@ def _timestamp(value: object) -> datetime:
     return value.astimezone(timezone.utc)
 
 
+def _load_manifest(flags_root: Path, run_id: str):
+    """The filer's own manifest lookup, so 'fileable' means exactly what file_result.py accepts."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_file_result", ROOT / "scripts/coordination/churn/file_result.py"
+    )
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.load_manifest(str(flags_root), run_id)
+
+
+def _unfileable(flags_root: Path, run_id: str, row: dict) -> str | None:
+    """Positive evidence only that no filer can ever act on this run; anything else still alarms.
+
+    A due row without `ended_file` (older producer) is never suppressed. Origin 2026-11-05: smoke-only
+    rows with no manifest and a false-complete marker moved to grants/.false-complete-* re-alarmed
+    every pass although file_result.py refuses them (exit 2) and their successors were filed.
+    """
+    ended = row.get("ended_file")
+    if not isinstance(ended, str) or not ended:
+        return None
+    if not Path(ended).exists():
+        return "ended marker moved aside (not a terminal run)"
+    try:
+        path, _manifest = _load_manifest(flags_root, run_id)
+    except Exception:  # an unreadable filer must not silence the alarm
+        return None
+    if path is None:
+        return "no manifest file_result.py accepts (smoke-only or unpublished row)"
+    return None
+
+
 def scan_once(
     flags_root: Path,
     bus_root: Path,
@@ -50,6 +83,7 @@ def scan_once(
         "nudged": [],
         "alerted": [],
         "unknown": [],
+        "unfileable": [],
         "observed_at": now.isoformat(),
         "bus_status": "not_needed",
     }
@@ -104,6 +138,10 @@ def scan_once(
                 report["unknown"].append({"line": number, "reason": str(exc)})
                 continue
             if (flags_root / "filing-done" / f"{run_id}.FILED").is_file():
+                continue
+            why = _unfileable(flags_root, run_id, row)
+            if why:
+                report["unfileable"].append({"id": run_id, "reason": why})
                 continue
             age = (now - seen).total_seconds()
             if age <= 3600:
