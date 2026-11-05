@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T20:54:18Z",
+  "generated_at": "2026-11-05T20:55:40Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1953,7 +1953,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 583,
+          "line": 584,
           "name": "attention-matching-kv-compaction",
           "open": 5,
           "readiness": "ready"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 954,
+          "line": 955,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1570,
+          "line": 1571,
           "name": "streaming-llm-baseline",
           "open": 1,
           "readiness": "ready"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 1717,
+          "line": 1718,
           "name": "triattention-kv-selection",
           "open": 6,
           "readiness": "ready"
@@ -2049,7 +2049,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1590,
+          "line": 1591,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2058,7 +2058,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1714,
+          "line": 1715,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2067,7 +2067,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2041,
+          "line": 2042,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2076,7 +2076,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2180,
+          "line": 2181,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2085,7 +2085,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2733,
+          "line": 2734,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2102,7 +2102,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2870,
+          "line": 2871,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2125,7 +2125,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3764,
+          "line": 3765,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 62,
           "readiness": "blocked"
