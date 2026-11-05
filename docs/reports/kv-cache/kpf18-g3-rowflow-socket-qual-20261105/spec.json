@@ -1,0 +1,20 @@
+{
+  "id": "kpf18-g3-rowflow-socket-qual-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/g3-rowflow-socket-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/g3-rowflow-socket-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Qualification PASS only for six real socket deadline controls, bounded 15-second timeout and actual publisher four-CPU affinity. Stop on STOP, failure or deadline. No native cancellation or model/GPU verdict.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:772",
+  "priority_rank": 35,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/g3-rowflow-socket-qual-20261105",
+  "keep": [
+    "**"
+  ],
+  "first_progress_s": 30,
+  "dryrun_native_result": true
+}
