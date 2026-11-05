@@ -55,3 +55,7 @@ KPF-17: original STOP successor publisher smoke failed after ten synthetic cases
 ## 01:00Z — Publish corrected GPU mechanics qualification
 
 KVU-11c: kvu11c-gpu-mechanics-smoke-r2-20261105 publisher smoke PASS and row published; the model-free GPU witness reached first progress with 488,624,128 bytes sampled VRAM. The granted TTS request, thread-option behavior, audio and promotion remain open.
+
+## 01:01Z — File conflicting GPU mechanics result
+
+KVU-11c: correction to the earlier readiness entry: the granted run did execute one native TTS request. RESULT reports HTTP 200, 2.72 s mono 24 kHz audio, four positive own-server VRAM samples, mapped candidate libraries and owned-child drain; the outer receipt ended rc75 partial-native-incomplete. Filed inconclusive; the mismatch requires investigation and the parent gate stays open. Native result bytes and end receipt preserved in docs/reports/kv-cache/kvu11c-gpu-mechanics-r2-result-20261105.

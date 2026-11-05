@@ -1,0 +1,7 @@
+rc=75 time=2026-11-05T00:58:38Z reason=partial-native-incomplete
+job_id=kvu11c-gpu-mechanics-smoke-r2-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=900
+started=2026-11-05T00:58:35Z
+regions=mi210_0,184-187
