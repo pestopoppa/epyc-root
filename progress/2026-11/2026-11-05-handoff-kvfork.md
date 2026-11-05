@@ -141,3 +141,7 @@ KPF-62.3: published kpf623-census-r2-20261105 after the four-CPU publisher smoke
 ## 02:29Z — Prepare KPF-41 GPU parity publication and remove superseded test scratch
 
 KPF-41: started the existing r4 publisher; its initial invocation has not returned a smoke outcome, so no readiness or parity result is claimed. Removed eight superseded KPF-18 output-control test directories. Rowflow reports KPF-64 impact r3, KVU-12.6 impact r2, and KPF-62.3 census r2 grantable despite the dispatcher reporting no open rows; retained their inputs and unique evidence. KVU-11c startup control r1 had already completed under another owner; its terminal ID cannot be republished.
+
+## 02:30Z — Publish KPF-41 r4 GPU parity row
+
+KPF-41: kpf41-gpu-parity-r4-20261105 passed the four-CPU publisher smoke and is grantable; full GPU parity remains pending. The two independent supervisor rows also passed publisher smoke and are grantable; full synthetic qualification remains pending. Preserved active row inputs and unique evidence in scratch; eight superseded test directories were removed in the preceding boundary.
