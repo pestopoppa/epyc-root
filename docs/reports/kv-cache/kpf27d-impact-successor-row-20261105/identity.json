@@ -1,0 +1,20 @@
+{
+  "head": "326f502759986c9846027f8187972969139c0089",
+  "source_worktree": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source",
+  "sha256": {
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105/job.py": "bce236fa9c9bb4eba1eb292f53797b02feaa509524a01b2b219470492a2ab75b",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105/source_integrity.py": "4cda0146c6380afa31192a803b6f21521f8d5dd9a83c00f761d677af3b9c7b63",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105/gitnexus-guard.py": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105/spec.json": "6e468309aa4c26ff08c7adcba8dbaeac1ed16d6e05c39864258dc7d2a81db1eb",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105/README.md": "601b89d73d84f7e0b3d730b47f294084271f89ee0eae2422e536685f2eb13693",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105/launch.sh": "f5d29db0c3425cb4d7fbb2b4cf88b35d1c46ee074102241fd8039e2c6d2992bb",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/scripts/gitnexus-analyze.sh": "4772a8ac245e4fdb20521a17ddb48b9b7bdff6438afbebd069e70e4eb42fba89",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/scripts/gitnexus-writer.py": "bb835219d807309ad469361fa2403dde37cbb9a5a2a46941353d00ed32d17a13",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/scripts/gitnexus-guard.py": "0da1b0e511180bff218ad4448558e60ce6e08b2f1b795437e12bd98ffd80e3b6",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/scripts/gitnexus-quarter.cjs": "5fb41080fcea4f67cba70b4bd3067266896a31ac7b1663b296d07e08af35c724",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/src/scheduling/kv_pool_admission.py": "69a0ec60462655dab7699ab755696126e247db9bf0196af580174459c770d18b",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/src/inference/prefix_index.py": "3921d463b16b97b77b50a9025cc72f4df182fc71958b5fa167e5ed561171c316",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/src/api/routes/passthrough.py": "abe2297c41c1a17f6ac86fab54f00a9ea170704e703c1782fac0d5ea83330712",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf27d-impact-326f-successor-20261105-source/src/api/routes/chat_pipeline/scout_stage.py": "035ce54711ed4b7f0314767413804c20ffab47a67a9998c47dc945fc7e71acea"
+  }
+}
