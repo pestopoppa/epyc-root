@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 491
+      "open": 490
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 9,
-      "closed": 407,
+      "closed": 408,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 98,
+      "open": 97,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1346,7 +1346,7 @@
         },
         {
           "blocked": 0,
-          "closed": 134,
+          "closed": 135,
           "gates": [
             "RTG-36",
             "INF-79"
@@ -1355,7 +1355,7 @@
           "line": 2166,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 42
+          "open": 41
         }
       ]
     },
