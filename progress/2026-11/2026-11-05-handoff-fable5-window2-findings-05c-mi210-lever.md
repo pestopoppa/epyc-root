@@ -7,3 +7,7 @@ Q38P-3: r2 rc0 stage-1 NO-GO: B/Bp decode ratios 1.0867/1.1032 and pp512 0.9891/
 ## 01:29Z — Filed NPD r2 with scoped measured ratios and missing residency evidence.
 
 NPD1-STEP2: r2 ABBA ratios cross the idle reject threshold (A1/A0 1.645, 1.600), while TTFT and contention criteria pass; filed inconclusive because no in-window nonzero own-PID VRAM or mapped HIP evidence is recorded. Filtered grant records and raw packet preserved; prospective capture and reviewable instrumentation delegated. No serving change or gate decision.
+
+## 03:55Z — Prepare NPD1-STEP3 idle decode comparison
+
+Prepared NPD1-STEP3 CPU-only store comparison for Q38FN: matched t48 and batch settings, four ABBA launches, native decode timing and bounded smoke. Both stores identify source 181483cfc; checked server and CPU-library digests against build manifests. The two formerly routed PF1 and M4 rows were dropped or cancelled by the operator.
