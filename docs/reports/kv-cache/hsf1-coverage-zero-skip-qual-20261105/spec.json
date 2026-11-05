@@ -1,0 +1,20 @@
+{
+  "id": "hsf1-coverage-zero-skip-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-coverage-zero-skip-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-coverage-zero-skip-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "On the retained verified_coverage function compare original and isolated corrected versions across eight sealed synthetic cases. Accept only exact zero-count heap telemetry; preserve refusal for nonzero, unknown, fake-zero, truncation and mismatched skip lists. Require 16 expected outcomes and clean isolated fixture teardown. No native impact, clearance, or resolution of actual nonzero skipped telemetry.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-1.COVERAGE-ZERO-QUAL",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-coverage-zero-skip-qual-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "hsf1-coverage-zero-skip-qual"
+}

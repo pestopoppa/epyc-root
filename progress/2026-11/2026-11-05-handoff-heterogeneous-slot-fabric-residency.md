@@ -103,3 +103,7 @@ Filed KPF-50 synthetic custody PASS and typed historical decoder 8/8 synthetic P
 ## 02:27Z — File model-free wrapper STOP controls and publish HSF-4 aggregate census
 
 Filed wrapper STOP v2 PASS for ten model-free controls; no native oracle claim follows. Published the aggregate-only HSF-4 serving/dispatch histogram after four-CPU synthetic smoke; the full census and representativeness remain pending.
+
+## 02:32Z — File synthetic window and startup controls; prepare coverage parser qualification
+
+Filed KPF-50 44/44 synthetic window controls and rebuilt TTS startup/cleanup PASS with no synthesis. The HSF-1 native source impact is inconclusive with nonzero skipped telemetry; published a separate fail-closed zero-telemetry control after a repaired four-CPU smoke. Native impact and coverage remain unresolved.

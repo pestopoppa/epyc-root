@@ -1,0 +1,1 @@
+Model-free comparison of retained HSF-1 coverage function and private exact-zero-telemetry correction on sealed synthetic controls. The observed nonzero skip count remains an unclassified coverage refusal; this control does not clear native impacts or edit safety. No candidate source modified.

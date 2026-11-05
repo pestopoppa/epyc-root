@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T02:22:57Z reason=complete
+job_id=kvu11c-startup-cleanup-control-r1-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=900
+started=2026-11-05T02:22:54Z
+regions=mi210_0,184-187
