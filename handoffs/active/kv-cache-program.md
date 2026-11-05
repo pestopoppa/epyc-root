@@ -4118,7 +4118,9 @@ Owner action: investigate how the process executable can disappear while the ret
 
 - [ ] **KPF-VCOV-HEAPSKIP — `verified_coverage()` must whitelist gitnexus heap `skipped=N` lines, then rerun the rows it falsely failed:** kpf17-oracle, kpf182, kpf26, kpf27d, kpf625, kpf191, kpf131-r5. [no-belief: tooling-repair]
 - [ ] **HSF-3-RERUN-POST-DOUBLEFREE — rerun hsf3 adjacency and counter impact after the gitnexus 1.6.8 "double free or corruption (out)" fix lands** (fix in progress under `artifacts/analysis/gitnexus-1.6.8-fixes-20261104/doublefree/`; 2 rows filed inconclusive in 615fdc35a). Blocker: the gitnexus fix.
+  - 2026-11-05 (operator-adhoc-takeover-20261105): fix 12467c9d5 installed; republished as `hsf3-adjacency-impact-3a09-20261105-r2` and `hsf3-counter-impact-c5d1-20261105-r2` (kpf182-r3-q2 pattern: sealed ROOT 94bcd0003 guard/writer, e684b4623 coverage fix, any-cpu-quarter/0.1/8 GiB). Smoke PASS, grantable; result pending.
 - [ ] **KPF-30-RERUN-POST-DOUBLEFREE — rerun kpf30-r8 after the same gitnexus fix** (crashed on the double free). Blocker: the gitnexus fix.
+  - 2026-11-05 (operator-adhoc-takeover-20261105): fix 12467c9d5 installed; republished as `kpf30-impact-8952-20261104-r9` (same pattern and pinned source `kvfork/kpf30-impact-8952-r8-source`). Smoke PASS, grantable; result pending.
 - [ ] **KPF-64-RERUN-TRACEBACK — rerun kpf64 keeping the full traceback** (prior run inconclusive without it; 020bdd856).
 - [ ] **V11-FA8-RERUN-PINNED — rerun v11-fa8 impact pinned to `flash_attn_ext_f16_process_tile` with `scan_complete` and `partial=false`** (r6 filed fail on a partial scan, cfac40240).
 - [ ] **HPR-REPUBLISH-RUN15 — republish the hpr launcher on `filler_run15.sh`** (it still names `filler_run13.sh`).
