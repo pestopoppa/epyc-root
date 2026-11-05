@@ -19,3 +19,7 @@ c6-preb4-matched-build-20261105 completed the build-only control; retained and S
 ## 02:57Z — File refused v39 floor calibration
 
 Floor v39 result REFUSED after 24 anchor and 24 candidate main-surface units; no completed long-context floor and no floor decision. Retained result, units, log and receipts at /mnt/raid0/llm/tmp/akagg/retained-akxall8-floor-v39-20261105. Native runner returned rc1; successor repair is underway.
+
+## 02:58Z — File two-case forced cuBLAS comparison
+
+Two retained-input seed-71 cases: candidate MMVQ failed tolerance while forced CUBLAS passed both. Route markers, own-PID KFD and VRAM, matching inputs and child drain were recorded. This is a scoped diagnostic with no full correctness or promotion claim; result retained at /mnt/raid0/llm/tmp/akagg/retained-c6-cublas-pair-20261105/RESULT.json.
