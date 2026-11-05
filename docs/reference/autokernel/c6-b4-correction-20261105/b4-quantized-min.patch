@@ -1,0 +1,17 @@
+--- a/ggml/src/ggml-cuda/mmvq.cu
++++ b/ggml/src/ggml-cuda/mmvq.cu
+@@ -410,7 +410,13 @@
+         const half2 ds8 = bq8i->ds;
+         sumf_d += __low2float(ds8) * (dot * weight.sc[i]);
+         if (sum_lane) {
+-            sumf_m += __high2float(ds8) * weight.m[i];
++            // Use the same quantized activations and half-rounded scale as the dot.
++            int sum_q8 = 0;
++#pragma unroll
++            for (int k = 0; k < QI8_1; ++k) {
++                sum_q8 = ggml_cuda_dp4a(0x01010101, get_int_b4(bq8i->qs, k), sum_q8);
++            }
++            sumf_m += (__low2float(ds8) * float(sum_q8)) * weight.m[i];
+         }
+     }
+ 

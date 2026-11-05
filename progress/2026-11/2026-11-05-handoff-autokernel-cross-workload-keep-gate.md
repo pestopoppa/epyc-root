@@ -39,3 +39,11 @@ C6-Q4-MMVQ-FIX: consumed publisher PASS for akx-c6-n4-cublas-route-diagnostic-20
 ## 00:32Z — File C6 route results and queue fresh generic diagnostic smoke
 
 C6-Q4-MMVQ-FIX: filed the CUBLAS route diagnostic: two seed-71 matched pairs had candidate MMVQ failures and forced-CUBLAS passes with matched inputs and GPU witnesses; evidence retained at /mnt/raid0/llm/tmp/akagg/c6-cublas-route-retained-20261105/. Filed the generic comparison inconclusive because its RESULT predates publication and matches the publisher smoke; evidence retained at /mnt/raid0/llm/tmp/akagg/c6-generic-stale-result-retained-20261105/. [belief: cc] Prepared fresh attempt-bound generic comparison akx-c6-n4-generic-pair-fresh-20261105; GPU smoke queued due to GPU occupancy, not yet passed or ready. [no-belief: preparation only]
+
+## 00:39Z — Prepare b4 quantized-min correction and publish source-bound C6 build row
+
+C6-Q4-MMVQ-FIX: prepared source-bound b4 correction for the quantized q8 minimum sum; five crafted, 1,000 deterministic random and four lane-group host arithmetic controls passed. Published c6-b4-corrected-build-20261105 after four-CPU custody smoke PASS; the full build, GPU cases and candidate qualification remain pending. C6 generic-pair GPU smoke remains queued. CH-26b: integrated point-in-time mapped-binary checks into the disabled private C5 owner and its replay; 41 model-free tests passed, with no floor or continuous-custody claim. Review artifacts are under docs/reference/autokernel/. [no-belief: preparation and smoke only]
+
+## 00:40Z — Prepare b4 quantized-min correction and publish source-bound C6 build row
+
+C6-Q4-MMVQ-FIX: prepared source-bound b4 correction for the quantized q8 minimum sum; five crafted, 1,000 deterministic random and four lane-group host arithmetic controls passed. Published c6-b4-corrected-build-20261105 after four-CPU custody smoke PASS; the full build, GPU cases and candidate qualification remain pending. C6 generic-pair GPU smoke remains queued. CH-26b: integrated point-in-time mapped-binary checks into the disabled private C5 owner and its replay; 41 model-free tests passed, with no floor or continuous-custody claim. Review artifacts are under docs/reference/autokernel/. [no-belief: preparation and smoke only]
