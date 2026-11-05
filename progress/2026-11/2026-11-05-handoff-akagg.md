@@ -39,3 +39,7 @@ Filed `c6-q40-original-c6-perf-20261105` rc0: 20 paired runs across seven q4_0 s
 ## 03:42Z — Qualified the W5s retention successor census packet with publisher smoke.
 
 Qualified `akagg-w5s-retention-r3-20261105` after the archive manifest readback repair, 4 targeted retention tests, 21 entry/storage tests, source reseal, and publisher smoke PASS. The smoke observes one bounded native request only; full census and P0d acceptance remain pending. Also recovered the exact v39 floor producer from research commit 99301fa; the restore mismatch remains open. [no-belief: preparation and smoke qualification only]
+
+## 03:52Z — Qualified independent CPU f32 GDN oracle successor and prepared C6 target-shape GPU receipt binding.
+
+Published CPU f32 GDN one-hot oracle successor after publisher smoke; full three-arm baseline and mutant verdict remains pending. Prepared C6 target-shape GPU successor with nine binding controls; it awaits the dual-image build receipt. [no-belief: preparation and smoke only]
