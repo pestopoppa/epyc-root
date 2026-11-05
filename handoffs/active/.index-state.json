@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1494,
+          "line": 1498,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1618,
+          "line": 1622,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1945,
+          "line": 1949,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2084,
+          "line": 2088,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2637,
+          "line": 2641,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2774,
+          "line": 2778,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,7 +1219,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3664,
+          "line": 3668,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 54
@@ -1306,7 +1306,7 @@
     },
     "kv-cache-program.md": {
       "blocked": 1,
-      "closed": 317,
+      "closed": 322,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 103,
@@ -1318,11 +1318,11 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 421,
+      "total": 426,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 186,
+          "closed": 187,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1336,26 +1336,26 @@
         },
         {
           "blocked": 0,
-          "closed": 16,
+          "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 1609,
+          "line": 1611,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
-          "open": 9
+          "open": 11
         },
         {
           "blocked": 0,
-          "closed": 115,
+          "closed": 117,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2010,
+          "line": 2017,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 40
+          "open": 38
         }
       ]
     },
