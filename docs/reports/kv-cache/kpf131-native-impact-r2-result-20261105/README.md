@@ -1,0 +1,3 @@
+# Historical task/slot source impact R2 — inconclusive
+
+The full row ended rc 1 after 27 minutes. The retained JSONL contains only source-reference counts (three for each target) and no native impact records or `scan_complete`. Analyzer stdout reports indexing completed and lists 25 skipped large files; the displayed status reports the historical commit abbreviated to `a1f0c8c`. This is not proof of full skipped-file coverage or either upstream impact. The precise reason for the stop has not yet been established; no source edit clearance, task binding, historical control, or inference conclusion follows.

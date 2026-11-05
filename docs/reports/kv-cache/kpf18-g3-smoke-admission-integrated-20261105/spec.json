@@ -1,0 +1,22 @@
+{
+  "id": "kvu-kpf18-g3-admission-integrated-20261105",
+  "owner": "h-kvu",
+  "launcher": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-admission-integrated-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-admission-integrated-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS iff all seven synthetic controls pass for source-sealed original and corrected admission through copied publisher-smoke and lock-witness entry points; stop on mismatch, source drift, STOP or deadline. No live provider or GPU verdict.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-G3-ADMISSION",
+  "priority_rank": 46,
+  "first_progress_s": 30,
+  "dryrun_timeout_s": 60,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-g3-admission-integrated-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute"
+}

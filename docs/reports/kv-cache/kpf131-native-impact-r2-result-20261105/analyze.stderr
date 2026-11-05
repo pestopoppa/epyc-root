@@ -1,0 +1,385 @@
+[parse-worker bootstrap] thread=1 imports + grammars loaded (+0ms)
+[parse-worker bootstrap] thread=1 ready sent (+0ms)
+[parse-worker bootstrap] thread=1 first task received (+2ms)
+{"level":30,"time":1793847291178,"name":"gitnexus","msg":"📊 chunk 1/15: 110 files in 9590ms (11.5 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847298351,"name":"gitnexus","msg":"📊 chunk 2/15: 159 files in 7244ms (21.9 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847311028,"name":"gitnexus","msg":"📊 chunk 3/15: 29 files in 12749ms (2.3 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847323447,"name":"gitnexus","msg":"📊 chunk 4/15: 29 files in 12486ms (2.3 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847335504,"name":"gitnexus","msg":"📊 chunk 5/15: 28 files in 12119ms (2.3 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847350518,"name":"gitnexus","msg":"📊 chunk 6/15: 142 files in 15085ms (9.4 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847358770,"name":"gitnexus","msg":"📊 chunk 7/15: 260 files in 8316ms (31.3 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847367830,"name":"gitnexus","msg":"📊 chunk 8/15: 136 files in 9138ms (14.9 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847378547,"name":"gitnexus","msg":"📊 chunk 9/15: 173 files in 10789ms (16.0 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847385013,"name":"gitnexus","msg":"📊 chunk 10/15: 75 files in 6526ms (11.5 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847397788,"name":"gitnexus","msg":"📊 chunk 11/15: 104 files in 12857ms (8.1 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847408547,"name":"gitnexus","msg":"📊 chunk 12/15: 128 files in 10818ms (11.8 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847418481,"name":"gitnexus","msg":"📊 chunk 13/15: 127 files in 9972ms (12.7 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847425707,"name":"gitnexus","msg":"📊 chunk 14/15: 325 files in 7283ms (44.6 files/s) pool: 1/1 active, 0 quarantined"}
+{"level":30,"time":1793847426523,"name":"gitnexus","msg":"📊 chunk 15/15: 40 files in 871ms (45.9 files/s) pool: 1/1 active, 0 quarantined"}
+[gitnexus-heap] post-parse-chunks used_mb=215 rss_mb=1188 routes=0 nodes=90938 parsedFiles=0
+{"level":30,"time":1793847426524,"name":"gitnexus","msg":"[deferred-profile] deferred band start: routes=0"}
+[gitnexus-heap] parse-impl-return used_mb=219 rss_mb=694 exportedTypeMap=1376 parsedFiles=0 nodes=90938
+[gitnexus-heap] scopeResolution-enter used_mb=225 rss_mb=694
+[gitnexus-heap] scope-setup-nodeLookup-start used_mb=227 rss_mb=694 langs=7 files=1865
+[gitnexus-heap] scope-setup-nodeLookup-end used_mb=259 rss_mb=716 langs=7
+[gitnexus-heap] scope-lang-start used_mb=297 rss_mb=837 lang=python files=208 contentsLoaded=1
+[gitnexus-heap] sr-extract-start used_mb=297 rss_mb=842 lang=python files=208
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=4/208 parsedFiles=4 preExtractedHits=4
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=8/208 parsedFiles=8 preExtractedHits=8
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=12/208 parsedFiles=12 preExtractedHits=12
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=16/208 parsedFiles=16 preExtractedHits=16
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=20/208 parsedFiles=20 preExtractedHits=20
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=24/208 parsedFiles=24 preExtractedHits=24
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=28/208 parsedFiles=28 preExtractedHits=28
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=32/208 parsedFiles=32 preExtractedHits=32
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=36/208 parsedFiles=36 preExtractedHits=36
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=40/208 parsedFiles=40 preExtractedHits=40
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=44/208 parsedFiles=44 preExtractedHits=44
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=48/208 parsedFiles=48 preExtractedHits=48
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=52/208 parsedFiles=52 preExtractedHits=52
+[gitnexus-heap] sr-extract-progress used_mb=297 rss_mb=842 lang=python idx=56/208 parsedFiles=56 preExtractedHits=56
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=60/208 parsedFiles=60 preExtractedHits=60
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=64/208 parsedFiles=64 preExtractedHits=64
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=68/208 parsedFiles=68 preExtractedHits=68
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=72/208 parsedFiles=72 preExtractedHits=72
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=76/208 parsedFiles=76 preExtractedHits=76
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=80/208 parsedFiles=80 preExtractedHits=80
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=84/208 parsedFiles=84 preExtractedHits=84
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=88/208 parsedFiles=88 preExtractedHits=88
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=92/208 parsedFiles=92 preExtractedHits=92
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=96/208 parsedFiles=96 preExtractedHits=96
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=100/208 parsedFiles=100 preExtractedHits=100
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=104/208 parsedFiles=104 preExtractedHits=104
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=108/208 parsedFiles=108 preExtractedHits=108
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=112/208 parsedFiles=112 preExtractedHits=112
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=116/208 parsedFiles=116 preExtractedHits=116
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=120/208 parsedFiles=120 preExtractedHits=120
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=124/208 parsedFiles=124 preExtractedHits=124
+[gitnexus-heap] sr-extract-progress used_mb=298 rss_mb=842 lang=python idx=128/208 parsedFiles=128 preExtractedHits=128
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=132/208 parsedFiles=132 preExtractedHits=132
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=136/208 parsedFiles=136 preExtractedHits=136
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=140/208 parsedFiles=140 preExtractedHits=140
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=144/208 parsedFiles=144 preExtractedHits=144
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=148/208 parsedFiles=148 preExtractedHits=148
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=152/208 parsedFiles=152 preExtractedHits=152
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=156/208 parsedFiles=156 preExtractedHits=156
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=160/208 parsedFiles=160 preExtractedHits=160
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=164/208 parsedFiles=164 preExtractedHits=164
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=168/208 parsedFiles=168 preExtractedHits=168
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=172/208 parsedFiles=172 preExtractedHits=172
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=176/208 parsedFiles=176 preExtractedHits=176
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=180/208 parsedFiles=180 preExtractedHits=180
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=184/208 parsedFiles=184 preExtractedHits=184
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=188/208 parsedFiles=188 preExtractedHits=188
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=192/208 parsedFiles=192 preExtractedHits=192
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=196/208 parsedFiles=196 preExtractedHits=196
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=200/208 parsedFiles=200 preExtractedHits=200
+[gitnexus-heap] sr-extract-progress used_mb=299 rss_mb=842 lang=python idx=208/208 parsedFiles=207 preExtractedHits=207
+[gitnexus-heap] sr-extract-end used_mb=299 rss_mb=842 lang=python parsedFiles=207 preExtractedHits=207 skipped=1
+[gitnexus-heap] sr-pre-nodeLookup used_mb=308 rss_mb=842 lang=python
+[gitnexus-heap] sr-post-nodeLookup used_mb=308 rss_mb=842 lang=python
+[gitnexus-heap] sr-post-finalize used_mb=316 rss_mb=845 lang=python
+[gitnexus-heap] sr-post-workspaceIndex used_mb=319 rss_mb=845 lang=python
+[gitnexus-heap] sr-post-resolve used_mb=314 rss_mb=846 lang=python
+[gitnexus-heap] sr-end used_mb=327 rss_mb=846 lang=python parsedFiles=207
+[gitnexus-heap] lang-release-pre-gc used_mb=327 rss_mb=846 lang=python
+[gitnexus-heap] lang-release-post-gc used_mb=266 rss_mb=831 lang=python
+[gitnexus-heap] scope-lang-end used_mb=266 rss_mb=831 lang=python filesProcessed=207
+[gitnexus-heap] scope-lang-start used_mb=318 rss_mb=851 lang=typescript files=308 contentsLoaded=0
+[gitnexus-heap] sr-extract-start used_mb=318 rss_mb=851 lang=typescript files=308
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=6/308 parsedFiles=6 preExtractedHits=6
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=12/308 parsedFiles=12 preExtractedHits=12
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=18/308 parsedFiles=18 preExtractedHits=18
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=24/308 parsedFiles=24 preExtractedHits=24
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=30/308 parsedFiles=30 preExtractedHits=30
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=36/308 parsedFiles=36 preExtractedHits=36
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=42/308 parsedFiles=42 preExtractedHits=42
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=48/308 parsedFiles=48 preExtractedHits=48
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=54/308 parsedFiles=54 preExtractedHits=54
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=60/308 parsedFiles=60 preExtractedHits=60
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=66/308 parsedFiles=66 preExtractedHits=66
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=72/308 parsedFiles=72 preExtractedHits=72
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=78/308 parsedFiles=78 preExtractedHits=78
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=84/308 parsedFiles=84 preExtractedHits=84
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=90/308 parsedFiles=90 preExtractedHits=90
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=96/308 parsedFiles=96 preExtractedHits=96
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=102/308 parsedFiles=102 preExtractedHits=102
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=108/308 parsedFiles=108 preExtractedHits=108
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=114/308 parsedFiles=114 preExtractedHits=114
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=120/308 parsedFiles=120 preExtractedHits=120
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=126/308 parsedFiles=126 preExtractedHits=126
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=132/308 parsedFiles=132 preExtractedHits=132
+[gitnexus-heap] sr-extract-progress used_mb=318 rss_mb=851 lang=typescript idx=138/308 parsedFiles=138 preExtractedHits=138
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=144/308 parsedFiles=144 preExtractedHits=144
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=150/308 parsedFiles=150 preExtractedHits=150
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=156/308 parsedFiles=156 preExtractedHits=156
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=162/308 parsedFiles=162 preExtractedHits=162
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=168/308 parsedFiles=168 preExtractedHits=168
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=174/308 parsedFiles=174 preExtractedHits=174
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=180/308 parsedFiles=180 preExtractedHits=180
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=186/308 parsedFiles=186 preExtractedHits=186
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=192/308 parsedFiles=192 preExtractedHits=192
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=198/308 parsedFiles=198 preExtractedHits=198
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=204/308 parsedFiles=204 preExtractedHits=204
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=210/308 parsedFiles=210 preExtractedHits=210
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=216/308 parsedFiles=216 preExtractedHits=216
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=222/308 parsedFiles=222 preExtractedHits=222
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=228/308 parsedFiles=228 preExtractedHits=228
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=234/308 parsedFiles=234 preExtractedHits=234
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=240/308 parsedFiles=240 preExtractedHits=240
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=246/308 parsedFiles=246 preExtractedHits=246
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=252/308 parsedFiles=252 preExtractedHits=252
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=258/308 parsedFiles=258 preExtractedHits=258
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=264/308 parsedFiles=264 preExtractedHits=264
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=270/308 parsedFiles=270 preExtractedHits=270
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=276/308 parsedFiles=276 preExtractedHits=276
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=282/308 parsedFiles=282 preExtractedHits=282
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=288/308 parsedFiles=288 preExtractedHits=288
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=294/308 parsedFiles=294 preExtractedHits=294
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=300/308 parsedFiles=300 preExtractedHits=300
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=306/308 parsedFiles=306 preExtractedHits=306
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=851 lang=typescript idx=308/308 parsedFiles=308 preExtractedHits=308
+[gitnexus-heap] sr-extract-end used_mb=319 rss_mb=851 lang=typescript parsedFiles=308 preExtractedHits=308 skipped=0
+[gitnexus-heap] sr-pre-nodeLookup used_mb=305 rss_mb=850 lang=typescript
+[gitnexus-heap] sr-post-nodeLookup used_mb=305 rss_mb=850 lang=typescript
+[gitnexus-heap] sr-post-finalize used_mb=314 rss_mb=850 lang=typescript
+[gitnexus-heap] sr-post-workspaceIndex used_mb=315 rss_mb=850 lang=typescript
+[gitnexus-heap] sr-post-resolve used_mb=318 rss_mb=850 lang=typescript
+[gitnexus-heap] sr-end used_mb=318 rss_mb=850 lang=typescript parsedFiles=308
+[gitnexus-heap] lang-release-pre-gc used_mb=318 rss_mb=850 lang=typescript
+[gitnexus-heap] lang-release-post-gc used_mb=262 rss_mb=834 lang=typescript
+[gitnexus-heap] scope-lang-end used_mb=262 rss_mb=834 lang=typescript filesProcessed=308
+[gitnexus-heap] scope-lang-start used_mb=333 rss_mb=861 lang=c files=92 contentsLoaded=0
+[gitnexus-heap] sr-extract-start used_mb=333 rss_mb=861 lang=c files=92
+[gitnexus-heap] sr-extract-progress used_mb=333 rss_mb=861 lang=c idx=1/92 parsedFiles=1 preExtractedHits=1
+[gitnexus-heap] sr-extract-progress used_mb=333 rss_mb=861 lang=c idx=2/92 parsedFiles=2 preExtractedHits=2
+[gitnexus-heap] sr-extract-progress used_mb=334 rss_mb=861 lang=c idx=3/92 parsedFiles=3 preExtractedHits=3
+[gitnexus-heap] sr-extract-progress used_mb=334 rss_mb=861 lang=c idx=4/92 parsedFiles=4 preExtractedHits=4
+[gitnexus-heap] sr-extract-progress used_mb=334 rss_mb=861 lang=c idx=5/92 parsedFiles=5 preExtractedHits=5
+[gitnexus-heap] sr-extract-progress used_mb=334 rss_mb=861 lang=c idx=6/92 parsedFiles=6 preExtractedHits=6
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=7/92 parsedFiles=7 preExtractedHits=7
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=8/92 parsedFiles=8 preExtractedHits=8
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=9/92 parsedFiles=9 preExtractedHits=9
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=10/92 parsedFiles=10 preExtractedHits=10
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=11/92 parsedFiles=11 preExtractedHits=11
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=12/92 parsedFiles=12 preExtractedHits=12
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=13/92 parsedFiles=13 preExtractedHits=13
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=14/92 parsedFiles=14 preExtractedHits=14
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=15/92 parsedFiles=15 preExtractedHits=15
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=16/92 parsedFiles=16 preExtractedHits=16
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=17/92 parsedFiles=17 preExtractedHits=17
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=18/92 parsedFiles=18 preExtractedHits=18
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=19/92 parsedFiles=19 preExtractedHits=19
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=20/92 parsedFiles=20 preExtractedHits=20
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=21/92 parsedFiles=21 preExtractedHits=21
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=22/92 parsedFiles=22 preExtractedHits=22
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=23/92 parsedFiles=23 preExtractedHits=23
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=24/92 parsedFiles=24 preExtractedHits=24
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=25/92 parsedFiles=25 preExtractedHits=25
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=26/92 parsedFiles=26 preExtractedHits=26
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=27/92 parsedFiles=27 preExtractedHits=27
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=28/92 parsedFiles=28 preExtractedHits=28
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=29/92 parsedFiles=29 preExtractedHits=29
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=30/92 parsedFiles=30 preExtractedHits=30
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=31/92 parsedFiles=31 preExtractedHits=31
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=32/92 parsedFiles=32 preExtractedHits=32
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=33/92 parsedFiles=33 preExtractedHits=33
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=34/92 parsedFiles=34 preExtractedHits=34
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=35/92 parsedFiles=35 preExtractedHits=35
+[gitnexus-heap] sr-extract-progress used_mb=335 rss_mb=861 lang=c idx=36/92 parsedFiles=36 preExtractedHits=36
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=37/92 parsedFiles=37 preExtractedHits=37
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=38/92 parsedFiles=38 preExtractedHits=38
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=39/92 parsedFiles=39 preExtractedHits=39
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=40/92 parsedFiles=40 preExtractedHits=40
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=41/92 parsedFiles=41 preExtractedHits=41
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=42/92 parsedFiles=42 preExtractedHits=42
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=43/92 parsedFiles=43 preExtractedHits=43
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=44/92 parsedFiles=44 preExtractedHits=44
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=45/92 parsedFiles=45 preExtractedHits=45
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=46/92 parsedFiles=46 preExtractedHits=46
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=47/92 parsedFiles=47 preExtractedHits=47
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=48/92 parsedFiles=48 preExtractedHits=48
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=49/92 parsedFiles=49 preExtractedHits=49
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=50/92 parsedFiles=50 preExtractedHits=50
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=51/92 parsedFiles=51 preExtractedHits=51
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=52/92 parsedFiles=52 preExtractedHits=52
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=53/92 parsedFiles=53 preExtractedHits=53
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=54/92 parsedFiles=54 preExtractedHits=54
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=55/92 parsedFiles=55 preExtractedHits=55
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=56/92 parsedFiles=56 preExtractedHits=56
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=57/92 parsedFiles=57 preExtractedHits=57
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=58/92 parsedFiles=58 preExtractedHits=58
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=59/92 parsedFiles=59 preExtractedHits=59
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=60/92 parsedFiles=60 preExtractedHits=60
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=61/92 parsedFiles=61 preExtractedHits=61
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=62/92 parsedFiles=62 preExtractedHits=62
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=63/92 parsedFiles=63 preExtractedHits=63
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=64/92 parsedFiles=64 preExtractedHits=64
+[gitnexus-heap] sr-extract-progress used_mb=336 rss_mb=861 lang=c idx=65/92 parsedFiles=65 preExtractedHits=65
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=66/92 parsedFiles=66 preExtractedHits=66
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=67/92 parsedFiles=67 preExtractedHits=67
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=68/92 parsedFiles=68 preExtractedHits=68
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=69/92 parsedFiles=69 preExtractedHits=69
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=70/92 parsedFiles=70 preExtractedHits=70
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=71/92 parsedFiles=71 preExtractedHits=71
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=72/92 parsedFiles=72 preExtractedHits=72
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=73/92 parsedFiles=73 preExtractedHits=73
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=74/92 parsedFiles=74 preExtractedHits=74
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=75/92 parsedFiles=75 preExtractedHits=75
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=76/92 parsedFiles=76 preExtractedHits=76
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=77/92 parsedFiles=77 preExtractedHits=77
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=78/92 parsedFiles=78 preExtractedHits=78
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=79/92 parsedFiles=79 preExtractedHits=79
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=80/92 parsedFiles=80 preExtractedHits=80
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=81/92 parsedFiles=81 preExtractedHits=81
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=82/92 parsedFiles=82 preExtractedHits=82
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=83/92 parsedFiles=83 preExtractedHits=83
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=84/92 parsedFiles=84 preExtractedHits=84
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=85/92 parsedFiles=85 preExtractedHits=85
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=86/92 parsedFiles=86 preExtractedHits=86
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=87/92 parsedFiles=87 preExtractedHits=87
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=88/92 parsedFiles=88 preExtractedHits=88
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=89/92 parsedFiles=89 preExtractedHits=89
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=90/92 parsedFiles=90 preExtractedHits=90
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=91/92 parsedFiles=91 preExtractedHits=91
+[gitnexus-heap] sr-extract-progress used_mb=319 rss_mb=859 lang=c idx=92/92 parsedFiles=92 preExtractedHits=92
+[gitnexus-heap] sr-extract-end used_mb=319 rss_mb=859 lang=c parsedFiles=92 preExtractedHits=92 skipped=0
+[gitnexus-heap] sr-pre-nodeLookup used_mb=326 rss_mb=859 lang=c
+[gitnexus-heap] sr-post-nodeLookup used_mb=326 rss_mb=859 lang=c
+[gitnexus-heap] sr-post-finalize used_mb=338 rss_mb=865 lang=c
+[gitnexus-heap] sr-post-workspaceIndex used_mb=342 rss_mb=865 lang=c
+[gitnexus-heap] sr-post-resolve used_mb=334 rss_mb=865 lang=c
+[gitnexus-heap] sr-end used_mb=341 rss_mb=865 lang=c parsedFiles=92
+[gitnexus-heap] lang-release-pre-gc used_mb=341 rss_mb=865 lang=c
+[gitnexus-heap] lang-release-post-gc used_mb=263 rss_mb=844 lang=c
+[gitnexus-heap] scope-lang-end used_mb=263 rss_mb=844 lang=c filesProcessed=92
+[gitnexus-heap] scope-lang-start used_mb=576 rss_mb=1045 lang=cpp files=1227 contentsLoaded=1227
+[gitnexus-heap] sr-extract-start used_mb=576 rss_mb=1045 lang=cpp files=1227
+[gitnexus-heap] sr-extract-progress used_mb=578 rss_mb=1045 lang=cpp idx=24/1227 parsedFiles=24 preExtractedHits=24
+[gitnexus-heap] sr-extract-progress used_mb=573 rss_mb=1047 lang=cpp idx=48/1227 parsedFiles=48 preExtractedHits=48
+[gitnexus-heap] sr-extract-progress used_mb=582 rss_mb=1048 lang=cpp idx=72/1227 parsedFiles=72 preExtractedHits=72
+[gitnexus-heap] sr-extract-progress used_mb=576 rss_mb=1051 lang=cpp idx=96/1227 parsedFiles=96 preExtractedHits=96
+[gitnexus-heap] sr-extract-progress used_mb=581 rss_mb=1051 lang=cpp idx=120/1227 parsedFiles=120 preExtractedHits=120
+[gitnexus-heap] sr-extract-progress used_mb=584 rss_mb=1051 lang=cpp idx=144/1227 parsedFiles=144 preExtractedHits=144
+[gitnexus-heap] sr-extract-progress used_mb=588 rss_mb=1051 lang=cpp idx=168/1227 parsedFiles=168 preExtractedHits=168
+[gitnexus-heap] sr-extract-progress used_mb=578 rss_mb=1051 lang=cpp idx=192/1227 parsedFiles=192 preExtractedHits=192
+[gitnexus-heap] sr-extract-progress used_mb=584 rss_mb=1053 lang=cpp idx=216/1227 parsedFiles=216 preExtractedHits=216
+[gitnexus-heap] sr-extract-progress used_mb=587 rss_mb=1053 lang=cpp idx=240/1227 parsedFiles=240 preExtractedHits=240
+[gitnexus-heap] sr-extract-progress used_mb=588 rss_mb=1053 lang=cpp idx=264/1227 parsedFiles=264 preExtractedHits=264
+[gitnexus-heap] sr-extract-progress used_mb=590 rss_mb=1053 lang=cpp idx=288/1227 parsedFiles=288 preExtractedHits=288
+[gitnexus-heap] sr-extract-progress used_mb=590 rss_mb=1053 lang=cpp idx=312/1227 parsedFiles=312 preExtractedHits=312
+[gitnexus-heap] sr-extract-progress used_mb=580 rss_mb=1053 lang=cpp idx=336/1227 parsedFiles=336 preExtractedHits=336
+[gitnexus-heap] sr-extract-progress used_mb=581 rss_mb=1053 lang=cpp idx=360/1227 parsedFiles=360 preExtractedHits=360
+[gitnexus-heap] sr-extract-progress used_mb=584 rss_mb=1056 lang=cpp idx=384/1227 parsedFiles=384 preExtractedHits=384
+[gitnexus-heap] sr-extract-progress used_mb=585 rss_mb=1056 lang=cpp idx=408/1227 parsedFiles=408 preExtractedHits=408
+[gitnexus-heap] sr-extract-progress used_mb=587 rss_mb=1056 lang=cpp idx=432/1227 parsedFiles=432 preExtractedHits=432
+[gitnexus-heap] sr-extract-progress used_mb=587 rss_mb=1056 lang=cpp idx=456/1227 parsedFiles=456 preExtractedHits=456
+[gitnexus-heap] sr-extract-progress used_mb=591 rss_mb=1056 lang=cpp idx=480/1227 parsedFiles=480 preExtractedHits=480
+[gitnexus-heap] sr-extract-progress used_mb=592 rss_mb=1056 lang=cpp idx=504/1227 parsedFiles=504 preExtractedHits=504
+[gitnexus-heap] sr-extract-progress used_mb=584 rss_mb=1056 lang=cpp idx=528/1227 parsedFiles=528 preExtractedHits=528
+[gitnexus-heap] sr-extract-progress used_mb=586 rss_mb=1056 lang=cpp idx=552/1227 parsedFiles=552 preExtractedHits=552
+[gitnexus-heap] sr-extract-progress used_mb=588 rss_mb=1056 lang=cpp idx=576/1227 parsedFiles=576 preExtractedHits=576
+[gitnexus-heap] sr-extract-progress used_mb=589 rss_mb=1056 lang=cpp idx=600/1227 parsedFiles=600 preExtractedHits=600
+[gitnexus-heap] sr-extract-progress used_mb=592 rss_mb=1056 lang=cpp idx=624/1227 parsedFiles=624 preExtractedHits=624
+[gitnexus-heap] sr-extract-progress used_mb=593 rss_mb=1056 lang=cpp idx=648/1227 parsedFiles=648 preExtractedHits=648
+[gitnexus-heap] sr-extract-progress used_mb=595 rss_mb=1056 lang=cpp idx=672/1227 parsedFiles=672 preExtractedHits=672
+[gitnexus-heap] sr-extract-progress used_mb=587 rss_mb=1056 lang=cpp idx=696/1227 parsedFiles=696 preExtractedHits=696
+[gitnexus-heap] sr-extract-progress used_mb=592 rss_mb=1056 lang=cpp idx=720/1227 parsedFiles=720 preExtractedHits=720
+[gitnexus-heap] sr-extract-progress used_mb=593 rss_mb=1056 lang=cpp idx=744/1227 parsedFiles=744 preExtractedHits=744
+[gitnexus-heap] sr-extract-progress used_mb=593 rss_mb=1056 lang=cpp idx=768/1227 parsedFiles=768 preExtractedHits=768
+[gitnexus-heap] sr-extract-progress used_mb=595 rss_mb=1056 lang=cpp idx=792/1227 parsedFiles=792 preExtractedHits=792
+[gitnexus-heap] sr-extract-progress used_mb=598 rss_mb=1056 lang=cpp idx=816/1227 parsedFiles=816 preExtractedHits=816
+[gitnexus-heap] sr-extract-progress used_mb=600 rss_mb=1056 lang=cpp idx=840/1227 parsedFiles=840 preExtractedHits=840
+[gitnexus-heap] sr-extract-progress used_mb=592 rss_mb=1061 lang=cpp idx=864/1227 parsedFiles=864 preExtractedHits=864
+[gitnexus-heap] sr-extract-progress used_mb=593 rss_mb=1061 lang=cpp idx=888/1227 parsedFiles=888 preExtractedHits=888
+[gitnexus-heap] sr-extract-progress used_mb=595 rss_mb=1061 lang=cpp idx=912/1227 parsedFiles=912 preExtractedHits=912
+[gitnexus-heap] sr-extract-progress used_mb=595 rss_mb=1061 lang=cpp idx=936/1227 parsedFiles=936 preExtractedHits=936
+[gitnexus-heap] sr-extract-progress used_mb=595 rss_mb=1061 lang=cpp idx=960/1227 parsedFiles=960 preExtractedHits=960
+[gitnexus-heap] sr-extract-progress used_mb=596 rss_mb=1061 lang=cpp idx=984/1227 parsedFiles=984 preExtractedHits=984
+[gitnexus-heap] sr-extract-progress used_mb=601 rss_mb=1061 lang=cpp idx=1008/1227 parsedFiles=1008 preExtractedHits=1008
+[gitnexus-heap] sr-extract-progress used_mb=600 rss_mb=1066 lang=cpp idx=1032/1227 parsedFiles=1032 preExtractedHits=1032
+[gitnexus-heap] sr-extract-progress used_mb=602 rss_mb=1066 lang=cpp idx=1056/1227 parsedFiles=1056 preExtractedHits=1056
+[gitnexus-heap] sr-extract-progress used_mb=602 rss_mb=1066 lang=cpp idx=1080/1227 parsedFiles=1080 preExtractedHits=1080
+[gitnexus-heap] sr-extract-progress used_mb=602 rss_mb=1066 lang=cpp idx=1104/1227 parsedFiles=1104 preExtractedHits=1104
+[gitnexus-heap] sr-extract-progress used_mb=602 rss_mb=1066 lang=cpp idx=1128/1227 parsedFiles=1128 preExtractedHits=1128
+[gitnexus-heap] sr-extract-progress used_mb=602 rss_mb=1066 lang=cpp idx=1152/1227 parsedFiles=1152 preExtractedHits=1152
+[gitnexus-heap] sr-extract-progress used_mb=603 rss_mb=1066 lang=cpp idx=1176/1227 parsedFiles=1176 preExtractedHits=1176
+[gitnexus-heap] sr-extract-progress used_mb=604 rss_mb=1066 lang=cpp idx=1200/1227 parsedFiles=1200 preExtractedHits=1200
+[gitnexus-heap] sr-extract-progress used_mb=605 rss_mb=1066 lang=cpp idx=1224/1227 parsedFiles=1224 preExtractedHits=1224
+[gitnexus-heap] sr-extract-progress used_mb=606 rss_mb=1066 lang=cpp idx=1227/1227 parsedFiles=1227 preExtractedHits=1227
+[gitnexus-heap] sr-extract-end used_mb=606 rss_mb=1066 lang=cpp parsedFiles=1227 preExtractedHits=1227 skipped=0
+[gitnexus-heap] sr-pre-nodeLookup used_mb=620 rss_mb=1078 lang=cpp
+[gitnexus-heap] sr-post-nodeLookup used_mb=620 rss_mb=1078 lang=cpp
+[gitnexus-heap] sr-post-finalize used_mb=1295 rss_mb=1765 lang=cpp
+[gitnexus-heap] sr-post-workspaceIndex used_mb=1301 rss_mb=1776 lang=cpp
+[gitnexus-heap] sr-post-resolve used_mb=1337 rss_mb=2295 lang=cpp
+[gitnexus-heap] sr-end used_mb=1417 rss_mb=2366 lang=cpp parsedFiles=1227
+[gitnexus-heap] lang-release-pre-gc used_mb=1417 rss_mb=2368 lang=cpp
+[gitnexus-heap] lang-release-post-gc used_mb=579 rss_mb=2281 lang=cpp
+[gitnexus-heap] scope-lang-end used_mb=579 rss_mb=2281 lang=cpp filesProcessed=1227
+[gitnexus-heap] scope-lang-start used_mb=635 rss_mb=2298 lang=javascript files=6 contentsLoaded=0
+[gitnexus-heap] sr-extract-start used_mb=635 rss_mb=2298 lang=javascript files=6
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2298 lang=javascript idx=1/6 parsedFiles=1 preExtractedHits=1
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2298 lang=javascript idx=2/6 parsedFiles=2 preExtractedHits=2
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2298 lang=javascript idx=3/6 parsedFiles=3 preExtractedHits=3
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2298 lang=javascript idx=4/6 parsedFiles=4 preExtractedHits=4
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2298 lang=javascript idx=5/6 parsedFiles=5 preExtractedHits=5
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2298 lang=javascript idx=6/6 parsedFiles=6 preExtractedHits=6
+[gitnexus-heap] sr-extract-end used_mb=635 rss_mb=2298 lang=javascript parsedFiles=6 preExtractedHits=6 skipped=0
+[gitnexus-heap] sr-pre-nodeLookup used_mb=635 rss_mb=2298 lang=javascript
+[gitnexus-heap] sr-post-nodeLookup used_mb=635 rss_mb=2298 lang=javascript
+[gitnexus-heap] sr-post-finalize used_mb=637 rss_mb=2298 lang=javascript
+[gitnexus-heap] sr-post-workspaceIndex used_mb=637 rss_mb=2298 lang=javascript
+[gitnexus-heap] sr-post-resolve used_mb=637 rss_mb=2298 lang=javascript
+[gitnexus-heap] sr-end used_mb=620 rss_mb=2296 lang=javascript parsedFiles=6
+[gitnexus-heap] lang-release-pre-gc used_mb=620 rss_mb=2296 lang=javascript
+[gitnexus-heap] lang-release-post-gc used_mb=578 rss_mb=2280 lang=javascript
+[gitnexus-heap] scope-lang-end used_mb=578 rss_mb=2280 lang=javascript filesProcessed=6
+[gitnexus-heap] scope-lang-start used_mb=635 rss_mb=2297 lang=kotlin files=15 contentsLoaded=0
+[gitnexus-heap] sr-extract-start used_mb=635 rss_mb=2297 lang=kotlin files=15
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=1/15 parsedFiles=1 preExtractedHits=1
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=2/15 parsedFiles=2 preExtractedHits=2
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=3/15 parsedFiles=3 preExtractedHits=3
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=4/15 parsedFiles=4 preExtractedHits=4
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=5/15 parsedFiles=5 preExtractedHits=5
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=6/15 parsedFiles=6 preExtractedHits=6
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=7/15 parsedFiles=7 preExtractedHits=7
+[gitnexus-heap] sr-extract-progress used_mb=635 rss_mb=2297 lang=kotlin idx=8/15 parsedFiles=8 preExtractedHits=8
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=9/15 parsedFiles=9 preExtractedHits=9
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=10/15 parsedFiles=10 preExtractedHits=10
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=11/15 parsedFiles=11 preExtractedHits=11
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=12/15 parsedFiles=12 preExtractedHits=12
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=13/15 parsedFiles=13 preExtractedHits=13
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=14/15 parsedFiles=14 preExtractedHits=14
+[gitnexus-heap] sr-extract-progress used_mb=636 rss_mb=2297 lang=kotlin idx=15/15 parsedFiles=15 preExtractedHits=15
+[gitnexus-heap] sr-extract-end used_mb=636 rss_mb=2297 lang=kotlin parsedFiles=15 preExtractedHits=15 skipped=0
+[gitnexus-heap] sr-pre-nodeLookup used_mb=636 rss_mb=2297 lang=kotlin
+[gitnexus-heap] sr-post-nodeLookup used_mb=636 rss_mb=2297 lang=kotlin
+[gitnexus-heap] sr-post-finalize used_mb=623 rss_mb=2296 lang=kotlin
+[gitnexus-heap] sr-post-workspaceIndex used_mb=623 rss_mb=2296 lang=kotlin
+[gitnexus-heap] sr-post-resolve used_mb=626 rss_mb=2296 lang=kotlin
+[gitnexus-heap] sr-end used_mb=629 rss_mb=2296 lang=kotlin parsedFiles=15
+[gitnexus-heap] lang-release-pre-gc used_mb=629 rss_mb=2296 lang=kotlin
+[gitnexus-heap] lang-release-post-gc used_mb=579 rss_mb=2279 lang=kotlin
+[gitnexus-heap] scope-lang-end used_mb=579 rss_mb=2279 lang=kotlin filesProcessed=15
+[gitnexus-heap] scope-lang-start used_mb=620 rss_mb=2295 lang=swift files=9 contentsLoaded=9
+[gitnexus-heap] sr-extract-start used_mb=620 rss_mb=2295 lang=swift files=9
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=1/9 parsedFiles=1 preExtractedHits=1
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=2/9 parsedFiles=2 preExtractedHits=2
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=3/9 parsedFiles=3 preExtractedHits=3
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=4/9 parsedFiles=4 preExtractedHits=4
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=5/9 parsedFiles=5 preExtractedHits=5
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=6/9 parsedFiles=6 preExtractedHits=6
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=7/9 parsedFiles=7 preExtractedHits=7
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=8/9 parsedFiles=8 preExtractedHits=8
+[gitnexus-heap] sr-extract-progress used_mb=620 rss_mb=2295 lang=swift idx=9/9 parsedFiles=9 preExtractedHits=9
+[gitnexus-heap] sr-extract-end used_mb=620 rss_mb=2295 lang=swift parsedFiles=9 preExtractedHits=9 skipped=0
+[gitnexus-heap] sr-pre-nodeLookup used_mb=620 rss_mb=2295 lang=swift
+[gitnexus-heap] sr-post-nodeLookup used_mb=620 rss_mb=2295 lang=swift
+[gitnexus-heap] sr-post-finalize used_mb=620 rss_mb=2295 lang=swift
+[gitnexus-heap] sr-post-workspaceIndex used_mb=621 rss_mb=2295 lang=swift
+[gitnexus-heap] sr-post-resolve used_mb=624 rss_mb=2295 lang=swift
+[gitnexus-heap] sr-end used_mb=627 rss_mb=2295 lang=swift parsedFiles=9
+[gitnexus-heap] lang-release-pre-gc used_mb=627 rss_mb=2295 lang=swift
+[gitnexus-heap] lang-release-post-gc used_mb=579 rss_mb=2280 lang=swift
+[gitnexus-heap] scope-lang-end used_mb=579 rss_mb=2280 lang=swift filesProcessed=9
