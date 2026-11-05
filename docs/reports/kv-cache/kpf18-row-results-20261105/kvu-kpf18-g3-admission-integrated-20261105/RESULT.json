@@ -1,0 +1,40 @@
+{
+  "schema": "kpf18.smoke-admission-integrated.v1",
+  "status": "PASS",
+  "tests": 7,
+  "affinity": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "sources": {
+    "corrected.py": "97756ada320c23188eb3e8f2233c80c5a592b41ab8116e3157d8b94bf03b4948",
+    "test_integrated.py": "486c2444a9ac1a3b2f909e2d24372cc0df1d04d3d718abcff614ef78a500fc1f",
+    "lock_witness.py": "6ec66b07863c51602769279c70bde47c66d50648eda98614ea75bb8742ea4507",
+    "publisher_smoke.py": "dbf2a4324139a3c330852962509c8f989e77576f756290aeb28f6fe320eeba2b",
+    "complete.py": "23aac9882741292b87e264e21d6d3acdf1629370eca68b5d5241ae51d462d2eb",
+    "qualify.py": "bf056a26d3e7353e74acbbed27e8bd9a4aeedb60f7c0f47dc4b3ab724e6cf5bd",
+    "original.py": "b0becbb9ac5d8884c1f99234b01020ae1b4265320be6bc140a8bd421f2c25411"
+  }
+}

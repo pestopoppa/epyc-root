@@ -1,0 +1,39 @@
+{
+  "schema": "epyc.kpf18.supervisor.v1",
+  "status": "PASS",
+  "controls": 4,
+  "affinity": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "sources": {
+    "test_supervisor.py": "2cd18f4f6d80b16e0360c61adc610238301487aaa5cb610d739b7ae5644127df",
+    "original_supervisor.py": "088a73ac9e5084edb3ef6dc2c6552af8f751ae3a65277e9e0bd424e6ab617da4",
+    "complete.py": "c5bec3180322dada985e7b2d7cef7de91175f4f70bd3e88cb9ad1639c92d1f86",
+    "job.py": "b54e4006fde17b16f75f2139ae9c5c38891346463c54cd318a5e8838d26f0e06",
+    "output_reserve.py": "a763c65fc953c1ec2957b0b0784e7ed94f52b63985a12a6c633422460dd5d4fe",
+    "supervisor.py": "4daeeb2d2e3990d48152d02bfc72562cbc6e0d356218d9b20993fb10563c931d"
+  }
+}

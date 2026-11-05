@@ -1,0 +1,74 @@
+{
+  "schema": "kpf18.cancel-order.v1",
+  "status": "PASS",
+  "controls": [
+    {
+      "case": "ordered",
+      "original": true,
+      "corrected": true
+    },
+    {
+      "case": "release_before_cancel",
+      "original": true,
+      "corrected": false
+    },
+    {
+      "case": "cancel_before_launch",
+      "original": true,
+      "corrected": false
+    },
+    {
+      "case": "foreign_cancel",
+      "original": false,
+      "corrected": false
+    },
+    {
+      "case": "missing_release",
+      "original": false,
+      "corrected": false
+    },
+    {
+      "case": "duplicate_release",
+      "original": false,
+      "corrected": false
+    },
+    {
+      "case": "late_second_cancel",
+      "original": true,
+      "corrected": false
+    }
+  ],
+  "affinity": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "sources": {
+    "physical_trace.py": "d038e3cee0f117025f5b630d91ca2bb03966d889be8e4181c63efe56c3d15dc5",
+    "complete.py": "2653e7da9ca2d7160fb54c57b866d283af1fdc35fc31e08a701f5e37d8abdad2",
+    "qualify.py": "0e0f2ccde77686632b5166afdac9941528b36ac0e7afb1dee61b3c4e30a530f0",
+    "native_task_log_original.py": "83c93054f5927a4dae2f1e0aa141275e7da8aaca8813c1f332750d0c8ff3166a",
+    "native_task_log_corrected.py": "c338a7ea6c668377326670ea512738e5feafd296b09048fa8e4d1e14f1529ec9"
+  }
+}

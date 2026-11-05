@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T03:53:34Z reason=complete
+job_id=kvu-kpf18-g3-cancel-order-qual-20261105
+owner=h-kvu
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T03:53:31Z
+regions=72-95

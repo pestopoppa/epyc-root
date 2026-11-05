@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T03:54:16Z reason=complete
+job_id=kvu-kpf18-g3-supervisor-integrated-20261105
+owner=h-kvu
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T03:54:13Z
+regions=72-95
