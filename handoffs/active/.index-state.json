@@ -4,13 +4,13 @@
       "blocked": 50,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
-      "open": 651
+      "open": 653
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
       "handoffs": 1,
       "oldest_advance": "2026-11-03",
-      "open": 19
+      "open": 20
     },
     "research-evaluation-index.md": {
       "blocked": 5,
@@ -28,7 +28,7 @@
       "blocked": 6,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 486
+      "open": 496
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -733,7 +733,7 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-02",
-      "open": 92,
+      "open": 96,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -742,7 +742,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 331,
+      "total": 335,
       "tracks": [
         {
           "blocked": 0,
@@ -812,7 +812,7 @@
           "line": 2003,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 0
+          "open": 4
         }
       ]
     },
@@ -1117,7 +1117,7 @@
       "closed": 270,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 101,
+      "open": 103,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1126,7 +1126,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 373,
+      "total": 375,
       "tracks": [
         {
           "blocked": 1,
@@ -1148,7 +1148,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1538,
+          "line": 1541,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1158,7 +1158,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1662,
+          "line": 1665,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1168,7 +1168,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1989,
+          "line": 1992,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1178,7 +1178,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2128,
+          "line": 2131,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1188,7 +1188,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2681,
+          "line": 2684,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1202,7 +1202,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2818,
+          "line": 2821,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -1219,10 +1219,10 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3710,
+          "line": 3714,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 54
+          "open": 56
         }
       ]
     },
@@ -1231,7 +1231,7 @@
       "closed": 100,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 19,
+      "open": 20,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1240,7 +1240,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 122,
+      "total": 123,
       "tracks": [
         {
           "blocked": 0,
@@ -1300,7 +1300,7 @@
           "line": 2943,
           "markers": 1,
           "name": "sliders-local-validation",
-          "open": 1
+          "open": 2
         }
       ]
     },
@@ -1309,7 +1309,7 @@
       "closed": 388,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 100,
+      "open": 106,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1318,7 +1318,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 489,
+      "total": 495,
       "tracks": [
         {
           "blocked": 1,
@@ -1339,7 +1339,7 @@
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 1683,
+          "line": 1697,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9
@@ -1352,10 +1352,10 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2095,
+          "line": 2111,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 37
+          "open": 43
         }
       ]
     },
@@ -2453,7 +2453,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 702,
+          "line": 703,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14

@@ -641,7 +641,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-05T09:13:03Z",
+  "generated_at": "2026-11-05T09:19:11Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2040,7 +2040,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 702,
+          "line": 703,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2133,14 +2133,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 270,
-      "dispatchable": 101,
+      "dispatchable": 103,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
-      "open": 103,
+      "open": 105,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2190,7 +2190,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1538,
+          "line": 1541,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2199,7 +2199,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1662,
+          "line": 1665,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2208,7 +2208,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1989,
+          "line": 1992,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2217,7 +2217,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2128,
+          "line": 2131,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2226,7 +2226,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2681,
+          "line": 2684,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2243,7 +2243,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2818,
+          "line": 2821,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2257,7 +2257,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 54,
+          "dispatchable": 56,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-cross-workload-keep-gate",
@@ -2266,9 +2266,9 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3710,
+          "line": 3714,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 55,
+          "open": 57,
           "readiness": "blocked"
         }
       ]
@@ -2521,14 +2521,14 @@
       "blocked": 3,
       "blocked_by": [],
       "closed": 100,
-      "dispatchable": 19,
+      "dispatchable": 20,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-03",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 22,
+      "open": 23,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2593,11 +2593,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
           "line": 2943,
           "name": "sliders-local-validation",
-          "open": 2,
+          "open": 3,
           "readiness": "ready"
         }
       ]
@@ -3150,14 +3150,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 92,
+      "dispatchable": 96,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-02",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 92,
+      "open": 96,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3231,12 +3231,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 0,
+          "dispatchable": 4,
           "gates": [],
           "line": 2003,
           "name": "repo-readiness-scorer",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 4,
+          "readiness": "ready"
         }
       ]
     },
@@ -3512,14 +3512,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 388,
-      "dispatchable": 100,
+      "dispatchable": 106,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-05",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 101,
+      "open": 107,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3560,7 +3560,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1683,
+          "line": 1697,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3570,14 +3570,14 @@
             "INF-79",
             "RTG-36"
           ],
-          "dispatchable": 37,
+          "dispatchable": 43,
           "gates": [
             "RTG-36",
             "INF-79"
           ],
-          "line": 2095,
+          "line": 2111,
           "name": "kv-unified-stack-rollout",
-          "open": 37,
+          "open": 43,
           "readiness": "blocked"
         }
       ]
