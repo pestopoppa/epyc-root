@@ -1,7 +1,7 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 48,
+      "blocked": 49,
       "handoffs": 12,
       "oldest_advance": "2026-11-03",
       "open": 648
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-02",
-      "open": 488
+      "open": 486
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -1306,10 +1306,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 9,
-      "closed": 405,
+      "closed": 407,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 98,
+      "open": 96,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1346,7 +1346,7 @@
         },
         {
           "blocked": 0,
-          "closed": 132,
+          "closed": 134,
           "gates": [
             "RTG-36",
             "INF-79"
@@ -1355,7 +1355,7 @@
           "line": 2161,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 44
+          "open": 42
         }
       ]
     },
@@ -1492,7 +1492,7 @@
       ]
     },
     "mi210-serving-program.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 201,
       "guarded": 0,
       "last_advanced": "2026-11-05",
@@ -1505,7 +1505,7 @@
       },
       "row_id": "INF-22",
       "state": "active",
-      "total": 204,
+      "total": 205,
       "tracks": [
         {
           "blocked": 0,
@@ -1548,7 +1548,7 @@
           "open": 0
         },
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 16,
           "gates": [],
           "guarded": 0,
@@ -1562,7 +1562,7 @@
           "closed": 31,
           "gates": [],
           "guarded": 0,
-          "line": 2194,
+          "line": 2196,
           "markers": 1,
           "name": "qwen38-27b-replace-qwen36",
           "open": 0
@@ -1579,7 +1579,7 @@
             "INF-22#qwen38-27b-replace-qwen36"
           ],
           "guarded": 0,
-          "line": 2804,
+          "line": 2806,
           "markers": 1,
           "name": "numa-prefill-decode-disaggregation",
           "open": 0
