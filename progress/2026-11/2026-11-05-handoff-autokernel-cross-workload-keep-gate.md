@@ -191,3 +191,7 @@ Removed two superseded drafts (~182 MiB), retaining live and published row scrat
 ## 04:17Z — File C6 and CH-26 results, clean superseded scratch, and ready C6 floor build
 
 Filed C6 target-shape comparison inconclusive after rc1 and eight of 20 pairs; the retained pair-08 output reproduces a rounded-time floor refusal but original traceback was not retained. Filed CH-26 scheduler diagnostic pass for 24 functional windows only, without a noise-floor claim. Removed approximately 7.6 GiB superseded scratch with retained evidence. Prepared the C6 paired build successor with a two-second opt-in host-elapsed loop; publisher smoke is in progress and no readiness is claimed.
+
+## 04:20Z — Prepare a floor-preserving paired target-shape build
+
+The previous target-shape run's rounded one-second samples can fail its conservative floor. A matching producer-margin build, c6-targetshape-floor-build-r2-20261105, was already published and running when discovered; it uses a two-second opt-in threshold in both images and preserves the later one-second validation. Stopped duplicate preparation and removed both newly created source worktrees. No new result or qualification follows. The historical Nemotron traces lack token boundary markers; the CH-26b floor draft remains disabled pending custody and admission controls.
