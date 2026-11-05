@@ -4098,3 +4098,12 @@ Owner action: investigate how the process executable can disappear while the ret
 ##### 2026-10-31 CPU-FA-VKQ-3 READY preparation
 
 `codex3-cpu-fa-vkq3-mtp-20261031` is READY under prospective source enrollment `dcb7467273bea434c2939f92433fc0ed09b725cd` (manifest SHA-256 `f56b6ca1aa6b78a987816b2da42cc2b8a63f25b6edc3a6840b58915a19264f29`). One original agent conversation selection has 70,014 architect-tokenizer tokens; it is not a claim of a historical architect exchange. The actual host-entry public control completed rc0 and active STOP returned rc75 with owned children drained. The 35B target, MTP acceptance and full original task remain unrun; missing draft/accepted counts or generated token IDs remain UNKNOWN, not a zero or divergence verdict. No private transcript or weights appear in the [bounded capsule](../../artifacts/compute/codex3-vkq3-pip-r30-20261031/). [belief: cc]
+
+##### 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)
+
+- [ ] **KPF-VCOV-HEAPSKIP — `verified_coverage()` must whitelist gitnexus heap `skipped=N` lines, then rerun the rows it falsely failed:** kpf17-oracle, kpf182, kpf26, kpf27d, kpf625, kpf191, kpf131-r5. [no-belief: tooling-repair]
+- [ ] **HSF-3-RERUN-POST-DOUBLEFREE — rerun hsf3 adjacency and counter impact after the gitnexus 1.6.8 "double free or corruption (out)" fix lands** (fix in progress under `artifacts/analysis/gitnexus-1.6.8-fixes-20261104/doublefree/`; 2 rows filed inconclusive in 615fdc35a). Blocker: the gitnexus fix.
+- [ ] **KPF-30-RERUN-POST-DOUBLEFREE — rerun kpf30-r8 after the same gitnexus fix** (crashed on the double free). Blocker: the gitnexus fix.
+- [ ] **KPF-64-RERUN-TRACEBACK — rerun kpf64 keeping the full traceback** (prior run inconclusive without it; 020bdd856).
+- [ ] **V11-FA8-RERUN-PINNED — rerun v11-fa8 impact pinned to `flash_attn_ext_f16_process_tile` with `scan_complete` and `partial=false`** (r6 filed fail on a partial scan, cfac40240).
+- [ ] **HPR-REPUBLISH-RUN15 — republish the hpr launcher on `filler_run15.sh`** (it still names `filler_run13.sh`).

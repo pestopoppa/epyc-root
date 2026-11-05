@@ -3056,3 +3056,7 @@ When this handoff closes (either via Phase 0 `not_viable_local` or Phase 1 `phas
 - [x] **LSA-INTAKE-XREF-1 — Repair intake validation of historical handoff references after the approved backlog folds: resolve old filenames only through an unambiguous committed fold mapping to an existing owner and Track heading; reject unknown, ambiguous and dangling targets. Apply the same resolution to index and cross-reference-map checks, add focused moved/missing/ambiguous tests, and require the full intake validator to exit zero before closing this campaign.** ✅ 2026-11-03 [no-belief: software verification]
 
 Validation evidence: 53 regression tests and 16 subtests passed; the exact approved-plan/checkpoint validator passed all 2,623 entries. The resolver follows committed fold and MEQ lineage and rejects missing, ambiguous, cyclic and dangling references. No model performance or quality result is implied.
+
+##### 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)
+
+- [ ] **PADDLE-RC75-RESUME — the paddle wrapper must treat rc75 (tempfail/disk-floor) as resumable, not failure** (~19 rows affected; codex3).

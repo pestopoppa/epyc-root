@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-LSA-32K-STOP | Remove the `STOP.reviewed-20261104T2307Z` fence so the LSA window-3 32K real run (smoke_predicate.py chmod fixed; dry-run passes) can launch, or keep it fenced. | [long-context-program.md](long-context-program.md) LSA window-3 | 2026-11-05 |
 | OP-OPENCODE-RECLAIM | Reclaim ~26 GB of opencode DB: a live copy plus hourly root snapshots (not growing; last use 10-20). Options: keep newest snapshot only, or drop the live copy. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LOOP-34 | 2026-10-29 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](engineering-hygiene-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
