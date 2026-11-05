@@ -66,7 +66,7 @@ class ShapeEvidence(Fx):
             rf.publish(self.spec("xg", lp, regions="0-95", shape="quiet-host"), self.flags)
 
     def test_quiet_host_with_baseline_ref_or_override_admitted(self):
-        lp = self.launcher("qa", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95")
+        lp = self.launcher("qa", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
         row = rf.publish(self.spec("qa", lp, lane="gpu", regions="mi210_0,0-95", baseline_ref="artifacts/x/baseline.json"), self.flags)
         self.assertEqual(row["shape"], "quiet-host")
         lp = self.launcher("qb", cmd="bench -t 8", extra="--claim-cpus 0-95")
@@ -76,7 +76,7 @@ class ShapeEvidence(Fx):
             rf.publish(self.spec("qb", lp, regions="0-95", shape_override="because"), self.flags)
 
     def test_production_serving_48_threads_keeps_whole_host(self):
-        lp = self.launcher("npd", cmd="llama-server -t 48", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95")
+        lp = self.launcher("npd", cmd="llama-server -t 48", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
         row = rf.publish(self.spec("npd", lp, lane="gpu", regions="mi210_0,0-95"), self.flags)
         self.assertEqual(row["shape"], "quiet-host")
         self.assertEqual(row["busy_fraction"], 0.5)
@@ -111,7 +111,7 @@ class ShapeEvidence(Fx):
 
 class GpuQ3(Fx):
     def npd_like(self, rid="g3"):
-        lp = self.launcher(rid, cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95")
+        lp = self.launcher(rid, cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
         return rf.publish(self.spec(rid, lp, lane="gpu", regions="mi210_0,0-95"), self.flags)
 
     def test_gpu_timing_without_evidence_maps_to_gpu_q3(self):
@@ -119,8 +119,8 @@ class GpuQ3(Fx):
         # q3 cores 72-87 (GLOBAL.q3 exclusive): refused at publish; the explicit gpu-q3 form below is admitted
         with self.assertRaises(rf.Refused) as e:
             self.npd_like()
-        self.assertIn("72-87 stay lockable", str(e.exception))
-        lp = self.launcher("g3", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95")
+        self.assertIn("beyond q3", str(e.exception))   # gpushape 2026-11-05: refused by the GPU-lane overreach gate first
+        lp = self.launcher("g3", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95 --role bench")
         row = rf.publish(self.spec("g3", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
         self.assertEqual(row["shape"], "gpu-q3")
         opts, bench = rf.row_shape(row)
@@ -203,6 +203,86 @@ class Supersede(Fx):
         self.assertIn("reason=owner_dropped_it", rf.head1(os.path.join(self.flags, "grants", "wd.ended")))
         self.assertTrue(os.path.exists(os.path.join(self.root, "wd", "wd.STOP")))
         self.assertEqual(rf.main(["--flags", self.flags, "withdraw", "nope", "--reason", "x"]), 2)
+
+
+
+class GpuLaneOverreach(Fx):
+    """gpushape 2026-11-05 (D9-ack: defect fix - declared shape bypass, inf34 v15)."""
+
+    def test_declared_shape_gpu_with_whole_host_regions_refused(self):
+        lp = self.launcher("v15", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
+        with self.assertRaises(rf.Refused) as e:
+            rf.publish(self.spec("v15", lp, lane="gpu", regions="mi210_0,0-95", shape="gpu"), self.flags)
+        self.assertIn("beyond q3 + 184-191 (0-71)", str(e.exception))
+
+    def test_declared_gpu_q3_shape_never_bypasses(self):
+        lp = self.launcher("wq3", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 0-23")
+        with self.assertRaises(rf.Refused) as e:
+            rf.publish(self.spec("wq3", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
+        self.assertIn("0-23", str(e.exception))
+
+    def test_gpu_q3_form_admitted(self):
+        lp = self.launcher("ok", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95,184-191 --role bench")
+        row = rf.publish(self.spec("ok", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
+        self.assertEqual(row["shape"], "gpu-q3")
+
+    def test_whole_host_evidence_admits(self):
+        lp = self.launcher("t48", cmd="llama-server -t 48", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
+        self.assertEqual(rf.publish(self.spec("t48", lp, lane="gpu", regions="mi210_0,0-95", shape="gpu"), self.flags)["shape"], "gpu")
+        lp = self.launcher("br", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
+        rf.publish(self.spec("br", lp, lane="gpu", regions="mi210_0,0-95", baseline_ref="artifacts/x/b.json"), self.flags)
+        lp = self.launcher("so", cmd="bench -t 8", cls="cpu+gpu", extra="--gpu-quiet exclusive --claim-cpus 0-95 --role bench")
+        rf.publish(self.spec("so", lp, lane="gpu", regions="mi210_0,0-95", shape="gpu",
+                             shape_override="operator: op 2026-11-05: whole-host serving A/B"), self.flags)
+
+    def test_cpu_row_untouched(self):
+        self.assertEqual(rf.gpu_lane_overreach({"lane": "cpu"}, "0-95", {"class": "cpu", "claim_cpus": "0-95"}), set())
+        self.assertEqual(rf.gpu_lane_overreach({"lane": "gpu"}, "mi210_0,184-191", {"class": "gpu"}), set())
+        self.assertEqual(rf.gpu_lane_overreach({"lane": "gpu"}, "mi210_0,q1", {}), set(range(24, 48)) | set(range(120, 144)))
+
+
+class GpuQ3OnlyForTiming(Fx):
+    """gpushape q3-parallel (operator 2026-11-05): non-timing GPU rows leave q3 to CPU rows; timing rows keep it quiet."""
+
+    def test_non_timing_gpu_row_booking_q3_refused(self):
+        lp = self.launcher("cq", cmd="python3 check.py", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95,184-191")
+        with self.assertRaises(rf.Refused) as e:
+            rf.publish(self.spec("cq", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
+        self.assertIn("non-timing GPU row books q3", str(e.exception))
+        lp = self.launcher("co", cmd="python3 check.py", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95,184-191")
+        rf.publish(self.spec("co", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3",
+                             shape_override="operator: op 2026-11-05: keep q3 quiet"), self.flags)
+
+    def test_timing_declarations_admit_gpu_q3(self):
+        for rid, kw in (("ta", {"timing": "profile"}), ("tb", {"admission_class": "block-timing-quiet"})):
+            lp = self.launcher(rid, cmd="python3 p.py", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95,184-191")
+            row = rf.publish(self.spec(rid, lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3", **kw), self.flags)
+            self.assertEqual(row["shape"], "gpu-q3")
+
+    def test_non_timing_grant_leaves_q3_grantable(self):
+        lp = self.launcher("ng", cmd="python3 check.py", cls="gpu", extra="--no-fold-siblings --gpu-quiet exclusive")
+        row = rf.publish(self.spec("ng", lp, lane="gpu", regions="mi210_0,184-191"), self.flags)
+        self.assertEqual(row["shape"], "gpu")
+        opts, _ = rf.row_shape(row)
+        held = rf.expand(opts[0])
+        q3_cores = {f"c{n}" for n in range(72, 96)}
+        self.assertFalse(held & q3_cores)
+        self.assertNotIn("q3", held)
+
+    def test_timing_grant_keeps_q3_quiet(self):
+        lp = self.launcher("tg", cmd="bench -t 8", cls="gpu", extra="--gpu-quiet exclusive --claim-cpus 88-95,184-191 --role bench")
+        row = rf.publish(self.spec("tg", lp, lane="gpu", regions="mi210_0,88-95,184-191", shape="gpu-q3"), self.flags)
+        opts, _ = rf.row_shape(row)
+        self.assertTrue({f"c{n}" for n in range(72, 96)} <= rf.expand(opts[0]))
+
+
+class LowBusySkipMessage(unittest.TestCase):
+    def test_names_its_own_busy_regions(self):
+        h = {"options": [frozenset({"c72", "c73"})], "busy_fraction": 0.05, "gib": 1}
+        free = set(rf.CORES[:24])
+        why = rf.own_block(h, free, 10_000, False, set())
+        self.assertIn("busy_fraction 0.05", why)
+        self.assertIn("c72", why)
 
 
 if __name__ == "__main__":

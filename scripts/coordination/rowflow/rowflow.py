@@ -258,6 +258,8 @@ def parse_launcher(path):
         elif t in one:
             o[one[t]] = toks[j + 1]; j += 2
         elif t in ("--sched-port", "--excl-lock", "--gpu-threads", "--role", "--precond-cmd", "--requires-tool", "--qual-interpreter"):
+            if t == "--role":
+                o["launch_role"] = toks[j + 1]   # gpushape: read only by gpu_timing_row (row_shape's `role` stays unset)
             j += 2
         elif t == "--no-fold-siblings":
             o["nofold"] = True; j += 1
@@ -715,7 +717,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "timing"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -723,6 +725,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     need(sfp, f"stop_file {o['stop']!r} is not absolute and does not resolve from the launcher's own D= assignment; "
               "use a literal absolute --stop path (or D=\"$(cd \"$(dirname \"$0\")\" && pwd)\" with --stop \"$D/<id>.STOP\")")
     row["stop_file"] = sfp
+    if spec.get("timing") is not None:
+        need(str(spec["timing"]) in GPU_TIMING_KINDS, f"timing must be one of {GPU_TIMING_KINDS}")
     sup = spec.get("supersedes")
     if sup is not None:
         need(isinstance(sup, str) and sup or isinstance(sup, list) and all(isinstance(x, str) and x for x in sup),
@@ -746,6 +750,26 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
                        f"{row.get('declared_threads') or 'none'}{': ' + ', '.join(row.get('threads_evidence') or []) if row.get('threads_evidence') else ''}), "
                        f"a baseline_ref naming the decision-grade baseline / production-serving measurement, or "
                        f"shape_override \"operator: <who> <date>: <why>\"; right-sized: {right_size(row.get('declared_threads'), lane, o.get('gpu_quiet', ''))}")
+    # gpushape 2026-11-05 (D9-ack: operator 2026-11-05 approved shape-from-evidence + gpu-q3; defect fix - declared shape
+    # bypass): inf34 v15 declared `shape: gpu` with regions mi210_0,0-95 + --claim-cpus 0-95 and booked the whole host for a
+    # GPU qualification. A GPU-lane row whose regions/claim reach beyond q3 (72-95 + siblings 168-191) is refused unless
+    # it carries whole-host evidence; a declared shape never skips this.
+    over = gpu_lane_overreach(row, regions, o)
+    need(not over or whole_host_evidence(row),
+         f"GPU-lane row claims cpus beyond q3 + 184-191 ({compress_cpus(over)}); a GPU run needs gpu-quiet + q3's host "
+         f"threads only (shape gpu-q3: regions mi210_0,88-95,184-191, launcher --class gpu --claim-cpus 88-95,184-191) "
+         f"unless it measures whole-host CPU serving: >= {WHOLE_HOST_THREADS} declared threads (found "
+         f"{row.get('declared_threads') or 'none'}), a baseline_ref, or shape_override \"operator: <who> <date>: <why>\"")
+    # gpushape q3-parallel (operator 2026-11-05: "when not performing timing work on the GPU/CPU and, most importantly, in
+    # production we should totally allow q3 CPU use to take place in parallel with the GPU use"): gpu-q3 (q3 kept quiet)
+    # is ONLY for GPU timing rows; every other GPU row is the plain gpu shape (gpu-quiet + 184-191, no-fold) and may not
+    # book q3 cores, unless it carries an operator shape_override.
+    q3book = gpu_lane_q3_cores(row, regions, o)
+    if (q3book or row["shape"] == "gpu-q3") and not gpu_timing_row(row, o) and not str(row.get("shape_override") or "").strip():
+        need(False, f"non-timing GPU row books q3 ({compress_cpus(q3book) or 'shape gpu-q3'}): q3 CPU use runs in parallel with "
+                    f"non-timing GPU work; use the plain gpu shape (regions mi210_0,184-191, launcher --class gpu "
+                    f"--no-fold-siblings). A timing row declares it: launcher --role bench, admission_class "
+                    f"block-timing-pairable|block-timing-quiet, or timing: {'|'.join(GPU_TIMING_KINDS)}; else shape_override")
     if row["shape"] == "gpu-q3":
         gpu_grant = o.get("class") == "gpu" and "mi210" in str(regions) and engine_grant_cpus(o)
         bad = gpu_q3_claim_cores(regions if gpu_grant else (o.get("claim_cpus") or regions)) & set(range(72, 88))
@@ -877,7 +901,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
-              "fix_ref", "baseline_ref", "shape_override"):
+              "fix_ref", "baseline_ref", "shape_override", "timing"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -1578,6 +1602,73 @@ def check_engine_not_sealed(launcher, eng):
                  "the packet's seals (PASS.json records engine_sha256)")
 
 
+GPU_Q3_ALLOWED_CPUS = frozenset(range(72, 96)) | frozenset(range(168, 192))   # q3 cores + their SMT siblings (incl. 184-191)
+
+
+def _cpu_set(text):
+    out = set()
+    for t in str(text or "").split(","):
+        a, _, b = t.strip().partition("-")
+        if a.isdigit() and (not b or b.isdigit()):
+            out |= set(range(int(a), int(b or a) + 1))
+        elif re.fullmatch(r"q[0-3]", t.strip()):
+            q = int(t.strip()[1])
+            out |= set(range(24 * q, 24 * q + 24)) | set(range(96 + 24 * q, 120 + 24 * q))
+    return out
+
+
+def compress_cpus(cpus):
+    out, run = [], []
+    for c in sorted(cpus):
+        if run and c == run[-1] + 1:
+            run.append(c)
+            continue
+        if run:
+            out.append(f"{run[0]}-{run[-1]}" if len(run) > 1 else str(run[0]))
+        run = [c]
+    if run:
+        out.append(f"{run[0]}-{run[-1]}" if len(run) > 1 else str(run[0]))
+    return ",".join(out)
+
+
+GPU_TIMING_KINDS = ("bench", "profile", "ak-keep-gate")
+GPU_TIMING_CLASSES = ("block-timing-pairable", "block-timing-quiet")
+
+
+def gpu_timing_row(row, o):
+    """A GPU row that measures time on the GPU (keeps q3 quiet): launcher --role bench, a timing admission_class, or an
+    explicit spec `timing` kind (bench | profile | ak-keep-gate)."""
+    return ((o or {}).get("launch_role") == "bench" or row.get("admission_class") in GPU_TIMING_CLASSES
+            or str(row.get("timing") or "") in GPU_TIMING_KINDS)
+
+
+def gpu_lane_q3_cores(row, regions, o):
+    """The q3 cpus (72-95 and siblings 168-183; the MI210 host threads 184-191 excepted) a GPU-lane row books via its
+    regions or launcher claim; empty for a CPU row."""
+    regs = str(regions or "")
+    if not (row.get("lane") == "gpu" or "mi210" in regs or (o or {}).get("class") in ("gpu", "cpu+gpu")):
+        return set()
+    cpus = set() if regs == "any-cpu-quarter" or regs.startswith("any-of") else \
+        _cpu_set(",".join(t for t in regs.split(",") if not t.strip().startswith("mi210")))
+    cpus |= _cpu_set((o or {}).get("claim_cpus") or "")
+    return cpus & (set(range(72, 96)) | set(range(168, 184)))
+
+
+def gpu_lane_overreach(row, regions, o):
+    """gpushape 2026-11-05: the cpus a GPU-lane row (lane gpu, mi210 in regions, or launcher class gpu / cpu+gpu) names in
+    its regions or its launcher claim (--claim-cpus) beyond q3 + its siblings; empty for a CPU row. Independent of any
+    declared shape - the declared `shape: gpu` on regions mi210_0,0-95 was exactly the bypass."""
+    regs = str(regions or "")
+    if not (row.get("lane") == "gpu" or "mi210" in regs or (o or {}).get("class") in ("gpu", "cpu+gpu")):
+        return set()
+    if regs == "any-cpu-quarter" or regs.startswith("any-of"):
+        cpus = set()
+    else:
+        cpus = _cpu_set(",".join(t for t in regs.split(",") if not t.strip().startswith("mi210")))
+    cpus |= _cpu_set((o or {}).get("claim_cpus") or "")
+    return cpus - GPU_Q3_ALLOWED_CPUS
+
+
 def check_shape_evidence(spec, o):
     """Publish gate for the whole-host evidence fields themselves."""
     br = spec.get("baseline_ref")
@@ -1701,7 +1792,9 @@ def own_block(h, free, ram, gpu_grant_open, ports):
     if any(o and o <= free for o in h["options"]):
         return "timing row keeps off q3 while a GPU grant is open"   # fits on regions, filtered only by the bench rule
     if row_busy(h) < DRAIN_MIN_BUSY:   # operator 2026-11-03: a mostly idle row takes only regions that are free anyway
-        return f"busy_fraction {row_busy(h):g} < {DRAIN_MIN_BUSY:g}: runs only when its regions are free"
+        busy = sorted(set().union(*[o - free for o in h["options"] if o])) if h.get("options") else []
+        return (f"busy_fraction {row_busy(h):g} < {DRAIN_MIN_BUSY:g}: runs only when its regions are free"
+                + (f" (its own regions {','.join(compress(set(busy)))} are busy; other free cores do not fit it)" if busy else ""))
     return None
 
 
