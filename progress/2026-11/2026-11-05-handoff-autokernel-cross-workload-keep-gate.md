@@ -103,3 +103,7 @@ C6-Q4-MMVQ-FIX: c6-b4-full-suite-r3-20261105 completed rc0 and was filed inconcl
 ## 02:17Z — File completed diagnostic results and ready the CH-26b functional successor
 
 Filed NEMO HIP trace feasibility rc0 as scoped prospective correlation; filed NEMO marker build r15 and CH-26b functional r2 inconclusive after retaining evidence. CH-26b r3 extended bounded cleanup waits, passed the four-CPU publisher smoke, and was published; the noise floor remains unmeasured. C6 support census is running.
+
+## 02:22Z — Prepare an independent known-graph fixture and identify its execution admission conflict
+
+C6 census is running and CH-26b r3 is grantable. NEMO server marker-build lineage has three failed full qualifications and was parked. Preserved and checked the standalone fixture source and smoke-built binary; publisher refused its honest 180 s build estimate under the five-minute row minimum. The brief allows only publisher smoke compute, so no admissible direct short build exists under current instructions. The prospective GPU trace remains unqualified pending marker-clock and same-PID residency checks.
