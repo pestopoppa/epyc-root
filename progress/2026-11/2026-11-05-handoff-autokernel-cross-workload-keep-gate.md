@@ -155,3 +155,7 @@ Implemented the bounded scheduler trace normalizer, verified six synthetic contr
 ## 03:27Z — Qualify prospective known-graph profiler diagnostic
 
 The prospective `nemo-known-graph-trace-markers-20261105` GPU smoke passed; its full run remains pending. Smoke produced no marker CSV, so marker schema and clock alignment remain unverified and no historical token boundaries are recovered. The C6 matched MoE comparison is granted. Added scheduler interval and fixture clock-join prototypes; both passed six synthetic controls and retain their admission and alignment limitations.
+
+## 03:36Z — Qualify source-bound target-layout build and two diagnostic successors
+
+Published `c6-targetshape-dual-build-20261105` after baseline test-object compiler smoke, `ch26-cpu-sched-chain-20261105` after repaired four-CPU scheduler smoke, and `nemo-sdk-roctx-marker-compare-r2-20261105` after GPU paired-fixture smoke. Preserved the failed predecessor evidence and limitations; none establishes candidate promotion, an admissible floor, clock identity or historical token boundaries.
