@@ -266,7 +266,72 @@ def parse_launcher(path):
     need(o["min_window"] > 0, "engine --min-window missing")
     need(o["complete_cmd"], "engine --complete-cmd missing (the engine refuses without it)")
     need(o["stop"], "engine --stop missing")
+    o["threads"], o["threads_evidence"] = launcher_threads(text, assigns, o)
     return o
+
+
+_THREAD_PATS = (
+    ("-t", re.compile(r"(?<![\w-])-t\s+['\"]?(\d+)\b")),
+    ("--threads", re.compile(r"--threads[ =]+['\"]?(\d+)\b")),
+    ("--workers", re.compile(r"--workers[ =]+['\"]?(\d+)\b")),
+    ("OMP_NUM_THREADS", re.compile(r"\bOMP_NUM_THREADS=['\"]?(\d+)\b")),
+)
+_TASKSET = re.compile(r"\btaskset\s+(?:-a\s+)?(?:-c|--cpu-list)\s+['\"]?([\d,-]+)")
+
+
+def count_cpus(cpus):
+    n = set()
+    for tok in str(cpus or "").split(","):
+        tok = tok.strip()
+        if re.fullmatch(r"\d+(-\d+)?", tok):
+            a, b = (tok.split("-") + [tok])[:2]
+            n |= set(range(int(a), int(b) + 1))
+    return len(n)
+
+
+def launcher_threads(text, assigns, o):
+    """Refinement 1 (keeper-friction review 2026-11-05): the threads the job declares in its argv - -t/--threads N,
+    --workers N, OMP_NUM_THREADS=N, taskset -c LIST - in the launcher and in the job file its --cmd names (.sh/.py).
+    Variables assigned in the launcher (and ${X:-N} defaults) are expanded. Returns (max threads or None, [evidence])."""
+    texts = [text]
+    for m in re.finditer(r"(/[^\s'\"`;|&()<>]+\.(?:sh|py))", o.get("cmd") or ""):
+        try:
+            texts.append(open(m.group(1), errors="replace").read()[:1 << 20])
+        except OSError:
+            pass
+
+    def ex(t):
+        for _ in range(3):
+            t = re.sub(r"\$\{([A-Za-z_]\w*):-([^}]*)\}", lambda m: assigns.get(m.group(1), m.group(2)), t)
+            t = re.sub(r"\$\{([A-Za-z_]\w*)\}|\$([A-Za-z_]\w*)", lambda m: assigns.get(m.group(1) or m.group(2), m.group(0)), t)
+        return t
+    best, tsk, ev = None, None, []
+    for t in texts:
+        # python argv lists (["-t", THREADS] / ["taskset", "-c", CPUS]): the first literal a NAME = "..." assignment
+        # gives (the production value; a conditional's smoke branch comes after `if`) becomes a plain argv token
+        pyv = {}
+        for m in re.finditer(r"^[ \t]*([A-Za-z_]\w*)\s*=\s*(?:\(.*?or\s*)?[\"']([\d][\d,-]*)[\"']", t, re.M):
+            pyv.setdefault(m.group(1), m.group(2))
+        for m in re.finditer(r"^[ \t]*([A-Za-z_]\w*)\s*=\s*(\d+)\s*(?:#.*)?$", t, re.M):
+            pyv.setdefault(m.group(1), m.group(2))
+        t = re.sub(r"""[\"'](-t|--threads|--workers|-c|--cpu-list|taskset)[\"']\s*,\s*(?:[\"']([\w,-]+)[\"']|([A-Za-z_]\w*))""",
+                   lambda m: f" {m.group(1)} {m.group(2) or pyv.get(m.group(3), m.group(3))}", t)
+        t = re.sub(r"""[\"']taskset[\"']\s*,""", " taskset ", t)
+        t = ex(re.sub(r"\\\n", " ", t))
+        for line in t.splitlines():
+            if line.lstrip().startswith("#"):
+                continue
+            for name, rx in _THREAD_PATS:
+                for m in rx.finditer(line):
+                    n = int(m.group(1))
+                    if 0 < n <= 192:
+                        ev.append(f"{name} {n}"); best = max(best or 0, n)
+            for m in _TASKSET.finditer(line):
+                n = count_cpus(m.group(1))
+                if n:
+                    ev.append(f"taskset {m.group(1)}"); tsk = max(tsk or 0, n)
+    # an explicit thread knob wins over a taskset list (taskset 0-95 + -t 48 uses 48 threads); taskset alone bounds it
+    return (best if best is not None else tsk), sorted(set(ev))
 
 
 # the launcher's own `D=` idioms that name its directory (ws58 2026-11-05: 18 rows carried an unexpanded `$D/...STOP`)
@@ -642,15 +707,108 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override"):
         if spec.get(k) is not None:
             row[k] = spec[k]
+    # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
+    sfp = resolve_stop_path({"stop_file": o["stop"], "launcher": {"path": launcher}})
+    need(sfp, f"stop_file {o['stop']!r} is not absolute and does not resolve from the launcher's own D= assignment; "
+              "use a literal absolute --stop path (or D=\"$(cd \"$(dirname \"$0\")\" && pwd)\" with --stop \"$D/<id>.STOP\")")
+    row["stop_file"] = sfp
+    sup = spec.get("supersedes")
+    if sup is not None:
+        need(isinstance(sup, str) and sup or isinstance(sup, list) and all(isinstance(x, str) and x for x in sup),
+             "supersedes must be a row id or a list of row ids")
+        need(rid not in ([sup] if isinstance(sup, str) else sup), "a row cannot supersede itself")
+    if spec.get("fix_ref") is not None:
+        need(isinstance(spec["fix_ref"], str) and spec["fix_ref"].strip(), "fix_ref must name the fix (commit or path)")
+    # refinement 1: shape from evidence
+    check_shape_evidence(spec, o)
+    if o.get("threads"):
+        row["declared_threads"] = int(o["threads"])
+        row["threads_evidence"] = o.get("threads_evidence") or []
     if spec.get("shape") is not None:
         need(str(spec["shape"]) in SHAPES or re.fullmatch(r"multi-quarter\([2-3]\)", str(spec["shape"])), f"shape must be one of {SHAPES} or multi-quarter(n)")
         row["shape"] = str(spec["shape"])
-    row["shape"] = shape_of(row, o)   # recorded: quarter | multi-quarter(n) | host | quiet-host | gpu
+    row["shape"] = shape_of(row, o)   # recorded: quarter | multi-quarter(n) | host | quiet-host | gpu | gpu-q3
+    if row["shape"] in ("host", "quiet-host") and not whole_host_evidence(row):
+        ram_host = int(row.get("gib") or 0) > 3 * QUARTER_RAM_GIB and row["shape"] == "host" and spec.get("shape") is None
+        need(ram_host, f"shape {row['shape']} needs whole-host evidence: >= {WHOLE_HOST_THREADS} declared threads (found "
+                       f"{row.get('declared_threads') or 'none'}{': ' + ', '.join(row.get('threads_evidence') or []) if row.get('threads_evidence') else ''}), "
+                       f"a baseline_ref naming the decision-grade baseline / production-serving measurement, or "
+                       f"shape_override \"operator: <who> <date>: <why>\"; right-sized: {right_size(row.get('declared_threads'), lane, o.get('gpu_quiet', ''))}")
+    if row.get("busy_fraction") is None and row.get("declared_threads"):
+        row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
+        row["busy_fraction_source"] = "declared_threads"
     atomic_json(ready_path(flags, rid), row)
     return row
+
+
+def withdrawn_dir(flags): return os.path.join(flags, "ready", ".withdrawn")
+
+
+def withdraw(flags, rid, reason, log=print):
+    """Refinement 5: end a row that will never run. Not running: ready/<id>.json -> ready/.withdrawn/<id>.json, a
+    terminal grants/<id>.ended `rc=75 reason=<reason>` (status/queue_status/backlog_gen/dashboard read it as closed),
+    and its STOP file touched (an armed poller never starts). Running (open grant): STOP touched, a pending record
+    written; the keeper finishes the withdrawal once the grant ends. Nothing is killed or deleted.
+    Returns WITHDRAWN | PENDING | ABSENT | TERMINAL."""
+    reason = re.sub(r"\s+", "_", str(reason).strip()) or "withdrawn"
+    G = os.path.join(flags, "grants")
+    if any(os.path.exists(os.path.join(G, rid + t)) for t in (".ended", ".complete")):
+        _move_withdrawn(flags, rid)
+        return "TERMINAL"
+    rp = ready_path(flags, rid)
+    d = load_json(rp)
+    if not d:
+        return "ABSENT"
+    sf = resolve_stop_path(d)
+    if sf:
+        try:
+            os.makedirs(os.path.dirname(sf), exist_ok=True)
+            open(sf, "a").close()
+        except OSError as e:
+            log(f"WITHDRAW {rid}: could not touch STOP {sf}: {e}")
+    os.makedirs(withdrawn_dir(flags), exist_ok=True)
+    if os.path.exists(os.path.join(G, rid + ".grant")):
+        atomic_json(os.path.join(withdrawn_dir(flags), rid + ".pending.json"), {"id": rid, "reason": reason, "at": now_iso()})
+        log(f"SUPERSEDE-PENDING {rid}: running; STOP touched, withdrawn when its grant ends (reason={reason})")
+        return "PENDING"
+    os.makedirs(G, exist_ok=True)
+    with open(os.path.join(G, rid + ".ended"), "w") as f:
+        f.write(f"rc=75 reason={reason} at={now_iso()}\n")
+    _move_withdrawn(flags, rid)
+    log(f"WITHDRAWN {rid} reason={reason}")
+    return "WITHDRAWN"
+
+
+def _move_withdrawn(flags, rid):
+    rp = ready_path(flags, rid)
+    if os.path.exists(rp):
+        os.makedirs(withdrawn_dir(flags), exist_ok=True)
+        os.replace(rp, os.path.join(withdrawn_dir(flags), rid + ".json"))
+
+
+def finish_withdrawals(flags, log=print):
+    """Keeper tick: a pending withdrawal whose grant has ended is completed (manifest moved; the run's own .ended stays)."""
+    for pp in glob.glob(os.path.join(withdrawn_dir(flags), "*.pending.json")):
+        rec = load_json(pp) or {}
+        rid = rec.get("id") or os.path.basename(pp)[:-len(".pending.json")]
+        if os.path.exists(os.path.join(flags, "grants", rid + ".grant")):
+            continue
+        r = withdraw(flags, rid, rec.get("reason") or "withdrawn", log)
+        if r != "PENDING":
+            os.replace(pp, pp[:-len(".pending.json")] + ".done.json")
+
+
+def supersede(flags, row, log=print):
+    """Refinement 5: publishing a row with `supersedes` withdraws each predecessor (reason=superseded-by:<id>)."""
+    sup = row.get("supersedes")
+    out = {}
+    for pred in ([sup] if isinstance(sup, str) else list(sup or [])):
+        if pred and pred != row["id"]:
+            out[pred] = withdraw(flags, pred, f"superseded-by:{row['id']}", log)
+    return out
 
 
 def published_line(row, flags):
@@ -704,7 +862,8 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # a ready/<id>.json written by publish() already carries the spec fields a republish needs: keep them
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
-              "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host"):
+              "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
+              "fix_ref", "baseline_ref", "shape_override"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -1135,7 +1294,9 @@ def open_grants(flags):
     return out
 
 
-SHAPES = ("quarter", "multi-quarter", "host", "quiet-host", "gpu")
+SHAPES = ("quarter", "multi-quarter", "host", "quiet-host", "gpu", "gpu-q3")
+WHOLE_HOST_THREADS = 48   # operator 2026-11-05: production CPU serving across all NUMA nodes (npd1-step5: -t 48 over 0-95)
+GPU_Q3_TOKENS = frozenset({GPU, "q3"} | {f"t{k}" for k in range(184, 192)})   # gpu-quiet + q3 cores + 184-191
 QUARTER_RAM_GIB = 256   # a quarter's share of the bookable RAM (1069 GiB / 4, rounded): a bigger model is multi-quarter
 
 
@@ -1154,6 +1315,12 @@ def shape_of(d, o=None):
             o = {}
     cls = o.get("class", "gpu" if "mi210" in regs else "cpu")
     if "mi210" in regs or cls in ("gpu", "cpu+gpu"):
+        # refinement 2 (operator 2026-11-05: "a GPU timing run doesn't need a quiet host ... It just needs a quiet q3"):
+        # a gpu-quiet exclusive row whose claim books >= 2 quarters is gpu-q3 unless it carries whole-host evidence
+        cc = o.get("claim_cpus") or ""
+        books_claim = not (cls == "gpu" and "mi210" in regs and (o.get("nofold") or engine_grant_cpus(o)))
+        if o.get("gpu_quiet") == "exclusive" and books_claim and len(quarters_of(cc, fold=True)) >= 2:
+            return "quiet-host" if whole_host_evidence(d) else "gpu-q3"
         return "gpu"
     if o.get("gpu_quiet") == "exclusive" and len(quarters_of(o.get("claim_cpus") or "0-95", fold=True)) >= 4:
         return "quiet-host"   # ws58 2026-11-01: gpu-quiet on a quarter claim = that quarter + GPU idle, not the whole host
@@ -1173,6 +1340,8 @@ def row_shape(d):
         o = parse_launcher(d["launcher"]["path"])
     except (Refused, OSError, StopIteration, ValueError, KeyError):
         o = {}
+    if shape_of(d, o) == "gpu-q3":   # refinement 2: gpu-quiet + q3 + 184-191; q0-q2 stay free
+        return [frozenset(compress(expand(set(GPU_Q3_TOKENS))))], True
     extra = set()
     cls = o.get("class", "gpu" if "mi210" in regs else "cpu")
     if "mi210" in regs or cls in ("gpu", "cpu+gpu"):
@@ -1317,6 +1486,51 @@ def check_busy_fraction(spec):
     need(bf is None or (isinstance(bf, (int, float)) and not isinstance(bf, bool) and 0 <= bf <= 1),
          f"busy_fraction {bf!r} must be a number 0..1 (the share of its claimed cpus the job keeps busy, e.g. 0.9); "
          f"omit it when unknown (= 1.0)")
+
+
+def whole_host_evidence(d):
+    """Refinement 1: what earns a host / quiet-host shape - >= WHOLE_HOST_THREADS declared threads, a baseline_ref naming
+    the decision-grade baseline / production-serving measurement it reproduces, or an operator shape_override."""
+    d = d or {}
+    try:
+        if int(d.get("declared_threads") or 0) >= WHOLE_HOST_THREADS:
+            return True
+    except (TypeError, ValueError):
+        pass
+    return bool(str(d.get("baseline_ref") or "").strip()) or bool(str(d.get("shape_override") or "").strip())
+
+
+def check_shape_evidence(spec, o):
+    """Publish gate for the whole-host evidence fields themselves."""
+    br = spec.get("baseline_ref")
+    if br is not None:
+        need(isinstance(br, str) and br.strip(), "baseline_ref must name the decision-grade baseline / production-serving measurement")
+        if br.startswith("/"):
+            need(os.path.exists(br), f"baseline_ref {br} does not exist")
+    so = spec.get("shape_override")
+    if so is not None:
+        need(isinstance(so, str) and re.match(r"^operator:\s*\S+.*\d{4}-\d{2}-\d{2}.*:\s*\S", so),
+             "shape_override must read \"operator: <who> <YYYY-MM-DD>: <why>\"")
+
+
+def right_size(threads, lane, gpu_quiet=""):
+    if lane == "gpu" or gpu_quiet == "exclusive":
+        return "gpu-q3"
+    if not threads:
+        return "quarter (declare the job's threads: -t/--threads/--workers/OMP_NUM_THREADS/taskset)"
+    n = -(-int(threads) // 24)
+    return "quarter" if n <= 1 else f"multi-quarter({min(n, 3)})"
+
+
+def claimed_cpus(regions, claim, shape):
+    if shape in ("host", "quiet-host"):
+        return 96
+    n = count_cpus(claim) or (0 if "mi210" in str(regions) else count_cpus(ws58_cpus(regions)))
+    if n:
+        return n
+    if shape.startswith("multi-quarter("):
+        return 24 * int(shape[len("multi-quarter("):-1] or 2)
+    return 24
 
 
 def row_busy(d):
@@ -1616,6 +1830,16 @@ def lineage_of(rid, allrows):
 
 
 def lineage_fails(flags, rid, allrows):
+    # refinement 5: a successor that names its fix (fix_ref) does not inherit its predecessors' failures - count only
+    # the chain from rid back to (and including) the nearest row declaring fix_ref
+    chain, cur, seen = [], rid, set()
+    while cur and cur not in seen:
+        seen.add(cur); chain.append(cur)
+        d = allrows.get(cur) or {}
+        if d.get("fix_ref"):
+            return lineage_of(rid, allrows), sum(len(fail_paths(flags, x)) for x in chain)
+        sup = d.get("supersedes")
+        cur = sup[0] if isinstance(sup, list) and sup else sup if isinstance(sup, str) else None
     lin = lineage_of(rid, allrows)
     reset = 0
     n = 0
@@ -1897,6 +2121,44 @@ def harness_tree(root, tracked):
     return tracked
 
 
+def tree_cpu_s(tracked, acc):
+    """Cumulative cpu seconds (utime+stime) of every tracked process, monotone: an exited pid keeps its last value."""
+    hz = os.sysconf("SC_CLK_TCK")
+    for pid, birth in list(tracked.items()):
+        try:
+            f = open(f"/proc/{pid}/stat").read().rsplit(")", 1)[1].split()
+        except (OSError, IndexError):
+            continue
+        if f[19] == birth:
+            acc[pid] = (int(f[11]) + int(f[12])) / hz
+    return sum(acc.values())
+
+
+MEASURE_WINDOW_S = 60
+OVERDECLARED_RATIO = 4.0   # declared busy >= 4x measured (and declared >= 0.5): flagged in PASS.json + launcher.out
+
+
+def measured_busy(samples, claimed, until=None):
+    """(measured_threads, measured_busy_fraction) over the last MEASURE_WINDOW_S of [(t, cpu_s)] up to `until`."""
+    pts = [x for x in samples if until is None or x[0] <= until + 5]
+    if len(pts) < 2:
+        return None, None
+    t1, c1 = pts[-1]
+    t0, c0 = next((x for x in pts if x[0] >= t1 - MEASURE_WINDOW_S), pts[0])
+    if t1 - t0 < 4:
+        t0, c0 = pts[0]
+    if t1 <= t0:
+        return None, None
+    th = max(0.0, (c1 - c0) / (t1 - t0))
+    return round(th, 3), round(min(1.0, th / max(1, claimed)), 3)
+
+
+def busy_flag(declared, measured):
+    if measured is None or declared < 0.5 or declared < OVERDECLARED_RATIO * max(measured, 1e-3):
+        return None
+    return f"OVER-DECLARED busy_fraction: declared {declared:g}, measured {measured:g}; right-size the shape/claim"
+
+
 def _same(pid, birth):
     st = _proc_stat(pid)
     return st is not None and st[2] == birth
@@ -2138,6 +2400,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     tracked = harness_tree(p.pid, {p.pid: (_proc_stat(p.pid) or (0, 0, None))[2]})  # setsid'd group: pgid == p.pid
     atomic_json(running_path(flags, rid), {"pid": p.pid, "pgid": p.pid, "started": now_iso(), "regions": regions, "launcher_sha256": lsha, "grant": grant})
     t0 = time.time()
+    cpu_acc, cpu_samples = {}, []
     vram_max = None
     gpu = "mi210_0" in regions
     first_unit_at = None
@@ -2151,6 +2414,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             for _ in range(5):
                 time.sleep(1)
                 harness_tree(p.pid, tracked)
+            cpu_samples.append((time.time(), tree_cpu_s(tracked, cpu_acc)))
             if gpu:
                 v = vram_used_bytes()
                 if v is not None:
@@ -2266,6 +2530,15 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
            "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
+    # refinement 1: what the job actually used (before the harness's stop), against the row's declared claim
+    claimed = claimed_cpus(d.get("regions"), (parse_launcher(lp) if os.path.isfile(lp) else {}).get("claim_cpus"), str(d.get("shape") or "quarter"))
+    mt, mb = measured_busy(cpu_samples, claimed, until=stop_requested)
+    rec.update(measured_threads=mt, measured_busy_fraction=mb, measured_claimed_cpus=claimed)
+    flag = busy_flag(row_busy(d), mb)
+    if flag:
+        rec["busy_flag"] = flag
+        with open(os.path.join(dd, "launcher.out"), "a") as lo:
+            lo.write(f"==== {flag}\n")
     if verdict == "WAIT":
         return verdict, reason
     # ws58 2026-11-02: a smoke that finished the WHOLE job (complete marker, or units reached the declared total) is done,
@@ -2572,6 +2845,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     if glob.glob(os.path.join(flags, "HOLD_*")):
         log("HOLD present; nothing allocated"); return []
     seen = set()
+    if not dry:
+        try:
+            finish_withdrawals(flags, log)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"WITHDRAW-FINISH failed: {type(e).__name__}: {e}")
     allrows = rows(flags)
     rl = rl_status()
     grants = open_grants(flags) if dry else heal_grants(flags, open_grants(flags), rl, log, seen, allrows)
@@ -2862,6 +3140,8 @@ def main(argv=None):
     s = sub.add_parser("publish"); s.add_argument("spec"); s.add_argument("--migrate", action="store_true", help="spec is a legacy ready/<id>.json manifest")
     s = sub.add_parser("status"); s.add_argument("id"); s.add_argument("--json", action="store_true")
     sub.add_parser("list")
+    s = sub.add_parser("withdraw", help="end a row that will never run: manifest -> ready/.withdrawn/, grants/<id>.ended rc=75, STOP touched")
+    s.add_argument("id"); s.add_argument("--reason", required=True)
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
@@ -2892,8 +3172,14 @@ def main(argv=None):
             need(spec, f"{a.spec} is not a JSON object")
             if a.migrate:
                 spec = spec_from_legacy(spec, a.flags)
-            print(published_line(publish(spec, a.flags, source=os.path.abspath(a.spec)), a.flags))
+            row = publish(spec, a.flags, source=os.path.abspath(a.spec))
+            print(published_line(row, a.flags))
+            supersede(a.flags, row)
             return 0
+        if a.cmd == "withdraw":
+            r = withdraw(a.flags, a.id, a.reason)
+            print(f"{r} {a.id}")
+            return 0 if r in ("WITHDRAWN", "PENDING", "TERMINAL") else 2
         if a.cmd == "status":
             st = status(a.flags, a.id, util=measure_util())
             print(json.dumps(st, indent=1) if a.json else status_text(st))

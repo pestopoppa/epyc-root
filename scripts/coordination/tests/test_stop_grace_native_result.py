@@ -19,7 +19,7 @@ def test_stop_grace_pass_counts_isolated_native_result_not_production_result():
         production = Path(job_dir) / 'LAST-RESULT.json'
         production.write_text(json.dumps([{'old': i} for i in range(23)]) + '\n')
         spec = fx.spec(rid, job_dir, result_path=str(production), result_format='json',
-                       regions='0-95', min_window_s=300, dryrun_timeout_s=60,
+                       regions='0-95', shape_override='operator: fixture 2026-11-05: whole-host dry-run fixture', min_window_s=300, dryrun_timeout_s=60,
                        dryrun_native_result=True, dryrun_whole_host=True,
                        admission_class='diagnostic')
         rf.publish(spec, fx.flags)
