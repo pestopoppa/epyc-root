@@ -7,3 +7,7 @@ MoE-Spec HIP r3 passed its build-only decision and C6 n4 route-marker build pass
 ## 00:02Z — Qualify the matched generic-path GPU diagnostic
 
 The GDN CPU F32 r4 disk-floor event was already filed and documented; no full result exists. Consumed the dispatcher qualification of the C6 generic-versus-candidate GPU row and C5 floor v39; both are armed and their full results remain pending.
+
+## 02:53Z — File the completed GPU BF16 one-hot oracle diagnostic
+
+GPU BF16 one-hot oracle baseline matched 27,262,976 outputs exactly; reverse-slot and key-row mutants mismatched 1,966,102 and 3,735,626 outputs. Each arm recorded at least 21 own-PID mapped VRAM samples and drained. CPU and GPU f32 remain separate.
