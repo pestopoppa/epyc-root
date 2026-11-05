@@ -1,10 +1,13 @@
 All preimage hashes verified
 checking file dist/core/ingestion/languages/cpp/query.js
 checking file dist/core/tree-sitter/safe-parse.js
+checking file dist/storage/parse-cache.js
 patching file dist/core/ingestion/languages/cpp/query.js
 patching file dist/core/tree-sitter/safe-parse.js
+patching file dist/storage/parse-cache.js
 All postimage hashes verified
 5fd1a389786f8eba8e1743d4bd7297c446e6264d984b303c78f706c0b170c0b0  /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/core/tree-sitter/safe-parse.js
 d47f3857f77b6fbd0c8b1fc0cbcb4493b0e95249479bd00f899360c3453c129c  /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/core/ingestion/languages/cpp/query.js
+3e7f09630ef02ed2b18c835bac2b31123436568f2bbaa042649904cf9159cc1c  /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/storage/parse-cache.js
 413a21d2ba6ad430d3cc9179e76dc5076cb2f6c189b6f56a7d84be7759838672  /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/core/ingestion/languages/cpp/captures.js
 6b5937d48e04c82c37e7d4071578da79631256b66fbf87bb1d44222cf6958242  /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/core/ingestion/pipeline-phases/communities.js

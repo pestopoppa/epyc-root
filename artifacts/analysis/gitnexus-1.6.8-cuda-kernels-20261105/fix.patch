@@ -86,3 +86,17 @@ diff -ruN a/dist/core/tree-sitter/safe-parse.js b/dist/core/tree-sitter/safe-par
      const budgetMs = resolveParseTimeoutMs();
      const armed = armParseBudget(parser, budgetMs);
      let tree;
+diff -ruN a/dist/storage/parse-cache.js b/dist/storage/parse-cache.js
+--- a/dist/storage/parse-cache.js	2026-11-05 18:18:00.446157928 +0000
++++ b/dist/storage/parse-cache.js	2026-11-05 18:18:00.447341500 +0000
+@@ -79,7 +79,9 @@
+     }
+     return '0.0.0-unknown';
+ })();
+-export const PARSE_CACHE_VERSION = `${SCHEMA_BUMP}+${GITNEXUS_PKG_VERSION}`;
++// EPYC local patch (HYG-GITNEXUS-CUDA-KERNEL-IMPACT): parse output changed for CUDA sources;
++// the suffix invalidates parse caches written by the unpatched package.
++export const PARSE_CACHE_VERSION = `${SCHEMA_BUMP}+${GITNEXUS_PKG_VERSION}+epyc-cuda1`;
+ const LEGACY_CACHE_FILENAME = 'parse-cache.json';
+ const CACHE_DIRNAME = 'parse-cache';
+ const CACHE_INDEX_FILENAME = 'index.json';

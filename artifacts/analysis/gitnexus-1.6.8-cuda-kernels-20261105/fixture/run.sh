@@ -1,5 +1,7 @@
 #!/bin/bash
-# usage: run.sh <gitnexus-package-root> <fresh-workdir>
+# usage: run.sh <gitnexus-package-root> <fresh-workdir> [<warm-cache-package-root>]
+# With a third arg, the repo is first indexed by that (e.g. unpatched) package so a stale
+# parse cache exists; the checked run must not replay it.
 # Indexes fixture/kern.cu in an isolated GITNEXUS_HOME and asserts:
 #   1. flash_attn_ext_vec (template<> __launch_bounds__(..) static __global__) is a Function node,
 #      and no symbol is named __launch_bounds__;
@@ -7,12 +9,13 @@
 #   3. case_impl / fused (kernel handle `k = flash_attn_ext_vec<..>` passed to a launcher) CALL the kernel.
 # Exit 0 = PASS, 1 = FAIL. Expected: FAIL on unpatched 1.6.8, PASS after fix.patch.
 set -euo pipefail
-pkg=${1:?package root}; work=${2:?fresh workdir}
+pkg=${1:?package root}; work=${2:?fresh workdir}; warm=${3:-}
 here=$(cd -- "$(dirname -- "$0")" && pwd)
 [[ ! -e "$work" ]] || { echo "workdir must not exist: $work" >&2; exit 2; }
 mkdir -p "$work/repo"; cp "$here/kern.cu" "$work/repo/"
 cd "$work/repo"; git init -q; git add kern.cu; git -c user.email=fx@local -c user.name=fx commit -qm fx
 export GITNEXUS_HOME="$work/home" GITNEXUS_REPO_NAME="cudafx"
+if [[ -n "$warm" ]]; then node "$warm/dist/cli/index.js" analyze --skip-agents-md --skip-skills --workers 1 --force > "$work/warm.log" 2>&1; fi
 node "$pkg/dist/cli/index.js" analyze --skip-agents-md --skip-skills --workers 1 --force > "$work/analyze.log" 2>&1
 node "$pkg/dist/cli/index.js" cypher "MATCH (a)-[r:CodeRelation]->(b) RETURN a.id AS src, r.type AS t, b.id AS dst" > "$work/edges.json"
 python3 - "$work/edges.json" <<'PY'

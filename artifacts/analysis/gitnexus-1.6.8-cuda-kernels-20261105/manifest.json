@@ -9,6 +9,10 @@
     "dist/core/ingestion/languages/cpp/query.js": {
       "original_sha256": "e40cc902d0c1467a5acffd43957283e0c525e62b4ea5b3c966654c3c26c1814e",
       "candidate_sha256": "d47f3857f77b6fbd0c8b1fc0cbcb4493b0e95249479bd00f899360c3453c129c"
+    },
+    "dist/storage/parse-cache.js": {
+      "original_sha256": "d0e58eaaecd48289ea0a248c7d53481bfb2e70ed787dd287fcc30131158d9d75",
+      "candidate_sha256": "3e7f09630ef02ed2b18c835bac2b31123436568f2bbaa042649904cf9159cc1c"
     }
   }
 }
