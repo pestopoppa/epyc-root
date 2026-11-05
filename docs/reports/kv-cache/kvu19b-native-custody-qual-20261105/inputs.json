@@ -1,0 +1,13 @@
+{
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/output_path.py": "4aa86a7a3fc1b3ac0bda331faab2539685305f30d9eece3cad5da5293df136ad",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/clock.cpp": "765d343f9583114b5beaf477d99279df93dfa42e46055ddf392bcc7b1a0d3e63",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/complete.py": "3a7621e896069a218c6d151c5f3cdf3e93eb603991bb251506ee59f3fa50a388",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/check.py": "c291bc9fd122b182c21739a745b0d878b2a890f58f4fe68caa2347c2b035e1da",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/hsa_clock.py": "fd321a4c5b0e75e348ea1473e8661490e48e6b0dec1aebccf6dfb9e9a0e33c41",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/toolchain-identity.json": "9f2d85e540340b84b970688ea0199cfb5fcb5d8410ed21923b41e172fa8c9d1f",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/job.sh": "51220a19a56a91cf6f73909fea1930fa239cbac9046be76974926fcd197677ab",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/job.py": "2a502051810887c9405187514d46ea07f43fa16c912a8cdbb5d548fd48bf8575",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/verify.py": "abdebf137cfc22bdc4470aff0bc5920e8d4867f9ddcb93653aed356efc54e940",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/runtime.sha256": "ad1ed000b642424a0e4a214606765660f0fbc3df0c5f4485d3902411905f8d1a",
+  "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu19b-native-custody-20261105/supervise.py": "638e36b9da41b0c9561c81601fd6ae00788450a5233d64c35668f8569bfa88c7"
+}

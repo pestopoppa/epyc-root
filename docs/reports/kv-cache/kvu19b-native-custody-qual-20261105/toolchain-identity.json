@@ -1,0 +1,641 @@
+{
+  "scope": "runtime first-phase compilation; no compiler or native witness executed during preparation",
+  "files": {
+    "/opt/rocm/amdgcn/bitcode/asanrtl.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/asanrtl.bc",
+      "sha256": "57f0f12e637a76cb9008fed34f332f8d346b180fc752b83b38d8dc8f2b8c5887"
+    },
+    "/opt/rocm/amdgcn/bitcode/hip.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/hip.bc",
+      "sha256": "48fb46642af2d11fffb16a78b954dae1488602bb2f8c2f85591fcab19710b03d"
+    },
+    "/opt/rocm/amdgcn/bitcode/ockl.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/ockl.bc",
+      "sha256": "b69c21de410826ca8c22a393a514b327c939efbdef28383cd9f9758991ab8336"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_abi_version_400.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_abi_version_400.bc",
+      "sha256": "fd483ebe4ee96ee6ad45f9adf10f84a08a1ba511c527ee01e9a9661cfc558691"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_abi_version_500.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_abi_version_500.bc",
+      "sha256": "69369876f893dcc93d8f7c54351131aee36ed3603a328fa2b1962bb32da4d29a"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_correctly_rounded_sqrt_off.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_correctly_rounded_sqrt_off.bc",
+      "sha256": "9627b69da6302791e9d362e75e6c1877573d4e4add52611d415ec8afec6b8ce1"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_correctly_rounded_sqrt_on.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_correctly_rounded_sqrt_on.bc",
+      "sha256": "e83e29f0487974e14226c56d85b1dac77e860e551604c9d5b93720639f5fc401"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_daz_opt_off.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_daz_opt_off.bc",
+      "sha256": "2ed5757053d2a743cd62c9060b5a0433b5345e4750e7a5647d48209f856130f6"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_daz_opt_on.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_daz_opt_on.bc",
+      "sha256": "32daa6796eb83914aa1da6b076dc8e5c4a99d3d45effe4e8320da63771648bbf"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_finite_only_off.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_finite_only_off.bc",
+      "sha256": "1a4ddba638d1eba64c46f51639a50289ed09311b2800def0768c328c439f83d7"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_finite_only_on.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_finite_only_on.bc",
+      "sha256": "9a17d9c02e8fa1b7f2297f450d03d7dfc2c7c366eb5af4103a30a480622b9414"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1010.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1010.bc",
+      "sha256": "c7fc8e3ef80a6341cb16a4431ba4ac57ccf5e3a8f90f82a75ee07a083ec65ca9"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1011.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1011.bc",
+      "sha256": "b7fe9ce802fee071682007683faff376d645413220f9f1b5d7b426bf29e7f38c"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1012.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1012.bc",
+      "sha256": "28fd3b3c128913a19dc29c4c99ec67d354e5d325d7f80029d28330c8d0aa35a9"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1013.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1013.bc",
+      "sha256": "6d43fc006ab54aec3813cb9fc5bb497edb1848dd4121df3fb317b54546c38783"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1030.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1030.bc",
+      "sha256": "2c50417a6faf4f4c2453e6a30ccfce881a339b737258cdb316b8beb5ea3b5b9b"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1031.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1031.bc",
+      "sha256": "2c7ce3f1b84b5c606e7c0b6dcc1a28546b66192d9dfb6456f51462842272794f"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1032.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1032.bc",
+      "sha256": "ba359e603126a0af1ed72879ad5a1558b79a5d71da91e9c4f5fd7e66b8a0bd17"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1033.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1033.bc",
+      "sha256": "3e98dca83c0366401e5f2e7fdad54cbd9733b05360ac74b51ad358dcc319ea81"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1034.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1034.bc",
+      "sha256": "3c2bab87f89f39a3f21185c09177c300562b6560b81a9fb0854721e520482209"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1035.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1035.bc",
+      "sha256": "3428103c071bacc26c9b770c4f0261dcb9d16ed036b6ff21cf7b56ddc09a09d5"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1036.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1036.bc",
+      "sha256": "058101b2c4a4b2a9aaa3cf52f1a8832951e2d7d4c9e68c55d496572e9e199de5"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1100.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1100.bc",
+      "sha256": "13a5031d1153351faca19712b36a356aed9352eaca4a396a0f18152e907eb3b9"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1101.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1101.bc",
+      "sha256": "831a56a05c1098a55c7114ff18445740206acc4ced2156e3ee1c635a40f2b515"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1102.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1102.bc",
+      "sha256": "a639533267df72d2439f2cc23df36fae3639515f61ec11ce04a0a272a44d8b99"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1103.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1103.bc",
+      "sha256": "81db916181a6a1639e42020fc900bb237c96ee45116318037087e412091b948f"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1150.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1150.bc",
+      "sha256": "855c9324526719886a6c914f28792d8e0128ccf13e95813af08c54d641e00f72"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1151.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1151.bc",
+      "sha256": "bf05db615fd73d3582a912b014fc736a72ca40de42c083bde23c690a6885b39f"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1152.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1152.bc",
+      "sha256": "38991706d2197b1e03fc9e376adfd43f95546dd9dc157c304691b0830ddad632"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1200.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1200.bc",
+      "sha256": "f78b0820f384f4da90125d366fc2892606cf91f8988ec54f219b1d3c44160447"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_1201.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_1201.bc",
+      "sha256": "ba7346abb5586d80e1c8ac0f2a9c6b73ece38ff9df1073d7792832c808bec5df"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_600.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_600.bc",
+      "sha256": "c20fc7a060381b3d0599afcdcf6e6aa7b7fd8d0f011e90e52f589393313be1de"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_601.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_601.bc",
+      "sha256": "61331743d4f7ac69ddea1e62c1bec4c39e9c05d495236d149d2167f6ffec986c"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_602.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_602.bc",
+      "sha256": "8cf8c658d40f219b03baa488496582477dd0bcff33a16c241075699f2c20e075"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_700.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_700.bc",
+      "sha256": "09c5cce6eaf2cfc7303556ef9a5d9f4d4b010dcb1f618a490cd3c2f09bc03659"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_701.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_701.bc",
+      "sha256": "eda18d181db3c3f2f411e864bae739a4852f3e21c88bf281f7fef6a8652d64d9"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_702.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_702.bc",
+      "sha256": "ce645bd1d7fad3522d4b1b24bd9226079d2b962309952971817780279c325588"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_703.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_703.bc",
+      "sha256": "da6ed951dde8755654a8cadbdc3466d5f451e32d2f652dce82f12dde837c45ee"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_704.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_704.bc",
+      "sha256": "2bffef1ff49ad08ee07eb7475adc3dc55372719553e71e9d98dd6fb80f43045d"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_705.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_705.bc",
+      "sha256": "c892966871c5b6aacfd7b3d48ada4801ffd22d859a63ff86b243779f747d16aa"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_801.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_801.bc",
+      "sha256": "a03433ef378f5c6ca00b41bca37aaf1e0ab7f549de470a82414e999a11e07435"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_802.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_802.bc",
+      "sha256": "900ec723f74d03a758720cd980880195ffa7ab27463009bcb0ff2aacb9f8e2bd"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_803.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_803.bc",
+      "sha256": "c8fbbe0d5e553d62862d999220dc6a46a7d2ff4daf5c793544c31ba4757fe9c5"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_805.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_805.bc",
+      "sha256": "091974933e4d8a360ac70c70984ce491b0dffd1b38d094a58724dc92641ea473"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_810.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_810.bc",
+      "sha256": "073d747be5ebf9139214f1fb7398eb9ddec8dba808ceae4ced7766bbda695df3"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_900.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_900.bc",
+      "sha256": "dd0cdfa7a5504f72b919dc9aa4413afc4b5f71c74bd97f0234c326da8cc9873d"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_902.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_902.bc",
+      "sha256": "d7cd793f03dad9180bbb16d1e28d69defa92055256cf1b9456572e32dcf74f48"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_904.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_904.bc",
+      "sha256": "3ae359715ca509de3217554d1b3dc44a3275d85ee0923bb884241c0a76ebf878"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_906.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_906.bc",
+      "sha256": "f64069e2e03d4676cbd57e36b7b377652acd9ead2999dfd1f8fae02afbb82fd6"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_908.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_908.bc",
+      "sha256": "7ca2ef24b5be619ea9e9fe642dd1b29e56b0a65b4c29c2b871a55f28d2cedf2a"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_909.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_909.bc",
+      "sha256": "6695681c7ed050f09f584825907ac3c07bd47d99dba74453293f593f7630557c"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_90a.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_90a.bc",
+      "sha256": "3926477043380ceeb1c3461b2cdd40d5d04f3a8b909c23b26f7f83b5fd02c21e"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_90c.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_90c.bc",
+      "sha256": "7451514df5f76688dc92900e11d47eb4db2ad2dcba1e9f4a59b5d9e2c1ad26f0"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_940.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_940.bc",
+      "sha256": "cfc310ebccbfbd4ae738730a328591462b56ea069242fad56419537970a17ae9"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_941.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_941.bc",
+      "sha256": "6b4e238f49a0869cb4cabc4d37d938f38600df41f84d4e944a93985491d84af7"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_isa_version_942.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_isa_version_942.bc",
+      "sha256": "63eddeab1e591515790e65d6e28359b96c4c74896793cc960c47f2407998a5c3"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_unsafe_math_off.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_unsafe_math_off.bc",
+      "sha256": "2ca5f4e8ec2002dc3dde27785b2feae056e1f2e4c69e2e77e86f6dd170646dcb"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_unsafe_math_on.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_unsafe_math_on.bc",
+      "sha256": "410ec474d94813a6ce466737c6762cd4e3a3a1480ac20c05f082b0cae74a4059"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_wavefrontsize64_off.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_wavefrontsize64_off.bc",
+      "sha256": "0ddbcf80c82e66a931900522efacde8a3ff29792d1aeb31d415a93e34c50b4ad"
+    },
+    "/opt/rocm/amdgcn/bitcode/oclc_wavefrontsize64_on.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/oclc_wavefrontsize64_on.bc",
+      "sha256": "25e0ea611f3a358e4c0840bc35fa39dc216604c482b1a1512c2f4ed51ddc9fd8"
+    },
+    "/opt/rocm/amdgcn/bitcode/ocml.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/ocml.bc",
+      "sha256": "b410d6cf4c48b6a8bdc727f7c3a4f62825955a686f9241637865582fc2492d1e"
+    },
+    "/opt/rocm/amdgcn/bitcode/opencl.bc": {
+      "realpath": "/opt/rocm/lib/llvm/lib/clang/18/lib/amdgcn/bitcode/opencl.bc",
+      "sha256": "1308609f329e714c30c32111eb0a83a4a28cece936469d6f291d3fc831b7ca41"
+    },
+    "/opt/rocm/bin/hipcc": {
+      "realpath": "/opt/rocm/bin/hipcc",
+      "sha256": "ed57a7842b21749ec1f9d761c7c8e4a2f1f4ef0888182382251494889d8b720f"
+    },
+    "/opt/rocm/bin/hipcc.bin": {
+      "realpath": "/opt/rocm/bin/hipcc.bin",
+      "sha256": "4dc9d32ab64a8d218289072c152ab54304851f44762323d85ea262c6bdbf2d7a"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_channel_descriptor.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_channel_descriptor.h",
+      "sha256": "ff69b21887414c4d299456c628e4b1f0752a1997745011e8f98bca7b6c64a5b5"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_device_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_device_functions.h",
+      "sha256": "d53c14621e11261a22cfce74bcb36270ed5f17114747ebc2fb5eadb43183186c"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_atomic.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_atomic.h",
+      "sha256": "29f88d37916357a9aa48039a9ba5490eef6d23b97cb9a454ad0e443223f9626c"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_bf16.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_bf16.h",
+      "sha256": "016b33ebcbd27e2f4f9c2b0820c3909024ad44b6c46adedfea89bdfc9d80863e"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_bfloat16.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_bfloat16.h",
+      "sha256": "70526540410b19abbff6078009eba28851f2b805820faf95b92a9c4e7a9a8d7d"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_common.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_common.h",
+      "sha256": "77392e233ba496a4d168d26328ba9f1449ba161e2d2bf1644e360716c6649822"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_complex.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_complex.h",
+      "sha256": "484ca097c5ff3025c3557c4d2019b90ecd1e5b06bea235575145b8f12220b17f"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_cooperative_groups.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_cooperative_groups.h",
+      "sha256": "b7caeace9652fbe2c62c8d43fa9341342a7b4c22864b41f5dfaa6cea6e953a52"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_fp16.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_fp16.h",
+      "sha256": "f3a370f7b89a882e10579c41bfc777070738162a0c8790d0b821e3dec87f62bc"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_fp8.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_fp8.h",
+      "sha256": "c1cd65e3bd43f8106ba0b328575b84b0f5d3a7ecd08d2a6afa317c6ea78d657f"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_gl_interop.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_gl_interop.h",
+      "sha256": "7639697a810eaad5f481555182aa9a910664c0dccbb9d9cafe2c5b4a18b353b3"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_math_constants.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_math_constants.h",
+      "sha256": "bb57c869ff8089617bd19035cf15645086d1aa824bbb996b7d86e0b7fbacc929"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_runtime.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_runtime.h",
+      "sha256": "66f0ec434022667275efc36e02c03b02e1ebc925db377685b3967d9b6b6c2038"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_runtime_pt_api.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_runtime_pt_api.h",
+      "sha256": "7dce26b470645a6892461f26f9dc48c6fbbdcecc1e2d3c048288649ed61c809c"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_unsafe_atomics.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_unsafe_atomics.h",
+      "sha256": "c3d9c9d52df619197f7a30e219a72d78ce997fce22a2f2227c0cd65fc0737b44"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_hip_vector_types.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_hip_vector_types.h",
+      "sha256": "a8f7664499f3960b6356c86469fa07c5d1e830b928612f54f990fe4e32f39ebd"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_math_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_math_functions.h",
+      "sha256": "e3ac22684312b4273312c1ed71c8079404dfc3fd0ee63e99f2b945902edb9940"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_surface_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_surface_functions.h",
+      "sha256": "aec42eca536a98d84b6fb3d98c1cfb59baee0ffe98217b4ea6d63604d243c555"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_warp_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_warp_functions.h",
+      "sha256": "fae272fe10704b1440f60cc6a78504677728f03fd41d536832bfd1bf1d7daa29"
+    },
+    "/opt/rocm/include/hip/amd_detail/amd_warp_sync_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/amd_warp_sync_functions.h",
+      "sha256": "d81db9b63a49fca2468a3441684cbf6b6ff81cbb7f4d743a789e7bcd13683cec"
+    },
+    "/opt/rocm/include/hip/amd_detail/concepts.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/concepts.hpp",
+      "sha256": "ec43a4a6bdb0dbe8dc954435d79cb1b450a405627b6ed53384139efa64743743"
+    },
+    "/opt/rocm/include/hip/amd_detail/device_library_decls.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/device_library_decls.h",
+      "sha256": "e1c952a607fcf7c5158df6455670e47188bbe40dbb72b3ecb85b4b72cd6ce0a5"
+    },
+    "/opt/rocm/include/hip/amd_detail/functional_grid_launch.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/functional_grid_launch.hpp",
+      "sha256": "bbb85107d9105d7e7be5ae42edc57780aa30e790d20540b03b47538c8b3095a8"
+    },
+    "/opt/rocm/include/hip/amd_detail/grid_launch.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/grid_launch.h",
+      "sha256": "b4d4bb090c3d832fb3f77d021251f79fa73988cbe9b10fd61592b4db898dcc4a"
+    },
+    "/opt/rocm/include/hip/amd_detail/grid_launch.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/grid_launch.hpp",
+      "sha256": "12e025337a25cab02b79bab05b9792c68e207e3bd6086380180b8b2e616db60c"
+    },
+    "/opt/rocm/include/hip/amd_detail/grid_launch_GGL.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/grid_launch_GGL.hpp",
+      "sha256": "2a9400bb2cb50f2b78e5670f691ff1f84c7ea273c6107034d4305b95aed34fe9"
+    },
+    "/opt/rocm/include/hip/amd_detail/helpers.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/helpers.hpp",
+      "sha256": "862da95b59974276c8c2f9b05adfe71ba037f2ca8b39df903f94bdb044d3b3ad"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_api_trace.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_api_trace.hpp",
+      "sha256": "50cb026aabab1c54913621e9c23680f03131025761878cb450ffca3b12dadb96"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_assert.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_assert.h",
+      "sha256": "7cdb06db72884ae63e939245a17fb9859eea19049c8ac5ee1dc744c189573aac"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_cooperative_groups_helper.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_cooperative_groups_helper.h",
+      "sha256": "b50fd722f18a86fae3d61ee063e2152e62af20f86c41ad18b017e5c5d8541cff"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_fp16_gcc.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_fp16_gcc.h",
+      "sha256": "06d16c2a64e9b4de13387a1c12271f35b065d8909d6562a6fdb77999ce4ecd86"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_fp16_math_fwd.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_fp16_math_fwd.h",
+      "sha256": "eb7b4a58c3dd5b9eaa5a51ff1db09a17f8ac557b9f9b9d78a25fd2c4be188d34"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_ldg.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_ldg.h",
+      "sha256": "2801196fd1f8cf80c3ae46a5a0c39e5b36a18837c8d95e9cebcbd64f78dbe5f5"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_prof_str.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_prof_str.h",
+      "sha256": "5dbd0cf73b581d1a912e328506e99b011dab8db527a19ba5c1e09929353c7a35"
+    },
+    "/opt/rocm/include/hip/amd_detail/hip_runtime_prof.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hip_runtime_prof.h",
+      "sha256": "799508e5cb1c60a6fdc42f48aa7698e77260cb57508e4111c106b0d37e01b798"
+    },
+    "/opt/rocm/include/hip/amd_detail/host_defines.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/host_defines.h",
+      "sha256": "6720af68fb29e2f705884108b760616a97d856f5a8548fd0d8ff6b6479459826"
+    },
+    "/opt/rocm/include/hip/amd_detail/hsa_helpers.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/hsa_helpers.hpp",
+      "sha256": "3acfac25038523fd006e1f10974e6cd11b5faee93836c48c7e0ec1b6e8313208"
+    },
+    "/opt/rocm/include/hip/amd_detail/macro_based_grid_launch.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/macro_based_grid_launch.hpp",
+      "sha256": "ea872c02b35af7f47a0fa5c2b8dcbc66adb7286fa3dae62c8ea342b6732b270b"
+    },
+    "/opt/rocm/include/hip/amd_detail/math_fwd.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/math_fwd.h",
+      "sha256": "9eea7962171e2679e0a0b24211223ca97d3c74da5b65c8b48bbf162aefb07dd2"
+    },
+    "/opt/rocm/include/hip/amd_detail/ockl_image.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/ockl_image.h",
+      "sha256": "2f344f18c6f9d79fe220020871b6f6b9007e6d3bd3e313a3639d55740443ee57"
+    },
+    "/opt/rocm/include/hip/amd_detail/program_state.hpp": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/program_state.hpp",
+      "sha256": "f1013d3a607c38a4f2eeb06bdc46048b3248dacfbfd6d817a6053bcc20362b2d"
+    },
+    "/opt/rocm/include/hip/amd_detail/texture_fetch_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/texture_fetch_functions.h",
+      "sha256": "131d65176801589c6d0b7c8ff695d1485cb0329de06c49b29744b0f222fdd723"
+    },
+    "/opt/rocm/include/hip/amd_detail/texture_indirect_functions.h": {
+      "realpath": "/opt/rocm/include/hip/amd_detail/texture_indirect_functions.h",
+      "sha256": "2a45b9a3980ca6854c4d1c337d71c0efe919f729c8f0e688c3a8c9d44075b3df"
+    },
+    "/opt/rocm/include/hip/channel_descriptor.h": {
+      "realpath": "/opt/rocm/include/hip/channel_descriptor.h",
+      "sha256": "81361eed2cc883e9b74e1390636bebe5187afae5af50ffdddfbbfc1784f6435e"
+    },
+    "/opt/rocm/include/hip/device_functions.h": {
+      "realpath": "/opt/rocm/include/hip/device_functions.h",
+      "sha256": "be4c9badd93ac3264ff93d48e4f463b5f70ca866170de0690798e1623df9f065"
+    },
+    "/opt/rocm/include/hip/driver_types.h": {
+      "realpath": "/opt/rocm/include/hip/driver_types.h",
+      "sha256": "9b51c8f341c2f34aa44de728d89774ef0a0bfe34f2e3c973f49883095ffccec8"
+    },
+    "/opt/rocm/include/hip/hip_bf16.h": {
+      "realpath": "/opt/rocm/include/hip/hip_bf16.h",
+      "sha256": "94bc3a2b996d6fa02a4ae20d613abc7e5c71b039013fc636cdbaa652305c1bd7"
+    },
+    "/opt/rocm/include/hip/hip_bfloat16.h": {
+      "realpath": "/opt/rocm/include/hip/hip_bfloat16.h",
+      "sha256": "36aa32f558df8e0955c76fcd25ca7c8724f5b0952e9174568fc5cc96276fd720"
+    },
+    "/opt/rocm/include/hip/hip_common.h": {
+      "realpath": "/opt/rocm/include/hip/hip_common.h",
+      "sha256": "ab968f846dc31d6d22509edac92e657ccfd99d940d6cc98b99f74794ec1b3dd0"
+    },
+    "/opt/rocm/include/hip/hip_complex.h": {
+      "realpath": "/opt/rocm/include/hip/hip_complex.h",
+      "sha256": "4e677340fe6854f7e1055011258711e5ecaff4722798a305b85a10ff510293f2"
+    },
+    "/opt/rocm/include/hip/hip_cooperative_groups.h": {
+      "realpath": "/opt/rocm/include/hip/hip_cooperative_groups.h",
+      "sha256": "80c2ef6984376fe7f5bdca0cb44c2d90dd213b9fffccd7cfe69e6804a9affd21"
+    },
+    "/opt/rocm/include/hip/hip_deprecated.h": {
+      "realpath": "/opt/rocm/include/hip/hip_deprecated.h",
+      "sha256": "8052ee0ae2a7ed1ff109fba6fe2fd0faf8b72e0f0d5872a984a64acdef03c04a"
+    },
+    "/opt/rocm/include/hip/hip_ext.h": {
+      "realpath": "/opt/rocm/include/hip/hip_ext.h",
+      "sha256": "9a5cce7ac17e5fada0f409d6740e0c3fdf4646efd5b7031b7df389165a0bb517"
+    },
+    "/opt/rocm/include/hip/hip_fp16.h": {
+      "realpath": "/opt/rocm/include/hip/hip_fp16.h",
+      "sha256": "bca261fb38035945bb3725f1b6fda1a3a6952d75fc0483dfcc28a0110e5de88e"
+    },
+    "/opt/rocm/include/hip/hip_fp8.h": {
+      "realpath": "/opt/rocm/include/hip/hip_fp8.h",
+      "sha256": "0b8aa7d229bb521be9db6e9598bfd06c5d9be391e1b2cd9ea247526ea5a405cb"
+    },
+    "/opt/rocm/include/hip/hip_gl_interop.h": {
+      "realpath": "/opt/rocm/include/hip/hip_gl_interop.h",
+      "sha256": "f86c244853019de33c6a4144ee9aa5862d24f85b76bb3e7aef8c06a22694e374"
+    },
+    "/opt/rocm/include/hip/hip_hcc.h": {
+      "realpath": "/opt/rocm/include/hip/hip_hcc.h",
+      "sha256": "458ac0ac39674c43fcf7129bcc8a56d7bfdbb016399a80a2b6ad343cbfb8a162"
+    },
+    "/opt/rocm/include/hip/hip_math_constants.h": {
+      "realpath": "/opt/rocm/include/hip/hip_math_constants.h",
+      "sha256": "f1b49fbdee44edc0eebcd01490551e43048b837889247baa86e0f81661cdc443"
+    },
+    "/opt/rocm/include/hip/hip_profile.h": {
+      "realpath": "/opt/rocm/include/hip/hip_profile.h",
+      "sha256": "b23b0db9dbaee4977ab3bb099dd66f64b944d11674c0dd6b4d5c2fe6747b21fd"
+    },
+    "/opt/rocm/include/hip/hip_runtime.h": {
+      "realpath": "/opt/rocm/include/hip/hip_runtime.h",
+      "sha256": "bb2f7497c35ea7ac4d5337867073280eff38053de132989e4d5fb98a39292f90"
+    },
+    "/opt/rocm/include/hip/hip_runtime_api.h": {
+      "realpath": "/opt/rocm/include/hip/hip_runtime_api.h",
+      "sha256": "1fdbcf68c43b541904b64c48e51c89f543970a62b36cf17bd29700b1835b3ff0"
+    },
+    "/opt/rocm/include/hip/hip_texture_types.h": {
+      "realpath": "/opt/rocm/include/hip/hip_texture_types.h",
+      "sha256": "02192f8c6e1c0e37ff6452e0e52b124df0675c6eb5e0f04ad5754f6bb8ab65b9"
+    },
+    "/opt/rocm/include/hip/hip_vector_types.h": {
+      "realpath": "/opt/rocm/include/hip/hip_vector_types.h",
+      "sha256": "e8570130190fdd93751276a5a5af61574568a7174126f6d40ae6b12128336d36"
+    },
+    "/opt/rocm/include/hip/hip_version.h": {
+      "realpath": "/opt/rocm/include/hip/hip_version.h",
+      "sha256": "81c5d4b11b72f66b520c040043e36ed2e503ee7edd44772c8b8fd541b65a5a74"
+    },
+    "/opt/rocm/include/hip/hiprtc.h": {
+      "realpath": "/opt/rocm/include/hip/hiprtc.h",
+      "sha256": "741c5eb05777342bc6f8d43df6ceb58b87d44177e81cd99885d17a0ad13d4074"
+    },
+    "/opt/rocm/include/hip/library_types.h": {
+      "realpath": "/opt/rocm/include/hip/library_types.h",
+      "sha256": "b4f3894d079d3c7e6a0bd99e6b02e02a99db16b402d962a57e8eacd2b84aa197"
+    },
+    "/opt/rocm/include/hip/math_functions.h": {
+      "realpath": "/opt/rocm/include/hip/math_functions.h",
+      "sha256": "7ebcdd278bde046f27f402cee04991add3a20e0b91e853faca02e7bce9d55523"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_channel_descriptor.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_channel_descriptor.h",
+      "sha256": "5ec26f17287c30a3dbe6b71038ac70240fb7d2c8b163181bb5e233564321254f"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_atomics.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_atomics.h",
+      "sha256": "44afba8fc2ad4ee23f53bcd722a4a0debc8a064b73177af7997e8b74d378199f"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_bf16.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_bf16.h",
+      "sha256": "f0229cd01ed427d3ff075e0841fe49154f0fb0110da65925551270921973bd8f"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_complex.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_complex.h",
+      "sha256": "699c4eb7117599d812b6541ce2e36002a1d660bb076e8a66288b7e6bfd63c0d8"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_cooperative_groups.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_cooperative_groups.h",
+      "sha256": "56decc25c8b2236880a9a91f4a8a9db2adee6ec15639b050c2f1ded5485f0a69"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_gl_interop.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_gl_interop.h",
+      "sha256": "cf79641033fcb9b5e8a15c12d3bdc40fb307aecca9c4399d0ad8b701c1005f4f"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_math_constants.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_math_constants.h",
+      "sha256": "28a09edfa4cf12757c51dd6bab26ea02b1e03ab9014beef97fc067425f9b4011"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_runtime.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_runtime.h",
+      "sha256": "6649c4b9c94b70152913e0126752899a13eacdfebe06495754508afb5a6a3804"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_runtime_api.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_runtime_api.h",
+      "sha256": "b89ef60f5cf09a7e38f5ef1dc3fde75d7982ed45e37bd261ca7a5b0ecdcf6b20"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_texture_types.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_texture_types.h",
+      "sha256": "df1b0735e4cd4c32752a324cd6ecbfce2fe0e031c3e147ebabfc2cb9a13cf378"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_unsafe_atomics.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hip_unsafe_atomics.h",
+      "sha256": "ba49305ddf5b4581ac960d6d40473b74e47e0d794fb94fd325e2ac0fa07d95f7"
+    },
+    "/opt/rocm/include/hip/nvidia_detail/nvidia_hiprtc.h": {
+      "realpath": "/opt/rocm/include/hip/nvidia_detail/nvidia_hiprtc.h",
+      "sha256": "23ed791a2fdc96a9a6fd67f92defe4d30eb9ece46e30ff68058f78cf7bd92699"
+    },
+    "/opt/rocm/include/hip/surface_types.h": {
+      "realpath": "/opt/rocm/include/hip/surface_types.h",
+      "sha256": "b901e3213a610ccee4e299ee1280c4ba9314c41a1bcef849a52cb4ba7a5e821e"
+    },
+    "/opt/rocm/include/hip/texture_types.h": {
+      "realpath": "/opt/rocm/include/hip/texture_types.h",
+      "sha256": "0ad99dca465f0e29219eb55f749937c3654ae57dc07ffeab10acd4f9580bbb6e"
+    },
+    "/opt/rocm/include/hiprand/hiprand.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand.h",
+      "sha256": "cdc721822d0bc11361bf01d9d6c199a2ace075192e0bd41eeef8f7885ca42ddd"
+    },
+    "/opt/rocm/include/hiprand/hiprand.hpp": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand.hpp",
+      "sha256": "2a97c64106f8a1193c37da443c9c95e74efbfd51828f4c4c00198f56998dc176"
+    },
+    "/opt/rocm/include/hiprand/hiprand_kernel.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_kernel.h",
+      "sha256": "676a9b7b40e85be0cfbf46d44b0085684a977e1822429bac34fbbcce56e4cb04"
+    },
+    "/opt/rocm/include/hiprand/hiprand_kernel_nvcc.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_kernel_nvcc.h",
+      "sha256": "07e0a89be635168544147013463c853f63ec4d6150021c8f78091de5260f261b"
+    },
+    "/opt/rocm/include/hiprand/hiprand_kernel_rocm.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_kernel_rocm.h",
+      "sha256": "c86b3d83f06a1db97a80b0c143c6199011bed5969ad429df861a73524b7d67e2"
+    },
+    "/opt/rocm/include/hiprand/hiprand_mtgp32_host.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_mtgp32_host.h",
+      "sha256": "dbc945188325c36d66168674798d4ab6e3d5129fbf1bb574c495588d19a1f504"
+    },
+    "/opt/rocm/include/hiprand/hiprand_nvcc.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_nvcc.h",
+      "sha256": "6895d8a81d11d71bcbc8368045394860757b53dd63850692759b31c1f770bc36"
+    },
+    "/opt/rocm/include/hiprand/hiprand_rocm.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_rocm.h",
+      "sha256": "a956904455bea394b3ea7427760b2f2e088f8b275f60e8b2caafddb52f2d232e"
+    },
+    "/opt/rocm/include/hiprand/hiprand_version.h": {
+      "realpath": "/opt/rocm/include/hiprand/hiprand_version.h",
+      "sha256": "57f135cfa4f9ed5ec021fc21dbb1ec016ca1b71a90ca9370b33ced384b6abc94"
+    },
+    "/opt/rocm/llvm/bin/clang": {
+      "realpath": "/opt/rocm/lib/llvm/bin/clang-18",
+      "sha256": "d7abf6eb6db27e3ead0be22aed5688b51ea4ab64831476f68434087155a68b21"
+    },
+    "/opt/rocm/llvm/bin/clang++": {
+      "realpath": "/opt/rocm/lib/llvm/bin/clang-18",
+      "sha256": "d7abf6eb6db27e3ead0be22aed5688b51ea4ab64831476f68434087155a68b21"
+    },
+    "/opt/rocm/llvm/bin/clang-offload-bundler": {
+      "realpath": "/opt/rocm/lib/llvm/bin/clang-offload-bundler",
+      "sha256": "4a455de48ee5c739f74e26e1979241a8b4e52ea9e57a316186c2425fae615cfe"
+    },
+    "/opt/rocm/llvm/bin/ld.lld": {
+      "realpath": "/opt/rocm/lib/llvm/bin/lld",
+      "sha256": "b135780dfca8a3fc03e307173c75215179daac6f0a14a40ada69d1ae41d4a72c"
+    },
+    "/opt/rocm/llvm/bin/llvm-link": {
+      "realpath": "/opt/rocm/lib/llvm/bin/llvm-link",
+      "sha256": "f6a181b2d9f4fa892e726e86eb466ec50a669a028cc40ef8f41dab5c95519ba9"
+    }
+  }
+}
