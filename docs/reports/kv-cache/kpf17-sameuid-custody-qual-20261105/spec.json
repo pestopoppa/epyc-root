@@ -1,0 +1,38 @@
+{
+  "id": "kvfork17-sameuid-custody-qual-20261105",
+  "owner": "h-kvfork",
+  "schema": "epyc.row.v3",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf17-sameuid-custody-qual-20261105/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-sameuid-custody-qual-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-sameuid-custody-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "gib": 1,
+  "ram_gib": 1,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "window_s": 600,
+  "smoke_timeout_s": 60,
+  "dryrun_native_result": true,
+  "priority_rank": 45,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "stop_file": "/mnt/raid0/llm/tmp/kvfork/kpf17-sameuid-custody-qual-20261105/STOP",
+  "model_free": true,
+  "case_count": 2,
+  "unit_key": "case_count",
+  "keep": [
+    "**"
+  ],
+  "question": "Does retained r5 custody.validate_maps refuse a same-UID hardlink overwrite on revalidation, and can the same overwrite remain visible after the final accepted check?",
+  "expected_effect_vs_sample_error": "Deterministic synchronized two-window qualification; no population estimate or sample-size claim.",
+  "checkpoints": [
+    "five-library pristine baseline accepted in each private fixture",
+    "same-UID overwrite via private hardlink preserves inode",
+    "pre-revalidation window refused by actual retained validator",
+    "post-final-check read observes changed fixture bytes without another check"
+  ],
+  "decision_rule": "Qualification COMPLETE requires both bounded windows and complete provenance. Status UNSAFE preserves post-final-check mutation visibility; never translate it to custody safety. Completion additionally requires pre-revalidation REFUSED, complete same-attempt evidence and seals. Unexpected refusal/acceptance or timeout preserves INVALID or unsafe evidence; no retries. Synthetic map lines and non-ELF mmap are explicitly not native-loader or build_identity coverage. Smoke executes these actual model-free probes only in separate smoke-out, publishes only to FILLER_DRYRUN_RESULT_PATH, and cannot complete the full row.",
+  "stop_rule": "One two-case attempt; stop on first exception, STOP, timeout or deadline. Writer barriers <=2s, done/join <=3s each; no inference, native build, model read, shared-artifact mutation, or long compute."
+}

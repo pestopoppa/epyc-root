@@ -1,0 +1,21 @@
+{
+  "decision_rule": "Model-free shell ordering only: all ten cases match; patched wrapper STOP never completes, no-STOP controls complete, original wrapper negative controls reproduce STOP completion defect. Synthetic evidence is not native oracle qualification. Post-job completion also requires rc=0 and reason=exited, excluding hard-end/disk-floor; rc75-without-STOP is covered.",
+  "dryrun_native_result": true,
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+  "id": "kvfork17-wrapper-stop-successor-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf17-wrapper-stop-successor-20261105/launch.sh",
+  "owner": "h-kvfork",
+  "priority_rank": 45,
+  "ram_gib": 1,
+  "regions": "any-cpu-quarter",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf17-wrapper-stop-successor-20261105/out/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf17-wrapper-stop-successor-20261105",
+  "smoke_timeout_s": 180
+}

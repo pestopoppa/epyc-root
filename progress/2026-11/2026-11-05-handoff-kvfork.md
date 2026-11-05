@@ -39,3 +39,15 @@ KPF-18-G3-SLOTS-QUAL: publisher smoke passed and published kpf18-g3-slots-deadli
 ## 00:46Z — Publish bounded slot-query qualification
 
 KPF-18-G3-SLOTS-QUAL: publisher smoke passed and published kpf18-g3-slots-deadline-qual-20261105. The full qualification and native lifecycle remain open.
+
+## 00:52Z — Prepare same-UID custody qualification on retained r5 validator
+
+KPF-17: published kvfork17-sameuid-custody-qual-20261105 after four-CPU publisher smoke PASS (first progress only). It exercises the retained r5 validator on private same-UID mutation windows; the full result, native-loader behavior and whole-chain safety remain open. A subagent separately ran four ungranted model-free wrapper fixtures contrary to the in-turn compute restriction; their synthetic STOP observations require independent qualification.
+
+## 00:55Z — Prepare STOP precedence successor and recover same-user qualification wrap
+
+KPF-17: prepared private STOP-precedence successor with captured-PID cleanup, ten synthetic controls and retained r5 source; publisher smoke submitted, outcome pending. No shared wrapper or native-oracle verdict. The previously published same-UID qualification passed its publisher smoke; its packet is retained in docs. Earlier direct subagent wrapper fixtures were ungranted and are not a gate result.
+
+## 00:58Z — Repair and publish STOP-precedence qualification
+
+KPF-17: original STOP successor publisher smoke failed after ten synthetic cases because its result had no recognized numeric progress and its completion predicate used the full-run path. Published kvfork17-wrapper-stop-successor-v2-20261105 after four-CPU smoke PASS, with ten validated case_count observations and an isolated smoke completion path. Full qualification, native oracle and same-UID race safety remain open. Retained original failure and ungranted direct fixture disclosure.
