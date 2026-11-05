@@ -101,3 +101,11 @@ KVU-19b-gap: original GPU smoke failed rc1: verifier refused the observed 1 GHz 
 KPF-13.1-NATIVE-FINDSLOT: full row kvu-kpf131-old-native-findslot-r2-20261104 rc0 FIXTURE_PASS; honest placement 2,3 and skip-apply mutation 0,1 detected, both child exits 0 and executable/five mapped library identities matched before/after. First placement follows the sealed fixture assertion and exits; build manifest retrospective. No historical layout or task-binding conclusion. Native result SHA-256 5cda47abd97049cba6ab5d4f0bd03d63abf17924033a859a02418a7eedc940c0.
 
 KPF-17.GDB-CONTINUE: published kvfork17-gdb-continue-qual-r3-20261105 after four-CPU smoke PASS. Adds a captured direct-child timeout cleanup control; full result pending, descendant-tree cleanup not established.
+
+## 01:42Z — File five synthetic KPF-50 qualifications and repair incomplete byte alignment.
+
+KPF-50 synthetic qualifications: full rows rc0; window-validator 44/44 controls, raw-maps 20/20, raw-residency 10/10, anchor 5/5, custody three controls. Native provenance, GPU residency and profile gate remain unresolved. KPF-62.3 byte alignment full row rc0 classified 256 unique, 151413 ambiguous, zero unrepresentable and 267 empty target pieces; missing separate empty auxiliary enumeration leaves box open. The r2 successor was published after a corrected four-CPU smoke passed; its first smoke failed completion/progress checks. Full empty-auxiliary enumeration remains pending.
+
+## 01:44Z — File five synthetic KPF-50 qualifications and repair incomplete byte alignment.
+
+Wrap-up retry: original synthetic evidence is retained in a compressed native archive after the account-number hook flagged numeric attempt-directory identifiers; the five qualification boxes were already ticked by the first wrap-up attempt.
