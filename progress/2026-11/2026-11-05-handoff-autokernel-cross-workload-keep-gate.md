@@ -35,3 +35,7 @@ NEMO-PROF-RESEG: consumed independent C3 request-join integration result. The ex
 ## 00:25Z — Consume C6 CUBLAS route diagnostic publisher smoke
 
 C6-Q4-MMVQ-FIX: consumed publisher PASS for akx-c6-n4-cublas-route-diagnostic-20261105: rc0, four isolated units, 30 seconds, sampled peak VRAM 451,637,248 bytes. The candidate-versus-CUBLAS seed-71 route comparison is ready for its full grant; dryrun_native_result isolates smoke from the full result. No native diagnostic, full-suite correctness, performance or promotion claim follows. [no-belief: publisher smoke only]
+
+## 00:32Z — File C6 route results and queue fresh generic diagnostic smoke
+
+C6-Q4-MMVQ-FIX: filed the CUBLAS route diagnostic: two seed-71 matched pairs had candidate MMVQ failures and forced-CUBLAS passes with matched inputs and GPU witnesses; evidence retained at /mnt/raid0/llm/tmp/akagg/c6-cublas-route-retained-20261105/. Filed the generic comparison inconclusive because its RESULT predates publication and matches the publisher smoke; evidence retained at /mnt/raid0/llm/tmp/akagg/c6-generic-stale-result-retained-20261105/. [belief: cc] Prepared fresh attempt-bound generic comparison akx-c6-n4-generic-pair-fresh-20261105; GPU smoke queued due to GPU occupancy, not yet passed or ready. [no-belief: preparation only]
