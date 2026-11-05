@@ -1,0 +1,8 @@
+Temporary breakpoint 1 at 0x1131: file /mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/kpf17-timeout-72na3jdk/hang.c, line 2.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Temporary breakpoint 1, main () at /mnt/raid0/llm/tmp/kvfork/kpf17-timeout-qual-20261104/out/full-attempt/kpf17-timeout-72na3jdk/hang.c:2
+2	int main(void){ volatile uint64_t x=1; for(;;) x=x*1664525+1013904223; }
+KPF17T_PID=2707592
+KPF17T_BIRTH=196277893
