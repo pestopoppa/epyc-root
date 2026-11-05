@@ -722,6 +722,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         need(rid not in ([sup] if isinstance(sup, str) else sup), "a row cannot supersede itself")
     if spec.get("fix_ref") is not None:
         need(isinstance(spec["fix_ref"], str) and spec["fix_ref"].strip(), "fix_ref must name the fix (commit or path)")
+    check_engine_not_sealed(launcher, eng)
     # refinement 1: shape from evidence
     check_shape_evidence(spec, o)
     if o.get("threads"):
@@ -1498,6 +1499,35 @@ def whole_host_evidence(d):
     except (TypeError, ValueError):
         pass
     return bool(str(d.get("baseline_ref") or "").strip()) or bool(str(d.get("shape_override") or "").strip())
+
+
+def check_engine_not_sealed(launcher, eng):
+    """sq3fix 2026-11-05: a job packet must not pin the live rowflow engine's digest. kpf17/kpf41 -sq3 sealed
+    filler_run15.sh's sha256 at build time; the engine was redeployed (2134ef303) while their COEXIST grants waited on
+    GLOBAL.q3, and both jobs asserted on the new digest at start (rc=1, empty out/). The engine is loop-plane code that is
+    redeployed under running rows by design; the dry run already records engine_sha256 in PASS.json. Refuse a packet
+    file in the launcher's directory that names the engine digest."""
+    try:
+        with open(eng, "rb") as f:
+            digest = hashlib.sha256(f.read()).hexdigest()
+    except OSError:
+        return
+    d = os.path.dirname(launcher)
+    for root, dirs, files in os.walk(d):
+        dirs[:] = [x for x in dirs if x not in ("__pycache__", ".git", "out", "source")]
+        for fn in files:
+            p = os.path.join(root, fn)
+            try:
+                if os.path.getsize(p) > (4 << 20):
+                    continue
+                with open(p, "rb") as f:
+                    data = f.read()
+            except OSError:
+                continue
+            need(digest.encode() not in data,
+                 f"{p} pins the rowflow engine digest ({os.path.basename(eng)} sha256 {digest[:12]}...): the engine is "
+                 "redeployed under queued rows, so a sealed engine digest fails the job at start; drop the engine from "
+                 "the packet's seals (PASS.json records engine_sha256)")
 
 
 def check_shape_evidence(spec, o):
