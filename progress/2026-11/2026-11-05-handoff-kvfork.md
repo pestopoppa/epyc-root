@@ -117,3 +117,7 @@ KVU-19b-gap: kvu19b-multi-clock-qual-r2-20261105 rc0 but INCONCLUSIVE: the two h
 ## 01:54Z — Ready the corrected GPU clock qualification and file the TTS mechanics failure.
 
 KVU-19b-gap: corrected multi-clock r3 passed publisher smoke and is grantable; full qualification remains pending. KVU-11c: GPU mechanics r3 failed rc1 on unclean server exit; retained log ends free(): invalid pointer and the exact server exit status is unknown. No GPU validation or causal conclusion. Removed the superseded failed KVU-11c HIP build scratch; preserved active row dependencies.
+
+## 01:59Z — File the clock qualification and publish synthetic trace qualification and TTS diagnostic rebuild.
+
+KVU-19b-gap: multi-clock r3 completed rc0, qualifying three individual model-free witness points and five mutations, without a drift or target-alignment claim. Published trace-analyzer synthetic qualification after its smoke passed. KVU-11c: scratch cleanup mistakenly removed the prior HIP build used in failed mechanics r3; source and original binary digests remain. Published a source-bound diagnostic rebuild after its smoke passed; exact identity requires all five hashes to match. Removed six superseded attempt directories (~186 MiB); retained published-row inputs and source custody.

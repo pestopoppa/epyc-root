@@ -1,0 +1,21 @@
+{
+  "id": "kvu19b-trace-analyzer-qual-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kvu19b-trace-analyzer-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kvu19b-trace-analyzer-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Model-free synthetic qualification only: PASS requires exact two-phase classification including one ambiguous boundary kernel and rejection of all 14 declared missing, duplicate, identity, time, bounds, authority, coverage, overlap, and placement mutations. Source checksum, STOP and deadline are checked; stop on any failure. The supplied clock bounds are synthetic assumptions; no target alignment, continuous drift, live profiling, inference or attribution follows.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19b-gap",
+  "priority_rank": 40,
+  "kind": "compute",
+  "smoke_timeout_s": 300,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kvu19b-trace-analyzer-qual-20261105",
+  "keep": ["**"],
+  "lineage": "kvu19b-trace-analyzer-qual",
+  "notes": "Standalone synthetic analyzer; r3 clock qualification was three model-free points only. Full native target integration, fresh clock and trace custody, drift bounds, residency, cleanup and actual phase attribution remain unqualified. Smoke and full run execute the same synthetic controls in isolated result paths."
+}

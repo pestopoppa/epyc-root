@@ -1,0 +1,7 @@
+rc=0 time=2026-11-05T01:53:41Z reason=complete
+job_id=kvu19b-multi-clock-qual-r3-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-05T01:53:05Z
+regions=mi210_0,184-187
