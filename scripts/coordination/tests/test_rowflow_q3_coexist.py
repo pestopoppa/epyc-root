@@ -117,5 +117,41 @@ class Publish(unittest.TestCase):
             rf.check_coexist(spec2, o2, "72-73")
 
 
+class EvidenceCoexist(unittest.TestCase):
+    """11:00Z live bug: nine unmarked -sq3 rows (busy 0.05, regions inside 72-87) sat grantable beside npd1-step5's
+    ACTIVE quiet-host grant (holds gpu-quiet,q0-q3). Evidence-derived coexist admits them on q3 cores only."""
+    def row(self, regions, busy=0.05, lane="cpu"):
+        return {"id": "x", "lane": lane, "regions": regions, "busy_fraction": busy}
+
+    def test_evidence_rows_are_coexist(self):
+        self.assertTrue(rf.is_coexist(self.row("72-73")))
+        self.assertTrue(rf.is_coexist(self.row("86-87")))
+
+    def test_gpu_threads_busy_or_wide_rows_are_not(self):
+        self.assertFalse(rf.is_coexist(self.row("88-89")))      # pins 184-185
+        self.assertFalse(rf.is_coexist(self.row("72-73", busy=0.5)))
+        self.assertFalse(rf.is_coexist(self.row("72-73", busy=None)))
+        self.assertFalse(rf.is_coexist(self.row("any-cpu-quarter")))
+        self.assertFalse(rf.is_coexist(self.row("0-1")))
+
+    def test_active_quiet_host_grant_plus_two_coexist_rows_on_q3(self):
+        qh = rf.expand(set(rf.REGIONS))   # npd1-step5: holds=gpu-quiet,q0,q1,q2,q3 (running)
+        free = ALL_TOKENS - qh - {f"t{k}" for k in range(184, 192)} | {f"t{k}" for k in range(184, 192)}
+        rows = [cand(r["id"], [cx_opt(r["regions"])], rank=55, coexist=rf.is_coexist(r), busy=0.05)
+                for r in (dict(self.row("72-73"), id="sq3a"), dict(self.row("84-85"), id="sq3b"))]
+        out, _, _ = rf.plan(free, rows, 1000, quiet_held=qh)
+        self.assertEqual(sorted(c["id"] for c, _ in out), ["sq3a", "sq3b"])
+        gpu_thr = {f"t{k}" for k in range(184, 192)}
+        for _, o in out:
+            self.assertFalse(o & gpu_thr)
+            self.assertFalse(o & (rf.expand({"q0", "q1", "q2"}) | {"gpu-quiet"}))
+
+    def test_gpu_q3_hold_also_admits_coexist(self):
+        qh = rf.expand({"q3", "gpu-quiet"}) | {f"t{k}" for k in range(184, 192)}
+        free = ALL_TOKENS - qh
+        out, _, _ = rf.plan(free, [cand("sq3", [cx_opt("74-75")], coexist=True, busy=0.05)], 1000, quiet_held=qh)
+        self.assertEqual([c["id"] for c, _ in out], ["sq3"])
+
+
 if __name__ == "__main__":
     unittest.main()
