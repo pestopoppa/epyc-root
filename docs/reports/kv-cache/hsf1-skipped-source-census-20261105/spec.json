@@ -1,0 +1,20 @@
+{
+  "id": "hsf1-skipped-source-census-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-skipped-source-census-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-skipped-source-census-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Source-bound read-only census of tracked Python files at exact detached 326f commit, with stable bounded inputs, count and list ECMAScript-trim-empty candidates and count oversized or unknown files. Preserve current installed extractor/runner sources sealed separately. The actual prior index file list and historical tool identity remain unknown: do not equate candidates to the four skipped files or clear any impact coverage.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:HSF-1.SKIP-CANDIDATE-CENSUS",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/hsf1-skipped-source-census-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "hsf1-skip-candidate-census"
+}

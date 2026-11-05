@@ -127,3 +127,7 @@ Filed 10/10 synthetic residency controls with native UNKNOWN, six model-free pre
 ## 02:54Z — File native map-files refusal and qualify stat-only admission controls
 
 Filed the original map_files acquisition as inconclusive after padded-range ENOENT; no native mapping claim follows. Published synthetic stat-admission controls after a four-CPU smoke; the full fixture and model immutability remain unproved.
+
+## 02:59Z — File slots and source-census controls; publish skip-candidate census
+
+Filed eleven model-free G3 slot controls; this is not native cancellation. Filed sixteen synthetic zero-skip parser controls and the direct-only HSF-4 aggregate; native impact coverage and fleet representativeness remain unknown. Published a source-bound skip-candidate census after four-CPU smoke, without asserting it identifies the historical skipped files.
