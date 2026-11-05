@@ -155,3 +155,11 @@ Filed KPF-50 anchor qualification PASS: five synthetic source-integrity controls
 ## 03:49Z — File observer qualification and ready old-image ubatch decoder
 
 Filed kvfork-kpf131-findslot-observer-r3-20261105 PASS: two hardware breakpoint hits per arm, expected outputs, zero debugger and inferior exits, before/after executable and five DSO identities, and verified cleanup; this does not prove historical layout or task binding. Published a separate source-bound model-free native ubatch position/owner decoder after its four-CPU publisher smoke passed; its full three-arm result is pending and the publisher assigned 48 GiB. No server association or historical verdict follows.
+
+## 04:02Z — File failed TTS mechanics and requalify stale prerequisites
+
+Filed kvu11c GPU mechanics r3 FAIL: the retained failure says the owned server did not exit cleanly, and its log ends free(): invalid pointer after synthesis; exact exit and root cause remain unknown, and the exposed r3 request must not be replayed. The existing target-marker parser and sealed ELF-loader rows were republished only after their changed launchers passed fresh four-CPU smokes. No TTS quality, parity, speed or promotion conclusion follows. Published a host-ASan build-only diagnostic after four-CPU smoke; full build pending, no device-ASan or cause claim. Earlier packets were held for missing proof, and r3 smoke failed during process capture.
+
+## 04:02Z — File failed TTS mechanics and requalify stale prerequisites
+
+Filed kvu11c GPU mechanics r3 FAIL: the retained failure says the owned server did not exit cleanly, and its log ends free(): invalid pointer after synthesis; exact exit and root cause remain unknown, and the exposed r3 request must not be replayed. The existing target-marker parser and sealed ELF-loader rows were republished only after their changed launchers passed fresh four-CPU smokes. No TTS quality, parity, speed or promotion conclusion follows. Published a host-ASan build-only diagnostic after four-CPU smoke; full build pending, no device-ASan or cause claim. Earlier packets were held for missing proof, and r3 smoke failed during process capture.
