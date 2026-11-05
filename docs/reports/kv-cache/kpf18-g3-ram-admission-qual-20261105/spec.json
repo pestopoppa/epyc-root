@@ -1,0 +1,24 @@
+{
+  "id": "kpf18-g3-ram-admission-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-ram-admission-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-ram-admission-qual-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "priority_rank": 47,
+  "first_progress_s": 30,
+  "dryrun_timeout_s": 60,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-ram-admission-qual-20261105",
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf18-g3-ram-admission-qual",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-G3-RAM-ADMISSION-QUAL",
+  "decision_rule": "All 28 original/corrected comparisons must match declared synthetic outcomes with identical source seals and reaped captured direct child. Original future-own acceptance is recorded; corrected helper must refuse. Stop on first mismatch, source drift, STOP/signal/deadline or cleanup failure. Model-free helper contract only; no whole-candidate/live host/GPU admission claim.",
+  "notes": "PREPARED_UNEXECUTED. No tests/smoke/publication. Helper gap is independently fenced by rowflow_entry activity check. Private correction not installed into candidate. 120s workload within 300s reservation; seven-second end reserve; separate smoke/full paths and outer-safe completion.",
+  "unit_key": "controls"
+}

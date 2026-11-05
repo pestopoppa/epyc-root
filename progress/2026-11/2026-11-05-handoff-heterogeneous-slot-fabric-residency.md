@@ -83,3 +83,7 @@ Filed kpf18-g3-rowflow-socket-qual-20261105 PASS: the full run completed six soc
 ## 02:00Z — File the incremental matched-frontier census and advance the next independent qualification
 
 Filed hsf3-incremental-r2-20261105 PASS for its scoped scan: 124 matched prior progress frontiers, zero unmatched, zero appended bytes or records. SQLite and tap remain outside scope; no gap distribution or independent replicate follows. Published exact-source malformed-call adjacency impact analysis after four-CPU partial reference smoke; a separate under-five-minute synthetic fixture was not run or published. No live gap outcome or projection claim follows.
+
+## 02:07Z — File plan-bound model-free qualification and advance its next prerequisite
+
+Filed kpf174-plan-bound-integration-20261105 PASS: native equality, honest and flag_on PASS, both mutants DETECTED, ten pre-entry refusals, unchanged seals and captured-child cleanup. This model-free result does not rejudge historical cells or demonstrate live layout. Published isolated conservative request-boundary and RAM-helper qualifications. Prefix smoke provided partial first progress, outer rc75; RAM-helper smoke completed rc0 after declaring its control records. Neither qualifies live layout, host admission or a historical result.
