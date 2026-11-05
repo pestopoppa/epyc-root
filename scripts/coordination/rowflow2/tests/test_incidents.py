@@ -110,3 +110,27 @@ def test_6_double_grant_is_impossible(tmp_path):
         raise AssertionError("a second grant file for an open grant was written")
     except RuntimeError as e:
         assert "DOUBLE-GRANT" in str(e)
+
+
+def test_7_q3_timing_grant_must_hold_smt_siblings_184_191():
+    """INF22 2026-11-05: iqk-q8-prefill-ab-r6 (CPU timing, whole q3, cores 72-95) did not hold siblings 168-191; GPU
+    host threads 184-191 (c6-gpu-27b-identity reloading a 27B server) shared 8 of 24 decode cores; requests 20-70%
+    slow. Now: a timing row on 88-95 must declare gpu exclusive; an any-quarter timing row lands on q0-q2."""
+    errs = rf.validate(spec("iqk-q8-prefill-ab-r6", cpus="q3", threads=24, timing=True), launcher_exists=yes)
+    assert any("88-95" in e for e in errs)
+    assert rf.validate(spec("r6", cpus="q3", threads=24, gpu="exclusive", timing=True), launcher_exists=yes) == []
+    assert rf.validate(spec("corr", cpus="q3", threads=24), launcher_exists=yes) == []    # correctness unaffected
+    gpu_row = rf.Grant("c6-gpu-27b-identity", frozenset(), "shared", False, 60, 1, T0, T0 + 3600, 1800)
+    # whole q3 + shared gpu busy: an any-quarter timing row goes to q0-q2, never q3
+    busy = [rf.Grant(f"b{i}", rf.QUARTERS[i], "none", False, 8, 1, T0, T0 + 3600, 1800) for i in (0, 1)]
+    plan = rf.admit([spec("t", cpus="any-quarter", threads=24, timing=True)], [gpu_row] + busy, T0)
+    assert [g.cores for g in plan.grants] == [rf.QUARTERS[2]]
+    # with q2 busy too, it waits rather than take q3 beside the gpu host lane
+    busy.append(rf.Grant("b2", rf.QUARTERS[2], "none", False, 8, 1, T0, T0 + 3600, 1800))
+    plan = rf.admit([spec("t", cpus="any-quarter", threads=24, timing=True)], [gpu_row] + busy, T0)
+    assert not plan.grants
+    # negative control: the same row without `timing` (correctness) takes q3 alongside the gpu lane
+    plan = rf.admit([spec("c", cpus="any-quarter", threads=24)], [gpu_row] + busy, T0)
+    assert [g.cores for g in plan.grants] == [rf.QUARTERS[3]]
+    # gitnexus-q3 coexist shape (cores 72-87, never 184-191) stays legal for a timing row without the gpu
+    assert rf.validate(spec("gx", cpus="72-87", threads=16, timing=True), launcher_exists=yes) == []

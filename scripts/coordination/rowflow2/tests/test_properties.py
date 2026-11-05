@@ -89,3 +89,52 @@ def test_reconcile_never_releases_quiet_or_unworked_and_needs_two_samples(trace,
     rel = set().union(*[a[2] for a in released if a[0] == "release-cores"]) if released else set()
     assert worked or not rel, "released the cores of a grant that never showed work (spin-up)"
     assert all(busy[c] < rf.IDLE_PCT for c in rel)
+
+
+# ---------------------------------------------------------------- hold budget (operator 2026-11-05 "Gate at a budget")
+def _held_world():
+    """q0-q2 busy until +2h; a top row needs a whole quarter and holds; q3 is free; a long lower row wants q3."""
+    gs = [rf.Grant(f"b{i}", rf.QUARTERS[i], "none", False, 8, 1, T0 - 60, T0 + 2 * 86400, 3600) for i in range(3)]
+    gs.append(rf.Grant("b3", frozenset(range(72, 80)), "none", False, 8, 1, T0 - 60, T0 + 600, 300))
+    top = spec("top", cpus="any-quarter", threads=24, rank=1)
+    low = spec("low", cpus="any-8-of-q3", threads=8, rank=90, est=20000)
+    return gs, [top, low]
+
+
+@settings(max_examples=200, deadline=None)
+@given(st.floats(0, 100), st.floats(0.5, 50))
+def test_hold_binds_iff_budget_unspent(spent, budget):
+    gs, pending = _held_world()
+    plan = rf.admit(pending, gs, T0, hold_spent=spent, budget=budget)
+    assert plan.hold and plan.hold.id == "top"
+    granted = {g.id for g in plan.grants}
+    if spent < budget:
+        assert "low" not in granted and "held-for" in plan.skipped["low"]
+        assert rf.hold_cost_qh(plan, gs, 3600) > 0
+    else:
+        assert "low" in granted and plan.budget_spent and rf.hold_cost_qh(plan, gs, 3600) == 0
+    check_plan(pending, gs, plan, T0)
+
+
+def test_hold_ledger_accumulates_resets_daily_and_then_releases():
+    gs, pending = _held_world()
+    st_, now = {}, T0
+    while rf.hold_spent_today(st_, now) < rf.HOLD_BUDGET_QH:
+        plan = rf.admit(pending, gs, now, hold_spent=rf.hold_spent_today(st_, now))
+        assert "low" not in {g.id for g in plan.grants}
+        rf.charge_hold(st_, plan, gs, now)
+        now += 120
+        assert now < T0 + 86400, "budget never spent"
+    assert "low" in {g.id for g in rf.admit(pending, gs, now, hold_spent=rf.hold_spent_today(st_, now)).grants}
+    assert rf.hold_spent_today(st_, T0 + 86400 + 60) == 0.0          # next UTC day: budget restored
+
+
+def test_hold_budget_negative_control_zero_cost_never_spends():
+    """A hold whose held tokens are all busy costs nothing: the budget must not drain (else it would gate falsely)."""
+    gs = [rf.Grant(f"b{i}", rf.QUARTERS[i], "none", False, 8, 1, T0 - 60, T0 + 7200, 3600) for i in range(4)]
+    plan = rf.admit([spec("top", cpus="any-quarter", threads=24, rank=1)], gs, T0)
+    assert plan.hold and rf.hold_cost_qh(plan, gs, 86400) == 0.0
+    st_ = {}
+    for k in range(720):
+        rf.charge_hold(st_, plan, gs, T0 + 120 * k)
+    assert rf.hold_spent_today(st_, T0 + 120 * 719) == 0.0

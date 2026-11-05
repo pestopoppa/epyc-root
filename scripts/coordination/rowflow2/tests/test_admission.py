@@ -18,7 +18,7 @@ def errs(**kw):
 def test_exactly_eight_tunables_and_every_constant_classified():
     assert len(rf.TUNABLES) == 8
     assert set(rf.TUNABLES) == {"SMOKE_CORES", "IDLE_SAMPLES", "IDLE_PCT", "SMOKE_DEADLINE_S", "OVERRUN_FACTOR",
-                                "QUIET_MAX_RANK", "FILE_OWNERLESS_S", "CLAIM_TTL_S"}
+                                "QUIET_MAX_RANK", "HOLD_BUDGET_QH", "CLAIM_TTL_S"}
     upper = {k for k, v in vars(rf).items() if k.isupper() and not k.startswith("_") and not callable(v)}
     assert upper == set(rf.TUNABLES) | set(rf.CONFIG) | set(rf.FACTS), upper ^ (set(rf.TUNABLES) | set(rf.CONFIG) | set(rf.FACTS))
     assert rf.IDLE_SAMPLES == 2 and rf.OVERRUN_FACTOR == 1.5 and rf.QUIET_MAX_RANK == 10

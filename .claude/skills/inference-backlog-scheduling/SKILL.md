@@ -97,6 +97,14 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
   folding onto 72-87). Single-worker gitnexus rows on 72-87 (siblings 168-183, never 88-95/184-191)
   co-run on per-core locks. Coexist applies ONLY beside a GPU-timing hold (`rowflow.coexist_host`),
   never beside a host / quiet-host row that measures CPU serving (npd1-step5, -t 48 over 0-95).
+- **Interim, frozen keeper (until rowflow2 cutover).**
+  - **Timing rows: publish on q0-q2, or on q3 only with gpu-quiet declared.** A whole-q3 CPU timing grant
+    does not hold siblings 168-191, and 184-191 are the MI210 host lane: iqk-q8-prefill-ab-r6 (q3) shared
+    8 of 24 decode cores with c6-gpu-27b-identity's 27B reload, requests 20-70% slow (main-inf22,
+    2026-11-05). rowflow2 enforces this (`timing: true`, design doc decision 7).
+  - **GPU correctness suites (test-backend-ops etc.) rank BELOW every waiting GPU timing row, or batch
+    them into one row**, until rowflow2's correctness-shares-gpu token is live. Each holds exclusive
+    gpu-quiet ~40 min at ~2 % busy (c6q4opt2-gpu-suite, 2026-11-05) and four timing rows waited behind it.
 - **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to
   184-191, CPU decode -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT
   channel (88-95 vs 184-191) prefill -9.6 %. Whole-host CPU models eat it; partial-host models go

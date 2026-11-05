@@ -38,10 +38,13 @@ IDLE_PCT = 2.0                           # a core below this % busy (both SMT th
 SMOKE_DEADLINE_S = 1200                  # a smoke past this is killed and FAILs (deadline)
 OVERRUN_FACTOR = 1.5                     # grant window = factor x max(estimate_s, min_window_s); overrun alert at factor x estimate
 QUIET_MAX_RANK = 10                      # quiet: true needs priority_rank < this (or an operator quiet_reason)
-FILE_OWNERLESS_S = 1200                  # an unclaimed prose-rule .ended older than this is routed owner-less
+HOLD_BUDGET_QH = 12.0                    # daily (UTC) idle budget spent holding for the top row, in quarter-hours
+                                         # (24 held-free cores x 1 h = 1; held-free gpu x 1 h = 1). Spent -> holds stop
+                                         # binding and lower rows backfill. Shadow sim: holds cost 1.5-9.9 QH + <=~1
+                                         # GPU-h/day, so 12 binds only on outlier days (operator 2026-11-05 "Gate at a budget")
 CLAIM_TTL_S = 7200                       # a filing claim older than this without .FILED re-opens the row
 TUNABLES = ("SMOKE_CORES", "IDLE_SAMPLES", "IDLE_PCT", "SMOKE_DEADLINE_S", "OVERRUN_FACTOR", "QUIET_MAX_RANK",
-            "FILE_OWNERLESS_S", "CLAIM_TTL_S")
+            "HOLD_BUDGET_QH", "CLAIM_TTL_S")
 
 # ============================================================== config (paths / env - not tunables)
 FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/" + "tmp/compute-flags")
@@ -55,6 +58,7 @@ CONFIG = ("FLAGS", "KFD_PROC", "PROC", "RAM_BOOKABLE_GIB", "DISK_PATH", "DISK_FL
 # ============================================================== host facts + vocabulary (not tunables)
 NCORES = 96
 GPU_HOST_THREADS = frozenset(range(184, 192))   # part of the gpu token
+GPU_SIBLING_CORES = frozenset(c - 96 for c in GPU_HOST_THREADS)   # 88-95: their SMT siblings are the gpu host threads
 QUARTERS = tuple(frozenset(range(24 * q, 24 * q + 24)) - SMOKE_CORES for q in range(4))
 ROW_CORES = frozenset(range(NCORES)) - SMOKE_CORES
 SCHEMA = "epyc.row.v4"
@@ -66,8 +70,8 @@ SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "s
                "estimate_s": (int, float), "min_window_s": (int, float), "decision_rule": str,
                "priority_rank": (int, float)}
 SPEC_OPTIONAL = {"quiet_reason": str, "measured_ack": str, "supersedes": (str, list), "fix_ref": str,
-                 "published_at": str, "schema": str, "legacy": dict}
-FACTS = ("NCORES", "GPU_HOST_THREADS", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
+                 "published_at": str, "schema": str, "legacy": dict, "timing": bool}
+FACTS = ("NCORES", "GPU_HOST_THREADS", "GPU_SIBLING_CORES", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
          "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG")
 
 
@@ -262,6 +266,21 @@ def parse_cpus(v):
     return Need((cores,), cores, None)
 
 
+def timing_need(need):
+    """A timing row without the gpu token may not use cores 88-95: their SMT siblings are the gpu host threads, which
+    it cannot hold (inc. INF22 2026-11-05: q3 timing grant shared physical cores with a 27B reload). None if nothing
+    is left."""
+    if need.options is not None:
+        opts = tuple(o for o in need.options if not (o & GPU_SIBLING_CORES))
+        return Need(opts, need.pool - GPU_SIBLING_CORES, None) if opts else None
+    pool = need.pool - GPU_SIBLING_CORES
+    return Need(None, pool, need.width) if len(pool) >= need.width else None
+
+
+def quiet_ok_cores(need):
+    return timing_need(need) is not None
+
+
 def fits_need(need, cores):
     """Two-sided invariant (i): is `cores` a legal grant for `need`?"""
     if need.options is not None:
@@ -320,6 +339,9 @@ def validate(spec, pred=None, launcher_exists=os.path.isfile):
         errs.append(f"quiet needs priority_rank < {QUIET_MAX_RANK} or quiet_reason (rank {spec['priority_rank']:g})")
     if spec["gpu"] == "exclusive" and not (spec["estimate_s"] <= 7200 or spec.get("quiet_reason")):  # 4
         errs.append(f"gpu exclusive needs estimate_s <= 7200 or quiet_reason (estimate {spec['estimate_s']:g})")
+    if spec.get("timing") and spec["gpu"] != "exclusive" and not quiet_ok_cores(need):    # 8 (SMT siblings)
+        errs.append("timing row on cores 88-95 (siblings = gpu host threads 184-191) must declare gpu exclusive "
+                    "(gpu-quiet); otherwise place it on q0-q2")
     if not os.path.isabs(spec["stop_file"]) or "$" in spec["stop_file"]:       # 5
         errs.append(f"stop_file {spec['stop_file']!r} is not an absolute literal path")
     if not launcher_exists(spec["launcher"]):                                  # 6
@@ -404,6 +426,8 @@ def map_legacy(m):
             "estimate_s": float(m["estimate_s"]), "min_window_s": float(m["min_window_s"]),
             "decision_rule": str(m["decision_rule"]), "priority_rank": rank,
             "published_at": str(m.get("published_at") or ""), "legacy": {"regions": regions, "shape": shape}}
+    if ac in _TIMING_CLASSES:
+        spec["timing"] = True
     for k in ("supersedes", "fix_ref"):
         if m.get(k):
             spec[k] = m[k]
@@ -489,6 +513,7 @@ class Plan:
     skipped: dict = field(default_factory=dict)     # id -> reason
     idle: list = field(default_factory=list)        # (class, free_count, reason)
     basis: list = field(default_factory=list)       # the open grants (after reconcile) this plan was admitted against
+    budget_spent: bool = False                      # today's HOLD_BUDGET_QH is used up: the hold did not bind
 
 
 def _order(specs):
@@ -508,11 +533,16 @@ def _pick(need, usable):
     return frozenset(sorted(cand)[:need.width])
 
 
-def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False):
+def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False, hold_spent=0.0,
+          budget=None):
     """Strict priority by rank (ties: publish time, id). Each row that fits the free tokens is granted. The FIRST row
     that does not fit holds the tokens it needs: a later (worse-ranked) row may take a held token only if its whole
-    window ends by the held row's ETA. `quiet` takes every row token plus the gpu, and waits for an idle smoke lane."""
+    window ends by the held row's ETA - until today's HOLD_BUDGET_QH is spent (`hold_spent`), after which the hold is
+    still reported but no longer binds and lower rows backfill. `quiet` takes every row token plus the gpu, and waits
+    for an idle smoke lane. A `timing` row never gets cores 88-95 unless it also holds the gpu exclusive (SMT)."""
     plan, seen = Plan(), set()
+    exhausted = hold_spent >= (HOLD_BUDGET_QH if budget is None else budget)
+    plan.budget_spent = exhausted
     busy = set().union(*[g.cores for g in grants]) if grants else set()
     free = set(ROW_CORES) - busy
     gx = any(g.gpu == "exclusive" or g.quiet for g in grants)
@@ -535,8 +565,13 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
             continue
         seen.add(rid)
         need, win = parse_cpus(s["cpus"]), window_s(s)
+        if s.get("timing") and s["gpu"] != "exclusive" and not s["quiet"]:
+            need = timing_need(need)
+            if need is None:
+                plan.skipped[rid] = "timing row needs gpu exclusive on cores 88-95"
+                continue
         h = plan.hold
-        h_ok = h is None or now + win <= h.eta
+        h_ok = h is None or exhausted or now + win <= h.eta
         usable = free if h_ok else free - h.cores
         gpu_need = "exclusive" if s["quiet"] else s["gpu"]
         why = None
@@ -606,6 +641,36 @@ def _make_hold(s, need, gpu_need, free_at, gpu_free_at, shared_free_at, now, gra
     return Hold(s["id"], float(s["priority_rank"]), cores, gpu_need != "none", eta)
 
 
+def hold_cost_qh(plan, grants, dt_s):
+    """Idle quarter-hours this plan's hold burns over dt_s: held tokens left free after the plan's grants. 0 once the
+    budget is spent (the hold no longer binds)."""
+    h = plan.hold
+    if h is None or plan.budget_spent or dt_s <= 0:
+        return 0.0
+    every = list(grants) + plan.grants
+    busy = set().union(*[g.cores for g in every]) if every else set()
+    qh = len(h.cores - busy) / 24.0
+    if h.gpu and not any(g.gpu != "none" or g.quiet for g in every):
+        qh += 1.0
+    return qh * dt_s / 3600.0
+
+
+def charge_hold(st, plan, grants, now):
+    """Advance the per-UTC-day hold ledger in `st` (keys hold_day, hold_qh, hold_t) by this tick's cost."""
+    day = iso(now)[:10]
+    if st.get("hold_day") != day:
+        st["hold_day"], st["hold_qh"] = day, 0.0
+    last = st.get("hold_t")
+    dt_s = min(now - last, 3600.0) if last is not None else 0.0
+    st["hold_qh"] = st.get("hold_qh", 0.0) + hold_cost_qh(plan, grants, dt_s)
+    st["hold_t"] = now
+    return st["hold_qh"]
+
+
+def hold_spent_today(st, now):
+    return st.get("hold_qh", 0.0) if st.get("hold_day") == iso(now)[:10] else 0.0
+
+
 def _idle_why(plan, pending, free, gpu_busy):
     out, granted = [], {g.id for g in plan.grants}
     waiting = [s for s in _order(pending) if s["id"] not in granted]
@@ -614,7 +679,7 @@ def _idle_why(plan, pending, free, gpu_busy):
         n = len(q & free)
         if not n:
             continue
-        if h and q & free & h.cores:
+        if h and q & free & h.cores and not plan.budget_spent:
             why = f"held-for {h.id} (rank {h.rank:g}) until {iso(h.eta)}"
         elif not waiting:
             why = "no pending row"
@@ -625,7 +690,7 @@ def _idle_why(plan, pending, free, gpu_busy):
         out.append((f"q{i}", n, why))
     if not gpu_busy:
         users = [s for s in waiting if s["gpu"] != "none" or s["quiet"]]
-        if h and h.gpu:
+        if h and h.gpu and not plan.budget_spent:
             why = f"held-for {h.id} (rank {h.rank:g}) until {iso(h.eta)}"
         elif not users:
             why = "no pending gpu row"
@@ -735,7 +800,7 @@ def file_decisions(ended, specs, claims, now):
             acts.append(("file", rid, "pass" if ok else "fail", "machine-rule"))
         elif rid in claims:
             acts.append(("reopen", rid) if now - claims[rid] > CLAIM_TTL_S else ("wait-claim", rid))
-        elif now - t0 > FILE_OWNERLESS_S or not str(s.get("owner") or "").strip():
+        elif now - t0 > SMOKE_DEADLINE_S or not str(s.get("owner") or "").strip():
             acts.append(("owner-less", rid))
         else:
             acts.append(("route-owner", rid, s.get("owner")))
@@ -1016,13 +1081,17 @@ def tick(flags, now, meas, state, log, runner=None):
     grants = list(byid.values())
     for rid in w.smoke_finished:
         os.remove(os.path.join(flags, "dryrun", rid, "SMOKE.json"))
-    plan = admit(w.pending, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running))
+    hb = state.setdefault("hold", {})
+    plan = admit(w.pending, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running),
+                 hold_spent=hold_spent_today(hb, now))
     plan.basis = grants
+    charge_hold(hb, plan, grants, now)
     for g in plan.grants:
         write_grant(flags, g)
         log(f"GRANT {g.id} {g.line()}")
     if plan.hold:
-        log(f"HOLD {plan.hold.id} cpus={cpulist(plan.hold.cores)} gpu={int(plan.hold.gpu)} eta={iso(plan.hold.eta)}")
+        log(f"HOLD {plan.hold.id} cpus={cpulist(plan.hold.cores)} gpu={int(plan.hold.gpu)} eta={iso(plan.hold.eta)}"
+            f" budget_qh={hb['hold_qh']:.2f}/{HOLD_BUDGET_QH:g}{' SPENT' if plan.budget_spent else ''}")
     for cls, n, why in plan.idle:
         log(f"IDLE-WHY {cls} free={n}: {why}")
     quiet = any(g.quiet for g in grants + plan.grants) or bool(plan.hold and plan.hold.cores == ROW_CORES)
@@ -1128,7 +1197,10 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
             else:
                 lines.append(f"{t} SHADOW-{a[0].upper()} {a[1]}" + (f" declared {a[2]} measured {a[3]}" if len(a) > 2 else ""))
         w.grants = list(byid.values())
-    plan = admit(w.pending, w.grants, now, disk_free=disk_free_gib(), smoke_busy=False)
+    hb = ctx.setdefault("hold", {}) if ctx is not None else {}
+    plan = admit(w.pending, w.grants, now, disk_free=disk_free_gib(), smoke_busy=False,
+                 hold_spent=hold_spent_today(hb, now))
+    charge_hold(hb, plan, w.grants, now)
     for rid, why in sorted(w.unmapped.items()):
         if ("SHADOW-UNMAPPED", rid) not in seen:
             seen.add(("SHADOW-UNMAPPED", rid))
@@ -1141,7 +1213,8 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
                          f"start={iso(g.start)} end={iso(g.end)} rank={s['priority_rank']:g} quiet={int(g.quiet)}")
     if plan.hold:
         h = plan.hold
-        lines.append(f"{t} SHADOW-HOLD {h.id} cpus={cpulist(h.cores)} gpu={int(h.gpu)} eta={iso(h.eta)}")
+        lines.append(f"{t} SHADOW-HOLD {h.id} cpus={cpulist(h.cores)} gpu={int(h.gpu)} eta={iso(h.eta)}"
+                     f" budget_qh={hb.get('hold_qh', 0.0):.2f}/{HOLD_BUDGET_QH:g}{' SPENT' if plan.budget_spent else ''}")
     for cls, n, why in plan.idle:
         lines.append(f"{t} SHADOW-IDLE-WHY {cls} free={n}: {why}")
     if w.smoke_queue:
