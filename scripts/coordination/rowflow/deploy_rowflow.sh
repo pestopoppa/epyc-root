@@ -14,6 +14,13 @@
 # 5. record   bin/rowflow/DEPLOYED.json {ref, sha, at, files{name: sha256}, gate}
 # 6. verify   the keeper log must show a SNAPSHOT after the install and no Traceback within --verify-s (300 s);
 #             otherwise the backups are restored (unless --no-rollback) and the script exits 3.
+#
+# FREEZE (operator 2026-11-05, "Freeze current + build rowflow2"): rowflow.py, publish_row.py and filler_run15.sh are
+# frozen at 9218dffd131008117a5f341848dce572b4669486. A deploy that would change any of them is REFUSED (exit 77)
+# before the gates run, unless --emergency "<reason>" is given; the reason, the frozen files touched and the UTC time
+# are recorded in DEPLOYED.json (`emergency`, and appended to `emergency_log`). The unit + replay gates still apply.
+# Exit criterion: rowflow2 (scripts/coordination/rowflow2/) passes its shadow week and is cut over
+# (docs/design/rowflow2-20261105.md). Other files (notify.py, hostutil.py, ...) deploy as before.
 set -euo pipefail
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -23,7 +30,9 @@ REPO=/workspace
 FLAGS=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 BIN="$FLAGS/bin/rowflow"
 LOG="$FLAGS/ws58-calendar-keeper.log"
-CHECK_ONLY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300
+CHECK_ONLY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
+FROZEN=(rowflow.py publish_row.py filler_run15.sh)
+FROZEN_AT=9218dffd131008117a5f341848dce572b4669486
 FILES=(rowflow.py publish_row.py notify.py hostutil.py grant_ok_launcher.py filler_run15.sh filler_lib.sh run_direct.py run_direct.sh)
 SCRATCH=${REPLAY_SCRATCH:-/mnt/raid0/llm/tmp/rowflow-replay}
 
@@ -35,7 +44,9 @@ while [ $# -gt 0 ]; do
     --allow-open-grants) ALLOW_OPEN=1; shift ;;
     --no-rollback) ROLLBACK=0; shift ;;
     --verify-s) VERIFY_S=$2; shift 2 ;;
-    -h|--help) sed -n 2,20p "$0"; exit 0 ;;
+    --emergency) EMERGENCY=${2:-}; shift 2
+      [ -n "${EMERGENCY// /}" ] || { echo "REFUSED: --emergency needs a non-empty reason" >&2; exit 64; } ;;
+    -h|--help) sed -n 2,27p "$0"; exit 0 ;;
     *) echo "unknown arg $1" >&2; exit 64 ;;
   esac
 done
@@ -50,6 +61,21 @@ git -C "$REPO" worktree add --detach -q "$STAGE" "$SHA"
 trap 'git -C "$REPO" worktree remove --force "$STAGE" >/dev/null 2>&1 || true' EXIT
 CAND="$STAGE/scripts/coordination/rowflow"
 [ -f "$CAND/rowflow.py" ] || { echo "REFUSED: $SHA has no scripts/coordination/rowflow/rowflow.py" >&2; exit 65; }
+
+# ---- 1b. freeze (before any gate: a frozen file never reaches the gates without an emergency reason)
+FROZEN_TOUCHED=()
+for f in "${FROZEN[@]}"; do
+  if [ -f "$CAND/$f" ] && { [ ! -f "$BIN/$f" ] || [ "$(sha256sum < "$CAND/$f")" != "$(sha256sum < "$BIN/$f")" ]; }; then
+    FROZEN_TOUCHED+=("$f")
+  fi
+done
+if [ ${#FROZEN_TOUCHED[@]} -gt 0 ]; then
+  if [ -z "$EMERGENCY" ]; then
+    echo "REFUSED: FROZEN at ${FROZEN_AT:0:9} (operator 2026-11-05): $SHA changes ${FROZEN_TOUCHED[*]}; pass --emergency \"<reason>\" (logged in DEPLOYED.json) or land the change in rowflow2" >&2
+    exit 77
+  fi
+  echo "deploy_rowflow: EMERGENCY override of the freeze for ${FROZEN_TOUCHED[*]}: $EMERGENCY"
+fi
 
 # ---- 2. tests
 UNIT=()
@@ -95,12 +121,25 @@ for f in "${CHANGED[@]}"; do
   [ "$(sha256sum < "$CAND/$f")" = "$(sha256sum < "$BIN/$f")" ] || { echo "INSTALL VERIFY FAILED: $f" >&2; exit 2; }
   echo "  installed $f (backup $f.bak-$TS-deploy)"
 done
+ROWFLOW_EMERGENCY="$EMERGENCY" ROWFLOW_FROZEN_TOUCHED="${FROZEN_TOUCHED[*]:-}" ROWFLOW_FROZEN_AT="$FROZEN_AT" \
 python3 - "$BIN/DEPLOYED.json" "$REF" "$SHA" "$TS" "$CAND" "${CHANGED[@]}" <<'PY'
 import hashlib, json, os, sys
 out, ref, sha, ts, cand, *changed = sys.argv[1:]
+try:
+    prev = json.load(open(out))
+except (OSError, ValueError):
+    prev = {}
+elog = list(prev.get("emergency_log") or [])
+reason, touched = os.environ.get("ROWFLOW_EMERGENCY", ""), os.environ.get("ROWFLOW_FROZEN_TOUCHED", "").split()
+emergency = {"reason": reason, "files": touched, "at": ts, "sha": sha} if (reason and touched) else None
+if emergency:
+    elog.append(emergency)
 files = {f: hashlib.sha256(open(os.path.join(os.path.dirname(out), f), "rb").read()).hexdigest()
          for f in os.listdir(os.path.dirname(out)) if f.endswith((".py", ".sh")) and ".bak" not in f}
-json.dump({"ref": ref, "sha": sha, "at": ts, "changed": changed, "files": files, "gate": "unit+replay PASS"},
+json.dump({"ref": ref, "sha": sha, "at": ts, "changed": changed, "files": files, "gate": "unit+replay PASS",
+           "frozen": {"files": ["rowflow.py", "publish_row.py", "filler_run15.sh"], "at": os.environ.get("ROWFLOW_FROZEN_AT"),
+                      "exit": "rowflow2 passes its shadow week (docs/design/rowflow2-20261105.md)"},
+           "emergency": emergency, "emergency_log": elog},
           open(out + ".part", "w"), indent=1, sort_keys=True)
 os.replace(out + ".part", out)
 PY

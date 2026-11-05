@@ -13,6 +13,14 @@ work is a reportable failure, not a resting state.
 
 Canonical protocol (read it once per session): `docs/guides/agent-workflows/compute-fillers.md`.
 
+> **2026-11-05 FREEZE: `rowflow.py`, `publish_row.py`, `filler_run15.sh` are frozen at `9218dffd1`** (operator: "Freeze
+> current + build rowflow2"). Do not write allocator fixes against them; `deploy_rowflow.sh` refuses such a deploy
+> unless `--emergency "<reason>"` (logged in `bin/rowflow/DEPLOYED.json`). Scheduling changes go to rowflow2
+> (`scripts/coordination/rowflow2/`, `docs/design/rowflow2-20261105.md`): tokens c0..c95 + `gpu` + ram/disk counters, a
+> 12-field declared spec, reconcile → admit (strict priority with a hold) → file, a fixed 4-core smoke lane, no
+> inference from job text. It runs in SHADOW (`SHADOW-GRANT` / `SHADOW-IDLE-WHY`, zero side effects) beside the live
+> keeper. **Exit criterion:** rowflow2 passes its shadow week and is cut over (compute-fillers.md → *Deploying rowflow*).
+>
 > **2026-11-01 simplified row flow (operator: "remove every gate that is not indispensable").** For NEW rows the
 > owner writes TWO things: the launcher (on `filler_run15.sh`) and a small spec; `scripts/coordination/rowflow/publish_row.py`
 > derives the rest into `compute-flags/ready/<id>.json` (`epyc.row.v3`). The keeper is the qualifier: ONE deterministic

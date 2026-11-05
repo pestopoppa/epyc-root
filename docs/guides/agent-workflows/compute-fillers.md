@@ -11,6 +11,15 @@ Plan long measurements and intermediate decisions using [measurement sufficiency
 
 ## Deploying rowflow: `deploy_rowflow.sh` is the ONLY sanctioned path (operator 2026-11-05)
 
+> **FROZEN (operator 2026-11-05, "Freeze current + build rowflow2").** `rowflow.py`, `publish_row.py` and
+> `filler_run15.sh` are frozen at the deployed `9218dffd1` (`bin/rowflow/DEPLOYED.json`). `deploy_rowflow.sh` refuses
+> (exit 77) any deploy that would change one of them unless `--emergency "<reason>"` is given; the reason is recorded
+> in `DEPLOYED.json` (`emergency`, `emergency_log`) and the unit + replay gates still run. No new rules, no
+> per-incident `if` in `plan()`/`contract_of`: a scheduling fix lands in **rowflow2**
+> (`scripts/coordination/rowflow2/`, design `docs/design/rowflow2-20261105.md`), which runs in read-only SHADOW beside
+> the live keeper. **Exit criterion:** rowflow2 passes its shadow week (switch-over criteria in the design doc) and is
+> cut over; until then the freeze holds. Other `bin/rowflow/` files (`notify.py`, `hostutil.py`, …) deploy as before.
+
 Nothing may copy files into `compute-flags/bin/rowflow/` by hand. The one path is
 `scripts/coordination/rowflow/deploy_rowflow.sh [--ref origin/main] [--check-only]`: it stages a detached worktree
 of `<ref>`, runs its unit tests (`tests/test_rowflow*.py`, `test_allocator.py`) **and the replay gate**
