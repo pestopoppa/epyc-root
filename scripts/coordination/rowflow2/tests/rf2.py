@@ -53,6 +53,10 @@ def oracle_need(s):
     (gpu-q3 NARROW, operator 2026-11-05) - and never any other q3 core the row did not declare."""
     need = rf.parse_cpus(s["cpus"])
     sib = frozenset(range(88, 96))
+    if s["gpu"] == "none" and not s["quiet"] and need.options is None and need.width and need.width > 24:
+        q3 = frozenset(range(72, 96))   # operator 2026-11-06: a CPU multi-quarter booking is q0-q2 only
+        if len(need.pool - q3) >= need.width:
+            need = rf.Need(None, need.pool - q3, need.width)
     if s.get("timing") and s["gpu"] != "exclusive" and not s["quiet"]:
         if need.options is not None:
             opts = tuple(o for o in need.options if not (o & sib))

@@ -145,6 +145,7 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
   `regions=0-95` grant (no `mi210_0` token, `.ended rc=2`, slot lost). A CPU timing job that needs
   the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (filler_run8). Dry-check
   the launcher's region parser against the exact grant line before arming.
+- **A CPU multi-quarter booking is q0-q2 only, and docker started under a row dies with the row.** q3's 88-95 are the physical cores behind GPU host threads 184-191 (lsa-quality-32k-r5-pca got q1+q3, MI210 idle ~40 min behind it); the keeper and rowflow2 wait for q0-q2 instead. filler_run15 labels containers the job starts (`epyc.filler.row=<id>`, via a `docker` shim) and stops+removes exactly those at STOP / hard end / exit (operator 2026-11-06).
 
 ## 3. Packing procedure
 

@@ -339,6 +339,42 @@ kill_pidfile() { # pids the job registered (fl_register_pid); TERM then KILL; ne
   done < "$PIDFILE"
   return 0
 }
+# operator 2026-11-06 "Yes, both" (ak-asm-t1-harness-r3-20261106-r2: a docker container started by the job survived the row's
+# STOP, held 0.8 GB of MI210 VRAM and overlapped the next timing row). Containers started UNDER a row are labelled by a
+# `docker` shim the job gets first on PATH (label epyc.filler.row=<ID>); on every end path the launcher stops and removes
+# the containers carrying THAT label, and only those - never a container the row did not start.
+DOCKER_LABEL="epyc.filler.row"
+docker_bin() { [ -n "${FILLER_DOCKER_BIN:-}" ] && { echo "$FILLER_DOCKER_BIN"; return; }; command -v docker 2>/dev/null; }
+DOCKER_USED="$STATE/$ID.dockershim/used"   # touched by the shim the first time the job runs/creates a container
+row_containers() { local d; d=$(docker_bin) || return 0; [ -n "$d" ] || return 0
+  timeout 20 "$d" ps -aq --no-trunc --filter "label=$DOCKER_LABEL=$ID" 2>/dev/null; }
+kill_containers() { # stop (TERM, 10 s, then KILL) + rm the containers this row started; returns 1 if one survives
+  local d ids c left; d=$(docker_bin) || return 0; [ -n "$d" ] || return 0
+  [ -e "$DOCKER_USED" ] || return 0   # the job never ran `docker run|create`: do not even ask the daemon (it can hang)
+  ids=$(row_containers); [ -n "$ids" ] || { rm -f "$DOCKER_USED"; return 0; }
+  for c in $ids; do
+    log "docker: stopping container ${c:0:12} started under $ID"
+    timeout 60 "$d" stop -t 10 "$c" >/dev/null 2>&1
+    timeout 60 "$d" rm -f "$c" >/dev/null 2>&1   # a --rm container is already gone: the failure is harmless
+  done
+  left=$(row_containers); [ -z "$left" ] && { rm -f "$DOCKER_USED"; log "docker: row containers stopped"; return 0; }
+  log "REFUSED: row container(s) survive stop+rm: $(echo $left | cut -c1-80)"; return 1
+}
+install_docker_shim() { # inner: put a labelling `docker` first on PATH for the job (no real docker -> nothing)
+  local real shim; real=$(docker_bin) || return 0; [ -n "$real" ] || return 0
+  shim="$STATE/$ID.dockershim"; mkdir -p "$shim"
+  cat > "$shim/docker" <<SHIM
+#!/bin/bash
+real=$(printf '%q' "$real")
+a=("\$@"); n=0
+[ "\${a[0]:-}" = container ] && n=1
+case "\${a[\$n]:-}" in
+  run|create) : > "$shim/used"; exec "\$real" "\${a[@]:0:\$((n+1))}" --label "$DOCKER_LABEL=$ID" "\${a[@]:\$((n+1))}";;
+esac
+exec "\$real" "\$@"
+SHIM
+  chmod 0755 "$shim/docker"; export PATH="$shim:$PATH"
+}
 is_complete() { [ -n "$COMPLETE_CMD" ] || return 1; ( cd "$WORKDIR" && bash -c "$COMPLETE_CMD" ) >/dev/null 2>&1; }
 mark_complete() {
   kill_pidfile || { log "REFUSED: completion while native child unverified"; return 70; }
@@ -360,6 +396,7 @@ if [ $INNER = 1 ]; then
   fi
   export FILLER_END_ISO=$(date -u -d "@$END" +%FT%TZ) FILLER_ID=$ID FILLER_DEADLINE=$(( END - 90 )) FILLER_STOPFILE=$STOPFILE FILLER_PORTS=$PORTS FILLER_PIDFILE=$PIDFILE FILLER_LIB=$HERE/filler_lib.sh
   mkdir -p "$STATE"; _pg=$(ps -o pgid= -p $$ | tr -d ' '); printf '%s %s\n' "$_pg" "$(proc_birth "$_pg")" > "$INNERPG"
+  install_docker_shim
   cd "$WORKDIR" || exit 3
   # No `timeout` wrapper: it moves the job into its own process group, out of reach of the launcher's captured-group kill.
   # The hard end is enforced by the launcher (TERM, wait, KILL on the whole setsid group); the job also honours FILLER_DEADLINE.
@@ -384,7 +421,7 @@ sleep_poll() { sleep "$1" 7>&- 8>&- & SLP=$!; wait $SLP 2>/dev/null; }
 on_term() {
   log "launcher signalled"
   if [ -n "$CUR" ]; then
-    kill_job && kill_pidfile || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
+    kill_job && kill_pidfile && kill_containers || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
   fi
   [ -e "$GRANT" ] && write_ended 143 launcher-signalled
   exit 143
@@ -515,6 +552,7 @@ run_one() {
   local cleanup_bad=0
   kill_job || cleanup_bad=1
   kill_pidfile || cleanup_bad=1
+  kill_containers || cleanup_bad=1
   CUR=""
   CUR_BIRTH=""
   exec 8>&-

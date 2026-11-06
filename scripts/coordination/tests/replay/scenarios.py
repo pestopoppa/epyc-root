@@ -747,7 +747,27 @@ def sc_override_multiquarter_books_two(path):
     return write(path, [({rid: r}, {})] * 3), check
 
 
+def sc_multiquarter_never_q3(path):
+    """operator 2026-11-06 "Yes, both": lsa-quality-32k-20261106-r5-pca (multi-quarter(2) via shape_override) was granted q1+q3;
+    its q3 lock covered 88-95 (the cores behind MI210 host threads 184-191) and a GPU row waited 600 s on it (rc75). With q0
+    and q2 busy and only q1 + q3 free the row WAITS: a CPU multi-quarter booking is q0-q2 only."""
+    rid = "lsa-r5-pca-override"
+    r = row(rid, regions="any-cpu-quarter", extra="python3 job.py", man={
+        "declared_shape": "multi-quarter(2)", "shape": "quarter",
+        "shape_override": "operator: pestopoppa 2026-11-06: widen LSA pca arm to 2 quarters (longest arm)"})
+    world = {"foreign": {"q0": "foreign-a", "q2": "foreign-b"}}
+
+    def check(d):
+        out = []
+        for i, g in _granted(d, rid):
+            hq = {h for h in g["holds"] if h in QUARTERS} | _fullq(g["holds"])
+            out.append(f"multi-quarter CPU row granted {sorted(hq)} at tick {i} (q3 must never be booked)")
+        return out
+    return write(path, [({rid: r}, world)] * 3), check
+
+
 SCENARIOS = {
+    "multiquarter-never-q3": sc_multiquarter_never_q3,
     "override-multiquarter-books-two": sc_override_multiquarter_books_two,
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,

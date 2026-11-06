@@ -323,10 +323,27 @@ def gpu_timing_need(need):
     return Need(None, need.pool - GPU_SIBLING_CORES, need.width, GPU_SIBLING_CORES)
 
 
+_Q3_CORES = QUARTERS[3]
+_MULTI_QUARTER_MIN_WIDTH = max(len(q) for q in QUARTERS) + 1   # wider than any one quarter: the grant spans quarters
+
+
+def cpu_multi_quarter_need(need):
+    """operator 2026-11-06 "Yes, both": a CPU row's multi-quarter booking uses q0-q2 ONLY. q3's cores 88-95 are the physical
+    cores behind the gpu host threads 184-191 (inc. lsa-quality-32k-r5-pca granted q1+q3: c7-q38-ppl-bisect-r5 waited 600 s
+    on q3, rc75, MI210 idle ~40 min). A width need wider than one quarter drops q3 from its pool and waits for q0-q2 when
+    they are busy; a host-wide width that cannot fit q0-q2 (> 3 quarters) and concrete / one-quarter needs are unchanged."""
+    if need.options is not None or need.width is None or need.width < _MULTI_QUARTER_MIN_WIDTH:
+        return need
+    pool = need.pool - _Q3_CORES
+    return Need(None, pool, need.width, need.fixed) if len(pool) >= need.width else need
+
+
 def grant_need(s):
     """The Need admit() grants for spec s: parse_cpus, then the timing SMT rule (no 88-95 without the gpu exclusive;
     None when nothing is left), then gpu-q3 NARROW (gpu exclusive, not quiet: + 88-95). A quiet row takes every core."""
     need = parse_cpus(s["cpus"])
+    if s["gpu"] == "none" and not s["quiet"]:
+        need = cpu_multi_quarter_need(need)
     if s.get("timing") and s["gpu"] != "exclusive" and not s["quiet"]:
         need = timing_need(need)
         if need is None:

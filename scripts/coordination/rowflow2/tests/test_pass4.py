@@ -355,3 +355,45 @@ def test_width_justification_carried_from_legacy_manifest():
          "priority_rank": 50, "width_justification": WJ}
     s, why = rf.map_legacy(m)
     assert why is None and s["width_justification"] == WJ
+
+
+# ================================================================ operator 2026-11-06 "Yes, both": CPU multi-quarter never books q3
+def test_cpu_multi_quarter_never_books_q3_and_waits(tmp_path):
+    """lsa-quality-32k-20261106-r5-pca got q1+q3 (its q3 lock covered 88-95, the cores behind gpu host threads 184-191);
+    c7-q38-ppl-bisect-r5 waited 600 s on q3, rc75, MI210 idle ~40 min. A 48-core CPU row is granted from q0-q2 only, and
+    WAITS when only q3 + one more quarter are free."""
+    q3 = frozenset(range(72, 96))
+    s = spec("lsa-quality-32k-20261106-r5-pca", cpus="any-48-of-0-95", threads=48)
+    need = rf.grant_need(s)
+    assert not (need.pool & q3), "a multi-quarter CPU need still offers q3 cores"
+    # q1 + q3 free (q0, q2 busy): the pre-fix engine granted q1+q3 here; now it waits
+    busy = [rf.Grant("hog", frozenset(rf.QUARTERS[0] | rf.QUARTERS[2]), "none", False, 8.0, 1.0, T0, T0 + 7200, 7200.0)]
+    plan = rf.admit([s], busy, T0)
+    assert plan.grants == [] and "cpus busy" in plan.skipped[s["id"]]
+    check_plan([s], busy, plan, T0)
+    # q0-q2 free: granted, never a q3 core
+    plan = rf.admit([s], [], T0)
+    assert len(plan.grants) == 1 and not (plan.grants[0].cores & q3) and len(plan.grants[0].cores) == 48
+    check_plan([s], [], plan, T0)
+
+
+def test_cpu_multi_quarter_q3_rule_leaves_gpu_and_small_rows_alone():
+    q3 = frozenset(range(72, 96))
+    # GPU row's own q3 rules unchanged: gpu-exclusive keeps holding 88-95
+    g = rf.grant_need(spec("gpu-timing", cpus="any-8-of-q3", threads=8, gpu="exclusive", timing=True))
+    assert g.fixed == rf.GPU_SIBLING_CORES
+    # single-quarter and concrete rows (incl. the gitnexus q3 coexist 72-87) are unchanged
+    assert rf.grant_need(spec("one-q", cpus="any-quarter", threads=24)).options == rf.QUARTERS
+    assert rf.grant_need(spec("gitnexus-q3", cpus="72-87", threads=16)).options == (frozenset(range(72, 88)),)
+    assert rf.grant_need(spec("small", cpus="any-8-of-q3", threads=8)).pool == q3 - rf.SMOKE_CORES
+    # a width that cannot fit q0-q2 (4 quarters) keeps q3 rather than becoming ungrantable
+    assert rf.grant_need(spec("host-ish", cpus=80, threads=80)).pool & q3
+
+
+def test_cpu_multi_quarter_negative_control_without_the_rule_grants_q3(monkeypatch):
+    """Control: with cpu_multi_quarter_need neutralised the same scenario DOES grant a q3 core."""
+    monkeypatch.setattr(rf, "cpu_multi_quarter_need", lambda need: need)
+    s = spec("lsa-pca-neg", cpus="any-48-of-0-95", threads=48)
+    busy = [rf.Grant("hog", frozenset(rf.QUARTERS[0] | rf.QUARTERS[2]), "none", False, 8.0, 1.0, T0, T0 + 7200, 7200.0)]
+    plan = rf.admit([s], busy, T0)
+    assert len(plan.grants) == 1 and plan.grants[0].cores & frozenset(range(72, 96))

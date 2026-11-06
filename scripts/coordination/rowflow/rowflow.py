@@ -1867,6 +1867,12 @@ def contract_of(d, o=None, flags=None):
             else:
                 within = [x.strip() for x in regs[len("any-of"):].split(",")] if regs.startswith("any-of") else QUARTERS
                 shape, opts = "quarter", [frozenset({q}) for q in within if q in QUARTERS]
+        if shape.startswith("multi-quarter(") and not gpu_tok:
+            # operator 2026-11-06 "Yes, both": a CPU row's multi-quarter booking is q0-q2 ONLY. q3's cores 88-95 are the
+            # physical cores behind the MI210 host threads 184-191 (lsa-quality-32k-r5-pca got q1+q3; c7-q38-ppl-bisect-r5
+            # then waited 600 s on the q3 lock, rc75, MI210 idle ~40 min). A multi-quarter row waits for q0-q2 instead.
+            nmq = int(shape[len("multi-quarter("):-1])
+            opts = [o for o in opts if "q3" not in o] or [frozenset(c) for c in itertools.combinations(QUARTERS[:3], nmq)]
         opts = [frozenset(x | gpu_tok) for x in opts]
     # keeper classfix 2026-11-05 (iqk-q8-prefill-ab-r3 regions q2 + shape_override -> granted 80-83 on q3;
     # inf75-c5-w3-halfb-census-c6-r2 mi210_0,48-95,144-191 + shape_override -> mi210_0,80-83): explicit concrete

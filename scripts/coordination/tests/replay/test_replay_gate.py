@@ -189,3 +189,21 @@ def test_negative_control_width_justification_old_code_refuses_justified_multiqu
     except rf.Refused as e:
         err = str(e)
     assert check(row, err, rf), "the old code should refuse the justified multi-quarter row"
+
+
+def test_negative_control_multiquarter_q3_rule_off_grants_q1_q3(work):
+    """operator 2026-11-06: with the q0-q2-only rule removed (the 15804eaf5 behaviour) the same trace grants q1+q3."""
+    import re
+    import shutil
+    old = os.path.join(work, "old-mq-q3-cand")
+    shutil.copytree(CAND, old, ignore=shutil.ignore_patterns("__pycache__", "*.bak*"))
+    src = os.path.join(old, "rowflow.py")
+    text, n = re.subn(r'if shape\.startswith\("multi-quarter\("\) and not gpu_tok:', "if False:", open(src).read(), count=1)
+    assert n == 1, "the multi-quarter q0-q2 rule was not found in the candidate"
+    open(src, "w").write(text)
+    name = "multiquarter-never-q3"
+    tpath, check = SC.SCENARIOS[name](os.path.join(work, name + ".neg.trace.jsonl"))
+    dec, err = RA.worker(old, tpath, os.path.join(work, "out", name + "-old"))
+    assert dec is not None, err
+    viol = list(check(dec))
+    assert viol and any("q3" in v for v in viol), f"without the rule the row should be granted q1+q3; got {viol}"
