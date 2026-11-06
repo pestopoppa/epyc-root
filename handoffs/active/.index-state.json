@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 674
+      "open": 673
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 750,
+      "closed": 751,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 148,
+      "open": 147,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -58,7 +58,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 303,
+          "closed": 304,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -69,14 +69,14 @@
           "line": 24,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 50
+          "open": 49
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5839,
+          "line": 5840,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5919,
+          "line": 5920,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6216,
+          "line": 6217,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9431,
+          "line": 9432,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13781,
+          "line": 13782,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 13993,
+          "line": 13994,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -1147,7 +1147,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1591,
+          "line": 1592,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1157,7 +1157,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1715,
+          "line": 1716,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1167,7 +1167,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2042,
+          "line": 2043,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1177,7 +1177,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2181,
+          "line": 2182,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1187,7 +1187,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2734,
+          "line": 2735,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1201,7 +1201,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2871,
+          "line": 2872,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1218,7 +1218,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3765,
+          "line": 3766,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61
@@ -1256,7 +1256,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 1103,
+          "line": 1104,
           "markers": 1,
           "name": "colbert-reranker-web-research",
           "open": 2
@@ -1266,7 +1266,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 1850,
+          "line": 1851,
           "markers": 1,
           "name": "document-parser-table-bench",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 2467,
+          "line": 2468,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 8
@@ -1286,7 +1286,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2575,
+          "line": 2576,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2944,
+          "line": 2945,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 2
@@ -1391,7 +1391,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 584,
+          "line": 587,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1401,7 +1401,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 955,
+          "line": 958,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1411,7 +1411,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1571,
+          "line": 1574,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1421,7 +1421,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1718,
+          "line": 1721,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 6
