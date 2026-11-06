@@ -26,6 +26,7 @@
 | P1 | Prove or disprove compaction laundering in the shipped OpenCode shell, then close the serializer | `handoffs/active/harness-program.md` |
 | P2 | Make compaction governance-safe: fix the instrument, declare the artifact contract and arms, pre-register reliability, guard role boundaries | `handoffs/active/context-and-token-economy.md` |
 | P3 | Classify governance rules by enforcement strength and add tool-use authorization | `handoffs/active/coordination-and-churn-pipeline.md` |
+| P4 | Publish one measured depth-to-throughput envelope for the launch-flag session | `handoffs/active/cpu-decode-roofline-program.md` |
 | M1 | Cite the short-context result once in the YARN go/no-go; create no task | `handoffs/active/long-context-program.md` |
 
 ## Proposed tasks (paste-ready; not applied)
@@ -38,6 +39,7 @@
 | TOC-CMP-3 | `handoffs/active/context-and-token-economy.md` | **TOC-CMP-3 — Add the compaction artifact contract to the TOC A/B: the six... |
 | TOC-CMP-4 | `handoffs/active/context-and-token-economy.md` | **TOC-CMP-4 — Make the compaction A/B reproducible before running it: pre-... |
 | TOC-CMP-5 | `handoffs/active/context-and-token-economy.md` | **TOC-CMP-5 — Add a role-boundary regression test to the orchestrator summ... |
+| DEPTH-ENV-1 | `handoffs/active/cpu-decode-roofline-program.md` | **DEPTH-ENV-1 — Publish one measured context-depth throughput envelope for... |
 | REG-ENF-1 | `handoffs/active/coordination-and-churn-pipeline.md` | **REG-ENF-1 — Publish a machine-readable governance rule registry with one... |
 | REG-ENF-2 | `handoffs/active/coordination-and-churn-pipeline.md` | **REG-ENF-2 — Move tool-use authorization from prose to a tool-boundary ho... |
 
@@ -56,6 +58,7 @@
 | RI-9 | intake-2640 three-axis enforcement dissection + PEP/PDP/PIP separation | Publish a rule registry with an enforcement_class per governance rule and generate the enforcement surfaces from it | P3 / REG-ENF-1 |
 | RI-10 | intake-2640 §4 hook-based enforcement at the tool-call boundary | Move tool-use authorization from prose to a tool-boundary hook with a declared fail posture | P3 / REG-ENF-2 |
 | RI-11 | intake-2628 §6 scope statement + conclusion | Record the short-context result as one cited consideration in the YARN go/no-go without re-scoping the program | M1 |
+| RI-12 | cpu-decode-roofline-program.md:186 measured depth penalty (-55% decode, -60% prefill by 128k) + intake-2628 Fig. 2 local latency curve | Publish one measured context-depth throughput envelope (prefill and decode at 16K/32K/48K/128K) for the models under launch-flag exploration, reusing existing runs and adding one cell only where a compaction-relevant budget is missing | P4 / DEPTH-ENV-1 |
 | D1 | intake-2628 §5.1 (proposal only; no trained checkpoint) | Decline an SSSM post-training workstream; keep the concept as architecture context | decline: proposal only, no trained checkpoint and no evaluated result |
 | D2 | intake-2630 §4 (no strategy beats default; offload lowered 0.38->0.24) | Decline porting the five compaction strategies or retuning thresholds | decline: no listed strategy beats default self-summarisation, and lossless offload lowered the score |
 | D3 | intake-2629 §4.3 mechanical reference is the scoring set, not a method | Decline mechanical-extraction-as-summary on the strength of 79.1% | decline: the 79.1% reference is the scoring set, not a deployable method |
@@ -261,6 +264,16 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "execution_conditions": "Registry generation is immediate; the tool-use hook ships behind its own test",
       "closure_basis": "Immediate outcomes retained; conflict-resolution precedence remains an open watch item"
     },
+    "P4": {
+      "project_objective": "Choose a compaction budget from measured serving speed rather than from an assumed long-context penalty",
+      "implementation_ref": "cpu-decode-roofline-program.md:186 (Q38FN depth: -55% decode / -60% prefill by 128k) and kv-cache-program.md KVU-12.6 (np8 L64k decode collapse 26.71 -> 10.18 tok/s)",
+      "gap": "The depth penalty is measured in separate places with different models, binaries and units; no single envelope covers the budgets a compaction policy would choose",
+      "operational_change": "Assemble one depth-to-throughput envelope and hand it to the launch-flag session",
+      "benefit_direction": "A smaller context budget is justified by measured local speed at that budget, not by the paper cloud figure; correctness constraint is that every cell names its binary and unit",
+      "owner": "handoffs/active/cpu-decode-roofline-program.md",
+      "execution_conditions": "Assembly is immediate and zero-inference; at most one new GPU cell only if a 16K/32K/48K point is missing",
+      "closure_basis": "Immediate envelope retained; flag tuning stays with the parallel session and is not filed here"
+    },
     "M1": {
       "project_objective": "Keep the long-context program decision honest without re-scoping it on one paper",
       "implementation_ref": "handoffs/active/long-context-program.md YARN gate",
@@ -340,6 +353,12 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "terminal_mapping": "M1"
     },
     {
+      "ledger_id": "RI-12",
+      "source": "cpu-decode-roofline-program.md:186 measured depth penalty (-55% decode, -60% prefill by 128k) + intake-2628 Fig. 2 local latency curve",
+      "action": "Publish one measured context-depth throughput envelope (prefill and decode at 16K/32K/48K/128K) for the models under launch-flag exploration, reusing existing runs and adding one cell only where a compaction-relevant budget is missing",
+      "terminal_mapping": "P4 / DEPTH-ENV-1"
+    },
+    {
       "ledger_id": "D1",
       "source": "intake-2628 \u00a75.1 (proposal only; no trained checkpoint)",
       "action": "Decline an SSSM post-training workstream; keep the concept as architecture context",
@@ -378,6 +397,14 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "disposition": "planned",
       "plan_ref": "P2",
       "reason": "Authorizes the Stage-2 dive scope used for all three waves; the Stage-3 filing remains separately reviewed and is mapped here to the compaction-governance packet."
+    },
+    {
+      "seq": 2,
+      "stage": 3,
+      "verbatim": "One of the reasons for requesting this deep dive is that being able to run models with equal long-horizon quality/efficiency at smaller contexts could unlock higher prefill/decode speed performance since the latter typically degrades at large contexts. There is a parallel opencode session that is currently exploring optimal launch flags for certain models for which these kinds of results (if trully accessible) would be incredibly valuable.",
+      "disposition": "planned",
+      "plan_ref": "P4",
+      "reason": "Adds the serving-speed objective and a named consumer (the launch-flag session); mapped to P4, which publishes a measured depth-to-throughput envelope from existing runs and hands it over without changing flags."
     }
   ],
   "opportunity_scan": [
@@ -526,6 +553,19 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
     },
     {
       "scan_id": "S12",
+      "source_ref": "cpu-decode-roofline-program.md:186 measured depth penalty (-55% decode, -60% prefill by 128k) + intake-2628 Fig. 2 local latency curve",
+      "implementation_ref": "cpu-decode-roofline-program.md:186; kv-cache-program.md KVU-12.6",
+      "mechanism": "Publish one measured context-depth throughput envelope (prefill and decode at 16K/32K/48K/128K) for the models under launch-flag exploration, reusing existing runs and adding one cell only where a compaction-relevant budget is missing",
+      "consumer": "the EPYC harness and compaction owners named in the mapping",
+      "application": "Publish one measured context-depth throughput envelope (prefill and decode at 16K/32K/48K/128K) for the models under launch-flag exploration, reusing existing runs and adding one cell only where a compaction-relevant budget is missing",
+      "disposition": "actionable",
+      "ledger_ids": [
+        "RI-12"
+      ],
+      "basis": "Read the verified source passage and the current consumer implementation; the gap and the terminal mapping were reviewed independently."
+    },
+    {
+      "scan_id": "S13",
       "source_ref": "intake-2628 \u00a75.1 (proposal only; no trained checkpoint)",
       "implementation_ref": "handoffs/active/model-architecture-readiness.md",
       "mechanism": "Decline an SSSM post-training workstream; keep the concept as architecture context",
@@ -538,7 +578,7 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "basis": "Read the verified source passage and the current consumer implementation; the gap and the terminal mapping were reviewed independently."
     },
     {
-      "scan_id": "S13",
+      "scan_id": "S14",
       "source_ref": "intake-2630 \u00a74 (no strategy beats default; offload lowered 0.38->0.24)",
       "implementation_ref": "handoffs/active/context-and-token-economy.md",
       "mechanism": "Decline porting the five compaction strategies or retuning thresholds",
@@ -551,7 +591,7 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "basis": "Read the verified source passage and the current consumer implementation; the gap and the terminal mapping were reviewed independently."
     },
     {
-      "scan_id": "S14",
+      "scan_id": "S15",
       "source_ref": "intake-2629 \u00a74.3 mechanical reference is the scoring set, not a method",
       "implementation_ref": "handoffs/active/context-and-token-economy.md",
       "mechanism": "Decline mechanical-extraction-as-summary on the strength of 79.1%",
@@ -564,7 +604,7 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "basis": "Read the verified source passage and the current consumer implementation; the gap and the terminal mapping were reviewed independently."
     },
     {
-      "scan_id": "S15",
+      "scan_id": "S16",
       "source_ref": "intake-2397 reuse assessment (no compaction events or constraint labels)",
       "implementation_ref": "handoffs/active/harness-program.md",
       "mechanism": "Decline a gated SWE-chat pull until our own probe lands outside the published base rate",
@@ -577,7 +617,7 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "basis": "Read the verified source passage and the current consumer implementation; the gap and the terminal mapping were reviewed independently."
     },
     {
-      "scan_id": "S16",
+      "scan_id": "S17",
       "source_ref": "intake-2640 framework-only paper (zero measurements)",
       "implementation_ref": "handoffs/active/coordination-and-churn-pipeline.md",
       "mechanism": "Decline adopting the access-control framework as a system; adopt only its separation principle in P3",
@@ -727,6 +767,19 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
       "review_basis": "Monitor-only: the paper explicitly does not rule out tasks where long context is beneficial, so no immediate operational step follows; the YARN gate'\ufffd\ufffd existing cells decide.",
       "task_refs": []
     },
+    "RI-12": {
+      "required_outcome": "Publish one measured context-depth throughput envelope (prefill and decode at 16K/32K/48K/128K) for the models under launch-flag exploration, reusing existing runs and adding one cell only where a compaction-relevant budget is missing",
+      "review_status": "preserved",
+      "review_basis": "Independent review of the selected passage and the current consumer confirms the gap and that the named task's acceptance covers the required operational outcome; activation gates are kept separate from implementation.",
+      "task_refs": [
+        {
+          "owner": "handoffs/active/cpu-decode-roofline-program.md",
+          "task_id": "DEPTH-ENV-1",
+          "task_text": "- [ ] **DEPTH-ENV-1 \u2014 Publish one measured context-depth throughput envelope for the models under launch-flag exploration: prefill and decode at 16K, 32K, 48K and 128K, assembled from existing runs (Q38FN depth record, KVU-12.6 and the 16k/64k exact-comparison row) with the source commit and binary per cell, adding at most one new cell where a compaction-relevant budget is missing; hand the table, not flag changes, to the OpenCode launch-flag session.**",
+          "acceptance": "One table states prefill and decode per depth with its unit, n, binary and source run, and every compaction-relevant budget is either measured or explicitly named as a gap. No launch flags are changed in this lane."
+        }
+      ]
+    },
     "D1": {
       "required_outcome": "No work is opened for this recommendation; the decline is recorded with its reason so it is not re-derived.",
       "review_status": "closed-with-basis",
@@ -782,6 +835,10 @@ decision; broader reproduction fires only if the probe shows loss below the pre-
     {
       "owner": "handoffs/active/context-and-token-economy.md",
       "task_text": "- [ ] **TOC-CMP-5 \u2014 Add a role-boundary regression test to the orchestrator summary path: a hostile tool output containing `[User]:` or `<|im_start|>` must not survive `build_consolidation_prompt` as an un-neutralised role boundary, and the summary must stay a prompt block rather than a user-role message.**"
+    },
+    {
+      "owner": "handoffs/active/cpu-decode-roofline-program.md",
+      "task_text": "- [ ] **DEPTH-ENV-1 \u2014 Publish one measured context-depth throughput envelope for the models under launch-flag exploration: prefill and decode at 16K, 32K, 48K and 128K, assembled from existing runs (Q38FN depth record, KVU-12.6 and the 16k/64k exact-comparison row) with the source commit and binary per cell, adding at most one new cell where a compaction-relevant budget is missing; hand the table, not flag changes, to the OpenCode launch-flag session.**"
     },
     {
       "owner": "handoffs/active/coordination-and-churn-pipeline.md",

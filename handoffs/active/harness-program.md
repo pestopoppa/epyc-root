@@ -2204,6 +2204,10 @@ Final same-entry noncohort qualification passed in241s: one actual answer391, ou
 P7 stdin transport is accepted; validate the remaining `/v1` override carry only at the owning inference session boundary. The operator approved this split on 2026-09-17; its recorded P0.4 trigger passed on 2026-09-26.
 
 #### Phase 0 tasks
+#### Compaction provenance — intake 2026-11-06 (2610.29869)
+
+- [ ] **UFH-21 — Prove or disprove compaction laundering in the shipped OpenCode shell, then close it: place a forged `[User]:` approval in a file the agent reads, run `/compact`, and record whether the summary carries it as a user instruction; if it does, patch the serialize path to escape role labels (or restore a typed message array) in both `packages/opencode` and `packages/core`, add a hostile-tool-output unit test, and file the upstream advisory.**
+
 
     - [x] **HS-4 P0 — shell integration, zero features** (doc §4). Per-step state (boxes are ticked by the owning session at the P0.4 live gate; evidence recorded in text): ✅ 2026-10-29 (audit: parent HS-4 P0: its Closed list names P0.1-P0.5, P0-MCP-a/b, preflight, P0-pre fixes (completed/harness-selection-completed-through-2026-09-27.md), P0.4 live PASS 2026-09-26; children L16-19 [x]; only watch item remai...) [no-belief: audit-reconciliation]
       - Closed (evidence in [completed sibling](../completed/harness-selection-completed-through-2026-09-27.md)): P0.1, P0.2, P0.3 (audit at 350c726a), P0.4 (live PASS 2026-09-26, r3), P0.5, P0-MCP-a/b, the P0.4 preflight install, and both P0-pre fixes.

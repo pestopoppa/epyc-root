@@ -377993,7 +377993,9 @@
     - context-and-token-economy.md
     - long-context-program.md
     - harness-program.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
+  - handoffs/active/long-context-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Stage-1 read of arXiv HTML v1 (2026-11-03) saved to disk; full body plus Appendices A-F read.
@@ -378092,6 +378094,9 @@
     trained checkpoints. The behavioural risk is not tested here at all: rule retention and post-compaction rule
     compliance are measured in intake-2630 and intake-2631 and both contradict "no accuracy sacrifice" for
     constraints that exist only in the transcript.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2629
   arxiv_id: '2610.31710'
   url: https://arxiv.org/abs/2610.31710
@@ -378128,7 +378133,8 @@
     - intake-2526
     handoffs:
     - context-and-token-economy.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Discovered by the Stage-1 contradiction pass on intake-2628. Abstract-level read only; the per-backbone
@@ -378178,6 +378184,9 @@
     mechanical baseline is the scoring reference, not a compaction method, so the gap measures the ceiling of
     literal extraction, not a deployable alternative. All 14 summarizers are hosted API models; none is a local
     GGUF model, so the local implication is inferred, not measured.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2630
   arxiv_id: '2610.31778'
   url: https://arxiv.org/abs/2610.31778
@@ -378215,7 +378224,9 @@
     handoffs:
     - context-and-token-economy.md
     - harness-program.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
+  - handoffs/active/harness-program.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Discovered by the Stage-1 contradiction pass. Directly relevant because the scaffold is OpenCode, the
@@ -378276,6 +378287,9 @@
     but our OpenCode runs with compaction auto=false, so these threshold findings apply to the orchestrator summary
     path, not to the CLI session. No compaction strategy beat default self-summarisation, and lossless filesystem
     offloading lowered GPT-5.3-Codex from 0.38 to 0.24, so porting a strategy is not indicated. | Surfaced-source declines (2026-11-06): Zahn & Chana 2026 and Wang et al. 2026 were not resolvable to identifiers from this run and are not ingested; Goldman et al. 2024 is background framing and is not dived.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2631
   arxiv_id: '2611.03223'
   url: https://arxiv.org/abs/2611.03223
@@ -378310,7 +378324,8 @@
     handoffs:
     - context-and-token-economy.md
     - harness-program.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Discovered by the Stage-1 contradiction pass. Bears directly on a governance-heavy harness: if
@@ -378360,6 +378375,9 @@
     retaining a rule does not preserve compliance (2.6x violation). The only strategy below baseline is an
     instruction to the compactor, not an enforcement monitor. No post-compaction system-prompt restatement arm
     exists in the paper.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2632
   arxiv_id: '2610.20116'
   url: https://arxiv.org/abs/2610.20116
@@ -378395,7 +378413,8 @@
     - intake-2629
     handoffs:
     - context-and-token-economy.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Discovered by the Stage-1 contradiction pass. The most directly portable design for a local-first
@@ -378455,6 +378474,9 @@
     conversation section at 25% of the model window (~10 verbatim rounds), so the paper does not test beyond ~20
     rounds, and its synthetic sessions are ~85% tool output, which this method externalises rather than
     compresses.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2633
   arxiv_id: '2610.20927'
   url: https://arxiv.org/abs/2610.20927
@@ -378491,6 +378513,9 @@
   notes: 'Discovered by the Stage-1 contradiction pass. Directly relevant to our summary path, which already
     mixes task state with model-written next steps. Abstract-level read only.'
   expanded_from: intake-2628
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Not selected for a Stage-2 dive in this run; claims remain provisional and may not be quoted.'
 - id: intake-2634
   arxiv_id: '2610.25516'
   url: https://arxiv.org/abs/2610.25516
@@ -378529,6 +378554,9 @@
     an overflowing 32K history, not an adequate full history, so it does not overturn the damage measured by
     Compact-Bench. Abstract-level read only.'
   expanded_from: intake-2628
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Not selected for a Stage-2 dive in this run; claims remain provisional and may not be quoted.'
 - id: intake-2635
   arxiv_id: '2610.27301'
   url: https://arxiv.org/abs/2610.27301
@@ -378571,6 +378599,9 @@
   notes: 'Discovered by the Stage-1 contradiction pass. Bears on whether compaction should be forward-looking
     (the paper own Appendix A recommendation) or question-agnostic. Abstract-level read only.'
   expanded_from: intake-2628
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Not selected for a Stage-2 dive in this run; claims remain provisional and may not be quoted.'
 - id: intake-2636
   arxiv_id: '2606.22528'
   url: https://arxiv.org/abs/2606.22528
@@ -378606,7 +378637,8 @@
     - intake-2632
     handoffs:
     - context-and-token-economy.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Dive-surfaced from intake-2631 (ARCBench) and intake-2632 (transparent-compact), both of which cite it
@@ -378666,6 +378698,9 @@
     compounding claim (supplementary-only evidence). Independent counter-evidence: ARCBench (intake-2631) finds
     most violations occur while the rule IS retained (21.1% of retained runs violate), so deletion is not the whole
     mechanism; arXiv 2608.11392 refines this as guardrail residue. The paper is a single-author preprint. | Surfaced-source declines (2026-11-06): none beyond the wave-3 ingestions.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2637
   arxiv_id: '2608.11242'
   url: https://arxiv.org/abs/2608.11242
@@ -378703,7 +378738,8 @@
     - intake-2630
     handoffs:
     - context-and-token-economy.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Dive-surfaced from intake-2631 (ARCBench), which draws five of its 17 cases from it. Previously appeared
@@ -378771,6 +378807,9 @@
     17%) and that restatement alone is insufficient. NOT-FOUND: any experiment placing a side constraint in the
     system prompt; all injections are user turns. External enforcement is named as future work, not measured.
     No independent replication or critique located; all numbers are the authors own. | Surfaced-source declines (2026-11-06): SWE-Natural / Open-SWE-Traces 2606.16038 is declined as a corpus-only addition (our probe needs no corpus); Zhao et al. 2025 is adjacent proximity work, not the same phenomenon.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2638
   arxiv_id: '2610.29869'
   url: https://arxiv.org/abs/2610.29869
@@ -378809,7 +378848,9 @@
     handoffs:
     - context-and-token-economy.md
     - harness-program.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/harness-program.md
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Dive-surfaced from intake-2636 (Governance Decay). Directly relevant because the harness list reportedly
@@ -378870,6 +378911,9 @@
     exposure in our CLI harness (flattening serializer + user-role re-injection), NOT present in the orchestrator path
     (structured previews, control-token neutralisation, summary appended to the prompt). The exposure must be proven
     with the cheap probe before any patch; the paper disclosure is not evidence that our specific build executes it.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2639
   arxiv_id: '2608.11392'
   url: https://arxiv.org/abs/2608.11392
@@ -378903,7 +378947,8 @@
     - intake-2636
     handoffs:
     - context-and-token-economy.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Dive-surfaced from intake-2636 (Governance Decay), where it is cited as a mechanism refinement (retained
@@ -378958,6 +379003,9 @@
     quote re-find. Confirms that a text-presence or recall-only rule probe is not a safety metric, and supplies the
     four-condition design our probe lacks (absent and pinned arms plus a deterministic tool-call grader). This is
     a single-cycle study: multi-cycle erosion is out of scope.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
 - id: intake-2640
   arxiv_id: '2609.26682'
   url: https://arxiv.org/abs/2609.26682
@@ -378991,7 +379039,8 @@
     handoffs:
     - context-and-token-economy.md
     - harness-program.md
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/coordination-and-churn-pipeline.md
   handoffs_created: []
   verification: dive-verified
   notes: 'Dive-surfaced from intake-2637 (Lost in Context Compaction), which names it as the external-enforcement
@@ -379038,3 +379087,6 @@
     rule from prose to enforcement, but it cannot support any claim that a particular enforcement is effective, and it
     offers nothing on cross-policy conflict resolution. The useful output is the mapping of our own rules to
     hard/soft/prose enforcement classes, not an adoption of the framework itself.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'

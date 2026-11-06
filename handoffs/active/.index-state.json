@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 674
+      "open": 675
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,13 +28,13 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 501
+      "open": 508
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 84
+      "open": 85
     }
   },
   "duplicates": {},
@@ -425,7 +425,7 @@
       "closed": 150,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 40,
+      "open": 45,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -434,7 +434,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 192,
+      "total": 197,
       "tracks": [
         {
           "blocked": 0,
@@ -444,14 +444,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 8
+          "open": 13
         },
         {
           "blocked": 0,
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 247,
+          "line": 255,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 8
@@ -461,7 +461,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 444,
+          "line": 452,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -471,7 +471,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 710,
+          "line": 718,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
@@ -481,7 +481,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1205,
+          "line": 1213,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -491,7 +491,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1742,
+          "line": 1750,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -501,7 +501,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2504,
+          "line": 2512,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 10
@@ -511,7 +511,7 @@
           "closed": 55,
           "gates": [],
           "guarded": 0,
-          "line": 2930,
+          "line": 2938,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 5
@@ -523,7 +523,7 @@
       "closed": 340,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 50,
+      "open": 52,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -532,7 +532,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 390,
+      "total": 392,
       "tracks": [
         {
           "blocked": 0,
@@ -542,14 +542,14 @@
           "line": 19,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 8
+          "open": 10
         },
         {
           "blocked": 0,
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 2436,
+          "line": 2441,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 21
@@ -559,7 +559,7 @@
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2559,
+          "line": 2564,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -569,7 +569,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3033,
+          "line": 3038,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -584,7 +584,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3478,
+          "line": 3483,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -600,7 +600,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4991,
+          "line": 4996,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -616,7 +616,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5651,
+          "line": 5656,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -632,7 +632,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5839,
+          "line": 5844,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -644,7 +644,7 @@
       "closed": 146,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 32,
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -653,7 +653,7 @@
       },
       "row_id": "INF-70",
       "state": "active",
-      "total": 178,
+      "total": 179,
       "tracks": [
         {
           "blocked": 0,
@@ -665,14 +665,14 @@
           "line": 95,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 27
+          "open": 28
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5054,
+          "line": 5058,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0
@@ -682,7 +682,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5207,
+          "line": 5211,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 1
@@ -692,7 +692,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5697,
+          "line": 5701,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -704,7 +704,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5811,
+          "line": 5815,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4
@@ -1006,7 +1006,7 @@
       "closed": 231,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 77,
+      "open": 78,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1015,7 +1015,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 326,
+      "total": 327,
       "tracks": [
         {
           "blocked": 12,
@@ -1078,7 +1078,7 @@
           "line": 2190,
           "markers": 1,
           "name": "opencode-shell-integration",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 2,
@@ -1091,7 +1091,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2269,
+          "line": 2273,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1104,7 +1104,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2716,
+          "line": 2720,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
