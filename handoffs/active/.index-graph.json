@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T22:58:19Z",
+  "generated_at": "2026-11-06T23:00:48Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1376,7 +1376,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-06",
-      "next_action": "Fix C7 Q38FN PPL regression (bisection, AK-ASM-C7-Q38-BISECT), then fold H8b/FA128 and re-gate C7",
+      "next_action": "C7r is champion (`62cb6a6af`); next C8-incremental folds: H8b (AK-ASM-H8B-GATE r2) and FA hd256 long-ctx r5",
       "open": 142,
       "priority": 0.896,
       "priority_basis": {

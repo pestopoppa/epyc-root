@@ -2596,7 +2596,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Fix C7 Q38FN PPL regression (bisection, AK-ASM-C7-Q38-BISECT), then fold H8b/FA128 and re-gate C7",
+      "next_action": "C7r is champion (`62cb6a6af`); next C8-incremental folds: H8b (AK-ASM-H8B-GATE r2) and FA hd256 long-ctx r5",
       "track": "autokernel research loop"
     },
     "INF-33": {
