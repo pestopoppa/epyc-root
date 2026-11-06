@@ -41,10 +41,6 @@ EXPECT_TRIED = {
     "Q38FN": {"gfx90a-asm:h12-fused-qsa-attention": "improved",
               "gfx90a-asm:h13-fused-hc-seam": "improved"},
 }
-EXPECT_TEXT = {
-    "27B": ["int8 MFMA", "view node", "real-model witness", "HIP-graph"],
-    "Q38FN": [],
-}
 
 
 def sha(path: Path) -> str:
@@ -83,7 +79,7 @@ def main() -> int:
     if dev:
         r = subprocess.run([sys.executable, str(vidya / "cli.py"), "--ledger",
                             str(state / "ledger.jsonl"), "ingest", "committed-conclusion",
-                            "--path", dev, "--as-of", as_of, "--only-new", "--json"],
+                            "--path", dev, "--as-of", as_of, "--only-new"],
                            capture_output=True, text=True)
         if r.returncode != 0:
             return result("UNKNOWN", reason="dev pre-ingest failed", stderr=r.stderr[-400:])
@@ -104,23 +100,27 @@ def main() -> int:
         (base / f"answer-{target['label']}.json").write_text(json.dumps(answer, indent=1,
                                                                         default=str))
         text = json.dumps(answer, default=str)
-        section = str(answer.get("section") or answer.get("context") or "")
+        ev = answer.get("evidence") or {}
+        section = str(ev.get("section") or "")
         (base / f"section-{target['label']}.md").write_text(section)
-        haystack = section or text
-        cc_hits = text.count("Committed conclusion")
-        got = {}
-        for line in haystack.splitlines():
-            for mech in EXPECT_TRIED[target["label"]]:
-                if mech in line and mech not in got:
-                    tail = line.split(mech, 1)[1].strip()
-                    got[mech] = tail.split("(")[0].split()[0] if tail else ""
+        cc_hits = section.count("clm_cc:v1:")
+        got = {e.get("mechanism_id"): e.get("outcome") for e in ev.get("tried_index") or []
+               if e.get("model_file") == target["model_file"]}
+        got = {k: v for k, v in got.items() if k in EXPECT_TRIED[target["label"]]}
         for mech, want in EXPECT_TRIED[target["label"]].items():
             if got.get(mech) != want:
                 failures.append(f"{target['label']}: {mech} expected {want}, got {got.get(mech)}")
-        for needle in EXPECT_TEXT[target["label"]]:
-            if needle not in haystack:
-                failures.append(f"{target['label']}: missing {needle!r}")
-        summary[target["label"]] = {"status": answer.get("status"), "tried": got,
+        claims = ev.get("claims") or []
+        host = [c for c in claims if c.get("tier") == "host"
+                and str(c.get("claim_id", "")).startswith("clm_cc:")]
+        harness = [c for c in claims if c.get("tier") == "harness"
+                   and str(c.get("claim_id", "")).startswith("clm_cc:")]
+        if target["label"] == "27B":
+            if "gfx90a-asm:int8-mfma-rate" not in section or not host:
+                failures.append("27B: int8-MFMA device fact missing from host tier")
+            if len(harness) < 3:
+                failures.append(f"27B: expected 3 harness lessons, got {len(harness)}")
+        summary[target["label"]] = {"status": answer.get("status"), "tried": got, "host_cc": len(host), "harness_cc": len(harness),
                                     "committed_conclusion_mentions": cc_hits,
                                     "fresh": (answer.get("ledger_state") or {}).get("freshness")}
     if sha(CANONICAL / "ledger.jsonl") != canonical_before:
