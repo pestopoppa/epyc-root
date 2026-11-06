@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T07:01:05Z",
+  "generated_at": "2026-11-06T07:01:47Z",
   "nodes": [
     {
       "age_days": 3,
@@ -3365,7 +3365,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 9,
       "blocked_by": [],
       "closed": 411,
@@ -3374,7 +3374,7 @@
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
-      "last_advanced": "2026-11-05",
+      "last_advanced": "2026-11-06",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "open": 105,
       "priority": 1.0,
