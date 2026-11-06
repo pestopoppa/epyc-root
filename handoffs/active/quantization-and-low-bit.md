@@ -383,6 +383,7 @@ Chasing the *trellis* stub is what uncovered the IQ-quant defect above, but the 
     one CPU quarter, ≤90 min, hard stop at grant end.
     Stop rule (`docs/guides/agent-workflows/measurement-sufficiency.md`): planned look per launch from launch 2; stop-on-answer when the tg128 ratio band clears
     1.00, stop-on-futility when it lies wholly below 0.95, hard cap = the 90 min grant; all are operational decisions, never a T3 gate result; the quality pass stays open.
+    - [ ] **EXP01-WEIGHTS-RETENTION** — `/mnt/raid0/llm/tmp/brf-exp01` is KEEP: 4 good A3B quants remain after the failed-build Q4_K_M was trashed (2026-11-06 disk triage, operator-adhoc-ops). Reclaim them once the EXP01 pilot row is filed, or move them under `models/` if kept. [no-belief: not-a-result]
     Eval set (pinned): `/mnt/raid0/llm/tmp/brf-exp01/items/exp01-items-24.jsonl`, 24 items, sha256 `96dc98cf6b2cfdd65897f1deaf2b6f8481225d013851262cf08d6171f150fdbc`.
     Seed 20261102 draw (`/mnt/raid0/llm/tmp/brf-exp01/bin/make_items.py`, a pure function of the pool sha) of 12 `cruxeval` (exact_match) + 12 `general` MMLU (multiple_choice) items from the canonical
     `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` (sha256 `73a2ed5a…818f8b`); ChatML user turn + empty think block, greedy 256 tokens; item hash = sha256(prompt+expect_regex).

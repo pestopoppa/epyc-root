@@ -408,3 +408,11 @@ Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-f
 ## Compiled Update — 2026-11-05 (INF-22 findings, main-inf22)
 
 - **YaRN E1-MEM chain PASS:** one unbroken A1 chain on one server (E1 image `9a3f1392a`, Qwen3.8-27B Q8_0, YaRN 524k), 128k→240k→400k→500k. The continuous own-PID peak was **47.63 GiB**, within the 55 GiB bar and identical to the split replay, which closes YARN-E1-MEM. Source: [mi210-serving-program.md:372-375](../handoffs/completed/mi210-serving-program.md).
+
+## Compiled Update — 2026-11-06 (YaRN OOLONG moves to the MI210, then pauses)
+
+- The CPU path for YaRN OOLONG is abandoned: a 112k-token item needs about 7 h of CPU prefill with no checkpoint, so s1/s2 v39 were both filed inconclusive.
+- First MI210 attempt (v40) exited rc78 because the job's Landlock fence denied `/dev/kfd`; v41/v42 fixed it (HIP TMPDIR, full-affinity ROCm threads, vanishing HIP temp files). A GPU job fence must allow the KFD device node.
+- The operator paused YARN-OOLONG until further notice (2026-11-06).
+
+Sources: [long-context program](../handoffs/active/long-context-program.md) · [wrap-up 6 progress](../progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md) · [friction review pass 4](../docs/reports/coordination/keeper-friction-review-20261105.md)

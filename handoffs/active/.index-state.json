@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 670
+      "open": 671
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 498
+      "open": 500
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -732,7 +732,7 @@
       "closed": 242,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 107,
+      "open": 109,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -741,7 +741,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 349,
+      "total": 351,
       "tracks": [
         {
           "blocked": 0,
@@ -751,14 +751,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 60
+          "open": 62
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1158,
+          "line": 1160,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -768,7 +768,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1197,
+          "line": 1199,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -778,7 +778,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1304,
+          "line": 1306,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -788,7 +788,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1404,
+          "line": 1406,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 5
@@ -798,7 +798,7 @@
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1450,
+          "line": 1452,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -808,7 +808,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2023,
+          "line": 2025,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 4
@@ -1998,7 +1998,7 @@
       "closed": 69,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 26,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2007,7 +2007,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 95,
+      "total": 96,
       "tracks": [
         {
           "blocked": 0,
@@ -2027,14 +2027,14 @@
           "line": 205,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 4
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 648,
+          "line": 649,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 3

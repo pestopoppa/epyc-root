@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T07:03:15Z",
+  "generated_at": "2026-11-06T07:06:05Z",
   "nodes": [
     {
       "age_days": 3,
@@ -2319,14 +2319,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 69,
-      "dispatchable": 26,
+      "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-04",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 26,
+      "open": 27,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2355,18 +2355,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
           "line": 205,
           "name": "iqk-iquant-enablement",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 648,
+          "line": 649,
           "name": "tq3-quantization-evaluation",
           "open": 3,
           "readiness": "ready"
@@ -3007,14 +3007,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 242,
-      "dispatchable": 107,
+      "dispatchable": 109,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-05",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 107,
+      "open": 109,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3034,18 +3034,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 60,
+          "dispatchable": 62,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 60,
+          "open": 62,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1158,
+          "line": 1160,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3054,7 +3054,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1197,
+          "line": 1199,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3063,7 +3063,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1304,
+          "line": 1306,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3072,7 +3072,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1404,
+          "line": 1406,
           "name": "loop-state-offraid-backup",
           "open": 5,
           "readiness": "ready"
@@ -3081,7 +3081,7 @@
           "blocked_by": [],
           "dispatchable": 35,
           "gates": [],
-          "line": 1450,
+          "line": 1452,
           "name": "refactoring-multirepo-2026-10",
           "open": 35,
           "readiness": "ready"
@@ -3090,7 +3090,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2023,
+          "line": 2025,
           "name": "repo-readiness-scorer",
           "open": 4,
           "readiness": "ready"

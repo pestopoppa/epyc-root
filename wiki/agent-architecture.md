@@ -5757,3 +5757,11 @@ Sources: [Jev dive](../research/deep-dives/ws58-jev-20261102/intake-2604-jev-har
 - **A launcher script may start a dispatcher as a side effect**: `churn_up.sh` did so on 2026-11-04 and resumed 11 sessions nobody asked for (CHURN-UP-NO-DISPATCHER).
 
 Sources: [S4 baseline vs Omega prompts](../docs/reports/harness-run-filings-20261104/s4/) · [harness-program](../handoffs/active/harness-program.md) · [coordination-and-churn-pipeline](../handoffs/active/coordination-and-churn-pipeline.md)
+
+## Compiled Update — 2026-11-06 (keeper friction pass 4, operator-adhoc-ops wrap-up 6)
+
+- Friction review pass 4 classified the 2026-11-04..06 smoke and arming failures by root cause: the pipeline, not the model, is the noise source — 88 % of FAILs carry no information about the measured question. Four keeper fixes follow from it (refusal terminal once; a completed row is never rc14; GPU idleness judged by KFD membership and sampled VRAM; rowflow2 grant ordering), tracked as ROWFLOW-PASS4-EMERGENCY.
+- IDLE-HELD grants now warn their owner (notify-only); rowflow2 auto-ends rc=75 and re-queues. A per-row declared idle grace is filed (ROWFLOW-IDLE-GRACE-FIELD) because one fleet threshold misfires on rows with legitimate idle phases.
+- Shared job templates (gitnexus-impact and GPU job-fence modules) are linted at rowflow2 publish.
+
+Sources: [friction review pass 4](../docs/reports/coordination/keeper-friction-review-20261105.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [wrap-up 6 progress](../progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md)

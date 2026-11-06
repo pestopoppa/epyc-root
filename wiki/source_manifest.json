@@ -4,7 +4,7 @@
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
-    "progress": 1341,
+    "progress": 1342,
     "research": 278
   },
   "kind": "project-wiki-source-manifest",
@@ -15,19 +15,19 @@
       "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-06T06:58:50Z",
+    "at": "2026-11-06T07:06:35Z",
     "scope_paths": [
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/kv-cache-program.md",
-      "handoffs/active/rocm-kernel-authoring.md",
-      "progress/2026-11/2026-11-06-main-inf22.md"
+      "docs/design/rowflow2-20261105.md",
+      "docs/reports/coordination/keeper-friction-review-20261105.md",
+      "handoffs/active/long-context-program.md",
+      "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T06:58:50Z",
+  "scan_time": "2026-11-06T07:06:35Z",
   "schema_version": 1,
-  "source_set_hash": "c75c1f531ea996ad26546079638c823d24eda59fd1536b1c6f7f2363abf31d4a",
+  "source_set_hash": "f379782c64361ac601dc482476e8a3b8f09f3aac907667ace70b53a73028ce44",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -150,10 +150,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a9a8923125527a0be83e80c7c0bfa47b5bb4545d3012e2cf8ca57c6ac680ffc8",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "9af289f5471b2a7e281af09ad2925a6a120a6f498443c43090f0afb67a0c4f06",
+      "modified": "2026-11-06T07:04:09Z",
       "path": "handoffs/active/long-context-program.md",
-      "size": 291316,
+      "size": 298839,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -16070,6 +16070,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "da26b2bdca7469ae6d613491e0137d5f394d4f91f62b0f73990d21eedbc72f82",
+      "modified": "2026-11-06T07:05:02Z",
+      "path": "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md",
+      "size": 3170,
+      "title": "Wrap-up 6 \u2014 2026-11-05 ~21:00Z to 2026-11-06 (operator-adhoc-ops-20261105)",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-05T19:30:50Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -17094,10 +17102,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "121544bb75445acce640c10086c0a22b34b346165415dcc8351bae3c5a5e2489",
-      "modified": "2026-11-05T20:47:20Z",
+      "content_hash": "c35d853153e0c0715221b4df215d7a7a2257cb8e9935c2bd87cfce2481481083",
+      "modified": "2026-11-06T07:04:09Z",
       "path": "docs/design/rowflow2-20261105.md",
-      "size": 9063,
+      "size": 12278,
       "title": "rowflow2 \u2014 minimal keeper, shadow week and cutover (2026-11-05)",
       "type": "docs"
     },
@@ -18662,10 +18670,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "ac99e30a2d934744496e8ddf1dac75a5f9fd1f14f687f519433fdd6bcb1c05bb",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "6aae633301d029a8f4e0add40c7fb1fc7b002a678df1e9c53a7d25b08338f113",
+      "modified": "2026-11-06T07:04:09Z",
       "path": "docs/reports/coordination/keeper-friction-review-20261105.md",
-      "size": 114576,
+      "size": 132812,
       "title": "Keeper friction review \u2014 2026-11-05",
       "type": "docs"
     },
@@ -19670,7 +19678,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2455,
+  "total_new": 2456,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
