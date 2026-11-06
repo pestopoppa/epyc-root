@@ -42,7 +42,7 @@ All declines are recorded in the bearing entries' `dive_corrections` or notes.
 ## Method and audit
 
 - Every dive read primary source text from disk (arXiv HTML v1/v4 or the alphaXiv paper markdown; repo at a pinned HEAD; blog HTML). Read depth is `FULL` except 2641 and 2642, which are `PARTIAL` for figures and the uninitialised SSDi8 submodule.
-- An independent second reader re-checked all 40 claim anchors: 0 hash mismatches, 0 genuinely absent quotes; one fabricated quote (2646 claim 3) and four wrong-direction or unsupported anchors were found and fixed; 7 locators were corrected. Report: `/mnt/raid0/llm/tmp/dive-quant-compiler-20261106/drafts/second-reader.md`.
+- An independent second reader re-checked all 40 claim anchors: 0 hash mismatches, 0 genuinely absent quotes; one fabricated quote (2646 claim 3) and four wrong-direction or unsupported anchors were found and fixed; 7 locators were corrected. Report: [second-reader-anchor-audit.md](second-reader-anchor-audit.md).
 - Quote convention: prose is source-faithful; HTML/LaTeX math glyphs are transliterated (× as x, − as -, superscripts as ^, elided spans as `(...)`), and table-derived or inferred spans are marked in `setup_scope`.
 - Stage-1 entries were persisted before any dive; all nine carry `claim_anchors` and `claim_corrections`.
 - Artefacts (raw text, hashes, drafts, quote verifiers) are under `/mnt/raid0/llm/tmp/dive-quant-compiler-20261106/`; the dive reports here are the permanent record.
