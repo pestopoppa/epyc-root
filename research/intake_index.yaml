@@ -379090,3 +379090,1216 @@
   integration_disposition: integrated
   disposition_evidence:
   - 'Approved plan routes this source''s verified findings to the named owner tasks; no deployment is implied.'
+- id: intake-2641
+  arxiv_id: '2610.39418'
+  url: https://arxiv.org/abs/2610.39418
+  source_type: paper
+  title: 'LinQuant: Functional Invariances for Low-Precision Linear Recurrences'
+  authors:
+  - Neehal Tumma
+  - Philipp Nazari
+  - Rohan Cherukuri
+  - Daniela Rus
+  - T. Konstantin Rusch
+  categories:
+  - quantization
+  - ssm_hybrid
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Seven functionally exact transformations of the chunkwise linear-recurrence computation (key and value axis
+    rotations and diagonal rescalings; scalar-decay, diagonal-decay and write-gate absorptions; a compensated WY
+    placement for delta rules) leave the FP recurrence unchanged while changing quantized error. Applicability is
+    recurrence- and write-dependent: key rotation is exact for absent/scalar decay and only local (within-chunk,
+    unrotated carry) under diagonal decay; reciprocal key rescaling does not preserve delta-corrected writes.'
+  - In the controlled 340M zoo at INT6 operands with per-tensor scales the selected stack reduces excess error far
+    more than any single transform (Mamba-2 perplexity 16.446 naive to 15.633 stack, FP 15.553; linear attention
+    30.694 to 18.138, FP 17.117). The paper says 'roughly twice'; recomputed under its own excess-NLL definition
+    the multiples are 2.008x and 1.865x, not the 1.98x/1.66x ratios of raw perplexity deltas.
+  - 'In the production W4A8 + INT8-state path the fused key rotation (with or without key rescaling) lowers WikiText-2
+    perplexity at every reported size: Mamba-2 8B 7.620 to 7.435 (FP16 7.250), 1.3B 10.928 to 10.849, Nemotron-H
+    Base 6.338 to 6.178 (FP16 6.030). At 2.7B the best row is 9.372 key-side; 9.379 is the rotation-only value-side
+    row and rotation-plus-rescaling is 9.383, so the small-model gains are at or inside one calibration standard
+    deviation.'
+  - 'The ''free latency'' result is a property of SSDi8''s fused split-and-quantize pass, not of the transforms:
+    the paper states neither transform needs a separate launch ''in this implementation''. The measurement is a
+    ratio at about 1% resolution with no confidence interval. Value-axis transforms are not deployed under per-channel
+    value scales, and the 1.24-1.72x canonical-storage cost covers only linear-attention/Mamba-2/GLA cells - delta
+    cells cost 1.77-10.56x.'
+  - 'Sub-INT8 is unsolved: with per-tensor scales the stack still leaves Mamba-2 340M at 17.141 against FP 15.553,
+    and the authors state that deployment below INT8 needs both a more accurate scheme and an efficient sub-byte
+    kernel. The INT6/INT4 experiments are narrowed integer ranges inside INT8 kernels, not sub-byte code.'
+  techniques:
+  - 'R_QK: random-signed Hadamard key-axis rotation, persistent for no/scalar decay and anchored-local for diagonal
+    decay'
+  - 'D_QK: reciprocal diagonal key rescaling d_n = (max|k|/max|q|)^kappa; invalid for delta writes'
+  - 'R_V / D_V: value-axis rotation and range-equalizing rescaling with canonical or rotated state storage'
+  - 'Decay absorption: scalar eta split; diagonal decay via per-token channelwise-max envelope with relative channel
+    decay left on keys'
+  - Write-gate absorption and compensated WY placement (sigma, tau) for delta rules; Gram/solve/WY stay FP32
+  - INT8 stored recurrent state with FP32 carry and per-(H, D_v) scales
+  - Chunkwise-parallel kernels, chunk 64 with 16-token diagonal sub-blocks
+  reported_results:
+  - 'Production WikiText-2 at T=2048: Mamba-2 8B 7.620 -> 7.435 (FP16 7.250), 1.3B 10.928 -> 10.849 (10.420), Nemotron-H
+    Base 6.338 -> 6.178 (6.030).'
+  - 'Production prefill on an A5000 at B=8: 1.3B 609 ms, 2.7B 1163 ms, 8B 2542 ms for the re-implemented SSDi8 baseline,
+    matching the official release; the fused key rotation adds no measurable prefill time at ~1% ratio resolution.'
+  - 'Controlled 340M zoo at INT6/INT8 state: Mamba-2 16.446 -> 15.633, linear attention 30.694 -> 18.138, DeltaNet
+    20.323 -> 15.871, Gated DeltaNet 17.064 -> 15.103, KDA 15.837 -> 14.906 at per-tensor value scales.'
+  - 'State precision at INT6: an INT8 carry costs linear attention +8% perplexity but only +0.2% for Gated DeltaNet
+    and +0.8% for Mamba-2, because decay damps accumulated carry error.'
+  cross_references:
+    intake_entries:
+    - intake-2642
+    - intake-2645
+    - intake-2646
+    - intake-2648
+    handoffs:
+    - quantization-and-low-bit.md
+    - model-architecture-readiness.md
+    - autokernel-loop.md
+    - rocm-kernel-authoring.md
+  credibility_score: 3
+  contradicting_evidence:
+  - 'RESOLVED 2026-11-06 by the MambaQuant dive (intake-2648): SSDi8''s ''Hadamard rotation degrades SSD'' is refuted
+    as a general claim. MambaQuant''s fixed-granularity control shows rotation is positive in every tested cell,
+    and SSDi8''s own delta is a scale-granularity failure, not a rotation result. LinQuant''s R_QK is therefore
+    a boundary extension on the axis SSDi8 excludes, not a contradiction.'
+  - 'Still unreconciled: no head-to-head Mamba-2 rotation arm with the same scale granularity is published by any
+    of the three papers, and LinQuant reports no isolation control separating rotation from recalibration.'
+  - All timing evidence is NVIDIA (A5000/A100/H100), prefill only; no ROCm/gfx90a or CPU measurement and no decode
+    or tokens-per-second number exists.
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-overturned
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: arXiv:2610.39418v1 §3.1 (paper.txt:165)
+    quote: we introduce LinQuant, a framework for low-precision recurrent prefill based on seven such invariances,
+      including rotations, diagonal rescalings, and alternative placements of recurrent decay and write factors.
+    quote_sha256: 0e9b2414abeadcf9bc7c3d64a8b84f481dbc26b23437ab1e58d700598a2912f6
+    source_revision: 2610.39418v1; 2026-10-29
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: arXiv:2610.39418v1 §4.1 (paper.txt:832) and Table 5; metric definition §B.1 (paper.txt:1356)
+    quote: At INT6 under per-tensor scales, the selected combination recovers roughly twice as much excess NLL as
+      the best single transformation for both 340M Mamba-2 and LA (Table 5).
+    quote_sha256: 25e18ad0377f3603c4f5e0dfdcb555a34e94d642670676de457abd91e60606f7
+    source_revision: 2610.39418v1; 2026-10-29
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: arXiv:2610.39418v1 §1 bullet (paper.txt:197) and Tables 2, 17
+    quote: We apply LinQuant to production W4A8 models with INT8 recurrent states, improving over SSDi8 on Mamba-2
+      1.3B, 2.7B, and 8B and Nemotron-H 8B.
+    quote_sha256: ff3da61896b558e3b50d4fef9c3f83b88847ead395a21cbcbf9fb3e6c03c4d21
+    source_revision: 2610.39418v1; 2026-10-29
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: arXiv:2610.39418v1 §5 Conclusion (paper.txt:967); scoping phrase App. D.2 (paper.txt:1737)
+    quote: Moreover, on the evaluated Mamba-2 models, query-key rotation adds no measurable prefill latency.
+    quote_sha256: f7c0c31bd5d11a2ecb17573a94b9b0357f1c9f08b2127ae50df09ea404d9b9a5
+    source_revision: 2610.39418v1; 2026-10-29
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: arXiv:2610.39418v1 §E.2, Table 7 (paper.txt:2825)
+    quote: These experiments use 4-bit integer ranges within INT8 kernels; deployment below INT8 therefore requires
+      both a more accurate quantization scheme and an efficient sub-byte implementation.
+    quote_sha256: c8a697045572b54a2e65e7c63532f16a60dc5528675b253b084b86d04e9b954e
+    source_revision: 2610.39418v1; 2026-10-29
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'The seven invariances and their commutation conditions are confirmed as exact identities in App. C. One
+      refinement: R_QK also survives diagonal decay in a local-only form, which is what Table 1''s tick for GLA/KDA
+      means.'
+  - claim_index: 1
+    effect: narrowed
+    note: Table values reproduce, but the 1.98x/1.66x multiples are ratios of raw perplexity deltas; under the paper's
+      own excess-NLL definition they are 2.008x/1.865x, and the paper itself only says 'roughly twice'.
+  - claim_index: 2
+    effect: narrowed
+    note: The 8B/1.3B/Nemotron-H rows are the rotation-plus-rescaling value-side configuration; 9.379 is the 2.7B
+      rotation-only row and 9.383 is the combined row, so the stage-1 claim mixed two configurations.
+  - claim_index: 3
+    effect: overturned
+    note: 'The ''free latency'' attribution is inverted for our tree: it is a property of SSDi8''s fused pass, which
+      llama.cpp does not have, so the rotation is a new per-layer matmul rather than a free transform.'
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed exactly, including the 94%-of-excess-NLL-recovered / +10.2%-perplexity-residue shape that flatters
+      the naive INT4 baseline.
+  dive_corrections: '2026-11-06: Primary-source dive (FULL prose, tables 1-19, App. C proofs, App. D kernels; figures
+    read by caption only) re-scoped the entry from ''deployable quantization gain'' to ''design catalogue for an
+    INT8 recurrence core we do not have''. Overturned: the ggml block-quant mapping premise (six of seven transforms
+    act on activations and never meet Q4_K/IQ block layouts), the 2.7B row attribution, the free-latency attribution,
+    and the value-axis cost range. Added: the per-channel granularity cancellation proof (App. C) that makes D_QK''s
+    payoff vanish as scales narrow, and the measured fact that llama.cpp''s GDN core is FP32 with no INT8 operand
+    path. Decode transfer was evaluated and declined arithmetically (state traffic is ~0.17% of per-token bytes).'
+  notes: 'Stage-2 dive read the arXiv HTML v1 from disk (sha256 531c4a6167431158...) Quote convention: stored quotes
+    are source-faithful but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render
+    as x, minus as -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table
+    cells flatten to one line; spans crossing math or table structure are marked table-derived or inference in setup_scope.
+    Raw-line provenance is in the dive report.. Transfers: (T1) the transforms target activations, not weights;
+    D_QK survives per-32-block scales but its ceiling shrinks to exactly zero at per-channel scales, and it is invalid
+    for GDN delta writes anyway. (T2) All seven are expressible as ggml graph ops but none is profitable while the
+    GDN core is FP32; the cheapest entry is the write-gate placement. (T3) nothing reaches decode. (T4) nothing
+    survives on CPU, because the win is arithmetic rather than bytes. The one reusable asset is the invariance suite
+    as a float64 oracle.'
+  recommended_actions:
+  - 'LQ-1 (probe, expected to kill the line): profile the GDN core''s share of prefill/decode at our serving shape;
+    pre-registered stop if under 5%.'
+  - 'LQ-2/LQ-3 (record): D_QK is inapplicable to standard GDN; ''free latency'' is SSDi8''s fused-pass property,
+    absent in our tree.'
+  - 'LQ-4 (decline): sub-INT8 recurrent core (+10.2% perplexity, no sub-byte kernel).'
+  - 'LQ-5 (trigger): INT8-carry tolerance is a prior only if a state-byte-reduction line is ever opened.'
+- id: intake-2642
+  arxiv_id: null
+  url: https://github.com/ntumm120/LinQuant
+  source_type: repo
+  title: 'LinQuant code release: functional invariances and INT8 Triton chunk kernels for quantized linear recurrences'
+  categories:
+  - quantization
+  - ssm_hybrid
+  - tool_implementation
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - linquant/reference.py is a 239-line torch-only float64 chunkwise forward for the linear/delta x no/scalar/diagonal-decay
+    family grid, with quantization entering only through a per-role callable; it is the executable spec for five
+    of the seven invariances, with the two diagonal rescalings applied by the harness outside the core.
+  - linquant/kernels/zoo holds pure-Triton INT8 chunk kernels for linear attention, GLA, DeltaNet, Gated DeltaNet
+    and KDA, but the delta-family WY preparation is FP32 torch including a triangular-solve launch, so the delta
+    cells are only partially low precision.
+  - linquant/kernels/mamba2 is a 2037-line INT8 Mamba-2 SSD chain including an all-INT8 fixed-point inter-chunk
+    state pass (INT32 recurrence on INT8 chunk states with a Q0.7 gate), with no test file at all.
+  - The tests prove invariance exactness at float64 (<1e-9) and kernel-vs-emulation dataflow equivalence within
+    a noise-relative bound, but there is no CI, every fixture requires CUDA, and the invariance sweep covers only
+    qk/v/eta/rho.
+  - The controlled-study zoo models and training code are not released, and production rows are single runs that
+    are not bit-reproducible (about 5e-3 perplexity spread on the same command and hardware).
+  techniques:
+  - Kronecker-factored Hadamard rotation (H_2 x H_{D/2}) with per-head random signs, fused into split-and-quantize
+  - INT8 stored state with FP32 carry and no error feedback into the carry
+  - Fake-quant kernel-arith emulation flags (tie_roles, local_fp16, kernel_arith, round_away) so a float64 reference
+    reproduces kernel rounding order
+  - Marlin QQQ W4A8 GEMM (from vLLM) for the weight side
+  cross_references:
+    intake_entries:
+    - intake-2641
+    - intake-2645
+    - intake-2646
+    - intake-2648
+    handoffs:
+    - quantization-and-low-bit.md
+    - model-architecture-readiness.md
+    - rocm-kernel-authoring.md
+  credibility_score: null
+  contradicting_evidence: []
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: repo-LinQuant/linquant/reference.py:37 @ 624a1a27
+    quote: dt = torch.float64
+    quote_sha256: 7198d1e8350d41a3b8a491b4dffe4f62eaf7f2dca58e387b4da039371fdfcb7b
+    source_revision: 624a1a27049cbc50a0dfa3a0a6a9140c9ed6c2a8; 2026-11-03
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: repo-LinQuant/linquant/kernels/zoo/gated_delta_rule.py:21 @ 624a1a27
+    quote: 'fp32 WY prep in torch. Returns (L, Hw, W, U, fw): Gram left factor (unused after), readout/write key'
+    quote_sha256: a339dfd8cb4365b9b6625fb0ebb8889a4d7d98cf866800d7a3922420d53af569
+    source_revision: 624a1a27049cbc50a0dfa3a0a6a9140c9ed6c2a8; 2026-11-03
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: repo-LinQuant/linquant/kernels/mamba2/state_passing.py:3 @ 624a1a27
+    quote: The inter-chunk recurrence runs in INT32 on the INT8 chunk states with the gate
+    quote_sha256: 50cc44edba6e6ddff9de187929a97bb6436ccc0cfebc82e861bb4f9d4cf46b1f
+    source_revision: 624a1a27049cbc50a0dfa3a0a6a9140c9ed6c2a8; 2026-11-03
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: repo-LinQuant/tests/test_reference.py:89 @ 624a1a27
+    quote: assert err < 1e-9
+    quote_sha256: 7061d89aa4eb54d10f85e089fa4b132cd0023c019d8e2c18895471cb2f4fdbb7
+    source_revision: 624a1a27049cbc50a0dfa3a0a6a9140c9ed6c2a8; 2026-11-03
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: repo-LinQuant/README.md:115 @ 624a1a27
+    quote: These checkpoints and their training code are not released.
+    quote_sha256: 6b51e942c183e58025a284d3dd5375719475bcb5f25ed757ceaeeafc5cacf0ae
+    source_revision: 624a1a27049cbc50a0dfa3a0a6a9140c9ed6c2a8; 2026-11-03
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Confirmed as torch-only and float64, but only five of seven invariances live in the core; D_QK/D_V are
+      harness-side and rho for the linear family is a caller-side relabeling.
+  - claim_index: 1
+    effect: narrowed
+    note: The zoo kernels are Triton for the INT8 contractions; the delta-family WY prep is FP32 torch with a triangular-solve
+      launch, which bounds how low-precision those cells really are.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed, including the exact line count and the absence of any mamba2 test.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed and strengthened: there is no CI at all, and the 1e-9 bound is float64 arithmetic over fp32-derived
+      operands.'
+  - claim_index: 4
+    effect: unaffected
+    note: Confirmed verbatim from the README.
+  dive_corrections: '2026-11-06: Code dive at HEAD 624a1a27 confirmed the oracle value and narrowed two claims.
+    The important positive finding for EPYC is that reference.py + invariances.py run on CPU (only the tests need
+    CUDA), so a float64 conformance oracle is available without a GPU and maps exactly onto the frozen build_delta_net_chunking
+    cell at rho=tau=1, eta=0, read_post=False. The llama.cpp ''chunked prefill TODO'' is real but narrower than
+    it sounds: a complete chunkwise GDN graph already exists; what is missing is the fused kernel, every quantization
+    boundary, INT8 stored state, the fused rotation epilogue and the rho/tau/eta knobs. Licensing defect recorded:
+    kernels/mamba2 is SSDi8-derived while LICENSE names only the submodule.'
+  notes: 'Stage-2 code read at HEAD 624a1a27049cbc50a0dfa3a0a6a9140c9ed6c2a8; libs/SSDi8 submodule pinned c10ccde6
+    but not initialized, so the SSDi8 tree itself was not read. MIT-clean: reference.py, invariances.py, harness.py,
+    run.py, kernels/zoo, hadamard.py, tests. SSDi8-licensed and not reusable: kernels/mamba2 and patches/ssdi8.patch.
+    Marlin QQQ is PTX for sm80/86/90 only, so the weight side has no HIP path. New hazard found: the Q0.7 fixed-point
+    gate clamps at 127/128, a systematic <=0.8% per-chunk under-decay.'
+  recommended_actions:
+  - 'LR-1 (immediate, ~1 day CPU): adopt reference.py as a float64 conformance oracle for the chunked GDN graph
+    beside tests/test-backend-ops.cpp.'
+  - 'LR-3 (probe): settle whether the MMQ path instantiates CDNA2''s int8 MFMA tile rather than dp4a.'
+  - 'LR-4/LR-5 (decline): do not vendor kernels/mamba2 (non-commercial) and do not port Marlin W4A8 to gfx90a (PTX-only).'
+  - 'LR-7 (record): the Q0.7 gate quantizer saturates above 0.9922 and loses ~0.78% of state per chunk.'
+- id: intake-2643
+  arxiv_id: null
+  url: https://www.alphaxiv.org/abs/2611.together-compiler-continual-ai-inference
+  source_type: paper
+  title: 'Together Compiler: Continual Compilation for AI Inference'
+  authors:
+  - Reyna Abhyankar
+  - Dylan Lim
+  - Drew Wadsworth
+  - Venkata Hasith Vattikuti
+  - YuTong Julia Zhang
+  - Jung Hwan Heo
+  - Taeksang Kim
+  - Kesavan Ramakrishnan
+  - Evangelene Stanley
+  - Xinyu Fang
+  - Daniel Y. Fu
+  - Simran Arora
+  categories:
+  - agent_architecture
+  - inference_serving
+  - benchmark_methodology
+  - autonomous_research
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'The reported bottleneck for agentic inference optimization is measurement turnaround: engine startup is over
+    ten minutes (one measured breakdown totals 761 s on MiniMax-M3.1-Flash/TensorRT-LLM, dominated by model loading
+    34.8%, graph capture 29.7% and autotuning 25.2%). A persistent engine loads once and hot-reloads a candidate
+    forward pass by replacing the forward-function pointer and re-capturing graphs.'
+  - 'A two-tier measurement design dominates a single high-fidelity tier: a fast tier over 12 layers weeds out slow,
+    invalid, hanging and IMA candidates and absorbs crashes (3.9 per 1000 jobs), while a 60-layer slow tier decides.
+    On one GLM 5.3 B200 setting the two-tier loop evaluated 1,354 candidates against 168 (8.1x) and found a solution
+    7.2% faster.'
+  - An analytical cost model with three estimate levels (spec sheet, measured micro-benchmarks, measured end-to-end)
+    prunes and ranks parallelism configurations instead of grid-searching them; configuration alone raised throughput
+    on Kimi K3 (up to 24% TPS, 18% TPM).
+  - 'Measured negative results on agent context shaping: an expert-curated knowledge base cost 25-31% lower speedup
+    after 12 hours; ensembling naive agents beat distinct expert-written strategies (6.2x vs 4.9x) and a single
+    naive agent beat every prescribed strategy; a mandated research-log graph consumed 43% of tool calls and 8%
+    of wall time at ~12.6 s per call, against <0.5% with a plain Markdown log.'
+  - 'Continual adaptation is asserted, not instrumented: the text contains no drift detector, threshold, recompile
+    trigger or re-convergence measurement, and no keep/discard protocol beyond ''loop until budget exhausted'' plus
+    a one-sentence verification suite.'
+  techniques:
+  - 'Tiered Persistent Engine: persistent engine + forward-pointer hot reload + CUDA/HIP graph recapture'
+  - Two-tier measurement (12-layer fast screen, 60-layer slow gate) with per-tier queue depth visible to agents
+  - Prefix-cache reuse of a fixed request set across measurements; kernel-module reuse across candidates
+  - Prefill/decode measurement split to reduce variance
+  - Analytical parallelism cost model with three estimate tiers and top-k config seeding
+  - Parallel communicating agents on a shared message board with no prescribed strategy decomposition
+  - Agent context-management ablations (knowledge hub on/off, expert strategies vs naive, graph log vs Markdown)
+  reported_results:
+  - 'Llama-3.2-1B batch 1: up to 1.7x over hand-written megakernels on H100/B200 (example B200 OSL 256 = 2,118 vs
+    2,011 TPS).'
+  - 'InferenceX AgentX traffic: up to 2.6x TPS against best published configurations across Kimi K3, GLM 5.3, MiniMax
+    M3.1-Flash and DeepSeek v4.1-Flash at 24 h per setting; batch-1 P90 TPS claims of 1,111 and 1,205.'
+  - 'Non-LLM workloads with bit-exactness: 1.5x-6.4x on weather, PDE, time-series and biology models on H100.'
+  - 'Tier ablation: 1,354 vs 168 candidates (8.1x) and a 7.2% faster solution; fast tier carried 3.9 crashes per
+    1000 jobs, slow tier zero.'
+  cross_references:
+    intake_entries:
+    - intake-2644
+    - intake-2647
+    - intake-2649
+    handoffs:
+    - autokernel-loop.md
+    - coordination-and-churn-pipeline.md
+    - kernel-champion-and-promotion.md
+    - harness-program.md
+  credibility_score: 1
+  contradicting_evidence:
+  - Vendor self-report with no independent replication and no artifact release. The 2026-11-04 critique round-ups
+    flag the 2.6x as an 'up to' over four models and five platforms against a dated baseline snapshot; the paper's
+    own control does answer the TP4-vs-TP8 confound for the batch-1 comparison (the same InferenceX image at TP8
+    matches its TP4 result).
+  - 'Continual adaptation has no mechanism: zero occurrences of drift/trigger/monitor/converge in the text. ''Continual''
+    is a design claim, not a demonstrated control loop.'
+  - Single-GPU tiering is absent (the Llama 1B table is single-accelerator by construction but device count is unstated),
+    gfx90a/MI210 is untested, and quantization is excluded from the edit surface.
+  - 'Reliability cost is real and lightly reported: 9 GPU resets (Xid 154) during the GLM 5.3 work, and a later
+    safety ban on the graph-editing technique that had produced gains.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: tc.md:216-222, Table 1a; tc.md:256-264
+    quote: Phase Time (s) Share (%) Model loading 265 34.8 KV-cache sizing 73 9.6 Autotuning 192 25.2 CUDA-graph
+      capture, decode 34 4.5 CUDA-graph capture, prefill 192 25.2 Total time to serving 761 100.0
+    quote_sha256: b599275347fa4cf27e890a7f18bb29885ee514746d1482370241165ce0fae58d
+    source_revision: alphaXiv 2611.together-compiler-continual-ai-inference; 2026-11-04
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: tc.md:262-264
+    quote: When an agent submits its candidate as a "job" to the endpoint, the server replaces the model's forward
+      function pointer and re-captures CUDA/HIP graphs.
+    quote_sha256: 89a16595c935da65c23f67b1847a84272d9797a14c41695746d4fffb438bd3f5
+    source_revision: alphaXiv 2611.together-compiler-continual-ai-inference; 2026-11-04
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: tc.md:286-293, Figure 2
+    quote: In Figure 2, we show the two-tiered measurement system evaluates 8.1x more candidates than a single slow
+      tier (1,354 vs. 168) and finds a solution that is 7.2% faster.
+    quote_sha256: fd21b18aa55cc944d2c9357feea6cfce1703d05a88386519c1651af95b3ec8fd
+    source_revision: alphaXiv 2611.together-compiler-continual-ai-inference; 2026-11-04
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: tc.md:511; tc.md:242-248
+    quote: that boosted TPS by up to 24% and TPM by up to 18%
+    quote_sha256: ebae570d320e30a23c314be3b6af503c6fd3753a691eeafc90f1b652153358c4
+    source_revision: alphaXiv 2611.together-compiler-continual-ai-inference; 2026-11-04
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: tc.md:Figure 5a/b commentary
+    quote: Knowledge hub. (...) this approach can lead to 25-31% lower speedup than agent performance without a
+      knowledge hub after 12 hours of optimization (Figure 5a).
+    quote_sha256: 93768e8eaa25109995f8b3624d263192a96ad6a24d35ef4989f600e4cc51ec95
+    source_revision: alphaXiv 2611.together-compiler-continual-ai-inference; 2026-11-04
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: tc.md:249-250
+    quote: TKCC perpetually loops until a given budget is exhausted, at which point we run a full suite of verification
+      tests (e.g., for KV cache contamination and quality)
+    quote_sha256: e9214398c0374f707e0c622c9f25804e11ba76a46384c371488945b902c22062
+    source_revision: alphaXiv 2611.together-compiler-continual-ai-inference; 2026-11-04
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: The 761 s breakdown and hot-reload mechanism are confirmed; '467 s' and 'JIT warm-up' do not appear in
+      the paper at all (they are the vendor blog's separate, unattributed table).
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed in the paper's own text; tier definitions are 12 vs 60 layers, 3 vs 11 minutes to first job,
+      0.05% vs 0.14% variance, 3.9 vs 0 crashes per 1000.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed, with the three estimate levels quoted.
+  - claim_index: 3
+    effect: narrowed
+    note: 'All three ablations exist, but ''43% of tool calls for <0.5% of wall time'' conflates two arms: with
+      the graph log, 43% of calls and 8% of time; without it, <0.5% of time. The KB result is about navigation cost,
+      not about the KB being wrong.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed by full-text scan: trigger, monitor, detect and converge are zero-hit strings.'
+  dive_corrections: '2026-11-06: Full-text dive (md + PDF cross-check) confirmed the tiering and cost-model claims
+    and corrected two Stage-1 items. Overturned: ''467 s'' is a blog-only figure and is not in the paper; the ''1.8x
+    is confounded by TP4-vs-TP8'' critique is refuted by the paper''s own TP8 control. Narrowed: the context-ablation
+    wall-time attribution. Added the decisive local comparison: the paper''s own Appendix C.3 numbers reproduce
+    our measured pathology, where build is 75.7% and measurement 3.9% of a median iteration, so the portable fix
+    is setup amortisation, not candidate generation.'
+  notes: 'Stage-2 dive read the full paper markdown (sha256 dda2a674...) and the PDF. Quote convention: stored quotes
+    are source-faithful but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render
+    as x, minus as -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table
+    cells flatten to one line; spans crossing math or table structure are marked table-derived or inference in setup_scope.
+    Raw-line provenance is in the dive report. The paper describes no keep/discard decision: metric is decode TPS,
+    repeats are never stated, stopping rule is ''until budget'', verification is one sentence, and rollback is pointer-level
+    teardown only. Our existing keep gate is stricter on every axis. Tiering already exists locally at finer granularity
+    (T0-T4 by evaluation scope). What is genuinely missing is the persistent warm engine; prefix-cache reuse is
+    a hazard we deliberately fence.'
+  recommended_actions:
+  - 'TK-1/TK-2 (immediate, zero GPU): consult the kernel store before building (44 of 51 builds were byte-identical)
+    and instrument build/correctness seconds.'
+  - 'TK-3 (immediate probe): one warm measurement worker holding one grant across N measurement units; measure published_at
+    to first_result_unit over 20 rows.'
+  - 'TK-4/TK-5 (replay first): screen-to-confirmed fidelity, then a 24-pair MI210 tiering experiment only if the
+    replay is inconclusive.'
+  - 'TK-8/TK-9 (decline): prefix-cache reuse across candidates, and deletion of the critic stage.'
+- id: intake-2644
+  arxiv_id: null
+  url: https://www.together.ai/blog/together-compiler-continual-compilation-for-ai-inference
+  source_type: blog
+  title: 'Together Compiler: Continual Compilation for AI inference (vendor announcement)'
+  categories:
+  - inference_serving
+  - agent_architecture
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  verdict: superseded
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Vendor startup table: status quo total time to serving 467 s (process/worker init 93, weight load 50, KV sizing
+    21, JIT warm-up 93, autotuning 193, API ready 10) versus 9.0 s for the persistent path (1.7 s RPC/setup plus
+    7.3 s graph capture). The blog states no model or engine for this table.'
+  - The blog's three mechanisms are persistent engines, fast/slow engine tiering, and an analytical parallelism
+    cost model; these are not the paper's three contributions (the blog splits the tiered persistent engine in two
+    and drops the agent-context ablations).
+  - The companion strategic post states that after putting megakernels into production, megakernel fusion is not
+    the right design goal for varied dynamic workloads - scoped to MoE and batch>1 workloads, while still claiming
+    a 1.7x win over megakernels on Llama 1B at batch 1.
+  techniques:
+  - Persistent engine with candidate hot reload
+  - Fast/slow engine tiering
+  - Analytical parallelism cost model
+  cross_references:
+    intake_entries:
+    - intake-2643
+    handoffs:
+    - autokernel-loop.md
+    - coordination-and-churn-pipeline.md
+  credibility_score: null
+  contradicting_evidence: []
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: together-blog.txt:213-242, Table 1
+    quote: Process + worker init. 93 - Weight loading 50 - KV-cache sizing 21 - JIT kernel warm-up 93 - Autotuning
+      193 - API server ready 10 - RPC call + Together Compiler setup - 1.7 CUDA-graph capture 7 7.3 Total time to
+      serving 467 9.0
+    quote_sha256: 00ecbfbcfe9f007cc374ffc026d5d4b5039dc74048aa2f9068b689aaf893641e
+    source_revision: together.ai blog; retrieved 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: together-blog.txt:245
+    quote: 'TKCC uses a tier of persistent engines to balance the throughput-fidelity tradeoff: "fast engines" load
+      a few layers and are ideal for rapid iteration and low-variance timings, while "slower engines" load many
+      layers and are ideal for testing whether optimizations hold-up on real data distributions.'
+    quote_sha256: 88118ad5d9d8c7c4dd0c1182b8781ea7a315a8b80245cd9f3e589869df85971c
+    source_revision: together.ai blog; retrieved 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: polymorphic-inference.txt:213
+    quote: 'But through the experience of putting some of the first megakernels into production for our customers
+      last year, we learned an interesting lesson: megakernel fusion is actually not the right design goal for modern
+      Polymorphic Inference! In the era of Polymorphic Inference, every variation - from model architecture (e.g.
+      MoE), to workload (dynamic workloads larger than batch size 1) - requires different technical approaches.'
+    quote_sha256: f534c75f865ece12e52f832280a5893d5173c85edd1d2cb0bf435a39135f2897
+    source_revision: together.ai blog (polymorphic inference); retrieved 2026-11-06
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed as text. The table is unattributed and its taxonomy is disjoint from the paper's 761 s breakdown
+      (weight loading 50 vs 265, graph capture 7 vs 226), so it is not a second measurement of the same thing.
+  - claim_index: 1
+    effect: narrowed
+    note: Confirmed for the blog's own text, but the mapping onto the paper's contributions is the blog's, not the
+      paper's.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed and correctly scoped: a design-goal lesson, not a retraction of fusion.'
+  dive_corrections: '2026-11-06: Dive confirmed all three claims as text and established that the blog is not independent
+    evidence for the paper. The 467 s table is unattributed and cannot be reconciled with the paper''s 761 s table;
+    the paper''s is the citable one (its own 5 s row/total gap disclosed). The megakernel concession corroborates
+    a local disposition that already existed, and decides nothing for a source-change kernel cell on one gfx90a
+    node.'
+  notes: 'Companion artifact of intake-2643, superseded by it for technical content. Quote convention: stored quotes
+    are source-faithful but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render
+    as x, minus as -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table
+    cells flatten to one line; spans crossing math or table structure are marked table-derived or inference in setup_scope.
+    Raw-line provenance is in the dive report. Net adoption from this URL is zero; it is retained because the startup-table
+    discrepancy is itself a measurement hazard worth recording.'
+  recommended_actions:
+  - 'TB-1/TB-2 (decline): do not cite the 467 s table; the 252x figure is a duplicate of intake-2643.'
+  - 'TB-5 (record): vendor blog tables and paper tables are not interchangeable measurements.'
+- id: intake-2645
+  arxiv_id: '2608.21952'
+  url: https://arxiv.org/abs/2608.21952
+  source_type: paper
+  title: 'SSDi8: Accurate and Efficient 8-bit Quantization for State Space Duality'
+  categories:
+  - quantization
+  - ssm_hybrid
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - First post-training quantization framework designed specifically for the Mamba-2 SSD module, maintaining a persistent
+    INT8 path across ChunkState, StatePassing, ChunkBMM and ChunkScan1; ChunkCumsum's output and all of ChunkScan2
+    stay FP16 because their element-wise structure cannot be recovered after quantization.
+  - Decouples element-wise multiplications from matrix multiplications so quantized B and C are reused across three
+    SSD submodules, and quantizes channel-varying activations once along the group axis where |G| is much smaller
+    than |H| (about 3% of SSD latency).
+  - Persists the recurrent state in INT8 with a gate multiply by Q(Decay)/2^7 (k=7), implemented as bit-shift operations,
+    plus an offline per-output-channel mean correction applied at the output projection; reports accuracy comparable
+    to FP16 with up to 1.4x speedup in W4A8/W8A8.
+  - Reports that directly applying Transformer-style quantization (Hadamard rotation, GPTQ) to SSD layers degrades
+    accuracy; the tested control rotates the projection layers and applies per-tensor round-to-nearest to SSD inputs,
+    so the measured gap is a scale-granularity failure rather than a rotation result.
+  techniques:
+  - Sparse-aware reformulation separating element-wise from matmul work
+  - Quantize-once reuse of INT8 B/C along the group axis
+  - INT8 persistent state with Q0.7 gate multiply and per-(H,P) static scale
+  - Offline per-channel mean correction at the output projection
+  - Dimension-decomposition-aware channel quantization
+  reported_results:
+  - Mamba-2 2.7B W4A8 six-task average 62.6 vs FP16 63.8 and Quamba2 62.1; 8B W8A8 70.2 vs FP16 70.7.
+  - 'WikiText-2 perplexity 8B: 7.62 W4A8 vs Quamba2 7.94, FP16 7.25; 2.7B prefill 1.47x over FP16 and 1.38x over
+    Quamba2 at B=32, L=2048 on an A5000.'
+  - 'Deployed on Orin NX 16G, outperforming Quamba2 across sequence lengths (W8A8 L=2048: 217.69 ms vs 249.29 ms).'
+  cross_references:
+    intake_entries:
+    - intake-2641
+    - intake-2642
+    - intake-2646
+    - intake-2648
+    handoffs:
+    - quantization-and-low-bit.md
+    - model-architecture-readiness.md
+  credibility_score: 4
+  contradicting_evidence:
+  - Bounded search surfaced only restatements of the authors' numbers (paper-note sites, a model-compression summary);
+    no independent replication was found.
+  - The mean correction is worth only about +0.2 accuracy points, and several percentages in the paper are internally
+    inconsistent (62.7 vs 62.6; 1.38x vs 1.47x; a figure caption that swaps the State path and ChunkScan).
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: arXiv:2608.21952v1 §4 opening (ssdi8_math.txt:226)
+    quote: The output tensor dA_cs from ChunkCumsum is negligible in size compared to other tensors, yet its recovery
+      after quantization is challenging due to the element-wise multiplication; hence, it is retained in FP16. In
+      the same vein, ChunkScan2 remains in FP16 for analogous reasons.
+    quote_sha256: 438e8661b441ac68b53942441ef6ef7f507703fab80a9d7ebd89165fa26f5bb3
+    source_revision: 2608.21952v1; 2026-08-22
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: arXiv:2608.21952v1 §4.2 (ssdi8_math.txt:301, 303)
+    quote: SSDi8 performs an early quantization of the channel-varying activations B and C once along the group
+      axis G at the beginning of each SSD layer.
+    quote_sha256: de0ad54d7572c76809ac65de18d33163aea7bb669d2092f3d8b662102d7c3bc9
+    source_revision: 2608.21952v1; 2026-08-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: arXiv:2608.21952v1 §4.2 Eq. 9 (ssdi8_math.txt:339)
+    quote: where S is a gating constant chosen as 2^k to enable bit-shift operations for minimal latency (with k=7
+      in experiments).
+    quote_sha256: 64e8462324fa2439ef49586bc58c460b49aef7063a4013e7c2a8596d7da5fd25
+    source_revision: 2608.21952v1; 2026-08-22
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: arXiv:2608.21952v1 §4.2 (ssdi8_math.txt:554)
+    quote: 'minimizing the error between Y and Y'' can be formulated as a least-squares problem, and the optimal
+      correction vector c* is given in closed form as the channel-wise mean of the quantization error:'
+    quote_sha256: f3ada065dda1a743d8974ba99b6422a9cad7cec8798d602eaba77964e8f98c93
+    source_revision: 2608.21952v1; 2026-08-22
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: arXiv:2608.21952v1 §1 (ssdi8_math.txt:175); control definition :566, :1723
+    quote: directly applying quantization methods originally designed for Transformers - such as Hadamard rotation
+      or GPTQ - to SSD layers leads to substantial accuracy degradation.
+    quote_sha256: 109d3c0e2983992cdfbc17f8dc4326329b261729503835b795954a584b5c8227
+    source_revision: 2608.21952v1; 2026-08-22
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The ''first'' claim survives, but the five-module coverage does not: ChunkCumsum''s output and all of
+      ChunkScan2 are FP16.'
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed, including the ~3% G-axis placement cost and which three submodules reuse B/C.
+  - claim_index: 2
+    effect: narrowed
+    note: The gate decay is a quantized multiply by Q(Decay)/2^7 (k=7), described by the authors as bit-shift operations;
+      at k=7 the quantized gate saturates at 127/128, a systematic <=0.8% per-chunk under-decay that the paper does
+      not state. The 1.4x hides 1.38x and 1.47x.
+  - claim_index: 3
+    effect: narrowed
+    note: 'The observation is real but its causal attribution is not tested: the only control rotates projections
+      with per-tensor RTN on SSD inputs, and the authors'' own table shows the gap is scale granularity. No arm
+      rotates inside SSD.'
+  dive_corrections: '2026-11-06: Primary-source dive (full HTML text) confirmed the accuracy, perplexity and Orin
+    numbers and overturned the five-module coverage, the ''bit-shift'' description, the 1.4x framing and the anti-Hadamard
+    causal claim. The speedup decomposes into a bandwidth win (StatePassing 2.25x, ChunkScan 1.77x) with ChunkBMM/CB
+    quantization dominating the latency gain; there is no decode measurement anywhere.'
+  notes: 'Stage-2 dive read arXiv HTML v1 from disk (sha256 bf8d8dfb...). Quote convention: stored quotes are source-faithful
+    but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render as x, minus as
+    -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table cells flatten to
+    one line; spans crossing math or table structure are marked table-derived or inference in setup_scope. Raw-line
+    provenance is in the dive report. Decode is ABSENT: no batch-1 latency, TTFT or tokens/s. FP16 residents: dA_cs,
+    all decay/LUT factors and X inside ChunkScan2. The N axis is excluded from quantization, which is exactly the
+    axis LinQuant''s R_QK rotates and MambaQuant''s Hadamard uses, making all three compatible rather than contradictory.'
+  recommended_actions:
+  - 'SD-1 (probe, no kernel): numpy-simulate axis granularity plus the N-axis rotation control nobody ran plus the
+    k=7 decay quant, on captured 1.3B SSD activations.'
+  - 'SD-2/SD-3 (record): two missing primitives (fused chunked-SSD op with INT8 state; per-(H,P)-scaled int8 matmul)
+    and the gate-saturation hazard.'
+  - 'SD-5/SD-6 (decline): mean correction (marginal) and W4A4 (no lane).'
+- id: intake-2646
+  arxiv_id: '2503.22879'
+  url: https://arxiv.org/abs/2503.22879
+  source_type: paper
+  title: 'Quamba2: A Robust and Scalable Post-training Quantization Framework for Selective State Space Models'
+  authors:
+  - Hung-Yueh Chiang
+  - Chi-Chih Chang
+  - Natalia Frumkin
+  - Kai-Chiang Wu
+  - Mohamed S. Abdelfattah
+  - Diana Marculescu
+  categories:
+  - quantization
+  - ssm_hybrid
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - Supports W8A8, W4A8 and W4A16 head-to-toe for both Mamba-1 and Mamba-2, motivated by different bit-width needs
+    for cloud throughput versus edge generation.
+  - Quantizes recurrence inputs offline by sort-and-cluster so similar-range heads share a scale, and quantizes
+    input-dependent B/C per state group (8 groups of 128 channels, not per-channel), exploiting channel-order preservation
+    and activation persistence of SSMs.
+  - Reports 1.3x prefill and 3x generation speedup with 4x memory reduction at a 1.6% average accuracy drop, and
+    runs Mamba2-8B on an Orin Nano 8G at about 12.5-12.7 tokens/s.
+  - At batch 1 the paper's own latency table places weight-only W4A16 within 2% of W4A8 (7.58 vs 7.43 ms per token),
+    so the measured generation gain is dominated by weight streaming and the activation-side contribution is about
+    0.15 ms per token.
+  techniques:
+  - Offline cluster-aware weight reordering folded into weight columns, conv channels and norms
+  - Per-state-group quantization of B and C
+  - Head-to-toe 4/8-bit quantization including embeddings and LM head
+  reported_results:
+  - 'Mamba2-8B W4A8: about 1.3x prefill and 3x generation speedup on an A5000, 4x memory reduction, 1.6 percentage-point
+    average accuracy drop across six zero-shot tasks; 12.5 TPS (W4A8) / 12.7 (W4A16) on Orin Nano 8G.'
+  - Batch-1 Mamba2-8B TPOT 22.73 -> 7.43 ms; weight-only W4A16 7.58 ms; the standalone INT8 SSD kernel is 1.08-1.19x.
+  cross_references:
+    intake_entries:
+    - intake-2641
+    - intake-2645
+    - intake-2648
+    handoffs:
+    - quantization-and-low-bit.md
+    - model-architecture-readiness.md
+  credibility_score: 3
+  contradicting_evidence:
+  - SSDi8 reports that Quamba2 quantizes only SSD inputs and leaves internal SSD computation in higher precision;
+    the dive found this only partially right (I/O is quantized, inner math is not).
+  - 'The 1.6% average hides regressions far larger than the headline: WinoGrande -3.3, LAMBADA -2.1, and excluded
+    MMLU -5.8; Quamba2 also loses the W8A8 average to MambaQuant.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: arXiv:2503.22879v4 abstract and Table 2
+    quote: To this end, we present Quamba2, compatible with W8A8, W4A8, and W4A16 for both Mamba1 and Mamba2 backbones,
+      addressing the growing demand for SSM deployment on various platforms.
+    quote_sha256: 5e555a3c733fc5d10f55995594655b8d2eb7fcc71df8e3469f4837ad9fadebab
+    source_revision: 2503.22879v4; 2025-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: arXiv:2503.22879v4 §4.1
+    quote: Based on the channel order preserving and activation persistence of SSMs, we propose an offline approach
+      to quantize inputs of a linear recurrence in 8-bit by sorting and clustering for input x, combined with a
+      per-state-group quantization for input-dependent parameters B and C. To ensure compute-invariance in the SSM
+      output, we rearrange weights offline according to the clustering sequence.
+    quote_sha256: fcc95921b6c24960bd716980782614cc9f6dba4ca977be350fbe6b3a94269a79
+    source_revision: 2503.22879v4; 2025-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: arXiv:2503.22879v4 §5.2 (quamba2.txt:653-658)
+    quote: In the W4A8 configuration, Quamba2 achieves 3.89x less memory use, 1.39x prefilling, and 3.05x faster
+      generation speed for Mamba2-8B on A5000.
+    quote_sha256: f89dc5d2210656c35caa4be991c6c6f8407d0dbaef386e9f8954f5637aa36312
+    source_revision: 2503.22879v4; 2025-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: arXiv:2503.22879v4 §5.2 (quamba2.txt:658-659); TPOT cells Table 5 (quamba2.txt:631-643)
+    quote: However, 4-bit weights bring latency benefits in the memory-bound generation stage.
+    quote_sha256: 78c0fc449ec4a047530162cfbfeb21a3de713c3b762a294de44c10bcb99ed7c3
+    source_revision: 2503.22879v4; 2025-11-06
+    verified_by: research-intake/stage2
+    setup_scope: 'table-derived: W4A8 7.43 ms and W4A16 7.58 ms are separate Table 5 cells, not a prose comparison'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed, including the explicit head-to-toe grid in Table 2.
+  - claim_index: 1
+    effect: narrowed
+    note: Confirmed, but 'per state group' means 8 groups of 128 channels, not per-channel; the paper's own figure
+      uses m=8 while the text uses m=4,n=4.
+  - claim_index: 2
+    effect: narrowed
+    note: All headline numbers recompute, but 13 tokens/s is a round-up of 12.5/12.7, and the 1.6% average is not
+      a capability number (it hides -3.3 WinoGrande and -5.8 MMLU).
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed from the batch-1 latency table; this is the entry's load-bearing finding.
+  dive_corrections: '2026-11-06: Primary-source dive confirmed the three Stage-1 claims with scope corrections and
+    added the decisive decomposition: the 3x generation speedup is weight streaming, not a Quamba2 activation mechanism.
+    The transferable residue is head-to-toe 4-bit on the LM head (read in full every token and never amortised)
+    and the magnitude-sorted channel permutation, both cheap; the per-group activation scales are not expressible
+    in ggml.'
+  notes: 'Stage-2 dive read arXiv HTML v4 from disk (sha256 a828ec49...). Quote convention: stored quotes are source-faithful
+    but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render as x, minus as
+    -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table cells flatten to
+    one line; spans crossing math or table structure are marked table-derived or inference in setup_scope. Raw-line
+    provenance is in the dive report. No CPU claim or measurement exists; Orin Nano is an Ampere GPU. Prefill 1.3x
+    is against FP16 and slower than W8A8. Full-text scan for cpu/x86/AVX/ggml finds only the substring in ''warm-up''.'
+  recommended_actions:
+  - 'Q2-1 (open, cheap): audit and price a 4-bit output.weight / token_embd arm - zero kernel work, ~1.05 GB/token
+    FP16 down to ~0.26 GB.'
+  - 'Q2-2 (bounded): offline numpy probe of magnitude-sorted channel permutation against an existing Q4_K window.'
+  - 'Q2-3 (decline): 8-bit SSM state.'
+- id: intake-2647
+  arxiv_id: '2609.30057'
+  url: https://arxiv.org/abs/2609.30057
+  source_type: paper
+  title: 'KREX: Concurrent Kernel Benchmarking on Shared GPUs via Region-Granular Exclusivity'
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - Existing agentic kernel-optimization systems reserve a GPU for a whole session or command although only a small
+    fraction of command execution needs exclusivity; measured session utilization is 3.4%, the timed loop is 8.5%
+    of a command, and 6 of 10 pairwise rankings reverse under 64-agent sharing.
+  - 'KREX lets agents mark timing-sensitive regions and enforces exclusivity only there: it blocks new competing
+    submissions, drains outstanding work, freezes sibling processes and isolates CPU cores inside the region, while
+    allowing concurrency outside it.'
+  - It reports up to 3.4x benchmarking throughput with p95 timing inflation of 0.30% / 1.58% / 3.90% for kernels
+    longer than 10 ms / 1 ms / 0.1 ms; the triad is figure-derived and unreproduced in body prose, whose own summary
+    is 2.4-2.5% overall.
+  - 'The AMD arm runs with context pooling disabled: 2.6x, none of it context reuse. On the NVIDIA arm context reuse
+    contributes only about 9% of the gain; off-region concurrency and MPS do the rest.'
+  techniques:
+  - Region-granular exclusivity markers inside a benchmarking command
+  - Submit-blocking plus drain before freezing sibling processes
+  - CPU-core isolation paired with GPU exclusivity
+  - Persistent GPU context processes reused across commands
+  reported_results:
+  - Up to 3.4x throughput over command-granular exclusivity (2.6x on the AMD arm with context pooling disabled),
+    against p95 timing inflation of 0.30/1.58/3.90% by kernel-duration band.
+  cross_references:
+    intake_entries:
+    - intake-2643
+    - intake-2649
+    handoffs:
+    - autokernel-loop.md
+    - kernel-champion-and-promotion.md
+    - coordination-and-churn-pipeline.md
+  credibility_score: 1
+  contradicting_evidence:
+  - The headline fidelity triad appears only in the abstract and introduction; the section that owns the fidelity
+    result reports a different aggregation (2.5% H20 / 2.4% MI308X) and notes that native repeat noise already reaches
+    12.1% below 0.1 ms.
+  - 'No gfx90a/MI210 result: the AMD arm is MI308X (gfx942) with context pooling disabled.'
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: krex.txt:143-148; quantified :210-226, :367-376
+    quote: Existing systems preserve measurement fidelity by reserving a GPU for an entire agent session or benchmarking
+      command. However, this results in poor utilization because only a small fraction of command execution requires
+      exclusive GPU access. Sharing GPUs could recover this idle capacity, but introduces contention that compromises
+      measurement fidelity and misdirects the agent's search.
+    quote_sha256: e02c391fa8b5a28e970fff3321b83af56f77c139c18c6025b0cb6976beaa0141
+    source_revision: 2609.30057v1; 2026-09-24
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: krex.txt:153-157
+    quote: The runtime then enforces exclusivity within marked regions and allows concurrent execution outside them,
+      achieving high throughput while preserving measurement fidelity. To enforce in-region exclusivity, KREX blocks
+      new competing GPU submissions and drains outstanding work before freezing sibling processes and isolating
+      CPU cores, protecting both GPU execution and the host threads that drive measurements.
+    quote_sha256: 8b64bd3637e9f8bf3748a5d6f2b9c4dc4010bafca33083a38cb5d53a5169e344
+    source_revision: 2609.30057v1; 2026-09-24
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: krex.txt:160-163
+    quote: Compared with command-granular exclusivity baselines, KREX delivers up to 3.4x the benchmarking throughput
+      with a negligible p95 timing inflation of 0.30%, 1.58%, and 3.90% for kernels longer than 10 ms, 1 ms, and
+      0.1 ms, respectively.
+    quote_sha256: 55926958e82c3b714e3e7e93ddb421ca4c0d1f75fc2ccddf5c8fde4c678b9c53
+    source_revision: 2609.30057v1; 2026-09-24
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: krex.txt:833-836, :844-848
+    quote: Note that KREX-serial outperforms native by about 9% because context reuse removes repeated context-creation
+      overhead.
+    quote_sha256: 5d4267d1eb26789750caecfda731120e25978dfd39a01827008ef150a8689352
+    source_revision: 2609.30057v1; 2026-09-24
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed and quantified in the paper's own measurements.
+  - claim_index: 1
+    effect: unaffected
+    note: All five sub-mechanisms confirmed; implementation needs a wrapper, an LD_PRELOAD dispatch interposer,
+      a dispatcher and a cgroup freezer - no driver hook, but also no permission to freeze foreign process trees
+      on a shared host.
+  - claim_index: 2
+    effect: narrowed
+    note: The 3.4x is NVIDIA; the AMD arm is 2.6x with context pooling disabled. The fidelity triad is figure-derived
+      while the body reports 2.4-2.5% overall.
+  - claim_index: 3
+    effect: overturned
+    note: The Stage-1 framing attributed the gain to persistent context reuse; the paper measures that at about
+      9% of the NVIDIA gain and 0% on AMD. Off-region concurrency and MPS carry the rest.
+  dive_corrections: '2026-11-06: Primary-source dive confirmed the mechanism and overturned the throughput attribution.
+    For EPYC the premise does not hold as stated: the GPU is already exclusive by grant (gpu-quiet), so the reusable
+    half is the discipline of declaring a timing region and using p95 as a gate input, not the 3.4x. Local bottleneck
+    is grant latency and the 2% effect-size floor, not co-tenant contention.'
+  notes: 'Stage-2 dive read arXiv HTML v1 (sha256 f2621e79...). Quote convention: stored quotes are source-faithful
+    but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render as x, minus as
+    -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table cells flatten to
+    one line; spans crossing math or table structure are marked table-derived or inference in setup_scope. Raw-line
+    provenance is in the dive report. Gate arithmetic: for independent arms p95 inflation ~ sqrt(2)*P, i.e. 0.42/2.23/5.52%;
+    with a 5.52% inflation a 3% win is unresolvable and a 1% win is sub-floor. Rule recorded: F_new = max(F_old,
+    sqrt(2)*P), so the 2% floor survives only while P <= 1.41%.'
+  recommended_actions:
+  - 'KX-1 (adopt pattern): region-scoped GPU grants in the autokernel scaffold.'
+  - 'KX-2 (adopt): treat p95 timing inflation as a gate input and widen the floor when P is large.'
+  - 'KX-5/KX-8 (decline): no submit-block/freeze interposer on a shared host, and do not carry the 3.4x figure to
+    gfx90a.'
+- id: intake-2648
+  arxiv_id: '2501.13484'
+  url: https://arxiv.org/abs/2501.13484
+  source_type: paper
+  title: 'MambaQuant: Quantizing the Mamba Family with Variance Aligned Rotation Methods'
+  categories:
+  - quantization
+  - ssm_hybrid
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Mamba quantization failure is variance misalignment across channels, not rotation itself: a fixed Hadamard
+    transform leaves each channel with a distinct distribution because the input covariance is input-dependent,
+    which is sub-optimal for per-tensor activation scales.'
+  - KLT computed offline from calibration data equalises channel variance exactly when composed with Hadamard, and
+    smoothing vectors folded into the preceding projections (including B, C and the discretization step) handle
+    the online case.
+  - A fixed-granularity rotation-on/off control improves over RTN in all four tested cells (+1.5, +6.6, +0.1, +4.8;
+    the +0.1 cell is within the ablation uncertainty estimated in the dive, not a stated paper threshold), which
+    refutes the general claim that Hadamard rotation degrades SSM/SSD accuracy; the transformer recipe fails because
+    it rotates the residual stream and leaves the recurrence operands per-tensor.
+  - The Hadamard acts on the state axis N ([16,16] block, 16 extra parameters per block), the axis SSDi8 excludes
+    and LinQuant's R_QK rotates, and it is exact because decay along N is scalar - LinQuant's own sufficient condition.
+  techniques:
+  - 'Variance-aligned rotation: offline KLT composed with Hadamard'
+  - Smoothing vectors absorbed into W_g/W_o, W_B, W_C and the discretization step
+  - S-SiLU reparameterisation of the gating nonlinearity
+  - Per-tensor activation quantisation with per-channel smoothing
+  reported_results:
+  - W8A8 under 1% loss on vision, with Mamba-790m at exactly 1.0 point; W4A8 vision cells regress up to 4.6 points
+    and the paper's appendix admits it.
+  - 'Rotation-on/off at fixed granularity: +4.8 (Mamba-2 130m) over RTN in the tested cells; offline KLT plus online
+    Hadamard plus smoothing lifts one cell 47.7 -> 77.8.'
+  - 'No latency, device, throughput, generation or decode measurement: the cost claims are analytic MAC counts,
+    and every percentage in the paper is percentage points.'
+  cross_references:
+    intake_entries:
+    - intake-2641
+    - intake-2645
+    - intake-2646
+    handoffs:
+    - quantization-and-low-bit.md
+    - model-architecture-readiness.md
+  credibility_score: 3
+  contradicting_evidence:
+  - The 'first PTQ for Mamba' claim is overturned by Quamba (arXiv:2410.13229), which predates it and is never cited.
+  - The QuaRot baseline numbers are reported as percentages where they are percentage points (21% is 20.9 points;
+    the '>12%' reproduces in neither unit).
+  - The [5120,5120] Hadamard is not a power-of-two order, so the cited O(n log n) cost is unreproducible; a dense
+    implementation would cost about 61% of their own baseline.
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: mambaquant.txt:169, :309
+    quote: Our analysis reveals that Hadamard transformation fails to achieve variance alignment across channels,
+      as shown in Figure 2(b)(e).
+    quote_sha256: a058ab30126b5fcb9ccfa367ab306b7c1eff2574fb9bdffa24e916d4e9f8e8a3
+    source_revision: 2501.13484v3; 2025-01-23
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: mambaquant.txt:339
+    quote: In this way, the variance of each channel becomes the same, making quantization much easier.
+    quote_sha256: 6e0d1a1006dde6b71d09feb8d90b4113d1252434a77f5b4ac0996c10fa17d37f
+    source_revision: 2501.13484v3; 2025-01-23
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Table 3, Hadamard-rotation rows (mambaquant.txt:654-659)
+    quote: Hadamard Rotate 33.9(↑\uparrow 1.5) 50.8(↑\uparrow 6.6) Hadamard Rotate 25.1(↑\uparrow 0.1) 40.2(↑\uparrow
+      4.8)
+    quote_sha256: f76a26be1b8c1744241469f738f0bcda332da5eead87f4a5fcb156cc6c5eabab
+    source_revision: 2501.13484v3; 2025-01-23
+    verified_by: research-intake/stage2
+    setup_scope: 'table-derived: the W8A8 vision cells; the paper states no prose conclusion about the sign of rotation'
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: mambaquant.txt:1309 (Hadamard sizes); axis pinned by :157 Figure 1c caption and :1306 parameter count
+    quote: Within the Mamba block, we inserted an online Hadamard transformation of size [16,16] for the matmul
+      smoothing and similarly used a [5120,5120] Hadamard transformation for the output projection smoothing.
+    quote_sha256: c8e3efc5ecee3a7ad3fa1e3f0a2e9db340a9291e7927936d1ffb43540739d622
+    source_revision: 2501.13484v3; 2025-01-23
+    verified_by: research-intake/stage2
+    setup_scope: 'inference: that the [16,16] block acts on state axis N follows from the figure caption identifying
+      the rotated tensor as the PScan output, the width 16 matching d_state, and the 16 extra parameters per block
+      - the paper does not name the axis'
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed: the derivation and the sub-optimal-not-harmful wording both check out.'
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed mathematically (Eq. 12-13); KLT alone does not equalise, the Hadamard on whitened data does.
+  - claim_index: 2
+    effect: narrowed
+    note: The fixed-granularity control exists and is positive, but the paper measures no latency and its percentages
+      are points; the refutation of SSDi8's general claim is therefore evidential, not a like-for-like Mamba-2 reproduction.
+  - claim_index: 3
+    effect: unaffected
+    note: Confirmed by tensor shape, parameter count and the scalar-decay condition.
+  dive_corrections: '2026-11-06: Stage-2b dive (Stage 1 + 2 in one pass) established this as the missing third position
+    on SSM rotation: rotation is right, unaligned rotation is weak, and the Transformer recipe is catastrophic.
+    It refutes SSDi8''s general anti-Hadamard claim while leaving its narrow description of the tested recipe intact,
+    and it makes LinQuant''s R_QK a mechanism-supported boundary extension rather than an unexplained contradiction.'
+  notes: 'Read arXiv HTML v3 end to end (sha256 recorded in the dive). Quote convention: stored quotes are source-faithful
+    but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render as x, minus as
+    -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table cells flatten to
+    one line; spans crossing math or table structure are marked table-derived or inference in setup_scope. Raw-line
+    provenance is in the dive report. Implementation is declined for EPYC: per-tensor activation quantisation plus
+    a per-token transform inside an FP32 recurrence, against a quantiser (Q4_K per-32 blocks) that already does
+    most of the equalisation, with zero latency evidence. The value is the evidence and the predicted sign/granularity
+    behaviour for a future probe.'
+  recommended_actions:
+  - 'MQ-2/MQ-3 (record + pre-register): upgrade the LinQuant/SSDi8 relation to boundary extension; state the predicted
+    positive sign and granularity-dependent effect size before any N-axis rotation probe.'
+  - 'MQ-4 (merge into Q2-2): add a 32-wide Hadamard and KLT-composed arm to the existing channel-permutation probe
+    at a fixed per-32-block budget.'
+  - 'MQ-6 (decline implementation): re-open only if an INT8 state path lands and per-tensor activation quantisation
+    is proposed.'
+- id: intake-2649
+  arxiv_id: '2605.03208'
+  url: https://arxiv.org/abs/2605.03208
+  source_type: paper
+  title: 'Kerncap: Automated Kernel Extraction and Isolation for AMD GPUs'
+  authors:
+  - Cole Ramos
+  - Keith Lowery
+  categories:
+  - hardware_optimization
+  - tool_implementation
+  - benchmark_methodology
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - A single HSA-level interposer captures both HIP and Triton dispatches, with a Python compile-hook shim supplying
+    Triton's JIT-only metadata; no binary rewriting is required and source is optional.
+  - It extracts one kernel dispatch from a running application, snapshots every tracked device allocation at its
+    original virtual address, finds the translation unit through compile_commands.json plus DWARF plus nm, and emits
+    a project with a Clang VFS overlay that replays the exact original compiler flags.
+  - Evaluated on six HIP and Triton workloads across CDNA2 (MI210/gfx90a), CDNA3 and RDNA3, from 152 MB to 30 GB,
+    including a VA-faithful vLLM MoE capture reached through pointer indirection.
+  - The llama.cpp case study's 13.6x is arithmetically correct but dominated by replacing a 2,072 s counter-profile
+    run with a 129.4 s byte-exact replay; the developer-productivity figure is the 5.4x inner loop, and single-TU
+    recompiles take 18.3 s against 128 s for a full CMake rebuild.
+  techniques:
+  - HSA runtime interposer via rocprofiler-sdk LD_PRELOAD
+  - Address-space closure capture at original virtual addresses
+  - Translation-unit discovery via compile_commands.json, DWARF and nm
+  - Clang VFS overlay replay with exact original flags
+  reported_results:
+  - Six workloads, three AMD architectures, 152 MB-30 GB snapshots; MI210/gfx90a cells in every workload.
+  - 'llama.cpp: edit-recompile-validate 13.6x overall (5.4x on the byte-exact replay path), single-TU recompile
+    18.3 s vs 128 s.'
+  - Interception-only preserves steady-state throughput within noise on the CDNA3 host (251 vs 254 tg32).
+  cross_references:
+    intake_entries:
+    - intake-2643
+    - intake-2647
+    handoffs:
+    - autokernel-loop.md
+    - rocm-kernel-authoring.md
+    - kernel-champion-and-promotion.md
+  credibility_score: 2
+  contradicting_evidence:
+  - Not peer-reviewed, no artifact evaluation, and no independent replication; the fidelity claim is byte-exactness
+    against the captured region, not correctness of the kernel.
+  - Requires ROCm >= 7.0 with rocprofiler-sdk; this host runs ROCm 6.2 and has no librocprofiler-sdk, so it is not
+    runnable as shipped today.
+  - Captures one dispatch at a time with no inter-kernel dependency tracking, which bounds what it can represent
+    for a multi-kernel decode path.
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: abstract (kerncap.html:330); mechanism :872-905
+    quote: an automated kernel extraction tool that intercepts dispatches at the HSA runtime for both HIP and Triton
+    quote_sha256: 6f64228b90a2708dc7e53819ee174dd38574490320af9f98d29bc97a8f7e8bd5
+    source_revision: 2605.03208v2; 2026-05-06
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: kerncap.html:986 (address-space closure)
+    quote: an address space is a closure over its pointer graph, so capturing every tracked allocation at its original
+      virtual address captures the graph for free.
+    quote_sha256: 526588b702beb230925a928866cd941ba6631825940b725b0651edbc4c96afc5
+    source_revision: 2605.03208v2; 2026-05-06
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: kerncap.html:1564; Table 2 :1686-1689
+    quote: We evaluate Kerncap across three AMD GPU architectures spanning AMD
+    quote_sha256: 9356c3ca3429beb9a50bd47a1c0bdec29a5d6b459e10c4b1e7e3afd2b46cbe45
+    source_revision: 2605.03208v2; 2026-05-06
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: abstract (kerncap.html:349); decomposition :2269, :2357, :2361
+    quote: reducing kernel isolation from a multi-hour process to a single command.
+    quote_sha256: 18689bcae92e865c00c763e58ac7709c27d388de21887f0786a87ad97b224044
+    source_revision: 2605.03208v2; 2026-05-06
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: kerncap.html:2325
+    quote: make recompile rebuilds the single HSACO in 18.3 seconds (vs. 128 seconds for a full llama.cpp CMake
+      rebuild).
+    quote_sha256: a03d61d2194d413cce370347c5e615bc7dc6c3c8fd6174e4fdc533a69f0fd163
+    source_revision: 2605.03208v2; 2026-05-06
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed; the interposer is a single HSA hook with a Python shim for Triton metadata.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed, including the address-space closure and VFS overlay replay.
+  - claim_index: 2
+    effect: unaffected
+    note: Confirmed, and gfx90a/MI210 is explicitly in scope across all six workloads.
+  - claim_index: 3
+    effect: narrowed
+    note: 13.6x is arithmetically right but inflated by removing a counter-profiling run; the honest developer-productivity
+      number is the 5.4x inner loop.
+  dive_corrections: '2026-11-06: Stage-2b dive. Verdict is adopt-pattern, not adopt-component: Kerncap solves the
+    kernel-in-a-big-HIP-app problem and would delete two scheduled hand-built harnesses, but it cannot sit at the
+    trust boundary (no confinement, no anti-tamper, and an oracle that is identity-to-capture so an identically
+    wrong candidate would pass). It is a fixture generator inside the sandbox. Host is ROCm 6.2 with no rocprofiler-sdk,
+    so a ROCm 7.0 migration gates it. The larger post-rebuild gap is build parallelism, not build tooling.'
+  notes: 'Read arXiv HTML v2 end to end (sha256 ec53fdda...). Quote convention: stored quotes are source-faithful
+    but not byte-identical where the HTML/LaTeX renderer intervenes - multiplication signs render as x, minus as
+    -, superscripts as ^, curly quotes fold to straight, doubled math tokens collapse, and table cells flatten to
+    one line; spans crossing math or table structure are marked table-derived or inference in setup_scope. Raw-line
+    provenance is in the dive report. Artifact: github.com/AMDResearch/intellikit (kerncap/ subdir). Interception
+    fidelity measured on gfx942 only; no gfx90a perturbation measurement. Complement to KREX: a Kerncap replay is
+    itself a region holder, not an exception to region-granular exclusivity.'
+  recommended_actions:
+  - 'KC-1 (trigger): ROCm 7.0 gate before any adoption.'
+  - 'KC-2 (immediate): instrument and parallelise build seconds (AK-HR-3b) before buying any build accelerator.'
+  - 'KC-3 (probe): hoist the runtime branch out of mul_mat_vec_q''s inner loop - the paper''s measured 1.22x on
+    a decode hot kernel; gate >=1.10.'
+  - 'KC-4 (trigger): replace the two hand-built harnesses behind ROCm >=7.'
+  - 'KC-5 (decline): never at the trust boundary.'
+
