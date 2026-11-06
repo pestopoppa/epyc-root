@@ -759,3 +759,12 @@ Sources: [log-linear-gated-deltanet-readiness](../handoffs/active/model-architec
 
 - intake-2205#record (Qwen3.8-Next architecture design report): Dive harvested the inference-relevant mechanism set (QSA parameters, 4-branch Gated Residual read/write rule, n-gram placement, MTP acceptance) and confirmed the indexer-budget claim from intake-1945#record. Worth investigating; disposition monitor; handoffs cpu-decode-roofline-program and reasoning-compression.
 - intake-2213#record (FlashQLA): Settled ops (chunked fwd/bwd only, no decode), algorithm (chunk 64, WY/UT, fused state carry, fp32 acc), vendor speedups with conditions and MIT licence; our v10 prefill is sequential on CPU and HIP. Monitor; handoffs mi210-big-model-and-acceleration-roadmap and cpu-prefill-compute-large-models.
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): chunked GDN prefill and its oracle
+
+- **A chunked GDN graph already exists in the frozen tree**; what the GDN/Mamba-2 readiness line lacks is the fused kernel, the quantization boundaries, INT8 stored state and the rho/tau/eta knobs — not the algorithm (intake-2642).
+- **The invariance algebra now has an executable spec.** `linquant/reference.py` is torch-only, float64, and maps exactly onto `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, so it can serve as a CPU conformance oracle without weights (intake-2642).
+- **State-precision asymmetry**: an INT8 carry costs linear attention ~8% perplexity but only ~0.2-0.8% for decaying mixers, because decay damps accumulated error; state traffic is about 0.17% of per-token bytes today, so this is a prior, not a task (intake-2641, intake-2645).
+- **Filed work**: `GDN-ORACLE-1` (fp64 oracle) and `GDN-SHARE-1` (core-share profile that closes the LinQuant line below 5% of wall) in [model-architecture-readiness.md](../handoffs/active/model-architecture-readiness.md).
+
+Sources: [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [SSDi8 dive](../research/deep-dives/quant-compiler-20261106/ssdi8.md)

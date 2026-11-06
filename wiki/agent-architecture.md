@@ -5765,3 +5765,12 @@ Sources: [S4 baseline vs Omega prompts](../docs/reports/harness-run-filings-2026
 - Shared job templates (gitnexus-impact and GPU job-fence modules) are linted at rowflow2 publish.
 
 Sources: [friction review pass 4](../docs/reports/coordination/keeper-friction-review-20261105.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [wrap-up 6 progress](../progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md)
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): what an agentic optimizer actually needs
+
+- **Measurement turnaround dominates candidate quality** in a mature agentic kernel loop: Together Compiler's premise matches our measured split (build 75.7%, measured 3.9%), and the portable fixes are kernel-store reuse before rebuilding, a parallel build, and one grant carrying many measurement units (intake-2643).
+- **Prescribed context and role-decomposed planners measured negative** in their ablations (an expert knowledge base cost 25-31% speedup; naive ensembles beat expert strategies 6.2x vs 4.9x). Do not generalise this to our loop: their experiment compares role-specialised peers, while ours is a stage pipeline with a no-repeat fold, which that ablation does not test (intake-2643).
+- **An external optimizer's keep gate is not automatically stronger than ours**; theirs states no repeats and no rollback beyond teardown (intake-2643).
+- **Filed work**: `P1`/`P2`/`P3` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md) and [coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md).
+
+Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · [intake stage-3 plan](../research/intake-stage3-plan-2026-11-06-linquant-tkcc.md)

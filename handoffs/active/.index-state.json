@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 513
+      "open": 508
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -66,7 +66,7 @@
             "INF-06#autokernel-restart-and-strip"
           ],
           "guarded": 0,
-          "line": 24,
+          "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
           "open": 51
@@ -76,7 +76,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5899,
+          "line": 5902,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5979,
+          "line": 5982,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6276,
+          "line": 6279,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9491,
+          "line": 9494,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13841,
+          "line": 13844,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14053,
+          "line": 14056,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -662,7 +662,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 95,
+          "line": 98,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
           "open": 28
@@ -672,7 +672,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5058,
+          "line": 5061,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0
@@ -682,7 +682,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5211,
+          "line": 5214,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 1
@@ -692,7 +692,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5701,
+          "line": 5704,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -704,7 +704,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5815,
+          "line": 5818,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4
@@ -729,10 +729,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 243,
+      "closed": 248,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 114,
+      "open": 109,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -745,13 +745,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 138,
+          "closed": 143,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 67
+          "open": 62
         },
         {
           "blocked": 0,
@@ -1137,7 +1137,7 @@
             "INF-06#autokernel-restart-and-strip"
           ],
           "guarded": 0,
-          "line": 9,
+          "line": 12,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
           "open": 44
@@ -1147,7 +1147,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1597,
+          "line": 1600,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1157,7 +1157,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1721,
+          "line": 1724,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1167,7 +1167,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2048,
+          "line": 2051,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1177,7 +1177,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2187,
+          "line": 2190,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1187,7 +1187,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2740,
+          "line": 2743,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 2
@@ -1201,7 +1201,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2879,
+          "line": 2882,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1218,7 +1218,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3773,
+          "line": 3776,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61
@@ -2148,7 +2148,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 36,
+          "line": 39,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
           "open": 40
@@ -2161,7 +2161,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1732,
+          "line": 1735,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 21
@@ -2174,7 +2174,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2999,
+          "line": 3002,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 5
@@ -2184,7 +2184,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3404,
+          "line": 3407,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 4
@@ -2194,7 +2194,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3919,
+          "line": 3922,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 4
@@ -2204,7 +2204,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 4030,
+          "line": 4033,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 2
