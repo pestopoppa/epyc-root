@@ -221,6 +221,7 @@ def arm_fails_since_pass(flags, rid, p=None):
 # the replay gate's negative controls can prove the OLD behaviour fails the new scenario (never a tautology).
 PRECOND_PARK_ONCE = True      # fix 1: a --precond-cmd refusal parks the row at the FIRST refusal (478 false repeats vs 3 real)
 COMPLETE_BEFORE_RC14 = True   # fix 2: a dead poller whose row has a terminal success receipt is COMPLETE, not rc=14 (11/11 false)
+WIDTH_JUSTIFICATION = True   # operator 2026-11-06: a justified multi-quarter CPU width is admitted without shape_override
 GPU_IDLE_BY_DEVICE = True     # fix 3: a GPU-token grant is idle by its KFD clients + device busy %, never by CPU % (43/72 false)
 GPU_IDLE_SAMPLES = 2          # fix 3: consecutive quiet device samples before a GPU grant reads IDLE-HELD
 _PRECOND_REFUSED = "refuse rc=12: not ready: precond-cmd failed"
@@ -854,7 +855,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "gpu_fence_override", "timing", "gpu_use"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -902,11 +903,15 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              f"shape {c['shape']} needs whole-host evidence: >= {WHOLE_HOST_THREADS} threads (found {c['threads'] or 'none'}), a "
              "baseline_ref naming the decision-grade baseline / production-serving measurement, or shape_override "
              f"\"operator: <who> <date>: <why>\"; right-sized from its threads: {'declare -t/--threads/--workers/OMP_NUM_THREADS' if c['threads'] is None else ('sub-quarter' if c['threads'] <= SUB_CORES else 'quarter' if c['threads'] <= 24 else 'multi-quarter(' + str(min(3, -(-c['threads'] // 24))) + ')')}")
-        need(over < SHAPE_TOLERANCE_CORES, f"declared {decl or 'regions ' + regions} books {over} cores more than the evidence "
+        wj = width_justified(row, c)
+        if wj:
+            print(f"WIDTH-JUSTIFIED {rid}: declared {decl or regions} over contract {c['shape']} by {over} cores: {wj}")
+        need(wj or over < SHAPE_TOLERANCE_CORES, f"declared {decl or 'regions ' + regions} books {over} cores more than the evidence "
              f"contract needs ({c['shape']}: {c['need']} cores; threads {c['threads'] or 'unknown'}"
              f"{': ' + ', '.join(row.get('threads_evidence') or []) if row.get('threads_evidence') else ''}; engine lock "
              f"{'= grant' if c['lock'] else '= --claim-cpus ' + (o.get('claim_cpus') or '-')}); republish right-sized "
-             f"(shape {c['shape']}, a claim no wider than it), or add shape_override \"operator: <who> <date>: <why>\"")
+             f"(shape {c['shape']}, a claim no wider than it), add width_justification \"<why the extra width helps, >= 20 chars>\" "
+             "(CPU rows only), or add shape_override \"operator: <who> <date>: <why>\"")
         wide = {int(t[1:]) for x in c["options"] for t in expand(x) if re.fullmatch(r"[ct]\d+", t)} - GPU_Q3_ALLOWED_CPUS
         need(not (c["gpu_use"] and wide and not c["evidence"]), f"GPU-lane row locks cpus beyond q3 + 184-191 "
              f"({compress_cpus(wide)}); a GPU run needs gpu-quiet + q3's host threads (shape gpu-q3: regions "
@@ -1048,7 +1053,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
-              "fix_ref", "baseline_ref", "shape_override", "gpu_fence_override", "timing", "gpu_use"):
+              "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -1718,6 +1723,11 @@ def contract_of(d, o=None, flags=None):
         # (read as the host) unless it names the grant's own cpus; a CONTRACT_LOCK engine's lock= replaces it anyway
     tv = [x for x in (row_threads(d, flags), o.get("threads")) if x]
     threads = max(tv) if tv else None
+    if threads is None and WIDTH_JUSTIFICATION and len(str(d.get("width_justification") or "").strip()) >= WIDTH_JUSTIFICATION_MIN:
+        # operator 2026-11-06: a width-agnostic job (no thread knob) with a justified multi-quarter declaration books that width
+        dw = re.fullmatch(r"multi-quarter\(([23])\)", str(d.get("declared_shape") or d.get("shape") or ""))
+        if dw and not d.get("timing") and d.get("admission_class") not in GPU_TIMING_CLASSES:
+            threads = 24 * int(dw.group(1))
     gpu_row = "mi210" in regs or cls in ("gpu", "cpu+gpu") or d.get("lane") == "gpu"
     gpu_use = gpu_row and not gpu_quiet_only(d, o, flags)
     timing = gpu_timing_row(d, o)
@@ -1969,6 +1979,20 @@ def compress_cpus(cpus):
     return ",".join(out)
 
 
+WIDTH_JUSTIFICATION_MIN = 20
+
+
+def width_justified(row, c):
+    """The justification text when a CPU row's extra width is admitted by width_justification, else ''. Never for a GPU
+    row, a timing row or a whole-host shape: the q3/gpu-quiet placement rules are separate gates and stay unchanged."""
+    wj = row.get("width_justification")
+    if not WIDTH_JUSTIFICATION or not isinstance(wj, str) or len(wj.strip()) < WIDTH_JUSTIFICATION_MIN:
+        return ""
+    if c.get("gpu_use") or c.get("timing") or row.get("timing") or c["shape"] in ("host", "quiet-host") or str(row.get("lane")) == "gpu":
+        return ""
+    return wj.strip()
+
+
 def check_shape_evidence(spec, o):
     """Publish gate for the whole-host evidence fields themselves."""
     br = spec.get("baseline_ref")
@@ -1976,6 +2000,10 @@ def check_shape_evidence(spec, o):
         need(isinstance(br, str) and br.strip(), "baseline_ref must name the decision-grade baseline / production-serving measurement")
         if br.startswith("/"):
             need(os.path.exists(br), f"baseline_ref {br} does not exist")
+    wj = spec.get("width_justification")
+    if wj is not None:
+        need(isinstance(wj, str) and len(wj.strip()) >= WIDTH_JUSTIFICATION_MIN,
+             f"width_justification must be a string of >= {WIDTH_JUSTIFICATION_MIN} characters naming why the extra width helps")
     so = spec.get("shape_override")
     if so is not None:
         need(isinstance(so, str) and re.match(r"^operator:\s*\S+.*\d{4}-\d{2}-\d{2}.*:\s*\S", so),

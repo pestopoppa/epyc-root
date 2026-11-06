@@ -88,7 +88,7 @@ SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "s
                "estimate_s": (int, float), "min_window_s": (int, float), "decision_rule": str,
                "priority_rank": (int, float)}
 SPEC_OPTIONAL = {"quiet_reason": str, "measured_ack": str, "supersedes": (str, list), "fix_ref": str,
-                 "published_at": str, "schema": str, "legacy": dict, "timing": bool}
+                 "published_at": str, "schema": str, "legacy": dict, "timing": bool, "width_justification": str}
 FACTS = ("NCORES", "GPU_HOST_THREADS", "GPU_SIBLING_CORES", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
          "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG", "IDLE_WARN_S", "IDLE_HELD_RETRY",
          "PARK_ON_REFUSAL", "REFUSAL_RCS", "REFUSAL_REASONS", "COMPLETE_BEATS_DEAD", "GPU_IDLE_BY_GPU_SIGNALS", "GPU_IDLE_PCT",
@@ -389,6 +389,14 @@ def validate(spec, pred=None, launcher_exists=os.path.isfile):
     if spec.get("timing") and spec["gpu"] != "exclusive" and not quiet_ok_cores(need):    # 8 (SMT siblings)
         errs.append("timing row on cores 88-95 (siblings = gpu host threads 184-191) must declare gpu exclusive "
                     "(gpu-quiet); otherwise place it on q0-q2")
+    wj = spec.get("width_justification")                                       # operator 2026-11-06 (mirrors rowflow)
+    if wj is not None:
+        if len(wj.strip()) < 20:
+            errs.append("width_justification must be >= 20 characters naming why the extra width helps")
+        elif n <= 24:
+            errs.append(f"width_justification is for a multi-quarter CPU width; |cpus|={n} needs none")
+        elif spec["gpu"] != "none" or spec.get("timing") or spec["quiet"]:
+            errs.append("width_justification applies to CPU rows only: never gpu, timing or quiet rows (placement rules unchanged)")
     if not os.path.isabs(spec["stop_file"]) or "$" in spec["stop_file"]:       # 5
         errs.append(f"stop_file {spec['stop_file']!r} is not an absolute literal path")
     if not launcher_exists(spec["launcher"]):                                  # 6
@@ -475,7 +483,7 @@ def map_legacy(m):
             "published_at": str(m.get("published_at") or ""), "legacy": {"regions": regions, "shape": shape}}
     if ac in _TIMING_CLASSES:
         spec["timing"] = True
-    for k in ("supersedes", "fix_ref"):
+    for k in ("supersedes", "fix_ref", "width_justification"):
         if m.get(k):
             spec[k] = m[k]
     if spec["quiet"] and m.get("shape_override"):

@@ -164,3 +164,27 @@ def test_negative_control_pass4_old_rule_fails_scenario(flag, name, expect, work
     viol = list(check(dec))
     assert viol and any(e in v for v in viol for e in expect), \
         f"with {flag} off the old keeper should fail {name} ({expect}); got {viol}"
+
+
+def test_negative_control_width_justification_old_code_refuses_justified_multiquarter(work, tmp_path):
+    """With WIDTH_JUSTIFICATION off (the pre-change publish gate) the justified multi-quarter scenario must FAIL."""
+    import importlib.util
+    old = _candidate_with_flag_off(work, "WIDTH_JUSTIFICATION")
+    spec_ = importlib.util.spec_from_file_location("rowflow_old_wj", os.path.join(old, "rowflow.py"))
+    sys.path.insert(0, old)
+    try:
+        rf = importlib.util.module_from_spec(spec_)
+        spec_.loader.exec_module(rf)
+    finally:
+        sys.path.remove(old)
+    root = str(tmp_path)
+    flags = os.path.join(root, "compute-flags")
+    os.makedirs(os.path.join(flags, "ready")); os.makedirs(os.path.join(flags, "grants"))
+    rf.TMP = root + "/"
+    spec, check = SC.PUBLISH_SCENARIOS["publish-wj-justified-multiquarter-accepted"](root)
+    row, err = None, None
+    try:
+        row = rf.publish(spec, flags)
+    except rf.Refused as e:
+        err = str(e)
+    assert check(row, err, rf), "the old code should refuse the justified multi-quarter row"

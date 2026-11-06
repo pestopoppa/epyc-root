@@ -79,6 +79,10 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
     gpu-quiet,q3,t184..t191: q3 busy" while an 8-core AITER build held 80-87/176-183). A timing row
     that really needs a quieter neighbourhood declares it: explicit regions (e.g. `mi210_0,72-95,184-191`)
     plus `shape_override "operator: <who> <date>: <why>"`; the keeper honours them verbatim.
+  - **Width beyond the evidence contract (CPU rows only, operator 2026-11-06)**: a `multi-quarter(n)` declaration is admitted
+    without `shape_override` when the spec carries `width_justification` (>= 20 chars naming why extra width helps, e.g.
+    "width-agnostic prefill; throughput scales with threads"); it is logged in the row and the publish output. Never for GPU/timing
+    rows (placement rules above unchanged); a smoke footprint is still no width evidence and a declared quarter is still a floor.
   - **Any other GPU row (correctness, builds, qualification) and production** → shape `gpu`: the GPU +
     its own threads 184-191 only. q3 cores stay grantable to CPU work in parallel (measured: GPU at 100%
     while 88-95 sit ~1%; co-residency cost below).

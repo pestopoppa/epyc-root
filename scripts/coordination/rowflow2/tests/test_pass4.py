@@ -333,3 +333,24 @@ def test_p4_4_negative_control_first_grantable_in_id_order_grants_the_rank_20_ro
     assert granted == [LATE[0]], granted
     with pytest.raises(AssertionError):
         check_plan(sim.plans[-1][1].pending, p3.basis, p3, sim.now)   # the two-sided oracle catches the priority inversion
+
+
+# ================================================================ width_justification (operator 2026-11-06)
+WJ = "width-agnostic prefill; throughput scales with threads"
+
+
+def test_width_justification_multiquarter_cpu_accepted_and_bad_forms_refused(tmp_path):
+    sim = Sim(tmp_path)
+    assert sim.publish(spec("wj-ok", cpus="q0,q1", threads=40, width_justification=WJ)) == []
+    assert any("width_justification" in e for e in sim.publish(spec("wj-short", cpus="q0,q1", threads=40, width_justification="faster")))
+    assert any("width_justification" in e for e in sim.publish(spec("wj-q", cpus="q1", threads=12, width_justification=WJ)))
+    assert any("width_justification" in e for e in sim.publish(spec("wj-gpu", cpus="q0,q1", threads=40, gpu="exclusive", width_justification=WJ)))
+    assert any("width_justification" in e for e in sim.publish(spec("wj-timing", cpus="q0,q1", threads=40, timing=True, width_justification=WJ)))
+
+
+def test_width_justification_carried_from_legacy_manifest():
+    m = {"schema": rf.LEGACY_SCHEMA, "id": "wj-leg", "owner": "o", "handoff_task": "handoffs/active/x.md:R", "launcher": "/bin/sh",
+         "regions": "q0,q1", "shape": "multi-quarter(2)", "estimate_s": 3000, "min_window_s": 600, "decision_rule": "rc == 0",
+         "priority_rank": 50, "width_justification": WJ}
+    s, why = rf.map_legacy(m)
+    assert why is None and s["width_justification"] == WJ

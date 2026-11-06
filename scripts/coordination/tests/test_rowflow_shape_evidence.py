@@ -108,6 +108,27 @@ class ShapeEvidence(Fx):
         self.assertEqual(rf.row_threads({"id": "pf", "declared_threads": 24}, flags), 24)
         self.assertIsNone(rf.row_threads({"id": "x", "measured_threads": 0.4}, flags))
 
+    def test_width_justification_admits_multiquarter_cpu(self):
+        """operator 2026-11-06: a justified multi-quarter CPU width needs no shape_override; short/absent still refused."""
+        lp = self.launcher("wj", cmd="python3 job.py")
+        with self.assertRaises(rf.Refused) as e:
+            rf.publish(self.spec("wj", lp, regions="any-cpu-quarter", shape="multi-quarter(2)"), self.flags)
+        self.assertIn("width_justification", str(e.exception))
+        with self.assertRaises(rf.Refused):
+            rf.publish(self.spec("wj", lp, regions="any-cpu-quarter", shape="multi-quarter(2)", width_justification="faster"), self.flags)
+        with self.assertRaises(rf.Refused):
+            rf.publish(self.spec("wj", lp, regions="any-cpu-quarter", shape="multi-quarter(2)", width_justification="   "), self.flags)
+        why = "width-agnostic prefill; throughput scales with threads"
+        row = rf.publish(self.spec("wj", lp, regions="any-cpu-quarter", shape="multi-quarter(2)", width_justification=why), self.flags)
+        self.assertEqual(row["width_justification"], why)
+        self.assertEqual(row["shape"], "multi-quarter(2)")   # the justified width is what the contract books
+
+    def test_width_justification_never_admits_gpu_or_whole_host(self):
+        why = "width-agnostic prefill; throughput scales with threads"
+        lp = self.launcher("wjh", cmd="bench -t 8", extra="--claim-cpus 0-95")
+        with self.assertRaises(rf.Refused):
+            rf.publish(self.spec("wjh", lp, regions="0-95", shape="host", width_justification=why), self.flags)
+
     def test_declared_quarter_never_shrunk_by_smoke(self):
         """iqk-q8-prefill-ab/-step0 2026-11-05: declared quarter, 4-core smoke measured ~2 threads, granted 4 cores."""
         os.makedirs(os.path.join(self.flags, "dryrun", "iq"), exist_ok=True)

@@ -988,7 +988,49 @@ def pub_inf75_c6_r2_explicit_override(root):
     return spec, check
 
 
-PUBLISH_SCENARIOS = {"publish-npd1-step5-accepted": pub_npd1_step5,
+def _wj_spec(root, rid, **kw):
+    d, lp = _mk_cpu_row(root, rid, "import os\nassert len(os.sched_getaffinity(0)) >= 48, 'width-agnostic prefill'\n")
+    txt = open(lp).read().replace("export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1\n", "")   # width-agnostic: no thread knob
+    open(lp, "w").write(txt)
+    spec = {"id": rid, "owner": "t", "launcher": lp, "lane": "cpu", "regions": "any-cpu-quarter", "shape": "multi-quarter(2)",
+            "result_path": os.path.join(d, "out", "r.json"), "decision_rule": "replay publish fixture",
+            "estimate_s": 3000, "handoff_task": "handoffs/active/x.md:LSA", "first_progress_s": 600}
+    spec.update(kw)
+    return spec
+
+
+def pub_wj_justified_accepted(root):
+    """lsa-quality-32k-20261106-r4-pca: width-agnostic CPU prefill, multi-quarter(2), width_justification, NO shape_override."""
+    spec = _wj_spec(root, "lsa-wj-ok", width_justification="width-agnostic prefill; throughput scales with threads")
+
+    def check(row, err, rf):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        c = rf.contract_of(row)
+        return [] if row.get("width_justification") and str(c["shape"]).startswith("multi-quarter") else [f"contract {c['shape']} / no justification"]
+    return spec, check
+
+
+def pub_wj_unjustified_refused(root):
+    spec = _wj_spec(root, "lsa-wj-none")
+
+    def check(row, err):
+        return [] if err is not None and "books" in err and "width_justification" in err else [f"expected the width refusal, got row={bool(row)} err={err}"]
+    return spec, check
+
+
+def pub_wj_short_refused(root):
+    spec = _wj_spec(root, "lsa-wj-short", width_justification="faster")
+
+    def check(row, err):
+        return [] if err is not None and "width_justification" in err else [f"expected refusal of a short justification, got {err}"]
+    return spec, check
+
+
+PUBLISH_SCENARIOS = {"publish-wj-justified-multiquarter-accepted": pub_wj_justified_accepted,
+                     "publish-wj-unjustified-multiquarter-refused": pub_wj_unjustified_refused,
+                     "publish-wj-short-justification-refused": pub_wj_short_refused,
+                     "publish-npd1-step5-accepted": pub_npd1_step5,
                      "publish-helper-omp-not-thread-evidence": pub_inf75_helper_omp,
                      "publish-yarn-compute-process-threads-win": pub_yarn_job_side_threads,
                      "publish-stt5-cpu-declared-never-gpu-quiet": pub_stt5_cpu_declared_no_gpu,

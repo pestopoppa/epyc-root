@@ -51,7 +51,7 @@ RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction",
-             "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "timing")
+             "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
