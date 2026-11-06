@@ -7062,3 +7062,16 @@ Sources: [AKAGG 11-05](../progress/2026-11/2026-11-05-handoff-akagg.md) · [AKAG
 - **Kernel-manifest bookkeeping.** The v11 candidate manifest and the C6 qualification rows (isum candidate `9e9d7f291`, unsupported-case set equal to C5/v10) are tracked in [llama-v11-manifest](../docs/reference/kernel-manifests/llama-v11-manifest.md).
 
 Sources: [portability report](../artifacts/analysis/mi300-to-mi210-portability-20261105.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [HIP FA shapes](../docs/reference/hip-fa-unsupported-shapes.md) · [AutoKernel loop](../handoffs/active/autokernel-loop.md) · [ROCm kernel authoring](../handoffs/active/rocm-kernel-authoring.md) · [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) · [CPU decode roofline](../handoffs/active/cpu-decode-roofline-program.md)
+
+## Compiled Update — 2026-11-06 (operator wiki sweep, main-inf22): AK-ASM MI300 -> MI210 port verdicts
+
+Op-level gates are >=5 interleaved reps against the C6 store; e2e numbers are tokens/s on the MI210.
+
+- **What worked: kernels that avoid a pass or a host round-trip.** Fused QSA attention for Q38FN (H12) is 3.16x over C6 dense masked FA at kv=32k. GQA-packed multi-token verify attention at hd256 (H10) is 2.63x at kv>=32k and gives 27B DFlash2 decode +4.8/+4.3/+14.6% at 8k/32k/64k. The hc-seam HIP fusion (H13b+c) puts MEAN_D1 and TOP_K>1024 on the GPU, which cuts Q38FN GPU<->CPU splits from 294 to 100 per token (the remaining 100 are the `--n-cpu-moe` boundaries) and gives tg64 +11.7%.
+- **Skinny GEMV: split the problem by weight size.** A wvSplitK-style Q8_0 GEMV (H1b) reaches 927 vs 545 GB/s on 27B weights >6MiB at M 5..11 (geomean 1.73x; e2e pp5/pp8 123/183 vs 79.5/127). Weights <=6MiB use stream-K + LDS-DMA with an f32-atomic split-K (H1+H7, 1.94x). At M>=12 the new path loses to C6. Three rounds of tuning the original MMQ-style arm on large 27B shapes reached only 0.70-0.83x.
+- **Small wins:** retargeted AITER topksoftmax asm gives A3B about +2% (router graph 1.25x). AITER has no 512-expert/top-10 kernel, so Q38FN is not covered. The fused GDN decode step (H15) gives +1.3% 27B tg128 and needs a perplexity on/off check before fold. CK-tile hd256 FA is 3.71x at the op level but only +3% e2e on 27B pp2048.
+- **What failed:** pipelined int8 MMQ (0.48x vs rocBLAS) and a HIP int8 per-32-scale GEMM (0.52x). On gfx90a, int8 MFMA runs at the bf16 rate, so these paths gain nothing over dequant + rocBLAS. Fused rmsnorm+quant was 1.017x. Fused qk-norm+rope+kv-write was 1.13x at the op level but within noise e2e. The rocWMMA-off MMA FA path is invalid.
+- **Tooling:** HIP-graph capture of `hipModuleLaunchKernel` works on ROCm 6.2. All 782 non-fp8 gfx942 AITER `.co` files re-assemble for gfx90a after these rewrites: renames, an exact int8 K-split, a CAS rewrite of `pk_add_bf16`, and a scratch-spill fallback. On the MI210, topksoftmax, PA, fmoe int8, mhc_seam, i8gemm and bf16gemm with fp32 output pass. bf16gemm with bf16 output is off by 1 ulp.
+- **C6 bug found:** `ggml_cuda_topk_moe_fusion` reads past the last graph node (fix `c650d06e0`; serving is unaffected).
+
+Sources: [autokernel-loop AK-ASM boxes](../handoffs/active/autokernel-loop.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md) · [ROCK-AITER-GFX90A](../handoffs/active/rocm-kernel-authoring.md)

@@ -1662,3 +1662,9 @@ Sources: [kvfork 11-05](../progress/2026-11/2026-11-05-handoff-kvfork.md) · [kv
 - The enable decision no longer rides the v11 stack-change package until KVU-16g-3 passes.
 
 Sources: [KV program](../handoffs/active/kv-cache-program.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [MI210 serving program](../handoffs/completed/mi210-serving-program.md)
+
+## Compiled Update — 2026-11-06 (operator wiki sweep, main-inf22): KVU-16g-3 re-tune also fails
+
+None of the re-tuned prefill-budget operating points met the bound. The p99 iteration time overshoots its target by 50-80 ms, and neighbour TTFT ON/OFF is 1.33-1.59x against a 1.30 bound. Arm 4 was stopped for futility. The operator must now choose between relaxing the bound and fixing the overshoot in the budgeter; this is box KVU-16g-4.
+
+Sources: [kv-cache-program KVU-16g-3](../handoffs/active/kv-cache-program.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)

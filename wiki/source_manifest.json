@@ -4,7 +4,7 @@
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
-    "progress": 1340,
+    "progress": 1341,
     "research": 278
   },
   "kind": "project-wiki-source-manifest",
@@ -12,23 +12,22 @@
   "last_touch": {
     "advanced": {
       "added": 1,
-      "changed": 4,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-05T20:49:41Z",
+    "at": "2026-11-06T06:58:50Z",
     "scope_paths": [
-      "docs/design/rowflow2-20261105.md",
-      "docs/reference/gitnexus-compute-claims.md",
-      "handoffs/active/engineering-hygiene-backlog.md",
-      "progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md",
-      "progress/2026-11/2026-11-05-rowflow-gpu-q3-narrow.md"
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/kv-cache-program.md",
+      "handoffs/active/rocm-kernel-authoring.md",
+      "progress/2026-11/2026-11-06-main-inf22.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-05T20:49:41Z",
+  "scan_time": "2026-11-06T06:58:50Z",
   "schema_version": 1,
-  "source_set_hash": "b548ee99bb3d5602f3e491e43bba24f445b2b4e75ecd1815daaadb39980c21a9",
+  "source_set_hash": "c75c1f531ea996ad26546079638c823d24eda59fd1536b1c6f7f2363abf31d4a",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -39,10 +38,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e0a8e95404a1393428481a3c643f19f091fb98ef50c0fc3afe239790eddb71c4",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "ac6e5111cf73485626387c8de339b4446a6854d9590689310ca49291b7df64e5",
+      "modified": "2026-11-06T06:57:24Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1527839,
+      "size": 1547548,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -143,10 +142,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a2b38d9b40f9759edd8bf23ecea2fbea3d4e97a269fb27cf1c764bca329ada95",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "9a7ac5e47461ff186b8c79f6b13d9ad960fc770006f6b2a9dcc1dedadc4e4666",
+      "modified": "2026-11-06T06:57:24Z",
       "path": "handoffs/active/kv-cache-program.md",
-      "size": 1017626,
+      "size": 1018693,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
@@ -207,10 +206,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b265ffd56d73bf052924da8d19739d5ad191693603c02aad92744434b488997c",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "c126bd7a2a30be9ac86d860a95713b1b6d47712fedaf3f4456b731fa589c2fc1",
+      "modified": "2026-11-06T06:57:18Z",
       "path": "handoffs/active/rocm-kernel-authoring.md",
-      "size": 572949,
+      "size": 573260,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -16063,6 +16062,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "b7a4ff4bc21a22ce5dfc960430ed787e93d588d0e4eba988bac8869af8c2b794",
+      "modified": "2026-11-06T06:57:44Z",
+      "path": "progress/2026-11/2026-11-06-main-inf22.md",
+      "size": 4089,
+      "title": "2026-11-06 \u2014 main-inf22 (night 2026-11-05/06): AK-ASM MI300 -> MI210 port",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-05T19:30:50Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -19663,7 +19670,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2454,
+  "total_new": 2455,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
