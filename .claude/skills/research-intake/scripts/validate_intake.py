@@ -241,13 +241,24 @@ def _absorbed_ids(entries: list[dict]) -> set[str]:
     return out
 
 
+HANDOFF_STATUSES: tuple[str, ...] = ("active", "completed", "archived", "blocked")
+
+
 class _HandoffReferences:
     """Resolve current files and the committed 1a/1b folds, never guessed stems.
 
     A fold's member tracks are lifted intact by later folds. Keep the first
     track encountered while following file redirects, rather than replacing it
-    with the intermediate owner's track. Historical completed stubs do not
-    establish that the final owner or that lifted track still exists.
+    with the intermediate owner's track.
+
+    A fold is authored while its destination is active, but the destination can
+    be archived later — with its tracks intact. That fold is then TERMINAL
+    HISTORY, not a live owner: it must still exist under
+    ``handoffs/<status>/`` and must still carry the named track, so citations
+    resolve, but nothing may infer that the final owner is active from it.
+    Accepting only ``handoffs/active/`` made every reference through such a fold
+    unresolvable the moment the owner was archived (2026-11-05 mi210 archive:
+    5,877 validator errors from one entry in each route list).
     """
 
     def __init__(self, root: Path, directories: list[Path]):
@@ -272,8 +283,10 @@ class _HandoffReferences:
                 for fold in data["folds"]:
                     destination = fold["destination"]
                     dest_path = Path(destination)
-                    if (dest_path.parts[:2] != ("handoffs", "active")
-                            or len(dest_path.parts) != 3 or dest_path.suffix != ".md"):
+                    if (len(dest_path.parts) != 3
+                            or dest_path.parts[0] != "handoffs"
+                            or dest_path.parts[1] not in HANDOFF_STATUSES
+                            or dest_path.suffix != ".md"):
                         raise ValueError(f"invalid fold destination {destination!r}")
                     for source, target in fold["redirects"]["files"].items():
                         target_file, track = self._split(target)
@@ -303,9 +316,28 @@ class _HandoffReferences:
                             or not target.endswith(".md")
                             or (track is not None and (not isinstance(track, str) or not track.strip()))):
                         raise ValueError(f"invalid MEQ fold redirect for {source!r}")
-                    self.redirects.setdefault(source, set()).add((f"handoffs/active/{target}", track))
+                    located = self._locate_handoff(target)
+                    if located is None:
+                        raise ValueError(f"dangling MEQ fold target {target!r}")
+                    self.redirects.setdefault(source, set()).add((located, track))
         except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
             self.mapping_error = f"invalid committed fold mapping: {exc}"
+
+    def _locate_handoff(self, name: str) -> str | None:
+        """Find one handoff basename under any status directory.
+
+        A fold registry target may itself have been archived after the fold; it
+        is still the file the redirect names. More than one match is ambiguous
+        and refused rather than picked by directory order.
+        """
+        found = [
+            f"handoffs/{status}/{name}"
+            for status in HANDOFF_STATUSES
+            if (self.root / "handoffs" / status / name).is_file()
+        ]
+        if len(found) > 1:
+            raise ValueError(f"ambiguous handoff {name!r} across status directories")
+        return found[0] if found else None
 
     @staticmethod
     def _split(ref: str) -> tuple[str, str | None]:

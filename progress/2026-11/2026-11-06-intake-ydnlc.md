@@ -36,3 +36,28 @@ DEPTH-ENV-1 (depth-to-throughput envelope for the launch-flag session). M1 = mon
 + plan listed as new sources. Dive digest committed at `research/deep-dives/intake-digests/2026-11-06-ids-2628-2640.md`.
 
 Lane branch pushed to origin; **not merged to main** (serialized-trunk decision left to the operator).
+
+## Follow-up: repaired the repo-wide fold-mapping validator failure
+
+**Problem.** `validate_intake.sh` exited 1 with 5,877 errors, all one class:
+`invalid committed fold mapping: invalid fold destination 'handoffs/completed/mi210-serving-program.md'`.
+Introduced when `mi210-serving-program` was archived (commit `bcad0506a`): the committed
+`fold-list-1a/1b.json` entries still name the archived destination, and the loader accepted only
+`handoffs/active/*.md`.
+
+**Root cause.** The loader validated a fold destination's *status directory* instead of the file it
+names. A fold is authored while its destination is active, but the destination can be archived later
+with every `## Track:` heading intact. That is terminal history, not a dangling mapping.
+
+**Fix** (`.claude/skills/research-intake/scripts/validate_intake.py`): accept any
+`handoffs/<status>/<file>.md` destination for the four statuses already supported by `resolve()`;
+locate `.folded.json` MEQ targets across status directories (and refuse an ambiguous basename);
+keep the existing track-existence and dangling-target checks. The fold-list JSON is left untouched —
+it is the historical record of the fold, not the place to rewrite it.
+
+**Tests.** `tests/skills/test_research_intake_fold_mapping.py`: 7 cases (active destination, archived
+destination, invalid destination, missing track, archived MEQ target, missing MEQ target, ambiguous
+basename). Intake suite: 35 passed, 16 subtests passed.
+
+**Result.** `validate_intake.sh` exit **0**, 2,636 entries; `--plan-file/--session-file` mode also
+exit 0. No index, handoff or fold-list content changed.
