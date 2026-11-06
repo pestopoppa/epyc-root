@@ -139,6 +139,8 @@ class Sim:
         self.idle_q = self.idle_gpu = self.hold_q = self.hold_gpu = 0.0
         self.idle_parts = {"q": [], "gpu": []}
         self.granted_ever, self.smoked_ever = set(), set()
+        self.foreign = frozenset()      # foreign KFD pids the next measurement reports (device quiet gate fixtures)
+        self.refusals = []              # (now, id, mode) every time the fake launcher refused a grant
         self.plans = []
 
     def log(self, line):
@@ -147,7 +149,9 @@ class Sim:
     def _touch(self, p):
         os.utime(p, (self.now, self.now))
 
-    def publish(self, s, launcher_text="#!/bin/bash\nexec true\n", smoke_outcome="pass", use=1.0, gpu_use=True, rc=0):
+    def publish(self, s, launcher_text="#!/bin/bash\nexec true\n", smoke_outcome="pass", use=1.0, gpu_use=True, rc=0, refuse=None):
+        """refuse: None | "released" (the launcher drops the grant unrun, writes nothing - the STOP-present / precond loop
+        shape) | "build-missing" (filler_run15 --precond-cmd contract: .ended rc=5 reason=build-missing:..., grant deleted)."""
         lp = os.path.join(self.root, "launchers", s["id"] + ".sh")
         os.makedirs(os.path.dirname(lp), exist_ok=True)
         with open(lp, "w") as f:
@@ -155,7 +159,7 @@ class Sim:
         s = dict(s, launcher=lp, stop_file=os.path.join(self.root, "stops", s["id"] + ".STOP"), published_at=rf.iso(self.now))
         errs = rf.publish(s, self.flags, self.log)
         if not errs:
-            self.specs[s["id"]] = dict(s, _smoke=smoke_outcome, _use=use, _gpu_use=gpu_use, _rc=rc)
+            self.specs[s["id"]] = dict(s, _smoke=smoke_outcome, _use=use, _gpu_use=gpu_use, _rc=rc, _refuse=refuse)
         return errs
 
     def write_pass(self, rid, measured_threads=None):
@@ -202,6 +206,13 @@ class Sim:
             if os.path.exists(os.path.join(G, rid + ".ended")):
                 continue
             s = self.specs[rid]
+            if s.get("_refuse"):   # the launcher refuses at admission: the job never starts
+                self.refusals.append((self.now, rid, s["_refuse"]))
+                if s["_refuse"] == "build-missing":
+                    with open(os.path.join(G, rid + ".ended"), "w") as f:
+                        f.write(f"rc=5 reason=build-missing:precond-cmd-failed time={rf.iso(self.now)}\n")
+                os.remove(gp)
+                continue
             if rid not in self.runs:
                 self.granted_ever.add(rid)
                 g = rf.parse_grant(rid, rf.head1(gp), now=self.now)
@@ -228,7 +239,7 @@ class Sim:
                     busy[c] = 85.0
             if self.specs[rid]["gpu"] == "exclusive":
                 kfd[rid] = {4242} if self.specs[rid]["_gpu_use"] else set()
-        return rf.Measurement(core_busy=busy, own_kfd=kfd, alive={})
+        return rf.Measurement(core_busy=busy, own_kfd=kfd, alive={}, foreign_kfd=self.foreign)
 
     def step(self):
         self._filler()

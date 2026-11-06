@@ -54,7 +54,8 @@ PROC = os.environ.get("ROWFLOW2_PROC", "/proc")
 RAM_BOOKABLE_GIB = float(os.environ.get("ROWFLOW2_RAM_GIB", "1069"))     # rowflow QUARTER_RAM_GIB x 4, rounded
 DISK_PATH = os.environ.get("ROWFLOW2_DISK_PATH", "/mnt/raid0")
 DISK_FLOOR_GIB = float(os.environ.get("ROWFLOW2_DISK_FLOOR_GIB", "150"))  # == filler_run15 FILLER_DISK_FLOOR_GIB
-CONFIG = ("FLAGS", "KFD_PROC", "PROC", "RAM_BOOKABLE_GIB", "DISK_PATH", "DISK_FLOOR_GIB")
+GPU_BUSY_GLOB = os.environ.get("ROWFLOW2_GPU_BUSY_GLOB", "/sys/class/drm/card*/device/gpu_busy_percent")  # amdgpu utilisation
+CONFIG = ("FLAGS", "KFD_PROC", "PROC", "RAM_BOOKABLE_GIB", "DISK_PATH", "DISK_FLOOR_GIB", "GPU_BUSY_GLOB")
 
 # ============================================================== host facts + vocabulary (not tunables)
 NCORES = 96
@@ -68,6 +69,20 @@ GPU_MODES = ("none", "shared", "exclusive")
 ENDED_REASONS = ("complete", "exit", "stopped", "superseded", "withdrawn", "dead-poller", "disk-floor", "window-end", "idle-held")
 IDLE_WARN_S = IDLE_HELD_S // 3                  # derived, not a tunable: the owner warning (300 s) precedes the end (900 s)
 IDLE_HELD_RETRY = 1                             # fixed rule: one re-queue after an idle-held end; the second end is terminal
+# ---- Pass 4 rules (keeper-friction-review-20261105.md P4.3 #1, #2, #4; INF-22 GPU ordering 2026-11-06). Each carries a
+# switch so its test has a NEGATIVE CONTROL (the old path must fail the new assertion); the switches are facts, not tunables.
+PARK_ON_REFUSAL = True       # P4.3 #1: an admission refusal (launcher precond / not-engine / grant released unrun) parks the
+                             # row ONCE: one FAIL-refused record, one alert; retried only after its launcher or spec sha
+                             # changes or an operator `unpark`. False = the pre-P4 path (re-granted every tick, a FAIL per tick).
+REFUSAL_RCS = {12: "precond", 15: "launcher-not-engine", 5: "build-missing"}   # rc -> refusal kind (filler_run15 / grant_ok_launcher)
+REFUSAL_REASONS = ("build-missing", "not-ready", "precond", "released")        # .ended reason bases that are refusals
+COMPLETE_BEATS_DEAD = True   # P4.3 #2: a dead poller whose row holds a completion receipt (.complete, or .ended rc=0
+                             # reason=complete) is a COMPLETION, never a dead-poller rc=75 (11 of 11 live rc=14 were false)
+GPU_IDLE_BY_GPU_SIGNALS = True   # P4.3 #4: a gpu-token grant is busy/idle by its own KFD pid set + GPU utilisation only;
+                                 # CPU % never judges it (no release-cores / over-declared / idle-held by CPU for gpu grants)
+GPU_IDLE_PCT = 5.0           # GPU utilisation below this reads idle in a sample (sysfs gpu_busy_percent is integer %)
+RANK_AT_GRANT_TIME = True    # INF-22 2026-11-06: once the device is quiet, the best-RANKED grantable GPU row is granted,
+                             # re-ranked at grant time over every grantable row; False = first grantable row in id order
 SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "stop_file": str, "cpus": (int, str),
                "threads": int, "gpu": str, "quiet": bool, "ram_gib": (int, float), "disk_gib": (int, float),
                "estimate_s": (int, float), "min_window_s": (int, float), "decision_rule": str,
@@ -75,7 +90,9 @@ SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "s
 SPEC_OPTIONAL = {"quiet_reason": str, "measured_ack": str, "supersedes": (str, list), "fix_ref": str,
                  "published_at": str, "schema": str, "legacy": dict, "timing": bool}
 FACTS = ("NCORES", "GPU_HOST_THREADS", "GPU_SIBLING_CORES", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
-         "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG", "IDLE_WARN_S", "IDLE_HELD_RETRY")
+         "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG", "IDLE_WARN_S", "IDLE_HELD_RETRY",
+         "PARK_ON_REFUSAL", "REFUSAL_RCS", "REFUSAL_REASONS", "COMPLETE_BEATS_DEAD", "GPU_IDLE_BY_GPU_SIGNALS", "GPU_IDLE_PCT",
+         "RANK_AT_GRANT_TIME")
 
 
 # ============================================================== util
@@ -564,14 +581,29 @@ def _pick(need, usable):
     return frozenset(sorted(cand)[:need.width]) | need.fixed
 
 
-def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False):
+def gpu_quiet_step(n, foreign_kfd):
+    """Device-level quiet counter (ONE per device, never per row): consecutive samples with no foreign KFD client.
+    Returns (n', quiet) with quiet = n' >= IDLE_SAMPLES. Foreign = a KFD pid outside every open grant's process tree."""
+    n = n + 1 if not foreign_kfd else 0
+    return n, n >= IDLE_SAMPLES
+
+
+def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False, gpu_quiet=True, quiet_n=None):
     """Strict priority by rank (ties: publish time, id). Each row that fits the free tokens is granted. The FIRST row
     that does not fit holds the tokens it needs: a later (worse-ranked) row may take a held token only if its whole
     window ends by the held row's ETA (plain backfilling: no budget, no counter, the top row's
     start is never delayed). `quiet` takes every row token plus the gpu, and waits
     for an idle smoke lane. A `timing` row never gets cores 88-95 unless it also holds the gpu exclusive (SMT); a gpu
-    EXCLUSIVE row holds 88-95 with the gpu and never the rest of q3 (gpu-q3 NARROW, operator 2026-11-05)."""
+    EXCLUSIVE row holds 88-95 with the gpu and never the rest of q3 (gpu-q3 NARROW, operator 2026-11-05).
+    GPU QUIET (INF-22 2026-11-06): `gpu_quiet` is the DEVICE's state (gpu_quiet_step: IDLE_SAMPLES consecutive samples
+    without a foreign KFD client). While it is False every gpu-EXCLUSIVE row is skipped and takes no hold (shared rows
+    run beside foreign clients); the moment it is True the ranking below runs over EVERY grantable row as it stands
+    NOW, so the best-ranked exclusive row is granted - never the one whose wait happened to start first, and never one
+    that arrived mid-wait unless it is the best-ranked."""
     plan, seen = Plan(), set()
+    quiet_why = None if gpu_quiet else ("device not quiet: foreign KFD client" if not quiet_n else
+                                        f"device quiet {quiet_n}/{IDLE_SAMPLES} samples")
+    order = _order(pending) if RANK_AT_GRANT_TIME else sorted(pending, key=lambda s: s["id"])   # False = legacy control
     busy = set().union(*[g.cores for g in grants]) if grants else set()
     free = set(ROW_CORES) - busy
     gx = any(g.gpu == "exclusive" or g.quiet for g in grants)
@@ -588,7 +620,7 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
             gpu_free_at = max(gpu_free_at, g.end)
         if g.gpu == "exclusive" or g.quiet:
             shared_free_at = max(shared_free_at, g.end)
-    for s in _order(pending):
+    for s in order:
         rid = s["id"]
         if rid in seen:   # one decision per id per tick: a twice-published id can never be granted twice
             continue
@@ -601,6 +633,9 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
         h_ok = h is None or now + win <= h.eta
         usable = free if h_ok else free - h.cores
         gpu_need = "exclusive" if s["quiet"] else s["gpu"]
+        if gpu_need == "exclusive" and quiet_why:   # gated rows wait without a hold (the keeper's held_back), like the device
+            plan.skipped[rid] = "gpu-quiet EXCLUSIVE needs a quiet device: " + quiet_why
+            continue
         why = None
         if qopen:
             why = "a quiet grant is open"
@@ -703,16 +738,35 @@ class Measurement:
     core_busy: dict | None = None   # core -> % busy (max over its SMT threads); None = not measured
     own_kfd: dict = field(default_factory=dict)   # grant id -> set of KFD pids inside its process tree
     alive: dict = field(default_factory=dict)     # grant id -> poller alive (True/False); absent = unknown
+    gpu_util: float | None = None                 # device utilisation % (amdgpu gpu_busy_percent); None = not measured
+    complete: frozenset = frozenset()             # grant ids holding a completion receipt (.complete / .ended rc=0 complete)
+    foreign_kfd: frozenset = frozenset()          # KFD pids outside every open grant's process tree (device quiet gate)
+
+
+def gpu_idle_sample(mine, gpu_util):
+    """P4.3 #4: a gpu-token grant's sample is idle ONLY when its own KFD pid set is KNOWN and empty AND the device
+    utilisation (when measured) is ~0; any own KFD pid = busy. CPU % plays no part. None = the KFD side is unmeasured."""
+    if mine is None:
+        return None
+    if mine:
+        return False
+    return gpu_util is None or gpu_util < GPU_IDLE_PCT
 
 
 def reconcile(grants, meas, state, now):
     """Pure: (actions, new_state). Actions: ('release-cores', id, cores), ('release-gpu', id), ('overrun', id),
-    ('dead-poller', id), ('over-declared', id, declared, measured_busy), ('idle-warn', id, idle_s), ('idle-end', id, idle_s).
-    Quiet grants never release cores. IDLE-HELD (operator 2026-11-05): a grant is wholly idle in a sample when every core
-    it holds reads < IDLE_PCT AND (gpu none, or its own KFD pid set is KNOWN and empty); a grant with nothing measurable
-    (no cores, no gpu, or an unmeasured side) is never idle. Continuous idleness >= IDLE_WARN_S warns once, >= IDLE_HELD_S
-    ends; one busy sample resets the clock. No grace field: a load, compile or build phase keeps a core busy, so it never
-    reads idle; the clock cannot predate the grant's first sample, so the first IDLE_HELD_S after start are the grace."""
+    ('dead-poller', id), ('completed', id), ('over-declared', id, declared, measured_busy), ('idle-warn', id, idle_s),
+    ('idle-end', id, idle_s).
+    Quiet grants never release cores. IDLE-HELD (operator 2026-11-05): a CPU grant is wholly idle in a sample when every
+    core it holds reads < IDLE_PCT; a grant with nothing measurable (no cores, no gpu, or an unmeasured side) is never idle.
+    GPU grants (P4.3 #4, GPU_IDLE_BY_GPU_SIGNALS): busy/idle comes from gpu_idle_sample() alone - own KFD pids + device
+    utilisation across IDLE_SAMPLES consecutive samples; CPU % never releases their cores, never flags over-declaration and
+    never starts their idle clock (43 of 72 live OVER-DECLARED and every IDLE-HELD gpu-quiet notify were CPU readings of
+    GPU work). Continuous idleness >= IDLE_WARN_S warns once, >= IDLE_HELD_S ends; one busy sample resets the clock. No
+    grace field: a load, compile or build phase keeps a core busy, so it never reads idle; the clock cannot predate the
+    grant's first sample, so the first IDLE_HELD_S after start are the grace.
+    DEAD POLLER (P4.3 #2, COMPLETE_BEATS_DEAD): a poller dead IDLE_SAMPLES samples whose row is in meas.complete is a
+    ('completed', id), never a ('dead-poller', id) - every live rc=14 "pid dead" since 11-04 had a .complete."""
     acts, new = [], {}
     for g in grants:
         if g.smoke:
@@ -720,7 +774,8 @@ def reconcile(grants, meas, state, now):
         st = dict(state.get(g.id) or {"idle": {}, "gpu0": 0, "dead": 0, "alerted": False, "busy": [], "worked": False,
                                       "declared": len(g.cores), "gpu_used": False, "idle_since": None, "idle_warned": False})
         st["idle"] = dict(st["idle"])
-        if meas.core_busy is not None and g.cores:
+        gpu_grant = g.gpu != "none" and GPU_IDLE_BY_GPU_SIGNALS
+        if meas.core_busy is not None and g.cores and not gpu_grant:
             nb = sum(1 for c in g.cores if meas.core_busy.get(c, 0.0) >= IDLE_PCT)
             st["busy"] = (st["busy"] + [nb])[-720:]
             st["worked"] = st["worked"] or nb > 0
@@ -736,18 +791,21 @@ def reconcile(grants, meas, state, now):
                     st["od_logged"] = True
                 for c in rel:
                     st["idle"].pop(c, None)
-        if g.gpu == "exclusive" and not g.quiet:
-            mine = meas.own_kfd.get(g.id)
-            if mine:
-                st["gpu0"], st["gpu_used"] = 0, True
-            elif mine is not None:
-                st["gpu0"] += 1
-                if st["gpu0"] >= IDLE_SAMPLES:
-                    acts.append(("release-gpu", g.id))
         mine = meas.own_kfd.get(g.id) if g.gpu != "none" else None
-        cores_idle = not g.cores or (meas.core_busy is not None and all(meas.core_busy.get(c, 0.0) < IDLE_PCT for c in g.cores))
-        gpu_idle = g.gpu == "none" or (mine is not None and not mine)
-        wholly_idle = bool(g.cores or g.gpu != "none") and cores_idle and gpu_idle   # an unmeasured side is never idle
+        g_idle = gpu_idle_sample(mine, meas.gpu_util if GPU_IDLE_BY_GPU_SIGNALS else None) if g.gpu != "none" else None
+        if g.gpu != "none":
+            if g_idle is False:
+                st["gpu0"], st["gpu_used"] = 0, True
+            elif g_idle:
+                st["gpu0"] += 1
+            if g.gpu == "exclusive" and not g.quiet and g_idle and st["gpu0"] >= IDLE_SAMPLES:
+                acts.append(("release-gpu", g.id))
+        if gpu_grant:   # the gpu token's own signals decide (IDLE_WARN_S of continuous idleness spans >= IDLE_SAMPLES samples)
+            wholly_idle = bool(g_idle)
+        else:
+            cores_idle = not g.cores or (meas.core_busy is not None and all(meas.core_busy.get(c, 0.0) < IDLE_PCT for c in g.cores))
+            gpu_idle = g.gpu == "none" or (mine is not None and not mine)
+            wholly_idle = bool(g.cores or g.gpu != "none") and cores_idle and gpu_idle   # an unmeasured side is never idle
         if wholly_idle:
             if st.get("idle_since") is None:
                 st["idle_since"] = now
@@ -765,9 +823,32 @@ def reconcile(grants, meas, state, now):
         a = meas.alive.get(g.id)
         st["dead"] = st["dead"] + 1 if a is False else 0
         if st["dead"] >= IDLE_SAMPLES:
-            acts.append(("dead-poller", g.id))
+            acts.append(("completed", g.id) if (COMPLETE_BEATS_DEAD and g.id in meas.complete) else ("dead-poller", g.id))
         new[g.id] = st
     return acts, new
+
+
+def completion_receipt(flags, rid):
+    """P4.3 #2: the row's terminal success evidence - grants/<id>.complete, or grants/<id>.ended whose first line says
+    rc=0 and reason=complete. A poller that is gone AFTER this is a finished job, not a dead one."""
+    G = os.path.join(flags, "grants")
+    if _ex(G, rid + ".complete"):
+        return "complete"
+    e = ended_fields(head1(os.path.join(G, rid + ".ended")))
+    return "ended rc=0 complete" if e["rc"] == 0 and e["base"] == "complete" else None
+
+
+def refusal_kind(e):
+    """P4.3 #1: the admission-refusal kind of an .ended record, or None. A refusal is the LAUNCHER declining to run the
+    job (precond-cmd rc=12 / build-missing rc=5, launcher-is-not-the-engine rc=15, 'released' = grant dropped unrun) - the
+    job never started, so nothing about the host changed and re-granting next tick can only repeat it."""
+    if e["base"] in REFUSAL_REASONS or e["base"].startswith("precond"):
+        return e["base"]
+    return REFUSAL_RCS.get(e["rc"])
+
+
+def spec_sha(d):
+    return hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()
 
 
 def measured_summary(st):
@@ -852,6 +933,9 @@ class World:
     state: dict = field(default_factory=dict)       # id -> state word
     ended: dict = field(default_factory=dict)       # id -> (fields, mtime) for .ended without .FILED
     smoke_finished: list = field(default_factory=list)
+    parked: dict = field(default_factory=dict)      # id -> PARKED.json record still binding (launcher + spec sha unchanged)
+    stale_parks: list = field(default_factory=list)  # ids whose PARKED.json names an older launcher/spec sha (auto-unpark)
+    launcher_sha: dict = field(default_factory=dict)  # id -> current launcher sha256 (rows that reached the sha check)
 
 
 def _ex(*p):
@@ -930,11 +1014,19 @@ def load_world(flags, now, sha_cache=None):
         except OSError:
             w.unmapped[rid], w.state[rid] = "admit: launcher unreadable", "unmapped"
             continue
+        w.launcher_sha[rid] = cur
+        pk = load_json(os.path.join(D, rid, "PARKED.json"))   # P4.3 #1: a refusal park binds the row AS PUBLISHED
+        if pk:
+            if pk.get("launcher_sha256") == cur and pk.get("spec_sha256") == spec_sha(d):
+                w.parked[rid], w.state[rid] = pk, "parked"
+                continue
+            w.stale_parks.append(rid)   # the launcher or the manifest changed: the park no longer binds (tick removes it)
         p = load_json(os.path.join(D, rid, "PASS.json"))
+        smoke_fails = [f for f in glob.glob(os.path.join(D, rid, "FAIL-*.json")) if not os.path.basename(f).startswith("FAIL-refused-")]
         if p and p.get("launcher_sha256") == cur:
             w.pending.append(spec)
             w.state[rid] = "pending"
-        elif any((load_json(f) or {}).get("launcher_sha256") == cur for f in glob.glob(os.path.join(D, rid, "FAIL-*.json"))):
+        elif any((load_json(f) or {}).get("launcher_sha256") == cur for f in smoke_fails):
             w.state[rid] = "failed"
         else:
             w.smoke_queue.append(spec)
@@ -1080,11 +1172,69 @@ def withdraw(flags, rid, reason, log=print):
     return "WITHDRAWN"
 
 
+def park(flags, rid, spec, kind, e, now, log):
+    """P4.3 #1: ONE FAIL-refused record + ONE alert per refusal episode; PARKED.json binds the row as published (launcher
+    sha + spec sha); the refusing .ended is kept as evidence under dryrun/ and the grant is dropped, so the row is neither
+    done nor pending: it is `parked` until its launcher or manifest changes or an operator runs `unpark`."""
+    dd, G = os.path.join(flags, "dryrun", rid), os.path.join(flags, "grants")
+    n = len(glob.glob(os.path.join(dd, "FAIL-refused-*.json"))) + 1
+    try:
+        lsha = sha256(spec["launcher"])
+    except (OSError, KeyError):
+        lsha = None
+    ssha = spec_sha(load_json(os.path.join(flags, "ready", rid + ".json")) or spec)
+    fix = (f"{rid}: launcher refused at admission ({kind}, rc={e.get('rc')}, reason={e.get('reason') or '-'}); parked - "
+           f"fix the launcher/precond target or the manifest and republish, or `rowflow2.py unpark --id {rid}`")
+    rec = {"id": rid, "kind": "refused", "refusal": kind, "rc": e.get("rc"), "reason": e.get("reason"), "at": iso(now),
+           "launcher_sha256": lsha, "spec_sha256": ssha, "attempt": n, "fix_task": fix}
+    write_text(os.path.join(dd, f"FAIL-refused-{n}.json"), json.dumps(rec) + "\n")
+    write_text(os.path.join(dd, "PARKED.json"), json.dumps(rec) + "\n")
+    if _ex(G, rid + ".ended"):
+        os.replace(os.path.join(G, rid + ".ended"), os.path.join(dd, f"REFUSED-{n}.ended"))
+    if _ex(G, rid + ".grant"):
+        os.remove(os.path.join(G, rid + ".grant"))
+    write_text(os.path.join(flags, "rowflow2-alerts.jsonl"),
+               json.dumps({"kind": "refused", "row_id": rid, "at": iso(now), "refusal": kind, "attempt": n, "fix_task": fix}) + "\n", append=True)
+    log(f"REFUSED {rid} {kind} rc={e.get('rc')} reason={e.get('reason') or '-'}: parked (dryrun/{rid}/FAIL-refused-{n}.json); "
+        f"retried only after a launcher/spec sha change or `rowflow2.py unpark --id {rid}`")
+
+
+def unpark(flags, rid, log=print):
+    """Operator unpark: the refusal park no longer binds; the next tick re-admits the row (its PASS still stands)."""
+    dd = os.path.join(flags, "dryrun", rid)
+    had = _ex(dd, "PARKED.json")
+    if had:
+        os.remove(os.path.join(dd, "PARKED.json"))
+    write_text(os.path.join(dd, "UNPARK.json"), json.dumps({"id": rid, "at": iso(time.time())}) + "\n")
+    log(f"UNPARK {rid}" + ("" if had else " (was not parked)"))
+    return had
+
+
 def tick(flags, now, meas, state, log, runner=None):
     """One live tick: reconcile -> admit -> smoke lane -> file. Writes only under `flags`. Returns (plan, state)."""
     w = load_world(flags, now)
     G = os.path.join(flags, "grants")
+    for rid in w.stale_parks:
+        os.remove(os.path.join(flags, "dryrun", rid, "PARKED.json"))
+        log(f"UNPARK-AUTO {rid}: launcher or manifest sha changed since the refusal park")
+    if PARK_ON_REFUSAL:   # P4.3 #1: refusals seen this tick, each parked exactly once
+        tracked = set(state.get("grants") or {}) | set(state.get("granted_last") or [])   # incl. last tick's fresh grants
+        live, parked_now = {g.id for g in w.grants}, set()
+        for rid, (e, _mt) in sorted(w.ended.items()):
+            kind = refusal_kind(e)
+            if kind and rid in w.specs and not _ex(G, rid + ".complete"):
+                park(flags, rid, w.specs[rid], kind, e, now, log)
+                parked_now.add(rid)
+                w.ended.pop(rid, None)
+                w.state[rid] = "parked"
+                w.pending = [s for s in w.pending if s["id"] != rid]
+        for rid in sorted(tracked - live - parked_now):   # a grant we held last tick vanished with no .ended/.complete: released unrun
+            if rid in w.specs and not _ex(G, rid + ".ended") and not _ex(G, rid + ".complete") and not _ex(G, rid + ".grant"):
+                park(flags, rid, w.specs[rid], "released", {"rc": None, "reason": "released: grant dropped by the launcher, job unrun"}, now, log)
+                w.state[rid] = "parked"
+                w.pending = [s for s in w.pending if s["id"] != rid]
     acts, state_new = reconcile(w.grants, meas, state.get("grants", {}), now)
+    state["gpu_quiet_n"], gpu_quiet = gpu_quiet_step(int(state.get("gpu_quiet_n") or 0), meas.foreign_kfd)
     byid = {g.id: g for g in w.grants}
     for a in acts:
         g = byid.get(a[1])
@@ -1102,9 +1252,16 @@ def tick(flags, now, meas, state, log, runner=None):
         elif a[0] == "over-declared":
             log(f"OVER-DECLARED {a[1]} declared {a[2]} measured {a[3]}")
         elif a[0] == "dead-poller" and g:
-            write_text(os.path.join(G, g.id + ".ended"), f"rc=75 reason=dead-poller time={iso(now)}\n")
+            how = completion_receipt(flags, g.id) if COMPLETE_BEATS_DEAD else None   # P4.3 #2: re-read at write time (race)
+            if how:
+                log(f"COMPLETED {g.id}: poller gone after its completion receipt ({how}); not a dead poller")
+            else:
+                write_text(os.path.join(G, g.id + ".ended"), f"rc=75 reason=dead-poller time={iso(now)}\n")
+                log(f"DEAD-POLLER {g.id}: grant removed")
             byid.pop(g.id)
-            log(f"DEAD-POLLER {g.id}: grant removed")
+        elif a[0] == "completed" and g:
+            log(f"COMPLETED {g.id}: poller gone after its completion receipt ({completion_receipt(flags, g.id) or 'measured'}); not a dead poller")
+            byid.pop(g.id)
         elif a[0] == "idle-warn":
             log(f"IDLE-HELD-WARN {a[1]} idle {a[2]}s (every core < {IDLE_PCT:g}%, no own KFD pid): owner warned; "
                 f"ends rc=75 and re-queues at {IDLE_HELD_S}s")
@@ -1134,11 +1291,13 @@ def tick(flags, now, meas, state, log, runner=None):
     grants = list(byid.values())
     for rid in w.smoke_finished:
         os.remove(os.path.join(flags, "dryrun", rid, "SMOKE.json"))
-    plan = admit(w.pending, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running))
+    plan = admit(w.pending, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running), gpu_quiet=gpu_quiet,
+                 quiet_n=state["gpu_quiet_n"])
     plan.basis = grants
     for g in plan.grants:
         write_grant(flags, g)
         log(f"GRANT {g.id} {g.line()}")
+    state["granted_last"] = [g.id for g in plan.grants]   # a grant the launcher drops before the next tick is still ours
     if plan.hold:
         log(f"HOLD {plan.hold.id} cpus={cpulist(plan.hold.cores)} gpu={int(plan.hold.gpu)} eta={iso(plan.hold.eta)}")
     for cls, n, why in plan.idle:
@@ -1207,16 +1366,30 @@ def _logged(path):
     return seen
 
 
+def gpu_util():
+    """Device utilisation % from amdgpu sysfs (max over matching cards), or None when unreadable."""
+    vals = []
+    for p in glob.glob(GPU_BUSY_GLOB):
+        try:
+            vals.append(float(head1(p)))
+        except ValueError:
+            pass
+    return max(vals) if vals else None
+
+
 def measure(flags, grants, prev_stat):
     """(Measurement, stat sample). A grant's own KFD pids = KFD clients inside its poller's process tree (ARMED.json
-    pid), known only when that pid is visible here; poller liveness is never guessed from an invisible pid."""
+    pid), known only when that pid is visible here; poller liveness is never guessed from an invisible pid. Foreign KFD
+    pids (device quiet gate) = every KFD client outside all known grant trees; completion receipts feed the dead-poller rule."""
     s1 = proc_stat()
     kfd, own = kfd_pids(), {}
     for g in grants:
         pid = (load_json(os.path.join(flags, "dryrun", g.id, "ARMED.json")) or {}).get("pid")
         if pid and os.path.exists(os.path.join(PROC, str(pid))):
             own[g.id] = kfd & descendants(int(pid))
-    return Measurement(core_busy(prev_stat, s1) if prev_stat else None, own, {}), s1
+    foreign = frozenset(kfd - set().union(*own.values())) if own else frozenset(kfd)
+    done = frozenset(g.id for g in grants if not g.smoke and completion_receipt(flags, g.id))
+    return Measurement(core_busy(prev_stat, s1) if prev_stat else None, own, {}, gpu_util(), done, foreign), s1
 
 
 def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
@@ -1250,7 +1423,10 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
             else:
                 lines.append(f"{t} SHADOW-{a[0].upper()} {a[1]}" + (f" declared {a[2]} measured {a[3]}" if len(a) > 2 else ""))
         w.grants = list(byid.values())
-    plan = admit(w.pending, w.grants, now, disk_free=disk_free_gib(), smoke_busy=False)
+        ctx["gpu_quiet_n"], ctx["gpu_quiet"] = gpu_quiet_step(int(ctx.get("gpu_quiet_n") or 0), meas.foreign_kfd)
+    gq = ctx.get("gpu_quiet", True) if ctx is not None else True
+    plan = admit(w.pending, w.grants, now, disk_free=disk_free_gib(), smoke_busy=False, gpu_quiet=gq,
+                 quiet_n=(ctx or {}).get("gpu_quiet_n"))
     for rid, why in sorted(w.unmapped.items()):
         if ("SHADOW-UNMAPPED", rid) not in seen:
             seen.add(("SHADOW-UNMAPPED", rid))
@@ -1420,7 +1596,12 @@ def main(argv=None):
     mr = sub.add_parser("map-report")
     mr.add_argument("--flags", default=FLAGS)
     mr.add_argument("--json", action="store_true")
+    up = sub.add_parser("unpark", help="operator: lift a refusal park so the row is re-admitted next tick")
+    up.add_argument("--flags", default=FLAGS)
+    up.add_argument("--id", required=True)
     a = ap.parse_args(argv)
+    if a.cmd == "unpark":
+        return 0 if unpark(a.flags, a.id) else 1
     if a.cmd in ("status", "map-report"):
         guard_readonly(a.flags)   # read-only surfaces
     if a.cmd == "shadow":

@@ -171,9 +171,10 @@ def _expected_idle_acts(samples, step_s):
 @given(st.lists(st.tuples(st.booleans(), st.booleans()), min_size=1, max_size=14), st.sampled_from([60, 120, 180]),
        st.sampled_from(["exclusive", "none"]))
 def test_idle_held_warns_once_then_ends_only_after_continuous_idle(samples, step_s, gpu):
-    """A gpu-exclusive (88-95 + MI210) or CPU-quarter grant: wholly idle = every core < IDLE_PCT and (gpu none or own KFD
-    pid set known-empty). The warning comes once per idle run at >= IDLE_WARN_S, the end at >= IDLE_HELD_S, never earlier,
-    and one busy sample resets both. A quiet grant with no tokens and the unmeasured sides never read idle."""
+    """A gpu-exclusive (88-95 + MI210) or CPU-quarter grant. CPU grant: wholly idle = every core < IDLE_PCT. GPU grant
+    (P4.3 #4): idle = own KFD pid set known-empty AND device utilisation ~0; its CPU cores read 50% busy in EVERY sample
+    here and must never matter. The warning comes once per idle run at >= IDLE_WARN_S, the end at >= IDLE_HELD_S, never
+    earlier, and one busy sample resets both. A quiet grant with no tokens and the unmeasured sides never read idle."""
     cores = frozenset(range(88, 96)) if gpu == "exclusive" else frozenset(rf.QUARTERS[1])
     g = rf.Grant("a", cores, gpu, False, 0, 0, T0, T0 + 36000, 7200)
     q = rf.Grant("q", frozenset(), "none", True, 0, 0, T0, T0 + 36000, 7200)    # nothing measurable
@@ -181,12 +182,16 @@ def test_idle_held_warns_once_then_ends_only_after_continuous_idle(samples, step
     state, got = {}, []
     for i, (busy, kfd) in enumerate(samples):
         cb = {c: 0.0 for c in range(96)}
-        if busy:
+        util = None
+        if gpu == "exclusive":
+            cb.update({c: 50.0 for c in cores})      # a hot sibling core: CPU % is not a GPU signal
+            util = 80.0 if busy else 0.0             # 'busy' = device utilisation for a GPU grant
+        elif busy:
             cb[min(cores)] = 50.0
         own = {"a": ({4242} if kfd else set())} if gpu == "exclusive" else {}
         if gpu == "none" and kfd:      # a CPU grant has no KFD side: 'kfd' then means a busy sibling core instead
             cb[max(cores)] = 50.0
-        acts, state = rf.reconcile([g, q, u], rf.Measurement(core_busy=cb, own_kfd=own), state, T0 + i * step_s)
+        acts, state = rf.reconcile([g, q, u], rf.Measurement(core_busy=cb, own_kfd=own, gpu_util=util), state, T0 + i * step_s)
         assert not [a for a in acts if a[1] in ("q", "u") and a[0] in ("idle-warn", "idle-end")], "unmeasurable grant read idle"
         got += [(a[0], i) for a in acts if a[0] in ("idle-warn", "idle-end") and a[1] == "a"]
         if any(a[0] == "idle-end" for a in acts):
