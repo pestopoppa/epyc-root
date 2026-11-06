@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-TOKEN-DISPATCHER-RESTART | Dispatcher stays STOPPED. Before any restart: run artifacts/operator/ratify_token_doctrine_20261106.sh (2 doctrine lines), unpark sessions as needed, wait for the Codex reset 2026-11-11. | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) TOKEN-DISPATCHER-RESTART-GATE | 2026-11-06 |
 | OP-WT-NEEDS-HUMAN | 20 NEEDS-HUMAN worktrees (39 GB: llama.cpp-experimental, -preserved-20260724, DS41 experimental trees, ~14 autokernel lanes) — keep, salvage+remove, or per-tree. List: /workspace/tmp/cleanup-20261105/review_triage.md. | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | 2026-11-06 |
 | OP-OPENCODE-RECLAIM | Reclaim ~26 GB of opencode DB: a live copy plus hourly root snapshots (not growing; last use 10-20). Options: keep newest snapshot only, or drop the live copy. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LOOP-34 | 2026-10-29 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](engineering-hygiene-backlog.md) NIB2-98 | 2026-10-21 |
