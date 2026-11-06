@@ -574,6 +574,158 @@ def sc_idle_held_busy_grant_silent(path):
 
 
 
+# ---------------------------------------------------------------------------------------------- friction pass 4 (2026-11-06)
+PRECOND_LINE = ("refuse rc=12: not ready: precond-cmd failed: printf '%s %s\n' c66f05148e35355bd04292958d9a123b0a80f1db "
+                "'/mnt/raid0/llm/tmp/heterogeneous-slot-fabric/kpf50/input.json' | sha256sum -c --status")
+DEAD_LINE = "refuse rc=14: launcher pid {pid} of {rid} is dead (no /proc/{pid} or zombie)"
+
+
+def _fails_per_tick(d):
+    return [len(x["fails_new"]) for x in d]
+
+
+def _lines(d, prefix):
+    return [(x["i"], l) for x in d for l in x["lines"] if l.startswith(prefix)]
+
+
+def sc_precond_parks_once(path):
+    """P4.4 row 1: kpf50-child-evidence-main-impact-r2 was refused by its own --precond-cmd 171 times (06:34Z-09:26Z, one
+    per tick) and alerted 171 times, because its live poller kept it `armed`. Rule: the FIRST refusal parks the row (one
+    FAIL, one PARK line); it is never re-admitted until its manifest changes (tick 5: a republish with new notes), which
+    buys exactly one more refusal episode."""
+    rid = "kpf50-child-evidence-main-impact-20261104-r2"
+    r = row(rid, regions="any-cpu-quarter", est=3600)
+    r["admit"] = {"refuse": PRECOND_LINE}
+    r2 = dict(r, manifest=dict(r["manifest"], notes="precondition input regenerated"))
+    world = {"foreign": {}}
+    ticks = [({rid: r}, world)] * 5 + [({rid: r2}, world)] * 3
+
+    def check(d):
+        out = []
+        f = _fails_per_tick(d)
+        if f != [1, 0, 0, 0, 0, 1, 0, 0]:
+            out.append(f"FAIL records per tick {f}; expected one at tick 0 and one at tick 5 (the spec change), never per tick")
+        park = _lines(d, f"PARK {rid}:")
+        if [i for i, _ in park] != [0, 5]:
+            out.append(f"PARK lines at ticks {[i for i, _ in park]}; expected [0, 5]")
+        skip = _lines(d, f"SKIP {rid}:")
+        if skip:
+            out.append(f"the parked row was re-admitted (SKIP lines at ticks {[i for i, _ in skip]})")
+        if _granted(d, rid):
+            out.append("a refused row was granted")
+        return out
+    return write(path, ticks), check
+
+
+def sc_completed_not_rc14(path):
+    """P4.4 row 2: v11-122-llg-build-cpu / c6q4isum-llg-build-gpu & co: `refuse rc=14: launcher pid N is dead` was written
+    as a launch FAIL (+ owner alert, + fix_task) 1 s after the poller had finished the WHOLE job (grants/<id>.complete,
+    .ended rc=0 reason=complete). Rule: a receipt present at admission time makes a dead pid a COMPLETION: no FAIL, no
+    alert, a COMPLETE line, and the row is `done` from the next tick (never a candidate again)."""
+    rid = "v11-122-llg-build-cpu-20261105"
+    r = row(rid, regions="any-cpu-quarter", est=3600)
+    r["admit"] = {"refuse": DEAD_LINE, "complete_marker": True, "pid_dies": True}
+    ticks = [({rid: r}, {"foreign": {}})] * 3
+
+    def check(d):
+        out = []
+        if sum(_fails_per_tick(d)):
+            out.append(f"a completed row got a FAIL record (per tick {_fails_per_tick(d)})")
+        c = _lines(d, f"COMPLETE {rid}:")
+        if [i for i, _ in c] != [0]:
+            out.append(f"COMPLETE lines at ticks {[i for i, _ in c]}; expected exactly one, at tick 0")
+        if any((x["cands"] or 0) > 0 for x in d[1:]):
+            out.append("the completed row stayed a candidate after its receipt")
+        if _granted(d, rid):
+            out.append("a completed row was granted")
+        return out
+    return write(path, ticks), check
+
+
+def sc_dead_poller_without_receipt_still_fails(path):
+    """Control for the rule above: the same dead pid with NO receipt is still a launch FAIL (a real dead poller)."""
+    rid = "akx-c6-n4-generic-vs-candidate-20261104"
+    r = row(rid, regions="any-cpu-quarter", est=3600)
+    r["admit"] = {"refuse": DEAD_LINE, "pid_dies": True}
+    ticks = [({rid: r}, {"foreign": {}})] * 2
+
+    def check(d):
+        out = []
+        if _fails_per_tick(d)[0] != 1:
+            out.append(f"a genuinely dead poller must still FAIL at tick 0 (got {_fails_per_tick(d)})")
+        if _lines(d, f"COMPLETE {rid}:"):
+            out.append("COMPLETE logged without any receipt")
+        return out
+    return write(path, ticks), check
+
+
+def _gpu_harness_rows(util_busy, regions="mi210_0,184-191", q3=0.0):
+    g = row("ak-asm-t1-harness", lane="gpu", regions=regions, cls="gpu", nofold=True, est=7200,
+            extra="python3 harness.py --device rocm", man={"admission_class": "correctness"})
+    g["kfd_own"] = True
+    world = {"foreign": {"q0": "foreign-a", "q1": "foreign-b", "q2": "foreign-c"},
+             "util": {"q0": 90.0, "q1": 90.0, "q2": 90.0, "q3": q3,
+                      "gpu": {"busy": util_busy, "vram_pct": 3.0, "vram_gib": 2.0, "card": "card2"}}}
+    return {"ak-asm-t1-harness": g}, world
+
+
+def sc_gpu_harness_with_kfd_never_idle(path):
+    """P4.4 rows 3-4: ak-asm-t1-harness (a RUNNING GPU harness: own KFD client, 2 GiB VRAM) read IDLE-HELD gpu-quiet and
+    warned its owner 30+ times because the device busy % sampled 0 between kernels and its host threads sat idle. Rule:
+    a grant whose own process tree holds a KFD client is busy; it never reads IDLE-HELD and never warns - 8 ticks."""
+    rows, world = _gpu_harness_rows(0)
+    ticks = [(rows, world)] * 8
+
+    def check(d):
+        out = []
+        if not _granted(d, "ak-asm-t1-harness"):
+            return ["fixture: GPU row never granted"]
+        held = _lines(d, "IDLE-HELD")
+        if held:
+            out.append(f"a GPU grant with its own KFD client read IDLE-HELD: {held[:3]}")
+        return out
+    return write(path, ticks), check
+
+
+def sc_gpu_grant_cpu_regions_not_judged(path):
+    """A GPU grant over mi210_0 + all of q3 (kvu16g3 form): q3 reads 0 % CPU while the device is 80 % busy and no KFD
+    client is attributable (a fenced child container). CPU % never judges a GPU-token grant: no IDLE-HELD q3."""
+    rows, world = _gpu_harness_rows(80, regions="mi210_0,72-95", q3=0.0)
+    rows["ak-asm-t1-harness"]["kfd_own"] = False
+    ticks = [(rows, world)] * 6
+
+    def check(d):
+        out = []
+        if not _granted(d, "ak-asm-t1-harness"):
+            return ["fixture: GPU row never granted"]
+        held = _lines(d, "IDLE-HELD")
+        if held:
+            out.append(f"IDLE-HELD read on a GPU grant by CPU %: {held[:3]}")
+        return out
+    return write(path, ticks), check
+
+
+def sc_gpu_grant_quiet_device_idle_after_two_samples(path):
+    """Counter-case: no own KFD client AND the device at 0 % - IDLE-HELD gpu-quiet only from the 2nd quiet sample (tick 2:
+    tick 0 grants, tick 1 is sample 1), then warns the owner once >= 300 s later (the pass-3 notify-only contract)."""
+    rows, world = _gpu_harness_rows(0)
+    rows["ak-asm-t1-harness"]["kfd_own"] = False
+    ticks = [(rows, world)] * 8
+
+    def check(d):
+        out = []
+        held = [i for i, _ in _lines(d, "IDLE-HELD gpu-quiet ak-asm-t1-harness")]
+        if not held or held[0] != 2:
+            out.append(f"IDLE-HELD gpu-quiet should start at tick 2 (2nd quiet sample), got ticks {held[:4]}")
+        if any(l for _, l in _lines(d, "IDLE-HELD q3")):
+            out.append("q3 judged by CPU % under a GPU grant")
+        w = [i for i, _ in _lines(d, "IDLE-HELD-WARN gpu-quiet ak-asm-t1-harness:")]
+        if len(w) != 1:
+            out.append(f"expected exactly one owner warning over 8 ticks, got {w}")
+        return out
+    return write(path, ticks), check
+
+
 SCENARIOS = {
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,
@@ -599,6 +751,12 @@ SCENARIOS = {
     "idle-held-warns-owner-once": sc_idle_held_warns_once,
     "idle-held-repeat-warning-15min": sc_idle_held_repeats_each_15min,
     "idle-held-busy-grant-silent": sc_idle_held_busy_grant_silent,
+    "p4-precond-refusal-parks-once": sc_precond_parks_once,
+    "p4-completed-row-not-rc14": sc_completed_not_rc14,
+    "p4-dead-poller-without-receipt-still-fails": sc_dead_poller_without_receipt_still_fails,
+    "p4-gpu-harness-with-kfd-never-idle-held": sc_gpu_harness_with_kfd_never_idle,
+    "p4-gpu-grant-cpu-regions-not-judged": sc_gpu_grant_cpu_regions_not_judged,
+    "p4-gpu-grant-quiet-device-idle-after-two-samples": sc_gpu_grant_quiet_device_idle_after_two_samples,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)

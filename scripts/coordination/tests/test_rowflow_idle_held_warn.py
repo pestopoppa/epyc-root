@@ -49,8 +49,10 @@ class IdleHeldWarn(Fixture):
         rid = "rock-aiter-tests-r3-20261105"
         self.row(rid, 10, QUIET_OPT, "gpu", lane="gpu", regions="mi210_0,184-191")
         gp = self.grant(rid, "gpu-quiet,c88,t184", age_s=64)
-        warned = self.run_ticks(rid, {"gpu-quiet": rid}, [GPU_IDLE] * 4)   # t=0,120,240,360 -> idle_since=t0
-        self.assertEqual(warned, [[], [], [], [rid]], "exactly one warning, at the first tick >= 300 s idle")
+        # fix 3 (2026-11-06): a GPU grant reads IDLE-HELD only after GPU_IDLE_SAMPLES (2) quiet device samples (no own
+        # KFD client, device < IDLE_PCT), so idle_since = t0 + 120 and the warning comes at the first tick >= 300 s after it
+        warned = self.run_ticks(rid, {"gpu-quiet": rid}, [GPU_IDLE] * 5)   # t=0,120,240,360,480 -> idle_since=t0+120
+        self.assertEqual(warned, [[], [], [], [], [rid]], "exactly one warning, at the first tick >= 300 s idle")
         a = alerts(self.flags)
         self.assertEqual(len(a), 1)
         self.assertEqual((a[0]["kind"], a[0]["severity"], a[0]["row_id"], a[0]["row_owner"]), ("idle-held", "warning", rid, "t"))
@@ -80,13 +82,13 @@ class IdleHeldWarn(Fixture):
         n = 14                                    # t = 0 .. 1560 s
         warned = self.run_ticks(rid, {"gpu-quiet": rid}, [GPU_IDLE] * n)
         ticks = [i for i, w in enumerate(warned) if w]
-        self.assertEqual(ticks, [3, 11], "first at 360 s idle, repeat at the first tick >= 900 s after it (1320 s)")
+        self.assertEqual(ticks, [4, 12], "idle from the 2nd quiet sample (120 s): first at 360 s idle, repeat at the first tick >= 900 s after it")
         a = alerts(self.flags)
         self.assertEqual([x["detail"]["warning_n"] for x in a], [1, 2])
         self.assertNotEqual(a[0]["key"], a[1]["key"])
         st = rf.load_json(rf.idle_warn_state_path(self.flags))
         self.assertEqual(st[rid]["warn_n"], 2)
-        self.assertEqual(int(st[rid]["idle_since"]), int(self.t0))
+        self.assertEqual(int(st[rid]["idle_since"]), int(self.t0) + TICK)   # the 2nd quiet sample
 
     def test_cpu_quarter_grant_is_covered_and_a_busy_tick_resets_the_clock(self):
         rid = "cpu-q1"

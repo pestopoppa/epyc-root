@@ -216,6 +216,7 @@ class World:
         self.disk = 400.0
         self.kills = []
         self.spawned = []
+        self.admit = {}        # rid -> scripted admission (blob["admit"]) for the current tick
         self.next_pid = 900000
 
     def pid(self):
@@ -329,7 +330,18 @@ def load_candidate(rowflow_dir, flags, tmp):
     patch("cpu_sample", lambda *a, **k: {})
     patch("armed_engine_ok", lambda pid, rid, proc="/proc": bool(pid) and _int(pid) in W.alive)
     patch("row_orphans", lambda rid: [])
-    patch("admit", lambda flags, rid, d, pid, regions, window_s: (True, f"replay-admit {rid} regions={regions}"))
+    def admit(flags, rid, d, pid, regions, window_s):
+        """Admission as the trace scripts it: blob["admit"] = {"refuse": line, "complete_marker": bool, "pid_dies": bool}
+        (pass-4 fixtures: a --precond-cmd refusal every tick; a poller that finished the job and died before admit)."""
+        spec = W.admit.get(rid)
+        if not spec:
+            return True, f"replay-admit {rid} regions={regions}"
+        if spec.get("complete_marker"):
+            _write(os.path.join(flags, "grants", rid + ".complete"), "complete\n")
+        if spec.get("pid_dies"):
+            W.alive.discard(_int(pid))
+        return False, str(spec.get("refuse") or "refuse rc=12: scripted").replace("{pid}", str(pid)).replace("{rid}", rid)
+    patch("admit", admit)
 
     def arm_one(flags, rid, d, regions=None, log=print):
         pid = W.pid()
@@ -533,7 +545,7 @@ def _epoch(s):
 
 _LINE_KINDS = ("GRANT", "DRAIN", "DRAIN-HELD", "NO-DRAIN", "RANK-SKIP", "RANK-HOLD", "IDLE-WHY", "IDLE-VIOLATION",
                "IDLE-HELD", "SMOKE-WAIT", "SMOKE-PLACE", "WAIT", "SKIP", "ERROR", "HEAL", "SNAPSHOT", "CONFLICT",
-               "ROW-ARM", "RE-PLAN", "PLAN", "SHAPE-DOWNSIZE", "BACKFILL", "RECLAIM", "REAP", "DRYRUN-REAP", "HOLD")
+               "ROW-ARM", "RE-PLAN", "PLAN", "SHAPE-DOWNSIZE", "BACKFILL", "RECLAIM", "REAP", "DRYRUN-REAP", "HOLD", "PARK", "COMPLETE")
 
 
 def _kind(line):
@@ -566,6 +578,11 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
         W.disk = float(tick.get("disk_free_gib") or 400.0)
         sb.advance(tick)
         sb.materialize(tick, rf)
+        W.admit = {rid: b["admit"] for rid, b in tick["rows"].items() if isinstance(b.get("admit"), dict)}
+        for rid, s_ in sb.sim.items():   # blob["kfd_own"]: the granted row's own poller is a KFD client (a working GPU job)
+            b = tick["rows"].get(rid) or {}
+            if b.get("kfd_own") and s_.get("pid"):
+                W.kfd[int(s_["pid"])] = int(b.get("kfd_own_vram") or (2 << 30))
         open_before = {rid: dict(s) for rid, s in sb.sim.items()}
         kills0, fails0 = len(W.kills), set(glob.glob(os.path.join(sb.flags, "dryrun", "*", "FAIL-*.json")))
         lines, err = [], None

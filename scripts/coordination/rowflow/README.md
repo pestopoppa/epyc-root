@@ -31,3 +31,20 @@ S=$(date -u +%FT%TZ); R=/workspace/scripts/coordination/rowflow/rowflow.py; unti
 ```
 
    Handle each alert, then `rowflow.py alerts --ack <key>`; re-arm the watcher.
+
+## Friction pass-4 rules (operator 2026-11-06, emergency deploy into the frozen keeper)
+
+`docs/reports/coordination/keeper-friction-review-20261105.md` Pass 4 (P4.3 / P4.4). Each rule is a module flag in
+`rowflow.py` (`PRECOND_PARK_ONCE`, `COMPLETE_BEFORE_RC14`, `GPU_IDLE_BY_DEVICE`) so the replay gate's negative controls
+can prove the pre-fix keeper fails the incident scenario (`tests/replay/scenarios.py` `p4-*`).
+
+1. **Refusal terminal once.** A launcher `--precond-cmd` refusal (rc=12) PARKS the row at the first refusal: one FAIL
+   record, one alert, a `PARK <id>` line. It is retried only after its launcher or manifest sha changes, or after
+   `rowflow.py unpark <id> [--by <who>] [--note <text>]` (writes `dryrun/<id>/UNPARK.json`; earlier arming FAILs no
+   longer count). Other admission refusals keep the `MAX_FAILS` rule.
+2. **A completed row is not rc=14.** A poller that is dead after `grants/<id>.complete` (or an `.ended` receipt
+   `rc=0 ... reason=complete`) logs `COMPLETE <id>` and writes no FAIL.
+3. **GPU idleness by GPU signals.** A grant holding `gpu-quiet` is judged by its own KFD clients and the device busy %
+   only (never by the CPU % of the regions it holds); it reads `IDLE-HELD gpu-quiet` only after `GPU_IDLE_SAMPLES` (2)
+   consecutive quiet samples (state `ws58-keeper-state/allocator/gpu_idle.json`). The dry run never raises
+   `OVER-DECLARED busy_fraction` for a GPU-token row.

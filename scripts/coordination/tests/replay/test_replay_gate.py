@@ -129,3 +129,38 @@ def test_publish_scenario(name, tmp_path):
     import inspect
     v = check(row, err, rf) if len(inspect.signature(check).parameters) >= 3 else check(row, err)
     assert not v, "\n".join(v)
+
+# ------------------------------------------------------------------ negative controls: friction pass-4 fixes (2026-11-06)
+# Each fix is guarded by a module flag; a copy of the candidate with the flag OFF (the pre-fix keeper) must FAIL the
+# scenario that the fix is deployed for - proving each scenario detects the incident class, not a tautology.
+P4_CONTROLS = [
+    ("PRECOND_PARK_ONCE", "p4-precond-refusal-parks-once", ("FAIL records per tick", "re-admitted")),
+    ("COMPLETE_BEFORE_RC14", "p4-completed-row-not-rc14", ("got a FAIL record",)),
+    ("GPU_IDLE_BY_DEVICE", "p4-gpu-harness-with-kfd-never-idle-held", ("read IDLE-HELD",)),
+    ("GPU_IDLE_BY_DEVICE", "p4-gpu-grant-cpu-regions-not-judged", ("by CPU %",)),
+]
+
+
+def _candidate_with_flag_off(work, flag):
+    import re
+    import shutil
+    old = os.path.join(work, f"old-{flag.lower()}-cand")
+    if not os.path.isdir(old):
+        shutil.copytree(CAND, old, ignore=shutil.ignore_patterns("__pycache__", "*.bak*"))
+        src = os.path.join(old, "rowflow.py")
+        text = open(src).read()
+        text, n = re.subn(rf"^{flag} = True\b", f"{flag} = False", text, count=1, flags=re.M)
+        assert n == 1, f"{flag} = True not found in the candidate"
+        open(src, "w").write(text)
+    return old
+
+
+@pytest.mark.parametrize("flag,name,expect", P4_CONTROLS, ids=[f"{f}:{n}" for f, n, _ in P4_CONTROLS])
+def test_negative_control_pass4_old_rule_fails_scenario(flag, name, expect, work):
+    old = _candidate_with_flag_off(work, flag)
+    tpath, check = SC.SCENARIOS[name](os.path.join(work, name + f".neg-{flag}.trace.jsonl"))
+    dec, err = RA.worker(old, tpath, os.path.join(work, "out", name + f"-old-{flag}"))
+    assert dec is not None, err
+    viol = list(check(dec))
+    assert viol and any(e in v for v in viol for e in expect), \
+        f"with {flag} off the old keeper should fail {name} ({expect}); got {viol}"

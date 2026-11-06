@@ -201,16 +201,72 @@ def is_arm_fail(f):
 
 
 def arm_fails_since_pass(flags, rid, p=None):
-    """[FAIL records] of the consecutive arming/launch failures since the row's PASS and its last successful grant
-    (ws58 2026-11-03: yarn-e1-a2-gpu failed to arm 172 times after its PASS and stayed grantable all night)."""
+    """[FAIL records] of the consecutive arming/launch failures since the row's PASS, its last successful grant and its
+    last operator UNPARK (ws58 2026-11-03: yarn-e1-a2-gpu failed to arm 172 times after its PASS and stayed grantable
+    all night)."""
     p = load_json(pass_path(flags, rid)) if p is None else p
     t0 = max(iso_epoch((p or {}).get("passed_at")) or 0.0, iso_epoch((load_json(granted_path(flags, rid)) or {}).get("at")) or 0.0)
+    un = iso_epoch((load_json(unpark_path(flags, rid)) or {}).get("at")) or 0.0   # records up to AND IN the unpark second are forgiven
     out = []
     for fp in fail_paths(flags, rid):
         f = load_json(fp) or {}
-        if is_arm_fail(f) and (iso_epoch(f.get("at")) or 0.0) >= t0:
+        at = iso_epoch(f.get("at")) or 0.0
+        if is_arm_fail(f) and at >= t0 and (not un or at > un):
             out.append(dict(f, fail_file=fp))
     return sorted(out, key=lambda f: iso_epoch(f.get("at")) or 0.0)
+
+
+# ---------------------------------------------------------------- friction pass-4 fixes (operator 2026-11-06, emergency deploy)
+# docs/reports/coordination/keeper-friction-review-20261105.md Pass 4 (P4.3 / P4.4). Each rule carries a module flag so
+# the replay gate's negative controls can prove the OLD behaviour fails the new scenario (never a tautology).
+PRECOND_PARK_ONCE = True      # fix 1: a --precond-cmd refusal parks the row at the FIRST refusal (478 false repeats vs 3 real)
+COMPLETE_BEFORE_RC14 = True   # fix 2: a dead poller whose row has a terminal success receipt is COMPLETE, not rc=14 (11/11 false)
+GPU_IDLE_BY_DEVICE = True     # fix 3: a GPU-token grant is idle by its KFD clients + device busy %, never by CPU % (43/72 false)
+GPU_IDLE_SAMPLES = 2          # fix 3: consecutive quiet device samples before a GPU grant reads IDLE-HELD
+_PRECOND_REFUSED = "refuse rc=12: not ready: precond-cmd failed"
+
+
+def unpark_path(flags, rid): return os.path.join(dry_dir(flags, rid), "UNPARK.json")
+
+
+def is_precond_refusal(f):
+    """A launch FAIL record whose admission refusal was the launcher's own --precond-cmd (grant_ok_launcher rc=12)."""
+    return is_arm_fail(f) and _PRECOND_REFUSED in str((f or {}).get("reason", ""))
+
+
+def precond_park(flags, rid, cur, p=None):
+    """fix 1: the FAIL record that parks `rid`, or None. A precond refusal is terminal for the row AS PUBLISHED: the newest
+    launch refusal by --precond-cmd whose launcher_sha256 == the current launcher and row_sha256 == the current manifest,
+    written after the PASS / last grant / last `rowflow.py unpark`. A launcher or spec edit (sha change) or an unpark
+    retries it; nothing else does (kpf50 / kpf41: 171 refusals of one unchanged precond, one per tick, 171 alerts)."""
+    if not PRECOND_PARK_ONCE:
+        return None
+    rs = row_sha(flags, rid)
+    for f in reversed(arm_fails_since_pass(flags, rid, p)):
+        if is_precond_refusal(f) and f.get("launcher_sha256") == cur and f.get("row_sha256") == rs:
+            return f
+    return None
+
+
+def unpark(flags, rid, by="", note=""):
+    """Operator unpark: arming/launch FAIL records before this moment no longer count (precond park and the MAX_FAILS
+    park alike); the row is grantable again on the next tick if its PASS still matches. Returns the record written."""
+    rec = {"id": rid, "at": now_iso(), "by": by or os.environ.get("USER") or "", "note": note}
+    os.makedirs(dry_dir(flags, rid), exist_ok=True)
+    atomic_json(unpark_path(flags, rid), rec)
+    return rec
+
+
+def terminal_success(flags, rid):
+    """fix 2: the receipt that says `rid`'s job FINISHED - grants/<id>.complete, or grants/<id>.ended whose first line
+    reads rc=0 ... reason=complete - else None. A poller that is dead after this receipt completed; it did not die."""
+    G = os.path.join(flags, "grants")
+    if os.path.exists(os.path.join(G, rid + ".complete")):
+        return f"grants/{rid}.complete"
+    h = head1(os.path.join(G, rid + ".ended"))
+    if h and re.search(r"(^|\s)rc=0(\s|$)", h) and "reason=complete" in h:
+        return f"grants/{rid}.ended ({h[:90]})"
+    return None
 
 
 def row_sha(flags, rid):
@@ -2333,7 +2389,13 @@ def status(flags, rid, allrows=None, util=None):
         if held is not None:
             if util is not None:
                 st["util"] = hostutil.regions_pct(util, held)
-                idle = hostutil.idle_regions(util, held)
+                if GPU_IDLE_BY_DEVICE and GPU in held:
+                    # fix 3 (2026-11-06): a GPU-token grant is judged by the device only - its CPU regions (MI210 host
+                    # threads / q3 cores) read low by design; idle = the keeper's persisted GPU_IDLE_SAMPLES-sample verdict
+                    n = int((load_json(gpu_idle_state_path(flags)) or {}).get(rid) or 0)
+                    idle = [GPU] if n >= GPU_IDLE_SAMPLES else []
+                else:
+                    idle = hostutil.idle_regions(util, held)
                 if idle and st.get("grant_age_s", 0) > IDLE_HELD_AFTER_S:
                     st["blocker"] = f"IDLE-HELD {','.join(idle)}: measured <{hostutil.IDLE_PCT:g}% busy {st['grant_age_s']}s into the grant"
     return st
@@ -2374,6 +2436,12 @@ def _status_raw(flags, rid, allrows=None):
         sf = resolve_stop_path(d)   # 2026-11-05: `$D/...` resolved; unknown (None) keeps the row grantable
         if sf and os.path.exists(sf):   # a STOP file stops the row: never granted, never a drain candidate, never burns the id
             out.update(state="stopped", reason=sf, stop_file=sf, fix=f"rm {sf}"); return out
+        pk = precond_park(flags, rid, cur, p)   # fix 1 (2026-11-06): BEFORE the armed branch - a live poller whose
+        if pk:                                  # precond keeps refusing was re-admitted (and re-FAILed) every tick
+            out.update(state="parked", precond_parked=True, arm_fails=len(arm_fails_since_pass(flags, rid, p)),
+                       reason=f"precond-cmd refused at {pk.get('at')} ({str(pk.get('reason'))[:160]}); terminal for this "
+                              f"launcher+spec: retried only after a launcher/spec edit or `rowflow.py unpark {rid}`",
+                       fail_file=pk["fail_file"], fix_task=pk.get("fix_task")); return out
         a = load_json(armed_path(flags, rid))
         if a and alive(a.get("pid")):
             if armed_engine_ok(a.get("pid"), rid):
@@ -2566,7 +2634,12 @@ def measured_busy(samples, claimed, until=None):
     return round(th, 3), round(min(1.0, th / max(1, claimed)), 3)
 
 
-def busy_flag(declared, measured):
+def busy_flag(declared, measured, gpu=False):
+    """OVER-DECLARED busy_fraction line, or None. fix 3 (2026-11-06): never for a row that holds the GPU token - its CPU
+    share is LOW by design (the device does the work; 43 of 72 flags were GPU rows, 0 real); the dry run judges such a
+    row by VRAM residency / the rc78 vacuous-fence test instead."""
+    if GPU_IDLE_BY_DEVICE and gpu:
+        return None
     if measured is None or declared < 0.5 or declared < OVERDECLARED_RATIO * max(measured, 1e-3):
         return None
     return f"OVER-DECLARED busy_fraction: declared {declared:g}, measured {measured:g}; right-size the shape/claim"
@@ -2625,9 +2698,13 @@ def record_arm_fail(flags, rid, d, kind, reason, log=print):
     """An arming (kind=arm) or launch (kind=launch: admission refused the armed poller) failure of a PASSed row. The
     MAX_FAILS-th consecutive one since the PASS parks the row (status) and writes operator-escalations/<id>.arming.md."""
     pol = os.path.join(dry_dir(flags, rid), "poller.out")
+    if PRECOND_PARK_ONCE and _PRECOND_REFUSED in reason:   # fix 1: terminal at the first refusal, one record, one alert
+        park = (f"the row is PARKED now (precond refusal is terminal for this launcher+spec): fix the precondition, then "
+                f"republish or `rowflow.py unpark {rid}`")
+    else:
+        park = f"after {MAX_FAILS} in a row the row is parked until it is republished"
     record_fail(flags, rid, d, reason, {"kind": kind, "launcher_out_tail": tail(pol), "tail_of": pol,
-                                        "fix_task": f"fix the {kind} failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/poller.out); "
-                                                    f"after {MAX_FAILS} in a row the row is parked until it is republished"})
+                                        "fix_task": f"fix the {kind} failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/poller.out); {park}"})
     af = arm_fails_since_pass(flags, rid)
     if len(af) < MAX_FAILS:
         return len(af)
@@ -2986,7 +3063,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     claimed = claimed_cpus(d.get("regions"), (parse_launcher(lp) if os.path.isfile(lp) else {}).get("claim_cpus"), str(d.get("shape") or "quarter"))
     mt, mb = measured_busy(cpu_samples, claimed, until=stop_requested)
     rec.update(measured_threads=mt, measured_busy_fraction=mb, measured_claimed_cpus=claimed)
-    flag = busy_flag(row_busy(d), mb)
+    flag = busy_flag(row_busy(d), mb, gpu=GPU in holds or gpu_declared(d))   # fix 3: GPU-token rows are never OVER-DECLARED by CPU %
     if flag:
         rec["busy_flag"] = flag
         with open(os.path.join(dd, "launcher.out"), "a") as lo:
@@ -3274,27 +3351,90 @@ def measure_util(sample_s=hostutil.SAMPLE_S):
     return hostutil.measure(sample_s)
 
 
-def idle_held(flags, grants, holders, util, log, seen, now=None):
+def gpu_idle_state_path(flags):
+    return os.path.join(state_dir(flags), "gpu_idle.json")
+
+
+def grant_own_pids(flags, g):
+    """The pids a grant's poller owns: the grant's pid and the ARMED pid, each with its process tree."""
+    own = set()
+    for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
+        if x:
+            try:
+                own |= tree_pids(int(x)) | {int(x)}
+            except (OSError, ValueError):
+                pass
+    return own
+
+
+def gpu_grant_busy(flags, g, util, occ):
+    """fix 3: (busy, why) of a GPU-token grant by GPU SIGNALS only - its own KFD clients (and their VRAM) and the device
+    busy %. Busy when the grant's process tree holds any KFD client OR the device reads >= IDLE_PCT; quiet only when
+    both are silent. CPU % is never consulted (ak-asm-t1-harness: a running GPU harness read IDLE-HELD by CPU %)."""
+    own = grant_own_pids(flags, g)
+    kfd = {p: v for p, v in (occ.get("pids") or {}).items() if p in own}
+    busy_pct = (util.get("gpu") or {}).get("busy") if isinstance(util, dict) else None
+    if kfd:
+        return True, f"{len(kfd)} own KFD client(s) {','.join(map(str, sorted(kfd)[:4]))} hold {sum(kfd.values()) / (1 << 30):.1f} GiB"
+    if busy_pct is not None and busy_pct >= hostutil.IDLE_PCT:
+        return True, f"device {busy_pct:.0f}% busy"
+    if busy_pct is None and not (occ.get("pids") or {}) and occ.get("vram_used") is None:
+        return True, "device unreadable (never idle on no evidence)"
+    return False, f"no own KFD client, device {busy_pct if busy_pct is not None else '?'}% busy"
+
+
+def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
     """2026-11-03 session review item 2: every held region is judged by MEASUREMENT, not by its grant file - a grant
     older than IDLE_HELD_AFTER_S whose region reads < IDLE_PCT busy logs IDLE-HELD (one line: region, row, %, age,
     where the logs are). Never kills, never de-grants; the 3rd consecutive tick raises the repeat ALERT. Returns the
-    [(region, rid, pct)] list."""
+    [(region, rid, pct)] list.
+    fix 3 (operator 2026-11-06): a grant holding the GPU token is judged by GPU signals ONLY (gpu_grant_busy: own KFD
+    clients, device busy %), never by the CPU % of the regions it holds, and reads IDLE-HELD only after GPU_IDLE_SAMPLES
+    consecutive quiet samples (state: ws58-keeper-state/allocator/gpu_idle.json {rid: quiet samples})."""
     now = time.time() if now is None else now
-    age = {}
+    age, by_id = {}, {}
     for g in grants:
+        by_id[g["id"]] = g
         try:
             age[g["id"]] = int(now - os.path.getmtime(g["path"]))
         except OSError:
             continue
+    gpu_ids = {g["id"] for g in grants if GPU in g["holds"]} if GPU_IDLE_BY_DEVICE else set()
     out = []
     for r, rid in sorted(holders.items()):
         if rid not in age or age[rid] <= IDLE_HELD_AFTER_S:
             continue
+        if rid in gpu_ids:
+            continue   # judged below, by the device
         v = hostutil.regions_pct(util, [r]).get(r)
         if v is not None and v < hostutil.IDLE_PCT:
             out.append((r, rid, v))
             seen.add(f"idle-held:{r}:{rid}")
             log(f"IDLE-HELD {r} {rid}: measured {v:.0f}% busy, grant {age[rid]}s old; logs {dry_dir(flags, rid)}")
+    if GPU_IDLE_BY_DEVICE:
+        sp = gpu_idle_state_path(flags)
+        st = {k: int(v) for k, v in (load_json(sp) or {}).items() if k in gpu_ids}
+        if gpu_ids:
+            try:
+                occ = gpu_occupancy() if occ is None else occ
+            except OSError:
+                occ = {"pids": {}, "vram_used": None}
+        for rid in sorted(gpu_ids):
+            if rid not in age or age[rid] <= IDLE_HELD_AFTER_S:
+                st[rid] = 0
+                continue
+            busy, why = gpu_grant_busy(flags, by_id[rid], util, occ)
+            st[rid] = 0 if busy else int(st.get(rid) or 0) + 1
+            if busy or st[rid] < GPU_IDLE_SAMPLES:
+                continue
+            v = float((util.get("gpu") or {}).get("busy") or 0.0) if isinstance(util, dict) else 0.0
+            out.append((GPU, rid, v))
+            seen.add(f"idle-held:{GPU}:{rid}")
+            log(f"IDLE-HELD {GPU} {rid}: {why} for {st[rid]} samples, grant {age[rid]}s old; logs {dry_dir(flags, rid)}")
+        try:
+            atomic_json(sp, st)
+        except OSError as ex:
+            log(f"IDLE-HELD gpu state write failed ({sp}): {ex}")
     return out
 
 
@@ -3801,6 +3941,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 if why:   # host condition, not the row: no FAIL recorded, retried next tick
                     log(f"WAIT {rid}: {why}")
                     failed.append(rid); continue
+                done = terminal_success(flags, rid) if COMPLETE_BEFORE_RC14 else None
+                if done:   # fix 2: the job finished since this tick's status() - nothing to arm, nothing failed
+                    log(f"COMPLETE {rid}: {done} present; not armed, no FAIL")
+                    failed.append(rid); continue
                 a = load_json(armed_path(flags, rid))
                 if a and alive(a.get("pid")) and not armed_engine_ok(a.get("pid"), rid):
                     log(f"RE-ARM {rid}: ARMED pid {a.get('pid')} runs no filler_run*.sh engine for this row (not killed; re-armed)")
@@ -3814,8 +3958,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     pid = a["pid"]
                 ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
                 if not ok:
+                    done = terminal_success(flags, rid) if COMPLETE_BEFORE_RC14 else None
+                    if done:   # fix 2 (2026-11-06): a dead poller AFTER the job's own completion receipt is completion, not rc=14
+                        log(f"COMPLETE {rid}: admission refused ({line[:120]}) but {done} present; counted as completion, no FAIL")
+                        failed.append(rid); continue
                     n = record_arm_fail(flags, rid, d, "launch", f"admission refused the armed poller: {line[:300]}", log)
-                    log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
+                    if PRECOND_PARK_ONCE and _PRECOND_REFUSED in line:   # fix 1: one FAIL, one alert, parked now
+                        log(f"PARK {rid}: {line[:200]}; precond refusal is terminal for this launcher+spec (1 FAIL, 1 alert); "
+                            f"retried after a launcher/spec edit or `rowflow.py unpark {rid}`")
+                    else:
+                        log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
                     failed.append(rid); continue
                 # the engine's region-lock claim IS the contract: a CONTRACT_LOCK engine locks lock= instead of --claim-cpus
                 gl = write_grant(flags, rid, regions, opt, d["window_s"], (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "")
@@ -4127,6 +4279,9 @@ def main(argv=None):
     sub.add_parser("list")
     s = sub.add_parser("withdraw", help="end a row that will never run: manifest -> ready/.withdrawn/, grants/<id>.ended rc=75, STOP touched")
     s.add_argument("id"); s.add_argument("--reason", required=True)
+    s = sub.add_parser("unpark", help="operator: a parked row (precond refusal / arming failures) is grantable again next tick; its "
+                                      "earlier arming FAIL records no longer count (dryrun/<id>/UNPARK.json)")
+    s.add_argument("id"); s.add_argument("--by"); s.add_argument("--note", default="")
     s = sub.add_parser("allocate", help="ONE snapshot per tick: heal, assign dry runs + grants together, write grants, log IDLE-WHY/UNDERUSED")
     s.add_argument("--log", help="keeper log the detached dry runs append DRYRUN-RESULT to (default <flags>/ws58-calendar-keeper.log)")
     s.add_argument("--plan", action="store_true", help="snapshot + plan only; change nothing")
@@ -4165,6 +4320,12 @@ def main(argv=None):
             r = withdraw(a.flags, a.id, a.reason)
             print(f"{r} {a.id}")
             return 0 if r in ("WITHDRAWN", "PENDING", "TERMINAL") else 2
+        if a.cmd == "unpark":
+            need(a.id in rows(a.flags), f"{a.id}: no epyc.row.v3 row in ready/")
+            rec = unpark(a.flags, a.id, a.by or "", a.note)
+            st = status(a.flags, a.id)
+            print(f"UNPARKED {a.id} at {rec['at']}; state now {st['state']}: {st.get('reason', '')[:160]}")
+            return 0
         if a.cmd == "status":
             st = status(a.flags, a.id, util=measure_util())
             print(json.dumps(st, indent=1) if a.json else status_text(st))
