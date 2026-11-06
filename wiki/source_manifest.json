@@ -15,20 +15,16 @@
       "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-06T17:05:21Z",
+    "at": "2026-11-06T17:51:37Z",
     "scope_paths": [
-      "docs/guides/agent-workflows/backlog-churn-flow.md",
-      "docs/reports/coordination/token-efficiency-audit-20261106.md",
-      "handoffs/active/engineering-hygiene-backlog.md",
-      "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md",
-      "research/deep-dives/ydnlc-20261106/intake-2632-transparent-compact.md"
+      "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T17:05:21Z",
+  "scan_time": "2026-11-06T17:51:37Z",
   "schema_version": 1,
-  "source_set_hash": "20d7ddd253868c243d4ac1d40a9cd8637fb0b8cf47965b1741cbfe84fa90fe8e",
+  "source_set_hash": "cda260fde69aa92d6f2c27e32e5e5f927c7ab236d8d1a534bc524aabafe4be40",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16175,10 +16171,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "3ff31df4b86645814beec07f8576a3e8b4aaef533bb88eda40927210b076d9ed",
-      "modified": "2026-11-06T17:01:42Z",
+      "content_hash": "c0f61f2241ca3620ca1c7d7620f765366f88e4752e2dc29810ecb2d2c162fa59",
+      "modified": "2026-11-06T17:50:26Z",
       "path": "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md",
-      "size": 6760,
+      "size": 7755,
       "title": "Wrap-up 6 \u2014 2026-11-05 ~21:00Z to 2026-11-06 (operator-adhoc-ops-20261105)",
       "type": "progress"
     },

@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 50,
+      "blocked": 51,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 681
+      "open": 682
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1359,11 +1359,11 @@
       ]
     },
     "long-context-program.md": {
-      "blocked": 1,
+      "blocked": 2,
       "closed": 101,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 42,
+      "open": 43,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1372,10 +1372,10 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 144,
+      "total": 146,
       "tracks": [
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 57,
           "gates": [
             "RTG-58"
@@ -1384,14 +1384,14 @@
           "line": 17,
           "markers": 1,
           "name": "yarn-context-extension-research",
-          "open": 25
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 589,
+          "line": 594,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1401,7 +1401,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 960,
+          "line": 965,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1411,7 +1411,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1576,
+          "line": 1581,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1421,7 +1421,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1723,
+          "line": 1728,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 11

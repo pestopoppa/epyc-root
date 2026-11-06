@@ -416,3 +416,7 @@ Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-f
 - The operator paused YARN-OOLONG until further notice (2026-11-06).
 
 Sources: [long-context program](../handoffs/active/long-context-program.md) · [wrap-up 6 progress](../progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md) · [friction review pass 4](../docs/reports/coordination/keeper-friction-review-20261105.md)
+
+### YaRN oolong ownership handover (2026-11-06)
+
+The YaRN oolong program (YARN-OOLONG-V38-RESUME) moved from the operator ad-hoc session to main-inf22 at the operator's direction, and the operator lifted the YaRN pause ("he owns the YaRN work, so he's free to schedule it as needed"). The CPU path is abandoned (about 7 h per 112k-token item with no checkpoint); the GPU recipe uses the shared `job_fence` module and four GPU job fixes. Source: `progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md`, `handoffs/active/long-context-program.md`.
