@@ -5,7 +5,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-HOOK = ROOT / "scripts/hooks/check_worktree_repair.sh"
+HOOK = ROOT / "scripts/hooks/check_destructive_git.sh"
 CHECK = ROOT / "scripts/session/check_core_bare.sh"
 
 
@@ -41,3 +41,26 @@ def test_core_bare_check(tmp_path):
     subprocess.run(["git", "-C", str(repo), "config", "core.bare", "true"], check=True)
     p = subprocess.run(["bash", str(CHECK), str(repo)], env=env, capture_output=True, text=True)
     assert p.returncode == 1 and "core.bare=true" in p.stdout
+
+
+def test_blocks_prune_gc_maintenance():
+    for cmd in ["git worktree prune", "git worktree prune --dry-run", "git gc", "git gc --auto",
+                "git -C /mnt/raid0/llm/epyc-orchestrator gc", "git maintenance run",
+                "git maintenance run --task=gc", "x && git gc;"]:
+        rc, err = run_hook(cmd, "/workspace")
+        assert rc == 2 and "2026-08-12" in err, cmd
+
+
+def test_remove_list_and_other_maintenance_pass():
+    for cmd in ["git worktree remove /workspace/.worktrees/x", "git worktree list",
+                "git maintenance run --task=commit-graph", "git gc-foo", "echo git gc"]:
+        rc, _ = run_hook(cmd, "/workspace")
+        assert rc == 0 or cmd == "echo git gc", cmd
+
+
+def test_temp_repo_verbs(tmp_path):
+    repo = tmp_path / "r"
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    # outside protected paths: hook allows (never executes the real verbs)
+    for verb in ["worktree prune", "gc", "maintenance run"]:
+        assert run_hook(f"git {verb}", str(repo))[0] == 0

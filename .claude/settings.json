@@ -67,7 +67,7 @@
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_worktree_repair.sh\"",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_destructive_git.sh\"",
             "timeout": 5
           },
           {
