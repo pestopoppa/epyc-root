@@ -43,6 +43,11 @@ AI_OLD = "execution goes to 3–5 concurrent subagents. Working serially is the 
 AI_NEW = ("execution goes to subagents (up to 3–5 concurrent: a ceiling, never a floor; no fan-out for a handful of tool\n"
           "  calls). Serial execution of parallel work is the defect.")
 
+CM_H_OLD = "- **Fan out subagents by default — always, not only when a dispatch says so.**"
+CM_H_NEW = "- **Fan out subagents when the work is genuinely parallel — width is a ceiling, not a floor.**"
+AI_H_OLD = "- **Fan out by default.**"
+AI_H_NEW = "- **Fan out when the work is genuinely parallel.**"
+
 def read(rel):
     return open(os.path.join(ROOT, rel)).read()
 
@@ -69,8 +74,8 @@ if NEW_WIDTH not in t:
     t = t.replace(OLD_WIDTH, NEW_WIDTH)
 new[OC] = t
 
-for rel, o, n in ((CM, CM_OLD, CM_NEW), (AI, AI_OLD, AI_NEW)):
-    s = old[rel]
+for rel, o, n in ((CM, CM_OLD, CM_NEW), (AI, AI_OLD, AI_NEW), (CM, CM_H_OLD, CM_H_NEW), (AI, AI_H_OLD, AI_H_NEW)):
+    s = new.get(rel, old[rel])
     if n not in s:
         if s.count(o) != 1:
             sys.exit(f"Refusing: fan-out sentence not found exactly once in {rel}")
