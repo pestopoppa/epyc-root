@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 675
+      "open": 677
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1363,7 +1363,7 @@
       "closed": 101,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 37,
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1372,7 +1372,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 138,
+      "total": 140,
       "tracks": [
         {
           "blocked": 0,
@@ -1424,7 +1424,7 @@
           "line": 1723,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 6
+          "open": 8
         }
       ]
     },
@@ -2518,7 +2518,7 @@
       "blocked": 2,
       "closed": 355,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-06",
       "open": 104,
       "owner_index": "research-evaluation-index.md",
       "prune": {
