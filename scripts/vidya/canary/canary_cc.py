@@ -84,15 +84,25 @@ def main() -> int:
         if r.returncode != 0:
             return result("UNKNOWN", reason="dev pre-ingest failed", stderr=r.stderr[-400:])
     failures, summary = [], {}
-    for target in (T27B, TQ38):
-        r = subprocess.run(
+
+    def prepare(target, stamp):
+        return subprocess.run(
             [sys.executable, str(vidya / "loop_beliefs.py"), "prepare", "--consumer", CONSUMER,
              "--target-json", json.dumps(target), "--ledger", str(state / "ledger.jsonl"),
-             "--read-log", str(state / "reads.jsonl"), "--as-of", as_of,
+             "--read-log", str(state / "reads.jsonl"), "--as-of", stamp,
              "--alarm-state", str(base / "alarm" / "alarm_state.json"),
              "--alarm-config", str(base / "alarm" / "alarm_config.yaml"),
              "--known-good", str(state / "known-good.json"), "--max-claims", "64"],
             capture_output=True, text=True, cwd=str(root))
+
+    # Warm-up read: ensure_current folds the stale register (VB-CC-3) with frames stamped at
+    # fold time, i.e. after this read's as_of; they are visible to every later read.
+    prepare(T27B, as_of)
+    import time
+    time.sleep(2)
+    as_of = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    for target in (T27B, TQ38):
+        r = prepare(target, as_of)
         try:
             answer = json.loads(r.stdout.strip().splitlines()[-1])
         except (ValueError, IndexError):
