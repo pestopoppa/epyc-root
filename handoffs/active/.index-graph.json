@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T20:07:55Z",
+  "generated_at": "2026-11-06T20:10:53Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1369,15 +1369,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 771,
-      "dispatchable": 150,
+      "closed": 773,
+      "dispatchable": 148,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-06",
       "next_action": "Fix C7 Q38FN PPL regression (bisection, AK-ASM-C7-Q38-BISECT), then fold H8b/FA128 and re-gate C7",
-      "open": 151,
+      "open": 149,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1414,7 +1414,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 52,
+          "dispatchable": 50,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1423,7 +1423,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 53,
+          "open": 51,
           "readiness": "blocked"
         },
         {
