@@ -59,3 +59,16 @@ def test_out_of_scope_row_reports_but_never_refuses_or_journals():
     r = kt.verdict("C7r-gate", 1.0, samples(3.9), samples(3.9), journal=j)
     assert not r["refused"] and r["effect_inside_tail"] and r["F_pct"] > 5.5 and not r["enforced"]
     assert not j.exists()
+
+
+def test_scope_matches_real_row_ids_case_insensitively():
+    for rid in ("ak-asm-h8b-e2e-20261106", "ak-asm-h8b-gate-r2-20261106", "fa-ck-hd256-gate-r5-20261106",
+                "H8B-E2E-x", "c8-incr-1", "FA-r5-x"):
+        assert kt.applies(rid), rid
+
+
+def test_scope_token_anchoring_and_c7r_exclusion():
+    for rid in ("c80-thing", "fa-ck-hd256-gate-20261106", "unrelated-row", "h8bx-e2e"):
+        assert not kt.applies(rid), rid
+    for rid in ("c7r-fa-r5-gate", "C7R-C8-x", "ak-c7r-h8b-e2e-20261106", "c7r2-c8-x"):
+        assert not kt.applies(rid), rid

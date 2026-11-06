@@ -18,6 +18,7 @@ from __future__ import annotations
 import fnmatch
 import json
 import math
+import re
 from pathlib import Path
 import statistics
 import sys
@@ -49,8 +50,30 @@ def load_scope(path: Path = SCOPE_FILE) -> list[str]:
     return list(json.loads(Path(path).read_text("utf-8"))["enforced_row_patterns"])
 
 
+def _tokens(text: str) -> list[str]:
+    return [t for t in re.split(r"[-_.:/\s]+", text.lower()) if t]
+
+
+def load_exclusions(path: Path = SCOPE_FILE) -> list[str]:
+    return [str(x).lower() for x in json.loads(Path(path).read_text("utf-8")).get("excluded_row_tokens", ["c7r"])]
+
+
 def applies(row_id: str, scope=None) -> bool:
-    return any(fnmatch.fnmatchcase(row_id, p) for p in (scope if scope is not None else load_scope()))
+    """Case-insensitive. A pattern matches by fnmatch OR when its tokens (pattern minus `*`, split on - _ .) appear IN ORDER as whole
+    tokens of the row id (anchored on the scope token, so `h8b-e2e` matches `ak-asm-h8b-e2e-20261106`, `fa-r5` matches
+    `fa-ck-hd256-gate-r5-...`, and `c8` never matches `c80`). Any id carrying an excluded token (C7r) is out of scope."""
+    ids = _tokens(row_id)
+    if any(t == x or re.fullmatch(re.escape(x) + r"\d*", t) and x == "c7r" for t in ids for x in load_exclusions()):
+        return False
+    low = row_id.lower()
+    for pat in (scope if scope is not None else load_scope()):
+        if fnmatch.fnmatchcase(low, pat.lower()):
+            return True
+        want = _tokens(pat.replace("*", " "))
+        it = iter(ids)
+        if want and all(w in it for w in want):
+            return True
+    return False
 
 
 def verdict(row_id: str, effect_pct: float, samples_a, samples_b, *, region: dict | None = None,

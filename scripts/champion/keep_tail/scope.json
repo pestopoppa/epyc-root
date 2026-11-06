@@ -1,3 +1,1 @@
-{"schema": "epyc.keep_tail.scope.v1",
- "decision": "main-inf22 acked enforcement for FUTURE GPU A/B rows only (2026-11-06); nothing retroactive; not C7r's gate",
- "enforced_row_patterns": ["H8b-r2*", "H8B-E2E*", "FA-r5*", "C8-*"]}
+{"schema": "epyc.keep_tail.scope.v1", "decision": "main-inf22 acked enforcement for FUTURE GPU A/B rows only (2026-11-06); nothing retroactive; not C7r's gate", "enforced_row_patterns": ["H8b-r2*", "H8B-E2E*", "FA-r5*", "C8-*"], "excluded_row_tokens": ["c7r"], "match": "case-insensitive; fnmatch or in-order whole-token match; excluded tokens win"}
