@@ -153,6 +153,7 @@ else
 fi
 
 check "/mnt/raid0/llm exists" "[ -d /mnt/raid0/llm ]" "Create with: mkdir -p /mnt/raid0/llm"
+check "no shared clone has core.bare=true (worktree repair hazard)" "bash $SCRIPT_DIR/check_core_bare.sh >/dev/null" "Run scripts/session/check_core_bare.sh; fix: git -C <repo> config core.bare false"
 
 # /tmp/claude bind-mount matters for an interactive session (scratch redirection) but is irrelevant to a
 # batch preflight, so it is advisory (WARN, not FAIL) under the batch profile.
