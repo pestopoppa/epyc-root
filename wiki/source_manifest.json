@@ -5,26 +5,26 @@
     "handoff-blocked": 1,
     "handoff-completed": 373,
     "progress": 1343,
-    "research": 290
+    "research": 299
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 9,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-06T17:51:37Z",
+    "at": "2026-11-06T19:53:55Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md"
+      "research/deep-dives/quant-compiler-20261106"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T17:51:37Z",
+  "scan_time": "2026-11-06T19:53:55Z",
   "schema_version": 1,
-  "source_set_hash": "cda260fde69aa92d6f2c27e32e5e5f927c7ab236d8d1a534bc524aabafe4be40",
+  "source_set_hash": "ed9c209529a894901fb8c2d638e1c3d0129663b52cde15db8a18bcae6a9219ec",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -4936,6 +4936,78 @@
       "path": "research/deep-dives/pi-autoresearch-mad-scoring.md",
       "size": 6851,
       "title": "pi-autoresearch MAD Scoring \u2014 Deep Dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "04f326a8cc8b9f2c977aa98b2b220a2195412c16f65f07a2b213ab5abc61e93e",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/kerncap.md",
+      "size": 36332,
+      "title": "Kerncap \u2014 Stage-1 + Stage-2 dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "73d563b567810d4a00bf2a85a5a9f2918b10f29c913557bd7ef4a1be38f503e4",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/krex.md",
+      "size": 31098,
+      "title": "KREX \u2014 deep dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "8f9c325f8a1d9c3e32b0beac3ebb1ca26b57d632c6ee902c51625b3549213e0f",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/linquant-paper.md",
+      "size": 46067,
+      "title": "intake-2641 \u2014 LinQuant (arXiv 2610.39418v1) \u2014 Stage-2 dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "074258e77dfe5c36895be1237369c3ca4b25861379a904853b09cb6561b3f16b",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/linquant-repo.md",
+      "size": 47234,
+      "title": "Stage-2 dive \u2014 intake-2642, LinQuant code release",
+      "type": "research"
+    },
+    {
+      "content_hash": "f36ab6fb8e104524e9f912d3825d3800e825f77810bee045f951ef72071ba1c3",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/mambaquant.md",
+      "size": 39928,
+      "title": "MambaQuant \u2014 Stage-1 + Stage-2b dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "44f8dfc948cdf8ca4d790a981e42d2bffa7ff9d4f33fb478375daf70f494d729",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/quamba2.md",
+      "size": 37346,
+      "title": "Quamba2 \u2014 Stage-2 deep dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "22774973f642251902eb9e5fef52f51480af2e24ca9b840c062952a4b28a9bed",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/ssdi8.md",
+      "size": 33919,
+      "title": "SSDi8 \u2014 Stage-2 dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "7bf47373ea3a20ce958f3be979444e6ed2f943565664269415c8e9cdb2e0430b",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/tkcc.md",
+      "size": 51901,
+      "title": "TKCC deep dive \u2014 what the paper actually says, and what it means for our loops",
+      "type": "research"
+    },
+    {
+      "content_hash": "40bbd7d93fd93a3a80740ff96c64242a4d9635514dbefe70ba78ab957a68effa",
+      "modified": "2026-11-06T19:53:03Z",
+      "path": "research/deep-dives/quant-compiler-20261106/together-blog.md",
+      "size": 23272,
+      "title": "Stage-2 dive \u2014 intake-2644, Together Compiler blog (companion entry)",
       "type": "research"
     },
     {
@@ -19787,7 +19859,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2470,
+  "total_new": 2479,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

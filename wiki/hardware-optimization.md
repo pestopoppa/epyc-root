@@ -7081,3 +7081,12 @@ Sources: [autokernel-loop AK-ASM boxes](../handoffs/active/autokernel-loop.md) �
 All eight AK-ASM KEEP ports merge cleanly onto champion C6 `65da39eb1` as candidate C7 (`experimental/c7-asm-ports-20261106` @ `c420b9d1a`): H10, H1b (+H1/H7), FA asm/CK/graph, H12, H11, H13b/c (H12's radix TOP_K kept over H13c bitonic), H15, and H14 present but default OFF (its e2e gain was noise). Each merge built for GPU and CPU, and CPU test-backend-ops grew 8000->8253 cases with 0 failures. The full-candidate gate (correctness, e2e vs C6 with a 0.97 floor set before any run, PPL on 27B and Q38FN incl. the H15 aliasing check) decides the fold. Separately, the AutoKernel planner cannot yet see any AK-ASM verdict: `[belief: cc]` ticks have no ingest path until VB-CC-PILOT lands (AK-ASM-PLANNER-SEED). Confidence: verified for builds/tests; fold verdict pending.
 
 Sources: [autokernel-loop AK-ASM-FOLD](../handoffs/active/autokernel-loop.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): extraction, rotation and integer-dot facts
+
+- **gfx90a already has the int8 primitives** (`v_dot4_i32_i8`, `mfma_i32_16x16x16i8`), so a missing integer dot is not what blocks a low-precision GDN path; the operand path is (intake-2641).
+- **Kerncap extracts one dispatch from a running HIP/Triton app** via an HSA interposer and address-space closure, on MI210/gfx90a among others, with a 5.4x inner-loop recompile workflow; it needs ROCm >= 7.0 and cannot replace the C6/native harness because its oracle is identity-to-capture (intake-2649).
+- **Rotation cost is a fused-pass property.** A key rotation is free only when fused into an existing split-and-quantize pass; in a tree without one it is a new per-layer matmul (intake-2641, intake-2642).
+- **Filed work**: build-cost packet `AK-SETUP-1/2` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md); ROCm-gated adoption stays a durable trigger.
+
+Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [Kerncap dive](../research/deep-dives/quant-compiler-20261106/kerncap.md)

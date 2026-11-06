@@ -3261,3 +3261,13 @@ Sources: [MI210 serving program (completed)](../handoffs/completed/mi210-serving
 - **HIP FA f16 head sizes 192/320/512/576 are unsupported outside the GQA-optimised path and SHELVED** ([hip-fa-unsupported-shapes](../docs/reference/hip-fa-unsupported-shapes.md); fix parked on `experimental/c6-hip-fa-f16-hs-20261105`). Qwen3.6-35B-A3B (hs 256, GQA 8) is unaffected; new-model and change-topology now check it.
 
 Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [q3 narrow](../progress/2026-11/2026-11-05-rowflow-gpu-q3-narrow.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [engineering hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md)
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): continual compilation and shared-GPU measurement
+
+- **Together Compiler's transferable mechanism is setup amortisation, not candidate generation.** A persistent engine loads once and hot-reloads candidate forward passes; the paper's own numbers reproduce our pathology (build 75.7% / measured 3.9% of an iteration), and its tiering already exists locally at finer scope (intake-2643).
+- **Its keep gate is weaker than ours**: no repeats stated, "until budget", one-line verification, rollback only at pointer teardown. Do not adopt it (intake-2643).
+- **KREX's premise does not hold on this host.** The GPU is already exclusive by grant; with a 3.90% p95 tail, independent arms imply a 5.52% floor at which a true 3% win is unresolvable. The reusable parts are declaring a timing region and treating p95 as a gate input (intake-2647).
+- **Kerncap is a fixture generator, not a gate**: gfx90a is in scope, but adoption is gated on ROCm >= 7.0 and it cannot sit at the trust boundary (intake-2649).
+- **Filed work**: `CHURN-WARM-1`, `KEEP-TAIL-1`, `AK-SETUP-1/2` in [coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md), [kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md), [autokernel-loop.md](../handoffs/active/autokernel-loop.md).
+
+Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · [KREX dive](../research/deep-dives/quant-compiler-20261106/krex.md) · [Kerncap dive](../research/deep-dives/quant-compiler-20261106/kerncap.md) · [vendor post](../research/deep-dives/quant-compiler-20261106/together-blog.md)

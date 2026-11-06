@@ -1269,3 +1269,13 @@ Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.m
 - **C6 q4_K MMVQ/MMQ fix.** The qualification candidate's unsupported-case set equals C5/v10 (operator-ratified rule), the full suite has 0 failures on the supported subset, and q4_K n=1..4 timing is within +5% after the per-lane fix (`f9f872ebc`, isum `9e9d7f291`).
 
 Sources: [kernel champion](../handoffs/active/kernel-champion-and-promotion.md) · [findings](../docs/reference/mi210-serving-program-findings-20261105.md) · [portability report](../artifacts/analysis/mi300-to-mi210-portability-20261105.md)
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): low-precision recurrence and the rotation question
+
+- **LinQuant's invariances are activation transforms, not weight-quant knobs.** Six of seven act inside the recurrence and never meet Q4_K/IQ per-32-block layouts; `D_QK` additionally cancels exactly under per-channel scales and is invalid for delta writes. The transferable asset is the float64 reference implementation as a conformance oracle (intake-2641, intake-2642).
+- **The SSDi8 "rotation hurts SSD" claim is refuted as a general statement.** MambaQuant's fixed-granularity control improves over RTN in all four tested cells, and SSDi8's own gap is a scale-granularity failure; LinQuant's key rotation is a boundary extension on the state axis SSDi8 excludes (intake-2645, intake-2648).
+- **Quamba2's 3x generation gain is weight streaming**, not activation quantization: weight-only W4A16 is within 2% of W4A8 at batch 1, so its activation machinery is worth ~2%. The remaining byte lever for a bandwidth-bound decode is head-to-toe 4-bit on the LM head and embeddings (intake-2646).
+- **Sub-INT8 recurrence stays out of scope**: the INT4 row still leaves +10.2% perplexity and the authors state a sub-byte kernel is required (intake-2641).
+- **Filed work**: `QUANT-HEAD-1` (head/embedding bytes audit) and `QUANT-ROT-1` (offline rotation/permutation probe at a fixed per-32-block budget) in [quantization-and-low-bit.md](../handoffs/active/quantization-and-low-bit.md).
+
+Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [SSDi8](../research/deep-dives/quant-compiler-20261106/ssdi8.md) · [Quamba2](../research/deep-dives/quant-compiler-20261106/quamba2.md) · [MambaQuant](../research/deep-dives/quant-compiler-20261106/mambaquant.md)

@@ -7735,3 +7735,12 @@ Sources: [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops
 - **An impact tool that cannot parse the target is not a LOW verdict.** KPF-41 r8 gave LOW on 3 of 4 symbols; the fourth, a CUDA `__global__` kernel after `__launch_bounds__`, is not indexed and `<<<>>>` launches make no edges, so KPF-41 stays open until the indexer is fixed (HYG-GITNEXUS-CUDA-KERNEL-IMPACT).
 
 Sources: [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [compute fillers](../docs/guides/agent-workflows/compute-fillers.md) · [keeper friction review](../docs/reports/coordination/keeper-friction-review-20261105.md) · [engineering hygiene backlog](../handoffs/active/engineering-hygiene-backlog.md) · [coordination pipeline](../handoffs/active/coordination-and-churn-pipeline.md)
+
+## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): tier fidelity and tail inflation
+
+- **Two-tier screening is a fidelity question, not a free speedup.** Together Compiler's fast tier runs a layer subset and its slow tier decides; its reported 8.1x candidate throughput is a measurement-design result with no CI. Our tiering is already finer (T0-T4 by evaluation scope), so the open question is whether our fast tier ranks like the full tier (intake-2643).
+- **Report rank agreement, not just per-row deltas.** Only 8 judgeable screen/confirmed pairs exist; the replay widens the join with strict candidate-diff pairing and reports Spearman rho, sign agreement and ordering-flip rate with a CI, stopping when the CI excludes 0.7 (intake-2643, intake-2647).
+- **Tail inflation enters the floor.** For independent arms, p95 inflation of 3.90% implies a 5.52% floor; the rule is `F = max(2.00%, sqrt(2)*P)` whenever both arms share the environment (intake-2647).
+- **Filed work**: `AK-TIER-1` (zero-GPU replay) and `KEEP-TAIL-1` (p95 gate input) in [autokernel-loop.md](../handoffs/active/autokernel-loop.md) and [kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md).
+
+Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · [KREX dive](../research/deep-dives/quant-compiler-20261106/krex.md)
