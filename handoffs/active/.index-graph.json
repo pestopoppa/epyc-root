@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T23:50:16Z",
+  "generated_at": "2026-11-06T23:51:49Z",
   "nodes": [
     {
       "age_days": 3,
@@ -3098,7 +3098,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 341,
@@ -3107,7 +3107,7 @@
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-05",
+      "last_advanced": "2026-11-06",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
       "open": 52,
       "priority": 0.711,
@@ -3154,7 +3154,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2568,
+          "line": 2570,
           "name": "dashboard-architecture-restructure",
           "open": 6,
           "readiness": "ready"
@@ -3163,7 +3163,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3042,
+          "line": 3044,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3181,7 +3181,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3487,
+          "line": 3489,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3201,7 +3201,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5000,
+          "line": 5002,
           "name": "loop-owned-fleet-implementation",
           "open": 2,
           "readiness": "blocked"
@@ -3221,7 +3221,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5660,
+          "line": 5662,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3241,7 +3241,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5848,
+          "line": 5850,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
