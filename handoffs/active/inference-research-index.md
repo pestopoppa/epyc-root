@@ -12,7 +12,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm | INF-48, EVL-47 |
+| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | Build C7 = C6 65da39eb1 + 8 KEEP AK-ASM ports; run combined gate incl. H15 PPL (AK-ASM-FOLD) | INF-48, EVL-47 |
 | INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion | INF-06, INF-50 |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-65 |
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-48, RTG-58 |

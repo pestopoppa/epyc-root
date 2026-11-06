@@ -2596,7 +2596,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
+      "next_action": "Build C7 = C6 65da39eb1 + 8 KEEP AK-ASM ports; run combined gate incl. H15 PPL (AK-ASM-FOLD)",
       "track": "autokernel research loop"
     },
     "INF-33": {

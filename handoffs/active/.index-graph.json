@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T07:01:47Z",
+  "generated_at": "2026-11-06T07:03:15Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1376,7 +1376,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-06",
-      "next_action": "GPU MMQ seeds parked (operator 2026-09-27): resume by running window_ab.sh in a GPU window (AK-MMQ-H10a/b), then AK-MMQ-H3 iglp_opt arm",
+      "next_action": "Build C7 = C6 65da39eb1 + 8 KEEP AK-ASM ports; run combined gate incl. H15 PPL (AK-ASM-FOLD)",
       "open": 144,
       "priority": 0.896,
       "priority_basis": {
