@@ -4,28 +4,27 @@
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
-    "progress": 1342,
+    "progress": 1343,
     "research": 290
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 12,
+      "added": 1,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-06T15:45:11Z",
+    "at": "2026-11-06T16:06:01Z",
     "scope_paths": [
-      "research/deep-dives/intake-digests/2026-11-06-ids-2628-2640.md",
-      "research/deep-dives/ydnlc-20261106"
+      "progress/2026-11/2026-11-06-inference-serving-launch.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T15:45:11Z",
+  "scan_time": "2026-11-06T16:06:01Z",
   "schema_version": 1,
-  "source_set_hash": "97c8e0759e30b97814b50da3b0342dd7aa80efaa04585ca94bb4658f7e425d48",
+  "source_set_hash": "31660480137ce7bee2b5d9d0bc725e50d18649d631e29892194632c8dd17ccf2",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16156,6 +16155,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "8663bbeb05456a62e515fc740946bbe601815140ca9d3ddae2410ef5892ee609",
+      "modified": "2026-11-06T16:02:24Z",
+      "path": "progress/2026-11/2026-11-06-inference-serving-launch.md",
+      "size": 11571,
+      "title": "2026-11-06 \u2014 C6 inference serving launch commands (operator support)",
+      "type": "progress"
+    },
+    {
       "content_hash": "6e2be19522d931aa8a143e9363fb1a2d2ba9b659a36e0e2773871b4804ef1c6f",
       "modified": "2026-11-06T08:48:40Z",
       "path": "progress/2026-11/2026-11-06-main-inf22.md",
@@ -19772,7 +19779,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2468,
+  "total_new": 2469,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

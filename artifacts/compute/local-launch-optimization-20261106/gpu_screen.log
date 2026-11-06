@@ -1,0 +1,55 @@
+[region-lock] acquiring gpu-quiet exclusive as role='bench-gpu' (timeout_s=600.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase gpu
+[14:45:25] gpu_ref_np1_16k: launching taskset ... :18083
+[14:45:32] gpu_ref_np1_16k: warmup n_predict=384
+[14:45:40] gpu_ref_np1_16k: measured request 1/1 (cache_prompt=False)
+[14:45:49] gpu_ref_np1_16k: done ok=True elapsed=24.5s
+[14:45:49] {"arm": "gpu_ref_np1_16k", "ok": true, "tok_s": [71.05676584390088], "acceptance": {"alpha": 0.63992, "accepted": 311, "generated": 486}}
+[14:45:49] gpu_np1_64k_f16_n8_50k: launching taskset ... :18083
+[14:45:56] gpu_np1_64k_f16_n8_50k: warmup n_predict=16
+[14:45:57] gpu_np1_64k_f16_n8_50k: measured request 1/2 (cache_prompt=False)
+[14:47:32] gpu_np1_64k_f16_n8_50k: measured request 2/2 (cache_prompt=True)
+[14:47:40] gpu_np1_64k_f16_n8_50k: done ok=True elapsed=110.1s
+[14:47:40] {"arm": "gpu_np1_64k_f16_n8_50k", "ok": true, "tok_s": [42.76365463537971], "acceptance": {"alpha": 0.44988, "accepted": 193, "generated": 429}}
+[14:47:40] gpu_np1_196k_f16_n8_50k: launching taskset ... :18083
+[14:47:47] gpu_np1_196k_f16_n8_50k: warmup n_predict=16
+[14:47:48] gpu_np1_196k_f16_n8_50k: measured request 1/2 (cache_prompt=False)
+[14:49:22] gpu_np1_196k_f16_n8_50k: measured request 2/2 (cache_prompt=True)
+[14:49:30] gpu_np1_196k_f16_n8_50k: done ok=True elapsed=110.2s
+[14:49:30] {"arm": "gpu_np1_196k_f16_n8_50k", "ok": true, "tok_s": [43.04747901519475], "acceptance": {"alpha": 0.44988, "accepted": 193, "generated": 429}}
+[14:49:30] gpu_np4_262k_f16_n8_50k: launching taskset ... :18083
+[14:49:37] gpu_np4_262k_f16_n8_50k: warmup n_predict=16
+[14:49:38] gpu_np4_262k_f16_n8_50k: measured request 1/2 (cache_prompt=False)
+[14:51:13] gpu_np4_262k_f16_n8_50k: measured request 2/2 (cache_prompt=True)
+[14:51:20] gpu_np4_262k_f16_n8_50k: done ok=True elapsed=110.6s
+[14:51:20] {"arm": "gpu_np4_262k_f16_n8_50k", "ok": true, "tok_s": [43.557223131743925], "acceptance": {"alpha": 0.44037, "accepted": 192, "generated": 436}}
+[14:51:20] gpu_np2_262k_f16_n8_50k: launching taskset ... :18083
+[14:51:27] gpu_np2_262k_f16_n8_50k: warmup n_predict=16
+[14:51:28] gpu_np2_262k_f16_n8_50k: measured request 1/2 (cache_prompt=False)
+[14:53:03] gpu_np2_262k_f16_n8_50k: measured request 2/2 (cache_prompt=True)
+[14:53:10] gpu_np2_262k_f16_n8_50k: done ok=True elapsed=110.2s
+[14:53:10] {"arm": "gpu_np2_262k_f16_n8_50k", "ok": true, "tok_s": [43.77074729147129], "acceptance": {"alpha": 0.44037, "accepted": 192, "generated": 436}}
+[14:53:10] gpu_np4_262k_q8_n7_prod_50k: launching taskset ... :18083
+[14:53:17] gpu_np4_262k_q8_n7_prod_50k: warmup n_predict=16
+[14:53:18] gpu_np4_262k_q8_n7_prod_50k: measured request 1/2 (cache_prompt=False)
+[14:54:53] gpu_np4_262k_q8_n7_prod_50k: measured request 2/2 (cache_prompt=True)
+[14:55:02] gpu_np4_262k_q8_n7_prod_50k: done ok=True elapsed=111.6s
+[14:55:02] {"arm": "gpu_np4_262k_q8_n7_prod_50k", "ok": true, "tok_s": [41.85373460383397], "acceptance": {"alpha": 0.45972, "accepted": 194, "generated": 422}}
+[14:55:02] gpu_np4_262k_f16_n7_50k: launching taskset ... :18083
+[14:55:09] gpu_np4_262k_f16_n7_50k: warmup n_predict=16
+[14:55:10] gpu_np4_262k_f16_n7_50k: measured request 1/2 (cache_prompt=False)
+[14:56:45] gpu_np4_262k_f16_n7_50k: measured request 2/2 (cache_prompt=True)
+[14:56:52] gpu_np4_262k_f16_n7_50k: done ok=True elapsed=110.2s
+[14:56:52] {"arm": "gpu_np4_262k_f16_n7_50k", "ok": true, "tok_s": [43.49684010748477], "acceptance": {"alpha": 0.44037, "accepted": 192, "generated": 436}}
+[14:56:52] gpu_np4_262k_q8_n7_50k: launching taskset ... :18083
+[14:56:59] gpu_np4_262k_q8_n7_50k: warmup n_predict=16
+[14:57:00] gpu_np4_262k_q8_n7_50k: measured request 1/2 (cache_prompt=False)
+[14:58:36] gpu_np4_262k_q8_n7_50k: measured request 2/2 (cache_prompt=True)
+[14:58:44] gpu_np4_262k_q8_n7_50k: done ok=True elapsed=112.1s
+[14:58:44] {"arm": "gpu_np4_262k_q8_n7_50k", "ok": true, "tok_s": [40.135790668021045], "acceptance": {"alpha": 0.44037, "accepted": 192, "generated": 436}}
+[14:58:44] gpu_np1_64k_node1_50k: launching taskset ... :18083
+[14:58:51] gpu_np1_64k_node1_50k: warmup n_predict=16
+[14:58:52] gpu_np1_64k_node1_50k: measured request 1/2 (cache_prompt=False)
+[15:00:27] gpu_np1_64k_node1_50k: measured request 2/2 (cache_prompt=True)
+[15:00:35] gpu_np1_64k_node1_50k: done ok=True elapsed=110.3s
+[15:00:35] {"arm": "gpu_np1_64k_node1_50k", "ok": true, "tok_s": [43.16422063796044], "acceptance": {"alpha": 0.44988, "accepted": 193, "generated": 429}}

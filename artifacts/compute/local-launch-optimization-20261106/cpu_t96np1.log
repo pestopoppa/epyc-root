@@ -1,0 +1,29 @@
+[region-lock] acquiring gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=600.0) …
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1448s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1454s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1459s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1464s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1469s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1474s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1480s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1485s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1490s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1495s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1500s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1506s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1511s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1516s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1521s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1526s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1532s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1537s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1542s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1547s
+[region-lock] waiting 0.0s for q0 (cpu_region.GLOBAL.q0.lock) as role='bench' tag='local-launch-cpu-t96np1': held by pid 3705705 role=bench tag=local-launch-cpu-55k age=1552s
+[region-lock] held gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] after 104.4s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase cpu --only cpu_champ_t96_np1_50k --no-evict
+[15:26:28] cpu_champ_t96_np1_50k: launching taskset ... :18074
+[15:26:39] cpu_champ_t96_np1_50k: warmup n_predict=16
+[15:26:40] cpu_champ_t96_np1_50k: measured request 1/2 (cache_prompt=False)
+[15:32:51] cpu_champ_t96_np1_50k: measured request 2/2 (cache_prompt=True)
+[15:33:10] cpu_champ_t96_np1_50k: done ok=True elapsed=402.3s
+[15:33:10] {"arm": "cpu_champ_t96_np1_50k", "ok": true, "tok_s": [14.518320216070688], "acceptance": {"alpha": 0.59259, "accepted": 80, "generated": 135}}

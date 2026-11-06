@@ -1,0 +1,1572 @@
+"""Error classification helpers for orchestration graph execution."""
+
+from __future__ import annotations
+
+from src.escalation import ErrorCategory
+
+
+def classify_error(error_message: str) -> ErrorCategory:
+    """Classify an error message into an ErrorCategory."""
+    lower = error_message.lower()
+
+    if any(kw in lower for kw in ("timeout", "timed out", "deadline")):
+        return ErrorCategory.TIMEOUT
+    if any(kw in lower for kw in ("json", "schema", "validation", "jsonschema")):
+        return ErrorCategory.SCHEMA
+    if any(kw in lower for kw in ("format", "style", "lint", "ruff", "markdown")):
+        return ErrorCategory.FORMAT
+    if any(
+        kw in lower
+        for kw in ("abort", "generation aborted", "early_abort", "early abort")
+    ):
+        return ErrorCategory.EARLY_ABORT
+    if any(
+        kw in lower
+        for kw in ("backend", "connection", "unreachable", "infrastructure", "502", "503")
+    ):
+        return ErrorCategory.INFRASTRUCTURE
+    if any(
+        kw in lower
+        for kw in ("syntax", "type error", "typeerror", "nameerror", "import error", "test fail")
+    ):
+        return ErrorCategory.CODE
+    if any(kw in lower for kw in ("wrong", "incorrect", "assertion", "logic")):
+        return ErrorCategory.LOGIC
+
+    return ErrorCategory.UNKNOWN
+
+"""Pure answer-extraction helpers for graph execution."""
+
+from __future__ import annotations
+
+import re
+
+from src.env_parsing import env_bool as _env_bool
+
+
+def _repl_prose_rescue_enabled() -> bool:
+    """Gate raw-prose FINAL rescue behind an env flag for safe rollout."""
+    return _env_bool("ORCHESTRATOR_REPL_PROSE_RESCUE", True)
+
+
+def _looks_like_prompt_echo(text: str) -> bool:
+    """Detect echoed prompt/instruction text that should never be rescued."""
+    hay = (text or "").lower()
+    markers = (
+        "answer with the letter only",
+        "answer with the",
+        "question:",
+        "options:",
+        "choose the correct",
+        "select the best",
+        "respond with",
+        "you are given",
+        "instruction:",
+    )
+    return any(m in hay for m in markers)
+
+
+def _should_attempt_prose_rescue(raw_output: str, extracted_code: str) -> bool:
+    """Allow prose rescue only for short, answer-like outputs."""
+    if not _repl_prose_rescue_enabled():
+        return False
+    if not raw_output or not raw_output.strip():
+        return False
+    if "FINAL(" in extracted_code:
+        return False
+    if "```" in raw_output:
+        return False
+    if _looks_like_prompt_echo(raw_output):
+        return False
+    if len(raw_output) > 220:
+        return False
+    return True
+
+
+_FINAL_RE = re.compile(
+    r"""FINAL\(\s*(?:'{3}(.+?)'{3}|"{3}(.+?)"{3}|["'](.+?)["']|(-?[\d.]+(?:e[+-]?\d+)?|True|False|None))\s*\)""",
+    re.DOTALL,
+)
+
+_PROSE_ANSWER_RE = re.compile(
+    r"(?:^|\n)\s*(?:"
+    r"[Tt]he\s+(?:correct\s+)?answer\s+is[:\s]+|"
+    r"[Aa]nswer[:\s]+|"
+    r"[Tt]herefore[,:\s]+(?:the\s+answer\s+is[:\s]+)?|"
+    r"[Ss]o\s+the\s+answer\s+is[:\s]+|"
+    r"[Ss]o,?\s+I\s+will\s+go\s+with[:\s]+|"
+    r"I(?:'ll|\s+will)\s+go\s+with[:\s]+|"
+    r"I\s+(?:choose|select|pick)[:\s]+|"
+    r"[Mm]y\s+answer\s+is[:\s]+|"
+    r"[Tt]he\s+correct\s+(?:option|choice)\s+is[:\s]+"
+    r")([A-Za-z0-9][A-Za-z0-9.)]*)",
+)
+
+
+def _extract_final_from_raw(text: str) -> str | None:
+    """Extract answer from FINAL("answer") in raw LLM output."""
+    m = _FINAL_RE.search(text)
+    if m:
+        return m.group(1) or m.group(2) or m.group(3) or m.group(4) or ""
+    return None
+
+
+def _extract_prose_answer(text: str) -> str | None:
+    """Extract answer from prose LLM output that lacks FINAL()."""
+    m = _PROSE_ANSWER_RE.search(text)
+    if m:
+        answer = m.group(1).rstrip(".)").strip()
+        if answer:
+            return answer
+    bare = re.search(r"(?:^|\n)\s*([A-D])\s*(?:\n|$)", text)
+    if bare:
+        return bare.group(1)
+    return None
+
+
+def _rescue_from_last_output(text: str) -> str | None:
+    """Try to extract a usable answer from the last LLM output."""
+    if not text or not text.strip():
+        return None
+    final_answer = _extract_final_from_raw(text)
+    if final_answer is not None:
+        return final_answer
+    prose_answer = _extract_prose_answer(text)
+    if prose_answer is not None:
+        return prose_answer
+    code_block = re.search(r"```(?:\w*\n)?(.*?)```", text, re.DOTALL)
+    if code_block:
+        code_content = code_block.group(1).strip()
+        if len(code_content) > 20:
+            return code_content
+    return None
+
+
+def _resolve_answer(output: str, tool_outputs: list) -> str:
+    """Extract the best answer from REPL output and tool outputs."""
+    if output and output.strip():
+        return output.strip()
+    if tool_outputs:
+        return "\n".join(str(t) for t in tool_outputs if t)
+    return ""
+"""Prospective, request-local observations of native registry argument validation.
+
+The registry is copied for this REPL only; shared tools and registry remain untouched.
+This covers registry invocations only, not direct REPL functions or parser failures.
+"""
+
+from __future__ import annotations
+
+import copy
+import threading
+import uuid
+from contextvars import ContextVar
+from types import MethodType
+from typing import Any
+
+MAX_RECORDED_CALLS = 4096
+
+
+class Observer:
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._active: ContextVar[dict[str, Any] | None] = ContextVar(
+            "tool_validation_observer_call", default=None
+        )
+        self._calls: list[dict[str, Any]] = []
+        self._attempted = 0
+        self._capture_error = False
+
+    def invoke(self, original, *args, **kwargs):
+        try:
+            with self._lock:
+                self._attempted += 1
+                record = None
+                if len(self._calls) < MAX_RECORDED_CALLS:
+                    record = {
+                        "call_id": uuid.uuid4().hex,
+                        "argument_validation": None,
+                        "finished": False,
+                    }
+                    self._calls.append(record)
+            token = self._active.set(record)
+        except Exception:
+            self._capture_error = True
+            return original(*args, **kwargs)
+        try:
+            return original(*args, **kwargs)
+        finally:
+            try:
+                if record is not None:
+                    with self._lock:
+                        record["finished"] = True
+                self._active.reset(token)
+            except Exception:
+                self._capture_error = True
+                pass
+
+    def validate(self, original, args):
+        errors = original(args)
+        try:
+            active = self._active.get()
+            if active is not None:
+                with self._lock:
+                    active["argument_validation"] = not bool(errors)
+        except Exception:
+            self._capture_error = True
+            pass
+        return errors
+
+    def snapshot(self) -> dict[str, Any]:
+        with self._lock:
+            calls = [dict(row) for row in self._calls]
+            if self._capture_error:
+                for call in calls:
+                    call["argument_validation"] = None
+            attempted = None if self._capture_error else self._attempted
+            omitted = None if attempted is None else attempted - len(calls)
+        return {
+            "scope": "request_local_registry_invoke",
+            "coverage_of_all_tool_attempts": "unknown",
+            "calls": calls,
+            "registry_invocations": attempted,
+            "unrecorded_invocations": omitted,
+            "censored": omitted is None or omitted > 0,
+            "repair_links": None,
+        }
+
+
+def attach(repl: Any) -> Observer | None:
+    """Attach only when the native registry and tools can be copied unchanged.
+
+    Instance invoke overrides (including query_memory's identity-bound closure),
+    subclasses and custom validation are intentionally unsupported.
+    """
+    from src.registry.tool_registry import Tool, ToolRegistry
+
+    registry = getattr(repl, "tool_registry", None)
+    overrides = (
+        "invoke",
+        "can_use_tool",
+        "_can_use_tool_cascading",
+        "_record_invocation",
+        "_invoke_mcp",
+    )
+    if type(registry) is not ToolRegistry or any(name in vars(registry) for name in overrides):
+        return None
+    tools = registry._tools
+    if any(type(tool) is not Tool or "validate_args" in vars(tool) for tool in tools.values()):
+        return None
+    observer = Observer()
+    local = copy.copy(registry)
+    local._tools = {}
+    for name, tool in tools.items():
+        cloned = copy.copy(tool)
+        original_validate = cloned.validate_args
+
+        def validate(args, original=original_validate):
+            return observer.validate(original, args)
+
+        cloned.validate_args = validate
+        local._tools[name] = cloned
+    original_invoke = MethodType(ToolRegistry.invoke, local)
+
+    def invoke(*args, **kwargs):
+        return observer.invoke(original_invoke, *args, **kwargs)
+
+    local.invoke = invoke
+    repl.tool_registry = local
+    return observer
+"""Portable resume tokens for crash recovery (Lobster pattern).
+
+Encodes minimal graph state as a compact base64url token for
+cross-session resume. Complements SQLiteStatePersistence.
+
+Only active when features().resume_tokens is True.
+
+Encoding: JSON → zlib compress → base64url. Target: <500 bytes.
+
+Usage:
+    from src.graph.resume_token import ResumeToken
+
+    # Encode from TaskState
+    token = ResumeToken.from_state(state, node_class="CoderNode")
+    encoded = token.encode()  # compact base64url string
+
+    # Decode back
+    token = ResumeToken.decode(encoded)
+    # Use token.node_class, token.current_role, etc. to reconstruct state
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import json
+import logging
+import zlib
+from dataclasses import asdict, dataclass, field
+
+log = logging.getLogger(__name__)
+
+
+@dataclass
+class ResumeToken:
+    """Compact graph state for crash recovery.
+
+    Contains only the fields needed to resume execution — no full
+    prompt or context (those come from the session store).
+    """
+
+    task_id: str = ""
+    node_class: str = ""  # e.g. "CoderNode"
+    current_role: str = ""
+    turns: int = 0
+    escalation_count: int = 0
+    consecutive_failures: int = 0
+    role_history: list[str] = field(default_factory=list)
+    last_error: str = ""  # truncated to 200 chars
+    checksum: str = ""  # SHA-256[:8] integrity check
+
+    @classmethod
+    def from_state(
+        cls,
+        state: "TaskState",  # noqa: F821
+        node_class: str,
+    ) -> ResumeToken:
+        """Create a ResumeToken from current TaskState.
+
+        Args:
+            state: Current graph state.
+            node_class: Name of the current node class.
+
+        Returns:
+            ResumeToken ready for encoding.
+        """
+        token = cls(
+            task_id=state.task_id,
+            node_class=node_class,
+            current_role=str(state.current_role),
+            turns=state.turns,
+            escalation_count=state.escalation_count,
+            consecutive_failures=state.consecutive_failures,
+            role_history=list(state.role_history),
+            last_error=(state.last_error[:200] if state.last_error else ""),
+        )
+        # Compute checksum over content fields
+        content = json.dumps(
+            {k: v for k, v in asdict(token).items() if k != "checksum"},
+            sort_keys=True,
+        )
+        token.checksum = hashlib.sha256(content.encode()).hexdigest()[:8]
+        return token
+
+    def encode(self) -> str:
+        """Encode token to compact base64url string.
+
+        Returns:
+            Base64url-encoded string (typically <500 bytes).
+        """
+        payload = json.dumps(asdict(self), separators=(",", ":"))
+        compressed = zlib.compress(payload.encode(), level=9)
+        return base64.urlsafe_b64encode(compressed).decode()
+
+    @classmethod
+    def decode(cls, encoded: str) -> ResumeToken:
+        """Decode a base64url token string.
+
+        Args:
+            encoded: Base64url-encoded token string.
+
+        Returns:
+            ResumeToken instance.
+
+        Raises:
+            ValueError: If token is invalid or checksum fails.
+        """
+        try:
+            compressed = base64.urlsafe_b64decode(encoded)
+            payload = zlib.decompress(compressed).decode()
+            data = json.loads(payload)
+        except Exception as e:
+            raise ValueError(f"Invalid resume token: {e}") from e
+
+        token = cls(**data)
+
+        # Verify checksum
+        content = json.dumps(
+            {k: v for k, v in data.items() if k != "checksum"},
+            sort_keys=True,
+        )
+        expected = hashlib.sha256(content.encode()).hexdigest()[:8]
+        if token.checksum != expected:
+            raise ValueError(
+                f"Resume token checksum mismatch: {token.checksum} != {expected}"
+            )
+
+        return token
+"""Prospective native backend usage for one opt-in compression episode."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class Baseline:
+    ledger: Any
+    task_id: str
+    call_ids: frozenset[str]
+
+
+def begin(primitives: Any, repl: Any, task_id: str) -> Baseline | None:
+    """Bind only the active request's ledger and the REPL's actual primitives."""
+    try:
+        from src.llm_primitives.usage import UsageLedger
+
+        if (not task_id or repl.llm_primitives is not primitives
+                or getattr(primitives, '_bound_request_usage', None) is not None):
+            return None
+        if primitives._request_task_id_ctx.get() != task_id:
+            return None
+        ledger = primitives._usage_ledger_ctx.get()
+        if not isinstance(ledger, UsageLedger):
+            return None
+        records = ledger.records()
+        return Baseline(ledger, task_id, frozenset(record['call_id'] for record in records))
+    except (AttributeError, KeyError, TypeError):
+        return None
+
+
+def finish(baseline: Baseline | None, primitives: Any, repl: Any, task_id: str) -> dict[str, Any]:
+    """Never turn missing, pending, estimated or foreign usage into exact totals."""
+    unknown = {
+        'status': 'unknown', 'backend_attempts': None, 'cached_replays': None,
+        'observed_input_calls': None, 'observed_output_calls': None,
+        'total_input_tokens': None, 'total_output_tokens': None, 'total_tokens': None,
+    }
+    try:
+        if (baseline is None or baseline.task_id != task_id or repl.llm_primitives is not primitives
+                or getattr(primitives, '_bound_request_usage', None) is not None
+                or primitives._request_task_id_ctx.get() != task_id
+                or primitives._usage_ledger_ctx.get() is not baseline.ledger):
+            return unknown
+        records = [r for r in baseline.ledger.records() if r['call_id'] not in baseline.call_ids]
+        replays = [r for r in records if r['provenance'] == 'cached_replay_of_server_reported'
+                   and not r['pending'] and not r['censored']]
+        attempts = [r for r in records if r not in replays]
+
+        def observed(record: dict, key: str) -> bool:
+            value = record.get(key)
+            return (record.get('provenance') == 'server_reported' and not record.get('pending')
+                    and not record.get('censored') and type(value) is int and value >= 0)
+
+        ins = [r['prompt_tokens'] for r in attempts if observed(r, 'prompt_tokens')]
+        outs = [r['completion_tokens'] for r in attempts if observed(r, 'completion_tokens')]
+        # An empty record set cannot prove that the expected graph call was observed.
+        complete_in = bool(records) and len(ins) == len(attempts)
+        complete_out = bool(records) and len(outs) == len(attempts)
+        total_in = sum(ins) if complete_in else None
+        total_out = sum(outs) if complete_out else None
+        return {
+            'status': 'complete' if complete_in and complete_out else 'partial',
+            'backend_attempts': len(attempts), 'cached_replays': len(replays),
+            'observed_input_calls': len(ins), 'observed_output_calls': len(outs),
+            'total_input_tokens': total_in, 'total_output_tokens': total_out,
+            'total_tokens': total_in + total_out if total_in is not None and total_out is not None else None,
+        }
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return unknown
+"""Think-harder adaptive logic for orchestration graph nodes.
+
+Manages per-role ROI tracking and adaptive token budget decisions. Extracted
+from graph/helpers.py — all callers continue to import from helpers via
+compatibility re-exports.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+from pydantic_graph import GraphRunContext
+
+from src.escalation import ErrorCategory
+from src.graph.state import TaskDeps, TaskState
+
+log = logging.getLogger(__name__)
+
+Ctx = GraphRunContext[TaskState, TaskDeps]
+
+
+def _think_harder_cfg():
+    from src.config import get_config
+
+    return get_config().think_harder
+
+
+def _expected_think_harder_roi(state: TaskState, role: str) -> float:
+    """Return expected ROI for think-harder on this role from historical stats."""
+    stats = state.think_harder_roi_by_role.get(role, {})
+    attempts = float(stats.get("attempts", 0.0))
+    successes = float(stats.get("successes", 0.0))
+    if attempts <= 0:
+        return 1.0
+    success_rate = successes / attempts
+    # ROI proxy: how often think-harder avoided escalation/failure, centered at 0.5.
+    return success_rate - 0.5
+
+
+def _update_think_harder_stats(ctx: Ctx) -> None:
+    """Track per-role think-harder ROI for future gating decisions."""
+    state = ctx.state
+    attempted = bool(state.think_harder_attempted or state.think_harder_succeeded is False)
+    if not attempted:
+        return
+    role = str(state.current_role)
+    stats = state.think_harder_roi_by_role.setdefault(
+        role,
+        {
+            "attempts": 0.0,
+            "successes": 0.0,
+            "expected_roi": 1.0,
+            "ema_marginal_utility": 0.0,
+            "last_attempt_turn": -9999.0,
+        },
+    )
+    stats["attempts"] = float(stats.get("attempts", 0.0)) + 1.0
+    succeeded = bool(state.think_harder_succeeded)
+    if succeeded:
+        stats["successes"] = float(stats.get("successes", 0.0)) + 1.0
+
+    th_cfg = _think_harder_cfg()
+    fallback_budget = float(th_cfg.token_budget_fallback)
+    n_tokens = float(state.artifacts.get("think_harder_token_budget", fallback_budget) or fallback_budget)
+    token_penalty = min(n_tokens / fallback_budget, 1.5) * float(th_cfg.token_penalty_per_4k)
+    sample_utility = (1.0 if succeeded else 0.0) - token_penalty
+    prev_ema = float(stats.get("ema_marginal_utility", 0.0))
+    alpha = max(
+        float(th_cfg.ema_alpha_min),
+        min(float(th_cfg.ema_alpha_max), float(state.think_harder_ema_alpha)),
+    )
+    stats["ema_marginal_utility"] = ((1.0 - alpha) * prev_ema) + (alpha * sample_utility)
+    stats["last_attempt_turn"] = float(state.turns)
+    stats["expected_roi"] = _expected_think_harder_roi(state, role)
+    state.artifacts["think_harder_expected_roi"] = stats["expected_roi"]
+    state.artifacts["think_harder_marginal_utility"] = stats["ema_marginal_utility"]
+
+
+def _should_think_harder(ctx: Ctx, error_category: ErrorCategory) -> bool:
+    """On penultimate retry, try same model with boosted config (CoT, 2x tokens).
+
+    Returns True exactly once: when consecutive_failures == max_retries - 1
+    and think_harder hasn't been attempted yet for this role.
+    """
+    cfg = ctx.deps.config
+    state = ctx.state
+
+    # Format/schema errors: just retry, don't think harder
+    if (
+        error_category in cfg.no_escalate_categories
+        or error_category == ErrorCategory.SCHEMA
+        or error_category == ErrorCategory.TIMEOUT
+    ):
+        return False
+
+    # Only try once per role
+    if state.think_harder_attempted:
+        return False
+
+    role = str(state.current_role)
+    role_stats = state.think_harder_roi_by_role.get(role, {})
+    last_attempt_turn = float(role_stats.get("last_attempt_turn", -9999.0))
+    if (state.turns - last_attempt_turn) < max(0, int(state.think_harder_cooldown_turns)):
+        return False
+    attempts = int(role_stats.get("attempts", 0.0))
+    if attempts >= state.think_harder_min_samples:
+        expected_roi = _expected_think_harder_roi(state, role)
+        if expected_roi < state.think_harder_min_expected_roi:
+            log.info(
+                "Think-harder disabled for %s due to low ROI (expected=%.3f, attempts=%d)",
+                role, expected_roi, attempts,
+            )
+            return False
+        ema_marginal = float(role_stats.get("ema_marginal_utility", 0.0))
+        if ema_marginal < float(state.think_harder_min_marginal_utility):
+            log.info(
+                "Think-harder disabled for %s due to low marginal utility "
+                "(ema=%.3f < %.3f, attempts=%d)",
+                role,
+                ema_marginal,
+                float(state.think_harder_min_marginal_utility),
+                attempts,
+            )
+            return False
+
+    return state.consecutive_failures == cfg.max_retries - 1
+
+
+def _build_think_harder_config(state: TaskState) -> dict[str, Any]:
+    """Build adaptive think-harder config using per-role ROI history.
+
+    This uses a decaying envelope:
+    - high expected ROI -> larger token budget + CoT prefix
+    - low expected ROI -> smaller budget and lower temperature
+    """
+    role = str(state.current_role)
+    expected_roi = _expected_think_harder_roi(state, role)
+    role_stats = state.think_harder_roi_by_role.setdefault(
+        role,
+        {
+            "attempts": 0.0,
+            "successes": 0.0,
+            "expected_roi": 1.0,
+            "ema_marginal_utility": 0.0,
+            "last_attempt_turn": -9999.0,
+        },
+    )
+    # Map ROI range [-0.5, 0.5] to [0, 1] for stable envelope scaling.
+    roi_norm = max(0.0, min(1.0, expected_roi + 0.5))
+
+    th_cfg = _think_harder_cfg()
+    min_tokens = int(th_cfg.token_budget_min)
+    max_tokens = int(th_cfg.token_budget_max)
+    n_tokens = int(round(min_tokens + ((max_tokens - min_tokens) * roi_norm)))
+    temp_min = float(th_cfg.temperature_min)
+    temp_max = float(th_cfg.temperature_max)
+    temperature = round(temp_min + ((temp_max - temp_min) * roi_norm), 2)
+    cot_prefix = (
+        "# Step-by-step solution:\n"
+        if roi_norm >= float(th_cfg.cot_roi_threshold)
+        else ""
+    )
+
+    state.artifacts["think_harder_expected_roi"] = expected_roi
+    state.artifacts["think_harder_token_budget"] = n_tokens
+    state.artifacts["think_harder_temperature"] = temperature
+    state.artifacts["think_harder_cot_enabled"] = bool(cot_prefix)
+    role_stats["last_attempt_turn"] = float(state.turns)
+
+    return {
+        "n_tokens": n_tokens,
+        "cot_prefix": cot_prefix,
+        "temperature": temperature,
+    }
+"""REPL session log — append-only processing journal for multi-turn tasks.
+
+Gives models memory of their own processing history across REPL turns
+and escalation boundaries. Each turn is captured as a TurnRecord and
+appended to a per-task markdown file.
+
+Follows repl_tap.py patterns: thread-safe, fail-silent, _IN_PYTEST guard.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import os
+import threading
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any
+
+from src.roles import Role
+from src.security.control_tokens import neutralise_control_tokens
+
+log = logging.getLogger(__name__)
+
+_session_log_lock = threading.Lock()
+_IN_PYTEST = bool(os.environ.get("PYTEST_CURRENT_TEST"))
+
+
+# ---------------------------------------------------------------------------
+# TurnRecord — one turn's full record
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class TurnRecord:
+    """Structured record of a single REPL turn."""
+
+    turn: int
+    role: str
+    timestamp: str = ""
+
+    # Code metadata
+    code_hash: str = ""  # 8-char hash for anti-loop detection
+    code_first_line: str = ""  # first non-comment line
+    code_last_line: str = ""
+    code_line_count: int = 0
+
+    # Output
+    output_preview: str = ""  # ~200 chars
+    output_length: int = 0
+
+    # Error
+    error_message: str = ""  # ~300 chars
+
+    # Outcome classification
+    outcome: str = ""  # "ok" | "error" | "nudge" | "silent" | "final" | "escalation"
+
+    # Tool calls (from exploration log diff)
+    tool_calls: list[str] = field(default_factory=list)
+
+    # Nudge / escalation details
+    nudge_text: str = ""
+    escalation_target: str = ""
+
+    # Process reward telemetry (CF Phase 3a)
+    token_budget_ratio: float = 0.0   # tokens_used / tokens_budgeted for this turn
+    on_scope: bool = True             # whether turn stayed on-task (heuristic)
+    tool_success_ratio: float = 1.0   # fraction of tool calls that succeeded
+
+    def to_log_line(self) -> str:
+        """Compact single-line summary for deterministic fallback."""
+        parts = [f"T{self.turn}({self.role})"]
+        if self.outcome:
+            parts.append(self.outcome)
+        if self.code_hash:
+            parts.append(f"code:{self.code_hash}")
+        if self.code_line_count:
+            parts.append(f"{self.code_line_count}L")
+        if self.tool_calls:
+            parts.append(f"tools:[{','.join(self.tool_calls[:3])}]")
+        if self.error_message:
+            parts.append(f"err:{self.error_message[:60]}")
+        elif self.output_preview:
+            parts.append(f"out:{self.output_preview[:60]}")
+        if self.nudge_text:
+            parts.append(f"nudge:{self.nudge_text[:40]}")
+        return " | ".join(parts)
+
+    def to_markdown_block(self) -> str:
+        """Multi-line markdown block for the session log file."""
+        lines = [
+            f"### Turn {self.turn} — {self.role} [{self.outcome}]",
+        ]
+        if self.timestamp:
+            lines[0] += f" ({self.timestamp})"
+        if self.code_hash:
+            lines.append(
+                f"- Code: `{self.code_hash}` "
+                f"({self.code_line_count} lines) "
+                f"first=`{self.code_first_line[:80]}`"
+            )
+        if self.tool_calls:
+            lines.append(f"- Tools: {', '.join(self.tool_calls[:5])}")
+        if self.error_message:
+            lines.append(f"- Error: {self.error_message[:300]}")
+        if self.output_preview:
+            lines.append(f"- Output: {self.output_preview[:200]}")
+        if self.nudge_text:
+            lines.append(f"- Nudge: {self.nudge_text[:120]}")
+        if self.escalation_target:
+            lines.append(f"- Escalation → {self.escalation_target}")
+        return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# ConsolidatedSegment — two-level condensation (CF Phase 1)
+# ---------------------------------------------------------------------------
+
+# Max granular blocks before forcing consolidation
+MAX_GRANULAR_BLOCKS = 15
+
+
+@dataclass
+class ConsolidatedSegment:
+    """A consolidated segment from two-level condensation.
+
+    Tier 1 (granular): TurnRecord.to_log_line() produces stable 1-2 sentence
+    blocks that accumulate without re-processing.
+
+    Tier 2 (deep): At consolidation boundaries, accumulated Tier 1 blocks are
+    consolidated into a dense paragraph via the live worker path.
+    """
+
+    turn_range: tuple[int, int]  # (start_turn, end_turn) inclusive
+    granular_blocks: list[str]   # raw Tier 1 lines preserved for audit
+    consolidated: str            # Tier 2 dense paragraph
+    trigger: str                 # what triggered consolidation
+    timestamp: float = 0.0
+    reward_signals: Any = None   # RewardSignals instance (CF Phase 3a), optional
+    # CF-P1: Provenance tracking — trace derived summaries to source turns
+    validity_timestamp: float | None = None  # when this segment was last validated
+    source_turn_ids: list[int] = field(default_factory=list)  # original turn indices
+    # CF-P2: Supersession detection — flag segments with contradicted info
+    superseded: bool = False
+    superseded_by_turn: int | None = None  # turn that contradicted this segment
+    # CF-P3: Metadata filtering — topic tags for retrieval
+    topic_tags: list[str] = field(default_factory=list)  # auto-extracted: code, config, error...
+    # CF-P4: Hybrid raw+derived — keep raw for recent, compressed for older
+    is_raw: bool = False  # True if this segment retains verbatim content
+
+    def to_prompt_block(self) -> str:
+        """Compact representation for prompt injection."""
+        return (
+            f"[Turns {self.turn_range[0]}-{self.turn_range[1]} "
+            f"({self.trigger})]\n{self.consolidated}"
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize for checkpoint persistence."""
+        d = {
+            "turn_range": list(self.turn_range),
+            "granular_blocks": self.granular_blocks,
+            "consolidated": self.consolidated,
+            "trigger": self.trigger,
+            "timestamp": self.timestamp,
+        }
+        if self.reward_signals is not None:
+            d["reward_signals"] = self.reward_signals.to_dict()
+        # CF-P1: Provenance
+        if self.validity_timestamp is not None:
+            d["validity_timestamp"] = self.validity_timestamp
+        if self.source_turn_ids:
+            d["source_turn_ids"] = self.source_turn_ids
+        # CF-P2: Supersession
+        if self.superseded:
+            d["superseded"] = True
+            d["superseded_by_turn"] = self.superseded_by_turn
+        # CF-P3: Topic tags
+        if self.topic_tags:
+            d["topic_tags"] = self.topic_tags
+        # CF-P4: Raw flag
+        if self.is_raw:
+            d["is_raw"] = True
+        return d
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> "ConsolidatedSegment":
+        """Deserialize from checkpoint."""
+        reward_data = d.get("reward_signals")
+        reward_signals = RewardSignals.from_dict(reward_data) if reward_data else None
+        return cls(
+            turn_range=tuple(d["turn_range"]),
+            granular_blocks=d["granular_blocks"],
+            consolidated=d["consolidated"],
+            trigger=d.get("trigger", "unknown"),
+            timestamp=d.get("timestamp", 0.0),
+            reward_signals=reward_signals,
+            # CF-P1
+            validity_timestamp=d.get("validity_timestamp"),
+            source_turn_ids=d.get("source_turn_ids", []),
+            # CF-P2
+            superseded=d.get("superseded", False),
+            superseded_by_turn=d.get("superseded_by_turn"),
+            # CF-P3
+            topic_tags=d.get("topic_tags", []),
+            # CF-P4
+            is_raw=d.get("is_raw", False),
+        )
+
+
+# ---------------------------------------------------------------------------
+# SegmentCache — hash-based dedup for consolidated segments (CF Phase 1+)
+# ---------------------------------------------------------------------------
+
+
+class SegmentCache:
+    """Hash-based dedup cache for consolidated segment text.
+
+    Avoids re-consolidating identical block sequences (e.g. repeated
+    tool outputs like git status, pytest results). The cache key is a
+    SHA-256 hash of normalized block content.
+
+    Lifecycle: per-session, created lazily on TaskState, survives
+    checkpoints via to_dict/from_dict.
+    """
+
+    def __init__(self, max_size: int = 64):
+        self._store: dict[str, str] = {}  # hash -> consolidated text
+        self._max_size = max_size
+        self._hits = 0
+        self._misses = 0
+
+    @staticmethod
+    def normalize(blocks: list[str]) -> str:
+        """Normalize block list for stable hashing.
+
+        Strips whitespace, lowercases, joins with null sentinel.
+        """
+        return "\x00".join(b.strip().lower() for b in blocks)
+
+    @staticmethod
+    def key(normalized: str) -> str:
+        """SHA-256[:16] hash key from normalized text."""
+        return hashlib.sha256(
+            normalized.encode("utf-8", errors="replace")
+        ).hexdigest()[:16]
+
+    def lookup(self, blocks: list[str]) -> str | None:
+        """Check cache for matching consolidated text. Returns None on miss."""
+        norm = self.normalize(blocks)
+        k = self.key(norm)
+        result = self._store.get(k)
+        if result is not None:
+            self._hits += 1
+        else:
+            self._misses += 1
+        return result
+
+    def insert(self, blocks: list[str], consolidated: str) -> None:
+        """Insert consolidated text for block sequence. FIFO eviction at max_size."""
+        norm = self.normalize(blocks)
+        k = self.key(norm)
+        if len(self._store) >= self._max_size and k not in self._store:
+            oldest = next(iter(self._store))
+            del self._store[oldest]
+        self._store[k] = consolidated
+
+    @property
+    def hit_rate(self) -> float:
+        """Cache hit rate as a fraction [0.0, 1.0]."""
+        total = self._hits + self._misses
+        return self._hits / total if total > 0 else 0.0
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serialize for checkpoint persistence."""
+        return {
+            "store": dict(self._store),
+            "max_size": self._max_size,
+            "hits": self._hits,
+            "misses": self._misses,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> "SegmentCache":
+        """Deserialize from checkpoint."""
+        cache = cls(max_size=d.get("max_size", 64))
+        cache._store = dict(d.get("store", {}))
+        cache._hits = d.get("hits", 0)
+        cache._misses = d.get("misses", 0)
+        return cache
+
+
+# ---------------------------------------------------------------------------
+# RewardSignals — process reward telemetry (CF Phase 3a)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class RewardSignals:
+    """Aggregate process reward telemetry for a consolidated segment."""
+
+    avg_token_budget_ratio: float = 0.0
+    scope_adherence: float = 1.0       # fraction of turns on-scope
+    avg_tool_success: float = 1.0
+    advantage: float = 0.0             # position-weighted advantage
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "avg_token_budget_ratio": self.avg_token_budget_ratio,
+            "scope_adherence": self.scope_adherence,
+            "avg_tool_success": self.avg_tool_success,
+            "advantage": self.advantage,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> "RewardSignals":
+        return cls(**{k: d.get(k, 0.0) for k in cls.__dataclass_fields__})
+
+
+_OUTCOME_REWARDS = {
+    "ok": 0.5,
+    "final": 1.0,
+    "error": -0.5,
+    "escalation": -0.2,
+    "nudge": -0.1,
+    "silent": 0.0,
+}
+
+
+def segment_advantage(records: list[TurnRecord], gamma: float = 0.95) -> float:
+    """Position-weighted advantage for a sequence of turn records.
+
+    Uses discounted success signal: +1 for final, +0.5 for ok, -0.5 for error.
+    Discount applied from end of segment backward (later turns weighted more).
+    """
+    if not records:
+        return 0.0
+
+    advantage = 0.0
+    discount = 1.0
+    for record in reversed(records):
+        reward = _OUTCOME_REWARDS.get(record.outcome, 0.0)
+        advantage += discount * reward
+        discount *= gamma
+
+    return advantage
+
+
+def compute_reward_signals(records: list[TurnRecord]) -> RewardSignals:
+    """Compute aggregate reward signals from a list of TurnRecords."""
+    if not records:
+        return RewardSignals()
+
+    budget_ratios = [r.token_budget_ratio for r in records if r.token_budget_ratio > 0]
+    on_scope_count = sum(1 for r in records if r.on_scope)
+    tool_ratios = [r.tool_success_ratio for r in records]
+
+    return RewardSignals(
+        avg_token_budget_ratio=(
+            sum(budget_ratios) / len(budget_ratios) if budget_ratios else 0.0
+        ),
+        scope_adherence=on_scope_count / len(records),
+        avg_tool_success=(
+            sum(tool_ratios) / len(tool_ratios) if tool_ratios else 1.0
+        ),
+        advantage=segment_advantage(records),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Helpfulness Scoring — heuristic segment priority (CF Phase 2c)
+# ---------------------------------------------------------------------------
+
+import re as _re
+
+_IDENTIFIER_RE = _re.compile(
+    r'(?:'
+    r'(?:[a-zA-Z_][\w]*(?:\.[\w]+)+)'          # dotted: foo.bar.baz
+    r'|(?:/[\w./-]+\.[\w]+)'                    # file paths: /src/foo.py
+    r'|(?:[a-zA-Z_][\w]*\(\))'                 # function calls: foo()
+    r'|(?:[A-Z][a-zA-Z0-9]+(?:[A-Z][a-zA-Z0-9]+)+)'  # CamelCase: FooBar
+    r')'
+)
+
+
+def extract_identifiers(text: str) -> set[str]:
+    """Parse file paths, function calls, dotted names, CamelCase from text."""
+    return set(_IDENTIFIER_RE.findall(text))
+
+
+def compute_reference_overlap(segment_text: str, recent_text: str) -> float:
+    """Jaccard overlap of identifiers between segment and recent text.
+
+    Returns float in [0.0, 1.0]. Higher means segment is more relevant
+    to recent context.
+    """
+    seg_ids = extract_identifiers(segment_text)
+    recent_ids = extract_identifiers(recent_text)
+    if not seg_ids and not recent_ids:
+        return 0.0
+    union = seg_ids | recent_ids
+    return len(seg_ids & recent_ids) / len(union) if union else 0.0
+
+
+# Content sensitivity patterns (preserve segments matching these)
+_SENSITIVE_PATTERNS = [
+    _re.compile(r"WARNING|CRITICAL|FATAL", _re.IGNORECASE),
+    _re.compile(r"bug_location|constraint_discovered", _re.IGNORECASE),
+    _re.compile(r"(?:API|auth|secret|token|credential)", _re.IGNORECASE),
+]
+
+# Outcome importance weights for helpfulness heuristic
+_OUTCOME_HELPFULNESS = {
+    "ok": 0.3,
+    "error": 0.5,       # errors are informative (what NOT to do)
+    "final": 0.8,       # successful completions very helpful
+    "escalation": 0.6,  # escalation context matters
+    "nudge": 0.2,
+    "silent": 0.1,
+}
+
+
+def segment_helpfulness(
+    segment: ConsolidatedSegment,
+    current_turn: int,
+    recent_text: str = "",
+    *,
+    recency_weight: float = 0.3,
+    overlap_weight: float = 0.3,
+    outcome_weight: float = 0.2,
+    sensitivity_weight: float = 0.2,
+) -> float:
+    """Score a segment's helpfulness for retention priority.
+
+    Returns float in [0.0, 1.0]. Lower scores = compact first.
+
+    Components:
+      - recency: exponential decay based on turn distance
+      - reference_overlap: identifier overlap with recent turns
+      - outcome: average outcome importance of segment's turns
+      - sensitivity: presence of critical/sensitive content
+    """
+    # Recency: gentle decay over turn distance
+    mid_turn = (segment.turn_range[0] + segment.turn_range[1]) / 2
+    distance = max(current_turn - mid_turn, 0)
+    recency = 1.0 / (1.0 + distance * 0.1)
+
+    # Reference overlap
+    overlap = compute_reference_overlap(segment.consolidated, recent_text)
+
+    # Outcome score from granular blocks
+    outcome_scores = []
+    for block in segment.granular_blocks:
+        matched = False
+        for outcome, weight in _OUTCOME_HELPFULNESS.items():
+            if outcome in block.lower():
+                outcome_scores.append(weight)
+                matched = True
+                break
+        if not matched:
+            outcome_scores.append(0.2)
+    avg_outcome = sum(outcome_scores) / len(outcome_scores) if outcome_scores else 0.2
+
+    # Sensitivity: any critical patterns present?
+    sensitivity = 0.0
+    for pat in _SENSITIVE_PATTERNS:
+        if pat.search(segment.consolidated):
+            sensitivity = 1.0
+            break
+
+    return (
+        recency_weight * recency
+        + overlap_weight * overlap
+        + outcome_weight * avg_outcome
+        + sensitivity_weight * sensitivity
+    )
+
+
+def prioritized_compaction(
+    segments: list[ConsolidatedSegment],
+    current_turn: int,
+    recent_text: str = "",
+) -> list[ConsolidatedSegment]:
+    """Return segments sorted by ascending helpfulness (least helpful first).
+
+    Does NOT mutate the input list. Caller decides how many to compact.
+    """
+    scored = [
+        (segment_helpfulness(seg, current_turn, recent_text), seg)
+        for seg in segments
+    ]
+    scored.sort(key=lambda x: x[0])
+    return [seg for _, seg in scored]
+
+
+# ---------------------------------------------------------------------------
+# CompactionProfile — role-aware compaction (CF Phase 3b)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class CompactionProfile:
+    """Role-specific compaction parameters.
+
+    Controls how aggressively context is compacted for different
+    orchestration roles. Text-sensitive roles (coder, architect)
+    get conservative profiles; exploratory roles get aggressive.
+    """
+
+    max_compression_level: int = 3       # 1=light, 2=moderate, 3=aggressive
+    free_zone_ratio: float = 0.25        # fraction of segments kept un-compacted
+    preserve_threshold: float = 0.6      # helpfulness score above which to preserve
+    quality_check_interval: int = 5      # consolidations between quality checks
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "max_compression_level": self.max_compression_level,
+            "free_zone_ratio": self.free_zone_ratio,
+            "preserve_threshold": self.preserve_threshold,
+            "quality_check_interval": self.quality_check_interval,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> "CompactionProfile":
+        return cls(**{k: d[k] for k in cls.__dataclass_fields__ if k in d})
+
+
+# Default profiles per orchestrator role
+COMPACTION_PROFILES: dict[str, CompactionProfile] = {
+    "architect": CompactionProfile(
+        max_compression_level=1,
+        free_zone_ratio=0.40,
+        preserve_threshold=0.7,
+        quality_check_interval=3,
+    ),
+    "worker_general": CompactionProfile(
+        max_compression_level=3,
+        free_zone_ratio=0.20,
+        preserve_threshold=0.4,
+        quality_check_interval=8,
+    ),
+    "worker_fast": CompactionProfile(
+        max_compression_level=3,
+        free_zone_ratio=0.15,
+        preserve_threshold=0.3,
+        quality_check_interval=10,
+    ),
+}
+
+DEFAULT_COMPACTION_PROFILE = CompactionProfile()
+
+
+def get_compaction_profile(role: str) -> CompactionProfile:
+    """Get compaction profile for a role, with fallback to default."""
+    if role == "worker_fast":
+        return COMPACTION_PROFILES["worker_fast"]
+    normalized = str(Role.from_string(role) or role)
+    if normalized == "worker_explore":
+        normalized = "worker_general"
+    return COMPACTION_PROFILES.get(normalized, DEFAULT_COMPACTION_PROFILE)
+
+
+@dataclass
+class CompactionQualityMonitor:
+    """Tracks compaction quality metrics over time.
+
+    Monitors whether compaction is discarding segments that turn out
+    to be needed later (referenced in subsequent turns).
+    """
+
+    compactions_performed: int = 0
+    segments_compacted: int = 0
+    post_compaction_references: int = 0   # times compacted content was re-referenced
+    quality_checks: int = 0
+    task_outcomes: int = 0
+    give_up_outcomes: int = 0
+    repl_task_outcomes: int = 0
+    repl_max_turns_outcomes: int = 0
+
+    def record_compaction(self, n_segments: int) -> None:
+        self.compactions_performed += 1
+        self.segments_compacted += n_segments
+
+    def record_reference_miss(self) -> None:
+        """A compacted segment's identifiers appeared in a later turn."""
+        self.post_compaction_references += 1
+
+    def record_quality_check(self) -> None:
+        self.quality_checks += 1
+
+    def record_task_outcome(self, answer: str, *, repl_mode: bool) -> None:
+        """Record terminal give-up and REPL non-termination signals."""
+        from src.pipeline_monitor.anomaly import (
+            detect_assistant_help_request,
+            detect_repl_max_turns,
+        )
+
+        self.task_outcomes += 1
+        if detect_assistant_help_request(answer):
+            self.give_up_outcomes += 1
+        if repl_mode:
+            self.repl_task_outcomes += 1
+            if detect_repl_max_turns(answer, "repl"):
+                self.repl_max_turns_outcomes += 1
+
+    @property
+    def give_up_rate(self) -> float:
+        if self.task_outcomes == 0:
+            return 0.0
+        return self.give_up_outcomes / self.task_outcomes
+
+    @property
+    def repl_max_turns_rate(self) -> float:
+        if self.repl_task_outcomes == 0:
+            return 0.0
+        return self.repl_max_turns_outcomes / self.repl_task_outcomes
+
+    @property
+    def miss_rate(self) -> float:
+        """Fraction of compacted segments later referenced."""
+        if self.segments_compacted == 0:
+            return 0.0
+        return self.post_compaction_references / self.segments_compacted
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "compactions_performed": self.compactions_performed,
+            "segments_compacted": self.segments_compacted,
+            "post_compaction_references": self.post_compaction_references,
+            "quality_checks": self.quality_checks,
+            "task_outcomes": self.task_outcomes,
+            "give_up_outcomes": self.give_up_outcomes,
+            "repl_task_outcomes": self.repl_task_outcomes,
+            "repl_max_turns_outcomes": self.repl_max_turns_outcomes,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict[str, Any]) -> "CompactionQualityMonitor":
+        return cls(**{k: d.get(k, 0) for k in cls.__dataclass_fields__})
+
+
+def build_granular_summary(record: TurnRecord) -> str:
+    """Tier 1: deterministic 1-2 sentence block from a TurnRecord.
+
+    No LLM call — pure formatting from structured turn data.
+    """
+    return record.to_log_line()
+
+
+def should_consolidate(
+    granular_blocks: list[str],
+    record: TurnRecord,
+    prev_role: str = "",
+) -> str | None:
+    """Check if Tier 2 consolidation should fire.
+
+    Returns the trigger reason string, or None if no consolidation needed.
+    """
+    # Escalation boundary (role change)
+    if record.escalation_target or (prev_role and record.role != prev_role):
+        return "escalation"
+
+    # Sub-task completion (FINAL accepted)
+    if record.outcome == "final":
+        return "final"
+
+    # Block count threshold
+    if len(granular_blocks) >= MAX_GRANULAR_BLOCKS:
+        return "block_limit"
+
+    return None
+
+
+def build_consolidation_prompt(granular_blocks: list[str]) -> str:
+    """Build prompt for Tier 2 deep consolidation via worker_general."""
+    block_text = neutralise_control_tokens("\n".join(granular_blocks))  # CT-12.3c
+    return (
+        "Consolidate this sequence of REPL session events into a dense 2-4 "
+        "sentence paragraph. Preserve: key findings, errors encountered, "
+        "approaches tried, and current state. Drop: redundant details, "
+        "repeated failures, tool call noise. Be specific and factual.\n\n"
+        f"Events ({len(granular_blocks)} entries):\n{block_text}"
+    )
+
+
+async def consolidate_segment(
+    primitives: Any,
+    granular_blocks: list[str],
+    turn_range: tuple[int, int],
+    trigger: str,
+    *,
+    inline: bool = False,
+) -> ConsolidatedSegment:
+    """Run Tier 2 consolidation: LLM call over bounded granular blocks.
+
+    Falls back to concatenated granular blocks if LLM call fails.
+    """
+    import time
+
+    prompt = build_consolidation_prompt(granular_blocks)
+    consolidated_text = ""
+
+    try:
+        if inline:
+            consolidated_text = primitives.llm_call(
+                prompt, role="worker_general", n_tokens=300,
+            )
+        else:
+            import asyncio
+            consolidated_text = await asyncio.to_thread(
+                primitives.llm_call, prompt,
+                role="worker_general", n_tokens=300,
+            )
+    except Exception as exc:
+        log.debug("Tier 2 consolidation failed, using granular fallback: %s", exc)
+
+    if not consolidated_text or not consolidated_text.strip():
+        # Fallback: join granular blocks (still shorter than full re-summarization)
+        consolidated_text = "; ".join(granular_blocks)
+
+    from src.trace.replay.clock import time as _replay_time   # HIL-16b: tape-aware, == time.time() with no tape
+
+    now = _replay_time()
+    return ConsolidatedSegment(
+        turn_range=turn_range,
+        granular_blocks=list(granular_blocks),
+        consolidated=consolidated_text.strip(),
+        trigger=trigger,
+        timestamp=now,
+        # CF-P1: Provenance — track source turns for drift detection
+        validity_timestamp=now,
+        source_turn_ids=list(range(turn_range[0], turn_range[1] + 1)),
+        # CF-P3: Auto-extract topic tags from content
+        topic_tags=_extract_topic_tags(consolidated_text),
+    )
+
+
+def check_supersession(
+    new_turn_text: str,
+    segments: list[ConsolidatedSegment],
+    turn_id: int,
+) -> list[ConsolidatedSegment]:
+    """Detect if a new turn contradicts information in compacted segments (CF-P2).
+
+    Scans for explicit correction patterns in the new turn text and flags
+    affected segments for re-derivation or invalidation.
+
+    Returns the list of segments that were flagged as superseded.
+    """
+    import re
+
+    correction_patterns = [
+        r"\bactually\b.*\bis\b",          # "actually X is Y"
+        r"\bcorrection\b",                  # "correction: ..."
+        r"\bnot\s+\d+\b.*\bbut\s+\d+\b",  # "not 30B but 35B"
+        r"\bwrong\b.*\bshould\s+be\b",     # "wrong, should be..."
+        r"\binstead\s+of\b",               # "use X instead of Y"
+        r"\bno\s+longer\b",               # "no longer true"
+        r"\bignore\b.*\bprevious\b",       # "ignore the previous..."
+        r"\bupdate[d]?\b.*\bfrom\b.*\bto\b",  # "updated from X to Y"
+    ]
+
+    lower_text = new_turn_text.lower()
+    is_correction = any(
+        re.search(pattern, lower_text)
+        for pattern in correction_patterns
+    )
+    if not is_correction:
+        return []
+
+    flagged = []
+    for seg in segments:
+        if seg.superseded:
+            continue  # Already flagged
+        # Check if the correction is relevant to this segment's content
+        # Simple heuristic: look for shared substantive words
+        seg_words = set(seg.consolidated.lower().split())
+        new_words = set(lower_text.split())
+        overlap = seg_words & new_words - {"the", "a", "is", "was", "to", "of", "in", "and", "or", "it", "that"}
+        if len(overlap) >= 3:
+            seg.superseded = True
+            seg.superseded_by_turn = turn_id
+            flagged.append(seg)
+            log.info(
+                "CF-P2: Segment turns %d-%d superseded by turn %d (overlap: %s)",
+                seg.turn_range[0], seg.turn_range[1], turn_id,
+                ", ".join(sorted(list(overlap)[:5])),
+            )
+    return flagged
+
+
+def _extract_topic_tags(text: str) -> list[str]:
+    """Extract topic tags from segment content for metadata filtering (CF-P3).
+
+    Simple keyword-based extraction. Returns up to 5 tags.
+    """
+    tags = []
+    lower = text.lower()
+    tag_keywords = {
+        "code": ["function", "class", "import", "def ", "return ", "error:", "traceback"],
+        "config": ["config", "parameter", "setting", "flag", "threshold"],
+        "error": ["error", "failed", "exception", "crash", "timeout"],
+        "routing": ["route", "escalat", "delegat", "role", "specialist"],
+        "eval": ["quality", "accuracy", "benchmark", "score", "eval"],
+        "memory": ["memory", "episode", "recall", "retriev"],
+        "tool": ["tool", "web_search", "code_search", "grep", "peek"],
+    }
+    for tag, keywords in tag_keywords.items():
+        if any(kw in lower for kw in keywords):
+            tags.append(tag)
+    return tags[:5]
+
+
+# ---------------------------------------------------------------------------
+# ScratchpadEntry — model-extracted semantic insights
+# ---------------------------------------------------------------------------
+
+SCRATCHPAD_CATEGORIES = frozenset({
+    "bug_location", "approach_eliminated", "constraint_discovered",
+    "user_intent", "dependency_found",
+})
+MAX_SCRATCHPAD_ENTRIES = 8
+
+
+@dataclass
+class ScratchpadEntry:
+    """A semantic insight extracted by the worker model from session history."""
+
+    turn: int
+    category: str      # One of SCRATCHPAD_CATEGORIES
+    insight: str       # 1-2 sentence insight
+    confidence: float = 0.8
+
+    def to_bullet(self) -> str:
+        return f"- [{self.category}] {self.insight}"
+
+
+# ---------------------------------------------------------------------------
+# Path helpers
+# ---------------------------------------------------------------------------
+
+
+def session_log_path(task_id: str) -> str:
+    """Return the path for the session log file."""
+    safe_id = "".join(c if c.isalnum() or c in "-_" else "_" for c in task_id)[:80]
+    try:
+        from src.config import get_config
+        return str(get_config().paths.tmp_dir / f"session_{safe_id}.md")
+    except Exception:
+        return f"/mnt/raid0/llm/tmp/session_{safe_id}.md"
+
+
+# ---------------------------------------------------------------------------
+# Build TurnRecord from execution results
+# ---------------------------------------------------------------------------
+
+
+def _code_hash(code: str) -> str:
+    """8-char hash of code for dedup/anti-loop detection."""
+    if not code:
+        return ""
+    return hashlib.sha256(code.encode("utf-8", errors="replace")).hexdigest()[:8]
+
+
+def _first_non_comment_line(code: str) -> str:
+    """Extract first non-comment, non-blank line from code."""
+    for line in code.split("\n"):
+        stripped = line.strip()
+        if stripped and not stripped.startswith("#"):
+            return stripped
+    return ""
+
+
+def _last_line(code: str) -> str:
+    """Extract last non-blank line from code."""
+    for line in reversed(code.split("\n")):
+        if line.strip():
+            return line.strip()
+    return ""
+
+
+def build_turn_record(
+    *,
+    turn: int,
+    role: str,
+    code: str = "",
+    output: str = "",
+    error: str | None = None,
+    is_final: bool = False,
+    nudge: str = "",
+    escalation_target: str = "",
+    tool_calls: list[str] | None = None,
+    token_budget_ratio: float = 0.0,
+    on_scope: bool = True,
+    tool_success_ratio: float = 1.0,
+) -> TurnRecord:
+    """Factory to build a TurnRecord from execution results."""
+    from src.trace.replay.clock import now_hms as _replay_now_hms
+
+    # Classify outcome
+    if is_final:
+        outcome = "final"
+    elif escalation_target:
+        outcome = "escalation"
+    elif nudge:
+        outcome = "nudge"
+    elif error:
+        outcome = "error"
+    elif not output and not error:
+        outcome = "silent"
+    else:
+        outcome = "ok"
+
+    return TurnRecord(
+        turn=turn,
+        role=role,
+        timestamp=_replay_now_hms(),   # HIL-16b: tape-a

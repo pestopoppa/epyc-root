@@ -1,0 +1,7 @@
+[region-lock] acquiring gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=600.0) …
+[region-lock] held gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase cpu --only cpu_ref_8k_t48
+[14:15:54] cpu_ref_8k_t48: launching taskset ... :18074
+[14:16:05] cpu_ref_8k_t48: warmup n_predict=16
+[14:16:06] cpu_ref_8k_t48: measured request 1/1 (cache_prompt=False)
+[14:16:17] cpu_ref_8k_t48: done ok=True elapsed=22.7s
+[14:16:17] {"arm": "cpu_ref_8k_t48", "ok": true, "tok_s": [46.97706835761336], "acceptance": {"alpha": 0.78947, "accepted": 120, "generated": 152}}

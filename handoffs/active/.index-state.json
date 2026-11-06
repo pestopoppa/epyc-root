@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 677
+      "open": 679
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1116,7 +1116,7 @@
       "closed": 278,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 122,
+      "open": 124,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1125,7 +1125,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 402,
+      "total": 404,
       "tracks": [
         {
           "blocked": 1,
@@ -1140,14 +1140,14 @@
           "line": 9,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 42
+          "open": 44
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1595,
+          "line": 1597,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1157,7 +1157,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1719,
+          "line": 1721,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1167,7 +1167,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2046,
+          "line": 2048,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1177,7 +1177,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2185,
+          "line": 2187,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1187,7 +1187,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2738,
+          "line": 2740,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1201,7 +1201,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2875,
+          "line": 2877,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1218,7 +1218,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3769,
+          "line": 3771,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61
@@ -2659,7 +2659,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "Qualify C6 serving gates and resolve baseline GPU properties; assemble the CAS review package without updating champion",
+      "next_action": "Qualify C6 serving gates; confirm local t96/MTP profile and 28k code prompt before canonical recipe change",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
