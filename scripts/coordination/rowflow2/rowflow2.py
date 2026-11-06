@@ -24,6 +24,7 @@ import ast
 import datetime as dt
 import glob
 import hashlib
+import itertools
 import json
 import os
 import re
@@ -83,16 +84,21 @@ GPU_IDLE_BY_GPU_SIGNALS = True   # P4.3 #4: a gpu-token grant is busy/idle by it
 GPU_IDLE_PCT = 5.0           # GPU utilisation below this reads idle in a sample (sysfs gpu_busy_percent is integer %)
 RANK_AT_GRANT_TIME = True    # INF-22 2026-11-06: once the device is quiet, the best-RANKED grantable GPU row is granted,
                              # re-ranked at grant time over every grantable row; False = first grantable row in id order
+SMOKE_RANK_GATE = True       # keeper batch 2026-11-06: a GPU row ranked worse than a queued GPU smoke waits (WAIT-FOR-SMOKE);
+                             # False = the old path (ready rows ignore the smoke queue's rank)
+VRAM_SAMPLE_S = 1            # residency sampled at 1 s (was 5 s: a short job fell between samples)
+RESIDENCY_SCHEMA = "epyc.rowflow.residency.v1"
+RESIDENCY_MIN_BYTES = 64 << 20
 SPEC_FIELDS = {"id": str, "owner": str, "handoff_task": str, "launcher": str, "stop_file": str, "cpus": (int, str),
                "threads": int, "gpu": str, "quiet": bool, "ram_gib": (int, float), "disk_gib": (int, float),
                "estimate_s": (int, float), "min_window_s": (int, float), "decision_rule": str,
                "priority_rank": (int, float)}
 SPEC_OPTIONAL = {"quiet_reason": str, "measured_ack": str, "supersedes": (str, list), "fix_ref": str,
-                 "published_at": str, "schema": str, "legacy": dict, "timing": bool, "width_justification": str}
+                 "published_at": str, "schema": str, "legacy": dict, "timing": bool, "width_justification": str, "smoke_predicate": str}
 FACTS = ("NCORES", "GPU_HOST_THREADS", "GPU_SIBLING_CORES", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
          "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG", "IDLE_WARN_S", "IDLE_HELD_RETRY",
          "PARK_ON_REFUSAL", "REFUSAL_RCS", "REFUSAL_REASONS", "COMPLETE_BEATS_DEAD", "GPU_IDLE_BY_GPU_SIGNALS", "GPU_IDLE_PCT",
-         "RANK_AT_GRANT_TIME")
+         "RANK_AT_GRANT_TIME", "SMOKE_RANK_GATE", "VRAM_SAMPLE_S", "RESIDENCY_SCHEMA", "RESIDENCY_MIN_BYTES")
 
 
 # ============================================================== util
@@ -272,6 +278,10 @@ def parse_cpus(v):
     s = str(v).strip()
     if s == "any-quarter":
         return Need(QUARTERS, ROW_CORES, None)
+    m = re.fullmatch(r"any-([23])-quarters", s)   # emergency 2026-11-06 (mirrors rowflow): N whole quarters, q0-q2 combinations first
+    if m:
+        combos = sorted(itertools.combinations(range(4), int(m[1])), key=lambda c: (3 in c, c))
+        return Need(tuple(frozenset().union(*[QUARTERS[i] for i in c]) for c in combos), ROW_CORES, None)
     m = re.fullmatch(r"any-quarter-of-(q[0-3](?:,q[0-3])*)", s)
     if m:
         return Need(tuple(QUARTERS[int(x[1])] for x in sorted(set(m[1].split(",")))), ROW_CORES, None)
@@ -390,13 +400,17 @@ def validate(spec, pred=None, launcher_exists=os.path.isfile):
         errs.append("timing row on cores 88-95 (siblings = gpu host threads 184-191) must declare gpu exclusive "
                     "(gpu-quiet); otherwise place it on q0-q2")
     wj = spec.get("width_justification")                                       # operator 2026-11-06 (mirrors rowflow)
+    q012 = frozenset().union(*QUARTERS[:3])
     if wj is not None:
         if len(wj.strip()) < 20:
             errs.append("width_justification must be >= 20 characters naming why the extra width helps")
-        elif n <= 24:
+        elif n <= 24 and not (spec["gpu"] != "none" and n >= 20):   # q0 is 20 cores: the smoke lane is carved out
             errs.append(f"width_justification is for a multi-quarter CPU width; |cpus|={n} needs none")
-        elif spec["gpu"] != "none" or spec.get("timing") or spec["quiet"]:
-            errs.append("width_justification applies to CPU rows only: never gpu, timing or quiet rows (placement rules unchanged)")
+        elif spec["quiet"] or (spec.get("timing") and spec["gpu"] == "none"):
+            errs.append("width_justification never applies to quiet rows or CPU timing rows (placement rules unchanged)")
+        elif spec["gpu"] != "none" and not (need.options is not None
+                                           and all(o <= q012 for o in need.options)):
+            errs.append("a gpu row's width_justification admits whole CPU quarters from q0-q2 only: never q3 72-87, never the whole host")
     if not os.path.isabs(spec["stop_file"]) or "$" in spec["stop_file"]:       # 5
         errs.append(f"stop_file {spec['stop_file']!r} is not an absolute literal path")
     if not launcher_exists(spec["launcher"]):                                  # 6
@@ -442,8 +456,11 @@ def map_legacy(m):
     cpu_items = keep + ([cpulist(nums)] if nums else [])
     if gpu_threads and not gpu_need:
         return None, f"regions {regions!r} name gpu host threads 184-191 but the row declares no gpu"
+    wq = re.fullmatch(r"multi-quarter\(([23])\)", str(m.get("declared_shape") or shape or ""))
     if regions == "any-cpu-quarter":
-        cpus = "any-quarter"
+        # emergency 2026-11-06: an ACCEPTED multi-quarter shape (shape_override or width_justification) is the width booked;
+        # it used to collapse to one quarter here (r4/r5-pca: declared multi-quarter(2), granted q1 only)
+        cpus = f"any-{wq[1]}-quarters" if (wq and not gpu_need and (m.get("shape_override") or m.get("width_justification"))) else "any-quarter"
     elif regions.startswith("any-of "):
         cpus = "any-quarter-of-" + regions[len("any-of "):].replace(" ", "")
     else:
@@ -452,6 +469,10 @@ def map_legacy(m):
         need = parse_cpus(cpus)
     except ValueError as e:
         return None, f"regions {regions!r}: {e}"
+    if gpu_need and shape != "quiet-host" and len({c for c in nums if c < 72}) >= 24 and not (
+            m.get("width_justification") or m.get("shape_override") or m.get("baseline_ref")):
+        return None, (f"regions {regions!r}: a gpu row books whole q0-q2 CPU quarters beside its gpu grant only with a "
+                      "width_justification (>= 20 chars); operator 2026-11-06 \"Allow, q0-q2 only\" (mirrors rowflow)")
     if not gpu_need:
         gpu = "none"
     elif shape in ("gpu-q3", "quiet-host") or ac in _TIMING_CLASSES:
@@ -483,7 +504,7 @@ def map_legacy(m):
             "published_at": str(m.get("published_at") or ""), "legacy": {"regions": regions, "shape": shape}}
     if ac in _TIMING_CLASSES:
         spec["timing"] = True
-    for k in ("supersedes", "fix_ref", "width_justification"):
+    for k in ("supersedes", "fix_ref", "width_justification", "smoke_predicate"):
         if m.get(k):
             spec[k] = m[k]
     if spec["quiet"] and m.get("shape_override"):
@@ -888,6 +909,81 @@ def smoke_step(queue, running, quiet_active, now):
     return []
 
 
+def smoke_env(spec):
+    """Env the smoke runner gives a smoke (mirrors rowflow dryrun_run): FILLER_SMOKE_UNITS=1 (stop after one unit) is set only
+    for a row WITHOUT smoke_predicate - a predicate row is a multi-stage smoke that stops when its predicate holds."""
+    env = {"FILLER_SMOKE": "1", "FILLER_DISK_FLOOR_GIB": "20", "FILLER_VRAM_SAMPLE_S": str(VRAM_SAMPLE_S)}
+    if not str(spec.get("smoke_predicate") or "").strip():
+        env["FILLER_SMOKE_UNITS"] = "1"
+    return env
+
+
+def smoke_may_stop(spec, units, predicate_ok):
+    """True when a running smoke may be stopped now: a predicate row only when smoke_predicate holds, any other row after
+    its first unit."""
+    if str(spec.get("smoke_predicate") or "").strip():
+        return bool(predicate_ok)
+    return units >= 1
+
+
+def smoke_rank_gate(pending, smoke_queue):
+    """(kept, waiting): GPU rows ranked worse than the best queued GPU smoke wait for it (keeper batch 2026-11-06)."""
+    if not SMOKE_RANK_GATE:
+        return list(pending), []
+    gq = [smoke_order_key(s)[0] for s in smoke_queue if s.get("gpu", "none") != "none"]
+    if not gq:
+        return list(pending), []
+    best = min(gq)
+    waiting = [s for s in pending if s.get("gpu", "none") != "none" and smoke_order_key(s)[0] > best]
+    return [s for s in pending if s not in waiting], waiting
+
+
+def verify_job_residency(rec, tracked, kfd_seen, t0):
+    """A job-written residency record is NOT trusted: accepted only when its pid is in the smoke's process tree AND was seen as
+    a KFD client holding VRAM in a harness sample, and it is no older than the smoke. Returns (bytes, why); 0 = rejected."""
+    if not isinstance(rec, dict):
+        return 0, "no residency record"
+    try:
+        pid, vb = int(rec["pid"]), int(rec["vram_bytes"])
+    except (KeyError, TypeError, ValueError):
+        return 0, "residency record malformed"
+    if rec.get("schema") != RESIDENCY_SCHEMA:
+        return 0, "residency record schema mismatch"
+    if pid not in tracked:
+        return 0, f"residency pid {pid} is not in the smoke's process tree"
+    if pid not in kfd_seen:
+        return 0, f"residency pid {pid} was never seen as a KFD client holding VRAM"
+    at = parse_iso(rec.get("at"))
+    if at is None or at < t0 - 1:
+        return 0, "residency record predates the smoke"
+    return max(vb, 0), f"job residency record pid {pid} {vb} B, verified as KFD client"
+
+
+def smoke_resident(vram_samples, rec, tracked, kfd_seen, t0):
+    """GPU smoke residency verdict: harness VRAM samples (taken every VRAM_SAMPLE_S) or a verified job record reach 64 MiB."""
+    mx = max([v for v in vram_samples if v is not None] or [0])
+    if mx >= RESIDENCY_MIN_BYTES:
+        return True, f"vram sampled {mx} B"
+    jb, why = verify_job_residency(rec, tracked, kfd_seen, t0)
+    return jb >= RESIDENCY_MIN_BYTES, why
+
+
+def escalation_tag(options):
+    """NEEDS-OWNER when every listed option is owner-level; NEEDS-OPERATOR only when an operator-only action is listed.
+    options: [(text, operator_only)]."""
+    return "NEEDS-OPERATOR" if any(op for _, op in options) else "NEEDS-OWNER"
+
+
+def write_escalation(flags, rid, why, options, now):
+    """operator-escalations/<id>.md with the honest heading (mirrors rowflow). Never raises."""
+    try:
+        L = [f"# PARKED {escalation_tag(options)} - row `{rid}` ({why}; written {iso(now)} by rowflow2)", "",
+             "Options: " + "; ".join(f"{i}. {t}" for i, (t, _) in enumerate(options, 1)) + ".", ""]
+        write_text(os.path.join(flags, "operator-escalations", rid + ".md"), "\n".join(L))
+    except Exception:  # noqa: BLE001
+        pass
+
+
 # ============================================================== file (pure)
 def ended_fields(text):
     kv = dict(re.findall(r"(\w+)=(\S+)", text or ""))
@@ -1233,6 +1329,9 @@ def park(flags, rid, spec, kind, e, now, log):
         os.replace(os.path.join(G, rid + ".ended"), os.path.join(dd, f"REFUSED-{n}.ended"))
     if _ex(G, rid + ".grant"):
         os.remove(os.path.join(G, rid + ".grant"))
+    write_escalation(flags, rid, f"launcher refused at admission: {kind}",
+                     [("fix the launcher/precond target or the manifest and republish", False),
+                      (f"`rowflow2.py unpark --id {rid}` (the owner may)", False), ("drop (remove ready/<id>.json)", False)], now)
     write_text(os.path.join(flags, "rowflow2-alerts.jsonl"),
                json.dumps({"kind": "refused", "row_id": rid, "at": iso(now), "refusal": kind, "attempt": n, "fix_task": fix}) + "\n", append=True)
     log(f"REFUSED {rid} {kind} rc={e.get('rc')} reason={e.get('reason') or '-'}: parked (dryrun/{rid}/FAIL-refused-{n}.json); "
@@ -1341,7 +1440,10 @@ def tick(flags, now, meas, state, log, runner=None):
     for rid in w.smoke_finished:
         smoke_alert(flags, rid, now)
         os.remove(os.path.join(flags, "dryrun", rid, "SMOKE.json"))
-    plan = admit(w.pending, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running), gpu_quiet=gpu_quiet,
+    pend, waiting = smoke_rank_gate(w.pending, w.smoke_queue)
+    if waiting:
+        log(f"WAIT-FOR-SMOKE: queued GPU smoke runs first; GPU row(s) {','.join(s['id'] for s in waiting[:5])} (worse rank) wait")
+    plan = admit(pend, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running), gpu_quiet=gpu_quiet,
                  quiet_n=state["gpu_quiet_n"])
     plan.basis = grants
     for g in plan.grants:
@@ -1358,7 +1460,8 @@ def tick(flags, now, meas, state, log, runner=None):
         if a[0] == "smoke-start":
             spec = w.specs[a[1]]
             write_text(os.path.join(dd, "SMOKE.json"), json.dumps({"id": a[1], "start": a[2], "deadline": a[3],
-                       "cores": cpulist(SMOKE_CORES), "launcher_sha256": sha256(spec["launcher"])}) + "\n")
+                       "cores": cpulist(SMOKE_CORES), "launcher_sha256": sha256(spec["launcher"]),
+                       "env": smoke_env(spec)}) + "\n")
             log(f"SMOKE-START {a[1]} cores={cpulist(SMOKE_CORES)} deadline={iso(a[3])}")
             if runner:
                 runner.start(a[1], SMOKE_CORES, a[3])
@@ -1476,7 +1579,7 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
         w.grants = list(byid.values())
         ctx["gpu_quiet_n"], ctx["gpu_quiet"] = gpu_quiet_step(int(ctx.get("gpu_quiet_n") or 0), meas.foreign_kfd)
     gq = ctx.get("gpu_quiet", True) if ctx is not None else True
-    plan = admit(w.pending, w.grants, now, disk_free=disk_free_gib(), smoke_busy=False, gpu_quiet=gq,
+    plan = admit(smoke_rank_gate(w.pending, w.smoke_queue)[0], w.grants, now, disk_free=disk_free_gib(), smoke_busy=False, gpu_quiet=gq,
                  quiet_n=(ctx or {}).get("gpu_quiet_n"))
     for rid, why in sorted(w.unmapped.items()):
         if ("SHADOW-UNMAPPED", rid) not in seen:

@@ -223,6 +223,7 @@ FRESH_ATTEMPT_ON_SHA_CHANGE = True   # operator 2026-11-06: a new launcher/job s
 SMOKE_RESIDENCY_FILE = "residency.json"   # job-written residency record contract (verify_job_residency); env FILLER_RESIDENCY_FILE
 PRECOND_PARK_ONCE = True      # fix 1: a --precond-cmd refusal parks the row at the FIRST refusal (478 false repeats vs 3 real)
 COMPLETE_BEFORE_RC14 = True   # fix 2: a dead poller whose row has a terminal success receipt is COMPLETE, not rc=14 (11/11 false)
+OVERRIDE_BOOKS_WIDTH = True   # emergency 2026-11-06: an accepted shape_override books the declared multi-quarter width (False = the dropped-shape bug)
 WIDTH_JUSTIFICATION = True   # operator 2026-11-06: a justified multi-quarter CPU width is admitted without shape_override
 GPU_IDLE_BY_DEVICE = True     # fix 3: a GPU-token grant is idle by its KFD clients + device busy %, never by CPU % (43/72 false)
 GPU_IDLE_SAMPLES = 2          # fix 3: consecutive quiet device samples before a GPU grant reads IDLE-HELD
@@ -971,6 +972,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
              f"(shape {c['shape']}, a claim no wider than it), add width_justification \"<why the extra width helps, >= 20 chars>\" "
              "(CPU rows only), or add shape_override \"operator: <who> <date>: <why>\"")
         wide = {int(t[1:]) for x in c["options"] for t in expand(x) if re.fullmatch(r"[ct]\d+", t)} - GPU_Q3_ALLOWED_CPUS
+        if wj and c["gpu_use"]:   # justified whole q0-q2 quarters beside the GPU grant (operator 2026-11-06)
+            wide -= {int(t[1:]) for q in ("q0", "q1", "q2") if any(q in x for x in c["options"]) for t in expand({q}) if re.fullmatch(r"[ct]\d+", t)}
         need(not (c["gpu_use"] and wide and not c["evidence"]), f"GPU-lane row locks cpus beyond q3 + 184-191 "
              f"({compress_cpus(wide)}); a GPU run needs gpu-quiet + q3's host threads (shape gpu-q3: regions "
              "mi210_0,88-95,184-191, --class gpu --no-fold-siblings) unless it carries whole-host evidence")
@@ -1781,8 +1784,11 @@ def contract_of(d, o=None, flags=None):
         # (read as the host) unless it names the grant's own cpus; a CONTRACT_LOCK engine's lock= replaces it anyway
     tv = [x for x in (row_threads(d, flags), o.get("threads")) if x]
     threads = max(tv) if tv else None
-    if threads is None and WIDTH_JUSTIFICATION and len(str(d.get("width_justification") or "").strip()) >= WIDTH_JUSTIFICATION_MIN:
-        # operator 2026-11-06: a width-agnostic job (no thread knob) with a justified multi-quarter declaration books that width
+    if threads is None and ((WIDTH_JUSTIFICATION and len(str(d.get("width_justification") or "").strip()) >= WIDTH_JUSTIFICATION_MIN)
+                            or (OVERRIDE_BOOKS_WIDTH and bool(str(d.get("shape_override") or "").strip()))):
+        # operator 2026-11-06: a width-agnostic job (no thread knob) with a justified (width_justification) or operator-
+        # overridden (shape_override) multi-quarter declaration books that width. Emergency fix: the override path used
+        # to fall through to one quarter (r4-pca declared multi-quarter(2), stored shape quarter, granted q1 only)
         dw = re.fullmatch(r"multi-quarter\(([23])\)", str(d.get("declared_shape") or d.get("shape") or ""))
         if dw and not d.get("timing") and d.get("admission_class") not in GPU_TIMING_CLASSES:
             threads = 24 * int(dw.group(1))
@@ -1807,6 +1813,10 @@ def contract_of(d, o=None, flags=None):
         lock_tokens = cpu_tokens(src, gpu_threads=True) if src else set()
         if (grant_cpus_engine or honours) and not (evidence or _cpu_set(src) <= GPU_Q3_ALLOWED_CPUS):
             lock_tokens = {f"t{k}" for k in GPU_HOST_THREADS}   # declared cpus beyond q3: the contract clips them
+            # operator 2026-11-06 ("Allow, q0-q2 only"): a justified GPU row keeps the WHOLE quarters q0-q2 it declares beside
+            # its GPU grant (its correctness reference runs on the ggml CPU backend); never q3 72-87, never the whole host
+            if WIDTH_JUSTIFICATION and len(str(d.get("width_justification") or "").strip()) >= WIDTH_JUSTIFICATION_MIN:
+                lock_tokens |= {q for q in cpu_tokens(src, gpu_threads=True) if q in ("q0", "q1", "q2")}
         if timing:
             shape, base = "gpu-q3", set(GPU_Q3_TOKENS)   # lends nothing: 72-87 are simply not held (lends stays empty)
         else:
@@ -1836,7 +1846,7 @@ def contract_of(d, o=None, flags=None):
                 shape, opts = "quarter", [frozenset({q}) for q in QUARTERS]
             else:
                 n = min(n, 3)
-                shape, opts = f"multi-quarter({n})", [frozenset(c) for c in itertools.combinations(QUARTERS, n)]
+                shape, opts = f"multi-quarter({n})", [frozenset(c) for c in sorted(itertools.combinations(QUARTERS, n), key=lambda c: ("q3" in c, c))]   # q0-q2 combinations first
         else:   # threads unknown, or a legacy engine whose claim locks more: the claim is what gets locked
             qs = quarters_of(cc, fold=True) if cc else (set() if abstract else quarters_of(decl_cpus, fold=True))
             if cc and not (cpu_tokens(cc) & set(QUARTERS)):
@@ -2046,8 +2056,9 @@ def width_justified(row, c):
     wj = row.get("width_justification")
     if not WIDTH_JUSTIFICATION or not isinstance(wj, str) or len(wj.strip()) < WIDTH_JUSTIFICATION_MIN:
         return ""
-    if c.get("gpu_use") or c.get("timing") or row.get("timing") or c["shape"] in ("host", "quiet-host") or str(row.get("lane")) == "gpu":
-        return ""
+    gpu = bool(c.get("gpu_use")) or str(row.get("lane")) == "gpu"
+    if c["shape"] in ("host", "quiet-host") or (not gpu and (c.get("timing") or row.get("timing"))):
+        return ""   # a GPU row's width is whole q0-q2 quarters only (contract_of clips the rest)
     return wj.strip()
 
 

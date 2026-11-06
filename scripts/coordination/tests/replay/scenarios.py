@@ -726,7 +726,29 @@ def sc_gpu_grant_quiet_device_idle_after_two_samples(path):
     return write(path, ticks), check
 
 
+def sc_override_multiquarter_books_two(path):
+    """lsa-quality-32k-20261106-r4-pca: regions any-cpu-quarter, declared multi-quarter(2) accepted via shape_override, threads
+    unknown. It was granted ONE quarter (q1) while q3 sat idle. A 2-quarter row is granted two whole quarters or waits."""
+    rid = "lsa-r4-pca-override"
+    r = row(rid, regions="any-cpu-quarter", extra="python3 job.py", man={
+        "declared_shape": "multi-quarter(2)", "shape": "quarter",
+        "shape_override": "operator: pestopoppa 2026-11-06: widen LSA pca arm to 2 quarters (longest arm)"})
+    free_q1_only = {"q1": {"busy": False}}
+
+    def check(d):
+        out = []
+        for i, g in _granted(d, rid):
+            hq = {h for h in g["holds"] if h in QUARTERS} | _fullq(g["holds"])
+            if len(hq) != 2:
+                out.append(f"2-quarter row granted {sorted(hq)} at tick {i}")
+        if not _granted(d, rid):
+            out.append("2-quarter row never granted on an idle host")
+        return out
+    return write(path, [({rid: r}, {})] * 3), check
+
+
 SCENARIOS = {
+    "override-multiquarter-books-two": sc_override_multiquarter_books_two,
     "stopped-never-granted": sc_stopped,
     "one-thread-not-whole-host": sc_one_thread,
     "gpu-work-leaves-q3-grantable": sc_gpu_work_q3,
@@ -1027,7 +1049,54 @@ def pub_wj_short_refused(root):
     return spec, check
 
 
-PUBLISH_SCENARIOS = {"publish-wj-justified-multiquarter-accepted": pub_wj_justified_accepted,
+
+def pub_override_multiquarter_persisted(root):
+    spec = _wj_spec(root, "lsa-ovr-ok", shape_override="operator: pestopoppa 2026-11-06: widen LSA pca arm to 2 quarters (longest arm)")
+
+    def check(row, err, rf):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        c = rf.contract_of(row)
+        return [] if row.get("shape") == "multi-quarter(2)" and c["shape"] == "multi-quarter(2)" else [f"persisted shape {row.get('shape')} / contract {c['shape']}"]
+    return spec, check
+
+
+def pub_gpu_wj_q0(root):
+    d = os.path.join(root, "gpu-wj")
+    os.makedirs(d, exist_ok=True)
+    eng = os.path.join(root, "filler_run15.sh")
+    open(eng, "w").write("#!/bin/bash\n")
+    open(os.path.join(d, "job.py"), "w").write("print(1)\n")
+    lp = os.path.join(d, "launch.sh")
+    open(lp, "w").write(f"#!/bin/bash\nset -euo pipefail\nD={d}\nexec /bin/bash {eng} --id gpu-wj --class gpu --no-fold-siblings --gpu-quiet shared "
+                        f"--min-window 900 --cmd \"/usr/bin/python3 -B $D/job.py\" --complete-cmd \"true\" --stop \"$D/STOP\" --workdir \"$D\"\n")
+    spec = {"id": "gpu-wj", "owner": "t", "launcher": lp, "lane": "gpu", "regions": "mi210_0,0-23,72-87,184-191",
+            "result_path": os.path.join(d, "out", "r.json"), "decision_rule": "replay publish fixture", "estimate_s": 3000,
+            "handoff_task": "handoffs/active/x.md:GPU", "first_progress_s": 600,
+            "width_justification": "correctness reference runs on the ggml CPU backend and needs a quarter"}
+
+    def check(row, err, rf):
+        if err is not None:
+            return [f"refused at publish: {err[:200]}"]
+        opt = rf.contract_of(row)["options"][0]
+        bad = [] if "q0" in opt else ["justified q0 not booked"]
+        if "q3" in opt or {"c72", "c80"} & rf.expand(opt):
+            bad.append("q3 72-87 booked")
+        return bad
+    return spec, check
+
+
+def pub_gpu_unjustified_q0_refused(root):
+    spec, _ = pub_gpu_wj_q0(root)
+    spec = {**spec, "regions": "mi210_0,0-23,184-191"}
+    spec.pop("width_justification")
+    return spec, (lambda row, err: [] if err is not None and "width_justification" in err else [f"expected refusal, got {err}"])
+
+
+PUBLISH_SCENARIOS = {"publish-override-multiquarter-persisted": pub_override_multiquarter_persisted,
+                     "publish-gpu-wj-q0-q2-only": pub_gpu_wj_q0,
+                     "publish-gpu-unjustified-q0-refused": pub_gpu_unjustified_q0_refused,
+                     "publish-wj-justified-multiquarter-accepted": pub_wj_justified_accepted,
                      "publish-wj-unjustified-multiquarter-refused": pub_wj_unjustified_refused,
                      "publish-wj-short-justification-refused": pub_wj_short_refused,
                      "publish-npd1-step5-accepted": pub_npd1_step5,

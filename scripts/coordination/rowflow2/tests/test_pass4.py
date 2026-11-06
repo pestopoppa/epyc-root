@@ -344,7 +344,8 @@ def test_width_justification_multiquarter_cpu_accepted_and_bad_forms_refused(tmp
     assert sim.publish(spec("wj-ok", cpus="q0,q1", threads=40, width_justification=WJ)) == []
     assert any("width_justification" in e for e in sim.publish(spec("wj-short", cpus="q0,q1", threads=40, width_justification="faster")))
     assert any("width_justification" in e for e in sim.publish(spec("wj-q", cpus="q1", threads=12, width_justification=WJ)))
-    assert any("width_justification" in e for e in sim.publish(spec("wj-gpu", cpus="q0,q1", threads=40, gpu="exclusive", width_justification=WJ)))
+    assert sim.publish(spec("wj-gpu", cpus="q0,q1", threads=40, gpu="exclusive", width_justification=WJ)) == []   # 2026-11-06: q0-q2 only
+    assert any("q0-q2" in e for e in sim.publish(spec("wj-gpu-q3", cpus="q2,q3", threads=40, gpu="exclusive", width_justification=WJ)))
     assert any("width_justification" in e for e in sim.publish(spec("wj-timing", cpus="q0,q1", threads=40, timing=True, width_justification=WJ)))
 
 

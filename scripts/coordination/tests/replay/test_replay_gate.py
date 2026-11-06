@@ -138,6 +138,7 @@ P4_CONTROLS = [
     ("COMPLETE_BEFORE_RC14", "p4-completed-row-not-rc14", ("got a FAIL record",)),
     ("GPU_IDLE_BY_DEVICE", "p4-gpu-harness-with-kfd-never-idle-held", ("read IDLE-HELD",)),
     ("GPU_IDLE_BY_DEVICE", "p4-gpu-grant-cpu-regions-not-judged", ("by CPU %",)),
+    ("OVERRIDE_BOOKS_WIDTH", "override-multiquarter-books-two", ("2-quarter row granted",)),   # negative control: old code grants 1
 ]
 
 
