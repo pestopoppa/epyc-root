@@ -67,6 +67,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import backlog_gen as bg  # noqa: E402
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rowflow"))
 import notify as rf_notify  # noqa: E402  - the inference mailbox (operator 2026-11-05)
+import token_guards as tg  # noqa: E402  - token-audit recs 1-5 (operator 2026-11-06)
+import codex_budget_meter as meter  # noqa: E402
 
 VERSION = "hs-dispatcher-v3"
 FLAGS = bg.FLAGS_DEFAULT
@@ -74,7 +76,7 @@ ROOT = "/workspace"
 USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit|limit reached", re.I)
 ADV_RX = re.compile(r"^- \[(blocked|needs-launcher|needs-qualification)\] ", re.M)  # JEV-3 deferred: used only by work_state()
 PAUSE_S = 30 * 60
-BACKOFF_S = (30 * 60, 2 * 3600, 6 * 3600)  # unknown reset time: 30 min -> 2 h -> 6 h (cap)
+BACKOFF_S = (6 * 3600, 12 * 3600, 24 * 3600)  # unknown reset AND no budget.json resets_at: 6 h -> 12 h -> 24 h (never 30 min; audit rec 2)
 _MONTHS = {m: i + 1 for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
 
 
@@ -146,6 +148,8 @@ def record_usage_limit(flags, reg, engine, text, now):
     reset = parse_reset(text, now)
     if reset is not None:
         until, kind, known = reset, ("weekly" if reset - now > 12 * 3600 else "5h"), True
+    elif float((tg.load_budget(flags) or {}).get("resets_at") or 0) > now:  # G2: wait for the meter's resets_at
+        until, kind, known = float(tg.load_budget(flags)["resets_at"]), "budget-meter", True
     else:
         until, kind, known = now + BACKOFF_S[min(max(int(ep["streak"]), 1) - 1, len(BACKOFF_S) - 1)], "unknown", False
     until = max(until, _parse(ep.get("until") or ""))
@@ -184,7 +188,7 @@ def preflight(path=None):
 ENGINES = ("codex", "claude", "opencode")
 # `WRAPPED <sha>` is the boundary line (2026-11-01 ruling); `WRAPUP: <sha>` is the v1 form, still accepted.
 FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates and handles task boundaries; execution goes to "
-               "3-5 concurrent subagents on the cheapest capable model/effort with TIGHT, FILE-POINTED prompts (paths + the exact "
+               "at most 2 concurrent subagents on the cheapest capable model/effort with TIGHT, FILE-POINTED prompts (paths + the exact "
                "change; never a transcript), only where it saves wall-clock without raising tokens per completed task - the metric "
                "(exceptions: agents/shared/OPERATING_CONSTRAINTS.md -> *When NOT to fan out*). This applies on every engine; do not "
                "rely on AGENTS.md/CLAUDE.md being loaded. Never re-read or re-verify what the scripts (wrapup.py, file_result.py, "
@@ -224,7 +228,7 @@ REPORT_LINE = (
     "LAST INSTRUCTION: work through this handoff's tasks in priority order (non-inference: do it; inference: make it ready = "
     "launcher + publish_row.py, whose smoke IS the dry run on 4 CPUs and the only compute you run yourself - it must PASS; "
     "long benchmark runs go through rows). " + TURN_END_LINE + " " + PERSIST_LINE + " Your wrap-up JSON (-> report.json) "
-    "MUST carry `box` (the box id this turn advanced) and `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
+    "MUST carry `box` (the box id this turn advanced), `next_step` (one line: the exact next action - it is your checkpoint when the dispatcher rotates you to a fresh thread) and `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
     "\"blocked\", `blocked_by`: [<row ids>] - every remaining task waits on those rows and each is already readied (dry-run "
     "PASS, armed, granted or running). You are resumed at once unless next=blocked on readied rows (then when one ends or FAILs "
     "its dry run) or next=done with no open box left (the handoff closes).")
@@ -862,15 +866,40 @@ def pretty(src=sys.stdin, dst=sys.stdout):
 
 
 # ---------------------------------------------------------------- engines
-def engine_cmd(engine, session_id, fresh: bool):
+def engine_cmd(engine, session_id, fresh: bool, model=None, effort=None):
+    """G1 (audit rec 1): every command pins model + effort (Codex plan mode too); refused without both."""
+    if not model or not effort:
+        raise tg.SpawnRefused(f"{engine}: spawn without model+effort (model={model!r} effort={effort!r})")
+    pin = tg.engine_flags(engine, model, effort)
     if engine == "codex":
-        return ["codex", "exec", "--json", "-"] if fresh else ["codex", "exec", "resume", "--json", session_id, "-"]
+        return (["codex", "exec", "--json"] + pin + ["-"]) if fresh else (["codex", "exec", "resume", "--json"] + pin + [session_id, "-"])
     if engine == "claude":
-        base = ["claude", "-p", "--output-format", "stream-json", "--verbose", "--permission-mode", "bypassPermissions"]
+        base = ["claude", "-p", "--output-format", "stream-json", "--verbose", "--permission-mode", "bypassPermissions"] + pin
         return base if fresh else base + ["--resume", session_id]
     if engine == "opencode":
-        return ["opencode", "run", "--format", "json"] + ([] if fresh else ["-s", session_id])
+        return ["opencode", "run", "--format", "json"] + pin + ([] if fresh else ["-s", session_id])
     raise ValueError(engine)
+
+
+def spawn_config(e, repo=None, flags=FLAGS, catalog=None, reg=None):
+    """G1: resolved {model, effort, source} for entry `e` (row manifest > handoff header > registry entry > cheap
+    default). Raises tg.SpawnRefused."""
+    engine = e.get("engine", "codex")
+    try:
+        text = open(os.path.join(repo or ROOT, e.get("handoff") or "/nonexistent")).read() if e.get("handoff") else ""
+    except OSError:
+        text = ""
+    rows = []
+    for rid in (e.get("row_ids") or [])[:5]:
+        try:
+            man = manifest_for(flags, rid)[1] or {}
+        except Exception:
+            man = {}
+        if man.get("model") or man.get("effort"):
+            rows.append({"id": rid, "model": man.get("model"), "effort": man.get("effort")})
+    if catalog is None and engine == "codex":
+        catalog = tg.codex_catalog()
+    return tg.resolve_spawn(engine, e, text, rows, tg.cfg(reg if reg is not None else load(reg_path(flags), {})), catalog)
 
 
 def project_cwd(e: dict, repo=None) -> str:
@@ -900,7 +929,10 @@ def launch(flags, slug, e, prompt, fresh=False, runner=None):
     stamp = now_iso().replace(":", "")
     out, pf = os.path.join(d, f"{stamp}.jsonl"), os.path.join(d, f"{stamp}.prompt.md")
     open(pf, "w").write(prompt)
-    cmd = engine_cmd(e.get("engine", "codex"), e.get("session_id"), fresh)
+    sc = spawn_config(e, flags=flags)  # SpawnRefused (a ValueError) -> the caller logs REFUSED and does not spawn
+    cmd = engine_cmd(e.get("engine", "codex"), e.get("session_id"), fresh, sc["model"], sc["effort"])
+    e["spawn_model"], e["spawn_effort"], e["spawn_source"] = sc["model"], sc["effort"], sc["source"]
+    log(flags, f"SPAWN-CFG {slug} engine={e.get('engine', 'codex')} model={sc['model']} effort={sc['effort']} source={sc['source']} fresh={fresh}")
     if runner:
         try:
             return runner(cmd, pf, out, cwd=cwd)
@@ -1064,7 +1096,8 @@ STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit f
 STARVED_ALARM_EVERY_S = 30 * 60
 PUSH_LOCK_DIR = os.path.join(ROOT, "coordination", "push-locks")
 PUSH_LOCK_REPORT_EVERY_S = 10 * 60
-CONTEXT_ROTATE_TOKENS = 150_000   # per-call input context above this -> fresh session at the next landed wrap-up (rotation)
+CONTEXT_ROTATE_TOKENS = tg.DEFAULTS["context_rotate_tokens"]  # G4 default 60k; registry token_guards.context_rotate_tokens overrides
+KILLER = tg.kill_pid  # G2 lease kill of a pid this dispatcher spawned (tests patch it)
 CODEX_SESSIONS = os.path.expanduser("~/.codex/sessions")
 GENERALIST = bg.GENERALIST        # codex-gen: an ordinary dispatcher-managed, always-on session (no handoff)
 
@@ -1338,6 +1371,29 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     S = reg.get("sessions") or {}
     if repo == ROOT and runner is None:  # the live dispatcher only; test fixtures never push
         maybe_regen_index(flags, now)
+        meter.update(flags, now=now)  # G3: zero-token budget meter, once per pass
+    gc, budget = tg.cfg(reg), tg.load_budget(flags)
+    bp = tg.budget_paused_until(budget, now)
+    if bp:  # G3: an exhausted budget pauses codex until resets_at (honoured by every engine_paused() gate)
+        ep = reg.setdefault("engine_pause", {}).setdefault("codex", {})
+        if _parse(ep.get("until") or "") < bp:
+            ep.update({"until": _iso(bp), "kind": "budget-meter", "reset_known": True})
+            log(flags, f"BUDGET-PAUSE codex until {_iso(bp)} (budget.json exhausted)")
+    for slug, e in S.items():  # G2: lease + per-thread token ceiling on LIVE turns -> kill our own pid + hard park
+        if e.get("pid") and alive(e["pid"]):
+            v = tg.lease_verdict(e, tg.rollout_usage(e.get("session_id")) if e.get("engine", "codex") == "codex" else None,
+                                 now, _parse(e.get("last_resume") or ""), gc)
+            if v and not tg.is_parked(e):
+                tg.park(e, v, now_iso())
+                log(flags, f"PARK-KILL {slug} pid={e['pid']}: {v} (SIGTERM={KILLER(e['pid'])}); unpark: handoff_sessions.py unpark {slug}")
+            elif v and tg.is_parked(e):
+                try:
+                    if int(e["pid"]) in (os.getpid(), os.getppid()):
+                        raise OSError("own pid")
+                    os.kill(int(e["pid"]), 9)
+                    log(flags, f"PARK-KILL {slug} pid={e['pid']}: still alive after SIGTERM; SIGKILL sent")
+                except OSError:
+                    pass
     # 1. reap finished turns (and our own zombie children)
     try:
         while os.waitpid(-1, os.WNOHANG)[0]:
@@ -1386,10 +1442,12 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
             e["context_tokens"] = context_size(e.get("session_id"), e.get("engine", "codex"))
-            if (e["context_tokens"] or 0) > CONTEXT_ROTATE_TOKENS and not e.get("fresh_next"):  # context rotation
+            if tg.rotate_verdict(e["context_tokens"], gc) and not e.get("fresh_next"):  # G4: context rotation (default 60k)
                 e["fresh_next"] = True
                 e["rotated_from"] = {"session_id": e.get("session_id"), "context_tokens": e["context_tokens"], "at": now_iso()}
-                log(flags, f"ROTATE {slug}: per-call context {e['context_tokens']} > {CONTEXT_ROTATE_TOKENS}; next resume is a FRESH session from brief + state delta")
+                e["checkpoint"] = tg.checkpoint_from(rep, e)
+                log(flags, f"ROTATE {slug}: last-call input {e['context_tokens']} > {gc['context_rotate_tokens']}; next start is a FRESH thread "
+                           f"from checkpoint ({'report.json' if rep else 'NO report: brief + wrap-up only'})")
             ev, e["pid"], e["last_end"], e["last_rc"] = e.get("pending_event"), None, now_iso(), last_rc(e)
             e["pending_event"] = None
             wrapped_now = bool(e.get("last_wrapup")) and (bool(m) or bool(rep and rep.get("wrapped_sha")))
@@ -1513,12 +1571,17 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     reap_lanes(flags, reg, repo)
     paused = _parse(reg.get("paused_until") or "") > now
     live = sum(1 for e in S.values() if alive(e.get("pid")))  # suspended sessions (waiting on a running row) have no pid
-    cap = int(reg.get("max_live", 5))
+    cap, cap_why = tg.width_cap(gc, budget, now, live)  # G5: min(configured cap [2], budget-derived)
+    if reg.get("dispatcher", {}).get("cap") != cap:
+        log(flags, f"WIDTH-CAP {cap}: {cap_why}")
     if not paused:
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
         for ev in q:  # events: run-ends (filing), dry-run FAILs, awaited files
             e = S.get(ev["slug"])
             if not e or e.get("status") in ("done", "retired"):
+                continue
+            if tg.is_parked(e):  # G2: hard park holds events too (kept queued, never dropped)
+                rest.append(ev)
                 continue
             if engine_paused(reg, e.get("engine", "codex"), now):  # quota gates RESUME only; filing by script never waits for it
                 if ev.get("kind") != "awaiting" and ev.get("rid") and "script_filed" not in ev and not filed(flags, ev["rid"]):
@@ -1551,14 +1614,14 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         # Inference-next sessions (next=inference / making-ready) take free slots first (operator 2026-11-04:
         # never stop readying inference); backlog-priority order holds within each tier. Ordering only, no preemption.
         work = [((0 if inference_next(e) else 1, rank(e.get("handoff"), slug, 0)), slug, None) for slug, e in S.items()
-                if e.get("status") not in ("done", "retired") and not alive(e.get("pid")) and slug not in launched
+                if e.get("status") not in ("done", "retired") and not tg.is_parked(e) and not alive(e.get("pid")) and slug not in launched
                 and not engine_paused(reg, e.get("engine", "codex"), now)
                 and not any(ev["slug"] == slug for ev in rest)
                 and ((e.get("_work") or ("",))[0] == "continue" or ((e.get("_work") or ("",))[0] == "pause" and not wrapped(e, lcache)))]
         for slug, e in S.items():  # unacked CRITICAL row alerts wake a non-running owner (operator 2026-11-05)
             if slug in launched or any(w[1] == slug for w in work) or any(ev["slug"] == slug for ev in rest):
                 continue
-            if not engine_paused(reg, e.get("engine", "codex"), now) and alert_wake(flags, slug, e, now):
+            if not tg.is_parked(e) and not engine_paused(reg, e.get("engine", "codex"), now) and alert_wake(flags, slug, e, now):
                 e["_work"], e["alert_wake_at"] = ("continue", "handle the UNHANDLED ROW ALERTS above first, ack each"), now_iso()
                 log(flags, f"ALERT-WAKE {slug}: unacked critical row alert(s)")
                 work.append(((-1, (-1, 0)), slug, None))
@@ -1580,13 +1643,20 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                     live += 1
                 continue
             e = S[slug]
-            if live >= cap and not is_generalist(e):  # codex-gen is always-on
+            if live >= cap and (not is_generalist(e) or cap == 0):  # codex-gen is always-on, except at a zero budget cap
                 continue
+            ok, why = tg.resume_verdict(e, now, gc)  # G2: progress evidence + max_resumes, else HARD park
+            if not ok:
+                tg.park(e, why, now_iso())
+                log(flags, f"PARK {slug}: {why}; unpark: handoff_sessions.py unpark {slug}")
+                continue
+            tg.note_resume(e, now)
             if not wrapped(e, lcache):
                 push(slug, e)
             else:
                 fresh = bool(e.get("fresh_next")) or not e.get("session_id")
-                _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" if fresh else "") +
+                cp = tg.checkpoint_block(e.pop("checkpoint", None)) if fresh else ""
+                _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" + cp if fresh else "") +
                     continue_prompt(slug, e, flags, e["_work"][1], delta(slug)), runner, None, fresh)
             live += 1
         if started:
@@ -1598,7 +1668,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     for e in S.values():
         e.pop("_work", None)
     st["seen"] = sorted(seen)
-    reg["dispatcher"] = {"version": VERSION, "last_pass": now_iso(), "live": live, "paused": paused,
+    reg["dispatcher"] = {"version": VERSION, "last_pass": now_iso(), "live": live, "paused": paused, "cap": cap,
                          "engines_paused": sorted(k for k in (reg.get("engine_pause") or {}) if engine_paused(reg, k, now))}
     save(reg_path(flags), reg)
     save(state_path(flags), st)
@@ -1861,17 +1931,52 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     prompt = scratch_lead(flags, slug, e) + prompt + "\n" + SCRATCH_LINE + "\n"
     try:
         pid, out = launch(flags, slug, e, prompt, fresh=fresh, runner=runner)
-    except ValueError as exc:  # project_cwd refused: never spawn outside the project
-        log(flags, f"REFUSED-CWD {slug}: {exc}")
+    except ValueError as exc:  # project_cwd refused or model/effort unresolved (G1): never spawn
+        log(flags, f"{'REFUSED-SPAWN' if isinstance(exc, tg.SpawnRefused) else 'REFUSED-CWD'} {slug}: {exc}")
         e.update({"status": "suspended", "pending_event": ev, "last_refusal": str(exc)})
         return
     e.update({"pid": pid, "last_output": out, "status": "live", "last_resume": now_iso(), "pending_event": ev})
     log(flags, f"{'START' if fresh else 'RESUME'} {slug} pid={pid} event={(ev or {}).get('rid', 'idle')} out={out}")
 
 
+def guard_plan(flags, reg, now=None, repo=None, catalog=None, budget=None):
+    """Dry run of every token guard: per session, the command it would spawn (model/effort pinned) or why it would be
+    refused / parked / killed / rotated, plus the width cap. Reads only; writes nothing, signals nothing."""
+    now = now or time.time()
+    gc = tg.cfg(reg)
+    budget = budget if budget is not None else meter.compute(flags, now=now, write=False)
+    S = reg.get("sessions") or {}
+    live = sum(1 for e in S.values() if alive(e.get("pid")))
+    cap, why = tg.width_cap(gc, budget, now, live)
+    out = [{"guard": "budget", "weekly_fraction": budget.get("weekly_fraction"), "resets_at": budget.get("resets_at"),
+            "burn_frac_per_h": budget.get("burn_frac_per_h"), "paused_until": budget.get("paused_until")},
+           {"guard": "width", "max_live": cap, "why": why, "live": live}]
+    for slug, e in S.items():
+        if e.get("status") in ("done", "retired"):
+            continue
+        row = {"slug": slug, "engine": e.get("engine", "codex")}
+        try:
+            sc = spawn_config(e, repo, flags, catalog, reg)
+            fresh = bool(e.get("fresh_next")) or not e.get("session_id")
+            row.update(model=sc["model"], effort=sc["effort"], source=sc["source"],
+                       cmd=engine_cmd(row["engine"], e.get("session_id") or "<new>", fresh, sc["model"], sc["effort"]))
+        except ValueError as ex:
+            row["would"] = f"REFUSE-SPAWN: {ex}"
+        usage = tg.rollout_usage(e.get("session_id")) if row["engine"] == "codex" else None
+        if alive(e.get("pid")):
+            v = tg.lease_verdict(e, usage, now, _parse(e.get("last_resume") or ""), gc)
+            row.setdefault("would", f"KILL+PARK: {v}" if v else "running (within lease and ceiling)")
+        else:
+            ok, w = tg.resume_verdict(e, now, gc)
+            row.setdefault("would", ("ROTATE-FRESH" if tg.rotate_verdict((usage or {}).get("last_input"), gc) or e.get("fresh_next")
+                                     else "RESUME-ELIGIBLE") if ok else f"PARK: {w}")
+        out.append(row)
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status"])
+    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -1881,6 +1986,7 @@ def main(argv=None):
     ap.add_argument("--force", action="store_true", help="transfer: even while the previous session is live")
     ap.add_argument("--priority", default=None, help="backlog-priority.json for the auto-start ranking (default: backlog_gen's)")
     ap.add_argument("--keeper-log", default=None)
+    ap.add_argument("--dry-run", action="store_true", help="dispatch: print what the guards would spawn/park; mutate nothing")
     a = ap.parse_args(argv)
     if a.cmd == "compile-check":  # churn_up.sh: `handoff_sessions.py compile-check <installed copy>` before exec
         ok, msg = compile_ok(a.slug or os.path.abspath(__file__))
@@ -1894,6 +2000,17 @@ def main(argv=None):
     reg = load(reg_path(a.flags), {"sessions": {}})
     if a.cmd == "status":
         print(json.dumps(reg, indent=2))
+        return 0
+    if a.cmd == "unpark":
+        if not a.slug or a.slug not in reg.get("sessions", {}):
+            ap.error("unpark needs a registered <slug>")
+        tg.unpark(reg["sessions"][a.slug])
+        save(reg_path(a.flags), reg)
+        log(a.flags, f"UNPARK {a.slug} (operator)")
+        return 0
+    if a.cmd == "dispatch" and a.dry_run:
+        for ln in guard_plan(a.flags, reg):
+            print(json.dumps(ln))
         return 0
     if a.cmd == "rank":  # the slot ranking with the candidate rows each handoff carries
         _, data = candidates(a.flags, reg, None, a.priority, a.keeper_log)

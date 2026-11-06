@@ -214,7 +214,7 @@ class TmuxWindowTests(AutoStartFixture):
             self.assertIn(f"tee '{out}'", script, "JSONL capture kept")
             self.assertIn("pretty", script)
             self.assertIn(f"'{out}.rc'", script, "exit status file")
-            self.assertIn("'codex' 'exec' '--json' '-'", script)
+            self.assertIn("'codex' 'exec' '--json' '-m' 'gpt-6-luna' '-c' 'model_reasoning_effort=\"medium\"'", script)
             self.assertIn(("set-option", "-w", "-t", "agent:=h-mid", "remain-on-exit", "on"), calls)
             # resume: the window exists -> respawn-pane by NAME, no new window, never send-keys
             pid2, out2 = hs.launch(self.flags, "mid", dict(e, session_id="thr"), "PROMPT2", fresh=False)
@@ -580,9 +580,9 @@ class BudgetTests(_DSHBase):
             reg, _ = self.dispatch()
         e = reg["sessions"]["alpha"]
         self.assertEqual(e["rotated_from"]["context_tokens"], 180_000)
-        self.assertEqual(self.calls[-1]["cmd"], ["codex", "exec", "--json", "-"], "the next resume was a FRESH session (rotation)")
+        self.assertEqual(self.calls[-1]["cmd"][:3] + self.calls[-1]["cmd"][-1:], ["codex", "exec", "--json", "-"], "the next resume was a FRESH session (rotation)")
         self.assertIn("brief", self.calls[-1]["prompt"].lower())
-        self.assertIn("ROTATE alpha: per-call context 180000 > 150000", self.log_text())
+        self.assertIn("ROTATE alpha: last-call input 180000 > 60000", self.log_text())
 
 
 class InventoryTests(_DSHBase):
@@ -771,20 +771,21 @@ class WrappedGateTests(_DSHBase):
 
 
 class NoopLogTests(_DSHBase):
-    def test_noop_turns_are_logged_never_parked(self):
-        reg = None
+    def test_noop_turn_is_logged_and_hard_parked(self):
+        # token audit rec 2 (operator 2026-11-06) supersedes the 11-02 "never parked": no progress evidence -> hard park
         self.session()
-        for n in (1, 2, 3):
-            r = reg or self.reg
-            r["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"text":"nothing landed"}\n', rc=0), "status": "live"})
-            hs.save(hs.reg_path(self.flags), r)
-            self.calls.clear()
-            with patch.object(hs, "turn_effect", return_value=""):
-                reg, _ = self.dispatch()
-            self.assertIn(f"NOOP alpha: turn completed nothing (no landed tick, no row published, no filing) [{n} consecutive]", self.log_text())
-            self.assertEqual(len(self.calls), 1, "a no-op turn is a log line, never a park: resumed at once")
-        self.assertEqual(reg["sessions"]["alpha"]["noop_turns"], 3)
-        self.assertNotIn("STUCK", self.log_text())
+        self.reg["sessions"]["alpha"].update({"pid": 99999979, "last_output": self.turn('{"text":"nothing landed"}\n', rc=0), "status": "live"})
+        hs.save(hs.reg_path(self.flags), self.reg)
+        self.calls.clear()
+        with patch.object(hs, "turn_effect", return_value=""):
+            reg, _ = self.dispatch()
+        self.assertIn("NOOP alpha: turn completed nothing (no landed tick, no row published, no filing) [1 consecutive]", self.log_text())
+        self.assertEqual(self.calls, [], "a no-op turn is not progress evidence: parked, not resumed")
+        self.assertIn("PARK alpha: no progress evidence", self.log_text())
+        self.assertTrue(reg["sessions"]["alpha"]["parked"])
+        with patch.object(hs, "turn_effect", return_value=""):
+            reg, _ = self.dispatch()
+        self.assertEqual(self.calls, [], "a hard park holds across passes until unpark")
         # a landed tick is an effect: turn_effect counts it
         with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed", return_value=True):
             self.assertIn("2 landed tick(s)", hs.turn_effect(self.flags, "alpha", {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}))

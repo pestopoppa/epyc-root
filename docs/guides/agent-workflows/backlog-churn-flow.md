@@ -216,6 +216,33 @@ session for new work while its last task is unwrapped (`UNWRAPPED <slug>` in the
 `handoff_sessions.py transfer <slug> --engine claude|opencode|codex` starts a fresh session from the files alone and
 records `transferred_from` in the registry.
 
+### Token guards (operator 2026-11-06; `scripts/coordination/token_guards.py`)
+
+Implements recs 1-5 of `docs/reports/coordination/token-efficiency-audit-20261106.md`. Knobs live in the registry
+under `token_guards` (defaults in `token_guards.DEFAULTS`); top-level `max_live` is the configured cap.
+
+- **G1 model + effort per spawn.** `launch()` resolves `model`/`effort` (row manifest > handoff header
+  `model:`/`effort:` lines > registry entry > cheap default `gpt-6-luna`/`medium`; claude `sonnet`/`medium`; opencode
+  has none), validates them against `~/.codex/models_cache.json` (the installed CLI's catalog), and passes
+  `-m <model> -c model_reasoning_effort=… -c plan_mode_reasoning_effort=…` to both `codex exec` and `codex exec resume`.
+  Unresolved or invalid → `REFUSED-SPAWN`, no launch. Every launch logs `SPAWN-CFG` with the values and their source.
+- **G2 budget, resumes, quota.** A live turn over `session_token_ceiling` (thread `total_tokens`, default 15 M) or
+  `lease_s` (5400 s) is SIGTERMed (SIGKILL next pass) and hard-parked (`PARK-KILL`). A continue-resume needs progress
+  evidence (last turn not a NOOP) and stays under `max_resumes` (12 / rolling 24 h), else `PARK`. Parked sessions get
+  no resumes and hold their events queued until `handoff_sessions.py unpark <slug>`. A usage-limit hit with no
+  parseable reset waits for `budget.json` `resets_at`; the last-resort backoff is 6 h → 12 h → 24 h, never 30 min.
+- **G3 budget meter.** `codex_budget_meter.py` (run by every dispatcher pass; standalone `--loop`, `--claude`,
+  `--dry-run`) sums rollout `token_count` usage incrementally into `<flags>/budget.json`: weekly fraction (provider
+  meter), `resets_at`, burn rate, token totals; alarms at 50 % / 80 % / exhausted through `rowflow/notify.py`; sets
+  `paused_until = resets_at` when exhausted, which the dispatcher turns into a codex engine pause (`BUDGET-PAUSE`).
+- **G4 rotation.** Last-call input above `context_rotate_tokens` (60 k) → `ROTATE`: the session's report.json
+  (`next`, `next_step`, `box`, `wrapped_sha`) becomes the checkpoint and the next start is a fresh thread carrying it.
+- **G5 width.** `max_live = min(cap [2], floor(remaining fraction / hours to reset / per-session burn))`; 0 when the
+  budget is exhausted. Sessions are told to fan out to at most 2 subagents.
+- **Dry run:** `handoff_sessions.py dispatch --dry-run` prints, per session, the pinned command it would spawn or the
+  refusal/park/kill/rotate verdict, plus budget and width; it writes and signals nothing.
+- Tests: `scripts/coordination/tests/test_token_guards.py` (each guard with a negative control).
+
 ## Roles
 
 - **Handoff sessions / codex-gen**: run the flow against their backlog file, forever. Never arm rows, write grants,

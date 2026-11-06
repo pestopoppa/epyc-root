@@ -55,12 +55,24 @@ class PauseTests(_Fixture):
         self.assertFalse(hs.engine_paused(reg, "opencode", now + 3600))
         self.assertIsNone(reg.get("paused_until"))
 
-    def test_unknown_reset_backs_off_30m_2h_6h(self):
-        reg, now, got = {}, 1_800_000_000.0, []
+    def test_unknown_reset_backs_off_6h_12h_24h_never_30m(self):
+        # token audit rec 2 (2026-11-06): no 30-minute retry loop; a 24 h quiet gap resets the streak
+        reg, t, got = {}, 1_800_000_000.0, []
         for i in range(4):
-            t = now + i * 3 * 3600 * 2  # each hit lands after the previous pause ended
-            got.append(hs._parse(hs.record_usage_limit(self.flags, reg, "codex", "rate limit", t)) - t)
-        self.assertEqual(got, [1800, 7200, 21600, 21600])
+            d = hs._parse(hs.record_usage_limit(self.flags, reg, "codex", "rate limit", t)) - t
+            got.append(d)
+            t += d + 60  # each hit lands after the previous pause ended
+        self.assertEqual(got, [21600, 43200, 86400, 21600])
+        self.assertNotIn(1800, got)
+
+    def test_unknown_reset_waits_for_budget_meter_resets_at(self):
+        now = 1_800_000_000.0
+        with open(os.path.join(self.flags, "budget.json"), "w") as f:
+            json.dump({"resets_at": now + 3 * 86400}, f)
+        reg = {}
+        until = hs.record_usage_limit(self.flags, reg, "codex", "rate limit", now)
+        self.assertEqual(hs._parse(until), int(now + 3 * 86400))
+        self.assertEqual(reg["engine_pause"]["codex"]["kind"], "budget-meter")
 
     def test_alert_once_naming_reset(self):
         now = local_epoch(2026, 11, 5, 12, 0)

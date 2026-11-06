@@ -117,6 +117,8 @@ class TransferTests(_Fixture):
 
     def test_transfer_refuses_live_session_unless_forced(self):
         self.reg["sessions"][self.slug]["pid"] = os.getpid()
+        # G1 (2026-11-06): opencode has no built-in default model; the registry declares one or the spawn is refused
+        self.reg["token_guards"] = {"default_model": {"opencode": "openai/gpt-6-luna"}, "default_effort": {"opencode": "medium"}}
         hs.save(hs.reg_path(self.flags), self.reg)
         with self.assertRaises(RuntimeError):
             hs.transfer(self.flags, self.slug, "opencode", runner=self.runner, repo=self.repo)
@@ -171,8 +173,15 @@ class WrappedParsingTests(_Fixture):
         e = reg["sessions"][self.slug]
         self.assertEqual(e["last_wrapup"], "83c110265331")
         ld.assert_any_call("83c110265331")
-        # operator loop 2026-11-02: a no-op turn is logged, never parked; no report.json -> resumed at once
+        # token audit rec 2 (2026-11-06) supersedes "never parked": a no-op turn is no progress evidence -> hard park
         self.assertIn("NOOP yarn: turn completed nothing", self.log_text())
+        self.assertIn("PARK yarn: no progress evidence", self.log_text())
+        self.assertEqual(self.calls, [])
+        hs.tg.unpark(reg["sessions"][self.slug])
+        hs.save(hs.reg_path(self.flags), reg)
+        with patch.object(hs, "landed", return_value=True):
+            reg, _ = self.dispatch()
+        e = reg["sessions"][self.slug]
         self.assertIn("OPEN yarn: next=unreported", self.log_text())
         self.assertEqual(e["status"], "live")
         self.assertEqual(len(self.calls), 1)
@@ -196,7 +205,7 @@ class FanoutPolicyTests(unittest.TestCase):
         for name, text in (("brief", hs.brief_text("x", e, flags)), ("end", hs.end_prompt("x", e, flags, "r1", flags + "/r1.ended")),
                            ("idle", hs.idle_prompt("x", e, flags)), ("continue", hs.continue_prompt("x", e, flags, "why"))):
             self.assertIn("FAN OUT", text, name)
-            self.assertIn("3-5 concurrent subagents", text, name)
+            self.assertIn("at most 2 concurrent subagents", text, name)
             self.assertIn("OPERATING_CONSTRAINTS.md", text, name)
             self.assertIn(hs.REPORT_LINE, text, name)
         self.assertIn("## Working mode: fan out", hs.brief_text("x", e, flags))
