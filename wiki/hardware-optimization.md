@@ -7075,3 +7075,9 @@ Op-level gates are >=5 interleaved reps against the C6 store; e2e numbers are to
 - **C6 bug found:** `ggml_cuda_topk_moe_fusion` reads past the last graph node (fix `c650d06e0`; serving is unaffected).
 
 Sources: [autokernel-loop AK-ASM boxes](../handoffs/active/autokernel-loop.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md) · [ROCK-AITER-GFX90A](../handoffs/active/rocm-kernel-authoring.md)
+
+## Compiled Update — 2026-11-06 (operator wiki sweep 2, main-inf22): C7 combined AK-ASM candidate
+
+All eight AK-ASM KEEP ports merge cleanly onto champion C6 `65da39eb1` as candidate C7 (`experimental/c7-asm-ports-20261106` @ `c420b9d1a`): H10, H1b (+H1/H7), FA asm/CK/graph, H12, H11, H13b/c (H12's radix TOP_K kept over H13c bitonic), H15, and H14 present but default OFF (its e2e gain was noise). Each merge built for GPU and CPU, and CPU test-backend-ops grew 8000->8253 cases with 0 failures. The full-candidate gate (correctness, e2e vs C6 with a 0.97 floor set before any run, PPL on 27B and Q38FN incl. the H15 aliasing check) decides the fold. Separately, the AutoKernel planner cannot yet see any AK-ASM verdict: `[belief: cc]` ticks have no ingest path until VB-CC-PILOT lands (AK-ASM-PLANNER-SEED). Confidence: verified for builds/tests; fold verdict pending.
+
+Sources: [autokernel-loop AK-ASM-FOLD](../handoffs/active/autokernel-loop.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)

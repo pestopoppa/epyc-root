@@ -11,23 +11,22 @@
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
+      "added": 0,
       "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-06T07:06:35Z",
+    "at": "2026-11-06T08:49:35Z",
     "scope_paths": [
-      "docs/design/rowflow2-20261105.md",
-      "docs/reports/coordination/keeper-friction-review-20261105.md",
-      "handoffs/active/long-context-program.md",
-      "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md"
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/kv-cache-program.md",
+      "progress/2026-11/2026-11-06-main-inf22.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T07:06:35Z",
+  "scan_time": "2026-11-06T08:49:35Z",
   "schema_version": 1,
-  "source_set_hash": "f379782c64361ac601dc482476e8a3b8f09f3aac907667ace70b53a73028ce44",
+  "source_set_hash": "4283159df7b6ecb0c6815dcc811d72fb86e578f7705e5f679d164ee1b8e0ba76",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -38,10 +37,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ac6e5111cf73485626387c8de339b4446a6854d9590689310ca49291b7df64e5",
-      "modified": "2026-11-06T06:57:24Z",
+      "content_hash": "47969e6ba44052e00a41418d5556e1ed830db7afb83272a9ec6feccfb1a340f7",
+      "modified": "2026-11-06T08:48:28Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1547548,
+      "size": 1550728,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -142,10 +141,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9a7ac5e47461ff186b8c79f6b13d9ad960fc770006f6b2a9dcc1dedadc4e4666",
-      "modified": "2026-11-06T06:57:24Z",
+      "content_hash": "f369a77e30050315a9b2f65447bec74db2d03eb1a1d6329c6f5fddaac7d422dc",
+      "modified": "2026-11-06T08:48:28Z",
       "path": "handoffs/active/kv-cache-program.md",
-      "size": 1018693,
+      "size": 1019948,
       "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
       "type": "handoff-active"
     },
@@ -16062,10 +16061,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "b7a4ff4bc21a22ce5dfc960430ed787e93d588d0e4eba988bac8869af8c2b794",
-      "modified": "2026-11-06T06:57:44Z",
+      "content_hash": "6e2be19522d931aa8a143e9363fb1a2d2ba9b659a36e0e2773871b4804ef1c6f",
+      "modified": "2026-11-06T08:48:40Z",
       "path": "progress/2026-11/2026-11-06-main-inf22.md",
-      "size": 4089,
+      "size": 6541,
       "title": "2026-11-06 \u2014 main-inf22 (night 2026-11-05/06): AK-ASM MI300 -> MI210 port",
       "type": "progress"
     },

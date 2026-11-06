@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 671
+      "open": 674
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 500
+      "open": 501
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 765,
+      "closed": 766,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 143,
+      "open": 146,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,11 +54,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 909,
+      "total": 913,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 318,
+          "closed": 319,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -69,14 +69,14 @@
           "line": 24,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 45
+          "open": 48
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5867,
+          "line": 5875,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5947,
+          "line": 5955,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6244,
+          "line": 6252,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9459,
+          "line": 9467,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13809,
+          "line": 13817,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14021,
+          "line": 14029,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -1305,10 +1305,10 @@
     },
     "kv-cache-program.md": {
       "blocked": 9,
-      "closed": 411,
+      "closed": 412,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 96,
+      "open": 97,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1317,7 +1317,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 516,
+      "total": 518,
       "tracks": [
         {
           "blocked": 8,
@@ -1345,7 +1345,7 @@
         },
         {
           "blocked": 0,
-          "closed": 137,
+          "closed": 138,
           "gates": [
             "RTG-36",
             "INF-79"
@@ -1354,7 +1354,7 @@
           "line": 2172,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
-          "open": 41
+          "open": 42
         }
       ]
     },

@@ -1668,3 +1668,9 @@ Sources: [KV program](../handoffs/active/kv-cache-program.md) · [findings](../d
 None of the re-tuned prefill-budget operating points met the bound. The p99 iteration time overshoots its target by 50-80 ms, and neighbour TTFT ON/OFF is 1.33-1.59x against a 1.30 bound. Arm 4 was stopped for futility. The operator must now choose between relaxing the bound and fixing the overshoot in the budgeter; this is box KVU-16g-4.
 
 Sources: [kv-cache-program KVU-16g-3](../handoffs/active/kv-cache-program.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)
+
+## Compiled Update — 2026-11-06 (operator wiki sweep 2, main-inf22): budgeter overshoot root cause (KVU-16g-4)
+
+The p99 overshoot behind KVU-16g-3 is a controller-shape defect, not noise. The budgeter centres the *mean* iteration time on its target, but iteration cost is a staircase in 32-row tiles (~60 ms per tile), so a linear EWMA dithers across a step edge: closed-loop iteration sd is 25-33 ms with lag-1 autocorrelation -0.33, against 8 ms open loop. The fix (`0a6c69991`, experimental, off C6) aligns the budget to the tile (`--prefill-budget-align 32`) and sizes it against the tail (`--prefill-budget-tail-k 1.0`); in simulation p99 drops 726->665 ms at target 670 and 949->890 at 900. On this scenario the neighbour-TTFT criterion and the p99 criterion cannot both pass (>= ~1.39x TTFT at p99 <= 670), so both settings are being measured (KVU-16g-4b). Confidence: inferred (simulation + unit test; live A/B pending).
+
+Sources: [kv-cache-program KVU-16g-4](../handoffs/active/kv-cache-program.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)
