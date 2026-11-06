@@ -1371,7 +1371,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     S = reg.get("sessions") or {}
     if repo == ROOT and runner is None:  # the live dispatcher only; test fixtures never push
         maybe_regen_index(flags, now)
-        meter.update(flags, now=now)  # G3: zero-token budget meter, once per pass
+        meter.update(flags, now=now, claude_root=meter.CLAUDE_ROOT,  # G3: zero-token budget meter (codex + claude), once per pass
+                     claude_weekly_tokens=int(tg.cfg(reg).get("claude_weekly_tokens") or 0) or None)
     gc, budget = tg.cfg(reg), tg.load_budget(flags)
     bp = tg.budget_paused_until(budget, now)
     if bp:  # G3: an exhausted budget pauses codex until resets_at (honoured by every engine_paused() gate)
@@ -1976,7 +1977,7 @@ def guard_plan(flags, reg, now=None, repo=None, catalog=None, budget=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark"])
+    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark", "preflight-restart"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -1998,6 +1999,12 @@ def main(argv=None):
     if a.cmd == "pane-status":
         return pane_status(a.flags, a.slug)
     reg = load(reg_path(a.flags), {"sessions": {}})
+    if a.cmd == "preflight-restart":  # REQUIRED before any dispatcher restart; non-zero = do not restart
+        fails = tg.restart_failures(reg, tg.load_budget(a.flags), time.time(), ROOT, tg.codex_catalog())
+        for f in fails:
+            print(f"REFUSE: {f}")
+        print("restart gate: " + ("OPEN" if not fails else f"CLOSED ({len(fails)} failure(s))"))
+        return 1 if fails else 0
     if a.cmd == "status":
         print(json.dumps(reg, indent=2))
         return 0

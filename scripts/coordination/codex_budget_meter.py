@@ -125,7 +125,7 @@ def _sum(b, since):
     return sum(v for k, v in (b or {}).items() if int(k) + 3600 > since)
 
 
-def compute(flags, now=None, codex_root=CODEX_ROOT, claude_root=None, write=True, notify=None):
+def compute(flags, now=None, codex_root=CODEX_ROOT, claude_root=None, write=True, notify=None, claude_weekly_tokens=None):
     """One meter pass. Returns the budget dict; writes budget.json + state unless write=False."""
     now = now or time.time()
     sp = os.path.join(flags, STATE_NAME)
@@ -140,7 +140,8 @@ def compute(flags, now=None, codex_root=CODEX_ROOT, claude_root=None, write=True
     st["rate_limits"] = newest
     if claude_root:
         seen = set(st.get("claude_seen") or [])
-        for ts, tok, _ in _scan(glob.glob(os.path.join(claude_root, "*", "*.jsonl")), st.setdefault("claude", {}), now,
+        cfiles = glob.glob(os.path.join(claude_root, "*", "*.jsonl")) + glob.glob(os.path.join(claude_root, "*", "*", "subagents", "*.jsonl"))
+        for ts, tok, _ in _scan(cfiles, st.setdefault("claude", {}), now,
                                 _claude_parse_factory(seen)):
             if ts:
                 _bucket(st, "claude_hours", ts, tok, now)
@@ -172,6 +173,18 @@ def compute(flags, now=None, codex_root=CODEX_ROOT, claude_root=None, write=True
     if claude_root:
         budget["claude_tokens_last_1h"] = _sum(st.get("claude_hours"), now - 3600)
         budget["claude_tokens_last_24h"] = _sum(st.get("claude_hours"), now - 86400)
+        budget["claude_tokens_last_7d"] = _sum(st.get("claude_hours"), now - 7 * 86400)
+        budget["claude_weekly_tokens"] = claude_weekly_tokens or None
+        cfrac = budget["claude_tokens_last_7d"] / float(claude_weekly_tokens) if claude_weekly_tokens else None
+        budget["claude_weekly_fraction"] = cfrac
+        budget["claude_alarms"] = []
+        if cfrac is not None:  # alarms only against an operator-stated allowance; a rolling 7-day window has no reset time
+            wk = int(now // (7 * 86400))
+            for thr in ALARMS:
+                if cfrac >= thr:
+                    budget["claude_alarms"].append(thr)
+                    if write:
+                        _alarm(flags, thr, cfrac, None, None, notify, engine="claude", window=wk)
     if frac is not None:
         for thr in ALARMS + ((1.0,) if exhausted else ()):
             if frac >= thr:
@@ -184,7 +197,7 @@ def compute(flags, now=None, codex_root=CODEX_ROOT, claude_root=None, write=True
     return budget
 
 
-def _alarm(flags, thr, frac, resets_at, burn, notify=None):
+def _alarm(flags, thr, frac, resets_at, burn, notify=None, engine="codex", window=None):
     """One idempotent alert per threshold per reset window through the existing inference mailbox."""
     emit = notify
     if emit is None:
@@ -194,10 +207,10 @@ def _alarm(flags, thr, frac, resets_at, burn, notify=None):
         except Exception:
             return
     when = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime(resets_at)) if resets_at else "unknown"
-    summary = (f"codex weekly budget {frac:.0%} used (threshold {thr:.0%}); resets {when}; burn "
+    summary = (f"{engine} weekly budget {frac:.0%} used (threshold {thr:.0%}); resets {when}; burn "
                f"{(burn or 0) * 100:.2f} %/h" + ("; dispatcher paused until reset" if thr >= 1.0 else ""))
     try:
-        emit(flags, "quota", "", f"codex-budget-{int(thr * 100)}-{int(resets_at or 0)}", summary,
+        emit(flags, "quota", "", f"{engine}-budget-{int(thr * 100)}-{int(resets_at or window or 0)}", summary,
              "critical" if thr >= 0.8 else "warning", owner="", detail={"fraction": frac, "resets_at": resets_at})
     except Exception:
         pass  # an alert failure never stops the meter
@@ -216,12 +229,14 @@ def main(argv=None):
     ap.add_argument("--flags", default=os.environ.get("HS_FLAGS", "/mnt/raid0/llm/tmp/compute-flags"))
     ap.add_argument("--codex-root", default=CODEX_ROOT)
     ap.add_argument("--claude", action="store_true", help="also sum Claude transcripts under ~/.claude/projects")
+    ap.add_argument("--claude-weekly-tokens", type=int, default=None, help="operator-stated weekly Claude token allowance (enables 50/80%% alarms)")
     ap.add_argument("--dry-run", action="store_true", help="print the budget; write nothing, alert nothing")
     ap.add_argument("--loop", action="store_true")
     ap.add_argument("--interval", type=int, default=300)
     a = ap.parse_args(argv)
     while True:
-        b = compute(a.flags, codex_root=a.codex_root, claude_root=CLAUDE_ROOT if a.claude else None, write=not a.dry_run)
+        b = compute(a.flags, codex_root=a.codex_root, claude_root=CLAUDE_ROOT if a.claude else None, write=not a.dry_run,
+                    claude_weekly_tokens=a.claude_weekly_tokens)
         print(json.dumps(b, indent=1))
         if not a.loop:
             return 0

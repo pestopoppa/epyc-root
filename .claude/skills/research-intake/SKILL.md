@@ -22,8 +22,8 @@ Do not use when:
 ## Execution model — fan out by stage (token efficiency, binding)
 
 The session running this skill is the INTEGRATOR. It does not fetch or dive sources itself. It
-dispatches 3–5 concurrent subagents per batch, each on the cheapest capable model with effort set
-explicitly, per [Parallel Subagent Fan-Out](../../../agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
+dispatches subagents per batch (width is a ceiling, not a floor), each on the cheapest capable model with the lowest adequate
+effort set explicitly, per [Parallel Subagent Fan-Out](../../../agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
 and `agents/README.md` → Model Routing:
 
 | Work | Model / effort |

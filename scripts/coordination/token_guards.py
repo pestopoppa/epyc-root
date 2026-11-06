@@ -38,6 +38,7 @@ DEFAULTS = {
     "context_rotate_tokens": 60_000,
     # G5
     "max_live": 2,
+    "claude_weekly_tokens": None,          # operator-stated weekly Claude allowance (tokens); None = meter without alarms
     "per_session_frac_per_h": 0.012,       # fallback weekly-fraction burn per live session (audit W2: ~1.2 %/h)
 }
 EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
@@ -51,8 +52,12 @@ class SpawnRefused(ValueError):
 
 
 def cfg(reg: dict) -> dict:
-    c = dict(DEFAULTS)
-    c.update((reg or {}).get("token_guards") or {})
+    c = {k: (dict(v) if isinstance(v, dict) else v) for k, v in DEFAULTS.items()}
+    for k, v in ((reg or {}).get("token_guards") or {}).items():
+        if isinstance(c.get(k), dict) and isinstance(v, dict):
+            c[k].update(v)  # per-key deep merge: a registry that sets only codex keeps the other engines' defaults
+        else:
+            c[k] = v
     if (reg or {}).get("max_live") is not None:
         c["max_live"] = int(reg["max_live"])
     return c
@@ -263,3 +268,46 @@ def width_cap(conf: dict, budget: dict | None, now: float, live: int = 0) -> tup
     per = burn / live if live and burn > 0 else float(conf["per_session_frac_per_h"])
     derived = int(math.floor(allowed / per + 1e-9)) if per > 0 else cap
     return min(cap, derived), f"min(cap {cap}, derived {derived} = {allowed:.4f}/h allowed / {per:.4f}/h per session)"
+
+
+# ---------------------------------------------------------------- restart gate (TOKEN-DISPATCHER-RESTART-GATE)
+DOCTRINE_FILE = "agents/shared/OPERATING_CONSTRAINTS.md"
+DOCTRINE_LINES = (
+    "- Every spawn carries model + effort + token budget, or it is a defect.",
+    "- Each wrap-up reports budget fraction per outcome.",
+    "- **Fan-out width is a CEILING of 3-5 subagents, never a floor.**",
+)
+
+
+def restart_failures(reg: dict, budget: dict | None, now: float, root: str, catalog=None) -> list[str]:
+    """Reasons the dispatcher must NOT be restarted; empty list = gate open."""
+    out = []
+    try:
+        lines = set(open(os.path.join(root, DOCTRINE_FILE)).read().split("\n"))
+    except OSError as ex:
+        lines = set()
+        out.append(f"doctrine: cannot read {DOCTRINE_FILE}: {ex}")
+    for ln in DOCTRINE_LINES:
+        if lines and ln not in lines:
+            out.append(f"doctrine: line not ratified in {DOCTRINE_FILE}: {ln!r} (operator runs artifacts/operator/ratify_token_doctrine_20261106.sh)")
+    if budget is None:
+        out.append("budget: budget.json missing or unreadable (run codex_budget_meter.py once)")
+    else:
+        if budget.get("weekly_fraction") is not None and float(budget["weekly_fraction"]) >= 1.0 and budget_paused_until(budget, now) == 0.0 \
+                and not budget.get("paused_until"):
+            out.append(f"budget: weekly_fraction {budget['weekly_fraction']} >= 1 with no paused_until")
+        if budget_paused_until(budget, now):
+            out.append(f"budget: exhausted, paused_until {budget.get('paused_until')} is in the future")
+    if float((reg or {}).get("paused_until") or 0) > now:
+        out.append(f"registry: paused_until {(reg or {}).get('paused_until')} is in the future")
+    conf = cfg(reg)
+    if int(conf["max_live"]) > 2:
+        out.append(f"max_live: {conf['max_live']} > 2")
+    for eng, model in (conf.get("default_model") or {}).items():
+        if not model:
+            continue
+        try:
+            resolve_spawn(eng, {}, "", (), conf, catalog)
+        except SpawnRefused as ex:
+            out.append(f"defaults: {ex}")
+    return out

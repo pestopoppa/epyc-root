@@ -8,7 +8,10 @@ light persist in churn/wrapup.py), so those files can never conflict between lan
 date on origin/main: at most once per --min-interval seconds (stamp under <flags>), it resets a dedicated worktree to
 origin/main, runs `scripts/handoffs/index_state.py`, and when the generated files changed commits ONLY them under the
 `wrapup` lease and pushes through serialized_push.py (one rebase-retry on rejection). The dispatcher pass starts it
-detached (handoff_sessions.py `maybe_regen_index`). Stdlib only.
+detached (handoff_sessions.py `maybe_regen_index`). Once per BATCH (TOKEN-REGEN-ONCE-PER-BATCH, 2026-11-06): beyond the
+interval it regenerates only when an input changed on origin/main since the last regen AND the batch has ended (no
+non-generated commit for QUIET_S) or the last regen is older than MAX_AGE_S; `--force` (operator-cadence wrap-up)
+bypasses the debounce. `index_state.py --check` is unchanged. Stdlib only.
 """
 from __future__ import annotations
 
@@ -82,11 +85,71 @@ def regen(wt: str) -> list[str]:
     return changed
 
 
-def run(wt: str, flags: str, dry_run: bool) -> int:
+QUIET_S = 180        # batch end = origin/main has had no non-generated commit for this long
+MAX_AGE_S = 3600     # ...or the last regen is older than this (bounds how stale the generated files can get)
+
+
+def state_path(flags: str) -> str:
+    return os.path.join(flags, "handoff-sessions", "index-regen.state.json")
+
+
+def batch_verdict(changed_files, head_ts: float, last_ts: float, now: float, quiet_s: float = QUIET_S,
+                  max_age_s: float = MAX_AGE_S) -> tuple[bool, str]:
+    """Regenerate once per BATCH (TOKEN-REGEN-ONCE-PER-BATCH): (run?, why).
+    `changed_files` = paths changed on origin/main since the last regen's base (None = never regenerated)."""
+    if changed_files is None:
+        return True, "first regen"
+    inputs = [f for f in changed_files if f not in GENERATED]
+    if not inputs:
+        return False, "no input changed since the last regen (generated files only)"
+    if now - last_ts >= max_age_s:
+        return True, f"last regen older than {max_age_s:.0f} s"
+    if now - head_ts < quiet_s:
+        return False, f"batch still landing: newest commit {now - head_ts:.0f} s old < {quiet_s:.0f} s quiet"
+    return True, f"batch ended: {len(inputs)} input file(s) changed, quiet {now - head_ts:.0f} s"
+
+
+def _load_state(flags: str) -> dict:
+    try:
+        import json
+        return json.load(open(state_path(flags)))
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_state(flags: str, sha: str) -> None:
+    import json
+    os.makedirs(os.path.dirname(state_path(flags)), exist_ok=True)
+    with open(state_path(flags), "w") as fh:
+        json.dump({"sha": sha, "ts": time.time()}, fh)
+
+
+def should_run(wt: str, flags: str, now: float | None = None, force: bool = False) -> tuple[bool, str]:
+    if force:
+        return True, "forced"
+    st = _load_state(flags)
+    git(wt, "fetch", "-q", "origin")
+    head = git(wt, "rev-parse", "origin/main").stdout.strip()
+    changed = None
+    if st.get("sha"):
+        d = git(wt, "diff", "--name-only", f"{st['sha']}..{head}", check=False)
+        changed = d.stdout.split() if d.returncode == 0 else None
+    ts = float(git(wt, "log", "-1", "--format=%ct", "origin/main").stdout.strip() or 0)
+    return batch_verdict(changed, ts, float(st.get("ts") or 0), now or time.time())
+
+
+def run(wt: str, flags: str, dry_run: bool, force: bool = False) -> int:
     ensure_worktree(wt)
+    ok, why = should_run(wt, flags, force=force)
+    if not ok:
+        log(f"skip: {why}")
+        return 0
+    log(f"regen: {why}")
     changed = regen(wt)
     if not changed:
         log("generated files current on origin/main")
+        if not dry_run:
+            _save_state(flags, git(wt, "rev-parse", "origin/main").stdout.strip())
         return 0
     if dry_run:
         log(f"DRY-RUN would commit {changed}")
@@ -107,6 +170,7 @@ def run(wt: str, flags: str, dry_run: bool) -> int:
             p = sp(wt, "--fetch", "--push")
             if p.returncode == 0:
                 log(f"pushed {git(wt, 'rev-parse', 'HEAD').stdout.strip()[:12]} {changed}")
+                _save_state(flags, git(wt, "rev-parse", "HEAD").stdout.strip())
                 return 0
             log(f"push rc={p.returncode}, regenerating on fresh origin/main: {(p.stdout + p.stderr).strip()[-200:]}")
         return 1
@@ -120,12 +184,13 @@ def main(argv=None) -> int:
     ap.add_argument("--flags", default=FLAGS_DEFAULT)
     ap.add_argument("--min-interval", type=float, default=600)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--force", action="store_true", help="skip the once-per-batch debounce and the interval stamp (operator wrap-up)")
     a = ap.parse_args(argv)
-    if not due(a.flags, a.min_interval):
+    if not a.force and not due(a.flags, a.min_interval):
         return 0
     touch_stamp(a.flags)
     try:
-        return run(a.worktree, a.flags, a.dry_run)
+        return run(a.worktree, a.flags, a.dry_run, a.force)
     except Exception as exc:  # noqa: BLE001
         log(f"FAIL {exc}")
         return 1

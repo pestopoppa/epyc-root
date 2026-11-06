@@ -157,7 +157,7 @@ warning, validation failure, lease action, revocation, or reprovisioning.
 
 | Rule | Canonical home | Coordinator-specific narrowing |
 |---|---|---|
-| Fan-out 3–5, and *When NOT to fan out* | `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* | **Never** spend the main thread on execution work — docs, briefs, edits, code, research, analysis all go to subagents. This is fan-out's tightest instance, **never an exemption**. (origin: INC-20260728-idle-mains) |
+| Fan-out width (a ceiling), and *When NOT to fan out* | `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out* | **Never** spend the main thread on execution work — docs, briefs, edits, code, research, analysis all go to subagents. This is fan-out's tightest instance, **never an exemption**. (origin: INC-20260728-idle-mains) |
 | Dispatch by task TEXT, not line number | [→ *Dispatching Backlog Work*](shared/OPERATING_CONSTRAINTS.md#dispatching-backlog-work--the-task-text-is-the-identity) | Fact-check the premise before firing a session at a screened row: a screener proves WELL-FORMED, not STILL-NEEDED. |
 | Three states — working / compacting / idle | [`agents/shared/SESSION_LIFECYCLE.md` → *Reading another session's liveness*](shared/SESSION_LIFECYCLE.md#reading-another-sessions-liveness--three-states-not-two) | Read the heartbeat and outbox; never infer. Hardware wins a disagreement only as read by `fleet_watch` or the owner (*Receipts, not dials*), never by you. |
 | `/clear`, close, pre-reboot wrap-up | `agents/shared/SESSION_LIFECYCLE.md` | **Confirming** every session wrapped before a reboot is your job. |

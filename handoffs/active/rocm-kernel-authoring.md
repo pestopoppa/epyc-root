@@ -1,5 +1,8 @@
 # ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring
 
+**Model**: gpt-6.1-terra
+**Effort**: high
+
 > **Fold destination** (BRF-T7-F13, BRF-T7-1, route 1b, 2026-11-03): renamed from `rocm-verify-profile-backend.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `rocm-verify-profile-backend`, `agentic-rocm-kernel-authoring`, `gemma-challenge-kernel-techniques-v7` (rows INF-03, INF-16 retired into INF-48). The former `rocm-verify-profile-backend.md` body is `## Track: rocm-verify-profile-backend`; tracks those handoffs already had are lifted verbatim after their owner.
 
 **Status**: ACTIVE HARDENING — v27 C6 launch boundary remains open

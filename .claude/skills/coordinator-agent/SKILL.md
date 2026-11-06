@@ -522,7 +522,7 @@ in that loop:
 - **Never spend the main thread on focused execution work** — docs, briefs, edits, research and
   analysis go to subagents. Your scarce resource is attention to task boundaries. This is the
   **strict case of a fleet-wide default that binds every main**, not a coordinator privilege:
-  **3–5 subagents run CONCURRENTLY**, model and effort matched to the task, and **every subagent
+  fan-out width is a ceiling (canonical policy in the file below), model and effort matched to the task, and **every subagent
   result is PROPOSED work** until you have reviewed its evidence and diffs. It admits **no
   coordinator exception** — the coordinator is the tightest instance of it, never an exemption
   from it. Full rule, including when NOT to fan out:

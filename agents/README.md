@@ -57,7 +57,7 @@ A pool worker is a process, not a session:
   worktree, one per completed unit. The typed report (`worker_report.v1`) is the *only* completion
   signal and carries pointers, not the diff — a headless auditor re-derives the change from git
   independently. Denied tool calls are recorded in the report rather than passing silently.
-- **Fans out its own subagents**, 3–5 concurrent, like any main (D0).
+- **Fans out its own subagents** like any main (D0), under the canonical ceiling policy: `agents/shared/OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*.
 
 Its tmux pane is **visible and human-authoritative** (D8): the operator may watch it, steer it, and
 answer permission prompts by hand. The machine never types into a pane and never makes a decision

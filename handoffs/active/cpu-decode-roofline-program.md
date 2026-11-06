@@ -1,5 +1,8 @@
 # CPU Decode Roofline Program — Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling
 
+**Model**: gpt-6.1-terra
+**Effort**: high
+
 > **Fold destination** (BRF-T7-F9, BRF-T7-1, route 1b, 2026-11-03): every former handoff of this plan target is a `## Track:` with its own gate marker: `cpu-decode-roofline-program`, `sarathi-serve-cpu-evaluation`, `moe-routing-tap-and-locality-measurement` (rows INF-49, INF-72 retired into INF-70). The former `cpu-decode-roofline-program.md` body is `## Track: cpu-decode-roofline-program`; tracks those handoffs already had are lifted verbatim after their owner.
 
 **CURRENT STATE (2026-09-08) — THE CAMPAIGN IS CLOSED OUT. Read this before everything below.**

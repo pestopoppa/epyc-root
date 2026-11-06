@@ -1,5 +1,8 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
+**Model**: gpt-6.1-terra
+**Effort**: high
+
 > **Fold destination** (BRF-T7-F5, BRF-T7-1, route 1b, 2026-11-03): renamed from `autokernel-research-loop.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `autokernel-research-loop`, `agent-collab-rnd-harness`, `autokernel-rebuild-program`, `autokernel-unified-surface-program`, `autokernel-concurrent-target-coordination`, `autokernel-orchestrator-actor-backend` (rows INF-02, INF-66, INF-73, INF-74, INF-78 retired into INF-06). The former `autokernel-research-loop.md` body is `## Track: autokernel-research-loop`; tracks those handoffs already had are lifted verbatim after their owner.
 
 **Status:** Active handoff. The live AutoKernel campaign is DS41 CPU decode (INF-77). The GLM campaign was stopped by the operator on 2026-09-18 and its subject was deleted on 2026-09-22. The 2026-09-08 kernel-research gate was lifted on 2026-09-27, so the GPU MMQ seeds are open. See *Current status — 2026-09-27* below.
