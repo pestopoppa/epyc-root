@@ -494,8 +494,17 @@ including the dispatches whose nudge says nothing about subagents.
 
 - **The main thread does review, integration, and task boundaries.** Execution — implementation,
   docs, research, analysis, verification harnesses — goes to subagents.
-- **3–5 subagents run CONCURRENTLY.** Independent work issued one agent at a time is serial working
-  with extra steps; put the independent calls in one block.
+- **Fan-out width is a CEILING of 3-5 subagents, never a floor.**
+  Spawn up to 3-5 concurrent subagents only when the work is genuinely parallel, and put the independent calls
+  in one block. Do not fan out for a handful of tool calls or a lookup whose target you already know: do it inline.
+  This is the ONE canonical statement of the policy; every other file points here instead of restating it.
+- **Every spawn sets model, effort and a token budget explicitly** (ratified token line in *Token-Efficiency
+  Operating Rules*). Pick the cheapest model that can do the job and the lowest adequate effort; Opus/Fable only
+  where the reasoning needs it (`agents/README.md` -> Model Routing).
+- **Briefs carry only the context the task needs, never a context dump.** Do not use `fork` for cheap work.
+- **Zero-token watchers, never LLM polling** (*Token-Efficiency Operating Rules*).
+- **Main threads rotate or compact early** (about 60k tokens for dispatched sessions; `token_guards` G4).
+- **Each wrap-up reports budget fraction per outcome** (ratified token line in *Token-Efficiency Operating Rules*).
 - **Match subagent model and effort to the task** (`agents/README.md` → Model Routing (Task-Based);
   Codex-side sizing in the section below).
 - **Every subagent brief names its lane checkout and the owning handoff's declared `**Scratch**:`
@@ -644,6 +653,9 @@ Harness-specific sizing and scheduling for the fan-out default above.
 
 Consolidated token-discipline doctrine. May get amendments later; this section is their canonical
 home — amend here, not by re-deriving the rule at the point of use.
+
+- Every spawn carries model + effort + token budget, or it is a defect.
+- Each wrap-up reports budget fraction per outcome.
 
 ### Main thread scope
 

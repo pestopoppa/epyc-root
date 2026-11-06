@@ -35,7 +35,8 @@ Use the canonical [repository map](../CLAUDE.md#repository-map) and dependency m
   `agents/shared/ENGINEERING_STANDARDS.md` (read-order item 3), not restated here.
 - Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
 - **Fan out by default.** A main's own thread is for review, integration and task boundaries;
-  execution goes to 3–5 concurrent subagents. Working serially is the defect. The width, the
+  execution goes to subagents (up to 3–5 concurrent: a ceiling, never a floor; no fan-out for a handful of tool
+  calls). Serial execution of parallel work is the defect. The width, the
   model/effort matching, the PROPOSED-work review gate **and the ratified *When NOT to fan out*
   exceptions** are canonical in [Parallel Subagent
   Fan-Out](shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
