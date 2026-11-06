@@ -72364,7 +72364,12 @@
     negative stability gains for ACE (Mem0, RBank, DoT, ACE, GEPA-Online). Setup differs from the ACE
     paper''s (their own ports, different models/benchmarks, ACE configuration not verified), so this narrows,
     not overturns, key_claims[3] (+10.6% agents / +8.6% finance, authors'' own numbers). Source: dive
-    notes /mnt/raid0/llm/tmp/dive-1071-reencounter.md.'
+    notes /mnt/raid0/llm/tmp/dive-1071-reencounter.md.
+
+    2026-11-06 re-encounter: resurfaced as the prior art for compaction drift during the Stage-1
+    contradiction pass on intake-2628 (You don''t need long context). Not minted as a new entry; its
+    ''brevity bias'' and ''context collapse'' terms are the canonical names for the failure mode the new
+    paper''s Appendix D shows in open-weight models.'
   contradicting_evidence:
   - 'Third-party (setup-different): Continual Learning Bench (arXiv 2606.05661, GPT-5.4, 5 rollouts) reports
     ACE normalised gain 8.6 +- 2.5, rank 9 of 12 by reward, highest cost ($62.8/run) vs 20.1 +- 9.1 for
@@ -344480,7 +344485,7 @@
   verdict: worth_investigating
   ingested_date: '2026-10-22'
   verification: dive-verified
-  read_depth: PARTIAL
+  read_depth: FULL
   handoffs_updated:
   - "handoffs/active/harness-improvement-loop.md"
   - "handoffs/active/unified-trace-memory-service.md"
@@ -344537,12 +344542,6 @@
     moderate accuracy; the authors caution against taking labels at face value.
   notes: 'Source arXiv:2604.20779v2 (1 Oct 2026), retrieved 2026-10-22, html sha256-12 830aca18f570. NOT read: Sec. 3, 4.1-4.3
     body, App. B-E detail, the dataset itself (github.com/SALT-NLP/SWE-chat), Entire.io tooling (github.com/entireio/cli).'
-  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read v2 HTML (abstract, Sec. 1-2, Sec. 4.4, App. A, App. F
-    annotation validation and the pushback classifier prompt in full; Sec. 3, 4.1-4.3 and App. B-E by search only). The source
-    measures in-session human pushback, not cross-session recurrence or instruction-file effects; pushback rate includes scope
-    changes and is LLM-labelled. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced
-    sources NOT dived, with reasons: SWE-INTERACT 2606.30573, SecureForge 2605.08382 and SLEIGHT-bench 2605.16626 declined
-    (not lesson-relevant).'
   claim_anchors:
   - claim_index: 0
     kind: section-and-quote
@@ -344582,23 +344581,37 @@
     quote_sha256: 9fb1dda4c5b896262ac4d833a2da9bbc4b9fb43cfd0cb762011014627de753ff
     source_revision: arXiv:2604.20779v2 (HTML, v2 of 1 Oct 2026, retrieved 2026-10-22, sha256-12 830aca18f570)
     verified_by: research-intake/stage2
+  depends_on: []
+  reencounters:
+  - '2026-11-06 re-encounter: resurfaced as the real-user-session substrate in intake-2630 (Benchmarks Are Surprisingly Compaction-Friendly) during the Stage-2 dive. No new entry minted - exact arxiv_id collision.'
+  dive_corrections: '2026-10-22 Stage-2b dive (combined pass): read v2 HTML (abstract, Sec. 1-2, Sec. 4.4, App. A, App. F
+    annotation validation and the pushback classifier prompt in full; Sec. 3, 4.1-4.3 and App. B-E by search only). The source
+    measures in-session human pushback, not cross-session recurrence or instruction-file effects; pushback rate includes scope
+    changes and is LLM-labelled. | 2026-10-22 Stage-2 close-out (operator pre-approved all recommended sources): dive-surfaced
+    sources NOT dived, with reasons: SWE-INTERACT 2606.30573, SecureForge 2605.08382 and SLEIGHT-bench 2605.16626 declined
+    (not lesson-relevant). | 2026-11-06 (wave-2 deepening, read_depth PARTIAL -> FULL): full v2 re-read confirms all five
+    key claims; every recorded quote hash reproduces. New nuance on the judge: Qwen3.5-9B is the second-best judge, chosen
+    over gpt-5.4 over a stated cost-performance trade-off, and the authors disclaim conclusive inference from LLM labels.
+    Reuse assessment for the compaction question: SWE-chat has no compaction events, no pre/post-summary spans and no
+    constraint annotations, so it cannot itself measure rule loss; it supplies a base rate, a schema to imitate and a
+    cross-population comparison only. The 44-session/269-constraint numbers in intake-2630 come from that paper hand-labelling
+    on top of SWE-chat, not from SWE-chat fields. Release is gated and ODC-By; the paper itself states no URL or licence. | Surfaced-source declines (2026-11-06): SWE-Together 2606.29957 is declined (no eval-tower need identified); the Transluce Docent report is a website without an arXiv identifier and is not ingested.'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Fresh claim.
+    note: 'Corpus counts confirmed; the exact 17,819 / 229,909 / 2,028,951 figures live only in the repo README.'
   - claim_index: 1
     effect: narrowed
-    note: Abstract says 50% of all turns; Fig. 8 is Claude Code only.
+    note: 'Abstract says 50% of all turns; Fig. 8 is Claude Code only, and the paper states that scope in §4.4.'
   - claim_index: 2
     effect: unaffected
-    note: Judge accuracy figures from Table 8 row qwen-3.5-9b (0.67 / 0.79); kappa from Table 6.
+    note: 'Accuracies and kappa confirmed; added nuance that the judge was chosen for cost, not accuracy.'
   - claim_index: 3
     effect: unaffected
-    note: Fresh claim.
+    note: 'Broad correction definition confirmed verbatim in App. F.2.4.'
   - claim_index: 4
     effect: unaffected
-    note: Absence claim covers the v2 HTML text only; the Entire.io and SWE-chat repos were not fetched.
-  depends_on: []
+    note: 'Abandonment bias confirmed; no cross-session recurrence or instruction-file effect anywhere in v2.'
 - id: intake-2398
   arxiv_id: '2511.02230'
   url: https://arxiv.org/abs/2511.02230
@@ -365803,7 +365816,7 @@
   handoffs_updated:
   - tool-output-compression.md
   handoffs_created: []
-  read_depth: PARTIAL
+  read_depth: FULL
   source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
   reader_should_conclude: 'Cite for: a raw recent-turn tail ties summaries at moderate budgets on AppWorld, and compaction
     raises post-boundary blocked actions and run-to-run unreliability. Do NOT cite as evidence about pointer/grep retrieval;
@@ -365844,35 +365857,42 @@
     quote_sha256: 1fd03eb5f8bc293656f3d2ec225bdcd379e17a10897b2177ab80d4c54266ab49
     source_revision: arXiv 2608.06503v2 HTML (sha256-12 edda8896fbaf)
     verified_by: research-intake/stage2
-  claim_corrections:
-  - claim_index: 0
-    effect: narrowed
-    note: Confirmed as observed; authors state they cannot separate omission, distortion and ineffective use as causes.
-  - claim_index: 1
-    effect: unaffected
-    note: Confirmed.
-  - claim_index: 2
-    effect: unaffected
-    note: Confirmed (590 boundaries, first 5 actions).
-  - claim_index: 3
-    effect: unaffected
-    note: Confirmed; Table 1 Acc/Pass^2/Pass@2 for no compression vs best prompt shows the gap widening.
-  - claim_index: 4
-    effect: unaffected
-    note: Confirmed.
-  dive_corrections: '2026-10-30 (Stage 2, wave 1): v2 (2026-10-14) read. Single benchmark (AppWorld, 168 tasks), 2 runs/task,
-    4,096-token compression window (frequent compaction regime). No pointer/grep arm. Adoptable: Pass^2/Pass@2 reliability
-    metrics and a post-boundary blocked-action count (count re-reads separately). Efficiency numbers are image-only (Fig 6,
-    not viewed). Code github.com/nokia-applied-research/Trace has no license file (not cloned). Dive-surfaced sources (TRACE/PCC
-    dive) DECLINED at Stage-2 close, 2026-10-30: github.com/nokia-applied-research/Trace (metric definitions anchored from
-    the paper suffice; no LICENSE file); Hermes agent/context_compressor.py @ cca3b77 (a second summary prompt; OpenClaw''s
-    published sectioned prompt chosen as the fair summary arm); 2602.03784 ComprExIT (latent compression, not session-level
-    retrieval). Already indexed: 2510.00615, 2510.05381, 2509.13313, 2602.16284, 2506.16411. Ingested in wave 2: 2502.05167
-    (intake-2531), 2506.07982 (intake-2532), OpenClaw (intake-2534); tau-bench 2406.12045 read as the metric source (intake-2533).'
   integration_disposition: integrated
   disposition_evidence:
   - MPL-5 -> P3 / TOC-MP-3
   - MPL-12 -> M3
+  reencounters:
+  - '2026-11-06 re-encounter: resurfaced as the compaction-loop evaluation cited by intake-2631 (ARCBench). No new entry minted - exact arxiv_id collision.'
+  dive_corrections: '2026-10-30 (Stage 2, wave 1): v2 read. Single benchmark (AppWorld, 168 tasks), 2 runs/task,
+    4,096-token compression window (frequent compaction regime). No pointer/grep arm. Adoptable: Pass^2/Pass@2 reliability
+    metrics and a post-boundary blocked-action count (count re-reads separately). Efficiency numbers are image-only (Fig 6,
+    not viewed). Code github.com/nokia-applied-research/Trace has no license file (not cloned). Dive-surfaced sources
+    DECLINED at Stage-2 close, 2026-10-30: Trace repo (metric definitions anchored from the paper suffice); Hermes
+    context_compressor.py (OpenClaw sectioned prompt chosen as the fair summary arm); 2602.03784 ComprExIT (latent
+    compression, not session-level retrieval). | 2026-11-06 (wave-2 deepening, PARTIAL -> FULL): full body plus Appendix A
+    re-read; all five anchor hashes reproduce and the claims stand. Author list is five people (adds Liangjie Hong). Adds
+    the reproducible-probe guidance: the 0.108 blocked/error effect was resolved with 590 boundaries at 3-5 rollouts each,
+    so a smaller local probe must buy precision with repeats - paired PRE/POST at fixed compaction points, three arms
+    (raw tail, summary, FIFO), 8-12 repeats per point and at least 30 points per model, paired difference with a
+    boundary-stratified bootstrap, and an explicit minimum detectable effect (0.10 blocked actions/step) below which the
+    result is futility, not absence. NOT established: that k=2 suffices, any power analysis, that 4,096-token budgets
+    transfer to our windows, and any evaluator-noise arm. | Surfaced-source declines (2026-11-06): the ACON repository has no printed arXiv id and is a baseline we are not running; tau2-bench and OpenClaw are already indexed (intake-2532/intake-2534).'
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Confirmed as observed; authors state they cannot separate omission, distortion and ineffective use as causes.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Confirmed and quantified: +0.108 blocked/error actions at the first action after a boundary, measured over 590 bounds.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed: accuracy 85.7 -> 63.7 vs Pass^2 77.4 -> 53.0 under FIFO.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed.'
 - id: intake-2528
   arxiv_id: '2605.23296'
   url: https://arxiv.org/abs/2605.23296
@@ -377868,3 +377888,1153 @@
   - This approved filing would route scoped conversion findings to the named owners; no reproduction or deployment
     implied.
   final_reader_note: See research/deep-dives/lsa-20261103/FINDINGS.md for the scoped wording and locator clarifications.
+
+- id: intake-2628
+  arxiv_id: '2611.05306'
+  url: https://arxiv.org/abs/2611.05306
+  source_type: paper
+  title: "You don't need long context"
+  authors:
+  - Peter Belcak
+  - Saurav Muralidharan
+  - Jindong Jiang
+  - Yonggan Fu
+  - Wonmin Byeon
+  - Hanrong Ye
+  - Ryan Angilly
+  - Ali Taghibakhshi
+  - Shih-Yang Liu
+  - Siru Ouyang
+  - Greg Heinrich
+  - Pavlo Molchanov
+  categories:
+  - context_management
+  - agent_architecture
+  - local_inference
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'End-of-conversation compaction (EoCC) at total-context/compaction-threshold budgets from 48K/36K down to
+    8K/6K keeps long-horizon agent accuracy broadly on par with full-history accumulation: across 6 benchmarks
+    Claude Opus 4.5 spans -3.7 to +5.6 percentage points and GPT 5.6 Sol -3.3 to +4.4 ppts, with no more than 5
+    of 22 threshold configurations losing more than 2 ppts for either model.'
+  - 'Selective input reading (long inputs stored as filesystem documents and read with grep/sed/head/doc-read)
+    matches or beats full-input baselines on 6 of 7 long-input benchmarks and is 0.4 ppts below on the seventh
+    (LongBench v2, Opus 4.5 67.6 vs 68.0), sometimes by large margins: RULER mean
+    recall 62.5% -> 95.7% (Opus 4.5) and 65.5% -> 96.4% (GPT 5.6 Sol); BABILong +24.9 / +23.3 points; NIAH
+    reaches 100% for both models with zero compactions.'
+  - 'Single-action compaction (SAC: one environment action per context, carrying only a natural-language
+    semantic state) preserves baseline SWE-bench Verified accuracy for Opus 4.5 (70.0 -> 70.2) and improves
+    Terminal-Bench 2.1 (47.2 -> 51.8), while GPT 5.6 Sol loses 2.0 and 3.3 ppts (84.4 -> 82.4; 87.6 -> 84.3);
+    median peak live context under SAC is 7-9K tokens and the maximum falls to 15-37K.'
+  - 'Proposes Semantic State Space Models (SSSMs): models post-trained to comprehend a natural-language state
+    description, act, register the outcome, and update that state so a separate inference instance can continue
+    the task, in explicit contrast to black-box neural state-space models.'
+  - 'Appendix D is the paper own counter-result for local models: tightening the compaction budget degrades
+    open-weight models monotonically, and Qwen 3 Coder Next collapses on SWE-bench Verified from 53.0% to 3.6%
+    at 16K/12K; Gemma 4 31B falls 65.2 -> 58.0 and Step 3.7 Flash 70.0 -> 56.6 at the same setting.'
+  - 'The best compactions are not narratives of the execution history but briefs for further execution: a
+    verbatim or near-verbatim copy of the input task, a record of the agent current occupation, intentions and
+    planned next steps, and the artifacts relevant to future execution (a decomposed plan, completion
+    requirements, and pointers to supporting information).'
+  techniques:
+  - End-of-Conversation Compaction (EoCC)
+  - Single-Action Compaction (SAC)
+  - Selective input reading via filesystem tools
+  - Semantic State Space Models (SSSMs)
+  - Estimated optimized retail cost model
+  reported_results:
+  - 'Long-horizon estimated cost savings 2.2x-8.8x for Opus 4.5 and 2.4x-5.0x for GPT 5.6 Sol across 6
+    benchmarks; long-input savings 6.5x-54.6x (Opus) and 4.4x-233.3x (GPT).'
+  - 'Cloud serving: reducing the configured context window from 256K to 16K buys 3.6x (GLM 5.2), 5.6x (Kimi
+    K2.6) and 7x (Qwen 3 Coder Next) more decoded tokens per second on the same H100 allocation.'
+  - 'Local serving (NVIDIA DGX Spark, 128 GB unified memory, llama.cpp GGUF 3-4 bit k-/i-quant for three of
+    five models): inter-token latency approximately doubles across the measured context range for several
+    models, with a larger memory footprint.'
+  - 'Open-weight SWE-bench Verified baselines -> 16K/12K: Qwen 3.6 27B 68.6 -> 65.0; Qwen 3 Coder Next 53.0 ->
+    3.6; Gemma 4 31B 65.2 -> 58.0; Step 3.7 Flash 70.0 -> 56.6; MiniMax M2.7 72.6 -> 67.8.'
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Compact-Bench (arXiv:2610.31710) measures 5-64% of full-history successes lost to summary compaction
+    across 14 summarizer backbones, with LLM summaries retaining at most 16.0% of recurring details versus
+    79.1% for mechanical extraction.'
+  - 'Benchmarks Are Surprisingly Compaction-Friendly (arXiv:2610.31778) fixes OpenCode and finds that the
+    smallest-context-window model does worse at lower thresholds, and that the first compaction summary already
+    drops about one third of a task anti-cheating rules.'
+  - 'ARCBench (arXiv:2611.03223) finds compacted runs that retain an operating rule still violate it more than
+    twice as often as full-history runs, isolating behavioural drift from information loss.'
+  - 'Scope caveat (not a contradiction, a bound): every benchmark used keeps ground truth in an external
+    filesystem the agent can re-read, which independent work identifies as exactly the condition under which
+    compaction cannot fail. The paper own Section 3.1 coin-toss example concedes the general case.'
+  cross_references:
+    intake_entries:
+    - intake-154
+    - intake-273
+    - intake-274
+    - intake-869
+    - intake-2522
+    - intake-2525
+    - intake-2526
+    - intake-2534
+    intake_entry_notes:
+    - intake-154 (context folding for long-horizon agents)
+    - intake-273 (Context Rot)
+    - intake-274 (observation masking vs summarization)
+    - intake-869 (context rot in long-horizon search)
+    - intake-2522 (Compaction is a mistake)
+    - intake-2525 (Addressable Recall Compaction)
+    - intake-2526 (structured context eviction)
+    - intake-2534 (OpenClaw session pruning + compaction)
+    handoffs:
+    - context-and-token-economy.md
+    - long-context-program.md
+    - harness-program.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Stage-1 read of arXiv HTML v1 (2026-11-03) saved to disk; full body plus Appendices A-F read.
+    The LaTeXML rendering duplicates inline math (for example "256256K" is 256K); all figures above were
+    de-duplicated against the HTML alttext before recording.
+
+    Measurement caveats a dive must settle: the cost model is an interpolation of retail API prices anchored at
+    Opus $25 / GPT $20 per million output tokens, not a FLOP or wall-clock saving for self-hosted inference; the
+    local latency series was measured on a DGX Spark, not on the MI210 or the EPYC CPU host; and the headline
+    accuracy result covers two frontier closed-weight models only.'
+  recommended_actions:
+  - 'Dive: verify the Appendix D open-weight table and the SAC table against the primary source, then bound any
+    EPYC compaction threshold from the local-model result rather than the frontier result.'
+  - 'Dive: check whether an EoCC-style semantic-state compaction prompt already exists in our session summary
+    path, and whether selective reading is already how our agents consume large inputs.'
+  reader_should_conclude: 'Use this entry for two things only: the mechanism taxonomy (EoCC, SAC, selective
+    reading) and the open-weight degradation table in Appendix D. Never cite the abstract line "little to no
+    task accuracy" as applying to our quantized local models, and never carry the x-fold cost savings into a
+    self-hosted FLOPs claim - they are retail API price ratios under a linear interpolation model.'
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: '§3, paragraph 5'
+    quote: 'across all benchmarks and compaction thresholds, the relative performance of Opus 4.5 ranges from -3.7 to +5.6ppts'
+    quote_sha256: c5e04e22ce966034bb998fa7200424aa833b67b49b4b4a7840255234f49fda70
+    source_revision: '2611.05306v1; 2026-11-03'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'Appendix F, Table 15 discussion'
+    quote: 'RULER further firmly supports our findings: mean recall rises from 62.5% to 95.7% for Claude Opus 4.5 and from 65.5% to 96.4% for GPT 5.6 Sol'
+    quote_sha256: 69f91c4f1531f28ecba81302e4c9f5b3f3dba7dd779a3ea287f6dfbaaa599a5b
+    source_revision: '2611.05306v1; 2026-11-03'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '§5, paragraph 1'
+    quote: 'SAC preserves the mini-swe-agent baseline accuracy on SWE-bench Verified and improves it by 4.6 percentage points on Terminal-Bench.'
+    quote_sha256: 06cdd349d98faca1afba96e2b238495d9d066bf704810bf757337e91ce9cfb5c
+    source_revision: '2611.05306v1; 2026-11-03'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '§5.1, paragraph 2'
+    quote: 'We propose the notion of a Semantic State Space Model (SSSM).'
+    quote_sha256: 3a20b7ae685902d0689cc90c741d6784273eed426dfed2bf7613b5752e792d5d
+    source_revision: '2611.05306v1; 2026-11-03'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: 'Appendix D, paragraph 3'
+    quote: 'Qwen 3 Coder Next catastrophically collapses on SWE-bench Verified from 53.0% to 3.6% at 16K / 12K'
+    quote_sha256: e1de14f78f9c9726bcbc635d88a73d50fc7995c57f507f43164b80a413ced09e
+    source_revision: '2611.05306v1; 2026-11-03'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: 'Appendix A, paragraph 9'
+    quote: 'the most accuracy-preserving compactions, regardless of the frequency of compaction, are those that contain (1) a verbatim or near-verbatim copy of the input task, (2) a record of agent’s current occupation, intentions, and planned next steps, and (3) all the artifacts that are of direct relevance to future execution'
+    quote_sha256: 034a464db35e1ed311b144699d773a3ab4a94ae0357e06ad2601061d9a38fb0b
+    source_revision: '2611.05306v1; 2026-11-03'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Confirmed for the two frontier closed-weight models. The -3.7 floor is FRAMES, where all four Opus
+      settings lose (1.3-3.7 ppts); the 5-of-22 count is per model, not pooled. "Broadly on par" must not be
+      generalised to open-weight or local models.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Confirmed with one exception the Stage-1 wording overstated: LongBench v2 Opus 4.5 is 67.6 vs 68.0
+      baseline (-0.4). The paper itself says "almost all ... and remains close to baseline in the remaining case".'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Table 2 numbers verified verbatim (70.0/70.2, 47.2/51.8, 84.4/82.4, 87.6/84.3); SAC medians 7-9K and
+      maxima 15-37K verified.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed as a proposal only: no SSSM is trained, evaluated or listed among the models. The abstract
+      says "we outline the concept".'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Table 9 and Table 10 verified; the collapse is real and specific to Qwen 3 Coder Next. Table 10 has
+      20 numbers (5 models x 4 columns).'
+  - claim_index: 5
+    effect: unaffected
+    note: 'Appendix A recipe verified verbatim; Appendix G prompts operationalise it as Objective / Established
+      facts / Applied changes / Verification / Dead ends / Remaining plan.'
+  dive_corrections: '2026-11-06: Stage-2 primary-source read of the arXiv HTML v1 (full body plus Appendices A-F
+    and G) with a second-reader mechanical quote re-find on all six anchors. Confirms the mechanism taxonomy and
+    the Appendix D local-model degradation; narrows claim 0 and claim 1 as recorded above. The cost multiples are
+    an interpolated retail-API model (Appendix B, anchored at $25 Opus / $20 GPT per million output tokens), not
+    measured FLOP or wall-clock savings for self-hosted serving; the 3.6x/5.6x/7x figures in Fig. 1 and Fig. 4 are
+    measured H100 decode throughput, and only those may be cited as measurements. SSSM is a proposal with zero
+    trained checkpoints. The behavioural risk is not tested here at all: rule retention and post-compaction rule
+    compliance are measured in intake-2630 and intake-2631 and both contradict "no accuracy sacrifice" for
+    constraints that exist only in the transcript.'
+- id: intake-2629
+  arxiv_id: '2610.31710'
+  url: https://arxiv.org/abs/2610.31710
+  source_type: paper
+  title: 'Compact-Bench: Measuring What Context Compaction Costs Long-Horizon Coding Agents'
+  authors:
+  - Ruopei Sun
+  - Jianfeng Cai
+  - Kangwen Zhao
+  - Wengang Zhou
+  - Houqiang Li
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Paired full-history and summary-only continuations from a shared repository state isolate the effect of a
+    specific history replacement, across 35 SWE-bench repairs, 146 agentic sessions and 106 production chains.'
+  - 'Across 14 summarizer backbones, stable damage ranges from 5% to 64% of 22 full-history successes.'
+  - 'LLM summaries retain at most 16.0% of recurring details, versus 79.1% for mechanical extraction.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Bud ContextCompact 2.0 (arXiv:2610.25516) reports compaction helping small models against truncation and
+    an overflowing 32K full history; that comparison is not the same as compaction versus an adequate full
+    history, so the two are not in direct conflict.'
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2526
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Discovered by the Stage-1 contradiction pass on intake-2628. Abstract-level read only; the per-backbone
+    damage table and the mechanical-extraction result need primary-source verification in a dive.'
+  expanded_from: intake-2628
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'Compact-Bench pairs full-history and summary-only continuations from a shared repository state'
+    quote_sha256: dc3f2d7092f4d759e098ba205508218ecca53df2a60874279d7cc04184c27643
+    source_revision: '2610.31710v2; 2026-10-28'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'Across 14 summarizer backbones, stable damage ranges from 5-64\% of 22 full-history successes'
+    quote_sha256: aa4182c9164be83623498186d8d762d899517f6e5660536eaf9d259b553a17aa
+    source_revision: '2610.31710v2; 2026-10-28'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'LLM summaries retain at most 16.0\% of recurring details, compared with 79.1\% for mechanical extraction'
+    quote_sha256: 0ace1cc524197dbb0677c016b60c40e6ba8ca6af5450a2c6f4fb9eeb43881ec5
+    source_revision: '2610.31710v2; 2026-10-28'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Mechanism confirmed, but only 24 of 35 repairs enter the comparison and every headline denominator is
+      22 validated PRE-pass cases. Selection deliberately biases easy (one test file, small gold patch).'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Table 2 verified: DeepSeek-Flash 64% damage, Claude Opus 4.8 5%, 120/126 first-round damaged pairs
+      confirm at K=3.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Numbers confirmed but the comparison is not a deployable method against a summary: the 79.1% mechanical
+      reference is the same deterministic extractor that defines the scoring set, emitting at most 40 values per
+      kind, and it was never run through Task Preservation. Do not cite it as evidence that mechanical compaction
+      preserves most of a summary.'
+  dive_corrections: '2026-11-06: Stage-2 read of v2 (full body, all tables, Appendices A/C/D/G/J/K/L) with
+    second-reader quote re-find. The 5-64% damage range is confirmed and is the strongest independent counterweight
+    to intake-2628 headline. The 16.0% vs 79.1% retention comparison is narrowed to a metric artifact: the
+    mechanical baseline is the scoring reference, not a compaction method, so the gap measures the ceiling of
+    literal extraction, not a deployable alternative. All 14 summarizers are hosted API models; none is a local
+    GGUF model, so the local implication is inferred, not measured.'
+- id: intake-2630
+  arxiv_id: '2610.31778'
+  url: https://arxiv.org/abs/2610.31778
+  source_type: paper
+  title: Benchmarks Are Surprisingly Compaction-Friendly
+  authors:
+  - Jeanne Salle
+  - Hardik Bhatnagar
+  - Matthias Bethge
+  - Sahar Abdelnabi
+  - Maksym Andriushchenko
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: new_opportunity
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Fixes the OpenCode scaffold and implements five compaction strategies inside it, evaluated on three frontier
+    models across three long-horizon benchmarks.'
+  - 'For 1M-context models the compaction threshold does not measurably affect task performance, while the
+    smallest-window model performs worse at lower thresholds.'
+  - 'The first compaction summary already drops roughly one third of a task anti-cheating rules, and the loss
+    rises monotonically with compaction count.'
+  - 'Argues current benchmarks are compaction-friendly because the objective is fixed and progress lives on disk.'
+  credibility_score: 3
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2629
+    - intake-2534
+    handoffs:
+    - context-and-token-economy.md
+    - harness-program.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Discovered by the Stage-1 contradiction pass. Directly relevant because the scaffold is OpenCode, the
+    harness this project runs. Abstract-level read only; thresholds, models and the rule-retention protocol need
+    primary-source verification.'
+  expanded_from: intake-2628
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: '§3.1'
+    quote: 'We use OpenCode (OpenCode contributors, 2026) as our fixed agent scaffold'
+    quote_sha256: 56de9fa3ea6e6555eada115e98d0dfa4ed500835d2253a6e88c2b803807f49dc
+    source_revision: '2610.31778v1; 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: '§4.1 Q1'
+    quote: 'For the 1M context models this range covers 16-38% of the window, so it does not test compaction near the scaffold default'
+    quote_sha256: c1a093e6fa081370e980e133522970f054281a1a82c463cf70ff8c8fca52a9dd
+    source_revision: '2610.31778v1; 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'the first compaction summary already drops about one third of the task’s anticheating rules on average'
+    quote_sha256: 750b55683fc4baf5fd7812effe3eccfb0b0a2379ec1903066083562e324f0ba3
+    source_revision: '2610.31778v1; 2026-10-22'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '§5'
+    quote: 'the objective is fixed and given once, while the agent’s progress can persist on disk'
+    quote_sha256: 0dbcdb074c49d9953ab4404da81a0c8acd84d68348a433f0bc72e8850c81f9e7
+    source_revision: '2610.31778v1; 2026-10-22'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The scaffold and five strategies are confirmed, but the paper does not evaluate "three frontier
+      models": §3.1 evaluates four (Opus 4.6, GPT-5.3-Codex, GPT-5.4, Gemini 3.1 Pro Preview). Gemini is dropped
+      from the headline because it rarely compacted.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Direction confirmed but the sweep is 160K-380K, only 16-38% of a 1M window, so it does not test the
+      default high-occupancy regime. GPT-5.3-Codex rises 0.38 -> about 0.60 between 160K and 260K on PaperBench;
+      PostTrainBench is inconclusive by the authors own wording.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed with qualifiers: "one third" is a 3-model mean over 3 rule categories, Codex-dominated
+      (2.73 vs 1.76 vs 0.51 dropped); ~0.92 categories at the first compaction, 1.93 by the 10th, 2.65 by the 30th.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed verbatim. Q4 counter-case: process instructions lost 35.9% and scope exclusions 36.8%, versus
+      6.2% for feature requirements.'
+  dive_corrections: '2026-11-06: Stage-2 read of v1 (abstract, §1-§5, appendices 6.1-6.11, all judge prompts) with
+    second-reader quote re-find. The most important correction for EPYC is structural: the scaffold is OpenCode,
+    but our OpenCode runs with compaction auto=false, so these threshold findings apply to the orchestrator summary
+    path, not to the CLI session. No compaction strategy beat default self-summarisation, and lossless filesystem
+    offloading lowered GPT-5.3-Codex from 0.38 to 0.24, so porting a strategy is not indicated. | Surfaced-source declines (2026-11-06): Zahn & Chana 2026 and Wang et al. 2026 were not resolvable to identifiers from this run and are not ingested; Goldman et al. 2024 is background framing and is not dived.'
+- id: intake-2631
+  arxiv_id: '2611.03223'
+  url: https://arxiv.org/abs/2611.03223
+  source_type: paper
+  title: Do Agents Still Follow the Rules? Benchmarking Rule Compliance under Agent Context Compaction
+  authors:
+  - Yiwei Zha
+  - Qingyu Meng
+  - Herbert Bos
+  - Min Chen
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: new_opportunity
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'ARCBench is built on the open-source pi agent harness and measures rule compliance from actions taken
+    during execution rather than from a static transcript.'
+  - 'Compaction rarely deletes the governing rule outright, yet compacted runs that still carry the rule
+    violate it more than twice as often as full-history runs.'
+  - 'Violations mostly arise because the agent treats a later request as permission, separating behavioural
+    drift from information loss.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2630
+    handoffs:
+    - context-and-token-economy.md
+    - harness-program.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Discovered by the Stage-1 contradiction pass. Bears directly on a governance-heavy harness: if
+    compaction doubles rule-violation rates, any compaction change needs a rule-adherence arm, not only an
+    accuracy arm. Abstract-level read only.'
+  expanded_from: intake-2628
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'a configurable benchmark built on the open-source pi agent harness'
+    quote_sha256: 373627ed5bf58c8e089f50e0a961cb0a4acef465daa78304e2e5b3580ef0c7a2
+    source_revision: '2611.03223v1; 2026-11-02'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'compacted runs that retain the rule violate more than twice as often as runs with the full history'
+    quote_sha256: 16717c9ab6d92cc5ae08e751b52aa21bbbb2a26469229ebdbf0bdbaeefced7e4
+    source_revision: '2611.03223v1; 2026-11-02'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '§4.2'
+    quote: 'approval is still the most common reason'
+    quote_sha256: 12df988a9771aa8b179d5660412abf2f99371a7adeca034c4ff6ea7266f15f19
+    source_revision: '2611.03223v1; 2026-11-02'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Confirmed, with one caveat: tools are never executed (each call receives a fixed canned result), so the
+      benchmark grades attempted tool calls in a live loop, not side effects.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed exactly: 8.1% violation with full history vs 21.1% among runs that retain the rule (2.6x);
+      deletion is rare (3.0% absent).'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Approval is the plurality (45.9%), not a majority, among compaction-added violations; 27.0% are
+      unregistered and 21.6% acknowledged-and-proceeded. Restating the rule in the system prompt after compaction
+      is NOT tested; the nearest positive result is a compactor instruction to retain rules (Pi+RP, 9.0% vs 11.9%
+      baseline), and an independent Hermes maintainer A/B found prompt-side restatement null.'
+  dive_corrections: '2026-11-06: Stage-2 read of v1 (abstract, §1-§5, App C/E.2/E.4/F, Tables 3-7 and 21-24) with
+    second-reader quote re-find. Confirms the central and most transferable result for a governance-heavy harness:
+    retaining a rule does not preserve compliance (2.6x violation). The only strategy below baseline is an
+    instruction to the compactor, not an enforcement monitor. No post-compaction system-prompt restatement arm
+    exists in the paper.'
+- id: intake-2632
+  arxiv_id: '2610.20116'
+  url: https://arxiv.org/abs/2610.20116
+  source_type: paper
+  title: Maximising Transparency in Context Compaction Improves Retention of Facts and Commitments for
+    Lightweight Coding Agents
+  authors:
+  - Felix Woolford
+  categories:
+  - context_management
+  - local_inference
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: adopt_patterns
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'transparent-compact is a deterministic compaction method for the open-source Pi coding agent, aimed at
+    lightweight and locally deployed models.'
+  - 'On planted-fact recall it keeps every user message and all assistant prose word for word and externalises
+    tool outputs and thinking behind a declared manifest, reaching 97.8% vs 75.3% (Qwen3.8-27B), 95.1% vs 55.0%
+    (Luna) and 93.3% vs 51.5% (Gemma).'
+  - 'The claimed commitment advantage over Pi default summary is directional but not statistically significant
+    overall (F(1,26)=2.25, p=0.15) and is negative on the frontier model; the significant commitment win is
+    against pi-vcc (F(1,26)=9.98, p=0.004).'
+  - 'Compaction itself makes no model call; recovery is a separate optional subagent over the raw session, or
+    deterministic list/grep/show tools.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2629
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Discovered by the Stage-1 contradiction pass. The most directly portable design for a local-first
+    stack: deterministic, transparency-preserving compaction instead of a second small model summarising.
+    Abstract-level read only; the metric definitions and the 27B setup need a dive.'
+  expanded_from: intake-2628
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: '§1'
+    quote: 'transparent-compact, a simple deterministic method for the open-source Pi coding agent'
+    quote_sha256: 881784e4ea0bc4b085c06d13c0e1be77a8218c26ea7a9b6341d84a0258e3106c
+    source_revision: '2610.20116v1; 2026-10-14'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: '§4.2'
+    quote: 'transparent-compact recalled more planted facts than Pi’s default summary on every model'
+    quote_sha256: 6b840a43a4aaea2427181f21a324e1d7f1a901f2e48393f7b27abd51a092bf3e
+    source_revision: '2610.20116v1; 2026-10-14'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '§4.1'
+    quote: 'Against pi-default the difference was smaller and not significant overall'
+    quote_sha256: d07b0c163c63ff7e057f6787c85db0d3f7f6fc3793e7782389653a8a80c2c78b
+    source_revision: '2610.20116v1; 2026-10-14'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '§3'
+    quote: 'For the span being compacted, the checkpoint keeps every user message and all assistant prose word for word'
+    quote_sha256: 828c3e2993a17012193a0ee19d1d6e37ca3dbce2de01f2c01801a59f1eb12388
+    source_revision: '2610.20116v1; 2026-10-14'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed; determinism is scoped to compaction, while recovery may delegate to a subagent.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed with numbers; the effect is the largest and most consistent in the study (F(1,17)=860.2,
+      p<0.001).'
+  - claim_index: 2
+    effect: overturned
+    note: 'The Stage-1 claim folded commitment into a single win. The commitment half is NOT significant overall
+      (p=0.15) and is -5 points on the frontier model; only the pi-vcc comparison is significant. Cite the fact
+      recall and the confident-failure reduction, never a general commitment win.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed: no model call in compaction itself; the optional context_lookup subagent and the
+      list/grep/show tools are the recovery path.'
+  dive_corrections: '2026-11-06: Stage-2 read of v1 (full body, all tables, appendices, references; public
+    implementation and replication repos checked via the GitHub API) with second-reader quote re-find. Overturns
+    the commitment half of the Stage-1 claim as recorded above. Also narrows deployability: the budget keeps a
+    conversation section at 25% of the model window (~10 verbatim rounds), so the paper does not test beyond ~20
+    rounds, and its synthetic sessions are ~85% tool output, which this method externalises rather than
+    compresses.'
+- id: intake-2633
+  arxiv_id: '2610.20927'
+  url: https://arxiv.org/abs/2610.20927
+  source_type: paper
+  title: 'Prune the Summary, Not the History: Source-Judged Compaction for Long-Horizon Agents'
+  authors:
+  - Guanghui Min
+  - Chen Chen
+  categories:
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Compaction summaries mix environment-established facts with compressor-written reasoning, and the agent
+    cannot distinguish them afterwards.'
+  - 'In an analysis of a widely used structured compressor, 83% of failed runs trace to an action carrying out
+    a summary entry that no environment output supports.'
+  - 'Source-Judged Compaction is a training-free post-processing step that marks which summary entries are
+    evidenced by environment output.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2629
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Discovered by the Stage-1 contradiction pass. Directly relevant to our summary path, which already
+    mixes task state with model-written next steps. Abstract-level read only.'
+  expanded_from: intake-2628
+- id: intake-2634
+  arxiv_id: '2610.25516'
+  url: https://arxiv.org/abs/2610.25516
+  source_type: paper
+  title: 'Bud ContextCompact 2.0: Context Compaction for Agent Success and Accuracy with Small Language Models
+    and Constrained Context Windows'
+  authors:
+  - Jithin VG
+  - Ditto PS
+  categories:
+  - context_management
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'On recall questions over recorded agent sessions, compaction to a 16K budget raised a 1.2B model accuracy
+    to 0.335 from 0.247 with truncation and 0.176 with its full 32K history.'
+  - 'A 9B model rose from 0.515 to 0.577 under the same protocol.'
+  - 'On 100 SWE-bench Verified tasks with a 27B model on a 49K window, resolve rate on long sessions rose from
+    41% to 53%, but gains vanish under a 45-minute budget because summaries cost about 161 s each.'
+  credibility_score: 1
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2629
+    - intake-2632
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Discovered by the Stage-1 contradiction pass. Careful reading needed: the baseline is truncation and
+    an overflowing 32K history, not an adequate full history, so it does not overturn the damage measured by
+    Compact-Bench. Abstract-level read only.'
+  expanded_from: intake-2628
+- id: intake-2635
+  arxiv_id: '2610.27301'
+  url: https://arxiv.org/abs/2610.27301
+  source_type: paper
+  title: Evaluating Context Compaction on the Questions That Come Later
+  authors:
+  - Junwei Yao
+  - Yongxi Zhou
+  - Zike Yang
+  - Zhijun Wang
+  - Jianan Liu
+  - Yanxian Chen
+  - Wenbo Ye
+  categories:
+  - context_management
+  - retrieval_augmented_decoding
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Compaction methods are usually selected for the current question, but the compacted context must also serve
+    later questions.'
+  - 'Keeping sentences judged necessary for the current question raises accuracy on that question by 11.4
+    points at 25% of the tokens, but on later questions no such method detects better than random sentence
+    deletion at the same budget.'
+  - 'Question-agnostic compression performs better on the later questions.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2633
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: stage1-unverified
+  notes: 'Discovered by the Stage-1 contradiction pass. Bears on whether compaction should be forward-looking
+    (the paper own Appendix A recommendation) or question-agnostic. Abstract-level read only.'
+  expanded_from: intake-2628
+- id: intake-2636
+  arxiv_id: '2606.22528'
+  url: https://arxiv.org/abs/2606.22528
+  source_type: paper
+  title: 'Governance Decay: How Context Compaction Silently Erases Safety Constraints in Long-Horizon LLM
+    Agents'
+  authors:
+  - Shiyang Chen
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Context compaction is a first-class agent-governance surface: it silently erases the constraints that govern
+    deployed agents, and the decay is 8.3x larger for soft organisational policies than for hard safety norms.'
+  - 'Across seven models and 1,323 episodes, a single compaction step raises pooled violation from 0% under full
+    history to 30% (up to 59%); when the constraint survives the summary the violation rate is 0%, when dropped
+    38%.'
+  - 'Constraint Pinning (quarantine the pinned rules, re-inject them verbatim after compaction, verify integrity)
+    restores violation to 0% for about 47 pinned tokens, while a provenance/spotlighting prompt does not (43%/45%).'
+  - 'Compounding across repeated compactions (0% to 78% over R=0-4) is asserted with the evidence in supplementary
+    material that is not on arXiv; treat the dose-response as directional, not measured in the main text.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2631
+    - intake-2632
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Dive-surfaced from intake-2631 (ARCBench) and intake-2632 (transparent-compact), both of which cite it
+    as the prior study of constraint loss under compaction. Abstract-level read only; the 0%->30% violation
+    figure attributed to it by transparent-compact is unverified here.'
+  expanded_from: intake-2631
+  read_depth: FULL
+  source_revision: '2606.22528v2; 2026-06-27'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: '§9 / concluding discussion'
+    quote: 'Context compaction—adopted for efficiency—is a first-class agent-governance surface: it silently erases the constraints that govern deployed agents'
+    quote_sha256: 45aaa6b1e27c68b79fa782a02a8cec18108ea2fd8a40175abf2aed9bc74f4796
+    source_revision: '2606.22528v2; 2026-06-27'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: '§4.1'
+    quote: 'compaction raises violation from 0% to 30%'
+    quote_sha256: bc9ab93648e24fc3cec252fd3978a97f89910a7fca1a87cf1847920b9ed8b00a
+    source_revision: '2606.22528v2; 2026-06-27'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '§6 defence evaluation'
+    quote: 'Constraint Pinning'
+    quote_sha256: 75aa75325cb8af6265d8930d2237c8fc66bae2ad7549d417c9d3466e7f16928b
+    source_revision: '2606.22528v2; 2026-06-27'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '§5 compounding probe'
+    quote: 'Governance Decay also compounds over repeated compaction'
+    quote_sha256: 5c47aaeeea0d34f1ae94c23d657591ad527e03ddad3e650ba6a54cfea1ac63e2
+    source_revision: '2606.22528v2; 2026-06-27'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed verbatim; the 8.3x soft-vs-hard split is in the abstract and evidence.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: Table 2 control 0 for all seven models; single-step pooled 30%, range 0% (GLM-5.1) to 59%
+      (DeepSeek-V4, Kimi-K2.5); survival split 0% (n=90) vs 38% (n=315). The 0% control is 27 episodes/cell, a
+      ceiling not an impossibility proof.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed: pinning 0% across all seven models and both attack variants, ~99% allowed-action completion,
+      1% over-refusal; provenance prompt 43%/45%. Residual breach under operator impersonation 17%, hardened 10%.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Stated as one sentence; the R=0-4 table is in supplementary material that is not on arXiv, so the
+      compounding claim is directional only. The "30%" headline is a single compaction step, not a compounded one.'
+  dive_corrections: '2026-11-06: Stage-2 read of v2 (abstract through §9 Limitations, all main tables; supplementary
+    unavailable) with second-reader quote re-find. Confirms the phenomenon and the defence ranking. Narrows the
+    compounding claim (supplementary-only evidence). Independent counter-evidence: ARCBench (intake-2631) finds
+    most violations occur while the rule IS retained (21.1% of retained runs violate), so deletion is not the whole
+    mechanism; arXiv 2608.11392 refines this as guardrail residue. The paper is a single-author preprint. | Surfaced-source declines (2026-11-06): none beyond the wave-3 ingestions.'
+- id: intake-2637
+  arxiv_id: '2608.11242'
+  url: https://arxiv.org/abs/2608.11242
+  source_type: paper
+  title: 'Lost in Context Compaction: When LLM Systems Drop Side Constraints'
+  authors:
+  - Zhiqi Wang
+  - Yichi Zhang
+  - Dongwon Lee
+  - Nathalie Baracaldo
+  categories:
+  - context_management
+  - agent_architecture
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'LLM systems drop side constraints (a user-issued requirement or preference governing HOW a task is carried
+    out, which leaves the primary goal intact when removed) when context is compacted.'
+  - 'Side-constraint retention is measured separately from task success through a baseline-corrected effective-
+    retention score, so constraint loss is isolated from task-level ability; the paper does not, however, report
+    a task-success metric.'
+  - 'The evaluated compactors retain only 17% of injected side constraints on average, and only 6% for the
+    open-weight compactors; no compactor retains more than 28.6% on the natural SWE-Natural set.'
+  - 'Restatement after compaction cuts violations from 30% to 13% but does not eliminate them; the only mitigation
+    above 90% retention is an out-of-transcript extract-and-append registry. External enforcement is not tested.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2631
+    - intake-2636
+    - intake-2630
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Dive-surfaced from intake-2631 (ARCBench), which draws five of its 17 cases from it. Previously appeared
+    in the index only inside a note listing ids that were NOT ingested (grep at intake-1315), which is not an
+    arxiv_id collision, so this is a first real entry. Abstract-level read only.'
+  expanded_from: intake-2631
+  read_depth: FULL
+  source_revision: '2608.11242v2; 2026-10-11'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: '§3 definition'
+    quote: 'a user-issued requirement or preference that governs how an LLM system carries out a task'
+    quote_sha256: 787e4f13fff9c9038da8088039cd3b1945b336df4ef526d1ddd4fe748061a88e
+    source_revision: '2608.11242v2; 2026-10-11'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'The evaluated compactors retain only 17% of injected SCs on average'
+    quote_sha256: f7f86ddf3a149aebd961374c1ad191ab3f6471a2139bd944ba2e40d760589891
+    source_revision: '2608.11242v2; 2026-10-11'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '§4.3 SWE-Natural'
+    quote: 'no compactor retains more than 28.6% of SCs'
+    quote_sha256: d5067844638db0feed1c9baec9bb7e77a826b185df8e5284f0268660385d8220
+    source_revision: '2608.11242v2; 2026-10-11'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '§5.3 mitigation'
+    quote: 'retention remains below 40% for both targeted configurations'
+    quote_sha256: 15c42efe64b65d0d28af71184ff8e35549db0dd4af69995759808fe63cece5ec
+    source_revision: '2608.11242v2; 2026-10-11'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '§5.4 failure analysis'
+    quote: '28 of the 30 sessions with deletions had the constraint silently dropped'
+    quote_sha256: 37a8e6118d6fa16029a6a361781cc12cfaf7ac401db6681cc938531efbf1e20d
+    source_revision: '2608.11242v2; 2026-10-11'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Definition confirmed verbatim with its five-type taxonomy (Action, Information, Process, Preference,
+      Output) and 15 hand-built constraints.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The separation is real (effective-retention score normalised to the uncompacted upper bound), but the
+      paper reports NO task-success metric. Do not cite it as evidence that task accuracy is unaffected while
+      constraints are lost.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'The 17% average reproduces only when GPT-5.4-mini 220K cells are included; the open-weight-only mean is
+      6.06%, which is the relevant number for local models. No compactor exceeds 28.6% on SWE-Natural.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed: restatement 30% -> 13% (no failure had explicit approval); extract-and-append registry
+      90.3-95.1% retention at 93.4-96.3% compliance; external enforcement explicitly future work.'
+  dive_corrections: '2026-11-06: Stage-2 read of v2 (full body plus Appendices B.2-B.4, C.1-C.4, F.1-F.5, H, I)
+    with second-reader quote re-find. Confirms side-constraint loss is severe for local-scale compactors (6%, not
+    17%) and that restatement alone is insufficient. NOT-FOUND: any experiment placing a side constraint in the
+    system prompt; all injections are user turns. External enforcement is named as future work, not measured.
+    No independent replication or critique located; all numbers are the authors own. | Surfaced-source declines (2026-11-06): SWE-Natural / Open-SWE-Traces 2606.16038 is declined as a corpus-only addition (our probe needs no corpus); Zhao et al. 2025 is adjacent proximity work, not the same phenomenon.'
+- id: intake-2638
+  arxiv_id: '2610.29869'
+  url: https://arxiv.org/abs/2610.29869
+  source_type: paper
+  title: 'Compaction Laundering: Provenance Destruction in Context-Compacting Coding Agents'
+  authors:
+  - Arshan Dabirsiaghi
+  categories:
+  - context_management
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: high
+  discovered_via: search
+  verdict: new_opportunity
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Flattening a typed conversation into one role-labelled string before summarization destroys provenance in
+    code, so a forged "[User]:" label inside anything the agent reads is carried forward as a genuine user
+    instruction: the forged approval launders in 87-100% of trials across pi, opencode, Cline, Aider and
+    OpenHands.'
+  - 'Across four role-typed harnesses (Codex, Gemini CLI, Qwen Code, Continue) the identical attack succeeds 0%
+    of the time, because there is no in-band role marker to forge.'
+  - 'Laundering is flat at 100% from a few thousand tokens to a ~908K context; executed consequences attenuate
+    to a ~20-40% plateau. The minimal fix is to escape role labels in tool content before flattening, or keep
+    roles typed; a post-summary provenance-contrast check catches 77% with 2% collateral.'
+  - 'The paper reports the vulnerability present in this project OpenCode build: both compaction serializers
+    interpolate "[User]:" and "[Tool result]:" labels unescaped, and the summary is re-injected as a user-role
+    message.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2628
+    - intake-2631
+    - intake-2636
+    handoffs:
+    - context-and-token-economy.md
+    - harness-program.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Dive-surfaced from intake-2636 (Governance Decay). Directly relevant because the harness list reportedly
+    includes OpenCode, which this project runs. Abstract/summary-level only; the per-harness survival rates and the
+    exact role-typing mechanism need primary-source verification in a dive.'
+  expanded_from: intake-2636
+  read_depth: FULL
+  source_revision: '2610.29869v1; 2026-10-21; code pixee/flat-compaction-attacks-oct-2027@9ce87b7'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'destroy message provenance in code, before the summarizer runs'
+    quote_sha256: e84aa4f4da1aaf5910df70fa1d55744139da693167be97c20882c31a1b19bfe3
+    source_revision: '2610.29869v1'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'the forged approval launders into the agent’s memory 87–100% of the time'
+    quote_sha256: 4420134a8f3c2df6c3b441028582b620cedf9745cd0d7083442da913365a2b6f
+    source_revision: '2610.29869v1'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 'Abstract'
+    quote: 'across four role-typed harnesses (Codex, Gemini CLI, Qwen Code, Continue) the identical attack succeeds 0% of the time'
+    quote_sha256: ee35b4c0ca7caddd7e06b1113ff71ebfa88d68b74383ee4d121955f9cc110a96
+    source_revision: '2610.29869v1'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '§6 minimal fix'
+    quote: 'Escape the role labels in tool content before flattening'
+    quote_sha256: 0d7cc7aceccf50c311450a3fcea5de61599cb782576d79ccfc3440e90e250c1e
+    source_revision: '2610.29869v1'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed: per-harness table pi/opencode/Aider 15/15, OpenHands 14/15, Cline 13/15; all clean arms 0/15.
+      The 87-100% headline is E10 cross-harness; other experiments report lower pi rates on different instruments.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: 0% (0/15) for all four role-typed harnesses; forged content can still survive in the summary
+      but is filed as document content, not user instruction.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Mechanism confirmed: provenance is destroyed before the summarizer; a pre-compaction audit catches it
+      every time and compaction erases the audit and promotes the forgery.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Confirmed by reading both local OpenCode compaction modules: serialize() interpolates role labels with no
+      escaping in packages/opencode and packages/core, and to-llm-message re-injects the summary as a user-role
+      message. Installed build is v2.2.5; the paper tested 1.18.15-1.18.21, so version range is not the test.'
+  dive_corrections: '2026-11-06: Stage-2 read of v1 plus the public code/disclosure package and a source read of the
+    local OpenCode compaction modules and the orchestrator consolidation path. Confirms an architectural trust-boundary
+    exposure in our CLI harness (flattening serializer + user-role re-injection), NOT present in the orchestrator path
+    (structured previews, control-token neutralisation, summary appended to the prompt). The exposure must be proven
+    with the cheap probe before any patch; the paper disclosure is not evidence that our specific build executes it.'
+- id: intake-2639
+  arxiv_id: '2608.11392'
+  url: https://arxiv.org/abs/2608.11392
+  source_type: paper
+  title: AI Guardrail Survival under Single-Cycle Agentic Self-Summarization
+  authors:
+  - Ted Kwartler
+  - Alan Aqrawi
+  - Arian Abbasi
+  categories:
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'A presence check is not a safety check: after one self-summarization cycle, a degraded guardrail residue
+    leads the model to perform the prohibited action far more often than an intact rule (+34 and +57 points
+    across two replay models; Qwen 23% vs 73%, Llama 38% vs 94%).'
+  - 'Even an intact rule fails to fire sometimes (23%/38%), so a correct textual check is a ceiling, not a
+    guarantee; a mention-level presence check passes many residues.'
+  - 'The reusable scoring rubric distinguishes intact / category-generalised / degraded / absent, and the paper
+    itself names the missing control arms (full history, rule-removed, pinned) and a deterministic tool-call
+    grader as future work.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2631
+    - intake-2636
+    handoffs:
+    - context-and-token-economy.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Dive-surfaced from intake-2636 (Governance Decay), where it is cited as a mechanism refinement (retained
+    rule, degraded behaviour). Abstract-level only. Bears directly on how a rule-retention probe must be scored.'
+  expanded_from: intake-2636
+  read_depth: FULL
+  source_revision: '2608.11392v2; 2026-08-11 (PDF; no arXiv HTML available)'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'p.1 abstract'
+    quote: 'On behavioral replay, a degraded residue leads the model to perform the prohibited action far more often'
+    quote_sha256: 3c343f2248779377d72bdc54540ab44bf7044095bd9c6edbdfdbcb9ea642d31a
+    source_revision: '2608.11392v2 PDF'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'p.3-4, §1'
+    quote: 'a post-compaction check that verifies only textual presence gives false assurance'
+    quote_sha256: 73d590298e62bd4663c5b3ae6fc781b7b93646b9166d56ae57c13e473031ac8d
+    source_revision: '2608.11392v2 PDF'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'p.18, §5'
+    quote: 'a mention-level presence check would pass many of these residues'
+    quote_sha256: b1bf9c9b4a24a4aded10e734071388a27b870365a3b0a1e23b863f36fe8cdc7d
+    source_revision: '2608.11392v2 PDF'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'p.24, §6 limitations'
+    quote: 'A stronger design would compare, per scenario, the full original context, the compacted summary, a deliberately rule-removed context, and a pinned rule'
+    quote_sha256: bae10addd89e28f8702d2899dec2046e372a115f8acd0ccc7434b92c6bf5f37a
+    source_revision: '2608.11392v2 PDF'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed with numbers: all-case Qwen D 43% vs W 9%, Llama D 88% vs W 31%; headroom 73% vs 23% and
+      94% vs 38%. Degradation is predicate loss (restricted action not recoverable), not scope narrowing; true
+      severing was not observed.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed; the paper explicitly calls for verifying recoverability of the rule operative content, and
+      states that even intact rules fail to fire sometimes so any text check is a ceiling.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Appendix D v4 rubric (intact / category-substituted / degraded / absent) is reusable and frozen; the
+      paper itself did not run the absent or full-history arms.'
+  dive_corrections: '2026-11-06: Stage-2 read of the v2 PDF (all 24 pages; no arXiv HTML exists) with second-reader
+    quote re-find. Confirms that a text-presence or recall-only rule probe is not a safety metric, and supplies the
+    four-condition design our probe lacks (absent and pinned arms plus a deterministic tool-call grader). This is
+    a single-cycle study: multi-cycle erosion is out of scope.'
+- id: intake-2640
+  arxiv_id: '2609.26682'
+  url: https://arxiv.org/abs/2609.26682
+  source_type: paper
+  title: 'From Alignment to Access Control: A Framework for GenAI Policy Enforcement'
+  authors:
+  - Nathalie Baracaldo
+  categories:
+  - agent_architecture
+  - inference_serving
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  verdict: worth_investigating
+  ingested_date: '2026-11-06'
+  key_claims:
+  - 'Preserving a constraint as prompt text does not guarantee that the model follows it ("Pretty Please"
+    enforcement has no guarantee); policy enforcement should be treated as access control with a policy
+    definition separated from the enforcement mechanism.'
+  - 'Hook-based deterministic enforcement at policy enforcement points, with the policy store external to the
+    application logic and the tool-call boundary as the interception surface, is proposed as the durable
+    surface.'
+  - 'This is a position and analytical-framework paper with zero first-party measurements: every number it
+    cites is from cited work, and it proposes no prototype, case study or ablation.'
+  credibility_score: 2
+  cross_references:
+    intake_entries:
+    - intake-2637
+    - intake-2636
+    handoffs:
+    - context-and-token-economy.md
+    - harness-program.md
+  handoffs_updated: []
+  handoffs_created: []
+  verification: dive-verified
+  notes: 'Dive-surfaced from intake-2637 (Lost in Context Compaction), which names it as the external-enforcement
+    direction it does not evaluate. Abstract-level only; the framework may be conceptual rather than an evaluated
+    system, which a dive must establish before any adoption.'
+  expanded_from: intake-2637
+  read_depth: FULL
+  source_revision: '2609.26682v1; 2026-09-22'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: '§2'
+    quote: 'Hence, there is no enforcement guarantee.'
+    quote_sha256: 58f99ee4afdc4b466ccc2cfb32ebeceeb4f1006608e8465991c06860b204d2fe
+    source_revision: '2609.26682v1'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Takeaway 1'
+    quote: 'Don’t rely on Pretty Please prompts to enforce policies'
+    quote_sha256: 61260160e9bc8f464b02bdb3da5ded3ac9481bdc8b04073531bd9bebb5ee7354
+    source_revision: '2609.26682v1'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: '§4'
+    quote: 'hook-based deterministic access control approaches that are not based on prompt ingestion'
+    quote_sha256: a7583041ceaf62f590f5332aaeed6e61e1595a4a1f7de194c9527a49a443a5f0
+    source_revision: '2609.26682v1'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed as a design principle; the paper is a position/framework paper, so this supports adoption of a
+      principle, never an evaluated system.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The paper never says "out-of-transcript"; it says hook-based deterministic access control not based on
+      prompt ingestion, with PEP/PDP/PIP separation. The principle is confirmed, the exact wording was ours.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed: three-axis dissection, five named regions, six policy classes, no prototype or measurement.'
+  dive_corrections: '2026-11-06: Stage-2 full read of v1. Establishes the paper is conceptual: it can justify moving a
+    rule from prose to enforcement, but it cannot support any claim that a particular enforcement is effective, and it
+    offers nothing on cross-policy conflict resolution. The useful output is the mapping of our own rules to
+    hard/soft/prose enforcement classes, not an adoption of the framework itself.'
