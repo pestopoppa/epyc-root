@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 690
+      "open": 683
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 773,
+      "closed": 780,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 148,
+      "open": 141,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -58,7 +58,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 326,
+          "closed": 333,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -69,14 +69,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 50
+          "open": 43
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5905,
+          "line": 5906,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5985,
+          "line": 5986,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6282,
+          "line": 6283,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9497,
+          "line": 9498,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13847,
+          "line": 13848,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14059,
+          "line": 14060,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -1147,7 +1147,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1600,
+          "line": 1603,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1157,7 +1157,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1724,
+          "line": 1727,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1167,7 +1167,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2051,
+          "line": 2054,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1177,7 +1177,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2190,
+          "line": 2193,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1187,7 +1187,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2743,
+          "line": 2746,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 2
@@ -1201,7 +1201,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2882,
+          "line": 2885,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1218,7 +1218,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3776,
+          "line": 3779,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61
@@ -1381,7 +1381,7 @@
             "RTG-58"
           ],
           "guarded": 0,
-          "line": 17,
+          "line": 33,
           "markers": 1,
           "name": "yarn-context-extension-research",
           "open": 26
@@ -1391,7 +1391,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 595,
+          "line": 1189,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1401,7 +1401,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 966,
+          "line": 1931,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1411,7 +1411,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1582,
+          "line": 3163,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1421,7 +1421,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1729,
+          "line": 3457,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 11
