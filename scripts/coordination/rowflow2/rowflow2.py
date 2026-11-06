@@ -868,13 +868,22 @@ def measured_summary(st):
 
 
 # ============================================================== smoke lane (pure)
+def smoke_order_key(s):
+    try:
+        rank = float(s.get("priority_rank", 100))
+    except (TypeError, ValueError):
+        rank = 100.0
+    return (rank, s.get("published_at") or "", s["id"])
+
+
 def smoke_step(queue, running, quiet_active, now):
-    """FIFO, one at a time, on SMOKE_CORES. running = (id, start, deadline) | None. Paused while quiet is open/held."""
+    """One at a time, on SMOKE_CORES, by priority_rank then published_at then id (operator 2026-11-06: never alphabetical or
+    arrival-only). running = (id, start, deadline) | None. Paused while quiet is open/held."""
     if running:
         rid, start, deadline = running
         return [("smoke-kill", rid)] if now > deadline else []
     if queue and not quiet_active:
-        head = sorted(queue, key=lambda s: (s.get("published_at") or "", s["id"]))[0]
+        head = sorted(queue, key=smoke_order_key)[0]
         return [("smoke-start", head["id"], now, now + SMOKE_DEADLINE_S)]
     return []
 
@@ -1180,6 +1189,27 @@ def withdraw(flags, rid, reason, log=print):
     return "WITHDRAWN"
 
 
+def smoke_alert(flags, rid, now, deadline=False):
+    """Operator 2026-11-06: a smoke that is not a PASS alerts the owner (id, FAIL reason, fix_task, FAIL path) - the row never
+    just disappears from the queue. Called once per smoke end (the caller removes SMOKE.json right after). Never raises."""
+    try:
+        dd = os.path.join(flags, "dryrun", rid)
+        start = float((load_json(os.path.join(dd, "SMOKE.json")) or {}).get("start", 0))
+        if not deadline and any(os.path.getmtime(f) >= start - 1 for f in glob.glob(os.path.join(dd, "PASS.json"))):
+            return
+        fails = sorted((f for f in glob.glob(os.path.join(dd, "FAIL-*.json")) if not os.path.basename(f).startswith("FAIL-refused-")),
+                       key=os.path.getmtime)
+        fp = fails[-1] if fails else None
+        rec = (load_json(fp) or {}) if fp else {}
+        reason = str(rec.get("reason") or ("smoke deadline" if deadline else "smoke ended with no PASS and no FAIL reason"))[:300]
+        fix = rec.get("fix_task") or f"fix the smoke failure of {rid}: {reason} (see {dd}/launcher.out), then republish"
+        write_text(os.path.join(flags, "rowflow2-alerts.jsonl"),
+                   json.dumps({"kind": "smoke-fail", "row_id": rid, "at": iso(now), "reason": reason, "fix_task": fix,
+                               "fail_file": fp}) + "\n", append=True)
+    except Exception:  # noqa: BLE001 - an alert failure never stops the tick
+        pass
+
+
 def park(flags, rid, spec, kind, e, now, log):
     """P4.3 #1: ONE FAIL-refused record + ONE alert per refusal episode; PARKED.json binds the row as published (launcher
     sha + spec sha); the refusing .ended is kept as evidence under dryrun/ and the grant is dropped, so the row is neither
@@ -1298,6 +1328,7 @@ def tick(flags, now, meas, state, log, runner=None):
             state.setdefault("measured_done", []).append(gid)
     grants = list(byid.values())
     for rid in w.smoke_finished:
+        smoke_alert(flags, rid, now)
         os.remove(os.path.join(flags, "dryrun", rid, "SMOKE.json"))
     plan = admit(w.pending, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running), gpu_quiet=gpu_quiet,
                  quiet_n=state["gpu_quiet_n"])
@@ -1326,6 +1357,7 @@ def tick(flags, now, meas, state, log, runner=None):
             spec = w.specs.get(a[1]) or {}
             write_text(os.path.join(dd, "FAIL-deadline.json"), json.dumps({"reason": "smoke deadline", "at": iso(now),
                        "launcher_sha256": sha256(spec["launcher"]) if spec else None}) + "\n")
+            smoke_alert(flags, a[1], now, deadline=True)
             os.remove(os.path.join(dd, "SMOKE.json"))
             log(f"SMOKE-DEADLINE {a[1]} killed")
     file_step(flags, w, now, log)
@@ -1452,7 +1484,7 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
         lines.append(f"{t} SHADOW-IDLE-WHY {cls} free={n}: {why}")
     if w.smoke_queue:
         lines.append(f"{t} SHADOW-SMOKE-QUEUE depth={len(w.smoke_queue)} head="
-                     f"{sorted(w.smoke_queue, key=lambda s: (s.get('published_at') or '', s['id']))[0]['id']}")
+                     f"{sorted(w.smoke_queue, key=smoke_order_key)[0]['id']}")
     lines.append(f"{t} SHADOW-TICK pending={len(w.pending)} grants={len(plan.grants)} open={len(w.grants)} "
                  f"unmapped={len(w.unmapped)} smoke_queue={len(w.smoke_queue)}")
     with open(log_path, "a") as f:

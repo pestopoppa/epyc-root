@@ -330,10 +330,55 @@ def run_smoke(flags, rid, regions, smoke_s):
     return v, msg
 
 
+def queue_order_key(flags, q):
+    """Operator 2026-11-06: the batch drains by the row's priority_rank (unpublished.json, else its ready manifest, else the
+    queued spec; default 100), then queued time, then id - never by id alone. GPU-SMOKE-QUEUED.json is only a marker."""
+    rid = os.path.basename(os.path.dirname(q))
+    qd = rf.load_json(q) or {}
+    row = rf.load_json(unpublished_path(flags, rid)) or rf.load_json(rf.ready_path(flags, rid)) or qd.get("spec") or {}
+    try:
+        at = qd.get("queued_at") or dt.datetime.fromtimestamp(os.path.getmtime(q), dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    except OSError:
+        at = ""
+    return (rf.row_rank(row), str(at), rid)
+
+
+def alert_queued_nonpass(flags, rid, verdict, msg):
+    """Operator 2026-11-06: a queued smoke that is not a PASS always reaches the owner; there is no silent drop. A FAIL with a
+    FAIL-N.json re-emits smoke-fail for the newest one (idempotent per file). Any other end (WAIT, an exception, a FAIL that
+    wrote no record) leaves dryrun/<id>/QUEUED-DROPPED-<n>.json and a `queued-smoke-dropped` alert with the reason, fix_task
+    and the unpublished.json path. Never raises (an alert failure must not stop the batch)."""
+    try:
+        row = rf.load_json(unpublished_path(flags, rid)) or rf.load_json(rf.ready_path(flags, rid)) or {}
+        owner = str(row.get("owner") or "")
+        fails = rf.fail_paths(flags, rid)
+        if verdict == "FAIL" and fails:
+            fp = fails[-1]
+            rec = rf.load_json(fp) or {}
+            rf.notify.smoke_fail(flags, rid, fp, rec, owner=owner)
+            return fp
+        dd = rf.dry_dir(flags, rid)
+        os.makedirs(dd, exist_ok=True)
+        n = len(glob.glob(os.path.join(dd, "QUEUED-DROPPED-*.json"))) + 1
+        fp = os.path.join(dd, f"QUEUED-DROPPED-{n}.json")
+        reason = f"queued GPU smoke ended {verdict} with no FAIL record: {msg}"[:400]
+        rec = {"id": rid, "at": rf.now_iso(), "kind": "queued-smoke-dropped", "verdict": verdict, "reason": reason,
+               "unpublished": unpublished_path(flags, rid),
+               "fix_task": f"re-run publish_row.py <spec.json> for {rid} ({reason}); manifest kept at {unpublished_path(flags, rid)}"}
+        rf.atomic_json(fp, rec)
+        rf.notify.emit(flags, "queued-smoke-dropped", rid, os.path.basename(fp), f"row {rid} queued GPU smoke {verdict}: {reason}",
+                       "warning", owner, {"fail_file": fp, "reason": reason, "fix_task": rec["fix_task"]})
+        return fp
+    except Exception as e:  # noqa: BLE001
+        print(f"alert-queued-nonpass {rid}: {type(e).__name__}: {e}", file=sys.stderr)
+        return None
+
+
 def run_gpu_queue(flags):
-    """The allocator's detached batch: every queued GPU smoke, one after another, as publish_row would run it."""
+    """The allocator's detached batch: every queued GPU smoke, one after another, as publish_row would run it - in
+    priority_rank order (queue_order_key); every non-PASS reaches the owner (alert_queued_nonpass)."""
     n = 0
-    for q in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))):
+    for q in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")), key=lambda x: queue_order_key(flags, x)):
         qd = rf.load_json(q) or {}
         rid = os.path.basename(os.path.dirname(q))
         up = unpublished_path(flags, rid)
@@ -349,6 +394,8 @@ def run_gpu_queue(flags):
         except Exception as e:  # noqa: BLE001 - one smoke never stops the batch
             v, msg = "FAIL", f"{type(e).__name__}: {e}"
         print(f"GPU-SMOKE {v} {rid}: {msg}")
+        if v != "PASS":
+            alert_queued_nonpass(flags, rid, v, msg)
         os.remove(q)
         n += 1
     return n
