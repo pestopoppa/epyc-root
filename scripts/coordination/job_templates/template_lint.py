@@ -8,6 +8,7 @@ Used by rowflow2.publish (rowflow/publish_row.py is frozen; operator 2026-11-06)
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -21,6 +22,23 @@ def _bad():
         return json.loads((HERE / "known_bad_templates.json").read_text())
     except (OSError, ValueError):
         return {"bad": {}, "fixed_vendored_v42": []}
+
+
+THREAD_VARS = ("OMP_NUM_THREADS", "AUTOKERNEL_BACKEND_THREADS", "AUTOKERNEL_CPU_N_THREADS", "GGML_N_THREADS",
+               "LLAMA_ARG_THREADS")
+BIN_RE = re.compile(r"test-backend-ops|llama-(?:bench|cli|server|perplexity|batched-bench|speculative|cvector-generator"
+                    r"|[a-z-]+)")
+T_RE = re.compile(r"(?:^|[\s'\"\[,])(?:-t|--threads)(?:[\s='\",\]]|$)")
+
+
+def thread_warn(path, text):
+    """WARN when a job file invokes test-backend-ops / llama-* with no -t and no thread env var (ggml defaults to
+    hardware_concurrency()=192 and ignores affinity). job_fence.py fence/smoke sets the env defaults itself."""
+    if not BIN_RE.search(text) or "job_fence" in text or any(v in text for v in THREAD_VARS) or T_RE.search(text):
+        return None
+    return (f"template-lint: {path} runs test-backend-ops/llama-* without -t or a thread env var "
+            f"({'/'.join(THREAD_VARS[:2])}/..); ggml defaults to 192 threads and ignores affinity. "
+            "Run under job_templates/job_fence.py or pass -t <affinity CPUs>")
 
 
 def lint_dir(path):
@@ -49,10 +67,15 @@ def lint_dir(path):
                                  "affinity-subset/HIP-temp fixes); import compute-flags/bin/job_templates/job_fence.py")
                 elif h in fixed:
                     warns.append(f"template-lint: {f} vendors a fixed copy; import job_templates/job_fence.py instead")
-            elif n.endswith(".py"):
+            elif n.endswith((".py", ".sh")):
                 try:
                     t = f.read_text(errors="replace")
                 except OSError:
+                    continue
+                tw = thread_warn(f, t)
+                if tw:
+                    warns.append(tw)
+                if not n.endswith(".py"):
                     continue
                 if ("gitnexus" in t and ("analyze" in t or "gitnexus-writer" in t) and '"impact"' in t
                         and "gitnexus_impact" not in t):

@@ -108,6 +108,26 @@ def apply(paths, gpu=False, extra=(), devices=GPU_DEV, tmpdir=None, lib=None):
         os.close(fd)
 
 
+THREAD_ENV = ("OMP_NUM_THREADS", "AUTOKERNEL_BACKEND_THREADS", "AUTOKERNEL_CPU_N_THREADS", "GGML_N_THREADS",
+              "LLAMA_ARG_THREADS")
+
+
+def affinity_threads(getaff=os.sched_getaffinity):
+    """N = number of logical CPUs in this process's affinity mask (NOT physical cores: a grant such as 184-191 is
+    8 SMT-sibling CPUs and ggml/OMP schedule one thread per logical CPU). hardware_concurrency() ignores affinity
+    and returns 192, so test-backend-ops / ggml CPU reference packed 192 threads onto 8 CPUs."""
+    return max(1, len(getaff(0)))
+
+
+def set_thread_defaults(env=None, getaff=os.sched_getaffinity):
+    """Set THREAD_ENV to affinity_threads() in `env` (default os.environ) without overriding existing values."""
+    env = os.environ if env is None else env
+    n = str(affinity_threads(getaff))
+    for k in THREAD_ENV:
+        env.setdefault(k, n)
+    return env
+
+
 def _exec(argv, env):
     resource.setrlimit(resource.RLIMIT_FSIZE, (FSIZE_CAP, FSIZE_CAP))
     os.execve(argv[0], argv, env)
@@ -127,7 +147,7 @@ def _split(args):
 
 def fence_main(args):
     paths, argv, gpu = _split(args)
-    env = dict(os.environ)
+    env = set_thread_defaults(dict(os.environ))
     if gpu and not paths:
         raise ValueError("--gpu needs at least one writable dir for the HIP TMPDIR")
     if gpu:
@@ -143,7 +163,7 @@ def smoke_main(args):
     root = Path(head[0])
     if not root.is_dir() or root.is_symlink() or not root.is_absolute():
         raise ValueError("smoke root must be an absolute real directory")
-    env = dict(os.environ, TMPDIR=str(root))
+    env = set_thread_defaults(dict(os.environ, TMPDIR=str(root)))
     apply([root], gpu=gpu, extra=[("/dev/null", WRITE_FILE | TRUNCATE)], tmpdir=str(root))
     _exec(argv, env)
 

@@ -156,3 +156,27 @@ def test_tree_usage_tolerates_vanishing_hip_temp(tmp_path, monkeypatch):
                         if self.name == "gone.txt" else real(self))
     with pytest.raises(FileNotFoundError):
         jf.tree_usage(tmp_path)
+
+
+def test_thread_defaults_follow_affinity_not_hardware_concurrency():
+    env = {}
+    jf.set_thread_defaults(env, getaff=lambda _pid: set(range(184, 192)))
+    assert {env[k] for k in jf.THREAD_ENV} == {"8"}
+
+
+def test_thread_defaults_keep_explicit_values():
+    env = {"OMP_NUM_THREADS": "3", "LLAMA_ARG_THREADS": "5"}
+    jf.set_thread_defaults(env, getaff=lambda _pid: set(range(8)))
+    assert env["OMP_NUM_THREADS"] == "3" and env["LLAMA_ARG_THREADS"] == "5"
+    assert env["AUTOKERNEL_BACKEND_THREADS"] == "8" and env["GGML_N_THREADS"] == "8"
+
+
+def test_lint_warns_on_unthreaded_ggml_binary(tmp_path):
+    import template_lint as tl
+    (tmp_path / "run.sh").write_text("/x/test-backend-ops test -o MUL_MAT\n")
+    assert any("without -t" in w for w in tl.lint_dir(tmp_path))
+    (tmp_path / "run.sh").write_text("/x/test-backend-ops test -o MUL_MAT\n")
+    (tmp_path / "run.sh").write_text("OMP_NUM_THREADS=8 /x/llama-bench -m m\n")
+    assert not tl.lint_dir(tmp_path)
+    (tmp_path / "run.sh").write_text("/x/llama-bench -t 8 -m m\n")
+    assert not tl.lint_dir(tmp_path)

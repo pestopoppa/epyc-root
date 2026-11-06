@@ -71,6 +71,7 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
 
 - **GPU rows never need the whole host (operator, 2026-11-05).** Size every row by what it actually
   runs (threads, `OMP_NUM_THREADS`, `--workers`, measured busy), never by what it declares.
+  - **Thread defaults come from affinity:** `job_fence.py fence/smoke` sets `OMP_NUM_THREADS`, `AUTOKERNEL_BACKEND_THREADS`, `AUTOKERNEL_CPU_N_THREADS`, `GGML_N_THREADS`, `LLAMA_ARG_THREADS` to the logical-CPU count of `sched_getaffinity` (never overriding set values), because ggml's `hardware_concurrency()` is 192 and ignores `taskset`; `template_lint.py` warns on unthreaded `test-backend-ops`/`llama-*`.
   - **GPU timing/bench/profile/AK-keep row** → shape `gpu-q3` **NARROW (operator 2026-11-05, "Narrow +
     emergency deploy")**: gpu-quiet + its host threads 184-191 + their SMT-sibling physical cores 88-95 —
     and **never the rest of q3**. Cores 72-87 (siblings 168-183) stay grantable to ANY CPU row beside a
