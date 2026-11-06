@@ -219,6 +219,8 @@ def arm_fails_since_pass(flags, rid, p=None):
 # ---------------------------------------------------------------- friction pass-4 fixes (operator 2026-11-06, emergency deploy)
 # docs/reports/coordination/keeper-friction-review-20261105.md Pass 4 (P4.3 / P4.4). Each rule carries a module flag so
 # the replay gate's negative controls can prove the OLD behaviour fails the new scenario (never a tautology).
+FRESH_ATTEMPT_ON_SHA_CHANGE = True   # operator 2026-11-06: a new launcher/job sha = ONE fresh attempt in a parked lineage
+SMOKE_RESIDENCY_FILE = "residency.json"   # job-written residency record contract (verify_job_residency); env FILLER_RESIDENCY_FILE
 PRECOND_PARK_ONCE = True      # fix 1: a --precond-cmd refusal parks the row at the FIRST refusal (478 false repeats vs 3 real)
 COMPLETE_BEFORE_RC14 = True   # fix 2: a dead poller whose row has a terminal success receipt is COMPLETE, not rc=14 (11/11 false)
 WIDTH_JUSTIFICATION = True   # operator 2026-11-06: a justified multi-quarter CPU width is admitted without shape_override
@@ -247,6 +249,62 @@ def precond_park(flags, rid, cur, p=None):
         if is_precond_refusal(f) and f.get("launcher_sha256") == cur and f.get("row_sha256") == rs:
             return f
     return None
+
+
+def job_sha(launcher_path):
+    """sha256 over the launcher and every existing file it references (job.py, engine, ...): a changed JOB with an unchanged
+    launcher text is a new attempt too (operator 2026-11-06). None when the launcher cannot be parsed."""
+    try:
+        files = sorted({os.path.realpath(x) for x in referenced_paths(parse_launcher(launcher_path)) if os.path.isfile(x)}
+                       | {os.path.realpath(launcher_path)})
+        return hashlib.sha256("\n".join(f"{f} {sha256(f)}" for f in files).encode()).hexdigest()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def lineage_unpark_at(flags, lin, allrows):
+    """Epoch of the newest UNPARK.json of the lineage id itself or of any row / dryrun id in the lineage (0 = never)."""
+    t = 0.0
+    for dd in glob.glob(os.path.join(flags, "dryrun", "*")):
+        oid = os.path.basename(dd)
+        if oid == lin or id_stem(oid) == lin or (oid in allrows and lineage_of(oid, allrows) == lin):
+            t = max(t, iso_epoch((load_json(os.path.join(dd, "UNPARK.json")) or {}).get("at")) or 0.0)
+    return t
+
+
+def counted_fails(flags, oid, un):
+    """FAIL files of `oid` that still count against its lineage: newer than the last unpark (records IN the unpark second
+    are forgiven, as for arming fails)."""
+    out = []
+    for fp in fail_paths(flags, oid):
+        at = iso_epoch((load_json(fp) or {}).get("at")) or 0.0
+        if not un or at > un:
+            out.append(fp)
+    return out
+
+
+def fresh_attempt(flags, rid, allrows, cur):
+    """Operator 2026-11-06: a parked lineage gives a republish whose launcher or job sha is NEW to the lineage ONE fresh
+    attempt without a new id + lineage_reset. Fresh iff no FAIL record in the lineage carries the current launcher sha with
+    a matching (or unrecorded) job sha. The attempt's own FAIL then carries the current shas, so the lineage parks again."""
+    if not FRESH_ATTEMPT_ON_SHA_CHANGE or not cur:
+        return False
+    lin = lineage_of(rid, allrows)
+    jcur = None
+    for dd in glob.glob(os.path.join(flags, "dryrun", "*")):
+        oid = os.path.basename(dd)
+        if not (oid == rid or id_stem(oid) == lin or (oid in allrows and lineage_of(oid, allrows) == lin)):
+            continue
+        for fp in fail_paths(flags, oid):
+            f = load_json(fp) or {}
+            if f.get("launcher_sha256") != cur:
+                continue
+            if f.get("job_sha256") is None:
+                return False
+            jcur = jcur or job_sha(allrows[rid]["launcher"]["path"]) if rid in allrows else None
+            if jcur is None or f.get("job_sha256") == jcur:
+                return False
+    return True
 
 
 def unpark(flags, rid, by="", note=""):
@@ -2334,22 +2392,24 @@ def lineage_fails(flags, rid, allrows):
         seen.add(cur); chain.append(cur)
         d = allrows.get(cur) or {}
         if d.get("fix_ref"):
-            return lineage_of(rid, allrows), sum(len(fail_paths(flags, x)) for x in chain)
+            un0 = lineage_unpark_at(flags, lineage_of(rid, allrows), allrows)
+            return lineage_of(rid, allrows), sum(len(counted_fails(flags, x, un0)) for x in chain)
         sup = d.get("supersedes")
         cur = sup[0] if isinstance(sup, list) and sup else sup if isinstance(sup, str) else None
     lin = lineage_of(rid, allrows)
     reset = 0
     n = 0
+    un = lineage_unpark_at(flags, lin, allrows)
     for other, d in allrows.items():
         if lineage_of(other, allrows) != lin:
             continue
         reset = max(reset, int(d.get("lineage_reset") or 0))
-        n += len(fail_paths(flags, other))
+        n += len(counted_fails(flags, other, un))
     # ids whose manifest is gone but whose dryrun dir remains still count
     for dd in glob.glob(os.path.join(flags, "dryrun", "*")):
         oid = os.path.basename(dd)
         if oid not in allrows and id_stem(oid) == lin:
-            n += len(fail_paths(flags, oid))
+            n += len(counted_fails(flags, oid, un))
     return lin, max(0, n - reset)
 
 
@@ -2482,9 +2542,11 @@ def _status_raw(flags, rid, allrows=None):
                                               f"(last: {str(af[-1].get('reason'))[:160]}); operator-escalations/{rid}.arming.md",
                        fail_file=af[-1]["fail_file"], fix_task=af[-1].get("fix_task")); return out
         out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
-    if nf >= MAX_FAILS:
-        out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md"); return out
-    if last_fail and last_fail.get("launcher_sha256") == cur and last_fail.get("row_sha256", row_sha(flags, rid)) == row_sha(flags, rid):
+    if nf >= MAX_FAILS and not fresh_attempt(flags, rid, allrows, cur):
+        out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md "
+                                          f"(owner: `rowflow.py unpark {lin}`, or republish with a changed launcher/job for one fresh attempt)"); return out
+    if last_fail and last_fail.get("launcher_sha256") == cur and last_fail.get("row_sha256", row_sha(flags, rid)) == row_sha(flags, rid) \
+            and (not FRESH_ATTEMPT_ON_SHA_CHANGE or last_fail.get("job_sha256") is None or last_fail.get("job_sha256") == job_sha(lp)):
         # sha-keyed FAIL memo: only a launcher or spec edit retries the row, never a rowflow change (22:25Z 2026-11-01:
         # an unchanged single-threaded launcher was re-dry-run after the allocator landed)
         out.update(state="failed", reason=str(last_fail.get("reason"))[:300], fail_file=fail_paths(flags, rid)[-1],
@@ -2515,6 +2577,31 @@ def vram_used_bytes():
         return max(int(v.get("VRAM Total Used Memory (B)", 0)) for v in j.values() if isinstance(v, dict))
     except Exception:
         return None
+
+
+def verify_job_residency(dd, tracked, kfd_seen, t0):
+    """Job-written residency record contract (operator 2026-11-06). The job writes $FILLER_RESIDENCY_FILE
+    (= dryrun/<id>/residency.json) as JSON {"schema": "epyc.rowflow.residency.v1", "pid": <host pid of the process holding
+    the VRAM>, "vram_bytes": <int>, "at": <ISO UTC>}. It is NOT trusted: accepted only when pid is in the smoke's own
+    process tree (`tracked`), that pid was observed as a KFD client holding VRAM in a harness sample, and `at` is no older than
+    the smoke. Returns (bytes, why): bytes is 0 when rejected."""
+    rec = load_json(os.path.join(dd, SMOKE_RESIDENCY_FILE))
+    if not isinstance(rec, dict):
+        return 0, "no residency record"
+    try:
+        pid, vb = int(rec["pid"]), int(rec["vram_bytes"])
+    except (KeyError, TypeError, ValueError):
+        return 0, "residency record malformed"
+    if rec.get("schema") != "epyc.rowflow.residency.v1":
+        return 0, "residency record schema mismatch"
+    if pid not in tracked:
+        return 0, f"residency pid {pid} is not in the smoke's process tree"
+    if pid not in kfd_seen:
+        return 0, f"residency pid {pid} was never seen as a KFD client holding VRAM"
+    at = iso_epoch(rec.get("at"))
+    if at is None or at < t0 - 1:
+        return 0, "residency record predates the smoke"
+    return max(vb, 0), f"job residency record pid {pid} {vb} B, verified as KFD client"
 
 
 def kill_group(pid, grace=20):
@@ -2710,6 +2797,7 @@ def reap_pids(tracked, grace=20):
 def record_fail(flags, rid, d, reason, extra):
     n = len(fail_paths(flags, rid)) + 1
     rec = {"id": rid, "at": now_iso(), "launcher_sha256": sha256(d["launcher"]["path"]) if os.path.isfile(d["launcher"]["path"]) else None,
+           "job_sha256": job_sha(d["launcher"]["path"]) if os.path.isfile(d["launcher"]["path"]) else None,
            "row_sha256": row_sha(flags, rid), "rowflow_sha256": sha256(__file__), "reason": reason, "launcher_out_tail": tail(os.path.join(dry_dir(flags, rid), "launcher.out")),
            "fix_task": f"fix dry-run failure of {rid}: {reason} (see compute-flags/dryrun/{rid}/launcher.out; the keeper retries as soon as the launcher file changes)",
            **extra}
@@ -2738,17 +2826,24 @@ def record_arm_fail(flags, rid, d, kind, reason, log=print):
         return len(af)
     out = os.path.join(flags, "operator-escalations", rid + ".arming.md")
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    L = [f"# PARKED NEEDS-OPERATOR - row `{rid}` ({len(af)} consecutive arming/launch failures since its PASS; written {now_iso()} by rowflow)", "",
+    L = [f"# PARKED NEEDS-OWNER - row `{rid}` ({len(af)} consecutive arming/launch failures since its PASS; written {now_iso()} by rowflow)", "",
          "The row passed its dry run but its poller cannot be armed or launched, so the allocator no longer grants it "
          "(a PASS alone used to keep it grantable forever). Last failures:", ""]
     L += [f"- {f.get('at')} [{f.get('kind') or 'arm'}] {str(f.get('reason'))[:300]}" for f in af[-5:]]
     L += ["", "Poller output tail:", "", "```"] + [str(x) for x in (af[-1].get("launcher_out_tail") or [])[-15:]] + ["```", "",
-          "Options: 1. fix the launcher and republish (a new PASS clears the count); 2. drop (remove ready/<id>.json).", ""]
+          "Options (all owner-level): 1. fix the launcher and republish (a new PASS clears the count); "
+          f"2. `rowflow.py unpark {rid}`; 3. drop (remove ready/<id>.json).", ""]
     with open(out, "w") as f:
         f.write("\n".join(L))
     if len(af) == MAX_FAILS:
         log(f"PARK {rid}: {len(af)} consecutive {kind} failures since its PASS; operator-escalations/{rid}.arming.md")
     return len(af)
+
+
+def escalation_tag(options):
+    """NEEDS-OWNER when every listed option is owner-level; NEEDS-OPERATOR only when an operator-only action is listed.
+    options: [(text, operator_only)]."""
+    return "NEEDS-OPERATOR" if any(op for _, op in options) else "NEEDS-OWNER"
 
 
 def write_escalation(flags, rid, allrows):
@@ -2757,7 +2852,11 @@ def write_escalation(flags, rid, allrows):
         return
     out = os.path.join(flags, "operator-escalations", lin + ".md")
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    L = [f"# PARKED NEEDS-OPERATOR - lineage `{lin}` ({nf} failed dry runs; written {now_iso()} by rowflow)", "",
+    opts = [("fix and re-admit under a new id with `lineage_reset: %d` in the spec" % nf, False),
+            ("`python3 rowflow.py unpark %s` (the owner may; earlier failed dry runs stop counting)" % lin, False),
+            ("republish with a changed launcher or job: ONE fresh attempt, no new id needed", False),
+            ("re-scope under a new `lineage`", False), ("drop (remove ready/<id>.json)", False)]
+    L = [f"# PARKED {escalation_tag(opts)} - lineage `{lin}` ({nf} failed dry runs; written {now_iso()} by rowflow)", "",
          "Nobody retries this lineage. Each failure below is the owner's recorded fix task.", ""]
     for other, d in sorted(allrows.items()):
         if lineage_of(other, allrows) != lin:
@@ -2765,8 +2864,7 @@ def write_escalation(flags, rid, allrows):
         for fp in fail_paths(flags, other):
             f = load_json(fp) or {}
             L.append(f"- {f.get('at')} **{other}**: {str(f.get('reason'))[:300]}")
-    L += ["", "Options: 1. fix and re-admit under a new id with `lineage_reset: %d` in the spec; 2. re-scope under a new `lineage`; "
-          "3. drop (remove ready/<id>.json)." % nf, ""]
+    L += ["", "Options: " + "; ".join(f"{i}. {t}" for i, (t, _) in enumerate(opts, 1)) + ".", ""]
     with open(out, "w") as f:
         f.write("\n".join(L))
 
@@ -2906,7 +3004,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
-    for stale in ("stop", "ended", "complete"):
+    for stale in ("stop", "ended", "complete", SMOKE_RESIDENCY_FILE):
         try:
             os.remove(os.path.join(dd, stale))
         except OSError:
@@ -2918,10 +3016,12 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=G,
                FILLER_POLL="5", FILLER_OWNER=str(d["owner"]), FILLER_EST_WALL_S=str(d["estimate_s"]),
                FILLER_DRYRUN_ONE_QUARTER="1" if one_quarter else "0",
-               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_SMOKE_UNITS": "1", "FILLER_DISK_FLOOR_GIB": "20"} if smoke_s else {}))  # a smoke writes little: only a near-full disk stops it  # ws58 2026-11-01: launchers written for the v8 keeper read it
+               WS58_REGIONS=ws58_cpus(regions), **({"FILLER_SMOKE": "1", "FILLER_DISK_FLOOR_GIB": "20",
+                                                                  **({} if d.get("smoke_predicate") else {"FILLER_SMOKE_UNITS": "1"})} if smoke_s else {}))  # a smoke writes little: only a near-full disk stops it  # ws58 2026-11-01: launchers written for the v8 keeper read it
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
     env["FILLER_SMOKE_T0"] = str(int(time.time()))
+    env["FILLER_RESIDENCY_FILE"] = os.path.join(dd, SMOKE_RESIDENCY_FILE)
     probe = FirstProgress(d, result_path, result_format, env, d.get("workdir"))
     if probe.stale:
         reason = (f"no first progress possible: {probe.kind} `{probe.pred[:80]}` already exits 0 BEFORE the launch, so it cannot "
@@ -2948,7 +3048,19 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     t_lock = None
     cpu_acc, cpu_samples = {}, []
     vram_max = None
+    kfd_seen = {}
+    residency_note = None
     gpu = gpu_residency_required(d, regions)
+
+    def residency_ok():
+        nonlocal vram_max, residency_note
+        if vram_max is not None and vram_max >= 64 << 20:
+            return True
+        jb, why = verify_job_residency(dd, tracked, kfd_seen, t0)
+        if jb >= 64 << 20:
+            vram_max, residency_note = max(vram_max or 0, jb), why
+            return True
+        return False
     first_unit_at = None
     progress = None
     stop_requested = None
@@ -2960,11 +3072,15 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             for _ in range(5):
                 time.sleep(1)
                 harness_tree(p.pid, tracked)
+                if gpu:   # operator 2026-11-06: residency sampled at 1 s (was 5 s: a short job fell between samples)
+                    v = vram_used_bytes()
+                    occ = gpu_occupancy()
+                    mine = {q: b for q, b in (occ.get("pids") or {}).items() if q in tracked and b > 0}
+                    kfd_seen.update(mine)
+                    cand_v = [x for x in (v, occ.get("vram_used"), sum(mine.values()) or None) if x is not None]
+                    if cand_v:
+                        vram_max = max(vram_max or 0, *cand_v)
             cpu_samples.append((time.time(), tree_cpu_s(tracked, cpu_acc)))
-            if gpu:
-                v = vram_used_bytes()
-                if v is not None:
-                    vram_max = max(vram_max or 0, v)
             # a dry run must never wait on a lock: a region-lock acquire for regions outside what this dry run holds, or one
             # not satisfied within 60 s, is the row's defect (the job's own claim ignores WS58_REGIONS)
             new_lines = tail(lout, 10**6)[out_lines0:]
@@ -3006,7 +3122,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
                                                f"{int(time.time() - t0)}s; {probe.what()}; {probe.fix(timeout)}")
                 elif rc not in (0, 75):
                     verdict, reason = "FAIL", f"first unit written but the job ended {rc_line[:120]}"
-                elif gpu and (vram_max is None or vram_max < 64 << 20):
+                elif gpu and not residency_ok():
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {rc_line[:80]}"
@@ -3014,7 +3130,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             if stop_requested and time.time() - stop_requested > STOP_GRACE_S:
                 # the engine's hard-end kill is production's truncation path too: PASS with a warning, then stop the group
                 warning = f"job did not stop within {STOP_GRACE_S}s of the stop file (FILLER_STOPFILE not honoured between items); truncated by signal"
-                if gpu and (vram_max is None or vram_max < 64 << 20):
+                if gpu and not residency_ok():
                     verdict, reason = "FAIL", f"GPU row produced a unit but VRAM never showed residency (max {vram_max} B sampled during the run)"
                 else:
                     verdict, reason = "PASS", f"first progress: {progress}; {warning}"
@@ -3084,7 +3200,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
     rec = {"regions": regions, "units": count_units(result_path, result_format, d.get("workdir")) - units0, "result_path": result_path,
            "result_format": result_format, "first_unit_at": first_unit_at, "first_progress": progress,
-           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max,
+           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max, "residency_evidence": residency_note,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     # refinement 1: what the job actually used (before the harness's stop), against the row's declared claim
@@ -3855,6 +3971,18 @@ def idle_partial_quarters(flags, free, busy, grants, holders):
     return out
 
 
+def queued_gpu_min_rank(flags):
+    """Lowest priority_rank among queued GPU smokes (marker -> unpublished.json / ready manifest / queued spec), or None."""
+    best = None
+    for q in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+        rid = os.path.basename(os.path.dirname(q))
+        row = load_json(os.path.join(dry_dir(flags, rid), "unpublished.json")) or load_json(ready_path(flags, rid)) \
+            or (load_json(q) or {}).get("spec") or {}
+        r = row_rank(row)
+        best = r if best is None else min(best, r)
+    return best
+
+
 def allocate(flags, keeper_log=None, log=print, dry=False):
     """dry=True: snapshot + plan only (PLAN lines); nothing healed, armed, granted or started."""
     keeper_log = keeper_log or os.path.join(flags, "ws58-calendar-keeper.log")
@@ -3898,6 +4026,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "coexist": k["coexist"], "lends": k["lends"], "lock": k["lock"],
                       "claim": k["claim"]})
+    qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
+    if qr is not None:
+        worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr]
+        if worse:
+            cands = [c for c in cands if c not in worse]
+            log(f"WAIT-FOR-SMOKE: queued GPU smoke rank {qr:g} runs first; GPU row(s) {','.join(c['id'] for c in worse[:5])} (worse rank) wait")
     # keeper-scheduled smokes (operator 2026-11-05 "that's the keeper's ENTIRE point"): placed ahead of every row on
     # genuinely free cores, packed onto partly used quarters; never on tokens a running grant lends to small rows, and
     # never breaking a whole free quarter a queued whole-quarter row would take (placement packing, operator "fix it")
@@ -4349,10 +4483,15 @@ def main(argv=None):
             print(f"{r} {a.id}")
             return 0 if r in ("WITHDRAWN", "PENDING", "TERMINAL") else 2
         if a.cmd == "unpark":
-            need(a.id in rows(a.flags), f"{a.id}: no epyc.row.v3 row in ready/")
+            known = (a.id in rows(a.flags) or os.path.isdir(dry_dir(a.flags, a.id))
+                     or os.path.exists(os.path.join(a.flags, "operator-escalations", a.id + ".md")))
+            need(known, f"{a.id}: not a ready/ row, a dryrun/ id or a parked lineage (operator-escalations/<lineage>.md)")
             rec = unpark(a.flags, a.id, a.by or "", a.note)
-            st = status(a.flags, a.id)
-            print(f"UNPARKED {a.id} at {rec['at']}; state now {st['state']}: {st.get('reason', '')[:160]}")
+            if a.id in rows(a.flags):
+                st = status(a.flags, a.id)
+                print(f"UNPARKED {a.id} at {rec['at']}; state now {st['state']}: {st.get('reason', '')[:160]}")
+            else:
+                print(f"UNPARKED lineage {a.id} at {rec['at']}; its earlier failed dry runs no longer count; rows in it re-enter the keeper next tick")
             return 0
         if a.cmd == "status":
             st = status(a.flags, a.id, util=measure_util())

@@ -1039,7 +1039,9 @@ def load_world(flags, now, sha_cache=None):
                 continue
             w.stale_parks.append(rid)   # the launcher or the manifest changed: the park no longer binds (tick removes it)
         p = load_json(os.path.join(D, rid, "PASS.json"))
-        smoke_fails = [f for f in glob.glob(os.path.join(D, rid, "FAIL-*.json")) if not os.path.basename(f).startswith("FAIL-refused-")]
+        un_at = os.path.getmtime(os.path.join(D, rid, "UNPARK.json")) if os.path.exists(os.path.join(D, rid, "UNPARK.json")) else 0.0
+        smoke_fails = [f for f in glob.glob(os.path.join(D, rid, "FAIL-*.json"))
+                       if not os.path.basename(f).startswith("FAIL-refused-") and os.path.getmtime(f) > un_at]   # an unpark forgives older smoke FAILs
         if p and p.get("launcher_sha256") == cur:
             w.pending.append(spec)
             w.state[rid] = "pending"
@@ -1243,9 +1245,18 @@ def unpark(flags, rid, log=print):
     had = _ex(dd, "PARKED.json")
     if had:
         os.remove(os.path.join(dd, "PARKED.json"))
-    write_text(os.path.join(dd, "UNPARK.json"), json.dumps({"id": rid, "at": iso(time.time())}) + "\n")
-    log(f"UNPARK {rid}" + ("" if had else " (was not parked)"))
-    return had
+    targets = [dd]
+    if not _ex(flags, "ready", rid + ".json"):   # operator 2026-11-06: a lineage id (no ready/ row of its own) unparks its members
+        targets += [x for x in glob.glob(os.path.join(flags, "dryrun", rid + "*")) if os.path.isdir(x) and x != dd]
+    for t in targets:
+        os.makedirs(t, exist_ok=True)
+        write_text(os.path.join(t, "UNPARK.json"), json.dumps({"id": os.path.basename(t), "at": iso(time.time())}) + "\n")
+        if t != dd:
+            had = had or _ex(t, "PARKED.json")
+            if _ex(t, "PARKED.json"):
+                os.remove(os.path.join(t, "PARKED.json"))
+    log(f"UNPARK {rid}" + ("" if had else " (was not parked)") + (f" +{len(targets) - 1} lineage member(s)" if len(targets) > 1 else ""))
+    return had or len(targets) > 1
 
 
 def tick(flags, now, meas, state, log, runner=None):

@@ -108,7 +108,7 @@ class ArmingFailuresPark(Fixture):
         self.assertIn("consecutive arming/launch failures", st["reason"])
         esc = os.path.join(self.flags, "operator-escalations", YARN + ".arming.md")
         self.assertTrue(os.path.isfile(esc))
-        self.assertIn("PARKED NEEDS-OPERATOR", open(esc).read())
+        self.assertIn("PARKED NEEDS-OWNER", open(esc).read())
 
     def test_failures_before_the_pass_or_before_a_grant_do_not_count(self):
         d = self.row(YARN, 7, GPU_OPT, "gpu", lane="gpu", regions="mi210_0,88-91", passed="2026-11-03T08:00:00Z")

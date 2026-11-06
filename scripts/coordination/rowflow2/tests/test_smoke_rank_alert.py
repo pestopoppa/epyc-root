@@ -76,3 +76,27 @@ def test_deadline_kill_alerts_owner(tmp_path):
         sim.step()
     a = [x for x in _alerts(sim) if x["kind"] == "smoke-fail"]
     assert len(a) == 1 and a[0]["reason"] == "smoke deadline" and a[0]["fail_file"].endswith("FAIL-deadline.json")
+
+
+# ---------------------------------------------------------------- keeper batch 2026-11-06 mirror: unpark a lineage id
+def test_unpark_lineage_id_lets_a_failed_smoke_row_retry(tmp_path):
+    """rowflow: `unpark <lineage id>` is accepted for parked rows that are not in ready/ and forgives their failed smokes.
+    rowflow2 mirror: a failed-smoke row is `failed` until its launcher sha changes; an owner unpark by id (or lineage
+    prefix) makes it `needs-smoke` again. (Residency, stop-file, NEEDS-OWNER and cross-queue rank have no rowflow2 surface:
+    its smoke lane has no VRAM probe, no engine stop file, no escalation files and no GPU smoke queue.)"""
+    sim = Sim(tmp_path)
+    assert sim.publish(spec("lin-b-20261106", cpus="q1", threads=12), smoke_outcome="fail") == []
+    for _ in range(12):
+        sim.step()
+    now = sim.now + 3600
+    assert rf.load_world(sim.flags, now).state["lin-b-20261106"] == "failed"
+    rf.unpark(sim.flags, "lin-b", log=lambda m: None)           # a lineage id: no ready/lin-b.json
+    assert rf.load_world(sim.flags, now).state["lin-b-20261106"] == "needs-smoke"
+
+
+def test_negative_control_without_unpark_the_failed_row_stays_failed(tmp_path):
+    sim = Sim(tmp_path)
+    assert sim.publish(spec("lin-c-20261106", cpus="q1", threads=12), smoke_outcome="fail") == []
+    for _ in range(12):
+        sim.step()
+    assert rf.load_world(sim.flags, sim.now + 3600).state["lin-c-20261106"] == "failed"
