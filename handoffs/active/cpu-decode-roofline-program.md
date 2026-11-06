@@ -97,6 +97,10 @@ bandwidth that is a 10–20 ms token (50–100 t/s) before speculation, and we m
 
 > Folded from the body of `handoffs/active/cpu-decode-roofline-program.md` (row INF-70), from its first `##` section on, @ `e424d56114f9` on 2026-11-03 (BRF-T7-F9, route 1b, operator D1/D5). Headings demoted two levels; every box kept its text and ID.
 
+#### Context-depth throughput envelope — intake 2026-11-06 (2611.05306)
+
+- [ ] **DEPTH-ENV-1 — Publish one measured context-depth throughput envelope for the models under launch-flag exploration: prefill and decode at 16K, 32K, 48K and 128K, assembled from existing runs (Q38FN depth record, KVU-12.6 and the 16k/64k exact-comparison row) with the source commit and binary per cell, adding at most one new cell where a compaction-relevant budget is missing; hand the table, not flag changes, to the OpenCode launch-flag session.**
+
 #### Completed scope — split out at close-out (2026-09-08)
 
 Landed/validated sections were split out when the campaign closed, so the first screen answers

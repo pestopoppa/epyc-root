@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T08:53:27Z",
+  "generated_at": "2026-11-06T15:43:15Z",
   "nodes": [
     {
       "age_days": 3,
@@ -2137,14 +2137,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 146,
-      "dispatchable": 32,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "last_advanced": "2026-11-03",
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
-      "open": 32,
+      "open": 33,
       "priority": 0.9191,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): G2-CONC \u2014 BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
@@ -2172,20 +2172,20 @@
           "blocked_by": [
             "INF-65"
           ],
-          "dispatchable": 27,
+          "dispatchable": 28,
           "gates": [
             "INF-65"
           ],
           "line": 95,
           "name": "cpu-decode-roofline-program",
-          "open": 27,
+          "open": 28,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5054,
+          "line": 5058,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2194,7 +2194,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5207,
+          "line": 5211,
           "name": "cpu-prefill-compute-large-models",
           "open": 1,
           "readiness": "ready"
@@ -2203,7 +2203,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5697,
+          "line": 5701,
           "name": "large-moe-expert-parallelism",
           "open": 0,
           "readiness": "no_open"
@@ -2216,7 +2216,7 @@
           "gates": [
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 5811,
+          "line": 5815,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -2777,14 +2777,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 150,
-      "dispatchable": 40,
+      "dispatchable": 45,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-05",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 42,
+      "open": 47,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2804,18 +2804,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 13,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 8,
+          "open": 13,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 247,
+          "line": 255,
           "name": "delegation-context-preassembly",
           "open": 8,
           "readiness": "ready"
@@ -2824,7 +2824,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 444,
+          "line": 452,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2833,7 +2833,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 710,
+          "line": 718,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -2842,7 +2842,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1205,
+          "line": 1213,
           "name": "rao-redel-substrate-spike",
           "open": 5,
           "readiness": "ready"
@@ -2851,7 +2851,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1742,
+          "line": 1750,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -2860,7 +2860,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 2504,
+          "line": 2512,
           "name": "reasoning-effort-levels",
           "open": 11,
           "readiness": "ready"
@@ -2869,7 +2869,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 2930,
+          "line": 2938,
           "name": "tool-output-compression",
           "open": 5,
           "readiness": "ready"
@@ -3102,14 +3102,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 340,
-      "dispatchable": 50,
+      "dispatchable": 52,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-05",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
-      "open": 50,
+      "open": 52,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3134,18 +3134,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 10,
           "gates": [],
           "line": 19,
           "name": "coordination-and-churn-pipeline",
-          "open": 8,
+          "open": 10,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 21,
           "gates": [],
-          "line": 2436,
+          "line": 2441,
           "name": "churn-pipeline",
           "open": 21,
           "readiness": "ready"
@@ -3154,7 +3154,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2559,
+          "line": 2564,
           "name": "dashboard-architecture-restructure",
           "open": 6,
           "readiness": "ready"
@@ -3163,7 +3163,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3033,
+          "line": 3038,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3181,7 +3181,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3478,
+          "line": 3483,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3201,7 +3201,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4991,
+          "line": 4996,
           "name": "loop-owned-fleet-implementation",
           "open": 2,
           "readiness": "blocked"
@@ -3221,7 +3221,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5651,
+          "line": 5656,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3241,7 +3241,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5839,
+          "line": 5844,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
@@ -3444,14 +3444,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 231,
-      "dispatchable": 77,
+      "dispatchable": 78,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-05",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 95,
+      "open": 96,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3536,13 +3536,13 @@
           "blocked_by": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
           "line": 2190,
           "name": "opencode-shell-integration",
-          "open": 1,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -3561,7 +3561,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2269,
+          "line": 2273,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3576,7 +3576,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2716,
+          "line": 2720,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"

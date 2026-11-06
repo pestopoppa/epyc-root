@@ -23,6 +23,11 @@
 
 #### Current executor start here — 2026-11-03
 
+
+#### Governance rule registry — intake 2026-11-06 (2609.26682)
+
+- [ ] **REG-ENF-1 — Publish a machine-readable governance rule registry with one row per rule carrying `enforcement_class: hard|soft|prose` and its enforcement point, generated into the hook, deny-list and prose surfaces so the rule set has one source of truth.**
+- [ ] **REG-ENF-2 — Move tool-use authorization from prose to a tool-boundary hook: deny an inference launch that holds no region claim, mirroring the destructive-command PreToolUse hook, and state the fail-open/fail-closed posture in the acceptance.**
 The coordinator-daemon / tmux delivery plane this file was filed for (M3–M5, C20/C30/C36, AIR-6/7/9, WS-2/3, DP-2, FW-1/2) is **retired**; the old AIR-6 rollout-gate narration moved to the archive ledger. **Live work here**: the `churn-pipeline` track (dispatcher reliability, CAF, wrap-up defect list), `fleet-fanout-measurement` (FM-*), the session-bus drain/heartbeat items (R9, WS-4, ROWFLOW-KILLBYNAME), the `dashboard-architecture-restructure` repairs and the remaining open `- [ ]` boxes below. Retired-plane history: [`../archived/coordination-and-churn-pipeline-coordinator-daemon-plane-through-2026-11-03.md`](../archived/coordination-and-churn-pipeline-coordinator-daemon-plane-through-2026-11-03.md).
 
 ---

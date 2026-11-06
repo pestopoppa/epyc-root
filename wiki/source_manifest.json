@@ -5,28 +5,27 @@
     "handoff-blocked": 1,
     "handoff-completed": 373,
     "progress": 1342,
-    "research": 278
+    "research": 290
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 3,
+      "added": 12,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-06T08:49:35Z",
+    "at": "2026-11-06T15:45:11Z",
     "scope_paths": [
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/kv-cache-program.md",
-      "progress/2026-11/2026-11-06-main-inf22.md"
+      "research/deep-dives/intake-digests/2026-11-06-ids-2628-2640.md",
+      "research/deep-dives/ydnlc-20261106"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T08:49:35Z",
+  "scan_time": "2026-11-06T15:45:11Z",
   "schema_version": 1,
-  "source_set_hash": "4283159df7b6ecb0c6815dcc811d72fb86e578f7705e5f679d164ee1b8e0ba76",
+  "source_set_hash": "97c8e0759e30b97814b50da3b0342dd7aa80efaa04585ca94bb4658f7e425d48",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -4637,6 +4636,14 @@
       "type": "research"
     },
     {
+      "content_hash": "d6b1b3e2637912f9cc8061f157a5f9d75ea5f8b35f0c9c1fa77dd45948181cd6",
+      "modified": "2026-11-06T15:28:27Z",
+      "path": "research/deep-dives/intake-digests/2026-11-06-ids-2628-2640.md",
+      "size": 35054,
+      "title": "Intake dive digest \u2014 2026-11-06, intake-2628#record .. intake-2640#record",
+      "type": "research"
+    },
+    {
       "content_hash": "c733c629d076f15c3c6ceea4ec87b9d5f0031a2d87028a7b9eeba55574535c28",
       "modified": "2026-11-05T19:30:50Z",
       "path": "research/deep-dives/intake-trio-202604-references.md",
@@ -5474,6 +5481,94 @@
       "path": "research/deep-dives/ws58-jev-20261102/wiki3b-dive.md",
       "size": 2293,
       "title": "wiki3b dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "a9438ae6c9225c4f9ed518aa7681dc468334292850acb1b27ecb4f282731e222",
+      "modified": "2026-11-06T15:22:19Z",
+      "path": "research/deep-dives/ydnlc-20261106/PLAN.md",
+      "size": 58828,
+      "title": "Research Intake Plan \u2014 You don't need long context (2026-11-06)",
+      "type": "research"
+    },
+    {
+      "content_hash": "acfc85370fcd4fdc92ae43e0c2a749d1c456b1350ff52b68f744de83739a4130",
+      "modified": "2026-11-06T14:55:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2628-you-dont-need-long-context.md",
+      "size": 4201,
+      "title": "intake-2628 \u2014 You don't need long context (NVIDIA, arXiv 2611.05306v1)",
+      "type": "research"
+    },
+    {
+      "content_hash": "5048fd3949ecf6f068b3ada15b074f363d4259efb0aac4b1824e2c84d82eaef5",
+      "modified": "2026-11-06T14:55:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2629-compact-bench.md",
+      "size": 2897,
+      "title": "intake-2629 \u2014 Compact-Bench (arXiv 2610.31710v2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "643480009b3f6cfc564057fb737c4fe99599f746cdb84099f4ab8cee92fc6e92",
+      "modified": "2026-11-06T14:55:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2630-compaction-friendly.md",
+      "size": 2980,
+      "title": "intake-2630 \u2014 Benchmarks Are Surprisingly Compaction-Friendly (arXiv 2610.31778v1)",
+      "type": "research"
+    },
+    {
+      "content_hash": "2c6f8c5328892ff9c99965f5e18d5ca8444b621a1a4c5a6b90fa0d415a1fe209",
+      "modified": "2026-11-06T14:55:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2631-arcbench.md",
+      "size": 2670,
+      "title": "intake-2631 \u2014 ARCBench (arXiv 2611.03223v1)",
+      "type": "research"
+    },
+    {
+      "content_hash": "6e0bbb10b36b5bc303ea0c08ffab4e84f9fc31f6de2339135a7890f4d3288d8c",
+      "modified": "2026-11-06T14:55:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2632-transparent-compact.md",
+      "size": 2811,
+      "title": "intake-2632 \u2014 transparent-compact (arXiv 2610.20116v1)",
+      "type": "research"
+    },
+    {
+      "content_hash": "6ef9072902f1772657c807cadc1e6760d234aaed7d67509ef3554344c920e1bb",
+      "modified": "2026-11-06T15:08:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2636-governance-decay.md",
+      "size": 2052,
+      "title": "intake-2636 \u2014 Governance Decay (arXiv 2606.22528v2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "abb6044980d0cfbf988f46009e2af4c0c9c41ed1792936c35cbe0e352cd53483",
+      "modified": "2026-11-06T15:08:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2637-lost-in-context-compaction.md",
+      "size": 2128,
+      "title": "intake-2637 \u2014 Lost in Context Compaction (arXiv 2608.11242v2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "cb606271a8688b85adcf0f90f0a0b5f9a904ef8ece3e82af733a62174c35fc34",
+      "modified": "2026-11-06T15:08:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2638-compaction-laundering.md",
+      "size": 2475,
+      "title": "intake-2638 \u2014 Compaction Laundering (arXiv 2610.29869v1)",
+      "type": "research"
+    },
+    {
+      "content_hash": "4dc224a1704d82e0539fada9811ff007b581ae12982a114ca09044f3f52c3b81",
+      "modified": "2026-11-06T15:08:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2639-guardrail-residue.md",
+      "size": 2045,
+      "title": "intake-2639 \u2014 Guardrail residue (arXiv 2608.11392v2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "697f252f6eb33471b129a8626724f8ea6d58506aebda6bcf2ce8a3a2567f9c43",
+      "modified": "2026-11-06T15:08:48Z",
+      "path": "research/deep-dives/ydnlc-20261106/intake-2640-access-control.md",
+      "size": 2230,
+      "title": "intake-2640 \u2014 From Alignment to Access Control (arXiv 2609.26682v1)",
       "type": "research"
     },
     {
@@ -19677,7 +19772,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2456,
+  "total_new": 2468,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -18,6 +18,14 @@ Retired ROOT publication custody: `/mnt/raid0/llm/tmp/codex-ni-root-legacy-retir
 Do not reimplement Phases 0, 1, 1+, 2a, 2b L1-L4, 2c scaffolding, 3a, or 3b. The active question is whether the remaining aggressive-compression and monitoring probes justify new behavior beyond the already-landed multi-tier compaction stack.
 
 ## Outstanding Tasks
+#### Compaction governance — intake 2026-11-06 (2611.05306 waves)
+
+- [ ] **TOC-CMP-1 — Fix the inverted reference-miss detector in the orchestrator summary path so a destroyed identifier can fire: read identifiers from `seg.granular_blocks` rather than the compacted text, and add a unit test whose only passing outcome is the destroyed-identifier case firing.**
+- [ ] **TOC-CMP-2 — Build the governance retention-and-compliance probe: declare 5-8 EPYC rules with hard/soft/prose enforcement classes and a sibling-target control, then measure four arms (full history, intact rule, degraded residue, rule absent) with deterministic tool-call predicates and the Appendix D v4 rubric, reporting retention as a ceiling and compliance as the result.**
+- [ ] **TOC-CMP-3 — Add the compaction artifact contract to the TOC A/B: the six-field execution brief (verbatim task, current intent, plan, completion requirements, artifacts, pointers), a pinned-governance buffer exempt from folding and re-injected verbatim with a post-fold entailment check, and a verbatim_manifest arm that declares what left the view.**
+- [ ] **TOC-CMP-4 — Make the compaction A/B reproducible before running it: pre-register a minimum detectable effect of 0.10 blocked actions per step, at least 30 paired compaction points per model with 8-12 repeats each, three arms (raw tail, summary, FIFO), a boundary-stratified bootstrap, and report Pass^3 alongside accuracy.**
+- [ ] **TOC-CMP-5 — Add a role-boundary regression test to the orchestrator summary path: a hostile tool output containing `[User]:` or `<|im_start|>` must not survive `build_consolidation_prompt` as an un-neutralised role boundary, and the summary must stay a prompt block rather than a user-role message.**
+
 
 - **[declined: ws58 2026-11-03 content-review: unbounded conditional ("only if it answers a current production question") with no question named; the L3 sweet spot stands]** **CF-L5 maximum-compression validation**: run the L5 single-sentence-per-segment compression check only if it answers a current production question. Compare against the known L3 sweet spot and record whether L5 is rejected, role-limited, or worth further tuning.
 - [ ] **CF-3c live quality-monitor validation**: validate `CompactionQualityMonitor` on real traffic/telemetry. The class scaffold exists; tune degradation thresholds only after upstream-compressor anti-thrashing in [tool-output-compression.md](context-and-token-economy.md#track-tool-output-compression) Phase 3d is accounted for.
