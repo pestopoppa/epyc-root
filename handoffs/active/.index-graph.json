@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T19:53:17Z",
+  "generated_at": "2026-11-06T19:58:21Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1326,15 +1326,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 355,
-      "dispatchable": 104,
+      "closed": 356,
+      "dispatchable": 103,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-06",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 106,
+      "open": 105,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1369,15 +1369,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 769,
-      "dispatchable": 149,
+      "closed": 771,
+      "dispatchable": 150,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-06",
       "next_action": "Read C7 gate c7-asm-ports-gate-20261106 (c420b9d1a vs C6, 0.97 floor, PPL incl. H15); fold or drop named port (AK-ASM-FOLD-GATE)",
-      "open": 150,
+      "open": 151,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1414,7 +1414,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 51,
+          "dispatchable": 52,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1423,14 +1423,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 52,
+          "open": 53,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5902,
+          "line": 5905,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1439,7 +1439,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5982,
+          "line": 5985,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1458,7 +1458,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6279,
+          "line": 6282,
           "name": "autokernel-rebuild-program",
           "open": 19,
           "readiness": "blocked"
@@ -1475,7 +1475,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9494,
+          "line": 9497,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1488,7 +1488,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13844,
+          "line": 13847,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1522,7 +1522,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14056,
+          "line": 14059,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"

@@ -184,6 +184,13 @@ Two vendored lane templates caused most lost compute in Pass 4 of `docs/reports/
 - `job_fence.py fence [--gpu] <dirs> -- /abs/exe ...` / `smoke [--gpu] <root> -- ...` / `admit --cpus .. --granted ..`: `--gpu` (GPU-token rows) allows `/dev/kfd` and `/dev/dri/*` and gives HIP a writable `TMPDIR` inside the fence. Admission is affinity **subset of the grant**. `repin_threads()` pulls a ROCr thread born with full-host affinity into the grant. `tree_usage()` skips `comgr-*` / `.hip-tmp` entries that vanish mid-scan.
 - Publish lint (warn only): `rowflow2.publish` runs `template_lint.py` and warns when a job dir vendors a known-bad sha (`known_bad_templates.json`) or a one-process gitnexus job. It lives in rowflow2 because `rowflow/publish_row.py` is frozen and changing it would need a keeper deploy. Run it by hand with `python3 .../job_templates/template_lint.py <launcher>`.
 
+## Job-side rules learned 2026-11-06 (main-inf22)
+
+- **GPU smoke rows must hold own-PID VRAM for >= 40 s.** The 1 s VRAM sampler verifies residency by the job's own PID; a smoke that exits sooner cannot prove it ran on the GPU.
+- **Derive taskset CPUs from the granted affinity**, never hardcode a CPU list in the job.
+- **Set CPU-backend thread counts explicitly** (`-t`/`GGML_N_THREADS`). Under taskset the ggml CPU backend still defaulted to 192 threads; the oversubscription made H8b correctness take 16 min per pass.
+- **Never share a STOP file across sibling rows.** One row's withdraw then kills every sibling; give each row its own STOP path.
+
 ## Reference implementation
 
 CT-18 Skill-Inject: `/mnt/raid0/llm/tmp/ct18-run-20261021/filler_worker.sh` (`ct18-worker`, CPU) and `filler_arch.sh` (`ct18-arch`, mi210_0 + host threads 184-191). They are generated from one template; `.ended` rc 124 = hard end, 4 = refused, 2 = unusable grant, 143 = launcher signalled.

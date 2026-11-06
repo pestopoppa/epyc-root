@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 691
+      "open": 692
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -16,7 +16,7 @@
       "blocked": 5,
       "handoffs": 5,
       "oldest_advance": "2026-11-02",
-      "open": 215
+      "open": 214
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 769,
+      "closed": 771,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 149,
+      "open": 150,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,11 +54,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 919,
+      "total": 922,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 322,
+          "closed": 324,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -69,14 +69,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 51
+          "open": 52
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5902,
+          "line": 5905,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5982,
+          "line": 5985,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6279,
+          "line": 6282,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9494,
+          "line": 9497,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13844,
+          "line": 13847,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14056,
+          "line": 14059,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -2516,10 +2516,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
-      "closed": 355,
+      "closed": 356,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 104,
+      "open": 103,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
