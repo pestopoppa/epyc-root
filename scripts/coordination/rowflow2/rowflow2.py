@@ -1023,6 +1023,22 @@ def write_grant(flags, g):
     write_text(p, g.line() + "\n")
 
 
+def template_warnings(launcher):
+    """Lane-template lint (friction review Pass 4 change 3): a job dir that vendors a known-bad write_fence /
+    smoke_admission / smoke_root_exec copy or a one-process gitnexus-impact job.py. Warnings only; a lint that
+    cannot load is silent. Lives here, not in the frozen rowflow/publish_row.py (would need a keeper deploy)."""
+    try:
+        here = os.path.dirname(os.path.abspath(__file__))
+        for d in (os.path.join(here, "..", "job_templates"), os.path.join(here, "job_templates")):
+            if os.path.isfile(os.path.join(d, "template_lint.py")):
+                sys.path.insert(0, d)
+                break
+        import template_lint
+        return template_lint.lint_dir(launcher)
+    except Exception:  # noqa: BLE001 - a lint never blocks publish
+        return []
+
+
 def publish(spec, flags, log=print):
     """Validate and write ready/<id>.json (schema v4); supersede predecessors. Returns refusal reasons ([] = ok)."""
     spec = dict(spec, schema=SCHEMA)
@@ -1038,6 +1054,8 @@ def publish(spec, flags, log=print):
     if errs:
         log(f"REFUSED {spec.get('id')}: {'; '.join(errs)}")
         return errs
+    for w in template_warnings(spec["launcher"]):   # WARN only, never a refusal (operator 2026-11-06)
+        log(f"WARN {spec['id']}: {w}")
     write_text(os.path.join(flags, "ready", spec["id"] + ".json"), json.dumps(spec, indent=1, sort_keys=True) + "\n")
     for s in sups:
         withdraw(flags, s, f"superseded:{spec['id']}", log)

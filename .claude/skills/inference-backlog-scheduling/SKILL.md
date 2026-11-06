@@ -393,6 +393,14 @@ critical path and the RAM ledger come from the writers' chains and the row RAM f
 
 Add a `DECISIONS` line to the report: `python3 scripts/handoffs/verdict_count.py` (read-only) prints the DECIDED / RAN-NO-VERDICT / RAN-FAILED-ONLY / NEVER-RUN class counts and decisions per day, so the operator sees decisions/week (last 7 d vs prior 7 d), not only runs; `--json OUT` writes the full per-row table.
 
+## Shared job templates: import, never copy (operator 2026-11-06)
+
+Two vendored lane templates caused most lost compute in Pass 4 of `docs/reports/coordination/keeper-friction-review-20261105.md`: the gitnexus-impact `job.py` (~40 copies, 40 rc!=0 runs after a good 29-min analyze, ~9 host-h) and the yarn `write_fence.py` / `smoke_admission.py` / `smoke_root_exec.py` trio (no GPU devices, no HIP TMPDIR, `len(cpus)!=2`, HIP temp vanish). **New rows import the shared modules from `/mnt/raid0/llm/tmp/compute-flags/bin/job_templates/`** (source and tests: `scripts/coordination/job_templates/`; redeploy with a plain copy after the tests pass). Existing rows are not rewritten.
+
+- `gitnexus_impact.py --config job.json --phase analyze|scan|all`: analyze writes `out/ANALYZED.json` and is skipped while the graph stays fresh (status = head, no parse-cache staleness from `parse_probes`, e.g. the KPF-41 `__launch_bounds__` misparse). A scan never re-analyzes. An unresolved, partial, or vacuous scan is rc 0 with `out/INCONCLUSIVE`, HIGH/CRITICAL is rc 3, and a failed analyze or a parser defect is rc 1.
+- `job_fence.py fence [--gpu] <dirs> -- /abs/exe ...` / `smoke [--gpu] <root> -- ...` / `admit --cpus .. --granted ..`: `--gpu` (GPU-token rows) allows `/dev/kfd` and `/dev/dri/*` and gives HIP a writable `TMPDIR` inside the fence. Admission is affinity **subset of the grant**. `repin_threads()` pulls a ROCr thread born with full-host affinity into the grant. `tree_usage()` skips `comgr-*` / `.hip-tmp` entries that vanish mid-scan.
+- Publish lint (warn only): `rowflow2.publish` runs `template_lint.py` and warns when a job dir vendors a known-bad sha (`known_bad_templates.json`) or a one-process gitnexus job. It lives in rowflow2 because `rowflow/publish_row.py` is frozen and changing it would need a keeper deploy. Run it by hand with `python3 .../job_templates/template_lint.py <launcher>`.
+
 ## When not to apply this skill
 
 A single run on an otherwise empty host still needs a FILLERS row, a grant and `ram_admit`, but

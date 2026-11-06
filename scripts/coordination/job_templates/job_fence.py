@@ -1,0 +1,261 @@
+#!/usr/bin/python3
+"""Shared job write-fence + smoke admission (replaces the vendored write_fence.py / smoke_admission.py /
+smoke_root_exec.py copies; operator decision 2026-11-06, friction review Pass 4 change 3b).
+
+Deployed at /mnt/raid0/llm/tmp/compute-flags/bin/job_templates/job_fence.py; source of truth
+scripts/coordination/job_templates/job_fence.py. Rows IMPORT or EXEC this file; they never copy it.
+
+Fixes carried over from yarn-oolong v41/v42-gpu (port_v41_gpu.py, bump_v42.py), each of which cost a failed GPU run:
+  1. GPU-token rows (`--gpu`): Landlock allows WRITE_FILE on /dev/kfd and beneath /dev/dri (HIP opens renderD* O_RDWR).
+     The CPU-era template denied them -> "no ROCm-capable device" -> rc78.
+  2. HIP gets a writable TMPDIR inside the fenced tree (comgr makes/removes comgr-* dirs at first kernel load;
+     MAKE_DIR denied -> 'ROCm error: out of memory').
+  3. Affinity admission is "every thread's cpus SUBSET OF the grant", not "exactly 2 cpus"; a ROCr runtime thread born
+     with full-host affinity is re-pinned into the grant, refused only if the re-pin does not hold.
+  4. Output scans tolerate HIP temp entries (comgr-*) vanishing mid-scan; any other vanish still fails.
+
+CLI:
+  job_fence.py fence [--gpu] <writable-dir>... -- /abs/exe args...     # exec under the fence
+  job_fence.py smoke [--gpu] <smoke-root> -- /abs/exe args...           # smoke: only <smoke-root> + /dev/null (+gpu)
+  job_fence.py admit --cpus 20,21 [--granted 20-23,116-119]             # smoke admission check, prints JSON
+"""
+import ctypes
+import json
+import os
+import resource
+import shutil
+import sys
+import time
+from pathlib import Path
+
+# Landlock (ABI >= 3)
+SYS_CREATE, SYS_ADD_RULE, SYS_RESTRICT = 444, 445, 446
+PR_SET_NO_NEW_PRIVS = 38
+WRITE_FILE, REMOVE_DIR, REMOVE_FILE, MAKE_DIR, MAKE_REG, TRUNCATE = 1 << 1, 1 << 4, 1 << 5, 1 << 7, 1 << 8, 1 << 14
+HANDLED = sum(1 << i for i in (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14))
+ALLOW = WRITE_FILE | MAKE_REG | TRUNCATE
+TMP_ALLOW = ALLOW | REMOVE_DIR | REMOVE_FILE | MAKE_DIR
+GPU_DEV = ("/dev/kfd", "/dev/dri")
+TMP_ROOT = "/mnt/raid0/llm/tmp/"
+HIP_TMP_MARKERS = ("comgr-",)
+FLAGS = Path("/mnt/raid0/llm/tmp/compute-flags")
+DISK_FLOOR = 151 * 1024 ** 3
+FSIZE_CAP = 128 * 1024 ** 2
+
+
+class Ruleset(ctypes.Structure):
+    _fields_ = [("access", ctypes.c_uint64)]
+
+
+class PathBeneath(ctypes.Structure):
+    _fields_ = [("access", ctypes.c_uint64), ("fd", ctypes.c_int32)]
+
+
+def _lib():
+    return ctypes.CDLL(None, use_errno=True)
+
+
+def _add(lib, fd, path, rights, directory=False):
+    flags = os.O_PATH | os.O_NOFOLLOW | (os.O_DIRECTORY if directory else 0)
+    d = os.open(path, flags)
+    try:
+        rule = PathBeneath(rights, d)
+        if lib.syscall(SYS_ADD_RULE, fd, 1, ctypes.byref(rule), 0):
+            raise OSError(ctypes.get_errno(), f"landlock rule {path}")
+    finally:
+        os.close(d)
+
+
+def hip_tmpdir(base):
+    """Create <base>/.hip-tmp (inside the fence) and return it. Callers export it as TMPDIR."""
+    p = Path(base) / ".hip-tmp"
+    p.mkdir(mode=0o700, exist_ok=True)
+    return str(p)
+
+
+def gpu_rules(lib, fd, devices=GPU_DEV, tmpdir=None):
+    """GPU-token rows: /dev/kfd + beneath /dev/dri writable, and TMPDIR (if under TMP_ROOT) gets mkdir/rm rights."""
+    for name in devices:
+        _add(lib, fd, name, WRITE_FILE)
+    tmp = tmpdir if tmpdir is not None else os.environ.get("TMPDIR", "")
+    if (tmp and os.path.isabs(tmp) and os.path.isdir(tmp) and not os.path.islink(tmp)
+            and os.path.realpath(tmp).startswith(TMP_ROOT)):
+        _add(lib, fd, tmp, TMP_ALLOW, directory=True)
+
+
+def apply(paths, gpu=False, extra=(), devices=GPU_DEV, tmpdir=None, lib=None):
+    """Restrict this process: writes only beneath `paths` (+ `extra` (path, rights) pairs; + GPU rules if gpu)."""
+    lib = lib or _lib()
+    if lib.syscall(SYS_CREATE, 0, 0, 1) < 3:
+        raise RuntimeError("Landlock ABI below 3")
+    rs = Ruleset(HANDLED)
+    fd = lib.syscall(SYS_CREATE, ctypes.byref(rs), ctypes.sizeof(rs), 0)
+    if fd < 0:
+        raise OSError(ctypes.get_errno(), "landlock ruleset")
+    try:
+        for name in paths:
+            p = Path(name)
+            if not p.is_absolute() or p.is_symlink() or not p.is_dir():
+                raise ValueError(f"invalid output directory {name}")
+            _add(lib, fd, p, ALLOW, directory=True)
+        for path, rights in extra:
+            _add(lib, fd, path, rights)
+        if gpu:
+            gpu_rules(lib, fd, devices, tmpdir)
+        if lib.prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) or lib.syscall(SYS_RESTRICT, fd, 0):
+            raise OSError(ctypes.get_errno(), "landlock restrict")
+    finally:
+        os.close(fd)
+
+
+def _exec(argv, env):
+    resource.setrlimit(resource.RLIMIT_FSIZE, (FSIZE_CAP, FSIZE_CAP))
+    os.execve(argv[0], argv, env)
+
+
+def _split(args):
+    if "--" not in args:
+        raise ValueError("missing -- before command")
+    i = args.index("--")
+    head, argv = args[:i], args[i + 1:]
+    gpu = "--gpu" in head
+    head = [a for a in head if a != "--gpu"]
+    if not argv or not Path(argv[0]).is_absolute():
+        raise ValueError("absolute executable required")
+    return head, argv, gpu
+
+
+def fence_main(args):
+    paths, argv, gpu = _split(args)
+    env = dict(os.environ)
+    if gpu and not paths:
+        raise ValueError("--gpu needs at least one writable dir for the HIP TMPDIR")
+    if gpu:
+        env["TMPDIR"] = hip_tmpdir(paths[0])
+    apply(paths, gpu=gpu, tmpdir=env.get("TMPDIR"))
+    _exec(argv, env)
+
+
+def smoke_main(args):
+    head, argv, gpu = _split(args)
+    if len(head) != 1:
+        raise ValueError("smoke takes exactly one smoke root")
+    root = Path(head[0])
+    if not root.is_dir() or root.is_symlink() or not root.is_absolute():
+        raise ValueError("smoke root must be an absolute real directory")
+    env = dict(os.environ, TMPDIR=str(root))
+    apply([root], gpu=gpu, extra=[("/dev/null", WRITE_FILE | TRUNCATE)], tmpdir=str(root))
+    _exec(argv, env)
+
+
+# ------------------------------------------------------------------ admission
+def parse_cpulist(text):
+    out = set()
+    for part in str(text).split(","):
+        part = part.strip()
+        if not part:
+            continue
+        a, _, b = part.partition("-")
+        out.update(range(int(a), int(b or a) + 1))
+    return out
+
+
+def affinity_subset(cpus, granted):
+    """The admission rule: a non-empty cpu set inside the grant (NOT 'exactly two cpus')."""
+    cpus = set(cpus)
+    return bool(cpus) and cpus <= set(granted)
+
+
+def repin_threads(pid, granted, getaff=os.sched_getaffinity, setaff=os.sched_setaffinity, proc="/proc"):
+    """Re-pin every thread of `pid` whose affinity escapes `granted` (ROCr spawns one with all host cpus).
+    Returns the tids that still escape after the re-pin (empty = admitted). Threads that exit mid-walk are skipped."""
+    granted = set(granted)
+    escaped = []
+    try:
+        tids = [int(t) for t in os.listdir(os.path.join(proc, str(pid), "task"))]
+    except FileNotFoundError:
+        return escaped
+    for tid in tids:
+        try:
+            if getaff(tid) <= granted:
+                continue
+            setaff(tid, granted)
+            if not getaff(tid) <= granted:
+                escaped.append(tid)
+        except (ProcessLookupError, FileNotFoundError):
+            continue
+    return escaped
+
+
+def check(cpus, granted=None, flags=FLAGS, disk_path=None, floor=DISK_FLOOR, own=None):
+    """Smoke admission. Fail closed on: own affinity outside the grant, a global HOLD, disk below the floor."""
+    cpus = set(cpus)
+    granted = set(granted) if granted is not None else cpus
+    own = set(os.sched_getaffinity(0)) if own is None else set(own)
+    if not affinity_subset(cpus, granted) or not affinity_subset(own, granted):
+        raise RuntimeError(f"smoke affinity outside grant: own={sorted(own)} granted={sorted(granted)}")
+    if list(Path(flags).glob("HOLD_*")):
+        raise RuntimeError("global HOLD")
+    if shutil.disk_usage(disk_path or Path(__file__).resolve().parent).free < floor:
+        raise RuntimeError("disk below 150 GiB floor plus 1 GiB output reserve")
+    return {"kind": "rowflow-owner-smoke", "cpus": sorted(cpus), "granted": sorted(granted), "checked_epoch": time.time()}
+
+
+# ------------------------------------------------------------------ output scans
+def is_hip_temp(rel):
+    return any(part.startswith(HIP_TMP_MARKERS) or part == ".hip-tmp" for part in Path(rel).parts)
+
+
+def tree_usage(root):
+    """(bytes, entries) under root. Entries vanishing mid-scan are skipped only inside HIP temp subtrees."""
+    root = Path(root)
+    total = count = 0
+
+    def onerror(e):
+        fn = getattr(e, "filename", "") or ""
+        if isinstance(e, FileNotFoundError) and is_hip_temp(os.path.relpath(fn, root)):
+            return
+        raise e
+
+    for parent, dirs, files in os.walk(root, followlinks=False, onerror=onerror):
+        for n in files:
+            p = Path(parent) / n
+            count += 1
+            try:
+                st = p.lstat()
+            except FileNotFoundError:
+                if is_hip_temp(p.relative_to(root)):
+                    continue
+                raise
+            total += max(st.st_size, st.st_blocks * 512)
+        count += len(dirs)
+    return total, count
+
+
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if not argv:
+        print(__doc__, file=sys.stderr)
+        return 64
+    cmd, rest = argv[0], argv[1:]
+    if cmd == "fence":
+        fence_main(rest)
+    elif cmd == "smoke":
+        smoke_main(rest)
+    elif cmd == "admit":
+        import argparse
+        ap = argparse.ArgumentParser(prog="job_fence.py admit")
+        ap.add_argument("--cpus", required=True)
+        ap.add_argument("--granted")
+        a = ap.parse_args(rest)
+        cpus = parse_cpulist(a.cpus)
+        print(json.dumps(check(cpus, parse_cpulist(a.granted) if a.granted else None)))
+        return 0
+    else:
+        print(f"unknown command {cmd}", file=sys.stderr)
+        return 64
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
