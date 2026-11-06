@@ -1244,3 +1244,150 @@ lane 80, file 60, supersede 60, status/CLI 120, measurement 70) — from 4,088. 
    standard: every claim above carries a timestamp or a line number).
 10. **Stop this report growing.** Pass 3 is the last pass that adds analysis; the next artefact is `rowflow2.py` in
     shadow mode and a one-page diff of SHADOW-GRANT vs GRANT.
+
+
+---
+
+# Pass 4 — smoke/arming friction 2026-11-04..06
+
+**Operator ask (2026-11-06, verbatim):** "review the logs of the parallel session. I'm still noticing a discernible amount
+of friction resulting from failed smoke tests and arming. I wonder if it's a model issue or if the pipeline is still too
+fickle."
+
+**Scope.** Read-only. Every dry-run `FAIL-*.json` (577 records, 94 rows) and every `grants/*.ended` (742, of which 361
+non-rc0) dated 2026-11-04T00:00Z → 2026-11-06T01:00Z, the keeper log tags for the same window, `rowflow-alerts.jsonl`,
+the per-row `unpublished.json` manifests (owner, lane), the inf22 / operator-adhoc / q3-narrow progress files and the
+session bus (no inf22 outbox exists; `mainA–D` carry no smoke traffic). Sessions: `main-inf22`, `operator-adhoc-*`,
+`refactor`, `codex*`, and the handoff-owned lanes (`h-kvfork`, `h-heterogeneous-slot-fabric-residency`, autokernel).
+Pass 1–3 findings that are already deployed (disk floor, STOP regrant loop, keeper `heal_grants` crash, dry-run deadline,
+q3 narrowing) are *not* repeated; where they still show in this window they are marked **resolved** and excluded from
+the hours.
+
+## P4.1 Verdict
+
+**Mostly pipeline, but not the part the operator sees.** Measured two ways the answer flips, and both halves matter:
+
+| Lens | Model (A) | Pipeline (B+C) | Genuine result (D) | Host (E) |
+|---|---|---|---|---|
+| **Failure *events*** (FAIL records + smoke-fail alerts, 11-05..06) | ~60 of 577 (10 %) | **~505 of 577 (88 %)** — one missing back-off (479) + 11 false "pid dead" + 15 predicate/harness | ~7 | 0 (11-05) |
+| **Rows that failed at least once** (94 rows) | **~55 (58 %)** | ~25 (27 %) | ~8 | ~6 (11-04 disk) |
+| **Compute hours lost** (non-rc0 grants, excl. disk-floor and smoke-ends) | **~24 h** (10 host-h impact rows, 10.8 q-h yarn own-window, 2.7 gpu-h short estimates) | **< 0.3 h** | ~4 h | 2.0 h (11-04 disk-floor, fixed) |
+
+So: **the *noise* is the pipeline's** — 88 % of every FAIL file and every smoke-fail alert the parallel session saw this
+window carries no new information (one row refused the same `--precond-cmd` 171 times, once per keeper tick, for 2 h 52
+min, and was alerted 171 times). **The *compute* is the models'** — but not as scattered one-off mistakes. 50 of the ~55
+authoring rows fail from **two lane templates copied across rows** (the gitnexus-impact `job.py` in the kvfork /
+slot-fabric lanes: 40 non-rc0 runs; the yarn `write_fence.py` / `smoke_admission.py` pair: 22 copies, 2 shas), so one
+defect becomes 10–40 failures before anyone sees a pattern. That layer — per-lane job templates — is neither the
+keeper's nor the row author's and is where **B masquerades as A**.
+
+The first-try smoke pass rate is **89 %** (775 of 869 rows smoked since 11-04 passed without a FAIL); of the 94 rows that
+failed, 49 of 84 lineages passed later. Median PASS smoke is 10 s. The dry-run harness is doing its job; the friction is
+(1) what it does *after* a refusal and (2) two templates.
+
+**Where a (B) defect made the model look wrong (verified):**
+
+| Symptom the owner saw | Truth | Records |
+|---|---|---|
+| `refuse rc=14: launcher pid N is dead` → `fix_task: fix dry-run failure of <row>` | the smoke had **completed the whole job** 1 s earlier (`ended rc=0 reason=complete`); every one of the 9 rows has `PASS.json` + `grants/<id>.complete` | 11 FAILs, 9 rows (`codex-gpu-serving-p5-candidate-pii`, `lsa-gpu-dense-bf16-8k`, `kvfork17-alt17-custody-race-qual`, `akx-c6-n4-generic-vs-candidate`, `v11-122-llg-build-{cpu,gpu}`, `c6q4fix-llg-build-cpu`, `c6q4opt-llg-build-gpu`, `c6q4isum-llg-build-gpu`) |
+| yarn v40 GPU rows `rc=78` "vacuous fenced GPU test" | the keeper's rc78 check was **correct**: the job did no GPU work — because the lane's own `write_fence.py` (Landlock) denied `/dev/kfd`/`/dev/dri`. Then three more template defects (HIP `TMPDIR`, a ROCm thread on all 192 CPUs that the job's own `smoke_admission.py` `len(cpus)!=2` rule rejects, HIP temp files vanishing mid-scan) cost v41 (rc=1) before v42 passed at 00:42Z — **3 h of the adhoc session on one template** | 2 FAILs rc78 + 1 rc1; 21:44Z → 00:42Z |
+| `rock-aiter-prebuild-r2`: FAIL "rc=? (no ended record)" written 2 min **after** a PASS of the same attempt; plus `refuse rc=10: no epyc.row.v3 row in ready/` | harness wrote both verdicts for one attempt; the rc=10 was a legacy publish path | 2 FAILs, main-inf22 |
+| `codex3-pareval120-k20-gen-r2`, `inf75-c5-w3-halfb-census-c6-r2`: "rc=? no ended record", log tail is `filler_run15.sh: line 219: /proc/N/environ: Permission denied` ×3 | the engine's port/seal scan read every process's environ without `2>`; ~2,000 lines per run flooded job logs (also the yarn OUTPUT-PAUSE) — fixed in the deployed filler (`:304` comment) | 2 FAILs |
+| `ufh14-b4k-guard-v3`: `ValueError: unknown grant fields` | the grant format grew new keys under the row (pass 3 deploy churn); the job's strict parser was right about its contract | 1 FAIL |
+| `OVER-DECLARED busy_fraction: declared 1, measured 0.075` on `kvu16g3-retune-r3/r4` and 41 other **GPU-lane** PASSes | the flag measures **CPU** busy on rows whose work is on the MI210 | 43 of 72 flags |
+| `IDLE-HELD gpu-quiet <row>: measured 0% busy` → owner notified (since `4b78e3716`, 22:05Z) | same CPU metric on GPU rows (`ak-asm-t1-harness` ×21 ticks, yarn v41/v42 gpu) | 9 rows, 30+ ticks in 3 h |
+
+## P4.2 Classification — every failure, by root cause
+
+Counts are records; "rows" are distinct ids. Hours are grant-held wall-clock from `.ended` `started=`→`time=`, split by
+the region class the grant held (whole host / one quarter / MI210+host threads). Dry-run FAILs hold ≤ 1 quarter for
+seconds and are counted as 0 h unless stated.
+
+| Class | What | FAIL records (rows) | Non-rc0 grants | host-h | q-h | gpu-h |
+|---|---|---|---|---|---|---|
+| **A** authoring | gitnexus-impact rows exit rc≠0 **after** a successful 29-min whole-host analyze (`results.jsonl status: partial`, verdict "inconclusive"); 6 attempts for `kpf182` alone (base, r2, r3, r3-q, r3-q2 → r3-q2-sq3 completes on 4 cores in 64 min) | — | **40** (kpf17/30/41/50/131/182/191/625, v11-fa8, kpf-rs1; owners h-slot-fabric 14, h-kvfork 6, h-kvu 2, adhoc takeover 8) | **9.05** | 1.02 | 0 |
+| A | yarn v36/v39 CPU rows: 12 h estimate, keeper window to 06:40Z next day, job's **own** window rule exits rc=75 at 1.9–4.9 h; no per-item checkpoint ("CPU prefill 7 h/item", inf22 11-05) | — | 4 (+2 `stopped` v37) | 0 | **10.8** (+0.8) | 0 |
+| A | estimate too short / own deadline: `kvu16g3-retune-r3` (est 1.5 h, held 1.77 h, rc75 deadline), `rock-aiter-build` 0.92 gpu-h, `rock-aiter-prebuild` 2.13 q-h (rc75 with `RESULT.json complete:true`) | — | 3 (main-inf22) | 0 | 2.13 | 2.69 |
+| A | smoke-time job errors: stale seal (`sha256sum ... did NOT match`, 6 → auto-retried, PASS in 1 min), `build-missing` (4), missing file/path (5), CMake/`FileNotFound`/`RuntimeError` in job (≈18), `rc=15` launcher is not the engine (3), job never writes a record in `first_progress_s` (≈10) | **≈50 (≈45 rows)** | ≈15 short rc=1/2/5 | 1.1 | 0.3 | 0.1 |
+| **B** harness/template | `rc=14` dead-pid refusal **after** the smoke completed (false FAIL, owner told to "fix") | **11 (9)** | 0 | 0 | 0 | 0 |
+| B | yarn lane template: `write_fence.py` Landlock denies `/dev/kfd` (rc78 ×2, keeper check correct), then TMPDIR / 192-CPU affinity / temp-vanish (rc1); 22 copies of the fence across yarn + micron-import + refactor lanes | **3 (3)** | 1 (0.13 gpu-h) | 0 | 0 | 0.13 |
+| B | engine `/proc/*/environ` scan without stderr redirect (log flood; 2 rows "no ended record"); harness wrote PASS **and** FAIL for one attempt; `unknown grant fields` after grant-schema growth; legacy-publish `rc=10` | **6 (5)** | 0 | 0 | 0 | 0 |
+| B | GPU-row measurements use CPU busy: `OVER-DECLARED` 43/72 false, `IDLE-HELD gpu-quiet` 9 rows / 30+ notifies | (flags, not FAILs) | 0 | 0 | 0 | 0 |
+| **C** rule too fickle | `--precond-cmd` refusal re-tried **every keeper tick with no back-off**: `kpf41-direct-vec-impact-r5` ×171 and `kpf50-child-evidence-main-impact-r2` ×171 (06:34→09:26Z), `kpf41-backend-gpu-qualification` ×137 (03:30→04:32Z); each tick wrote a FAIL file **and** a `smoke-fail` alert (478 of the 577 alerts since 11-05) | **479 (3)** | 0 | 0 | 0 | 0 |
+| C | "real record" heuristic refuses legitimate progress: `c6-support-census` ("6 new records ignored: unit_key missing"), `cafe4-v10-mtp-lifecycle-build` (490 s build, no numeric record → rc75), vidya `r18d/r234` ("no numeric field outside bookkeeping keys"), `handoff-vidya-kvu19a2-wire` (unit written, rc=0, "VRAM never showed residency") | **≈9 (8)** | 0 | 0 | 0 | 0 |
+| **D** genuine | `kvu16g3-retune-r4` rc=3 REJECT (`valid=False worst=1015.8`), `kvu16g2-ab/-r2/-decstep` rc=3, `q38p3a` rc=3, `hil15b-heavy-06-20-r12` rc=1 (1.67 q-h, refactor), `nemo-server-marker-build r13/r15`, `yarn-e1-a2-n10-gpu` "A2 REFUSED" | ≈4 | ≈10 | 0 | 1.7 | 1.5 |
+| **E** host | disk-floor (`rc=75 disk-floor`) — **215 of 217 fall in 11-04 14:00–23:59Z**, the pass-1 F1 window; 2 stragglers 11-05 13:xx. Keeper `heal_grants`→`shutil.move` crash ×63, 11-04 17:00–23:02Z, none since. **Both resolved.** | 0 | 217 | 0.72 | 0.54 | 0.74 |
+
+**Per session** (non-rc0 grants excl. disk-floor and smoke-ends; FAIL rows with lineage-later-PASS):
+
+| Session | FAIL rows (later PASS) | Non-rc0 grants | host-h | q-h | gpu-h | Dominant cause |
+|---|---|---|---|---|---|---|
+| **main-inf22** | 12 (6) | 15 | 0.31 | 2.21 | 3.14 | A: estimates/own deadline (kvu16g3 r3, rock-aiter ×2); D: kvu16g3 r4; B: rock-aiter-prebuild-r2 double verdict + rc10 |
+| **operator-adhoc-\*** | 4 (v42 passed under a new id) | 34 | 3.67 | 12.61 | 0.52 | A: yarn own-window 10.8 q-h; A: kpf41-q2-s impact ×4 (2.6 q-h); B: yarn template 3 h of session time |
+| h-heterogeneous-slot-fabric | 4 (4) | 14 | 3.51 | 0 | 0 | A-template: impact rows |
+| h-kvfork | 10 (9) | 6 | 1.47 | 0 | 0 | A-template: impact rows; C: 342 of the 479 precond loops |
+| refactor | 0 | 1 | 0 | 1.67 | 0 | D/A: hil15b r12 rc=1 |
+| codex\* | 1 | 7 | 0.21 | 0.60 | 0 | A: pareval rc=1 (+B environ flood); stt5 baseline rc75 window |
+| autokernel lanes (all-devices, cross-workload) | 26 (15) | 21 | 1.3 | 0.01 | 0.06 | A: stale seal / build-missing / sentinel builds; E on 11-04 |
+| lsa-screen | 8 (3) | 5 | 0.62 | 0.01 | 0 | A: CMake, missing `libllama.so`, `smoke_predicate.py` not +x |
+
+Agent time, not compute, is the larger invisible cost: 84 of the 1,310 commits on `origin/main` since 11-04 (6.4 %) are
+rowflow/keeper/smoke/fence fixes, and the adhoc session spent 21:44–00:42Z on one lane's fence.
+
+## P4.3 Top changes, ranked by hours saved per unit effort
+
+| # | Change | Fixes | Removes (this window) | Effort | Where |
+|---|---|---|---|---|---|
+| **1** | **Admission refusal is terminal, once.** A `--precond-cmd` / `rc=12` / `rc=15` refusal writes **one** `FAIL`, **one** alert, and parks the row (`ARMED` → `BACKLOG`, reason in `.ended`); the keeper re-tries only when the launcher *or precond target* sha changes (the `fix_task` text already promises this at `rowflow.py:2613`; the loop proves it is not what runs) | C | 476 of 577 FAIL files, 475 of 577 alerts (83 %); the parallel session's alert stream drops ~6× | ~20 lines in `arm_one`/refuse path | **Frozen keeper, emergency** (pure noise removal, no placement change); and rowflow2 `admit()` as the only retry rule |
+| **2** | **A dead poller with `.complete` / `ended rc=0` is a completion, not a failure.** Check `grants/<id>.ended` and `.complete` before `refuse rc=14`; never emit `fix_task` for a completed row | B | 11 false FAILs / 9 rows, each a "fix your row" to an owner whose row had finished; removes the "smoke marked COMPLETE then failed" confusion from pass 3 | 3 lines | **Frozen keeper, emergency**; rowflow2 `reconcile()` |
+| **3** | **Lane templates become shared, tested harness modules.** (a) the gitnexus-impact `job.py`: separate *analyze* (cacheable, 4 cores — pass-1 F3) from *scan*; scan reads the cached graph and never books the host; make `status: partial` an rc=0 inconclusive result, not rc=1. (b) `write_fence.py` + `smoke_admission.py`: one copy under `compute-flags/bin/` with the GPU device allow-list (`/dev/kfd`, `/dev/dri`) and HIP `TMPDIR` inside the fenced tree, affinity check = "⊆ granted cpus" not "== 2 cpus"; rows reference it by sha | A-template (reads as A, behaves as B) | 40 non-rc0 runs / 10 host-h; 3 h adhoc session time; prevents the next 20 copies inheriting the same defects | 1 day per template, owned by the lanes (kv-cache-program, long-context-program), not the keeper | **Lane repos + a rowflow2 publish lint** ("launcher imports `write_fence` from `bin/`, not a copy") |
+| **4** | **GPU-token rows are measured by KFD pid / VRAM, never CPU %.** Suppress `OVER-DECLARED busy_fraction` and `IDLE-HELD gpu-quiet` for rows holding the GPU token; use the fence sampler's KFD count (already collected for `GPU-FENCE-BREACH`) | B | 43 false flags, 9 falsely-notified rows / 30+ notifies in 3 h; the warn-only `4b78e3716` currently pages owners for GPU jobs that are busy | 10 lines (the metric exists) | **rowflow2 `reconcile()`** (it is the pass-3 §P3.4 rule); emergency only if the notifies keep paging |
+| **5** | **Progress is declared, not inferred.** `publish` refuses a row with no `smoke_predicate` and no `unit_key` unless `result_format` is a numeric jsonl; the "real record / bookkeeping keys / `unit_count` missing" heuristic goes. Refusal costs 0 s; today it costs a 300–900 s smoke and a wrong "fix the job" verdict | C | ≈9 FAILs / 8 rows this window; every future "the job worked but the predicate didn't see it" | publish-time check, ~15 lines | **rowflow2 schema** (P3.5 admission test); not worth touching the frozen keeper |
+| 6 | Estimates get a floor from measurement: a row whose predecessor ended `rc=75 deadline` republishes with `estimate_s ≥ 1.5 × measured`, or carries `measured_ack` | A | kvu16g3 r3 (1.77 gpu-h), rock-aiter ×2 (3 h), yarn v36→v39 repeated the same cutoff 4× (10.8 q-h) | publish-time lookup of lineage `.ended` | rowflow2 publish (P3.5 feedback rule) |
+
+Not recommended: more doctrine text about "declare your shape / check your seal". The 50-row template failures and the
+479-record loop are both *mechanical* — one copy of the template, one back-off rule — and neither improves with another
+paragraph in `SKILL.md`.
+
+## P4.4 Delete lens — checks producing more false failures than catches
+
+| Check | False | Real catches | Verdict |
+|---|---|---|---|
+| per-tick `--precond-cmd` re-refusal (writes FAIL + alert each tick) | **478** repeats carrying zero new information | 3 (the first refusal of each row) | **delete the repeat**: refuse once, park |
+| `refuse rc=14` dead-pid at admission | **11 / 11** (every rc=14 row since 11-04 had `.complete`) | 0 | **delete** as a failure verdict; keep as "poller finished" |
+| `OVER-DECLARED busy_fraction` on GPU-token rows | 43 of 72 flags | 0 on GPU rows (low CPU is the *expected* reading) | **suppress for GPU token**; keep for CPU rows (29 real over-declarations, e.g. `c6-iqkq8pf-fp16s-gate` declared 24 measured 3.2 — that one is right) |
+| `IDLE-HELD gpu-quiet` via CPU % (notify-only since 22:05Z) | 9 rows / 30+ notifies, no action possible by the owner | none verifiable (`ak-asm-t1-harness` was a running GPU harness) | **suppress for GPU token** until the KFD metric lands |
+| `ALERT-ROUTE … alarm_channel.py missing` | 60 lines since 11-04; routes nothing (pass 3 P3.3 "fix the missing `alarm_channel.py`" — still missing) | 0 | fix the import or delete the route |
+| `REAP-VAULT-REFUSED <dir>: keep set > vault cap` | **2,263 lines** since 11-04 for ~12 dirs, identical every tick (`codex-ni-inf50-writerrace-resume` ×623) | the decision never changes | log once per (dir, reason) |
+| "real record" progress heuristic (`no numeric field outside the bookkeeping keys`, `unit_key missing`) | ≈9 rows whose job had produced output | ≈10 rows that truly wrote nothing in time — but those are *also* caught by the plain deadline | replace with declared `smoke_predicate` / `unit_key` (change 5) |
+
+Checks that **earned their keep** this window and must stay: the GPU-fence `rc78` vacuous test (caught the yarn
+template's self-inflicted `/dev/kfd` denial on the first 11-second smoke, before a 12 h grant); the job-side
+`missing own-PID GPU witness` (`c6-q4k-targetshape-perf`); the dry-run deadline (`DRYRUN-DEADLINE` ×1, `DRYRUN-REAP`
+×12 released holds that pass 2 D9 saw held for 20 h); the disk floor (217 refusals on 11-04, 2 on 11-05 — the leak is
+closed and the gate is now quiet).
+
+## P4.5 Evidence commands (pass 4)
+
+```bash
+F=/mnt/raid0/llm/tmp/compute-flags
+# FAIL records since 11-04, by rc and by row (the 171/171/137 loop)
+python3 -I - <<'EOF'
+import json,glob,collections
+F=[json.load(open(f)) for f in glob.glob('/mnt/raid0/llm/tmp/compute-flags/dryrun/*/FAIL-*.json')]
+F=[j for j in F if (j.get('at') or '')>='2026-11-04']
+print(len(F), collections.Counter(j['id'] for j in F).most_common(3))
+EOF
+# rc=14 rows all completed
+for id in v11-122-llg-build-cpu-20261105 c6q4isum-llg-build-gpu-20261105; do ls $F/grants/$id.complete $F/dryrun/$id/PASS*.json; done
+# smoke-fail alerts share
+python3 -I -c "import json,collections;c=collections.Counter(json.loads(l)['row_id'] for l in open('$F/rowflow-alerts.jsonl') if '\"smoke-fail\"' in l and '2026-11-05' in l);print(sum(c.values()),c.most_common(3))"
+# yarn v39 grant window vs exit
+grep -E 'GRANT yarn-oolong-s2-import-eligible26-v39' $F/ws58-calendar-keeper.log | head -1; head -1 $F/grants/yarn-oolong-s2-import-eligible26-v39-20261105.ended
+# template propagation
+find /mnt/raid0/llm/tmp -maxdepth 3 -name write_fence.py | xargs sha256sum | awk '{print $1}' | sort | uniq -c
+# GPU-row false flags
+awk '$1>="2026-11-05T22:05" && $2=="IDLE-HELD" && $3=="gpu-quiet"{print $4}' $F/ws58-calendar-keeper.log | sort | uniq -c | sort -rn | head
+# disk-floor by day (resolved)
+for f in $F/grants/*.ended; do head -1 $f | grep -q disk-floor && head -1 $f | sed -n 's/.*time=\(..........\).*/\1/p'; done | sort | uniq -c
+```
