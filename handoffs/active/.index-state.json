@@ -2596,7 +2596,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Read C7 gate c7-asm-ports-gate-20261106 (c420b9d1a vs C6, 0.97 floor, PPL incl. H15); fold or drop named port (AK-ASM-FOLD-GATE)",
+      "next_action": "Fix C7 Q38FN PPL regression (bisection, AK-ASM-C7-Q38-BISECT), then fold H8b/FA128 and re-gate C7",
       "track": "autokernel research loop"
     },
     "INF-33": {
