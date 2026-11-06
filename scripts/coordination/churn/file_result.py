@@ -19,9 +19,11 @@ The verdict record validates against scripts/coordination/filed_verdict.schema.j
 filed_by, at}. Stdlib only.
 """
 import argparse, datetime, glob, hashlib, json, os, re, sys
+from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(HERE, "..", "..", "champion", "keep_tail"))
 DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
 OPS = {"<": lambda a, b: a < b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b,
        ">=": lambda a, b: a >= b, "==": lambda a, b: a == b, "!=": lambda a, b: a != b}
@@ -196,6 +198,36 @@ def decide(rule, metrics):
     return ("pass" if ok else "fail"), values, True, ""
 
 
+def _gpu_row(m):
+    return any("gpu" in str(m.get(k) or "").lower() or "mi210" in str(m.get(k) or "").lower()
+               for k in ("lane", "declared_shape", "regions"))
+
+
+def keep_tail_report(m, metrics, rid, flags, journal=None):
+    """KEEP-TAIL-1 (operator 2026-11-06): every GPU A/B row's verdict carries P and F, automatically.
+
+    A GPU row whose result carries per-arm timed samples (`samples_a`, `samples_b`; optional `effect_pct`,
+    `timing_region` {warm_up,timed_loop,compile_import_check}) gets keep_tail.verdict() appended as rec["keep_tail"] and
+    one line in <flags>/filing-done/keep_tail_counter.jsonl (the counter wrap-up checks: `keep_tail.py --counter`).
+    A GPU row without samples records reported=false and is NOT counted. Never raises: reporting must not block filing."""
+    if not _gpu_row(m):
+        return None
+    sa, sb = metrics.get("samples_a"), metrics.get("samples_b")
+    if not (isinstance(sa, list) and isinstance(sb, list)):
+        return {"reported": False, "reason": "no samples_a/samples_b in result"}
+    try:
+        import statistics
+        import keep_tail
+        eff = metrics.get("effect_pct")
+        eff = float(eff) if isinstance(eff, (int, float)) else (statistics.median(sb) / statistics.median(sa) - 1.0) * 100.0
+        region = metrics.get("timing_region") if isinstance(metrics.get("timing_region"), dict) else None
+        j = journal or os.environ.get("KEEP_TAIL_JOURNAL")
+        out = keep_tail.verdict(rid, eff, sa, sb, region=region, journal=Path(j) if j else None)
+        return dict(out, reported=True)
+    except Exception as e:  # noqa: BLE001
+        return {"reported": False, "reason": f"keep_tail failed: {type(e).__name__}: {e}"}
+
+
 def tick_line(rid, rc, verdict, values, filed_by):
     vals = " ".join(f"{k}={v:g}" for k, v in values.items())
     return (f"{rid} … ✅ {datetime.date.today().isoformat()} rc={rc} {verdict} {vals} "
@@ -259,6 +291,9 @@ def main(argv=None):
            "row_verdict": verdict, "rule": rule, "machine_checkable": machine, "values": values, "rc": rc, "end_line": endline,
            "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
            "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run}
+    kt = keep_tail_report(m, metrics, rid, flags)
+    if kt is not None:
+        rec["keep_tail"] = kt
     done = os.path.join(flags, "filing-done")
     summary = f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}" + (" (dry-run)" if a.dry_run else "")
     print(summary)
@@ -267,6 +302,9 @@ def main(argv=None):
     os.makedirs(done, exist_ok=True)
     with open(os.path.join(done, rid + ".verdict.json"), "w") as fh:
         json.dump(rec, fh, indent=1, sort_keys=True)
+    if kt and kt.get("reported"):
+        with open(os.path.join(done, "keep_tail_counter.jsonl"), "a") as fh:
+            fh.write(json.dumps({"row": rid, "at": now, "P_pct": kt["P_pct"], "F_pct": kt["F_pct"], "refused": kt["refused"]}, sort_keys=True) + "\n")
     tick = (agent or {}).get("tick_text")
     task = str(m.get("handoff_task") or "")
     if tick and ":" in task:

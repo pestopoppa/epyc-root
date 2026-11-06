@@ -78,8 +78,29 @@ def verdict(row_id: str, effect_pct: float, samples_a, samples_b, *, region: dic
     return out
 
 
+DEFAULT_COUNTER = Path("/mnt/raid0/llm/tmp/compute-flags/filing-done/keep_tail_counter.jsonl")
+TARGET_ROWS = 10
+
+
+def counter(path: Path | None = None) -> dict:
+    """KEEP-TAIL-1 closure counter: distinct rows that carry P and F (file_result.py appends one line per GPU A/B row)."""
+    p = Path(path) if path is not None else DEFAULT_COUNTER
+    rows: dict[str, dict] = {}
+    if p.is_file():
+        for line in p.read_text("utf-8").splitlines():
+            if line.strip():
+                r = json.loads(line)
+                rows[r["row"]] = r
+    return {"path": str(p), "rows_with_P_and_F": len(rows), "target": TARGET_ROWS, "closed": len(rows) >= TARGET_ROWS,
+            "refusals": sum(1 for r in rows.values() if r.get("refused")), "rows": sorted(rows)}
+
+
 def main(argv=None) -> int:
     a = list(sys.argv[1:] if argv is None else argv)
+    if a[:1] == ["--counter"]:
+        c = counter(Path(a[1]) if len(a) > 1 else None)
+        print(json.dumps(c, sort_keys=True))
+        return 0 if c["closed"] else 1
     journal = None
     if "--journal" in a:
         i = a.index("--journal"); journal = Path(a[i + 1]); del a[i:i + 2]

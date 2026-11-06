@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 508
+      "open": 507
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -76,7 +76,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5909,
+          "line": 5910,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5989,
+          "line": 5990,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6286,
+          "line": 6287,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9501,
+          "line": 9502,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13851,
+          "line": 13852,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14063,
+          "line": 14064,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -520,10 +520,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 340,
+      "closed": 341,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 53,
+      "open": 52,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -546,20 +546,20 @@
         },
         {
           "blocked": 0,
-          "closed": 29,
+          "closed": 30,
           "gates": [],
           "guarded": 0,
           "line": 2441,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 22
+          "open": 21
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2567,
+          "line": 2568,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -569,7 +569,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3041,
+          "line": 3042,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -584,7 +584,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3486,
+          "line": 3487,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -600,7 +600,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4999,
+          "line": 5000,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -616,7 +616,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5659,
+          "line": 5660,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -632,7 +632,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5847,
+          "line": 5848,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -1201,7 +1201,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2886,
+          "line": 2887,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1218,7 +1218,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3780,
+          "line": 3781,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61

@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T23:23:39Z",
+  "generated_at": "2026-11-06T23:50:16Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1430,7 +1430,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5909,
+          "line": 5910,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1439,7 +1439,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5989,
+          "line": 5990,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1458,7 +1458,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6286,
+          "line": 6287,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1475,7 +1475,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9501,
+          "line": 9502,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1488,7 +1488,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13851,
+          "line": 13852,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1522,7 +1522,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14063,
+          "line": 14064,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2102,7 +2102,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 2886,
+          "line": 2887,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2125,7 +2125,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 3780,
+          "line": 3781,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 62,
           "readiness": "blocked"
@@ -3101,15 +3101,15 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 340,
-      "dispatchable": 53,
+      "closed": 341,
+      "dispatchable": 52,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-05",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
-      "open": 53,
+      "open": 52,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3143,18 +3143,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 22,
+          "dispatchable": 21,
           "gates": [],
           "line": 2441,
           "name": "churn-pipeline",
-          "open": 22,
+          "open": 21,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2567,
+          "line": 2568,
           "name": "dashboard-architecture-restructure",
           "open": 6,
           "readiness": "ready"
@@ -3163,7 +3163,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3041,
+          "line": 3042,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3181,7 +3181,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3486,
+          "line": 3487,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3201,7 +3201,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4999,
+          "line": 5000,
           "name": "loop-owned-fleet-implementation",
           "open": 2,
           "readiness": "blocked"
@@ -3221,7 +3221,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5659,
+          "line": 5660,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3241,7 +3241,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5847,
+          "line": 5848,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
