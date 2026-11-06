@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 683
+      "open": 682
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 780,
+      "closed": 781,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 141,
+      "open": 140,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -93,7 +93,7 @@
         },
         {
           "blocked": 0,
-          "closed": 169,
+          "closed": 170,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -104,7 +104,7 @@
           "line": 6283,
           "markers": 1,
           "name": "autokernel-rebuild-program",
-          "open": 19
+          "open": 18
         },
         {
           "blocked": 0,

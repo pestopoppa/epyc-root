@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T23:00:48Z",
+  "generated_at": "2026-11-06T23:13:57Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1369,15 +1369,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 780,
-      "dispatchable": 141,
+      "closed": 781,
+      "dispatchable": 140,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-06",
       "next_action": "C7r is champion (`62cb6a6af`); next C8-incremental folds: H8b (AK-ASM-H8B-GATE r2) and FA hd256 long-ctx r5",
-      "open": 142,
+      "open": 141,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1451,7 +1451,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "dispatchable": 19,
+          "dispatchable": 18,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -1460,7 +1460,7 @@
           ],
           "line": 6283,
           "name": "autokernel-rebuild-program",
-          "open": 19,
+          "open": 18,
           "readiness": "blocked"
         },
         {
