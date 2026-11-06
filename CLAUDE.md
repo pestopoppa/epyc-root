@@ -200,7 +200,7 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
 
 ## Agents & Automation
 
-- **Fan out subagents by default — always, not only when a dispatch says so.** Your own thread is for
+- **Fan out subagents when the work is genuinely parallel — width is a ceiling, not a floor.** Your own thread is for
   review, integration and task boundaries; execution goes to subagents, **up to 3–5 concurrently as a ceiling, never a floor**, on the cheapest capable
   model and lowest adequate effort, set explicitly.
   The width, the model/effort matching, the PROPOSED-work review gate **and the ratified
