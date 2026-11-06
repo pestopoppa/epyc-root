@@ -5,8 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-if len(sys.argv) < 2 or sys.argv[1] not in ("a", "b"):
-    raise SystemExit("usage: run.py a LABEL ROOT | run.py b")
+if len(sys.argv) < 2 or sys.argv[1] not in ("a", "b", "cc"):
+    raise SystemExit("usage: run.py a LABEL ROOT | run.py b | run.py cc ROOT")
 script = Path(__file__).with_name("canary_" + sys.argv[1] + ".py")
 proc = subprocess.run([sys.executable, str(script), *sys.argv[2:]], text=True,
                       stdout=subprocess.PIPE)

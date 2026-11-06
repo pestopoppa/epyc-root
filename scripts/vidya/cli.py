@@ -556,6 +556,8 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
+    "committed-conclusion",
+    "repl-shadow-observation",
     "cs22v0-parity",
     "inf34-a2-raw-prefill",
     "dev-harness-aggregate", "lb49-combined-diagnostic",
@@ -893,6 +895,36 @@ def cmd_sync(args) -> int:
                  f"synced through intake-{rep['synced_max_id']}")
 
 
+def cmd_conclusion_add(args) -> int:
+    """VB-CC: write ONE committed-conclusion register row (a register writer, never a ledger
+    writer). The anchor is resolved from git history at --ref (first commit holding the item
+    verbatim; never blame); the row is validated exactly as the adapter will audit it."""
+    from adapters import committed_conclusion as ccm  # noqa: PLC0415
+    from datetime import datetime, timezone  # noqa: PLC0415
+
+    try:
+        also = []
+        for spec in args.also or ():
+            path, _, line = spec.rpartition(":")
+            also.append((path, int(line)))
+        row = ccm.build_row(
+            path=args.path, line=args.line, ref=args.ref, facet=args.facet or "",
+            kind=args.kind, stated=json.loads(args.stated_json),
+            scope=json.loads(args.scope_json), scope_evidence=args.scope_evidence,
+            category=args.category, direction=args.direction, actor=args.actor,
+            at=args.at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            retrofit=args.retrofit, task_id=args.task_id, also=also,
+            raw_paths=args.raw or (),
+            mechanism=json.loads(args.mechanism_json) if args.mechanism_json else None)
+    except (ValueError, ccm.ProjectionError) as exc:
+        print(f"conclusion add refused: {exc}", file=sys.stderr)
+        return 2
+    register = Path(args.register) if args.register else REPO_ROOT / ccm.REGISTER_REL
+    wrote = ccm.append_row(register, row)
+    return _emit({"cc_id": row["cc_id"], "written": wrote, "register": str(register)}, args.json,
+                 f"{'wrote' if wrote else 'already present'} {row['cc_id']} -> {register}")
+
+
 def cmd_cite_check(args) -> int:
     """SC12: gate intake citations in project documents (exit 3 = a blocking citation)."""
     from citation_gate import check_paths, summarize  # noqa: PLC0415
@@ -1087,6 +1119,30 @@ def build_parser() -> argparse.ArgumentParser:
     sy.add_argument("--force", action="store_true")
     sy.add_argument("--quiet", action="store_true")
     sy.set_defaults(func=cmd_sync)
+
+    co = sub.add_parser("conclusion", help="committed-conclusion register (VB-CC)")
+    cosub = co.add_subparsers(dest="conclusion_cmd", required=True)
+    ca = cosub.add_parser("add", help="append one confirmed committed-conclusion row")
+    ca.add_argument("--path", required=True, help="repo-relative handoff/progress path")
+    ca.add_argument("--line", type=int, required=True, help="item line at --ref")
+    ca.add_argument("--ref", default="origin/main")
+    ca.add_argument("--facet", help="identity facet when one item concludes per model")
+    ca.add_argument("--kind", default="result", choices=["result", "decision"])
+    ca.add_argument("--stated-json", required=True)
+    ca.add_argument("--scope-json", default="{}")
+    ca.add_argument("--scope-evidence", default="line",
+                    choices=["line", "heading", "handoff-header", "none"])
+    ca.add_argument("--category", default="CANDIDATE")
+    ca.add_argument("--direction", default="higher_better")
+    ca.add_argument("--mechanism-json")
+    ca.add_argument("--task-id")
+    ca.add_argument("--also", action="append", help="secondary anchor path:line (at --ref)")
+    ca.add_argument("--raw", action="append", help="raw evidence path (sha256 recorded)")
+    ca.add_argument("--actor", required=True)
+    ca.add_argument("--at")
+    ca.add_argument("--retrofit", action="store_true")
+    ca.add_argument("--register", help=f"register file (default <repo>/data/belief/committed_conclusions.jsonl)")
+    ca.set_defaults(func=cmd_conclusion_add)
 
     cc = sub.add_parser("cite-check", help="gate intake citations in project documents")
     cc.add_argument("paths", nargs="*", help="files or dirs (default: handoffs, wiki, docs)")

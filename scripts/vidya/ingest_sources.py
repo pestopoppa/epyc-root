@@ -375,6 +375,13 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "instrument offline_speed, written by `SpeedRun.finalize()`); every row carries its "
                 "timing context and its A/A noise floor",
            task="VB-UFH12-EMBSPEED"),
+    Source("committed-conclusion", "committed_conclusion",
+           lambda path: [path] if path.is_file() else sorted(path.glob("committed_conclusions.jsonl")),
+           default=Path(__file__).resolve().parents[2] / "data" / "belief" / "committed_conclusions.jsonl",
+           note="committed-conclusion register (epyc.vidya.committed_conclusion.v1): quote re-hashed "
+                "against git; Judged/Located only (protocol_id empty, no reps, no run_id); "
+                "decision and covered_by rows decline",
+           task="VB-CC-1 / VB-CC-PILOT"),
     Source("gfx90a-static-register", "gfx90a_static_register",
            _files("audit_*.json", "audit_*.json.gz", "*isa_audit*.json", "*isa_audit*.json.gz"),
            note="gfx90a static register/ISA audits (research `gfx90a_isa_audit.py audit --json`, "
