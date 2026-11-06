@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 433,
+    "docs": 434,
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
@@ -11,20 +11,24 @@
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 0,
+      "added": 0,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-06T16:06:01Z",
+    "at": "2026-11-06T17:05:21Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-06-inference-serving-launch.md"
+      "docs/guides/agent-workflows/backlog-churn-flow.md",
+      "docs/reports/coordination/token-efficiency-audit-20261106.md",
+      "handoffs/active/engineering-hygiene-backlog.md",
+      "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md",
+      "research/deep-dives/ydnlc-20261106/intake-2632-transparent-compact.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T16:06:01Z",
+  "scan_time": "2026-11-06T17:05:21Z",
   "schema_version": 1,
-  "source_set_hash": "31660480137ce7bee2b5d9d0bc725e50d18649d631e29892194632c8dd17ccf2",
+  "source_set_hash": "20d7ddd253868c243d4ac1d40a9cd8637fb0b8cf47965b1741cbfe84fa90fe8e",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -91,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f3afc527cef0431f5c3ed1ac1595ed7c18f02f81c32ee8a8da2c7ae48d3abf74",
-      "modified": "2026-11-05T20:47:57Z",
+      "content_hash": "780a8599ddf125b4b00bcc48685d3eb0c6533a9ada0607a5a418405005b86e0a",
+      "modified": "2026-11-06T17:01:42Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 426209,
+      "size": 430614,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -5524,7 +5528,7 @@
     },
     {
       "content_hash": "6e0bbb10b36b5bc303ea0c08ffab4e84f9fc31f6de2339135a7890f4d3288d8c",
-      "modified": "2026-11-06T14:55:48Z",
+      "modified": "2026-11-06T17:05:20Z",
       "path": "research/deep-dives/ydnlc-20261106/intake-2632-transparent-compact.md",
       "size": 2811,
       "title": "intake-2632 \u2014 transparent-compact (arXiv 2610.20116v1)",
@@ -16171,10 +16175,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "da26b2bdca7469ae6d613491e0137d5f394d4f91f62b0f73990d21eedbc72f82",
-      "modified": "2026-11-06T07:05:02Z",
+      "content_hash": "3ff31df4b86645814beec07f8576a3e8b4aaef533bb88eda40927210b076d9ed",
+      "modified": "2026-11-06T17:01:42Z",
       "path": "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md",
-      "size": 3170,
+      "size": 6760,
       "title": "Wrap-up 6 \u2014 2026-11-05 ~21:00Z to 2026-11-06 (operator-adhoc-ops-20261105)",
       "type": "progress"
     },
@@ -17355,10 +17359,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "a08301a03d0486e0e9c74b0a01c6a607c5f3057c55e075741fc702b0dc29e75b",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "c4fa561342dc4be3e22474519c779b62e3437f2cffa322ebe721ca88ce65aa4f",
+      "modified": "2026-11-06T17:00:06Z",
       "path": "docs/guides/agent-workflows/backlog-churn-flow.md",
-      "size": 32657,
+      "size": 35299,
       "title": "Churn through the backlog \u2014 the one workflow (operator, 2026-11-01; simplified the same evening)",
       "type": "docs"
     },
@@ -18779,6 +18783,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "bb4f3f3487e92cd5728755fbbfbaca013ebd19c3f227a576c6a4805cd664c262",
+      "modified": "2026-11-06T17:00:06Z",
+      "path": "docs/reports/coordination/token-efficiency-audit-20261106.md",
+      "size": 19463,
+      "title": "Token-efficiency audit \u2014 dispatcher era vs main-plus-subagents takeover (2026-11-06)",
+      "type": "docs"
+    },
+    {
       "content_hash": "0c5f81c9bd26fc530b095476aad1b6d8be7b015f09f71cef209bd9fbdae74153",
       "modified": "2026-11-05T19:30:50Z",
       "path": "docs/reports/evl38-schedule-retirement-20261101.md",
@@ -19779,7 +19791,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2469,
+  "total_new": 2470,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

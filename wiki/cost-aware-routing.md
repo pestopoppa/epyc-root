@@ -484,6 +484,16 @@ such, not a new measurement.
 - [progress 2026-08-23.md](../progress/2026-08/2026-08-23.md) — CT-E7b master-registry propagation, era-enforcement follow-up (instrument_eras `kernel_name`, `2746c652`, `7fe84d9c`).
 - [qwen38-27b-replace-qwen36.md](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — the served-Unsloth-template digest row (9,993 B / `12827f24b742`) the stamps are bound to.
 
+## 2026-11-06 Update — Agent-fleet token spend: the dispatcher era and the main-plus-subagents takeover were both expensive
+
+Measured from raw Codex rollouts and Claude transcripts (audit `docs/reports/coordination/token-efficiency-audit-20261106.md`, cc312a985). Verdict: half right.
+
+- The dispatcher (hs-dispatcher-v3) burned Codex at ~313M context tokens/h; one weekly budget lasted 21 h.
+- The takeover regime (main plus subagents) was not cheap: ~$203/h list-price-equivalent of Claude spend, at least 42% of the Claude week in 24 h; the weekly limit was hit on 11-06 ~09:10Z.
+- Three mechanisms: full-context re-send multiplied by width; an unbounded resume loop; and no model/effort passed to spawns, so every Codex spawn inherited terra/high from `~/.codex/config.toml`.
+- Guards landed in 51874fcdb: explicit model/effort per spawn (refused if unresolved), 15M-token per-thread ceiling, 5400 s lease, max 12 resumes/24 h with park/unpark, quota backoff to `resets_at`, a zero-token budget meter with 50/80% alarms, 60k-context rotation, and a width cap of min(2, budget-derived). Registry default is codex gpt-6.1-sol/medium, Claude sonnet/medium. The dispatcher stays stopped until the operator ratifies two doctrine lines and the Codex week resets (11-11).
+- EPYC relevance: cost-aware routing applies to the agent fleet itself, not only to the served models. Model/effort must be a property of the spawn (row > handoff > registry > default), and a budget meter with `paused_until` is the quota-blindness fix. The Claude side of the meter is not yet wired (TOKEN-CLAUDE-BUDGET-METER).
+
 ## Related Categories
 
 - [Context Management](context-management.md) -- Compression techniques reduce context pressure, which is the primary cost driver; tool output compression is a routing-adjacent optimization; format-native injection and the transplant ceiling are compiled there from the context side
@@ -493,6 +503,9 @@ such, not a new measurement.
 
 ## Source References
 
+- [token-efficiency-audit-20261106.md](../docs/reports/coordination/token-efficiency-audit-20261106.md) -- the measured dispatcher-era vs takeover token spend, the three mechanisms, and the delete lens (cc312a985).
+- [engineering-hygiene-backlog.md](../handoffs/active/engineering-hygiene-backlog.md) -- the TOKEN-* boxes filed from the audit and the ROWFLOW-PASS4-EMERGENCY tick.
+- [backlog-churn-flow.md](../docs/guides/agent-workflows/backlog-churn-flow.md) -- the dispatcher token-guard behaviour as documented with 51874fcdb.
 - [intake-1140](https://arxiv.org/abs/2608.06301) HarnessOpt-Bench (Scale AI) -- EXTERNAL, credibility `3/6`, unrefereed preprint dive-verified 2026-08-15: the controlled target-harness swap (Table 3), the published per-suite noise floor and its reading rule, the 111-run normalized-gain comparison our dive derived, and the explicit warning that the `0.142` vs `0.079` headline varies the optimizer's coding agent rather than the target harness. Cite as `intake-1140#record`; it does not inherit `intake-1134`'s ICML venue credit
 - [routing-intelligence.md](../handoffs/active/routing-program.md#track-routing-intelligence) §*Research Intake Update — 2026-08-15* -- the record-only filing of the harness-as-routing-dimension finding and the correction attached to it
 - [qwen38-27b-replace-qwen36.md](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) -- the operator-declined quality gate ("quality will improve certainly"), the throughput step retained as a serving baseline rather than a decision gate, and the 2026-08-15 architect-bench ladders (mmlu_pro / gpqa letter-vs-CoT / aime25 / olympiadbench_hard; humaneval / BCB-hard / LCB-hard 52.8% vs stock 45.3% / SWE-oracle 39/40)
@@ -533,6 +546,10 @@ such, not a new measurement.
 The [supplied-score expectation helper](../docs/reference/confidence-expectation-preparation.md) preserves exact synthetic coverage, existing grading φ maps and explicit missing/unresolved dispositions. [Original off-host CI37446388954](../artifacts/ni07/run-37446388954/README.md) passes26/26 after MAIN source/API custody review. Candidate-normalized native probabilities and JSON-reported probabilities do not establish parity with the historical T1 score-token instrument. No reviewer threshold, route, native writer or calibration result changed; RC-10 and SC43 live work remain open.
 
 ## Compile Log
+
+### Compiled Update — 2026-11-06 (wrap-up 7, operator-adhoc-ops-20261105)
+
+Fleet token-spend audit and dispatcher token guards compiled into the 2026-11-06 section above (cc312a985, 51874fcdb; boxes TOKEN-* in `handoffs/active/engineering-hygiene-backlog.md`). Scoped touch; other pending sources left in the delta.
 
 _Generated by `render_wiki.py restructure`: compile history, newest first. The sections above are the current state._
 
