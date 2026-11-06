@@ -2874,6 +2874,8 @@ it against this handoff by association.
 - Design decision to carry composed ngram, with its measured −1.6 % cost:
   artifact §01 "Design decision — the recipe carries `ngram-mod`".
 
+- [ ] **KEEP-TAIL-1 — Report p95 timing inflation beside every GPU A/B and widen the floor to max(2.00%, sqrt(2)*P).** Independent-arm inflation turns a 3.90% p95 into a 5.52% floor, at which a true 3% win is unresolvable and a 4.5% win can read as a regression. Every A/B row declares its timing region (warm-up, timed loop, compile/import/check) and reports P and the resulting F; a keep whose effect sits inside the reported tail is refused and the refusal is journalled. Done when the next 10 A/B rows carry P and F and any widened-floor refusal is recorded. [belief: pending]
+
 ## Track: autokernel-cross-workload-keep-gate
 <!-- gate: INF-06#autokernel-unified-surface-program, INF-06#autokernel-rebuild-program, INF-65#autokernel-champion-aggregate -->
 

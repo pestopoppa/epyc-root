@@ -1,9 +1,9 @@
 {
   "session_id": "intake-quant-compiler-20261106",
   "started_at": "2026-11-06T15:40:00Z",
-  "last_checkpoint": "2026-11-06T17:45:00Z",
-  "stage": 3,
-  "phase": "stage3-plan",
+  "last_checkpoint": "2026-11-06T18:10:00Z",
+  "stage": 4,
+  "phase": "stage4-in-progress",
   "lane": "/mnt/raid0/llm/worktrees/intake-quant-compiler-20261106",
   "branch": "intake/quant-compiler-20261106",
   "topic": "LinQuant low-precision linear recurrences (paper + repo) and Together Compiler continual inference compilation; transfer to quantization/SSM programs, autokernel loop and churn pipeline",
@@ -43,19 +43,428 @@
       "stage": 1,
       "verbatim": "Accept all recommended deep dives for up to four Stage 2 waves.",
       "disposition": "planned",
-      "plan_ref": "P1..P5",
-      "reason": "Pre-approves the whole verified set; Stage 2 runs as wave1 (submitted) and wave2 (expansions), waves 3-4 reserved for dive-surfaced sources."
+      "plan_ref": "P1",
+      "reason": "Pre-approval consumed by wave 1 (submitted sources), wave 2 (expansions) and wave 3 (two surfaced sources)."
     },
     {
       "seq": 2,
       "stage": 1,
       "verbatim": "The first two sources seem quite relevant for our inference-research and autokernel programs. The third source seems quite relevant towards optimizing task pipeline churn, especially when it involves copious amounts of inference tasks. It could also be relevant to the autokernel agent loop to speed up iterations and mutations without relying on monolithic planner->drafter->measurement loops.",
       "disposition": "planned",
-      "plan_ref": "P1,P2,P3,P4",
-      "reason": "Program mapping drives the dive briefs (quantization/SSM for 2641/2642/2645/2646; autokernel loop + churn for 2643/2644/2647) and the Stage-3 packet split."
+      "plan_ref": "P1",
+      "reason": "Quantization/SSM sources land in P4/P5; TKCC lands in P1/P2/P3. The anti-monolithic-planner reading is recorded as observation-grade and declined as a loop redesign (TK-9), because the paper's ablation compares role-specialised peers, not our stage decomposition."
     }
   ],
-  "actionable_ledger": [],
+  "actionable_ledger": [
+    {
+      "ledger_id": "LQ-1",
+      "source": "intake-2641 dive (prefill-only premise)",
+      "action": "Measure the GDN recurrent core's share of prefill and decode wall time on CPU and MI210.",
+      "terminal_mapping": "P4"
+    },
+    {
+      "ledger_id": "LQ-2",
+      "source": "intake-2641 claim 1, Table 1",
+      "action": "Record that reciprocal key rescaling is invalid for delta-corrected writes, so it cannot transfer to standard GDN.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "LQ-3",
+      "source": "intake-2641 claim 4a",
+      "action": "Record that no-launch-cost is a property of SSDi8's fused pass, absent in our tree.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "LQ-4",
+      "source": "intake-2641 claim 5",
+      "action": "Keep sub-INT8 out of scope for the recurrent core.",
+      "terminal_mapping": "decline: The paper's own residual is +10.2% perplexity with no sub-byte kernel; re-open only with a better scheme"
+    },
+    {
+      "ledger_id": "LQ-5",
+      "source": "intake-2641 Table 9",
+      "action": "Keep the INT8-carry tolerance asymmetry as a design prior for any recurrent-state byte reduction.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "LQ-6",
+      "source": "intake-2641 claim 3",
+      "action": "Do not re-derive the paper's W4A8 numbers as a target.",
+      "terminal_mapping": "decline: Those numbers are a delta between two INT8-core designs, not a gain over FP16"
+    },
+    {
+      "ledger_id": "LQ-7",
+      "source": "intake-2641 transform 7/7",
+      "action": "If an INT8 GDN core is ever built, start from the write-gate placement rather than the rotation.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "LQ-8",
+      "source": "intake-2641 transfer finding",
+      "action": "Close the stage-1 action to map the invariances onto ggml block types as mis-scoped.",
+      "terminal_mapping": "decline: Six of seven transforms act on activations and never meet Q4_K/IQ block layouts"
+    },
+    {
+      "ledger_id": "LR-1",
+      "source": "intake-2642 repo dive",
+      "action": "Land a CPU fp64 conformance oracle for the chunked GDN graph.",
+      "terminal_mapping": "P4"
+    },
+    {
+      "ledger_id": "LR-2",
+      "source": "intake-2642 repo dive",
+      "action": "Record the cell mapping to the published chunk_core form in the delta-net header.",
+      "terminal_mapping": "P4"
+    },
+    {
+      "ledger_id": "LR-3",
+      "source": "intake-2642 repo dive",
+      "action": "Settle whether MMQ on CDNA2 instantiates the int8 MFMA tile or falls back to dp4a.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "LR-4",
+      "source": "intake-2642 licence audit",
+      "action": "Do not vendor the SSDi8-derived mamba2 kernels; keep the design only.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "LR-5",
+      "source": "intake-2642 repo dive",
+      "action": "Do not pursue the Marlin W4A8 GEMM on gfx90a.",
+      "terminal_mapping": "decline: The kernel is PTX for NVIDIA parts only, with no HIP lowering"
+    },
+    {
+      "ledger_id": "LR-6",
+      "source": "intake-2642 repo dive",
+      "action": "Adopt the noise-relative kernel-vs-emulation bound as the house conformance pattern.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "LR-7",
+      "source": "intake-2642 repo dive",
+      "action": "Record the Q0.7 gate-quantizer saturation hazard.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "LR-8",
+      "source": "intake-2642 repo dive",
+      "action": "Do not attempt eta/rho/tau as knobs on GGUF weight quantization.",
+      "terminal_mapping": "decline: Those invariances redistribute token-wise activation factors that per-32-block weight scales never see"
+    },
+    {
+      "ledger_id": "LR-9",
+      "source": "intake-2642 repo dive",
+      "action": "Do not treat the repo's Section-4 numbers as evidence for our tree.",
+      "terminal_mapping": "decline: No zoo weights, no training code, and single-run rows at about 5e-3 perplexity resolution"
+    },
+    {
+      "ledger_id": "TK-1",
+      "source": "intake-2643 dive",
+      "action": "Time build and correctness separately inside the injected gate.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "TK-2",
+      "source": "intake-2643 dive",
+      "action": "Consult the kernel store before building.",
+      "terminal_mapping": "P1"
+    },
+    {
+      "ledger_id": "TK-3",
+      "source": "intake-2643 dive",
+      "action": "One grant, one model load, N measurement units.",
+      "terminal_mapping": "P2"
+    },
+    {
+      "ledger_id": "TK-4",
+      "source": "intake-2643 dive",
+      "action": "Fix the screen-to-confirmed join and report rank agreement.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "TK-5",
+      "source": "intake-2643 dive",
+      "action": "Layer-subset fast-tier fidelity experiment on MI210.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "TK-6",
+      "source": "intake-2643 dive",
+      "action": "Screen a keep against the whole served vector before it lands.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "TK-7",
+      "source": "intake-2643 dive",
+      "action": "Test the submit-only-if-ceiling rule against the funnel.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "TK-8",
+      "source": "intake-2643 dive",
+      "action": "Do not import prefix-cache reuse as a measurement optimisation.",
+      "terminal_mapping": "decline: Cache state is bound as a validity hazard in the recipe; reuse would confound the measurement"
+    },
+    {
+      "ledger_id": "TK-9",
+      "source": "intake-2643 dive",
+      "action": "Do not delete the planner or critic on the strength of the context ablation.",
+      "terminal_mapping": "decline: The ablation is one layer, ten trials, no CI, and compares role-specialised peers, not our stage decomposition"
+    },
+    {
+      "ledger_id": "TK-10",
+      "source": "intake-2643 dive",
+      "action": "Add a drift and re-convergence contract before claiming continual compilation.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "TB-1",
+      "source": "intake-2644 blog dive",
+      "action": "Blog claim 1 disposition.",
+      "terminal_mapping": "decline: The blog table is unattributed and cannot be reconciled with the paper's attributed 761 s table"
+    },
+    {
+      "ledger_id": "TB-2",
+      "source": "intake-2644 blog dive",
+      "action": "Blog claim 2 disposition.",
+      "terminal_mapping": "decline: The mechanism is the paper's and its local transfer is the warm-worker packet"
+    },
+    {
+      "ledger_id": "TB-3",
+      "source": "intake-2644 blog dive",
+      "action": "Blog claim 3 disposition.",
+      "terminal_mapping": "decline: The megakernel concession corroborates a disposition that already existed and decides nothing"
+    },
+    {
+      "ledger_id": "TB-4",
+      "source": "intake-2644 blog dive",
+      "action": "Blog claim 4 disposition.",
+      "terminal_mapping": "decline: Vendor scale and benchmark claims are not comparators for a single MI210 node"
+    },
+    {
+      "ledger_id": "TB-5",
+      "source": "intake-2644 blog dive",
+      "action": "Record that vendor blog tables are not the paper's tables.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "TB-6",
+      "source": "intake-2644 blog dive",
+      "action": "Record both URLs behind the two-URL entry.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "SD-1",
+      "source": "intake-2645 dive",
+      "action": "Run the offline axis-granularity and N-axis rotation probe on captured SSD activations.",
+      "terminal_mapping": "P5"
+    },
+    {
+      "ledger_id": "SD-2",
+      "source": "intake-2645 dive",
+      "action": "Record the two missing ggml primitives for a chunked INT8 recurrence.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "SD-3",
+      "source": "intake-2645 dive",
+      "action": "Record the INT8-state rounding and saturation hazards.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "SD-4",
+      "source": "intake-2645 dive",
+      "action": "Record the rotation result as an extension across the boundary the baseline drew.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "SD-5",
+      "source": "intake-2645 dive",
+      "action": "Adopt the offline mean correction as a calibration pattern.",
+      "terminal_mapping": "decline: Worth about +0.2 points for 1-2% latency at a stage we do not run"
+    },
+    {
+      "ledger_id": "SD-6",
+      "source": "intake-2645 dive",
+      "action": "Adopt the W4A4 exclusion.",
+      "terminal_mapping": "decline: No W4A4 lane exists; recording the exclusion is the whole action"
+    },
+    {
+      "ledger_id": "Q2-1",
+      "source": "intake-2646 dive",
+      "action": "Audit and price 4-bit head and embedding weights on the served GGUFs.",
+      "terminal_mapping": "P5"
+    },
+    {
+      "ledger_id": "Q2-2",
+      "source": "intake-2646 dive",
+      "action": "Probe magnitude-sorted channel permutation at our block window.",
+      "terminal_mapping": "P5"
+    },
+    {
+      "ledger_id": "Q2-3",
+      "source": "intake-2646 dive",
+      "action": "Port the 8-bit cached SSM state into a CPU path.",
+      "terminal_mapping": "decline: No SSD model is in scope and llama.cpp's recurrent state is not the SSD state"
+    },
+    {
+      "ledger_id": "Q2-4",
+      "source": "intake-2646 dive",
+      "action": "Record the resolved decode mechanism on the entry.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "Q2-5",
+      "source": "intake-2646 dive",
+      "action": "Carry the per-task caveats on the reported average.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "Q2-6",
+      "source": "intake-2646 dive",
+      "action": "Downgrade the baseline's characterization of Quamba2 to partial.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "Q2-7",
+      "source": "intake-2646 dive",
+      "action": "Pin the evaluation protocol in any comparator table.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "KX-1",
+      "source": "intake-2647 dive",
+      "action": "Region-scoped GPU grants between timed regions.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "KX-2",
+      "source": "intake-2647 dive",
+      "action": "Make p95 inflation a first-class gate input.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "KX-3",
+      "source": "intake-2647 dive",
+      "action": "Declare the timing region explicitly in every benchmark scaffold.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "KX-4",
+      "source": "intake-2647 dive",
+      "action": "Persistent server reuse across arms.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "KX-5",
+      "source": "intake-2647 dive",
+      "action": "Do not import submit-blocking, sibling freeze or driver interposition.",
+      "terminal_mapping": "decline: It requires freezing process trees we do not own on a shared host"
+    },
+    {
+      "ledger_id": "KX-6",
+      "source": "intake-2647 dive",
+      "action": "Run the 0.5%-target co-tenant experiment.",
+      "terminal_mapping": "decline: The target sits inside the measured process-launch noise and cannot resolve a verdict"
+    },
+    {
+      "ledger_id": "KX-7",
+      "source": "intake-2647 dive",
+      "action": "Audit rank inversion on banked receipts.",
+      "terminal_mapping": "P3"
+    },
+    {
+      "ledger_id": "KX-8",
+      "source": "intake-2647 dive",
+      "action": "Do not carry the throughput multiple onto gfx90a.",
+      "terminal_mapping": "decline: The AMD arm ran with context pooling disabled and no CDNA2 result exists"
+    },
+    {
+      "ledger_id": "MQ-1",
+      "source": "intake-2648 dive",
+      "action": "Ingest MambaQuant as its own entry.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "MQ-2",
+      "source": "intake-2648 dive",
+      "action": "Upgrade the cross-paper relation to boundary extension.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "MQ-3",
+      "source": "intake-2648 dive",
+      "action": "Pre-register the sign and granularity predictions for the rotation probe.",
+      "terminal_mapping": "P5"
+    },
+    {
+      "ledger_id": "MQ-4",
+      "source": "intake-2648 dive",
+      "action": "Add rotation arms to the channel-permutation probe.",
+      "terminal_mapping": "P5"
+    },
+    {
+      "ledger_id": "MQ-5",
+      "source": "intake-2648 dive",
+      "action": "Record the rotation-cost and percentage-unit hazards.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "MQ-6",
+      "source": "intake-2648 dive",
+      "action": "Decline the implementation wholesale.",
+      "terminal_mapping": "decline: Per-tensor activation quantisation plus a per-token transform inside an FP32 recurrence, with no latency evidence"
+    },
+    {
+      "ledger_id": "KC-1",
+      "source": "intake-2649 dive",
+      "action": "Gate any adoption on ROCm 7.0 availability.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "KC-2",
+      "source": "intake-2649 dive",
+      "action": "Fix build cost before buying any build accelerator.",
+      "terminal_mapping": "P1"
+    },
+    {
+      "ledger_id": "KC-3",
+      "source": "intake-2649 dive",
+      "action": "Probe hoisting the runtime branch out of the decode hot kernel.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "KC-4",
+      "source": "intake-2649 dive",
+      "action": "Replace two hand-built harnesses with a reproducer once the ROCm gate clears.",
+      "terminal_mapping": "M1"
+    },
+    {
+      "ledger_id": "KC-5",
+      "source": "intake-2649 dive",
+      "action": "Do not let the extractor near the trust boundary.",
+      "terminal_mapping": "decline: Its correctness oracle is identity-to-capture, so an identically wrong candidate passes"
+    },
+    {
+      "ledger_id": "KC-6",
+      "source": "intake-2649 dive",
+      "action": "Do not carry the headline multiple.",
+      "terminal_mapping": "decline: It prices a counter-profiling run against a byte-exact replay; the honest inner loop is smaller"
+    },
+    {
+      "ledger_id": "KC-7",
+      "source": "intake-2649 dive",
+      "action": "Adopt tuning-pinned configs for any Triton arm.",
+      "terminal_mapping": "K1"
+    },
+    {
+      "ledger_id": "KC-8",
+      "source": "intake-2649 dive",
+      "action": "Check snapshot capacity before any 27B-class trial.",
+      "terminal_mapping": "M1"
+    }
+  ],
   "prior_session_record": {
     "session_id": "intake-ws58-jev-20261102",
     "started_at": "2026-11-02T00:00:00Z",
@@ -81,5 +490,1362 @@
     "research/deep-dives/quant-compiler-20261106/mambaquant.md",
     "research/deep-dives/quant-compiler-20261106/kerncap.md"
   ],
-  "second_reader": "40 anchors re-checked; 1 fabricated quote and 4 unsupported anchors fixed, 7 locators corrected; 0 hash mismatches."
+  "second_reader": "40 anchors re-checked; 1 fabricated quote and 4 unsupported anchors fixed, 7 locators corrected; 0 hash mismatches.",
+  "stage3_filing": {
+    "format_version": 2,
+    "entry_updates": [
+      {
+        "id": "intake-2641",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/autokernel-loop.md",
+          "handoffs/active/model-architecture-readiness.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Routed to P4 (GDN-SHARE-1, GDN-ORACLE-1) and recorded as a design catalogue; implementation declined with measured basis."
+        ]
+      },
+      {
+        "id": "intake-2642",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/model-architecture-readiness.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "The fp64 oracle and cell mapping are packet P4; licence boundary and hazards recorded in the entry."
+        ]
+      },
+      {
+        "id": "intake-2643",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/autokernel-loop.md",
+          "handoffs/active/coordination-and-churn-pipeline.md",
+          "handoffs/active/kernel-champion-and-promotion.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Setup-cost findings routed to P1/P2/P3; context and continual claims declined with reasons."
+        ]
+      },
+      {
+        "id": "intake-2644",
+        "integration_disposition": "declined",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Superseded by intake-2643 for technical content; its startup table is unattributed and not adopted."
+        ]
+      },
+      {
+        "id": "intake-2645",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/quantization-and-low-bit.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "The offline rotation probe is packet P5; mean correction and W4A4 declined; hazards recorded."
+        ]
+      },
+      {
+        "id": "intake-2646",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/quantization-and-low-bit.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Head-to-toe bytes audit is packet P5; decode-mechanism record and per-task caveats applied to the entry."
+        ]
+      },
+      {
+        "id": "intake-2647",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/kernel-champion-and-promotion.md",
+          "handoffs/active/autokernel-loop.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "p95 gate input and rank replay routed to P3; interposer and process-freeze paths declined."
+        ]
+      },
+      {
+        "id": "intake-2648",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/quantization-and-low-bit.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Rotation predictions and arms merged into packet P5; implementation declined with measured basis."
+        ]
+      },
+      {
+        "id": "intake-2649",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "handoffs/active/autokernel-loop.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Build-cost ordering routed to P1; adoption gated on ROCm 7.0 and sandbox review."
+        ]
+      }
+    ],
+    "opportunity_reviews": {
+      "P1": {
+        "project_objective": "Build-cost amortisation before any new search policy",
+        "implementation_ref": "`handoffs/active/autokernel-loop.md:6667` \u2014 median iteration 2,675 s = build 2,025 (75.7%) / measured 105 (3.9%); `:6668` \u2014 44 of 51 anchor rebuilds byte-identical; `:6666` \u2014 compiling 29.0 h against GPU held 1.403 h, `-j 1` in 77/77 logs.",
+        "gap": "Build is 2,025 s of a median 2,675 s iteration, the content-addressed store is never consulted, and the build is serial on a 192-thread host.",
+        "operational_change": "Make the loop consult the content-addressed kernel store before compiling and stop serialising a 192-thread build, with build seconds recorded per attempt.",
+        "benefit_direction": "Down: per-attempt build wall and redundant compilations. Up: measured iterations per hour at equal GPU time.",
+        "owner": "autokernel-loop.md",
+        "execution_conditions": "CPU quarters only; no GPU. One build claim per row. A/B on identical source.",
+        "closure_basis": "Abandon the packet if build seconds stay within 20% of baseline or a byte-identical policy cannot be proven. If build falls below 20% of iteration wall, this packet is done and no wider reproduction is warranted."
+      },
+      "P2": {
+        "project_objective": "Warm measurement worker for the churn pipeline",
+        "implementation_ref": "`docs/guides/agent-workflows/compute-fillers.md:46` (one grant is one run), `docs/guides/agent-workflows/backlog-churn-flow.md:53` (startup alone never counts), `docs/guides/agent-workflows/agent-loop-design.md:522` (model load 282 -> 163-170 s, host ~85% idle).",
+        "gap": "Each measurement row pays a dry-run launch and a model load of its own; no grant window is shared across units.",
+        "operational_change": "Hold one grant across N measurement units and delete the per-row dry-run launch and model load, measuring `published_at -> first_result_unit`.",
+        "benefit_direction": "Down: wall and launches per completed measurement; up: measurements per grant-hour. No change to what is measured.",
+        "owner": "coordination-and-churn-pipeline.md",
+        "execution_conditions": "Phase A zero-GPU replay over 20 closed rows; phase B one live warm window on an idle grant. Single writer; cache/state bound by the recipe.",
+        "closure_basis": "Stop on a <10% median saving, or on the first unit whose measurement context differs from its cold twin. If warm state is shown to change a verdict, revert to cold measurement and keep only the instrumentation."
+      },
+      "P3": {
+        "project_objective": "Keep-gate tail discipline and tier-fidelity evidence",
+        "implementation_ref": "`handoffs/active/kernel-champion-and-promotion.md` keep-gate track (2.00% floor, matched pairs); `handoffs/active/autokernel-loop.md:5730` item 6 (only 8 judgeable screen/confirmed pairs, ratios 0.587 to -26.95).",
+        "gap": "Tail inflation is absent from the keep gate and only 8 strictly paired screen/confirmed rows exist, so tier fidelity is unmeasured.",
+        "operational_change": "Make tail inflation a first-class gate input and establish, from existing receipts, whether the fast tier ranks like the full tier before paying for a new GPU experiment.",
+        "benefit_direction": "Down: false keeps from tail-heavy comparisons and unnecessary tier experiments. Up: keeps that survive re-measurement.",
+        "owner": "kernel-champion-and-promotion.md",
+        "execution_conditions": "Replay is zero GPU and runs first; the GPU experiment is gated on the replay being inconclusive.",
+        "closure_basis": "Refuse to widen the floor without a measured P on the same row; stop the replay when the CI resolves the 0.7 question. A 24-pair MI210 layer-subset experiment only if the replay CI straddles 0.7."
+      },
+      "P4": {
+        "project_objective": "GDN prefill oracle and the LinQuant transfer decision",
+        "implementation_ref": "`handoffs/active/model-architecture-readiness.md:62` (75% of the stack is standard GDN), `:182` (state size); frozen tree `src/models/delta-net-base.cpp` chunked graph and `ggml/src/ggml-cuda/gated_delta_net.cu:191` fused-kernel TODO.",
+        "gap": "There is no fp64 oracle for the chunked GDN graph and the recurrence core's share of wall time has never been measured.",
+        "operational_change": "Install a CPU fp64 oracle for the chunked graph and measure the recurrence core's share of wall time, so the LinQuant line is decided by a number rather than by its abstract.",
+        "benefit_direction": "Down: risk of a silent divergence in the WY prep/state pass. Decision: close or keep the LinQuant implementation line.",
+        "owner": "model-architecture-readiness.md",
+        "execution_conditions": "Oracle: CPU only, no weights. Profile: one MI210 grant, one CPU quarter, Q8_0, DS41/Q38FN shape.",
+        "closure_basis": "Close the LinQuant implementation line if the core is under 5% of prefill or decode wall; keep the oracle regardless. A full LinQuant reproduction only after an INT8 recurrence core exists and the core share is material."
+      },
+      "P5": {
+        "project_objective": "Quantization records, head bytes and the rotation probe",
+        "implementation_ref": "`handoffs/active/quantization-and-low-bit.md` current low-bit line (DS41/Q38FN); llama.cpp lm-head read path; intake-2646 dive's byte arithmetic.",
+        "gap": "Head and embedding bytes have never been priced and activation rotation has never been tested at our real block budget.",
+        "operational_change": "Price the one byte-level lever this intake found (4-bit head/embeddings on a bandwidth-bound decode) and settle the rotation question offline at our real block budget.",
+        "benefit_direction": "Down: bytes read per generated token. Knowledge: whether activation rotation has any positive sign at per-32-block granularity.",
+        "owner": "quantization-and-low-bit.md",
+        "execution_conditions": "Offline audit and numpy probe only; no GPU, no converter change until the audit justifies one conversion arm.",
+        "closure_basis": "Stop the conversion arm if any task regresses beyond its recorded sigma; record the null if no rotation arm beats control. A converter-level rotation arm only if the offline probe shows a win larger than the window-error noise."
+      },
+      "K1": {
+        "project_objective": "Knowledge-only dispositions",
+        "implementation_ref": "intake-2641..intake-2649 entries and dive reports",
+        "gap": "Corrections, hazards and protocol rules with no active consumer",
+        "operational_change": "Record the correction or hazard where the next reader will meet it",
+        "benefit_direction": "Prevents a corrected premise from being re-derived",
+        "owner": "quantization-and-low-bit.md",
+        "execution_conditions": "Stage-2 record edits already applied; no GPU or CPU work",
+        "closure_basis": "Closed by the recorded correction in each affected entry."
+      },
+      "M1": {
+        "project_objective": "Durable triggers",
+        "implementation_ref": "dive ledgers and packet owners",
+        "gap": "Conditions that are real but not yet true",
+        "operational_change": "Keep each condition as owned prose with no active checkbox",
+        "benefit_direction": "Materializes work only when its stated condition fires",
+        "owner": "autokernel-loop.md",
+        "execution_conditions": "Armed only on the stated condition",
+        "closure_basis": "Closed as durable prose until its condition fires."
+      }
+    },
+    "actionable_additions": [
+      {
+        "ledger_id": "LQ-1",
+        "source": "intake-2641 dive (prefill-only premise)",
+        "action": "Measure the GDN recurrent core's share of prefill and decode wall time on CPU and MI210.",
+        "terminal_mapping": "P4"
+      },
+      {
+        "ledger_id": "LQ-2",
+        "source": "intake-2641 claim 1, Table 1",
+        "action": "Record that reciprocal key rescaling is invalid for delta-corrected writes, so it cannot transfer to standard GDN.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "LQ-3",
+        "source": "intake-2641 claim 4a",
+        "action": "Record that no-launch-cost is a property of SSDi8's fused pass, absent in our tree.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "LQ-4",
+        "source": "intake-2641 claim 5",
+        "action": "Keep sub-INT8 out of scope for the recurrent core.",
+        "terminal_mapping": "decline: The paper's own residual is +10.2% perplexity with no sub-byte kernel; re-open only with a better scheme"
+      },
+      {
+        "ledger_id": "LQ-5",
+        "source": "intake-2641 Table 9",
+        "action": "Keep the INT8-carry tolerance asymmetry as a design prior for any recurrent-state byte reduction.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "LQ-6",
+        "source": "intake-2641 claim 3",
+        "action": "Do not re-derive the paper's W4A8 numbers as a target.",
+        "terminal_mapping": "decline: Those numbers are a delta between two INT8-core designs, not a gain over FP16"
+      },
+      {
+        "ledger_id": "LQ-7",
+        "source": "intake-2641 transform 7/7",
+        "action": "If an INT8 GDN core is ever built, start from the write-gate placement rather than the rotation.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "LQ-8",
+        "source": "intake-2641 transfer finding",
+        "action": "Close the stage-1 action to map the invariances onto ggml block types as mis-scoped.",
+        "terminal_mapping": "decline: Six of seven transforms act on activations and never meet Q4_K/IQ block layouts"
+      },
+      {
+        "ledger_id": "LR-1",
+        "source": "intake-2642 repo dive",
+        "action": "Land a CPU fp64 conformance oracle for the chunked GDN graph.",
+        "terminal_mapping": "P4"
+      },
+      {
+        "ledger_id": "LR-2",
+        "source": "intake-2642 repo dive",
+        "action": "Record the cell mapping to the published chunk_core form in the delta-net header.",
+        "terminal_mapping": "P4"
+      },
+      {
+        "ledger_id": "LR-3",
+        "source": "intake-2642 repo dive",
+        "action": "Settle whether MMQ on CDNA2 instantiates the int8 MFMA tile or falls back to dp4a.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "LR-4",
+        "source": "intake-2642 licence audit",
+        "action": "Do not vendor the SSDi8-derived mamba2 kernels; keep the design only.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "LR-5",
+        "source": "intake-2642 repo dive",
+        "action": "Do not pursue the Marlin W4A8 GEMM on gfx90a.",
+        "terminal_mapping": "decline: The kernel is PTX for NVIDIA parts only, with no HIP lowering"
+      },
+      {
+        "ledger_id": "LR-6",
+        "source": "intake-2642 repo dive",
+        "action": "Adopt the noise-relative kernel-vs-emulation bound as the house conformance pattern.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "LR-7",
+        "source": "intake-2642 repo dive",
+        "action": "Record the Q0.7 gate-quantizer saturation hazard.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "LR-8",
+        "source": "intake-2642 repo dive",
+        "action": "Do not attempt eta/rho/tau as knobs on GGUF weight quantization.",
+        "terminal_mapping": "decline: Those invariances redistribute token-wise activation factors that per-32-block weight scales never see"
+      },
+      {
+        "ledger_id": "LR-9",
+        "source": "intake-2642 repo dive",
+        "action": "Do not treat the repo's Section-4 numbers as evidence for our tree.",
+        "terminal_mapping": "decline: No zoo weights, no training code, and single-run rows at about 5e-3 perplexity resolution"
+      },
+      {
+        "ledger_id": "TK-1",
+        "source": "intake-2643 dive",
+        "action": "Time build and correctness separately inside the injected gate.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "TK-2",
+        "source": "intake-2643 dive",
+        "action": "Consult the kernel store before building.",
+        "terminal_mapping": "P1"
+      },
+      {
+        "ledger_id": "TK-3",
+        "source": "intake-2643 dive",
+        "action": "One grant, one model load, N measurement units.",
+        "terminal_mapping": "P2"
+      },
+      {
+        "ledger_id": "TK-4",
+        "source": "intake-2643 dive",
+        "action": "Fix the screen-to-confirmed join and report rank agreement.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "TK-5",
+        "source": "intake-2643 dive",
+        "action": "Layer-subset fast-tier fidelity experiment on MI210.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "TK-6",
+        "source": "intake-2643 dive",
+        "action": "Screen a keep against the whole served vector before it lands.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "TK-7",
+        "source": "intake-2643 dive",
+        "action": "Test the submit-only-if-ceiling rule against the funnel.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "TK-8",
+        "source": "intake-2643 dive",
+        "action": "Do not import prefix-cache reuse as a measurement optimisation.",
+        "terminal_mapping": "decline: Cache state is bound as a validity hazard in the recipe; reuse would confound the measurement"
+      },
+      {
+        "ledger_id": "TK-9",
+        "source": "intake-2643 dive",
+        "action": "Do not delete the planner or critic on the strength of the context ablation.",
+        "terminal_mapping": "decline: The ablation is one layer, ten trials, no CI, and compares role-specialised peers, not our stage decomposition"
+      },
+      {
+        "ledger_id": "TK-10",
+        "source": "intake-2643 dive",
+        "action": "Add a drift and re-convergence contract before claiming continual compilation.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "TB-1",
+        "source": "intake-2644 blog dive",
+        "action": "Blog claim 1 disposition.",
+        "terminal_mapping": "decline: The blog table is unattributed and cannot be reconciled with the paper's attributed 761 s table"
+      },
+      {
+        "ledger_id": "TB-2",
+        "source": "intake-2644 blog dive",
+        "action": "Blog claim 2 disposition.",
+        "terminal_mapping": "decline: The mechanism is the paper's and its local transfer is the warm-worker packet"
+      },
+      {
+        "ledger_id": "TB-3",
+        "source": "intake-2644 blog dive",
+        "action": "Blog claim 3 disposition.",
+        "terminal_mapping": "decline: The megakernel concession corroborates a disposition that already existed and decides nothing"
+      },
+      {
+        "ledger_id": "TB-4",
+        "source": "intake-2644 blog dive",
+        "action": "Blog claim 4 disposition.",
+        "terminal_mapping": "decline: Vendor scale and benchmark claims are not comparators for a single MI210 node"
+      },
+      {
+        "ledger_id": "TB-5",
+        "source": "intake-2644 blog dive",
+        "action": "Record that vendor blog tables are not the paper's tables.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "TB-6",
+        "source": "intake-2644 blog dive",
+        "action": "Record both URLs behind the two-URL entry.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "SD-1",
+        "source": "intake-2645 dive",
+        "action": "Run the offline axis-granularity and N-axis rotation probe on captured SSD activations.",
+        "terminal_mapping": "P5"
+      },
+      {
+        "ledger_id": "SD-2",
+        "source": "intake-2645 dive",
+        "action": "Record the two missing ggml primitives for a chunked INT8 recurrence.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "SD-3",
+        "source": "intake-2645 dive",
+        "action": "Record the INT8-state rounding and saturation hazards.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "SD-4",
+        "source": "intake-2645 dive",
+        "action": "Record the rotation result as an extension across the boundary the baseline drew.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "SD-5",
+        "source": "intake-2645 dive",
+        "action": "Adopt the offline mean correction as a calibration pattern.",
+        "terminal_mapping": "decline: Worth about +0.2 points for 1-2% latency at a stage we do not run"
+      },
+      {
+        "ledger_id": "SD-6",
+        "source": "intake-2645 dive",
+        "action": "Adopt the W4A4 exclusion.",
+        "terminal_mapping": "decline: No W4A4 lane exists; recording the exclusion is the whole action"
+      },
+      {
+        "ledger_id": "Q2-1",
+        "source": "intake-2646 dive",
+        "action": "Audit and price 4-bit head and embedding weights on the served GGUFs.",
+        "terminal_mapping": "P5"
+      },
+      {
+        "ledger_id": "Q2-2",
+        "source": "intake-2646 dive",
+        "action": "Probe magnitude-sorted channel permutation at our block window.",
+        "terminal_mapping": "P5"
+      },
+      {
+        "ledger_id": "Q2-3",
+        "source": "intake-2646 dive",
+        "action": "Port the 8-bit cached SSM state into a CPU path.",
+        "terminal_mapping": "decline: No SSD model is in scope and llama.cpp's recurrent state is not the SSD state"
+      },
+      {
+        "ledger_id": "Q2-4",
+        "source": "intake-2646 dive",
+        "action": "Record the resolved decode mechanism on the entry.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "Q2-5",
+        "source": "intake-2646 dive",
+        "action": "Carry the per-task caveats on the reported average.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "Q2-6",
+        "source": "intake-2646 dive",
+        "action": "Downgrade the baseline's characterization of Quamba2 to partial.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "Q2-7",
+        "source": "intake-2646 dive",
+        "action": "Pin the evaluation protocol in any comparator table.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "KX-1",
+        "source": "intake-2647 dive",
+        "action": "Region-scoped GPU grants between timed regions.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "KX-2",
+        "source": "intake-2647 dive",
+        "action": "Make p95 inflation a first-class gate input.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "KX-3",
+        "source": "intake-2647 dive",
+        "action": "Declare the timing region explicitly in every benchmark scaffold.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "KX-4",
+        "source": "intake-2647 dive",
+        "action": "Persistent server reuse across arms.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "KX-5",
+        "source": "intake-2647 dive",
+        "action": "Do not import submit-blocking, sibling freeze or driver interposition.",
+        "terminal_mapping": "decline: It requires freezing process trees we do not own on a shared host"
+      },
+      {
+        "ledger_id": "KX-6",
+        "source": "intake-2647 dive",
+        "action": "Run the 0.5%-target co-tenant experiment.",
+        "terminal_mapping": "decline: The target sits inside the measured process-launch noise and cannot resolve a verdict"
+      },
+      {
+        "ledger_id": "KX-7",
+        "source": "intake-2647 dive",
+        "action": "Audit rank inversion on banked receipts.",
+        "terminal_mapping": "P3"
+      },
+      {
+        "ledger_id": "KX-8",
+        "source": "intake-2647 dive",
+        "action": "Do not carry the throughput multiple onto gfx90a.",
+        "terminal_mapping": "decline: The AMD arm ran with context pooling disabled and no CDNA2 result exists"
+      },
+      {
+        "ledger_id": "MQ-1",
+        "source": "intake-2648 dive",
+        "action": "Ingest MambaQuant as its own entry.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "MQ-2",
+        "source": "intake-2648 dive",
+        "action": "Upgrade the cross-paper relation to boundary extension.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "MQ-3",
+        "source": "intake-2648 dive",
+        "action": "Pre-register the sign and granularity predictions for the rotation probe.",
+        "terminal_mapping": "P5"
+      },
+      {
+        "ledger_id": "MQ-4",
+        "source": "intake-2648 dive",
+        "action": "Add rotation arms to the channel-permutation probe.",
+        "terminal_mapping": "P5"
+      },
+      {
+        "ledger_id": "MQ-5",
+        "source": "intake-2648 dive",
+        "action": "Record the rotation-cost and percentage-unit hazards.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "MQ-6",
+        "source": "intake-2648 dive",
+        "action": "Decline the implementation wholesale.",
+        "terminal_mapping": "decline: Per-tensor activation quantisation plus a per-token transform inside an FP32 recurrence, with no latency evidence"
+      },
+      {
+        "ledger_id": "KC-1",
+        "source": "intake-2649 dive",
+        "action": "Gate any adoption on ROCm 7.0 availability.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "KC-2",
+        "source": "intake-2649 dive",
+        "action": "Fix build cost before buying any build accelerator.",
+        "terminal_mapping": "P1"
+      },
+      {
+        "ledger_id": "KC-3",
+        "source": "intake-2649 dive",
+        "action": "Probe hoisting the runtime branch out of the decode hot kernel.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "KC-4",
+        "source": "intake-2649 dive",
+        "action": "Replace two hand-built harnesses with a reproducer once the ROCm gate clears.",
+        "terminal_mapping": "M1"
+      },
+      {
+        "ledger_id": "KC-5",
+        "source": "intake-2649 dive",
+        "action": "Do not let the extractor near the trust boundary.",
+        "terminal_mapping": "decline: Its correctness oracle is identity-to-capture, so an identically wrong candidate passes"
+      },
+      {
+        "ledger_id": "KC-6",
+        "source": "intake-2649 dive",
+        "action": "Do not carry the headline multiple.",
+        "terminal_mapping": "decline: It prices a counter-profiling run against a byte-exact replay; the honest inner loop is smaller"
+      },
+      {
+        "ledger_id": "KC-7",
+        "source": "intake-2649 dive",
+        "action": "Adopt tuning-pinned configs for any Triton arm.",
+        "terminal_mapping": "K1"
+      },
+      {
+        "ledger_id": "KC-8",
+        "source": "intake-2649 dive",
+        "action": "Check snapshot capacity before any 27B-class trial.",
+        "terminal_mapping": "M1"
+      }
+    ],
+    "steering_reconciliation": [
+      {
+        "seq": 1,
+        "stage": 1,
+        "verbatim": "Accept all recommended deep dives for up to four Stage 2 waves.",
+        "disposition": "planned",
+        "plan_ref": "P1",
+        "reason": "Pre-approval consumed by wave 1 (submitted sources), wave 2 (expansions) and wave 3 (two surfaced sources)."
+      },
+      {
+        "seq": 2,
+        "stage": 1,
+        "verbatim": "The first two sources seem quite relevant for our inference-research and autokernel programs. The third source seems quite relevant towards optimizing task pipeline churn, especially when it involves copious amounts of inference tasks. It could also be relevant to the autokernel agent loop to speed up iterations and mutations without relying on monolithic planner->drafter->measurement loops.",
+        "disposition": "planned",
+        "plan_ref": "P1",
+        "reason": "Quantization/SSM sources land in P4/P5; TKCC lands in P1/P2/P3. The anti-monolithic-planner reading is recorded as observation-grade and declined as a loop redesign (TK-9), because the paper's ablation compares role-specialised peers, not our stage decomposition."
+      }
+    ],
+    "opportunity_scan": [
+      {
+        "scan_id": "SC-1",
+        "source_ref": "intake-2643 \u00a74.2 Table 1a/b; intake-2649 \u00a76",
+        "implementation_ref": "autokernel-loop.md:6666-6668 (build share, serial build, identical rebuilds)",
+        "mechanism": "Setup cost dominates iteration; build is repeated and serial",
+        "consumer": "autokernel loop owner",
+        "application": "store-first build plus a parallel build with recorded seconds",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "TK-1",
+          "TK-2",
+          "KC-2"
+        ],
+        "basis": ""
+      },
+      {
+        "scan_id": "SC-2",
+        "source_ref": "intake-2643 \u00a74.2 persistent engine",
+        "implementation_ref": "compute-fillers.md:46; backlog-churn-flow.md:53; agent-loop-design.md:522",
+        "mechanism": "Warm engine decouples setup from measurement",
+        "consumer": "churn pipeline owner",
+        "application": "one grant carrying N measurement units",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "TK-3"
+        ],
+        "basis": ""
+      },
+      {
+        "scan_id": "SC-3",
+        "source_ref": "intake-2647 \u00a73-\u00a76; intake-2643 \u00a74.2 tiering",
+        "implementation_ref": "kernel-champion-and-promotion.md keep-gate track; autokernel-loop.md:5730",
+        "mechanism": "Tail inflation and screen/full-tier rank agreement decide keep validity",
+        "consumer": "keep-gate owner",
+        "application": "p95 as gate input and a rank replay",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "TK-4",
+          "TK-5",
+          "KX-2",
+          "KX-3",
+          "KX-7"
+        ],
+        "basis": ""
+      },
+      {
+        "scan_id": "SC-4",
+        "source_ref": "intake-2647 \u00a74 implementation",
+        "implementation_ref": "autokernel-loop.md grant and gpu-quiet discipline",
+        "mechanism": "Region-granular exclusivity and process freezing",
+        "consumer": "autokernel loop owner",
+        "application": "region-scoped grants",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "KX-1",
+          "KX-4",
+          "KX-5",
+          "KX-6",
+          "KX-8"
+        ],
+        "basis": "Our device is already exclusive by grant; the cost is grant latency, not co-tenant contention."
+      },
+      {
+        "scan_id": "SC-5",
+        "source_ref": "intake-2641 \u00a73-\u00a75; intake-2642 reference.py",
+        "implementation_ref": "model-architecture-readiness.md:62,182; delta-net-base.cpp; gated_delta_net.cu:191",
+        "mechanism": "Invariance-driven low-precision prefill and a chunked-graph oracle",
+        "consumer": "GDN architecture owner",
+        "application": "core-share profile plus fp64 oracle",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "LQ-1",
+          "LR-1",
+          "LR-2",
+          "LQ-2",
+          "LQ-3",
+          "LQ-7",
+          "LQ-8",
+          "LR-7"
+        ],
+        "basis": ""
+      },
+      {
+        "scan_id": "SC-6",
+        "source_ref": "intake-2645 \u00a74; intake-2648 Table 3; intake-2646 \u00a75",
+        "implementation_ref": "quantization-and-low-bit.md low-bit line",
+        "mechanism": "Rotation versus scale granularity; weight streaming at batch 1; head-to-toe bytes",
+        "consumer": "quantization owner",
+        "application": "offline rotation/permutation probe and a head-bytes audit",
+        "disposition": "actionable",
+        "ledger_ids": [
+          "SD-1",
+          "MQ-3",
+          "MQ-4",
+          "Q2-1",
+          "Q2-2",
+          "LQ-5"
+        ],
+        "basis": ""
+      },
+      {
+        "scan_id": "SC-7",
+        "source_ref": "intake-2641 \u00a75; intake-2645 \u00a74.2",
+        "implementation_ref": "quantization-and-low-bit.md; no INT8 recurrence core in tree",
+        "mechanism": "Sub-INT8 recurrence and mean correction",
+        "consumer": "quantization owner",
+        "application": "no implementation",
+        "disposition": "declined",
+        "ledger_ids": [
+          "LQ-4",
+          "LQ-6",
+          "SD-5",
+          "SD-6",
+          "LR-5",
+          "LR-8",
+          "LR-9",
+          "Q2-3"
+        ],
+        "basis": "Every path requires a recurrent core or a scheme we do not ship; each row records its measured basis."
+      },
+      {
+        "scan_id": "SC-8",
+        "source_ref": "intake-2646 \u00a75; intake-2648 \u00a74",
+        "implementation_ref": "quantization-and-low-bit.md comparator rules",
+        "mechanism": "Comparator protocol and per-task caveats",
+        "consumer": "quantization owner",
+        "application": "records only",
+        "disposition": "context-only",
+        "ledger_ids": [
+          "Q2-4",
+          "Q2-5",
+          "Q2-6",
+          "Q2-7",
+          "MQ-1",
+          "MQ-2",
+          "MQ-5",
+          "MQ-6",
+          "SD-2",
+          "SD-3",
+          "SD-4",
+          "LR-3",
+          "LR-4",
+          "LR-6"
+        ],
+        "basis": "Recorded corrections and hazard registers; no active work follows while no INT8 core or rocm migration exists."
+      },
+      {
+        "scan_id": "SC-9",
+        "source_ref": "intake-2643 \u00a74.2 context ablations; intake-2644 vendor post",
+        "implementation_ref": "autokernel-loop.md loop design; no continual-compilation claim",
+        "mechanism": "Continual compilation, planner deletion, prefix-cache reuse, vendor tables",
+        "consumer": "autokernel loop owner",
+        "application": "no adoption",
+        "disposition": "declined",
+        "ledger_ids": [
+          "TK-6",
+          "TK-7",
+          "TK-8",
+          "TK-9",
+          "TK-10",
+          "TB-1",
+          "TB-2",
+          "TB-3",
+          "TB-4",
+          "TB-5",
+          "TB-6"
+        ],
+        "basis": "The ablations are observation grade, the cache is a validity hazard, and the vendor tables are not the paper's tables."
+      },
+      {
+        "scan_id": "SC-10",
+        "source_ref": "intake-2649 \u00a75-\u00a77",
+        "implementation_ref": "rocm-kernel-authoring.md; kernel-champion trust boundary",
+        "mechanism": "Kernel extraction and isolation for measurement",
+        "consumer": "kernel authoring owner",
+        "application": "ROCm-gated reproduction",
+        "disposition": "declined",
+        "ledger_ids": [
+          "KC-1",
+          "KC-3",
+          "KC-4",
+          "KC-5",
+          "KC-6",
+          "KC-7",
+          "KC-8"
+        ],
+        "basis": "Not runnable on ROCm 6.2 and unsuitable at the trust boundary; triggers record the conditions."
+      }
+    ],
+    "outcome_reviews": {
+      "LQ-1": {
+        "required_outcome": "The core's share is measured and the <5% closure rule is evaluated.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "GDN-SHARE-1",
+            "task_text": "- [ ] **GDN-SHARE-1 \u2014 Measure the GDN recurrent core's share of prefill and decode wall time at our serving shape.** Profile one DS41/Q38FN-shaped Q8_0 run of the chunked GDN graph on CPU and one on MI210, separating the recurrence core from projections, attention and MLP. Pre-registered: if the core is under 5% of either wall, close the LinQuant implementation line as no-transfer and keep only the invariance taxonomy. Estimate 2 CPU-hours plus 1 GPU-hour. [belief: pending]",
+            "acceptance": "A per-stage wall profile on CPU and MI210 naming the core's share of prefill and decode; the <5% pre-registered closure is evaluated."
+          }
+        ]
+      },
+      "LQ-2": {
+        "required_outcome": "The limitation is recorded where GDN work is read.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Recorded in intake-2641 claim corrections; no task is needed because it forbids a path rather than opening one.",
+        "task_refs": []
+      },
+      "LQ-3": {
+        "required_outcome": "The scoping condition is recorded so a future reader does not import a free-latency assumption.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Recorded in intake-2641 claim corrections and the P4 brief.",
+        "task_refs": []
+      },
+      "LQ-4": {
+        "required_outcome": "The decline and its measured basis are recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The paper's own residual is +10.2% perplexity with no sub-byte kernel; re-open only with a better scheme.",
+        "task_refs": []
+      },
+      "LQ-5": {
+        "required_outcome": "The prior is durable prose, armed only if a state-byte line opens.",
+        "review_status": "closed-with-basis",
+        "review_basis": "State traffic is about 0.17% of per-token bytes today, so no active work is justified; the trigger is a state-byte-reduction proposal.",
+        "task_refs": []
+      },
+      "LQ-6": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Those numbers are a delta between two INT8-core designs, not a gain over FP16.",
+        "task_refs": []
+      },
+      "LQ-7": {
+        "required_outcome": "The ordering advice is durable prose.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No INT8 GDN core exists; the trigger is such a core being proposed.",
+        "task_refs": []
+      },
+      "LQ-8": {
+        "required_outcome": "The mis-scope is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Six of seven transforms act on activations and never meet Q4_K/IQ block layouts.",
+        "task_refs": []
+      },
+      "LR-1": {
+        "required_outcome": "The oracle runs in the CPU suite and fails on a seeded mutation.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "GDN-ORACLE-1",
+            "task_text": "- [ ] **GDN-ORACLE-1 \u2014 Land a CPU-only fp64 conformance oracle for the chunked GDN graph.** Vendor `linquant/reference.py` and `invariances.py` (MIT, attributed) into a test fixture, map our graph to `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, and assert 1e-9 against it plus chunked-graph equivalence to the per-token path. Add a dump case beside `tests/test-backend-ops.cpp`; no weights, no GPU. Done when the test runs in the normal CPU suite and fails on a seeded mutation of the WY prep or the state pass. [no-belief: test infrastructure]",
+            "acceptance": "The oracle test runs in the CPU suite, passes on the frozen graph, and fails on a seeded WY/state mutation."
+          }
+        ]
+      },
+      "LR-2": {
+        "required_outcome": "The mapping is recorded beside the oracle.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/model-architecture-readiness.md",
+            "task_id": "GDN-ORACLE-1",
+            "task_text": "- [ ] **GDN-ORACLE-1 \u2014 Land a CPU-only fp64 conformance oracle for the chunked GDN graph.** Vendor `linquant/reference.py` and `invariances.py` (MIT, attributed) into a test fixture, map our graph to `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, and assert 1e-9 against it plus chunked-graph equivalence to the per-token path. Add a dump case beside `tests/test-backend-ops.cpp`; no weights, no GPU. Done when the test runs in the normal CPU suite and fails on a seeded mutation of the WY prep or the state pass. [no-belief: test infrastructure]",
+            "acceptance": "The oracle test runs in the CPU suite, passes on the frozen graph, and fails on a seeded WY/state mutation."
+          }
+        ]
+      },
+      "LR-3": {
+        "required_outcome": "The question stays durable prose until MMQ work resumes.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No MMQ work is active now; the trigger is the next MMQ kernel task.",
+        "task_refs": []
+      },
+      "LR-4": {
+        "required_outcome": "The licence boundary is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The release under-declares third-party code; the boundary note is in intake-2642.",
+        "task_refs": []
+      },
+      "LR-5": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The kernel is PTX for NVIDIA parts only, with no HIP lowering.",
+        "task_refs": []
+      },
+      "LR-6": {
+        "required_outcome": "The pattern is named for future conformance work.",
+        "review_status": "closed-with-basis",
+        "review_basis": "It is a test-writing convention, not a deliverable; recorded here and in the dive.",
+        "task_refs": []
+      },
+      "LR-7": {
+        "required_outcome": "The hazard is recorded and arms on any fixed-point gate port.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No port exists; the trigger is a state-pass implementation using that quantizer.",
+        "task_refs": []
+      },
+      "LR-8": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Those invariances redistribute token-wise activation factors that per-32-block weight scales never see.",
+        "task_refs": []
+      },
+      "LR-9": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No zoo weights, no training code, and single-run rows at about 5e-3 perplexity resolution.",
+        "task_refs": []
+      },
+      "TK-1": {
+        "required_outcome": "The capability is verified as already landed before any re-file.",
+        "review_status": "closed-with-basis",
+        "review_basis": "AK-HR-3b is ticked with the stage_seconds keys landed; re-filing would duplicate an existing checkbox.",
+        "task_refs": []
+      },
+      "TK-2": {
+        "required_outcome": "Store-first build is implemented and replayed over the 51 anchors.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/autokernel-loop.md",
+            "task_id": "AK-SETUP-1",
+            "task_text": "- [ ] **AK-SETUP-1 \u2014 Consult the kernel store before building a source-change candidate.** A 2026-11-06 audit found 44 of 51 anchor rebuilds compiled a byte-identical tree because `build_key` hashes `patch_sha256`, which the anchor does not depend on. Before every build, look up the candidate's content-addressed key under `/mnt/raid0/llm/kernels/builds/`; on a hit bind the existing `BUILD-OK.json` plus binary digests as the build result and skip compilation, on a miss build. Record `store_hit: true|false` on the attempt so AK-HR-1 can price the saving. Done when a replay over the 51 historical anchors reports the hit count and skipped seconds, and every new attempt carries `store_hit`. [no-belief: tooling; no measurement]",
+            "acceptance": "Replay over the 51 historical anchors reports the hit count and skipped seconds; every new attempt carries store_hit; no binary is rebuilt on a hit."
+          }
+        ]
+      },
+      "TK-3": {
+        "required_outcome": "A warm window runs N units under one grant with contexts matched.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/coordination-and-churn-pipeline.md",
+            "task_id": "CHURN-WARM-1",
+            "task_text": "- [ ] **CHURN-WARM-1 \u2014 One grant, N measurement units: a warm worker that deletes the second full launch per row.** Today a measurement row pays publish, then a dry run that is itself a full launch, then grant, startup and one measurement. Hold one grant, load the model/server once, and execute N queued measurement units inside it; keep `restart_role()` as the rollback path, bind cache/state exactly as the recipe already does with `cache_state: warm|cold`, and record `published_at -> first_result_unit` plus per-unit wall on every row. Deletion: the per-row dry-run launch and the per-row model load. Phase A is a zero-GPU replay over 20 closed rows estimating saved seconds; phase B is one live warm window. Stop if median saved per unit <10% or any unit's measurement context differs from its cold twin. [belief: pending]",
+            "acceptance": "Twenty closed rows replay to a saved-seconds estimate; one live warm window runs N units under one grant; every unit's context matches its cold twin or the row stops."
+          }
+        ]
+      },
+      "TK-4": {
+        "required_outcome": "Spearman rho and sign agreement with a CI over every strict pair.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/autokernel-loop.md",
+            "task_id": "AK-TIER-1",
+            "task_text": "- [ ] **AK-TIER-1 \u2014 Replay the screen-to-confirmed join and report whether the fast tier ranks like the full tier.** Only 8 judgeable screen/confirmed pairs exist today (ratios 0.587 to -26.95, with sign flips in both campaigns). Widen the join with strict `candidate_diff_sha256` pairing across every closed store, then report Spearman rho, sign agreement and a bootstrap CI, plus the pairwise ordering-flip rate grouped by duration gap. Stop-on-answer when the CI excludes 0.7 in either direction. Zero GPU; run before any layer-subset experiment. [no-belief: analysis of existing records]",
+            "acceptance": "Spearman rho, sign agreement, ordering-flip rate and a bootstrap CI over every strictly paired screen/confirmed row; the 0.7 stop rule is evaluated explicitly."
+          }
+        ]
+      },
+      "TK-5": {
+        "required_outcome": "The experiment materializes only if the replay is inconclusive.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Gated on the P3 replay; running it first would pay GPU time for a question existing receipts may answer.",
+        "task_refs": []
+      },
+      "TK-6": {
+        "required_outcome": "The change arms when the keep gate next changes.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The keep gate is under active P3 work; a second concurrent edit would race it.",
+        "task_refs": []
+      },
+      "TK-7": {
+        "required_outcome": "The funnel test arms when the ranking question is settled.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Its evidence base is the same underpowered pair set that P3 must fix first.",
+        "task_refs": []
+      },
+      "TK-8": {
+        "required_outcome": "The hazard basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Cache state is bound as a validity hazard in the recipe; reuse would confound the measurement.",
+        "task_refs": []
+      },
+      "TK-9": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The ablation is one layer, ten trials, no CI, and compares role-specialised peers, not our stage decomposition.",
+        "task_refs": []
+      },
+      "TK-10": {
+        "required_outcome": "The contract arms only if such a claim is made.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No continual-compilation claim exists locally; the paper supplies no instrument.",
+        "task_refs": []
+      },
+      "TB-1": {
+        "required_outcome": "The basis is recorded in the entry.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The blog table is unattributed and cannot be reconciled with the paper's attributed 761 s table.",
+        "task_refs": []
+      },
+      "TB-2": {
+        "required_outcome": "The basis is recorded in the entry.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The mechanism is the paper's and its local transfer is the warm-worker packet.",
+        "task_refs": []
+      },
+      "TB-3": {
+        "required_outcome": "The basis is recorded in the entry.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The megakernel concession corroborates a disposition that already existed and decides nothing.",
+        "task_refs": []
+      },
+      "TB-4": {
+        "required_outcome": "The basis is recorded in the entry.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Vendor scale and benchmark claims are not comparators for a single MI210 node.",
+        "task_refs": []
+      },
+      "TB-5": {
+        "required_outcome": "The methodology note is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Recorded in intake-2644 and referenced by intake-2643's corrections.",
+        "task_refs": []
+      },
+      "TB-6": {
+        "required_outcome": "Both URLs are recorded on the entry.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The notes now carry the vendor post URL beside the submitted URL.",
+        "task_refs": []
+      },
+      "SD-1": {
+        "required_outcome": "The probe fixes the sign and granularity behaviour of rotation at our block budget.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/quantization-and-low-bit.md",
+            "task_id": "QUANT-ROT-1",
+            "task_text": "- [ ] **QUANT-ROT-1 \u2014 Run the offline activation-rotation probe at a fixed per-32-block budget.** On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. [belief: pending]",
+            "acceptance": "Four arms are compared on one real Q4_K row at a fixed block budget; the pre-registered sign and granularity predictions are evaluated."
+          }
+        ]
+      },
+      "SD-2": {
+        "required_outcome": "The scoping note is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "It is a build-scoping fact, not a deliverable, while no INT8 recurrence core exists.",
+        "task_refs": []
+      },
+      "SD-3": {
+        "required_outcome": "The hazard is recorded and arms on any fixed-point state port.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No such port exists; the trigger is the port being proposed.",
+        "task_refs": []
+      },
+      "SD-4": {
+        "required_outcome": "The corrected relation is recorded across three entries.",
+        "review_status": "closed-with-basis",
+        "review_basis": "MambaQuant supplies the fixed-granularity control; recorded in intake-2645 and 2648.",
+        "task_refs": []
+      },
+      "SD-5": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Worth about +0.2 points for 1-2% latency at a stage we do not run.",
+        "task_refs": []
+      },
+      "SD-6": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No W4A4 lane exists; recording the exclusion is the whole action.",
+        "task_refs": []
+      },
+      "Q2-1": {
+        "required_outcome": "Bytes per token are priced and one conversion arm is decided against per-task sigma.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/quantization-and-low-bit.md",
+            "task_id": "QUANT-HEAD-1",
+            "task_text": "- [ ] **QUANT-HEAD-1 \u2014 Audit and price 4-bit `output.weight` / `token_embd` on the served GGUFs.** The head is read in full every token and never amortises, so at 4-bit blocks it is the largest remaining per-token read. Audit every served DS41/Q38FN GGUF (current type, bytes per token, expected saving), then price one Q4_K conversion arm on the same model against WikiText-2 and the six-task set at the existing floor. Accept only if bytes per token fall and no task regresses beyond its recorded sigma; otherwise record the null. [belief: pending]",
+            "acceptance": "Every served GGUF's head/embedding type and bytes per token are recorded; one Q4_K arm is priced against the recorded per-task sigma."
+          }
+        ]
+      },
+      "Q2-2": {
+        "required_outcome": "The permutation arm is compared in the same offline probe as rotation.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/quantization-and-low-bit.md",
+            "task_id": "QUANT-ROT-1",
+            "task_text": "- [ ] **QUANT-ROT-1 \u2014 Run the offline activation-rotation probe at a fixed per-32-block budget.** On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. [belief: pending]",
+            "acceptance": "Four arms are compared on one real Q4_K row at a fixed block budget; the pre-registered sign and granularity predictions are evaluated."
+          }
+        ]
+      },
+      "Q2-3": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No SSD model is in scope and llama.cpp's recurrent state is not the SSD state.",
+        "task_refs": []
+      },
+      "Q2-4": {
+        "required_outcome": "The mechanism is recorded so the question is not re-asked.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Applied to intake-2646's claims during Stage 2.",
+        "task_refs": []
+      },
+      "Q2-5": {
+        "required_outcome": "The caveats are recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Applied to intake-2646's contradicting evidence during Stage 2.",
+        "task_refs": []
+      },
+      "Q2-6": {
+        "required_outcome": "The correction is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Applied to intake-2646's contradicting evidence during Stage 2.",
+        "task_refs": []
+      },
+      "Q2-7": {
+        "required_outcome": "The protocol rule is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "A comparator-admission rule, not a task.",
+        "task_refs": []
+      },
+      "KX-1": {
+        "required_outcome": "The scheduler change arms when the grant path is next touched.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Our GPU is already exclusive by grant; the measured local bottleneck is grant latency, not device hold.",
+        "task_refs": []
+      },
+      "KX-2": {
+        "required_outcome": "Every A/B row reports P and F, and widened-floor refusals are journalled.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/kernel-champion-and-promotion.md",
+            "task_id": "KEEP-TAIL-1",
+            "task_text": "- [ ] **KEEP-TAIL-1 \u2014 Report p95 timing inflation beside every GPU A/B and widen the floor to max(2.00%, sqrt(2)*P).** Independent-arm inflation turns a 3.90% p95 into a 5.52% floor, at which a true 3% win is unresolvable and a 4.5% win can read as a regression. Every A/B row declares its timing region (warm-up, timed loop, compile/import/check) and reports P and the resulting F; a keep whose effect sits inside the reported tail is refused and the refusal is journalled. Done when the next 10 A/B rows carry P and F and any widened-floor refusal is recorded. [belief: pending]",
+            "acceptance": "The next 10 GPU A/B rows carry a declared timing region, P and F=max(2.00%, sqrt(2)*P); any keep refused by the widened floor is journalled."
+          }
+        ]
+      },
+      "KX-3": {
+        "required_outcome": "The declaration is present in every new A/B report.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/kernel-champion-and-promotion.md",
+            "task_id": "KEEP-TAIL-1",
+            "task_text": "- [ ] **KEEP-TAIL-1 \u2014 Report p95 timing inflation beside every GPU A/B and widen the floor to max(2.00%, sqrt(2)*P).** Independent-arm inflation turns a 3.90% p95 into a 5.52% floor, at which a true 3% win is unresolvable and a 4.5% win can read as a regression. Every A/B row declares its timing region (warm-up, timed loop, compile/import/check) and reports P and the resulting F; a keep whose effect sits inside the reported tail is refused and the refusal is journalled. Done when the next 10 A/B rows carry P and F and any widened-floor refusal is recorded. [belief: pending]",
+            "acceptance": "The next 10 GPU A/B rows carry a declared timing region, P and F=max(2.00%, sqrt(2)*P); any keep refused by the widened floor is journalled."
+          }
+        ]
+      },
+      "KX-4": {
+        "required_outcome": "The current reuse is verified rather than duplicated.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Already held: the probe server is reused and per-arm model load is about 95-105 s.",
+        "task_refs": []
+      },
+      "KX-5": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "It requires freezing process trees we do not own on a shared host.",
+        "task_refs": []
+      },
+      "KX-6": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The target sits inside the measured process-launch noise and cannot resolve a verdict.",
+        "task_refs": []
+      },
+      "KX-7": {
+        "required_outcome": "The ordering-flip rate is reported beside the rank agreement.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/autokernel-loop.md",
+            "task_id": "AK-TIER-1",
+            "task_text": "- [ ] **AK-TIER-1 \u2014 Replay the screen-to-confirmed join and report whether the fast tier ranks like the full tier.** Only 8 judgeable screen/confirmed pairs exist today (ratios 0.587 to -26.95, with sign flips in both campaigns). Widen the join with strict `candidate_diff_sha256` pairing across every closed store, then report Spearman rho, sign agreement and a bootstrap CI, plus the pairwise ordering-flip rate grouped by duration gap. Stop-on-answer when the CI excludes 0.7 in either direction. Zero GPU; run before any layer-subset experiment. [no-belief: analysis of existing records]",
+            "acceptance": "Spearman rho, sign agreement, ordering-flip rate and a bootstrap CI over every strictly paired screen/confirmed row; the 0.7 stop rule is evaluated explicitly."
+          }
+        ]
+      },
+      "KX-8": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "The AMD arm ran with context pooling disabled and no CDNA2 result exists.",
+        "task_refs": []
+      },
+      "MQ-1": {
+        "required_outcome": "The entry exists with anchors.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Applied: intake-2648 created in this run.",
+        "task_refs": []
+      },
+      "MQ-2": {
+        "required_outcome": "The relation is corrected in the affected entries.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Applied to intake-2641 and intake-2645 during Stage 2.",
+        "task_refs": []
+      },
+      "MQ-3": {
+        "required_outcome": "The predictions are stated before the probe runs.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/quantization-and-low-bit.md",
+            "task_id": "QUANT-ROT-1",
+            "task_text": "- [ ] **QUANT-ROT-1 \u2014 Run the offline activation-rotation probe at a fixed per-32-block budget.** On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. [belief: pending]",
+            "acceptance": "Four arms are compared on one real Q4_K row at a fixed block budget; the pre-registered sign and granularity predictions are evaluated."
+          }
+        ]
+      },
+      "MQ-4": {
+        "required_outcome": "Rotation and permutation are compared in one fixed-budget probe.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/quantization-and-low-bit.md",
+            "task_id": "QUANT-ROT-1",
+            "task_text": "- [ ] **QUANT-ROT-1 \u2014 Run the offline activation-rotation probe at a fixed per-32-block budget.** On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. [belief: pending]",
+            "acceptance": "Four arms are compared on one real Q4_K row at a fixed block budget; the pre-registered sign and granularity predictions are evaluated."
+          }
+        ]
+      },
+      "MQ-5": {
+        "required_outcome": "The hazards are recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Recording facts about the source; no action follows.",
+        "task_refs": []
+      },
+      "MQ-6": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Per-tensor activation quantisation plus a per-token transform inside an FP32 recurrence, with no latency evidence.",
+        "task_refs": []
+      },
+      "KC-1": {
+        "required_outcome": "The gate stays durable until a ROCm migration is authorized.",
+        "review_status": "closed-with-basis",
+        "review_basis": "This host runs ROCm 6.2 with no rocprofiler-sdk.",
+        "task_refs": []
+      },
+      "KC-2": {
+        "required_outcome": "Build cost is instrumented, parallelised and store-aware.",
+        "review_status": "preserved",
+        "review_basis": "Immediate packet preserves this outcome.",
+        "task_refs": [
+          {
+            "owner": "handoffs/active/autokernel-loop.md",
+            "task_id": "AK-SETUP-2",
+            "task_text": "- [ ] **AK-SETUP-2 \u2014 Parallelise the source-change build and stop paying serial compile on a 192-thread host.** `-j 1` appears in 77/77 build logs and build is 2,025 s of a median 2,675 s iteration. Raise the build to a declared, pinned `-j` value, keep it fixed for A/B, and record build and correctness seconds (the keys landed with AK-HR-3b). Compare with the current serial build on the same source. Accept when median build wall drops >=50% with an identical binary digest and a clean `test-backend-ops` smoke; revert if the digest changes or a stale object is detected. [no-belief: tooling; no measurement]",
+            "acceptance": "Median build wall drops >=50% against the serial build on identical source, binary digest unchanged, backend-ops smoke clean."
+          },
+          {
+            "owner": "handoffs/active/autokernel-loop.md",
+            "task_id": "AK-SETUP-1",
+            "task_text": "- [ ] **AK-SETUP-1 \u2014 Consult the kernel store before building a source-change candidate.** A 2026-11-06 audit found 44 of 51 anchor rebuilds compiled a byte-identical tree because `build_key` hashes `patch_sha256`, which the anchor does not depend on. Before every build, look up the candidate's content-addressed key under `/mnt/raid0/llm/kernels/builds/`; on a hit bind the existing `BUILD-OK.json` plus binary digests as the build result and skip compilation, on a miss build. Record `store_hit: true|false` on the attempt so AK-HR-1 can price the saving. Done when a replay over the 51 historical anchors reports the hit count and skipped seconds, and every new attempt carries `store_hit`. [no-belief: tooling; no measurement]",
+            "acceptance": "Replay over the 51 historical anchors reports the hit count and skipped seconds; every new attempt carries store_hit; no binary is rebuilt on a hit."
+          }
+        ]
+      },
+      "KC-3": {
+        "required_outcome": "The probe arms with the next MMQ/HIP kernel task.",
+        "review_status": "closed-with-basis",
+        "review_basis": "It is a kernel micro-optimisation with a measured prior; it needs the next kernel slot, not a new owner now.",
+        "task_refs": []
+      },
+      "KC-4": {
+        "required_outcome": "The replacement arms after the ROCm migration and a sandbox placement review.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Not runnable as shipped today and cannot sit at the trust boundary.",
+        "task_refs": []
+      },
+      "KC-5": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "Its correctness oracle is identity-to-capture, so an identically wrong candidate passes.",
+        "task_refs": []
+      },
+      "KC-6": {
+        "required_outcome": "The basis is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "It prices a counter-profiling run against a byte-exact replay; the honest inner loop is smaller.",
+        "task_refs": []
+      },
+      "KC-7": {
+        "required_outcome": "The rule is recorded.",
+        "review_status": "closed-with-basis",
+        "review_basis": "A gating rule for future Triton work; no Triton arm is active.",
+        "task_refs": []
+      },
+      "KC-8": {
+        "required_outcome": "The check arms before any such capture.",
+        "review_status": "closed-with-basis",
+        "review_basis": "No capture is scheduled; the trigger is a 27B-class trial.",
+        "task_refs": []
+      }
+    },
+    "proposed_tasks": [
+      {
+        "owner": "handoffs/active/autokernel-loop.md",
+        "task_text": "- [ ] **AK-SETUP-1 \u2014 Consult the kernel store before building a source-change candidate.** A 2026-11-06 audit found 44 of 51 anchor rebuilds compiled a byte-identical tree because `build_key` hashes `patch_sha256`, which the anchor does not depend on. Before every build, look up the candidate's content-addressed key under `/mnt/raid0/llm/kernels/builds/`; on a hit bind the existing `BUILD-OK.json` plus binary digests as the build result and skip compilation, on a miss build. Record `store_hit: true|false` on the attempt so AK-HR-1 can price the saving. Done when a replay over the 51 historical anchors reports the hit count and skipped seconds, and every new attempt carries `store_hit`. [no-belief: tooling; no measurement]"
+      },
+      {
+        "owner": "handoffs/active/autokernel-loop.md",
+        "task_text": "- [ ] **AK-SETUP-2 \u2014 Parallelise the source-change build and stop paying serial compile on a 192-thread host.** `-j 1` appears in 77/77 build logs and build is 2,025 s of a median 2,675 s iteration. Raise the build to a declared, pinned `-j` value, keep it fixed for A/B, and record build and correctness seconds (the keys landed with AK-HR-3b). Compare with the current serial build on the same source. Accept when median build wall drops >=50% with an identical binary digest and a clean `test-backend-ops` smoke; revert if the digest changes or a stale object is detected. [no-belief: tooling; no measurement]"
+      },
+      {
+        "owner": "handoffs/active/coordination-and-churn-pipeline.md",
+        "task_text": "- [ ] **CHURN-WARM-1 \u2014 One grant, N measurement units: a warm worker that deletes the second full launch per row.** Today a measurement row pays publish, then a dry run that is itself a full launch, then grant, startup and one measurement. Hold one grant, load the model/server once, and execute N queued measurement units inside it; keep `restart_role()` as the rollback path, bind cache/state exactly as the recipe already does with `cache_state: warm|cold`, and record `published_at -> first_result_unit` plus per-unit wall on every row. Deletion: the per-row dry-run launch and the per-row model load. Phase A is a zero-GPU replay over 20 closed rows estimating saved seconds; phase B is one live warm window. Stop if median saved per unit <10% or any unit's measurement context differs from its cold twin. [belief: pending]"
+      },
+      {
+        "owner": "handoffs/active/autokernel-loop.md",
+        "task_text": "- [ ] **AK-TIER-1 \u2014 Replay the screen-to-confirmed join and report whether the fast tier ranks like the full tier.** Only 8 judgeable screen/confirmed pairs exist today (ratios 0.587 to -26.95, with sign flips in both campaigns). Widen the join with strict `candidate_diff_sha256` pairing across every closed store, then report Spearman rho, sign agreement and a bootstrap CI, plus the pairwise ordering-flip rate grouped by duration gap. Stop-on-answer when the CI excludes 0.7 in either direction. Zero GPU; run before any layer-subset experiment. [no-belief: analysis of existing records]"
+      },
+      {
+        "owner": "handoffs/active/kernel-champion-and-promotion.md",
+        "task_text": "- [ ] **KEEP-TAIL-1 \u2014 Report p95 timing inflation beside every GPU A/B and widen the floor to max(2.00%, sqrt(2)*P).** Independent-arm inflation turns a 3.90% p95 into a 5.52% floor, at which a true 3% win is unresolvable and a 4.5% win can read as a regression. Every A/B row declares its timing region (warm-up, timed loop, compile/import/check) and reports P and the resulting F; a keep whose effect sits inside the reported tail is refused and the refusal is journalled. Done when the next 10 A/B rows carry P and F and any widened-floor refusal is recorded. [belief: pending]"
+      },
+      {
+        "owner": "handoffs/active/model-architecture-readiness.md",
+        "task_text": "- [ ] **GDN-SHARE-1 \u2014 Measure the GDN recurrent core's share of prefill and decode wall time at our serving shape.** Profile one DS41/Q38FN-shaped Q8_0 run of the chunked GDN graph on CPU and one on MI210, separating the recurrence core from projections, attention and MLP. Pre-registered: if the core is under 5% of either wall, close the LinQuant implementation line as no-transfer and keep only the invariance taxonomy. Estimate 2 CPU-hours plus 1 GPU-hour. [belief: pending]"
+      },
+      {
+        "owner": "handoffs/active/model-architecture-readiness.md",
+        "task_text": "- [ ] **GDN-ORACLE-1 \u2014 Land a CPU-only fp64 conformance oracle for the chunked GDN graph.** Vendor `linquant/reference.py` and `invariances.py` (MIT, attributed) into a test fixture, map our graph to `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, and assert 1e-9 against it plus chunked-graph equivalence to the per-token path. Add a dump case beside `tests/test-backend-ops.cpp`; no weights, no GPU. Done when the test runs in the normal CPU suite and fails on a seeded mutation of the WY prep or the state pass. [no-belief: test infrastructure]"
+      },
+      {
+        "owner": "handoffs/active/quantization-and-low-bit.md",
+        "task_text": "- [ ] **QUANT-HEAD-1 \u2014 Audit and price 4-bit `output.weight` / `token_embd` on the served GGUFs.** The head is read in full every token and never amortises, so at 4-bit blocks it is the largest remaining per-token read. Audit every served DS41/Q38FN GGUF (current type, bytes per token, expected saving), then price one Q4_K conversion arm on the same model against WikiText-2 and the six-task set at the existing floor. Accept only if bytes per token fall and no task regresses beyond its recorded sigma; otherwise record the null. [belief: pending]"
+      },
+      {
+        "owner": "handoffs/active/quantization-and-low-bit.md",
+        "task_text": "- [ ] **QUANT-ROT-1 \u2014 Run the offline activation-rotation probe at a fixed per-32-block budget.** On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. [belief: pending]"
+      }
+    ],
+    "plan_sha256": "262e031d7fe1d4a05c8f0151a648e7e21d498d8a236f1961b4d288fb0c022b7a"
+  },
+  "approved": "2026-11-06 operator: Approve all five packets (P1-P5)"
 }

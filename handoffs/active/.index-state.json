@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 682
+      "open": 691
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 512
+      "open": 513
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -45,7 +45,7 @@
       "closed": 769,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 145,
+      "open": 149,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 915,
+      "total": 919,
       "tracks": [
         {
           "blocked": 1,
@@ -69,14 +69,14 @@
           "line": 24,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 47
+          "open": 51
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5894,
+          "line": 5899,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -86,7 +86,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5974,
+          "line": 5979,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -101,7 +101,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6271,
+          "line": 6276,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 19
@@ -115,7 +115,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9486,
+          "line": 9491,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -127,7 +127,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13836,
+          "line": 13841,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -151,7 +151,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14048,
+          "line": 14053,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -523,7 +523,7 @@
       "closed": 340,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 52,
+      "open": 53,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -532,7 +532,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 392,
+      "total": 393,
       "tracks": [
         {
           "blocked": 0,
@@ -552,14 +552,14 @@
           "line": 2441,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 21
+          "open": 22
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2564,
+          "line": 2566,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -569,7 +569,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3038,
+          "line": 3040,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -584,7 +584,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3483,
+          "line": 3485,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -600,7 +600,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4996,
+          "line": 4998,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -616,7 +616,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5656,
+          "line": 5658,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -632,7 +632,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5844,
+          "line": 5846,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -1116,7 +1116,7 @@
       "closed": 278,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 124,
+      "open": 125,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1125,7 +1125,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 404,
+      "total": 405,
       "tracks": [
         {
           "blocked": 1,
@@ -1190,7 +1190,7 @@
           "line": 2740,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 0,
@@ -1201,7 +1201,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 2877,
+          "line": 2879,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -1218,7 +1218,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 3771,
+          "line": 3773,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 61
@@ -1391,7 +1391,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 594,
+          "line": 595,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 5
@@ -1401,7 +1401,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 965,
+          "line": 966,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1411,7 +1411,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1581,
+          "line": 1582,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 1
@@ -1421,7 +1421,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 1728,
+          "line": 1729,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 11
@@ -1495,7 +1495,7 @@
       "closed": 27,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 12,
+      "open": 14,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1504,7 +1504,7 @@
       },
       "row_id": "INF-33",
       "state": "active",
-      "total": 39,
+      "total": 41,
       "tracks": [
         {
           "blocked": 0,
@@ -1516,14 +1516,14 @@
           "line": 12,
           "markers": 1,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 3
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 583,
+          "line": 586,
           "markers": 1,
           "name": "engram-conditional-memory",
           "open": 9
@@ -1998,7 +1998,7 @@
       "closed": 69,
       "guarded": 0,
       "last_advanced": "2026-11-04",
-      "open": 27,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2007,7 +2007,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 96,
+      "total": 98,
       "tracks": [
         {
           "blocked": 0,
@@ -2017,14 +2017,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 19
+          "open": 21
         },
         {
           "blocked": 0,
           "closed": 28,
           "gates": [],
           "guarded": 0,
-          "line": 205,
+          "line": 208,
           "markers": 1,
           "name": "iqk-iquant-enablement",
           "open": 5
@@ -2034,7 +2034,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 649,
+          "line": 652,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 3

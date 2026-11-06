@@ -379174,7 +379174,13 @@
     of the three papers, and LinQuant reports no isolation control separating rotation from recalibration.'
   - All timing evidence is NVIDIA (A5000/A100/H100), prefill only; no ROCm/gfx90a or CPU measurement and no decode
     or tokens-per-second number exists.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed to P4 (GDN-SHARE-1, GDN-ORACLE-1) and recorded as a design catalogue; implementation declined with a
+    measured basis.
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  - handoffs/active/model-architecture-readiness.md
   handoffs_created: []
   verification: dive-overturned
   read_depth: PARTIAL
@@ -379311,7 +379317,11 @@
     - rocm-kernel-authoring.md
   credibility_score: null
   contradicting_evidence: []
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - The fp64 oracle and cell mapping are packet P4; licence boundary and hazards recorded in the entry.
+  handoffs_updated:
+  - handoffs/active/model-architecture-readiness.md
   handoffs_created: []
   verification: dive-verified
   read_depth: PARTIAL
@@ -379473,7 +379483,13 @@
     gfx90a/MI210 is untested, and quantization is excluded from the edit surface.
   - 'Reliability cost is real and lightly reported: 9 GPU resets (Xid 154) during the GLM 5.3 work, and a later
     safety ban on the graph-editing technique that had produced gains.'
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Setup-cost findings routed to P1/P2/P3; context and continual claims declined with reasons.
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  - handoffs/active/coordination-and-churn-pipeline.md
+  - handoffs/active/kernel-champion-and-promotion.md
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -379604,6 +379620,9 @@
     - coordination-and-churn-pipeline.md
   credibility_score: null
   contradicting_evidence: []
+  integration_disposition: declined
+  disposition_evidence:
+  - Superseded by intake-2643 for technical content; its startup table is unattributed and not adopted.
   handoffs_updated: []
   handoffs_created: []
   verification: dive-verified
@@ -379716,7 +379735,11 @@
     no independent replication was found.
   - The mean correction is worth only about +0.2 accuracy points, and several percentages in the paper are internally
     inconsistent (62.7 vs 62.6; 1.38x vs 1.47x; a figure caption that swaps the State path and ChunkScan).
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - The offline rotation probe is packet P5; mean correction and W4A4 declined; hazards recorded.
+  handoffs_updated:
+  - handoffs/active/quantization-and-low-bit.md
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -379851,7 +379874,11 @@
     the dive found this only partially right (I/O is quantized, inner math is not).
   - 'The 1.6% average hides regressions far larger than the headline: WinoGrande -3.3, LAMBADA -2.1, and excluded
     MMLU -5.8; Quamba2 also loses the W8A8 average to MambaQuant.'
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Head-to-toe bytes audit is packet P5; decode-mechanism record and per-task caveats applied to the entry.
+  handoffs_updated:
+  - handoffs/active/quantization-and-low-bit.md
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -379969,7 +379996,12 @@
     result reports a different aggregation (2.5% H20 / 2.4% MI308X) and notes that native repeat noise already reaches
     12.1% below 0.1 ms.
   - 'No gfx90a/MI210 result: the AMD arm is MI308X (gfx942) with context pooling disabled.'
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - p95 gate input and rank replay routed to P3; interposer and process-freeze paths declined.
+  handoffs_updated:
+  - handoffs/active/kernel-champion-and-promotion.md
+  - handoffs/active/autokernel-loop.md
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -380099,7 +380131,11 @@
     the '>12%' reproduces in neither unit).
   - The [5120,5120] Hadamard is not a power-of-two order, so the cited O(n log n) cost is unreproducible; a dense
     implementation would cost about 61% of their own baseline.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Rotation predictions and arms merged into packet P5; implementation declined with a measured basis.
+  handoffs_updated:
+  - handoffs/active/quantization-and-low-bit.md
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL
@@ -380227,7 +380263,11 @@
     runnable as shipped today.
   - Captures one dispatch at a time with no inter-kernel dependency tracking, which bounds what it can represent
     for a multi-kernel decode path.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - Build-cost ordering routed to P1; adoption gated on ROCm 7.0 and sandbox review.
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
   handoffs_created: []
   verification: dive-verified
   read_depth: FULL

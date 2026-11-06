@@ -202,6 +202,9 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 - *Declined (operator, 2026-10-22): EXL3-EAR2, the BF16-anchored KLD/EAR run — its 55.6 GB BF16 download only served the 27B quant question.*
 - *Declined (operator, 2026-10-22): downloading the kaitchup Qwen3.8-27B-SLQ-EAR98/98.5/99 checkpoints (intake-2462#record, ledger A-L2; option A not taken) — vLLM/Humming CUDA-only, not loadable on MI210, EPYC or llama.cpp, and no smaller than our Q8_0 at EAR99.*
 
+- [ ] **QUANT-HEAD-1 — Audit and price 4-bit `output.weight` / `token_embd` on the served GGUFs.** The head is read in full every token and never amortises, so at 4-bit blocks it is the largest remaining per-token read. Audit every served DS41/Q38FN GGUF (current type, bytes per token, expected saving), then price one Q4_K conversion arm on the same model against WikiText-2 and the six-task set at the existing floor. Accept only if bytes per token fall and no task regresses beyond its recorded sigma; otherwise record the null. [belief: pending]
+- [ ] **QUANT-ROT-1 — Run the offline activation-rotation probe at a fixed per-32-block budget.** On one real Q4_K row, simulate no rotation, a 32-wide Hadamard, a magnitude-sorted channel permutation, and KLT composed with Hadamard, measuring q8_K window error, block amax/clipping error and dKLD. Pre-register the MambaQuant prediction: rotation has a positive sign and its effect shrinks as scale granularity narrows. No kernel, no converter change. Stop when one arm beats the control by more than the window-error noise, else record the null. [belief: pending]
+
 ## Track: iqk-iquant-enablement
 <!-- gate: none -->
 
