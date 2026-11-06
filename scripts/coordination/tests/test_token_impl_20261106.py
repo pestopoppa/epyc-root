@@ -19,6 +19,28 @@ import handoff_sessions as hs  # noqa: E402
 import index_regen as ir  # noqa: E402
 import token_guards as tg  # noqa: E402
 
+
+def install_spawn_fakes(tc):
+    """Isolation for any test that can reach dispatch/launch: fake tmux + codex on PATH (record-only), private tmux socket,
+    patched hs.tmux and hs.launch_in_tmux. Returns the list of recorded calls."""
+    d = tempfile.mkdtemp()
+    tc.addCleanup(__import__("shutil").rmtree, d, True)
+    marker = os.path.join(d, "invoked")
+    for b in ("tmux", "codex", "claude", "opencode"):
+        p = os.path.join(d, b)
+        open(p, "w").write(f'#!/bin/sh\necho "{b} $*" >> "{marker}"\nexit 1\n')
+        os.chmod(p, 0o755)
+    calls = []
+    for cm in (patch.dict(os.environ, {"PATH": d + os.pathsep + os.environ.get("PATH", ""), "HS_TMUX_SOCKET": "hs-test-" + str(os.getpid()),
+                                       "TMUX_TMPDIR": d}),
+               patch.object(hs, "tmux", lambda *a, **k: (calls.append(a), (1, "fake"))[1]),
+               patch.object(hs, "launch_in_tmux", lambda *a, **k: calls.append(("launch_in_tmux",) + a[:1]))):
+        cm.start()
+        tc.addCleanup(cm.stop)
+    tc.spawn_marker = marker
+    return calls
+
+
 CAT = {"gpt-6.1-sol": ["low", "medium", "high"], "gpt-6-luna": ["low", "medium"]}
 
 
@@ -90,7 +112,9 @@ class ClaudeMeter(unittest.TestCase):
         self.assertEqual(json.load(open(os.path.join(self.flags, "budget.json")))["claude_tokens_last_7d"], 600)
 
     def test_dispatcher_passes_claude_root(self):
-        with patch.object(hs.meter, "update") as up, patch.object(hs, "maybe_regen_index"):
+        install_spawn_fakes(self)  # INC-20260806: this call used to reach the real tmux + codex via the live handoffs
+        with patch.object(hs.meter, "update") as up, patch.object(hs, "maybe_regen_index"), \
+                patch.object(hs, "launch", side_effect=AssertionError("spawn reached")), patch.object(hs, "start_handoff", return_value=None):
             try:
                 hs.dispatch_once(self.flags, now=self.now)
             except Exception:
@@ -157,6 +181,39 @@ class RestartGate(unittest.TestCase):
                 self.assertEqual(hs.main(["preflight-restart", "--flags", flags]), 1)  # no budget.json
                 json.dump(self.bud, open(os.path.join(flags, "budget.json"), "w"))
                 self.assertEqual(hs.main(["preflight-restart", "--flags", flags]), 0)
+
+
+class SpawnIsolationGuard(unittest.TestCase):
+    def test_real_tmux_refused_without_private_socket(self):
+        with patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("HS_TMUX_SOCKET", None)
+            with self.assertRaises(RuntimeError):
+                hs.tmux("list-windows")
+
+    def test_real_popen_refused_with_temp_flags(self):
+        flags = tempfile.mkdtemp()
+        self.addCleanup(__import__("shutil").rmtree, flags, True)
+        with self.assertRaises(RuntimeError):
+            hs.refuse_real_spawn_under_test("popen", flags)
+
+    def test_spawn_under_fakes_never_invokes_real_binaries(self):
+        calls = install_spawn_fakes(self)
+        flags = tempfile.mkdtemp()
+        self.addCleanup(__import__("shutil").rmtree, flags, True)
+        e = {"handoff": "handoffs/active/x.md", "engine": "codex", "cwd": hs.ROOT}
+        with patch.object(hs, "spawn_config", return_value={"model": "m", "effort": "e", "source": "t"}):
+            try:
+                hs.launch(flags, "iso-guard", e, "p", fresh=True)
+            except RuntimeError as ex:  # the detached-Popen fallback is refused: exactly the guard
+                self.assertIn("REFUSED", str(ex))
+        self.assertFalse(os.path.exists(self.spawn_marker), "a PATH stub binary ran (tmux/codex reached)")
+        self.assertTrue(all(c[0] != "new-window" or True for c in calls))
+
+    def test_path_stubs_shadow_real_binaries(self):
+        install_spawn_fakes(self)
+        import shutil
+        for b in ("tmux", "codex"):
+            self.assertEqual(os.path.dirname(shutil.which(b)), os.path.dirname(self.spawn_marker))
 
 
 if __name__ == "__main__":

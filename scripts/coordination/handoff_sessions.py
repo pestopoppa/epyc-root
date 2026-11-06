@@ -679,10 +679,39 @@ TMUX_SESSION = "agent"
 PROTECTED_WINDOWS = ("codex-gen", "claude")
 
 
+_REAL_POPEN = subprocess.Popen
+
+
+def _under_test() -> bool:
+    return "unittest" in sys.modules and ("pytest" in sys.modules or any("unittest" in a or "test_" in a for a in sys.argv)) \
+        or "pytest" in sys.modules
+
+
+def _tmux_prefix() -> list:
+    """HS_TMUX_SOCKET -> a private tmux server (-L); tests set it so they can never touch the operator's `agent` session."""
+    sock = os.environ.get("HS_TMUX_SOCKET")
+    return ["-L", sock] if sock else []
+
+
+def refuse_real_spawn_under_test(what: str, flags: str | None = None) -> None:
+    """INC-20260806-test-spawned-codex: a test must never reach the real tmux server or the real engine binaries.
+    Under a test runner, the real tmux() needs a private socket (HS_TMUX_SOCKET) and a real detached Popen is refused
+    when the flags dir is a temp dir. Fakes (patched tmux / Popen / runner) never reach this."""
+    if not _under_test():
+        return
+    if what == "tmux" and not os.environ.get("HS_TMUX_SOCKET"):
+        raise RuntimeError("REFUSED: real tmux call under a test runner without a private socket (set HS_TMUX_SOCKET / patch hs.tmux)")
+    if what == "popen":
+        tmpd = os.path.realpath(__import__("tempfile").gettempdir())
+        if flags and os.path.realpath(flags).startswith(tmpd + os.sep) and subprocess.Popen is _REAL_POPEN:
+            raise RuntimeError("REFUSED: real engine spawn under a test runner with temp flags (patch hs.subprocess.Popen / pass runner=)")
+
+
 def tmux(*args, timeout=20):
     """Run one tmux command; (rc, stdout). Monkeypatched in tests."""
+    refuse_real_spawn_under_test("tmux")
     try:
-        r = subprocess.run(["tmux", *args], capture_output=True, text=True, timeout=timeout)
+        r = subprocess.run(["tmux", *_tmux_prefix(), *args], capture_output=True, text=True, timeout=timeout)
         return r.returncode, r.stdout
     except (OSError, subprocess.TimeoutExpired) as ex:
         return 1, str(ex)
@@ -942,6 +971,7 @@ def launch(flags, slug, e, prompt, fresh=False, runner=None):
     if pid:
         return pid, out
     log(flags, f"TMUX-FALLBACK {slug}: no window in session {TMUX_SESSION}; engine runs detached")
+    refuse_real_spawn_under_test("popen", flags)
     p = subprocess.Popen(cmd, stdin=open(pf), stdout=open(out, "w"), stderr=subprocess.STDOUT, cwd=cwd,
                          start_new_session=True)
     return p.pid, out
