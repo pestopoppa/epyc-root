@@ -1011,3 +1011,4 @@ DF2-19 evidence (2026-10-20, `dflash2-block-drafter-experimental-build.md`): the
 ### D-LSA research intake — approved 2026-11-03
 
 - [ ] **LSA-MOE-1 — Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**
+  - Gate + owner 2026-11-06: owned by main-inf22 as step (d) of the D-LSA plan (`long-context-program.md` → D-LSA research intake). It starts only after the 27B LSA-QUALITY-32K reaches KEEP-QUALITY and one 27B fast path (LSA-H12-E2E or LSA-CPU-SPARSE) keeps. A3B runs entirely on CPU or entirely on GPU, with zero graph splits on GPU. Stop-on-futility: if the 27B gate is not met, do not start. Cost (PLAN): 1-2 engineer-weeks capture/PCA + a timed distillation pilot. [no-belief: gate note]

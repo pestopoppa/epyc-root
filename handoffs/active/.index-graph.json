@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T16:05:34Z",
+  "generated_at": "2026-11-06T16:42:38Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1369,15 +1369,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 766,
-      "dispatchable": 146,
+      "closed": 768,
+      "dispatchable": 145,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-06",
       "next_action": "Read C7 gate c7-asm-ports-gate-20261106 (c420b9d1a vs C6, 0.97 floor, PPL incl. H15); fold or drop named port (AK-ASM-FOLD-GATE)",
-      "open": 147,
+      "open": 146,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1414,7 +1414,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 48,
+          "dispatchable": 47,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1423,14 +1423,14 @@
           ],
           "line": 24,
           "name": "autokernel-research-loop",
-          "open": 49,
+          "open": 48,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5888,
+          "line": 5892,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1439,7 +1439,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5968,
+          "line": 5972,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1458,7 +1458,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6265,
+          "line": 6269,
           "name": "autokernel-rebuild-program",
           "open": 19,
           "readiness": "blocked"
@@ -1475,7 +1475,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9480,
+          "line": 9484,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1488,7 +1488,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13830,
+          "line": 13834,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1522,7 +1522,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14042,
+          "line": 14046,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1908,17 +1908,17 @@
     },
     {
       "age_days": 2,
-      "blocked": 0,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 101,
-      "dispatchable": 39,
+      "dispatchable": 41,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-04",
       "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
-      "open": 39,
+      "open": 42,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1978,11 +1978,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 10,
           "gates": [],
           "line": 1723,
           "name": "triattention-kv-selection",
-          "open": 8,
+          "open": 11,
           "readiness": "ready"
         }
       ]
@@ -3368,7 +3368,7 @@
       "age_days": 0,
       "blocked": 9,
       "blocked_by": [],
-      "closed": 412,
+      "closed": 413,
       "dispatchable": 97,
       "domain": "routing-and-optimization",
       "guarded": 0,
