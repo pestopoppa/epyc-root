@@ -1,0 +1,21 @@
+{
+ "id": "df2-exl3-codec-cpu-gate-20261107",
+ "owner": "operator-adhoc-ops-20261105",
+ "kind": "compute",
+ "draft": true,
+ "published": false,
+ "note": "DRAFT row spec, never published. launcher/result_path are placeholders until the owner builds the launcher and seals SOURCE.sha256; fields follow spec.json of c8-decode-x-sweep-20261107-r2.",
+ "lane": "cpu",
+ "shape": "cpu_quarter",
+ "regions": "one quarter, no GPU",
+ "ram_gib": 32,
+ "estimate_s": 1800,
+ "first_progress_s": 600,
+ "handoff_task": "speculative-decoding.md:DF2-EXL3",
+ "inputs": [
+  "codec source+build preserved at /mnt/raid0/llm/tmp/h-df2-exl3-preserved-20261101/ (build receipt artifacts/compute/df2-exl3-codec-build-20261101/build.json, execution=not_run)",
+  "pinned EXL3 target + drafter revisions: NOT YET BOUND - first unit must bind exact revisions and sha256, fail-closed on sidecar/tensor mismatch"
+ ],
+ "decision_rule": "CPU codec-only gate: decode a fixed set of EXL3 tensors with the CPU reference path and compare to the golden output hashes in build.json; PASS iff all exact and the loader refuses a corrupted-sidecar fixture (must FAIL closed). Only a PASS opens the HIP codec row (separate booking: mi210 exclusive + host threads, needs an authorized GPU lease) and then the ReplaySSM / sliding-window drafter integration items. Stop-on-futility on unbound revisions. Diagnostic, no serving claim.",
+ "width_justification": "model-free tensor test; one quarter."
+}

@@ -1,0 +1,22 @@
+{
+ "id": "mtp-target-precision-cpu-matrix-20261107",
+ "owner": "operator-adhoc-ops-20261105",
+ "kind": "compute",
+ "draft": true,
+ "published": false,
+ "note": "DRAFT row spec, never published. launcher/result_path are placeholders until the owner builds the launcher and seals SOURCE.sha256; fields follow spec.json of c8-decode-x-sweep-20261107-r2.",
+ "lane": "cpu",
+ "shape": "cpu_whole_or_two_quarters",
+ "regions": "cpu, one arm resident at a time",
+ "ram_gib": 72,
+ "estimate_s": 14400,
+ "first_progress_s": 3000,
+ "handoff_task": "speculative-decoding.md:Missing control for the target-precision hypothesis",
+ "inputs": [
+  "/dev/shm/mtp-target-precision-20261104 (volatile: BF16 shards + non-UD Q4_K_M; re-acquire if rebooted)",
+  "Qwen3.8-27B Q8_0 existing; one BF16-trained DFlash2 drafter artifact"
+ ],
+ "precondition_no_compute": "Resolve cross-converter base revision and tensor correspondence (GGUF header + tensor-name/shape diff of BF16 vs Q8_0 vs Q4_K_M) before any arm; unresolved = inconclusive by the box's own rule.",
+ "decision_rule": "Same CPU binary, same verify shape, same prompt manifest (DF2-4 frozen protocol, untouched holdout), arms BF16 / Q8_0 / Q4_K_M interleaved by prompt, 12 prompts x 128 tokens, temp 0. Declare the same-backend numerical floor first (Q8_0 repeated twice). A precision effect is claimed only if the acceptance difference between arms exceeds the floor AND the 95% paired interval excludes 0; otherwise inconclusive. Interim looks after 6 prompts are futility/descriptive only; cap 14,400 s. Diagnostic, futility-only.",
+ "width_justification": "one 54 GB BF16 arm at a time; arms sequential."
+}

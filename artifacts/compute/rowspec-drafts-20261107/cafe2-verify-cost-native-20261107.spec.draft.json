@@ -1,0 +1,23 @@
+{
+ "id": "cafe2-verify-cost-native-20261107",
+ "owner": "operator-adhoc-ops-20261105",
+ "kind": "compute",
+ "draft": true,
+ "published": false,
+ "note": "DRAFT row spec, never published. launcher/result_path are placeholders until the owner builds the launcher and seals SOURCE.sha256; fields follow spec.json of c8-decode-x-sweep-20261107-r2.",
+ "lane": "cpu",
+ "shape": "cpu_quarter",
+ "regions": "any quiet quarter, taskset to the grant CPUs",
+ "ram_gib": 48,
+ "estimate_s": 3600,
+ "first_progress_s": 900,
+ "handoff_task": "speculative-decoding.md:CAFE-2",
+ "inputs": [
+  "verify-cost exe sha256 87cc0edd...46d517 (cafe2-v10-verify-cost-build-r2-20261104)",
+  "expert-union exe sha256 4deed3e1...f8af8",
+  "state-digest exe sha256 c0993f0b...8735",
+  "Qwen3.6-35B-A3B-MTP-Q8_0, v10 ffc1bac82"
+ ],
+ "decision_rule": "Round time vs verify rows N=1..9 for the MTP chain, >=5 interleaved reps per N on a quiet quarter, fit T=a+b*N(k+1)+c*(k+1) with E=256,K=8 using the MEASURED expert union from the union exe (not an independence model). T(5)/T(1)<=1.25 declines the cost-model half of CAFE-3; >=1.6 requires it; in between = report and CAFE-3 keeps its probe-before-veto design. Native state-digest equality must hold for timing cells to count. Stop-on-answer after N=1,5,9 if their 95% intervals already sit on one side of 1.25/1.6; stop-on-futility on any state mismatch or unbound exe. Diagnostic, futility-only.",
+ "width_justification": "timing needs a quiet quarter; single process."
+}

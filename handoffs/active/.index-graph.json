@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T18:47:23Z",
+  "generated_at": "2026-11-07T19:00:54Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1424,15 +1424,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 368,
-      "dispatchable": 90,
+      "closed": 371,
+      "dispatchable": 88,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-07",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 91,
+      "open": 89,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1467,15 +1467,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 799,
-      "dispatchable": 148,
+      "closed": 800,
+      "dispatchable": 147,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 149,
+      "open": 148,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1512,7 +1512,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 51,
+          "dispatchable": 50,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1521,7 +1521,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 52,
+          "open": 51,
           "readiness": "blocked"
         },
         {
@@ -1943,15 +1943,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 118,
-      "dispatchable": 31,
+      "closed": 119,
+      "dispatchable": 26,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-07",
       "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
-      "open": 32,
+      "open": 27,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1982,11 +1982,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 17,
+          "dispatchable": 12,
           "gates": [],
           "line": 13,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 18,
+          "open": 13,
           "readiness": "ready"
         },
         {
@@ -1999,7 +1999,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 725,
+          "line": 729,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
