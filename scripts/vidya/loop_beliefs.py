@@ -1192,6 +1192,15 @@ def _rank_key(row: Mapping[str, Any]) -> tuple:
     return (group, flag_order, recipe_boost, focus_boost) + inner + (row["claim_id"],)
 
 
+def _harness_rank_key(row: Mapping[str, Any]) -> tuple:
+    """Harness rows tie on everything a verifier finding carries (no value, grade, mechanism),
+    so the claim id decided ties and a matrix's per-seat findings outranked the matrix's own
+    decided proposition. Among otherwise-equal rows the aggregate (fewest id segments, e.g.
+    `...:<run>:matrix` vs `...:<run>:<seat>:<check>`) ranks first."""
+    key = _rank_key(row)
+    return key[:-1] + (str(row["claim_id"]).count(":"), key[-1])
+
+
 def _mechanism_key(row: Mapping[str, Any]) -> tuple | None:
     if row["status"] != "verified":
         return None
@@ -1530,7 +1539,9 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
             facts.insert(0, f"context {row['context_tokens']}")
         if row["revision"]:
             facts.append(row["revision"])
-        cap = CLAIM_TEXT_CAP if tier in _MODEL_TIERS + ("lineup",) else CONTEXT_TEXT_CAP
+        # A harness fact's text IS the decided proposition (no value/grade carries it), so it
+        # gets the full claim cap; the 220 context cap elided the verdict mid-sentence.
+        cap = CLAIM_TEXT_CAP if tier in _MODEL_TIERS + ("lineup", "harness") else CONTEXT_TEXT_CAP
         lines.append(f"{head}: {row['locator']} ({'; '.join(facts)}): {_cap(row['text'], cap)}")
         if tier in _MODEL_TIERS and row["grade_reasons"]:
             lines.append(f"  grade notes: {_cap(row['grade_reasons'][0], REASON_CAP)}")
@@ -1591,7 +1602,8 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
     has_target = any(row["tier"] == "target" for row in list(rows) + flagged_rows)
     for tier in TIERS:
         pool = [row for row in list(rows) + flagged_rows if row["tier"] == tier]
-        ranked, folded = _fold_mechanisms(sorted(pool, key=_rank_key))
+        ranked, folded = _fold_mechanisms(sorted(
+            pool, key=_harness_rank_key if tier == "harness" else _rank_key))
         info["folded"].extend(folded)
         tier_cap = (KNOB_CAP_WITH_TARGET if tier == "knob" and has_target
                     else TIER_CAPS[tier])
@@ -1687,12 +1699,14 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         return "\n".join(head + body + [count] + tail)
 
     def trim_once() -> bool:
-        # The harness tier keeps its best unit until only FORCED model-tier lines are left:
+        # The harness tier keeps its best unit per source kind until only FORCED model-tier
+        # lines are left:
         # it is consumer-scoped and reaches no other reader, so trimming it first made the
         # actor-wire matrix finding unreachable whenever the target tier filled the byte budget
         # (VB-AK-WIRE-PLANNER-TIER offline canary 2026-11-07: harness 35 rows, 0 shown).
-        if len(selected["harness"]) > 1:
-            selected["harness"].pop()
+        harness_sources = {u[0]["source_kind"] for u in selected["harness"] if u}
+        if len(selected["harness"]) > max(1, len(harness_sources)):
+            selected["harness"].pop()           # extras; units are round-robin by source kind
             return True
         for tier in ("host", "sibling"):
             if selected[tier]:

@@ -1322,6 +1322,17 @@ def test_harness_keeps_one_line_when_target_fills_the_byte_budget(tmp_path, alar
     assert roomy["tiers_shown"]["harness"] >= tight["tiers_shown"]["harness"]
 
 
+def test_harness_aggregate_ranks_before_its_parts():
+    base = {"tier": "harness", "status": "verified", "outcome": "", "recipe": "", "symbol": "",
+            "hit_recipes": (), "hit_focus": (), "grade_rank": (3, 2), "recency": 1.0,
+            "mechanism_id": "", "source_kind": "autokernel-actor-wire", "run": None,
+            "stale_epoch": False}
+    seat = {**base, "claim_id": "clm_ak-actor-wire:7314:34895e93:actor_wire_seat_x"}
+    matrix = {**base, "claim_id": "clm_ak-actor-wire:7314:matrix"}
+    assert lb._rank_key(seat) < lb._rank_key(matrix)              # the pre-fix tie-break
+    assert lb._harness_rank_key(matrix) < lb._harness_rank_key(seat)
+
+
 # ------------------------------------------------------------------------------ LOOP-SAFETY C1/C2, D-A1
 
 
