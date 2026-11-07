@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:32:50Z",
+  "generated_at": "2026-11-07T19:34:43Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2477,7 +2477,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
-      "next_action": "Work the triage owner lines (42 adopt, 4 C7r re-files); re-file P0d-W3-HALFB-C6 after the job.py:46 fix; then AKX-P0a census",
+      "next_action": "Land AKX-AUTO-4 branch (suite, re-pin); build AKX-P1e classifier; wire ALL-31 gates; then AKX-P0a census",
       "open": 68,
       "priority": 0.0032,
       "priority_basis": {

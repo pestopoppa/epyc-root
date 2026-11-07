@@ -2822,7 +2822,7 @@
       "id": "INF-82",
       "index": "inference-research-index.md",
       "line": 17,
-      "next_action": "Work the triage owner lines (42 adopt, 4 C7r re-files); re-file P0d-W3-HALFB-C6 after the job.py:46 fix; then AKX-P0a census",
+      "next_action": "Land AKX-AUTO-4 branch (suite, re-pin); build AKX-P1e classifier; wire ALL-31 gates; then AKX-P0a census",
       "track": "autokernel akx program (keep gate + all dims)"
     },
     "INF-83": {
