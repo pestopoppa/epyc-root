@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T18:01:30Z",
+  "generated_at": "2026-11-07T18:10:23Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1412,15 +1412,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 361,
-      "dispatchable": 100,
+      "closed": 365,
+      "dispatchable": 93,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-07",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 101,
+      "open": 94,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2078,14 +2078,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 159,
-      "dispatchable": 48,
+      "dispatchable": 49,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-07",
       "next_action": "C8 rows published (C8-3 census, C8-1 H17, C8-2 H16 M=36, C8-6 GDN chunked): file verdicts as they land, then the C8-1 attention fix",
-      "open": 49,
+      "open": 50,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2119,7 +2119,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 43,
+          "dispatchable": 44,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2128,14 +2128,14 @@
           ],
           "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 44,
+          "open": 45,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1594,
+          "line": 1595,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2144,7 +2144,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1718,
+          "line": 1719,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2153,7 +2153,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2043,
+          "line": 2044,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2162,7 +2162,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2182,
+          "line": 2183,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2171,7 +2171,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2738,
+          "line": 2739,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2183,7 +2183,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2878,
+          "line": 2879,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2885,
+          "line": 2886,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2456,15 +2456,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 105,
-      "dispatchable": 66,
+      "closed": 106,
+      "dispatchable": 65,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
       "next_action": "Work the triage owner lines (42 adopt, 4 C7r re-files); re-file P0d-W3-HALFB-C6 after the job.py:46 fix; then AKX-P0a census",
-      "open": 67,
+      "open": 66,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2502,7 +2502,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 53,
+          "dispatchable": 52,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2513,7 +2513,7 @@
           ],
           "line": 918,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 54,
+          "open": 53,
           "readiness": "blocked"
         }
       ]

@@ -606,12 +606,12 @@ _FILE_SOURCES = (
     "conversation-stack-measurement", "speech-ggml-optest",
     "speech-cpu-measurement", "speech-listen-rating",
     "hil15a-auc", "repl-preview",
-    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "kvu16a-sampled-load", "kvu19a2-native", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
+    "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "kvu16a-sampled-load", "kvu19a2-native", "kvu19b-gap", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
     "ak-r18-symbols", "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing",
-    "gpu-cpu-noise", "launch-affinity", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
-    "hsf5p-microbench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",
+    "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
+    "hsf5p-microbench", "v11-gate-bench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",
 )
 
 

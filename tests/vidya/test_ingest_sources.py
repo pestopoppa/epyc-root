@@ -323,6 +323,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "committed-conclusion",  # Throwaway git repo, quote audit, tamper and reingest: test_committed_conclusion_adapter.py.
         "kvu16a-sampled-load",  # Original-run synthetic ingest and planning canary: test_kvu16a_native.py.
         "kvu19a2-native",  # Dedicated positive ingest and tamper/pre-hook controls: test_kvu19a2_native.py.
+        "kvu19b-gap",  # Synthetic producer fixture, tamper controls, real-record ingest, planning canary: test_kvu19b_gap.py.
         "dev-harness-aggregate",  # Actual miners, publisher, CLI and planning: test_dev_harness_aggregate.py.
         "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
         "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
@@ -356,10 +357,11 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # CLI dispatch count: test_gpu_cpu_noise_adapter.py. v1 readings + pre-hook dumps, refusals and the
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
         # FD-DIV-1a/1b strict re-derivation + real receipts: test_fused_decode_div_adapter.py.
-        "gpu-cpu-noise", "launch-affinity", "fused-decode-div",
+        "gpu-cpu-noise", "launch-affinity", "fused-decode-div", "ch18-merge-trial",
         # Structured fold_gate v4 producer, strict per-library verifier projection and CLI dispatch:
         # test_champion_fold_gate_adapter.py.
         "champion-fold-gate",
+        "v11-gate-bench",  # Synthetic + real v11-050/051/052 re-derivation and tamper controls: test_v11_gate_bench.py.
         # HSF-5.P sidecar written by the real analyzer, re-derivation refusals and CLI dispatch:
         # test_hsf5p_microbench_adapter.py.
         "hsf5p-microbench",

@@ -440,6 +440,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("kvu16a_sampled_load.beliefs.jsonl", "*/kvu16a_sampled_load.beliefs.jsonl"),
            note="Prospective original-run sampled healthy load, not a peak; unknown coverage does not project",
            task="VB-KVU-16A-LOAD"),
+    Source("kvu19b-gap", "kvu19b_gap",
+           _files("belief_measurements.jsonl", "*/belief_measurements.jsonl"),
+           note="Prospective KVU-19b same-binary p3batch child records; synthetic microbenchmark observation, no protocol",
+           task="VB-FA-MASKSKIP"),
     Source("kvu19a2-native", "kvu19a2_native",
            _files("kvu19a2_native.beliefs.jsonl", "*/kvu19a2_native.beliefs.jsonl"),
            note="Prospective per-launch GPU FA output NaN counts; original pre-hook observations do not project",
@@ -564,6 +568,13 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "self-hash + re-derived escapes) and the pre-hook diag/probe task dumps "
                 "(retrofit, no binary sha256); a reading with no readable task declines",
            task="VB-LAUNCH-AFFINITY-WIRE"),
+    Source("ch18-merge-trial", "ch18_merge_trial",
+           lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
+           note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "
+                "strategy, tool, cleanup, conflict paths re-derived); pre-hook conflicts.json refused "
+                "(committed conclusion only); incomplete/failed trials project nothing; conflict inventory "
+                "is not a build or promotion verdict",
+           task="VB-CH18-MERGE-TRIAL-WIRE"),
     Source("fused-decode-div", "fused_decode_div",
            lambda p: importlib.import_module("adapters.fused_decode_div").units(p),
            note="FD-DIV-1a epyc.fd_div_1a.smoke_receipt.v1 (one claim per decided smoke, byte identity "
@@ -591,6 +602,14 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/mnt/raid0/llm/tmp/c6-35186-q4-microbench-r2-20261031/runs"),
            note="C6 Q4 diagnostic component timing native run bundles only; exact Q4_K 27B cases plus synthetic DS41 shape reference; strict input/image/run-seal rehash and raw timing re-derivation; unknown generated-input byte identity and co-tenancy remain explicit; empty protocol means observations only, no keep/serving grade",
            task="VB-C6-Q4-MICROBENCH-WIRE"),
+    Source("v11-gate-bench", "v11_gate_bench",
+           lambda p: importlib.import_module("adapters.v11_gate_bench").units(p),
+           default=Path("/mnt/raid0/llm/tmp/v11-runs"),
+           note="V11 GPU gate llama-bench A/B alternating-launch timing (v11-050/051/052 run dirs: COMPLETE + DECISION.json + "
+                "PREDECLARED.md + bench_*-<arm><n>.json): effect, base/arm spread and n re-derived from the raw rows and "
+                "refused on any difference from DECISION.json; predeclared sha256 re-hashed; hardened-protocol rows refused; "
+                "empty protocol = observations only",
+           task="VB-HARVEST-1022.a"),
     Source("hsf5p-microbench", "hsf5p_microbench",
            lambda p: importlib.import_module("adapters.hsf5p_microbench").units(p),
            default=Path("/mnt/raid0/llm/tmp/f8-launchers-20261024/hsf-5p"),
