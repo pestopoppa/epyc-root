@@ -2,7 +2,7 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 50,
-      "handoffs": 11,
+      "handoffs": 14,
       "oldest_advance": "2026-11-03",
       "open": 661
     },
@@ -40,6 +40,55 @@
   "duplicates": {},
   "gate_tasks": {},
   "handoffs": {
+    "autokernel-akx-program.md": {
+      "blocked": 1,
+      "closed": 103,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 68,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-82",
+      "state": "active",
+      "total": 172,
+      "tracks": [
+        {
+          "blocked": 0,
+          "closed": 39,
+          "gates": [
+            "INF-06#autokernel-unified-surface-program",
+            "INF-06#autokernel-rebuild-program",
+            "INF-65#autokernel-champion-aggregate"
+          ],
+          "guarded": 0,
+          "line": 11,
+          "markers": 1,
+          "name": "autokernel-cross-workload-keep-gate",
+          "open": 13
+        },
+        {
+          "blocked": 1,
+          "closed": 64,
+          "gates": [
+            "INF-06#autokernel-unified-surface-program",
+            "INF-82#autokernel-cross-workload-keep-gate",
+            "INF-77",
+            "INF-50#dflash2-block-drafter-experimental-build",
+            "RTG-58#kv-unified-stack-rollout",
+            "RTG-58#kv-prefix-fork-and-paged-attention"
+          ],
+          "guarded": 0,
+          "line": 908,
+          "markers": 1,
+          "name": "autokernel-all-devices-all-dimensions",
+          "open": 55
+        }
+      ]
+    },
     "autokernel-loop.md": {
       "blocked": 1,
       "closed": 788,
@@ -1112,11 +1161,11 @@
       ]
     },
     "kernel-champion-and-promotion.md": {
-      "blocked": 2,
-      "closed": 278,
+      "blocked": 1,
+      "closed": 156,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 125,
+      "open": 41,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1125,11 +1174,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 405,
+      "total": 198,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 131,
+          "closed": 115,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1137,17 +1186,17 @@
             "INF-06#autokernel-restart-and-strip"
           ],
           "guarded": 0,
-          "line": 12,
+          "line": 15,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 44
+          "open": 36
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1603,
+          "line": 1556,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1157,17 +1206,17 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1727,
+          "line": 1680,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2054,
+          "line": 2005,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1177,7 +1226,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2193,
+          "line": 2144,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1187,41 +1236,10 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2746,
+          "line": 2700,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
-          "open": 2
-        },
-        {
-          "blocked": 0,
-          "closed": 39,
-          "gates": [
-            "INF-06#autokernel-unified-surface-program",
-            "INF-06#autokernel-rebuild-program",
-            "INF-65#autokernel-champion-aggregate"
-          ],
-          "guarded": 0,
-          "line": 2887,
-          "markers": 1,
-          "name": "autokernel-cross-workload-keep-gate",
-          "open": 13
-        },
-        {
-          "blocked": 1,
-          "closed": 67,
-          "gates": [
-            "INF-06#autokernel-unified-surface-program",
-            "INF-65#autokernel-cross-workload-keep-gate",
-            "INF-77",
-            "INF-50#dflash2-block-drafter-experimental-build",
-            "RTG-58#kv-unified-stack-rollout",
-            "RTG-58#kv-prefix-fork-and-paged-attention"
-          ],
-          "guarded": 0,
-          "line": 3781,
-          "markers": 1,
-          "name": "autokernel-all-devices-all-dimensions",
-          "open": 61
+          "open": 1
         }
       ]
     },
@@ -1391,7 +1409,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 598,
+          "line": 611,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 1
@@ -1401,7 +1419,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 970,
+          "line": 983,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1411,7 +1429,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1586,
+          "line": 1599,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1421,7 +1439,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1733,
+          "line": 1746,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 9
@@ -1523,7 +1541,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 587,
+          "line": 588,
           "markers": 1,
           "name": "engram-conditional-memory",
           "open": 9
@@ -2514,6 +2532,22 @@
       "state": "active",
       "total": 9
     },
+    "v11-promotion-checklist.md": {
+      "blocked": 0,
+      "closed": 3,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 10,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-83",
+      "state": "active",
+      "total": 13
+    },
     "vidya-belief-substrate-program.md": {
       "blocked": 2,
       "closed": 356,
@@ -2529,6 +2563,22 @@
       "row_id": "EVL-47",
       "state": "active",
       "total": 461
+    },
+    "workspace-58-champion-calibration.md": {
+      "blocked": 0,
+      "closed": 16,
+      "guarded": 0,
+      "last_advanced": null,
+      "open": 6,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-84",
+      "state": "active",
+      "total": 22
     }
   },
   "row_id_collisions": {},
@@ -2606,7 +2656,7 @@
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "index": "inference-research-index.md",
-      "line": 21,
+      "line": 24,
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
       "track": "log linear gated deltanet readiness"
     },
@@ -2615,7 +2665,7 @@
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 22,
+      "line": 25,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2626,7 +2676,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 23,
+      "line": 26,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2635,7 +2685,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 24,
+      "line": 27,
       "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
       "track": "speculative decoding mtp refresh"
     },
@@ -2646,7 +2696,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 28,
       "next_action": "Fit DFlash2 draft at 512k (GPU 52.55>52 GiB; C7 server lacks -cd); run YARN-NATIVE-WINDOW-GATE",
       "track": "yarn context extension research"
     },
@@ -2659,7 +2709,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "Qualify C6 serving gates; confirm local t96/MTP profile and 28k code prompt before canonical recipe change",
+      "next_action": "C8 fold ledger (main-inf22): C6-LOCAL-SERVING-PROFILE + CODE28K on C7r, then triage adopted fold candidates",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
@@ -2669,7 +2719,7 @@
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "index": "inference-research-index.md",
-      "line": 17,
+      "line": 20,
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "track": "cpu decode roofline program"
     },
@@ -2681,7 +2731,7 @@
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
       "index": "inference-research-index.md",
-      "line": 18,
+      "line": 21,
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "track": "deepseek v41 flash evaluation"
     },
@@ -2690,7 +2740,7 @@
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
       "index": "inference-research-index.md",
-      "line": 19,
+      "line": 22,
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
       "track": "conversation stack (speech)"
     },
@@ -2699,9 +2749,43 @@
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "index": "inference-research-index.md",
-      "line": 20,
+      "line": 23,
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
       "track": "exl3 cpu mi210 implementation"
+    },
+    "INF-82": {
+      "deps": [
+        "INF-06",
+        "INF-65"
+      ],
+      "handoff": "autokernel-akx-program.md",
+      "id": "INF-82",
+      "index": "inference-research-index.md",
+      "line": 17,
+      "next_action": "workspace-a6: adopt or route each stale AKX box (no staleness declines), then AKX-P0a census producer",
+      "track": "autokernel akx program (keep gate + all dims)"
+    },
+    "INF-83": {
+      "deps": [
+        "INF-65"
+      ],
+      "handoff": "v11-promotion-checklist.md",
+      "id": "INF-83",
+      "index": "inference-research-index.md",
+      "line": 18,
+      "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion",
+      "track": "v11 promotion checklist"
+    },
+    "INF-84": {
+      "deps": [
+        "INF-65"
+      ],
+      "handoff": "workspace-58-champion-calibration.md",
+      "id": "INF-84",
+      "index": "inference-research-index.md",
+      "line": 19,
+      "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
+      "track": "workspace-58 champion calibration"
     },
     "PIP-04": {
       "deps": [],

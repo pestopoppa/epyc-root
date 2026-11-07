@@ -63,6 +63,26 @@
       "to": "RTG-58"
     },
     {
+      "from": "INF-82",
+      "kind": "dep",
+      "to": "INF-06"
+    },
+    {
+      "from": "INF-82",
+      "kind": "dep",
+      "to": "INF-65"
+    },
+    {
+      "from": "INF-83",
+      "kind": "dep",
+      "to": "INF-65"
+    },
+    {
+      "from": "INF-84",
+      "kind": "dep",
+      "to": "INF-65"
+    },
+    {
       "from": "REV-02",
       "kind": "dep",
       "to": "INF-77"
@@ -349,12 +369,6 @@
     {
       "from": "INF-65",
       "kind": "ref",
-      "to": "EVL-47",
-      "weight": 8
-    },
-    {
-      "from": "INF-65",
-      "kind": "ref",
       "to": "INF-33",
       "weight": 2
     },
@@ -362,13 +376,31 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-70",
-      "weight": 14
+      "weight": 5
     },
     {
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-77",
-      "weight": 5
+      "weight": 2
+    },
+    {
+      "from": "INF-65",
+      "kind": "ref",
+      "to": "INF-82",
+      "weight": 3
+    },
+    {
+      "from": "INF-65",
+      "kind": "ref",
+      "to": "INF-83",
+      "weight": 21
+    },
+    {
+      "from": "INF-65",
+      "kind": "ref",
+      "to": "INF-84",
+      "weight": 11
     },
     {
       "from": "INF-70",
@@ -423,6 +455,48 @@
       "kind": "ref",
       "to": "INF-70",
       "weight": 1
+    },
+    {
+      "from": "INF-82",
+      "kind": "ref",
+      "to": "EVL-47",
+      "weight": 6
+    },
+    {
+      "from": "INF-82",
+      "kind": "ref",
+      "to": "INF-65",
+      "weight": 6
+    },
+    {
+      "from": "INF-82",
+      "kind": "ref",
+      "to": "INF-70",
+      "weight": 9
+    },
+    {
+      "from": "INF-82",
+      "kind": "ref",
+      "to": "INF-77",
+      "weight": 3
+    },
+    {
+      "from": "INF-83",
+      "kind": "ref",
+      "to": "INF-65",
+      "weight": 7
+    },
+    {
+      "from": "INF-84",
+      "kind": "ref",
+      "to": "INF-65",
+      "weight": 5
+    },
+    {
+      "from": "INF-84",
+      "kind": "ref",
+      "to": "INF-83",
+      "weight": 2
     },
     {
       "from": "PIP-04",
@@ -611,7 +685,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T09:06:14Z",
+  "generated_at": "2026-11-07T09:22:10Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1344,7 +1418,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 9,
+        "unblocks": 12,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1387,7 +1461,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 6,
+        "unblocks": 9,
         "unblocks_rows": [
           "EVL-49",
           "INF-62",
@@ -1576,7 +1650,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 587,
+          "line": 588,
           "name": "engram-conditional-memory",
           "open": 9,
           "readiness": "ready"
@@ -1746,7 +1820,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 8,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1861,7 +1935,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 6,
+        "unblocks": 9,
         "unblocks_rows": [
           "INF-62",
           "INF-65",
@@ -1953,7 +2027,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 598,
+          "line": 611,
           "name": "attention-matching-kv-compaction",
           "open": 1,
           "readiness": "ready"
@@ -1962,7 +2036,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 970,
+          "line": 983,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1971,7 +2045,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1586,
+          "line": 1599,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +2054,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1733,
+          "line": 1746,
           "name": "triattention-kv-selection",
           "open": 10,
           "readiness": "ready"
@@ -1989,17 +2063,17 @@
     },
     {
       "age_days": 2,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 278,
-      "dispatchable": 125,
+      "closed": 156,
+      "dispatchable": 41,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-05",
-      "next_action": "Qualify C6 serving gates; confirm local t96/MTP profile and 28k code prompt before canonical recipe change",
-      "open": 127,
+      "next_action": "C8 fold ledger (main-inf22): C6-LOCAL-SERVING-PROFILE + CODE28K on C7r, then triage adopted fold candidates",
+      "open": 42,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2009,7 +2083,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 5,
+        "unblocks": 8,
         "unblocks_rows": [
           "INF-66",
           "INF-73",
@@ -2033,41 +2107,41 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 44,
+          "dispatchable": 36,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip"
           ],
-          "line": 12,
+          "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 45,
+          "open": 37,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1603,
+          "line": 1556,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
-          "line": 1727,
+          "line": 1680,
           "name": "cpu-fused-decoder-blocks",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2054,
+          "line": 2005,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2076,59 +2150,19 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2193,
+          "line": 2144,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
-          "line": 2746,
+          "line": 2700,
           "name": "v9-kernel-per-request-speculative-params",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
-        },
-        {
-          "blocked_by": [
-            "INF-06#autokernel-rebuild-program",
-            "INF-06#autokernel-unified-surface-program",
-            "INF-65#autokernel-champion-aggregate"
-          ],
-          "dispatchable": 13,
-          "gates": [
-            "INF-06#autokernel-unified-surface-program",
-            "INF-06#autokernel-rebuild-program",
-            "INF-65#autokernel-champion-aggregate"
-          ],
-          "line": 2887,
-          "name": "autokernel-cross-workload-keep-gate",
-          "open": 13,
-          "readiness": "blocked"
-        },
-        {
-          "blocked_by": [
-            "INF-06#autokernel-unified-surface-program",
-            "INF-50#dflash2-block-drafter-experimental-build",
-            "INF-65#autokernel-cross-workload-keep-gate",
-            "INF-77",
-            "RTG-58#kv-prefix-fork-and-paged-attention",
-            "RTG-58#kv-unified-stack-rollout"
-          ],
-          "dispatchable": 61,
-          "gates": [
-            "INF-06#autokernel-unified-surface-program",
-            "INF-65#autokernel-cross-workload-keep-gate",
-            "INF-77",
-            "INF-50#dflash2-block-drafter-experimental-build",
-            "RTG-58#kv-unified-stack-rollout",
-            "RTG-58#kv-prefix-fork-and-paged-attention"
-          ],
-          "line": 3781,
-          "name": "autokernel-all-devices-all-dimensions",
-          "open": 62,
-          "readiness": "blocked"
         }
       ]
     },
@@ -2372,6 +2406,133 @@
           "readiness": "ready"
         }
       ]
+    },
+    {
+      "age_days": null,
+      "blocked": 1,
+      "blocked_by": [
+        "INF-06#autokernel-rebuild-program",
+        "INF-06#autokernel-unified-surface-program",
+        "INF-50#dflash2-block-drafter-experimental-build",
+        "INF-65#autokernel-champion-aggregate",
+        "INF-77",
+        "INF-82#autokernel-cross-workload-keep-gate",
+        "RTG-58#kv-prefix-fork-and-paged-attention",
+        "RTG-58#kv-unified-stack-rollout"
+      ],
+      "closed": 103,
+      "dispatchable": 68,
+      "domain": "inference-research",
+      "guarded": 0,
+      "handoff": "autokernel-akx-program.md",
+      "id": "INF-82",
+      "last_advanced": null,
+      "next_action": "workspace-a6: adopt or route each stale AKX box (no staleness declines), then AKX-P0a census producer",
+      "open": 69,
+      "priority": 0.0021,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 29,
+      "readiness": "blocked",
+      "state": "active",
+      "track": "autokernel akx program (keep gate + all dims)",
+      "tracks": [
+        {
+          "blocked_by": [
+            "INF-06#autokernel-rebuild-program",
+            "INF-06#autokernel-unified-surface-program",
+            "INF-65#autokernel-champion-aggregate"
+          ],
+          "dispatchable": 13,
+          "gates": [
+            "INF-06#autokernel-unified-surface-program",
+            "INF-06#autokernel-rebuild-program",
+            "INF-65#autokernel-champion-aggregate"
+          ],
+          "line": 11,
+          "name": "autokernel-cross-workload-keep-gate",
+          "open": 13,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "INF-06#autokernel-unified-surface-program",
+            "INF-50#dflash2-block-drafter-experimental-build",
+            "INF-77",
+            "INF-82#autokernel-cross-workload-keep-gate",
+            "RTG-58#kv-prefix-fork-and-paged-attention",
+            "RTG-58#kv-unified-stack-rollout"
+          ],
+          "dispatchable": 55,
+          "gates": [
+            "INF-06#autokernel-unified-surface-program",
+            "INF-82#autokernel-cross-workload-keep-gate",
+            "INF-77",
+            "INF-50#dflash2-block-drafter-experimental-build",
+            "RTG-58#kv-unified-stack-rollout",
+            "RTG-58#kv-prefix-fork-and-paged-attention"
+          ],
+          "line": 908,
+          "name": "autokernel-all-devices-all-dimensions",
+          "open": 56,
+          "readiness": "blocked"
+        }
+      ]
+    },
+    {
+      "age_days": null,
+      "blocked": 0,
+      "blocked_by": [
+        "INF-65"
+      ],
+      "closed": 3,
+      "dispatchable": 10,
+      "domain": "inference-research",
+      "guarded": 0,
+      "handoff": "v11-promotion-checklist.md",
+      "id": "INF-83",
+      "last_advanced": null,
+      "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion",
+      "open": 10,
+      "priority": 0.0021,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 29,
+      "readiness": "blocked",
+      "state": "active",
+      "track": "v11 promotion checklist"
+    },
+    {
+      "age_days": null,
+      "blocked": 0,
+      "blocked_by": [
+        "INF-65"
+      ],
+      "closed": 16,
+      "dispatchable": 6,
+      "domain": "inference-research",
+      "guarded": 0,
+      "handoff": "workspace-58-champion-calibration.md",
+      "id": "INF-84",
+      "last_advanced": null,
+      "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
+      "open": 6,
+      "priority": 0.0021,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 29,
+      "readiness": "blocked",
+      "state": "active",
+      "track": "workspace-58 champion calibration"
     },
     {
       "age_days": 4,
@@ -3767,12 +3928,16 @@
       "UFH-16"
     ],
     "method": "override file > backlog-priority.json > derived heuristic (no authored priority field exists in the index rows)",
-    "open_rows_missing_from_file": [],
+    "open_rows_missing_from_file": [
+      "INF-82",
+      "INF-83",
+      "INF-84"
+    ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 28,
-      "heuristic": 0,
+      "heuristic": 3,
       "override": 0
     },
     "tiers": {
@@ -3787,7 +3952,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 1,
+    "blocked": 4,
     "no_open": 0,
     "ready": 27
   },
