@@ -380489,7 +380489,12 @@
     note: Hidden refs refs/t3/orchestration-v2/checkpoints confirmed in production code; rollback is capability-gated to fail before filesystem work.
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; clone at b90e554e0a942605c4de2d4ff5d4654caf998e27). All seven examined claims resolved: five confirmed, two narrowed. Narrowed: (a) the orchestration is command-idempotent with an outbox, but the event log is a ~1-day buffer whose projections cannot be rebuilt, so it is not an audit-trail or replay guarantee; (b) the 240-character rule applies to delta/merge-back summaries, not to portable handoff selection, which keeps full item text. Also recorded: the implemented strategy set has a fifth value (fork_delta_context); evals are excluded from EXECUTION in CI, not from the build; and on an external OpenCode server the adapter skips MCP registration and its scoped token, so orchestration tools disappear in the one mode that attaches to a pre-existing server. No tmux integration exists anywhere in the tree, and no llama.cpp/vLLM/MLX/local-endpoint path exists; the managed Codex runtime actively deletes OPENAI_BASE_URL.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
+  - handoffs/active/coordination-and-churn-pipeline.md
   handoffs_created: []
   ingested_date: '2026-11-06'
 
@@ -380635,7 +380640,11 @@
     note: 'Confirmed: /v1/chat/completions, /v1/embeddings, /v1/audio/transcriptions and the full /v1/responses surface; README disclaims multi-user serving, request queuing, continuous batching and GPU sharing. Nuance: there is a serialized wait queue for concurrent engine requests and no authentication in the web service (loopback default).'
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; foundry-local at 48e4e629257a827a464bda9874d0dd2bd2012adf, onnxruntime-genai v0.19.0 at d01b244, ORT 1.31.0, live catalog 2026-11-06). Four of five claims narrowed, one confirmed. Material corrections: 'automatic acceleration' is auto-DETECT plus explicit ACQUIRE (catalog queries are filtered by already-registered EPs, so an app that skips DownloadAndRegisterEps silently runs CPU); WebGPU is not compiled or shipped on Linux; '~20 MB' is the core library only, with ~65-90 MB per process before weights; 'best-performing variant' is device-tier order plus cached-first, never measured throughput; and although no ROCm EP is supported or shipped, ORT-GenAI 0.19 carries an AMDGPU/MIGraphX umbrella EP that Foundry enumerates and never registers. Port-cost estimate for the reusable detect->variant->select pattern: 4-6 engineer-days, excluding any fetch/cache layer.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/routing-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
 
@@ -380831,7 +380840,11 @@
     note: MiniWoB++ RSI figures read at Appendix A Table 2 / Section 5.6; not disputed. Scope is 32 tasks, so it is a development-set result. NOTE (second-reader pass) - the mis-bound latency/energy anchor was removed; this claim currently has NO supporting anchor and must not be cited until re-anchored at p.8 section 5.6 / Appendix A Table 2.
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2610.32813v1 is the only version, 37 pages read from disk; the Apache-2.0 code release at github.com/YuhuaJiang2002/HarnessMM HEAD 8c4ff0f9 was also read). The mechanism and every headline number reproduce, but the ATTRIBUTION does not: pricing the bypassed calls at the baseline per-call cost, callback removal explains at most 11.6% (HumanEval Codex), 17.5% (HumanEval DeepSeek), 14.3% (MBPP Codex) and 36.0% (MBPP DeepSeek) of the reported saving; the rest is per-call context shrink (tokens/call falls 26-72%). Output tokens RISE in both HumanEval arms (+18.3% DeepSeek, +48.2% Codex) and input accounts for 100.8% of the DeepSeek net saving, so the mechanism as measured removes prefill-side tokens and adds decode - the opposite of what a decode-bound gfx90a deployment would want. Stage-1 errors corrected: the AIME accuracy direction was inverted (87.14% is above No Skill's 86.96%); the cost-interval claim was inverted (the cost interval excludes zero, only correctness includes it); and two MBPP studies were conflated. The code release discloses what the paper does not: the HumanEval DeepSeek-harness actor is a self-hosted Qwen3.5-4B, and the admission path gates on an estimated >1024-token net saving, i.e. a token heuristic rather than a time heuristic.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
 
@@ -380988,7 +381001,12 @@
     note: 'Numbers are literal but the basis must be stated: -60% and -63% are both against repository-only (1.63M), not against each other. Structured is 660k vs summary 602k, i.e. structure costs 9.6% MORE prompt tokens than free-form summary, and the Qwen->Qwen accuracy difference (+4.4 pp vs +5.0 pp) has a CI that crosses zero (p=0.134). ''Structured beats summary'' is not supported.'
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2606.02875v2, 17 pages read from disk; venue confirmed as EMNLP 2026 main, pp. 17110-17126, DOI 10.18653/2026.emnlp-main.738, same title and both authors). Direction of the result: structured handoff is not measurably better than a free-form summary - Qwen->Qwen +4.4pp (CI crosses zero, p=0.134) vs +5.0pp, at 660k vs 602k prompt tokens, i.e. structure costs 9.6% MORE. The measured payload is the evidence class: validation evidence at the handoff point is worth +14.7pp and failure evidence +16.1 to +19.4pp, while the changed-files list is worth only +4.0pp (successor can git diff it). No per-field ablation exists; the field list is a template, not a proven ranking. Caveats recorded: 34% of handoff points are 'already solved; preserve' (not takeovers), 181 points nest in 75 tasks and the bootstrap did not cluster, Table 2's prompt-token column is almost certainly a per-run median (the paper never says), wall-clock is collected and deliberately not compared, and an 'event' is an LLM action OR a tool observation, so 99->55 events is roughly 50->27 model calls.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/context-and-token-economy.md
+  - handoffs/active/coordination-and-churn-pipeline.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2650
@@ -381096,7 +381114,11 @@
     note: 'The matrix exists (39 agents, 239 nightly snapshots) but does not track stable v1: it probes session/stop (renamed to session/close on 2026-03-09; 0/39 support), probes session/fork (unstable schema only), never records mcpCapabilities or promptCapabilities although both are in the initialize response it parses, and omits the current stable delete/close capabilities. It is a repo artifact, not in dist/ and not referenced by README.'
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth PARTIAL; registry cloned at 7402d128935361c0f7c32842f5b98469b66f8d77 with full history, ACP spec at 7ec5185c). The claim that the registry tells a client what an agent can do is OVERTURNED: the shipped agent schema carries no authMethods, no protocolVersion, no capability block and no MCP field, so only 1 of 5 client questions is answerable from the published index; a nightly capability matrix exists but is repo-internal. Confirmed: 46 manifests, hourly bot bumps (89.8% of last-30d commits), per-agent auth handshake check, quarantine list. But quarantine gates checks, not publication (6 agents ship unmarked), the auth check only proves advertisement, binary automation is GitHub-only with four manual agents, and the matrix probes a method renamed in March 2026 (session/stop -> session/close). Verdict for EPYC: no adoption - the lane's ACP arm was closed on layer grounds (north-facing editor protocol vs EPYC's south-facing injection point) and the registry removes no existing work; borrow only the pin source discipline (archive + sha256 + platform keys, refusing the 7/22 entries without sha256) and the nightly-capability-diff pattern.
-  handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2650
@@ -381202,7 +381224,11 @@
     note: 'Confirmed twice from Inngest primaries: event-level idempotency is 24h on producer id, function-level 24h on a CEL expression. Primary is stronger than the source - idempotency is also ignored for debouncing, event batching, and while a function is paused.'
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth PARTIAL; page read from disk, every workflow-engine statement checked against Temporal and Inngest primaries fetched the same day). All three claims confirmed at the vector the source states, with two precision edits: Continue-As-New is a roll-forward to a new Run Id, not compaction, and 'durable record over prompt summary' is a design principle with no engine counterpart. The EPYC session-bus audit is the payload: rule 9's rebuildability is enforced by a runnable `rebuild` (BUS_PROTOCOL:85-91; session_bus.py:2538-2583), boundary receipts are keyed by boundary_id and deduped (BUS_PROTOCOL:533-553), and there is NO time-bounded idempotency anywhere - retention is cursor-gated and --stale-after-h only prints a label. So EPYC is not exposed to constraint 3, and importing a vendor-style TTL would be a regression. One real defect found: `append` honours a caller-supplied message id without a uniqueness check (session_bus.py:1607-1611) while every consumer dedupes by id, so a collision silently loses a message. The R6c rationale at coordination-and-churn-pipeline.md:437-441 is stale against current rebuild_state and should be re-screened.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/coordination-and-churn-pipeline.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2650
@@ -381338,7 +381364,11 @@
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2602.20502v2, 19 pages plus v1 read for the revision delta). Claim 1 confirmed with a model-call qualifier (1.5-3.5 calls/task remain), claim 2 narrowed to a design claim (the Patcher is disabled in every evaluation run), claim 3 narrowed on both ratios. The transferable quantities are calls/task (14.7 -> 2.9) and input tokens (390k -> 29k), not the 3.2x wall-clock, which is a single-attempt mean against a hosted API; v1 reports the same Reddit tasks at 2x not 6.6x. Cost decomposes as 2.5x architecture x 3.2x prefix caching (Table 2b), so most of the '8x' is a price-list effect our own prefix cache already supplies. Authoring is amortised only over 39-101 tasks per application, with warm-up and engineering excluded, and Table 2(a) and Appendix C.1 disagree on the GitLab crawl cost by ~6x ($5 vs $29.5). The self-healing half has no measurement at all: no drift event, no repair-success rate, no rollback.
     Second-reader pass (2026-11-06): the 7.49x/7.67x cost ratios are dive arithmetic from the printed endpoints, not a quoted figure; the 3.2x prefix-caching factor is anchored at section 5.3 Table 2(b).
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652
@@ -381476,7 +381506,11 @@
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2610.31712v1, 21 pages). The mechanism claim survives intact; the number sentence is OVERTURNED by a denominator swap. On AndroidWorld tokens fall 78.0-89.6%, reuse is 82.0-87.5% and speedup is 1.2-1.9x (3/5 agents >=1.5x, none at 2x); the 70.7-79.8% reuse and 2-4x multipliers are the real-device blocks. The speedup is honest wall-clock (end-to-end, matched boundaries) but averaged only over pairs where BOTH arms succeeded, with no variance, no per-cell N and no host description. Two success columns are constructed products, not measurements: AndroidWorld 'success with replay' is base x conditional (stated unable to exceed base), and the real-device column is an arithmetic product whose measured counterpart is 93.0-98.0%. The paper's own explanation of the modest AndroidWorld result is the transferable datum: pre- and post-action UI acquisition is 40.02% of wall-clock, which is why removing model calls yields only ~1.5x. The admission gate is a three-group checklist, not a certificate.
     Second-reader pass (2026-11-06): the three-group enumeration used in claim 2 is rendered in Figure 3 and section A.4 but no single anchor quotes the enumeration; cite the groups as derived from the figure, not as a quoted list.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652
@@ -381582,7 +381616,11 @@
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2609.35088v1, 17 pages, all 9 tables read). Claim 1 confirmed and strengthened; claim 2 narrowed by the authority-timing result (a certificate installed after formation governs 0/3 pending calls); claim 3 confirmed with 'preregistered' qualified and reported_results populated. Comparison to intake-2652: HarnessMM's six fields prove a callback was OMITTED, and none of them names the interpreter. The minimum sound addition is three fields, not fourteen - tool_epoch (descriptor digest, handler artifact and config digest, serving process start, catalog epoch), effect_class, and expires_at/revocation_handle - and a recorded digest without a recheck at dispatch is decoration. The reviewed-profile pipeline itself should not be ported: its soundness rests on a trusted premise and our tool surface is not statically analyzable to that depth.
     Second-reader pass (2026-11-06): the section IV-F anchor is an elided splice of two non-adjacent sentences, and the section IV-G and Table VI anchors are condensed transcriptions; content was verified against the page text, but these are not contiguous spans.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652
@@ -381715,7 +381753,11 @@
     note: No grid, random, TPE or Hyperband control exists anywhere in section VIII or Appendix A; the only comparators are all-flags-off, two manual configs and the oracle. One run per config, no repeats, no seeds. The paper's +/-3-pass Wilson half-width is the ~68% value; the correct 90% width is +/-5.8 to 6.1 passes, which puts the reported gaps inside noise. The separating single-flag ablation is defined (Table I) but its pass counts are never reported.
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2604.20938v1, 14 pages). The formulation is competently stated but the evidence does not support the attribution role it was recruited for. HARBOR's best pick ties the manual peak (17/89 vs 17/89); the mean of five picks is 16.6/89 vs a 15/89 baseline (+1.6 passes, inside a corrected +/-5.9-pass 90% interval); there is no random/grid/TPE control; and the solver is warm-started from the manual A-D log it is compared against. The only +5 is against a manual config BELOW baseline. The search budget is unauditable: 3.5 units, 9.826 units, ~1.71 equivalents and ~5.2 from wall clock cannot all describe the same run, and the unit is never defined. The one experiment that would separate 'search found good flags' from 'the flags were already known-good' (single-flag pass counts, Table I) is defined and withheld, while the authors concede the pick reduces to compression-only. Its Oracle gap (17 vs 81 of 89) is an argument FOR conditional selection, i.e. for a decision graph, not against one. Second-reader note: arithmetic in reported_results (7.49x/7.67x) is dive arithmetic from printed endpoints, not a quoted figure.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652
@@ -381834,7 +381876,11 @@
     note: 'Gain is a rule-node counter, not wall-clock: median latency is +0.14 ms HIGHER in both domains when warm (32.07 vs 31.93; 7.76 vs 7.62). Transfer shows label equality at +24.4% and +30.2% reasoning work, with no token or currency cost reported. The pilot is four held-out cases. The ''verified'' oracle shares the author''s own source interpretation, so agreement is not external validation.'
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2609.33260v1, 14 pages). Claims 1-3 confirmed with scope narrowing; results added as claim 4 because the measured outcome inverts the naive reading: reuse cuts rule-node evaluations 62-70% while median latency rises by 0.14 ms in both domains, and the transfer study reports label equality at +24-30% reasoning work. 'Verified' means judged inside the authors' own encoding: the headline verifier is deterministic rule execution, the scenario oracle shares the runtime's source interpretation, and a model verifier appears only in a four-case pilot. Compared to EPYC's decision_receipt.v1, only two fields have a live consumer - validator identity/version and a conclusion valid-time interval distinct from offer expiry - and the source-version-separation contract is already implemented in routing_replay.py (frozen pre-purge snapshot, path + SHA-256). No reason to reopen HS-TD-4.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652
@@ -381985,7 +382031,11 @@
     note: 'The guarantee is a per-prompt marginal expected-correctness bound conditional on the observed prompt set, not a per-skip false-positive rate and not a high-probability statement over the data distribution. Assumptions: i.i.d. prompts and a correctly specified sigmoid family. The implementation does not meet the proof''s own premise: Lemma C.2 needs a joint band on (t, gamma) but only t gets a band and gamma is plugged in at its point estimate, and the band is a flat-prior credible interval presented as a confidence interval. Calibration is label-starved: the best-labelled entries had 42 and 33 observations after 60,000 prompts.'
   dive_corrections: >-
     2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2502.03771v5, ICLR 2026, 28 pages). Claim 1 confirmed; claim 2 OVERTURNED (the budget is on the cache's aggregate output, not on the skip - the guarantee is bought by exploring, i.e. by sometimes NOT skipping, so per-hit error is roughly delta/hit-rate: about 2.2% at delta=0.01 in their own table); claim 3 OVERTURNED as a joint attribution (12.5x is SemCacheCombo, 26x is SemCacheLMArena, and section 5 merges them while F.2 contradicts it); claim 4 narrowed (a marginal bound conditional on the observed prompt set, with an implementation that uses a 1-D band with gamma pinned and a flat-prior credible interval presented as confidence). The guarantee is label-hungry: the best-labelled entries had 42 and 33 observations after 60,000 prompts, and at n->0 the method explores and caches nothing. Applicability to EPYC: exact prefix caching satisfies the guarantee trivially and needs none of this; prompt-semantic caching is the applicable case; action omission cannot inherit it because an omitted call has no counterfactual label.
-  handoffs_updated: []
+  integration_disposition: integrated
+  disposition_evidence:
+  - 'Stage-3 plan research/intake-stage3-plan-2026-11-06-harness-inference.md maps this entry''s dive ledger to a packet, a trigger or an explicit decline.'
+  handoffs_updated:
+  - handoffs/active/harness-program.md
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652

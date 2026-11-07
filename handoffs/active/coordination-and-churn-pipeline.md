@@ -6401,3 +6401,16 @@ narrow subagent-writer exception.
   - *(2026-11-04, vidya-fanout session; evidence, box stays open.)* Second shape: a row without `dryrun_native_result` whose smoke `emit()`s a placeholder into the real `result_path`, while the real job starts with `if result.exists(): raise SystemExit(0)`, would have filed the full run as a no-op success (`vb-ak-wire-matrix-r1-20261103`; caught before any grant, smoke file moved to its dryrun dir, row republished with `dryrun_native_result: true`). Consider making publish_row require `dryrun_native_result` whenever the smoke would write `result_path`.
 
 - [x] **ROWFLOW-RESIDENCY-GPUQUIET-CPU** [non-inference] The dry-run residency check (`rowflow.py` `dryrun_run`, `gpu = "mi210_0" in regions`) fails every row that holds the MI210 only to keep it quiet: a CPU-only census with `--class cpu+gpu --gpu-quiet exclusive` was refused with "VRAM never showed residency" (`inf75-c5-w3-halfb-census-c6-20261105`, 2026-11-05 10:39Z; worked around by republishing it as a CPU row whose claim covers 184-191). Fix: require residency only for rows whose engine class executes on the GPU (lane gpu and not gpu-quiet-only), and keep the check for real GPU rows. Done when a test covers both shapes. Needs a D9 ack (scripts/coordination). ✅ 2026-11-05 — fixed in `c61a7430e` (spec `gpu_use: "quiet-only"`, publish-validated; 4 tests, suites 253 passed; D9-ack), live keeper installed. [no-belief: bug fix, no measurement]
+
+
+## Track: research-intake-harness-inference-2026-11-06
+
+Source batch: 12 entries ingested 2026-11-06 (t3code, Foundry Local, HarnessMM + 9 expansion entries). Plan: `research/intake-stage3-plan-2026-11-06-harness-inference.md`.
+- [ ] **CTX-HO-2 — Add a typed handoff-transfer record and ledger to the session bus.** Add a `handoff-transfer` message kind and a coordinator-owned append-only `transfers/` ledger with transfer_id, source point, base point, coverage, selected and omitted ids, budget_bytes, status, consumer, consumed_at; lazy resolution on first dispatch; ack deduped on transfer_id. Acceptance: schema, single-writer rule and a two-main fixture test.
+
+- [ ] **BUS-ID-1 — Refuse duplicate message ids in session_bus append.** `cmd_append` exits non-zero when a caller-supplied id already exists in the destination, instead of trusting it; add a regression test. Acceptance: a second append with the same explicit id fails and leaves one row.
+
+- [ ] **BUS-ID-2 — Record the unbounded-dedup invariant in BUS_PROTOCOL.** State that messages never expire, retention is cursor-gated, `--stale-after-h` labels but never drops, and a time-bounded TTL must not be introduced. Acceptance: the invariant appears with the rule number and the code references.
+
+- [ ] **BUS-ID-3 — Re-screen the R6c post-reboot brief against current rebuild_state.** Check whether rebuild now derives tokens, heartbeat task_id, leases and checkpoint fields; if so, narrow or close R6c. Acceptance: a dated screening note, not a new task.
+

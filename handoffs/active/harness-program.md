@@ -3584,3 +3584,39 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
 - [ ] **UFH14-TOOLS-1 — Count and cap the model-visible tool surface per role (intake-2565#record).** Enumerate what each role's prompt actually advertises (about 55 REPL globals plus about 55 registry tools behind TOOL/CALL) and log the count per role and per turn. Frontdoor turns called a tool in only 3.8-4.9% of turns (this handoff, line 670), so a large advertised surface costs prompt tokens for little use. Propose a per-role allowlist with deferred loading for the rest, behind a flag, for a later A/B.
+
+
+## Track: research-intake-harness-inference-2026-11-06
+
+Source batch: 12 entries ingested 2026-11-06 (t3code, Foundry Local, HarnessMM + 9 expansion entries). Plan: `research/intake-stage3-plan-2026-11-06-harness-inference.md`.
+- [ ] **UFH-TE-1 — Add validator identity and a conclusion validity interval to the decision receipt.** Extend `decision_receipt.v1` with `validator_id`, `validator_version` and `conclusion_valid_until_ns` (all optional, default None; no behaviour change). Acceptance: the schema and the producer emit the fields; an existing receipt without them still validates; no gate changes.
+
+- [ ] **UFH-TE-2 — Fold serving identity into the dispatch-time prepared-action recheck.** Extend the dispatch fingerprint with descriptor digest, handler artifact and config digest, serving process start time and serving tree commit. A mismatch returns `stale` and routes to re-form; stored calls are never executed silently. Acceptance: a synthetic handler swap between formation and dispatch produces `stale`, a benign restart does not, and a regression test pins both.
+
+- [ ] **UFH-TE-3 — Declare admissible evidence classes for any skipped or reused call.** Write the rule that a 'safely skipped' or 'reused' claim names one of: identity receipt (the call was executed with a bound receipt), rate-tau audited population (a fraction of skips are recomputed and scored), or none. Forbid statistical language without an audited denominator. Acceptance: the rule is in the receipt contract and a lint check flags any handoff sentence that claims a skip without a class.
+
+- [ ] **UFH-TE-4 — Write effect contracts for the tools stored calls actually use.** Enumerate the tool set reachable by stored or replayed calls and give each an effect class (read-only, mutating, external side effect, irreversible) plus the destination and principal it can touch. Acceptance: a table covering every tool in the stored-call set, with an explicit `unknown` class that blocks reuse; no inference.
+
+- [ ] **HIL-RE-1 — Require a call-count decomposition on every token-saving claim.** Any harness token-saving figure we cite or produce must state delta calls (certified bypasses vs other), tokens/call before and after, and whether the effect is prefill or decode. A saving that cannot be decomposed this way may not be described as callback elimination. Acceptance: the reporting convention text and one worked example from intake-2652#record.
+
+- [ ] **HIL-RE-2 — Register non-prompt reuse substrates with their invalidation sets.** One knowledge row naming per-operation graph reuse, per-action decision-graph reuse and prefix-cache reuse as distinct mechanisms, each with what invalidates it. Acceptance: the row exists and no existing reuse task is duplicated.
+
+- [ ] **HIL-RE-3 — Add a telemetry read/write-asymmetry invariant for harness flags.** When a flag fires on the write side but its consumer counter is identically zero, mark it silent, exclude it from any sweep and emit one typed event. Acceptance: a synthetic unwired consumer trips the check; a clean run is silent; no inference.
+
+- [ ] **HIL-RE-4 — Add an authoring-cost column to the S4 reporting contract.** Any reuse-bearing harness feature reports one-time authoring cost in dollars and engineer-hours, the break-even N against the paired baseline, whether that N is per-artefact or cross-artefact, and build cost separately from steady state. Acceptance: the S4 contract text carries the four fields.
+
+
+### Monitor triggers (durable, no active checkbox)
+
+These are inference-gated. Materialise a task only when the stated condition fires; each names what would make it decidable.
+
+- **Handoff-debt measurement (from intake-2653#record).** Trigger: any cross-main takeover is resumed twice in one week, or CTX-HO-3 has rendered validation evidence for 10 completed checkpoints. Probe: paired repository-only vs repository+rendered-note resume, counting model calls and cold-prefill seconds per solved checkpoint, n>=10. Decidable on calls per solved checkpoint; report p50 and the call delta, not tokens.
+- **Literal-action reuse wall-clock probe (from intake-2652#record).** Trigger: a >=20-task verifier-backed coding workload exists and one quiet window is granted. Probe: 20 tasks x 3 repetitions, ABBA, two arms with authorship charged to both, one guard class; primary metric p50 wall-clock per accepted task, non-inferiority on acceptance. Stop at 60 pairs; declare futility at 40 if the paired median log-ratio is >=1.0.
+- **Tool-turn futility gate and idempotence census (from intake-2657#record).** Trigger: any reuse mechanism reaches implementation. Probe: decompose one interactive turn into model / tool / context-assembly / wait time, and classify the top 20 tools by repeat-application semantics. If the non-model share is below the predeclared bound, reuse cannot pay and the mechanism closes.
+- **Session-identity capability column (from intake-2650#record).** Trigger: the first native transfer is attempted. Probe: fill can_resume / can_fork / can_rollback / max_context for OpenCode 1.x/2.x, Codex app-server and Claude in the harness candidate audit.
+- **Model-variant selector (from intake-2651#record).** Trigger: RTG-VAR-1 and RTG-VAR-2 have landed. Probe: implement eligible-variant selection behind a flag with golden tests; no throughput claim until a paired measurement.
+
+### Knowledge retained (no task)
+
+- **ACP registry posture (intake-2654#record).** The published registry is an agent catalog, not a capability catalog: only 1 of 5 client questions is answerable from it, quarantine is invisible to clients, and 7 of 22 binary manifests ship no sha256. Do not consume it as a runtime trust source; borrow the pin-source discipline (archive + sha256 + platform keys, refuse entries without sha256) and the nightly launch-and-probe capability-diff pattern.
+- **Stored-call default (intake-2658#record).** Stored and replayed calls are exact-pinned until an effect contract exists for that tool; the measured cost of exact pinning is re-formation, not failure, and our calls are cheap to re-form on a local model.
