@@ -77,6 +77,7 @@ import json
 import math
 import os
 import re
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -100,6 +101,9 @@ LEDGER_STATE_SCHEMA = "epyc.vidya.ledger_state.v1"
 CANONICAL_LEDGER = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
 ALARM_MODULE = REPO_ROOT / "scripts" / "coordination" / "alarm_channel.py"
 ALARM_KEY = "belief-ledger-not-current"
+#: LOOP-SAFETY C2: a `ready` read that returns an empty model/lineup tier for a target the
+#: previous ready read of the same consumer served non-empty. Warning only; never a refusal.
+TIER_EMPTIED_KEY = "belief-target-tier-emptied"
 ESCALATED_KEY = "belief-ledger-not-current-escalated"
 DEFAULT_ESCALATE_AFTER_S = 3600.0
 EXIT_READY, EXIT_USAGE, EXIT_REFUSED = 0, 2, 3
@@ -156,7 +160,7 @@ OUTCOMES = frozenset({"improved", "null", "regressed", "refused_correctness", "r
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 REFUSAL_REASONS = ("ledger_missing", "sync_unavailable", "ingest_failed", "still_stale",
-                   "chain_broken", "reader_error")
+                   "chain_broken", "reader_stale", "reader_error")
 
 
 class LedgerNotCurrent(Exception):
@@ -263,6 +267,41 @@ def _ingest_sources(ledger_path: Path, source_roots: Iterable[str | Path], *,
             "store_root", "receipts_listed", "receipts_read", "new_claims", "rescoped",
             "frames_appended", "seconds")} | {"refusals": len(report.get("refusals") or [])})
     return reports
+
+
+def reader_checkout(root: str | Path | None = None) -> dict[str, Any]:
+    """LOOP-SAFETY C1 reader pin: is the ROOT checkout this reader runs from current?
+
+    Current = its HEAD contains the local `origin/main` ref (`git merge-base --is-ancestor`).
+    A checkout AHEAD of origin/main (unpushed lane commits) is current; one that LACKS commits
+    on origin/main is stale, because a lagging checkout reads a lagging ledger, index and
+    reader (2026-10-25 canary D-A4/D-B3: the default `/workspace` was the stale ROOT). Any
+    git failure is `current: None`, which the caller treats as not current (fail closed)."""
+    root = Path(root) if root is not None else REPO_ROOT
+    out: dict[str, Any] = {"root": str(root), "head": None, "origin_main": None,
+                           "current": None, "error": None}
+
+    def git(*args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True,
+                              timeout=30)
+    try:
+        head = git("rev-parse", "--verify", "HEAD^{commit}")
+        origin = git("rev-parse", "--verify", "refs/remotes/origin/main^{commit}")
+        if head.returncode or origin.returncode:
+            out["error"] = (head.stderr or origin.stderr or "rev-parse failed").strip()[:300]
+            return out
+        out["head"], out["origin_main"] = head.stdout.strip(), origin.stdout.strip()
+        anc = git("merge-base", "--is-ancestor", out["origin_main"], out["head"])
+        if anc.returncode not in (0, 1):
+            out["error"] = (anc.stderr or "merge-base failed").strip()[:300]
+            return out
+        out["current"] = anc.returncode == 0
+        if not out["current"]:
+            behind = git("rev-list", "--count", f"{out['head']}..{out['origin_main']}")
+            out["behind"] = int(behind.stdout.strip()) if behind.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError, ValueError) as exc:
+        out["error"] = f"{type(exc).__name__}: {exc}"[:300]
+    return out
 
 
 def ensure_current(ledger_path: str | Path, *, index_path: str | Path | None = None,
@@ -1879,14 +1918,56 @@ def global_flags(result: Any) -> dict[str, list[str]]:
 
 
 def write_known_good(path: Path, consumer: str, state: Mapping[str, Any],
-                     flags: Mapping[str, Any], *, frontier: int | None, as_of: str) -> None:
+                     flags: Mapping[str, Any], *, frontier: int | None, as_of: str,
+                     nonempty_targets: Iterable[str] | None = None) -> None:
     body = {"schema": KNOWN_GOOD_SCHEMA, "consumer": consumer, "as_of": as_of,
             "frontier": frontier, "ledger_state": dict(state),
             "ledger_state_digest": state_digest(state), **flags}
+    if nonempty_targets is not None:
+        body["nonempty_targets"] = sorted(set(nonempty_targets))
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + f".tmp{os.getpid()}")
     tmp.write_text(json.dumps(body, sort_keys=True))
     os.replace(tmp, path)
+
+
+def _tier_emptied(previous: Mapping[str, Any] | None, targets: Iterable[Target],
+                  evidence: Mapping[str, Any]) -> list[str]:
+    """Targets the previous ready read served with a non-empty model/lineup tier that this read
+    returns empty (LOOP-SAFETY C2). Silent-empty input -- a lost store, a dropped scope -- looks
+    exactly like "no applicable claims", so a regression from usable claims to none is alarmed.
+    A previous snapshot without `nonempty_targets` (pre-C2) compares as nothing."""
+    before = set((previous or {}).get("nonempty_targets") or ())
+    empty = set(evidence.get("empty_targets") or ())
+    return sorted(_target_label(t) for t in targets
+                  if _target_label(t) in before and _target_label(t) in empty)
+
+
+def tier_emptied_alarm(consumer: str, emptied: list[str], *,
+                       alarm_state: str | Path | None = None,
+                       alarm_config: str | Path | None = None,
+                       api: Any = None) -> dict[str, Any]:
+    """Raise `belief-target-tier-emptied.<consumer>` (warning) when `emptied` is non-empty, clear
+    it otherwise. Never raises and never refuses: the read is still a plan WITH belief context."""
+    key = f"{TIER_EMPTIED_KEY}.{consumer}"
+    out: dict[str, Any] = {"key": key, "action": None}
+    try:
+        api = api or _alarm_api()
+        cfg = api.load_config(Path(alarm_config)) if alarm_config else None
+        state = Path(alarm_state) if alarm_state else None
+        with contextlib.redirect_stdout(sys.stderr):
+            if emptied:
+                res = api.raise_alarm(
+                    key, "warning",
+                    f"{consumer}: belief read returned NO model/lineup-tier claims for "
+                    f"{', '.join(emptied)}, which had usable claims at the previous ready read",
+                    {"consumer": consumer, "targets": emptied}, cfg=cfg, state_file=state)
+            else:
+                res = api.clear_alarm(key, cfg=cfg, state_file=state)
+        out["action"] = res.get("action")
+    except Exception as exc:  # noqa: BLE001
+        out["error"] = f"{type(exc).__name__}: {exc}"[:300]
+    return out
 
 
 def read_known_good(path: Path) -> dict[str, Any] | None:
@@ -1967,12 +2048,21 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
             known_good: str | Path | None = None, reply_field: str = "relies_on_claims",
             source_roots: Iterable[str | Path] = (), source_memo_dir: str | Path | None = None,
             sync_module: Any = None, scoped_module: Any = None,
-            alarm_api: Any = None) -> dict[str, Any]:
+            alarm_api: Any = None, check_reader_checkout: bool = False,
+            reader_root: str | Path | None = None) -> dict[str, Any]:
     """The one call before every planning step. Never raises.
 
     `ready`: ledger current + verified; `ledger_state` and `evidence` set (evidence may be empty
     when no claim applies -- that is still a plan WITH belief context). `refused`: the consumer
-    must not plan; the alarm has been raised."""
+    must not plan; the alarm has been raised.
+
+    `as_of` (D-A1, 2026-10-25 canary): an EXPLICIT `as_of` is a replay cutoff and is kept. When
+    omitted, the cutoff is taken AFTER `ensure_current`, so frames the producer-time scoped ingest
+    (`source_roots`) just appended are visible to the very plan that ingested them.
+
+    `check_reader_checkout` (C1 reader pin; the CLI turns it on unless `--allow-stale-reader`):
+    refuse `reader_stale` when the ROOT checkout the reader runs from lacks origin/main commits."""
+    explicit_as_of = as_of
     as_of = as_of or datetime.now(timezone.utc).isoformat()
     if isinstance(targets, Mapping):
         targets = [targets]
@@ -1992,6 +2082,21 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
                                        source_roots=source_roots,
                                        source_memo_dir=source_memo_dir,
                                        scoped_module=scoped_module)
+        if check_reader_checkout:
+            checkout = reader_checkout(reader_root)
+            base["reader_checkout"] = checkout
+            if checkout.get("current") is not True:
+                raise LedgerNotCurrent("reader_stale", (
+                    f"ROOT checkout {checkout['root']} HEAD {checkout.get('head')} does not "
+                    f"contain origin/main {checkout.get('origin_main')}"
+                    + (f" ({checkout['behind']} commits behind)" if checkout.get("behind")
+                       else "") + (f": {checkout['error']}" if checkout.get("error") else "")
+                    + "; read from a current checkout (e.g. the hub view "
+                      "/mnt/raid0/llm/views/epyc-root-main) or pass --allow-stale-reader "
+                      "for a pinned historical replay"))
+        if explicit_as_of is None:
+            as_of = datetime.now(timezone.utc).isoformat()
+            base["as_of"] = as_of
         result = fold(visible_frames(frames, as_of), as_of=as_of)
         if parsed:
             evidence = evaluate_frames(frames, parsed, as_of=as_of, max_claims=max_claims,
@@ -2003,10 +2108,13 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
         if target_errors and parsed:
             evidence["target_errors"] = target_errors
         flags = global_flags(result)
+        tier_emptied = _tier_emptied(read_known_good(kg_path), parsed, evidence)
+        nonempty_now = sorted({_target_label(t) for t in parsed}
+                              - set(evidence.get("empty_targets") or ()))
         kg_error = None
         try:
             write_known_good(kg_path, consumer, state, flags, frontier=result.frontier,
-                             as_of=as_of)
+                             as_of=as_of, nonempty_targets=nonempty_now)
         except OSError as exc:  # the plan still has belief context; degraded mode will not
             kg_error = f"{type(exc).__name__}: {exc}"[:300]
     except LedgerNotCurrent as exc:
@@ -2026,7 +2134,10 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
                 "last_known_good": _known_good_summary(kg_path)}
     cleared = clear_refusal_alarm(consumer, alarm_state=alarm_state, alarm_config=alarm_config,
                                   api=alarm_api)
+    tier_alarm = tier_emptied_alarm(consumer, tier_emptied, alarm_state=alarm_state,
+                                    alarm_config=alarm_config, api=alarm_api)
     return {**base, "status": "ready", "reason": None, "detail": "",
+            "tier_emptied": tier_emptied, "tier_emptied_alarm": tier_alarm,
             "targets": [t.as_dict() for t in parsed], "ledger_state": state,
             "ledger_state_digest": state_digest(state), "evidence": evidence,
             "banner": evidence.get("banner"),
@@ -2081,6 +2192,9 @@ def main(argv: list[str] | None = None) -> int:
                         "receipts are ingested before planning (repeatable)")
     p.add_argument("--source-memo-dir", default=None,
                    help="refusal memo dir for --source-root (default <ledger dir>/loop-memo)")
+    p.add_argument("--allow-stale-reader", action="store_true",
+                   help="skip the reader pin (C1) for a pinned historical replay; the answer "
+                        "records reader_checkout_check=false")
     p.add_argument("--reply-field", default="relies_on_claims",
                    help="the consumer's reply field for declared reliance (AutoPilot: vidya_claim_ids)")
     sub.add_parser("read-counter", add_help=False,
@@ -2133,7 +2247,9 @@ def main(argv: list[str] | None = None) -> int:
                      alarm_state=args.alarm_state, alarm_config=args.alarm_config,
                      max_claims=args.max_claims, max_bytes=args.max_bytes,
                      known_good=args.known_good, reply_field=args.reply_field,
-                     source_roots=args.source_root, source_memo_dir=args.source_memo_dir)
+                     source_roots=args.source_root, source_memo_dir=args.source_memo_dir,
+                     check_reader_checkout=not args.allow_stale_reader)
+    answer["reader_checkout_check"] = not args.allow_stale_reader
     print(json.dumps(answer, sort_keys=True, default=str))
     return EXIT_READY if answer["status"] == "ready" else EXIT_REFUSED
 

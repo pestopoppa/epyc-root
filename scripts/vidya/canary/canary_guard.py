@@ -17,6 +17,7 @@ import os
 import sqlite3
 import shutil
 from urllib.parse import parse_qsl, urlsplit
+import re
 import subprocess
 import sys
 import traceback
@@ -153,7 +154,16 @@ def _hook(event: str, args) -> None:
             # git subcommands/options can mutate files outside Python's audit hook.
             tail = argv[3:] if len(argv) >= 4 and argv[1] == "-C" else []
             allowed = tail in (["rev-parse", "HEAD"],
-                               ["status", "--porcelain", "--untracked-files=no"])
+                               ["status", "--porcelain", "--untracked-files=no"],
+                               # loop_beliefs.reader_checkout (LOOP-SAFETY C1 reader pin):
+                               ["rev-parse", "--verify", "HEAD^{commit}"],
+                               ["rev-parse", "--verify", "refs/remotes/origin/main^{commit}"])
+            hexsha = lambda v: bool(re.fullmatch(r"[0-9a-f]{40}", v))
+            if len(tail) == 4 and tail[:2] == ["merge-base", "--is-ancestor"]:
+                allowed = hexsha(tail[2]) and hexsha(tail[3])
+            if len(tail) == 3 and tail[:2] == ["rev-list", "--count"]:
+                parts = tail[2].split("..")
+                allowed = len(parts) == 2 and all(hexsha(x) for x in parts)
             if allowed and (env or {}).get("GIT_OPTIONAL_LOCKS") == "0":
                 return
             _block("subprocess", f"git: {argv[:8]}")

@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import sys
+import re
 sys.dont_write_bytecode = True
 import time
 import traceback
@@ -431,7 +432,7 @@ sec["higher_tier_pressure"] = guarded("higher_tier", lambda: ap._build_higher_ti
 sec["eval_coverage_pressure"] = guarded("eval_cov", lambda: ap._build_eval_coverage_pressure(
     journal, w8_candidate_generation_active=w8), "")
 sec["outcome_progress_pressure"] = guarded("outcome_progress",
-                                           lambda: ap._build_outcome_progress_pressure(), "")
+                                           lambda: ap._build_outcome_progress_pressure(journal.journal_dir), "")
 kvq = guarded("vidya_kvq", lambda: ap._build_vidya_kvq_context(), {"text": "(blocked)"})
 sec["vidya_kvq_evidence_block"] = kvq["text"]
 sec["pareto_summary"] = archive.summary_text(tier=ap.DEFAULT_FRONTIER_TIER)
@@ -583,13 +584,26 @@ keep = any("1472" in "\n".join(lines[max(0,i-4):i+5]) and
            "2.025" in "\n".join(lines[max(0,i-4):i+5]) and
            "ingest_triviality_guard" in "\n".join(lines[max(0,i-4):i+5])
            for i in range(len(lines)) if "1472" in lines[i])
+# Known conclusions (re-pinned 2026-11-07; see README "Known conclusions"). Trial 1472 is NOT a
+# keep (journal: keep_revert_decision=excluded, reproduction_confirmed) and predates the ratified
+# epoch fence pareto_exclude_before_ts=2026-08-10T16:23Z, so its absence is correct; it is kept
+# as an observation only. Gating: (1) the fence-surviving journal insight that numeric_trial went
+# 0+/N- across trials including 1500; (2) the strategy-store convention row "toolrunner backend
+# and REPL extraction fix" bound live (retrieved through the embedder: the semantic-ranking pin).
+numeric_insight = re.search(r"numeric_trial \(\w+ confidence, 0\+/\d+- across trials \[[^\]]*\b1500\b",
+                            prompt) is not None
+convention_row = any("toolrunner backend and REPL extraction fix" in ln and "bind=live" in ln
+                     for ln in lines)
+known = numeric_insight and convention_row
 frontier = archive.frontier_size(ap.DEFAULT_FRONTIER_TIER)
 frontier_section = bool(str(sec.get("pareto_summary") or "").strip()) and sec.get("pareto_geometry") is not None and "pareto_summary" not in (summary.get("errors") or {})
 unchanged = {"baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
              "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
              "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
 result = {"loop": "B", "live_embedder": bool(EMBED_URL),
-          "observed_1472_keep_with_numbers": keep, "observed_frontier_count": frontier, "frontier_section_assembled": frontier_section,
+          "observed_1472_keep_with_numbers": keep,
+          "observed_numeric_trial_insight": numeric_insight, "observed_toolrunner_convention": convention_row,
+          "observed_frontier_count": frontier, "frontier_section_assembled": frontier_section,
           "assembly_errors": sorted((summary.get("errors") or {})),
           "embed_calls": getattr(_embedder, "calls", 0), "embed_errors": EMBED_ERRORS[:3],
           "belief_ready": belief_ready is not None,
@@ -600,11 +614,11 @@ if not EMBED_URL:
 elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) or summary.get("errors"):
     result.update(status="UNKNOWN", reason="live embedder failed/unused, assembly error, or protected state changed")
     code = 2
-elif keep and frontier_section:
-    result.update(status="PASS", reason="1472 keep with 2.025 and ingest_triviality_guard present; frontier section assembled (T1 count recorded; empty is the intended post-rebase state)")
+elif known and frontier_section:
+    result.update(status="PASS", reason="numeric_trial 0+/N- insight (incl. 1500) and the live toolrunner convention row present; frontier section assembled (T1 count recorded; empty is the intended post-rebase state)")
     code = 0
 else:
-    result.update(status="FAIL", reason="known conclusion missing: keep_with_numbers=%s frontier_section=%s" % (keep, frontier_section))
+    result.update(status="FAIL", reason="known conclusion missing: numeric_insight=%s convention_row=%s frontier_section=%s" % (numeric_insight, convention_row, frontier_section))
     code = 1
 print("CANARY_RESULT:", json.dumps(result))
 sys.exit(code)

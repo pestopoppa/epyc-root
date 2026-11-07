@@ -1303,3 +1303,139 @@ def test_harness_claims_reach_only_their_consumer_and_are_never_evidence(tmp_pat
                        known_good=tmp_path / "known_good2.json", **alarm)
     assert other["evidence"]["tiers"]["harness"] == 0
     assert not hid & {c["claim_id"] for c in other["evidence"]["claims"]}
+
+
+# ------------------------------------------------------------------------------ LOOP-SAFETY C1/C2, D-A1
+
+
+class AppendingScoped:
+    """A producer-time ingest that appends a real claim stamped with the wall clock at ingest
+    time, i.e. strictly after `prepare` was entered (the 2026-10-25 canary D-A1 situation)."""
+
+    def __init__(self, tup):
+        self.tup = tup
+
+    def ingest_scoped_store(self, ledger, root, *, as_of, memo_path=None):
+        from datetime import datetime, timezone
+        stamp = datetime.now(timezone.utc).isoformat()
+        led = Ledger(ledger)
+        frames = to_frames(self.tup, as_of=stamp, adapter_id="fixture/v1")
+        for frame in frames:
+            led.append(frame)
+        return {"store_root": str(root), "receipts_listed": 1, "receipts_read": 1,
+                "new_claims": 1, "rescoped": 0, "frames_appended": len(frames), "seconds": 0.0,
+                "refusals": []}
+
+
+def _prepare_now(tmp_path, alarm, ledger, targets, **kw):
+    return lb.prepare("test.loop", targets, ledger=ledger, index_path=tmp_path / "index.yaml",
+                      sync_module=FakeSync(), known_good=tmp_path / "known_good.json",
+                      **alarm, **kw)
+
+
+def test_da1_own_producer_ingest_is_visible_to_the_same_plan(tmp_path, alarm):
+    fresh = _scoped("da1-own-ingest")
+    ans = _prepare_now(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), DS41_CPU,
+                       source_roots=[tmp_path / "store"], scoped_module=AppendingScoped(fresh))
+    assert ans["status"] == "ready", ans.get("detail")
+    assert _claim_id(fresh) in ans["evidence"]["claim_ids"]
+    assert ans["as_of"] == ans["evidence"]["as_of"]
+
+
+def test_da1_negative_control_explicit_cutoff_before_ingest_hides_it(tmp_path, alarm):
+    """The pre-fix semantics (cutoff fixed on entry) reproduced with an explicit as_of: the
+    frames the ingest appends after the cutoff stay invisible. Replays keep that behaviour."""
+    from datetime import datetime, timezone
+    cutoff = datetime.now(timezone.utc).isoformat()
+    fresh = _scoped("da1-own-ingest")
+    ans = _prepare_now(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), DS41_CPU, as_of=cutoff,
+                       source_roots=[tmp_path / "store"], scoped_module=AppendingScoped(fresh))
+    assert ans["status"] == "ready"
+    assert _claim_id(fresh) not in ans["evidence"]["claim_ids"]
+    assert ans["as_of"] == cutoff
+
+
+def _git(repo, *args):
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
+                   env={"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
+                        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t",
+                        "PATH": "/usr/bin:/bin", "HOME": str(repo)})
+
+
+def _checkout(tmp_path, behind):
+    repo = tmp_path / "rootco"
+    repo.mkdir(parents=True)
+    _git(repo, "init", "-q", "-b", "main")
+    _git(repo, "commit", "-q", "--allow-empty", "-m", "one")
+    _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    if behind:
+        _git(repo, "commit", "-q", "--allow-empty", "-m", "two")
+        _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+        _git(repo, "reset", "-q", "--hard", "HEAD~1")
+    else:
+        _git(repo, "commit", "-q", "--allow-empty", "-m", "ahead-lane-commit")
+    return repo
+
+
+def test_c1_reader_checkout_current_when_ahead_stale_when_behind(tmp_path):
+    ahead = lb.reader_checkout(_checkout(tmp_path / "a", behind=False))
+    assert ahead["current"] is True and ahead["error"] is None
+    behind = lb.reader_checkout(_checkout(tmp_path / "b", behind=True))
+    assert behind["current"] is False and behind["behind"] == 1
+
+
+def test_c1_stale_reader_refuses_and_alarms(tmp_path, alarm):
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   check_reader_checkout=True,
+                   reader_root=_checkout(tmp_path / "co", behind=True))
+    assert (ans["status"], ans["reason"]) == ("refused", "reader_stale")
+    assert "1 commits behind" in ans["detail"]
+    assert "belief-ledger-not-current.test.loop" in _active(alarm)
+
+
+def test_c1_non_git_root_fails_closed(tmp_path, alarm):
+    (tmp_path / "plain").mkdir()
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   check_reader_checkout=True, reader_root=tmp_path / "plain")
+    assert (ans["status"], ans["reason"]) == ("refused", "reader_stale")
+
+
+def test_c1_current_reader_is_ready_and_records_checkout(tmp_path, alarm):
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   check_reader_checkout=True,
+                   reader_root=_checkout(tmp_path / "co", behind=False))
+    assert ans["status"] == "ready" and ans["reader_checkout"]["current"] is True
+
+
+def test_c1_negative_control_library_default_does_not_probe(tmp_path, alarm):
+    """In-process callers (replays, canaries) are unaffected; only the CLI pins by default."""
+    ans = _prepare(tmp_path, alarm, _ledger(tmp_path, _kvq_run()), GPU_27B,
+                   reader_root=_checkout(tmp_path / "co", behind=True))
+    assert ans["status"] == "ready" and "reader_checkout" not in ans
+
+
+def test_c2_tier_emptied_alarm_on_regression_then_clears(tmp_path, alarm):
+    claim = _scoped("c2-tier")
+    full = _ledger(tmp_path, [claim], name="full.jsonl")
+    first = _prepare(tmp_path, alarm, full, DS41_CPU)
+    assert first["status"] == "ready" and first["tier_emptied"] == []
+    kg = lb.read_known_good(Path(first["known_good_path"]))
+    assert kg["nonempty_targets"] == ["DeepSeek-V4.1-Flash-Q4.gguf"]
+    # Silent-empty input: the same consumer now reads a ledger without the target's claims.
+    empty = _ledger(tmp_path, _kvq_run(), name="empty.jsonl")
+    second = _prepare(tmp_path, alarm, empty, DS41_CPU)
+    assert second["status"] == "ready"                              # never a refusal
+    assert second["tier_emptied"] == ["DeepSeek-V4.1-Flash-Q4.gguf"]
+    assert "belief-target-tier-emptied.test.loop" in _active(alarm)
+    # Recovery clears it.
+    third = _prepare(tmp_path, alarm, full, DS41_CPU)
+    assert third["tier_emptied"] == []
+    assert "belief-target-tier-emptied.test.loop" not in _active(alarm)
+
+
+def test_c2_negative_control_never_nonempty_target_does_not_alarm(tmp_path, alarm):
+    empty = _ledger(tmp_path, _kvq_run())
+    for _ in range(2):
+        ans = _prepare(tmp_path, alarm, empty, DS41_CPU)
+        assert ans["status"] == "ready" and ans["tier_emptied"] == []
+    assert "belief-target-tier-emptied.test.loop" not in _active(alarm)
