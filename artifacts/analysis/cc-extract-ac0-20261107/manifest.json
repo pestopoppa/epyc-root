@@ -1,0 +1,17 @@
+{
+  "check": "AC0",
+  "extractor": "cc-extract/v1",
+  "command": "python3 scripts/vidya/cc_extract.py items --items <class_a_items.json> --labels <labels_classA_true.json>",
+  "inputs": {
+    "/mnt/raid0/llm/tmp/ws58-conclusions-adapter-design-20261025/work/a1/class_a_items.json": "088c93c4d3b40f9ebb782d845d68f987fb77ea6a3f09138590781fabfade028f",
+    "/mnt/raid0/llm/tmp/ws58-conclusions-adapter-design-20261025/work/a1/labels_classA_true.json": "4e58ef149dbae139756d0b4266e9f7cad97ee83f38e9dab178b5845231d6b43e"
+  },
+  "result": "PASS: 50/54 recall 0.9259, precision 0.6024 (50/83)",
+  "caveat": "threshold 2 chosen in-sample on this gold set (>=3 gave recall 0.74); held-out precision comes from confirmer rejections",
+  "missed_gold_reason": {
+    "12": "fractions only, no verdict",
+    "16": "verdict prose, plumbing word in head",
+    "38": "decision-gate prose, no checkbox",
+    "91": "unticked checkbox, gated out by design"
+  }
+}
