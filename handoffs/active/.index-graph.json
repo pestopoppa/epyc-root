@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T11:25:21Z",
+  "generated_at": "2026-11-07T11:34:04Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1456,14 +1456,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 791,
-      "dispatchable": 136,
+      "dispatchable": 137,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 137,
+      "open": 138,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1500,7 +1500,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 39,
+          "dispatchable": 40,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1509,14 +1509,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 40,
+          "open": 41,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5924,
+          "line": 5925,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1525,7 +1525,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6004,
+          "line": 6005,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1544,7 +1544,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6301,
+          "line": 6302,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1561,7 +1561,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9516,
+          "line": 9517,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1574,7 +1574,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13866,
+          "line": 13867,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1608,7 +1608,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14078,
+          "line": 14079,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2175,6 +2175,30 @@
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [
+            "INF-06",
+            "INF-50"
+          ],
+          "dispatchable": 0,
+          "gates": null,
+          "line": 2863,
+          "name": "autokernel-all-devices-all-dimensions",
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [
+            "INF-06",
+            "INF-50"
+          ],
+          "dispatchable": 0,
+          "gates": null,
+          "line": 2870,
+          "name": "autokernel-cross-workload-keep-gate",
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
@@ -2950,14 +2974,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 150,
-      "dispatchable": 45,
+      "dispatchable": 47,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-05",
       "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
-      "open": 47,
+      "open": 49,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -3046,6 +3070,15 @@
           "name": "tool-output-compression",
           "open": 5,
           "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 2,
+          "gates": null,
+          "line": 3589,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 2,
+          "readiness": "ready"
         }
       ]
     },
@@ -3054,14 +3087,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 177,
-      "dispatchable": 62,
+      "dispatchable": 65,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-03",
       "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
-      "open": 63,
+      "open": 66,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3172,6 +3205,15 @@
           "name": "routing-intelligence",
           "open": 8,
           "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 3,
+          "gates": null,
+          "line": 4045,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 3,
+          "readiness": "ready"
         }
       ]
     },
@@ -3275,14 +3317,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 341,
-      "dispatchable": 52,
+      "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-06",
       "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
-      "open": 52,
+      "open": 56,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3418,6 +3460,15 @@
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 4,
+          "gates": null,
+          "line": 6406,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 4,
+          "readiness": "ready"
         }
       ]
     },
@@ -3617,14 +3668,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 231,
-      "dispatchable": 79,
+      "dispatchable": 87,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-05",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 97,
+      "open": 105,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3752,6 +3803,17 @@
           "line": 2721,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
+            "RTG-09"
+          ],
+          "dispatchable": 8,
+          "gates": null,
+          "line": 3589,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 8,
           "readiness": "blocked"
         }
       ]
