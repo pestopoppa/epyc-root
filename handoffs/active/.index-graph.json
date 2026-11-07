@@ -611,10 +611,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-06T23:51:49Z",
+  "generated_at": "2026-11-07T00:30:43Z",
   "nodes": [
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 130,
@@ -960,7 +960,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 67,
@@ -1048,7 +1048,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 117,
@@ -1124,7 +1124,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 2,
       "blocked_by": [],
       "closed": 215,
@@ -1246,7 +1246,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 75,
@@ -1323,7 +1323,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 356,
@@ -1369,15 +1369,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 783,
-      "dispatchable": 138,
+      "closed": 787,
+      "dispatchable": 134,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-06",
+      "last_advanced": "2026-11-07",
       "next_action": "C7r is champion (`62cb6a6af`); next C8-incremental folds: H8b (AK-ASM-H8B-GATE r2) and FA hd256 long-ctx r5",
-      "open": 139,
+      "open": 135,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1414,7 +1414,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 41,
+          "dispatchable": 37,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1423,14 +1423,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 42,
+          "open": 38,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5910,
+          "line": 5913,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1439,7 +1439,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5990,
+          "line": 5993,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1458,7 +1458,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6287,
+          "line": 6290,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1475,7 +1475,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9502,
+          "line": 9505,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1488,7 +1488,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13852,
+          "line": 13855,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1522,7 +1522,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14064,
+          "line": 14067,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1530,7 +1530,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 27,
@@ -1576,7 +1576,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 586,
+          "line": 587,
           "name": "engram-conditional-memory",
           "open": 9,
           "readiness": "ready"
@@ -1584,7 +1584,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 3,
       "blocked_by": [],
       "closed": 248,
@@ -1725,7 +1725,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 334,
@@ -1840,7 +1840,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 117,
@@ -1907,7 +1907,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 2,
       "blocked_by": [],
       "closed": 101,
@@ -1988,7 +1988,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 278,
@@ -2133,7 +2133,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [],
       "closed": 146,
@@ -2224,7 +2224,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2265,7 +2265,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 41,
       "blocked_by": [],
       "closed": 120,
@@ -2315,7 +2315,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 69,
@@ -2374,7 +2374,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 3,
       "blocked_by": [],
       "closed": 100,
@@ -2460,7 +2460,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2560,7 +2560,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 286,
@@ -2773,7 +2773,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [],
       "closed": 150,
@@ -2877,7 +2877,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 177,
@@ -3003,7 +3003,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 248,
@@ -3098,7 +3098,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 341,
@@ -3249,7 +3249,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3365,7 +3365,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 9,
       "blocked_by": [],
       "closed": 414,
@@ -3440,7 +3440,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 18,
       "blocked_by": [],
       "closed": 231,
@@ -3584,7 +3584,7 @@
       ]
     },
     {
-      "age_days": 34,
+      "age_days": 35,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,

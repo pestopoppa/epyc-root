@@ -189,6 +189,7 @@ Two vendored lane templates caused most lost compute in Pass 4 of `docs/reports/
 - **GPU smoke rows must hold own-PID VRAM for >= 40 s.** The 1 s VRAM sampler verifies residency by the job's own PID; a smoke that exits sooner cannot prove it ran on the GPU.
 - **Derive taskset CPUs from the granted affinity**, never hardcode a CPU list in the job.
 - **Set CPU-backend thread counts explicitly** (`-t`/`GGML_N_THREADS`). Under taskset the ggml CPU backend still defaulted to 192 threads; the oversubscription made H8b correctness take 16 min per pass.
+- **Never use `run_direct` for GPU work while the keeper runs.** A `run_direct` process counts as a foreign KFD user, so the keeper sees the GPU as occupied and stalls its own queue; route GPU jobs through rowflow grants.
 - **Never share a STOP file across sibling rows.** One row's withdraw then kills every sibling; give each row its own STOP path.
 
 ## Reference implementation
