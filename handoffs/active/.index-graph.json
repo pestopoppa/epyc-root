@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:07:42Z",
+  "generated_at": "2026-11-07T19:19:49Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2586,17 +2586,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 3,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 104,
-      "dispatchable": 16,
+      "closed": 105,
+      "dispatchable": 12,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-07",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 19,
+      "open": 13,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2616,11 +2616,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -2629,7 +2629,7 @@
           "gates": [],
           "line": 1104,
           "name": "colbert-reranker-web-research",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -2643,11 +2643,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 6,
           "gates": [],
           "line": 2468,
           "name": "opendataloader-pipeline-integration",
-          "open": 7,
+          "open": 6,
           "readiness": "ready"
         },
         {
@@ -2661,11 +2661,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 2945,
           "name": "sliders-local-validation",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         }
       ]

@@ -7,10 +7,10 @@
       "open": 663
     },
     "pipeline-integration-index.md": {
-      "blocked": 3,
+      "blocked": 1,
       "handoffs": 1,
       "oldest_advance": "2026-11-07",
-      "open": 16
+      "open": 12
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1294,11 +1294,11 @@
       ]
     },
     "knowledge-pipelines.md": {
-      "blocked": 3,
-      "closed": 104,
+      "blocked": 1,
+      "closed": 105,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 16,
+      "open": 12,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1307,7 +1307,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 123,
+      "total": 118,
       "tracks": [
         {
           "blocked": 0,
@@ -1317,10 +1317,10 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 3
+          "open": 1
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
@@ -1347,7 +1347,7 @@
           "line": 2468,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 7
+          "open": 6
         },
         {
           "blocked": 1,
@@ -1360,14 +1360,14 @@
           "open": 0
         },
         {
-          "blocked": 1,
-          "closed": 1,
+          "blocked": 0,
+          "closed": 2,
           "gates": [],
           "guarded": 0,
           "line": 2945,
           "markers": 1,
           "name": "sliders-local-validation",
-          "open": 2
+          "open": 1
         }
       ]
     },
