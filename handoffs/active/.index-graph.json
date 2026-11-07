@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T13:00:05Z",
+  "generated_at": "2026-11-07T13:04:45Z",
   "nodes": [
     {
       "age_days": 4,
@@ -3317,14 +3317,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 342,
-      "dispatchable": 55,
+      "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-07",
       "next_action": "Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next",
-      "open": 55,
+      "open": 56,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3463,11 +3463,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": null,
           "line": 6406,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         }
       ]
