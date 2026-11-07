@@ -1388,11 +1388,13 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     shared checkout moves to `6ce26fc9` only on OP-78. The host cron (AKX-ALL-15a) waits on OP-78's fast-forward and
     the host install (OP-79). AK-requested windows are still **NACK**: the AK half of round 2 (F4/F5/F6) is research
     `d6b1a5ac` (not on research main), pending re-review (AKX-ALL-15b).
+  - *(2026-11-07, operator-adhoc-ops-20261105.)* STATE: protocol written, `docs/guides/agent-workflows/mi210-window-protocol.md`; the manual cycle itself is not run. Box stays open: needs one real window with receipts.
   - [ ] **AKX-ALL-15a — arm the GPU-window watchdog (review F2) after today's :8083 restore.** (filed 2026-10-04,
     - Owner: Pipeline Management (routed by AutoKernel; AK supplies requirements). Action: ROUTE:Pipeline Management. Next: Arm watchdog; verify against :8083 restore Evidence: Dispatcher/watchdog plumbing (AUDIT.md:151) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
     workspace-ec) Install `scripts/server/gpu_window_watchdog.cron` in the host crontab (`* * * * *` +
     `@reboot sleep 90`). Done when a tick is seen writing `mi210.json.executor-status.json` after the restore and
     the hub probe is green.
+    - *(2026-11-07, operator-adhoc-ops-20261105.)* STATE: the watchdog is already ticking every minute (status rewritten 11:08Z, `verdict ok`, `holder production`). Not ticked: the post-restore tick and hub probe were not checked against the restore event itself.
     Manual `gpu_window park` only writes the window file and does NOT stop servers or free the GPU. Stop servers through `gpu_window_executor open` with a schedule entry and compute grant (60 min default cap; approved schedule policy may allow longer windows). See APP `c7d573c2661dc90aa83494d2b3f9e680742cf1d1` for the CLI warning.
   - [ ] **AKX-ALL-15b — close review F3/F4/F5/F6 so that AK-requested windows can be ACKed.** (filed 2026-10-04,
     - Owner: Pipeline Management (routed by AutoKernel; AK supplies requirements). Action: ROUTE:Pipeline Management. Next: Close F3/F4/F5/F6 items Evidence: Dispatcher plumbing (AUDIT.md:152) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
@@ -1401,6 +1403,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     - F5: a real compute-request sender and handshake.
     - F6: the AK honours `expected_end` mid-measurement.
     - F3: `--compute-grant` verified against the coordinator-daemon grant file.
+    - *(2026-11-07, operator-adhoc-ops-20261105.)* STATE: F3 is orch `4b871cc5` (merged). F4/F5/F6 are research `d6b1a5ac`, unmerged; 70 tests pass on it. Needs the third review, then merge. Not ticked.
     - Done when a third review ACKs (b).
   - [ ] **AKX-ALL-15c — the first AK GPU-lane job is multi-row dequant-GEMV.** (filed 2026-10-04, operator decision)
     - Owner: AutoKernel (adopted; loop work only, no AK loop launch -- compute via granted rowflow rows). Action: ADOPT. Next: Re-cut `ak/gpu-run1-20261004` on current champion; prep only, run when window + hold lifted (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]

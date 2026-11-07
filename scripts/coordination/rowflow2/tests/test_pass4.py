@@ -397,3 +397,23 @@ def test_cpu_multi_quarter_negative_control_without_the_rule_grants_q3(monkeypat
     busy = [rf.Grant("hog", frozenset(rf.QUARTERS[0] | rf.QUARTERS[2]), "none", False, 8.0, 1.0, T0, T0 + 7200, 7200.0)]
     plan = rf.admit([s], busy, T0)
     assert len(plan.grants) == 1 and plan.grants[0].cores & frozenset(range(72, 96))
+
+
+# ================================================================ AKX-ALL-15 item 4: CPU row under a GPU-quiet guard
+def test_gpu_quiet_guard_cpu_row_refused_at_publish(tmp_path):
+    """c6-w3-halfb-census-20261105: job.py demanded 'exclusive GPU-quiet ancestor required' but the row was republished as
+    a CPU row -> rc1 six seconds after grant. Publish must refuse it; the gpu-exclusive republish is admitted.
+    Negative control: a launcher without the guard text is admitted as CPU."""
+    d = tmp_path / "job"
+    d.mkdir()
+    (d / "launch.sh").write_text("#!/bin/sh\nexec python3 job.py\n")
+    (d / "job.py").write_text("raise ValueError('exclusive GPU-quiet ancestor required for canonical hosting SMT')\n")
+    bad = spec("c6-guard-cpu", cpus="q1", threads=12, launcher=str(d / "launch.sh"))
+    errs = rf.gpu_quiet_guard_conflicts(bad)
+    assert errs and "GPU-quiet ancestor" in errs[0]
+    assert rf.gpu_quiet_guard_conflicts(dict(bad, gpu="exclusive")) == []
+    assert rf.gpu_quiet_guard_conflicts(dict(bad, gpu="shared"))   # shared is not exclusive either
+    (d / "job.py").write_text("print('no guard')\n")
+    assert rf.gpu_quiet_guard_conflicts(bad) == []
+    # unreadable launcher never blocks
+    assert rf.gpu_quiet_guard_conflicts(dict(bad, launcher="/nonexistent/x.sh")) == []

@@ -1327,6 +1327,29 @@ def template_warnings(launcher):
         return []
 
 
+_GPUQ_GUARD = re.compile(r"(gpu.?quiet[^\n]{0,80}ancestor|ancestor[^\n]{0,80}gpu.?quiet)", re.I)
+
+
+def gpu_quiet_guard_conflicts(spec, read=None):
+    """AKX-ALL-15 item 4 (c6-w3-halfb-census, 2026-11-05): a launcher/job.py that REQUIRES an exclusive GPU-quiet ancestor
+    lock dies rc1 at entry when the row is granted without one (a CPU row republished under a GPU-quiet guard burned a
+    grant, 6 s in). Refuse at publish: the row must declare gpu exclusive (or quiet). Reads only launch script + sibling
+    job.py (<=256 KiB each); an unreadable file never blocks. Returns refusal reasons ([] = ok)."""
+    if spec.get("gpu") == "exclusive" or spec.get("quiet"):
+        return []
+    read = read or (lambda f: open(f, errors="replace").read(262144))
+    d = os.path.dirname(os.path.abspath(spec.get("launcher", "")))
+    for f in dict.fromkeys([spec.get("launcher", ""), os.path.join(d, "job.py")]):
+        try:
+            m = _GPUQ_GUARD.search(read(f))
+        except (OSError, TypeError, ValueError):
+            continue
+        if m:
+            return [f"{os.path.basename(f)} requires a GPU-quiet ancestor ({m.group(0)[:60]!r}) but the row declares "
+                    f"gpu={spec.get('gpu')!r} quiet={spec.get('quiet')}: publish it gpu exclusive, or remove the guard"]
+    return []
+
+
 def publish(spec, flags, log=print):
     """Validate and write ready/<id>.json (schema v4); supersede predecessors. Returns refusal reasons ([] = ok)."""
     spec = dict(spec, schema=SCHEMA)
@@ -1338,7 +1361,7 @@ def publish(spec, flags, log=print):
         e = ended_fields(_text(os.path.join(flags, "grants", s + ".ended")))
         if e["busy_p95"] is not None:
             pred = {"busy_p95": e["busy_p95"], "cpus": e["cpus"]}
-    errs = validate(spec, pred)
+    errs = validate(spec, pred) or gpu_quiet_guard_conflicts(spec)
     if errs:
         log(f"REFUSED {spec.get('id')}: {'; '.join(errs)}")
         return errs
