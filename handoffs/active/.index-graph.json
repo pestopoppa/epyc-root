@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:31:37Z",
+  "generated_at": "2026-11-07T19:32:50Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1943,15 +1943,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 120,
-      "dispatchable": 26,
+      "closed": 119,
+      "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-07",
       "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
-      "open": 27,
+      "open": 28,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1982,11 +1982,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 12,
           "gates": [],
           "line": 13,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 12,
+          "open": 13,
           "readiness": "ready"
         },
         {

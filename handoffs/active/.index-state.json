@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 666
+      "open": 667
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -2401,10 +2401,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 120,
+      "closed": 119,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 26,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2417,13 +2417,13 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 78,
+          "closed": 77,
           "gates": [],
           "guarded": 0,
           "line": 13,
           "markers": 1,
           "name": "speculative-decoding-mtp-refresh",
-          "open": 11
+          "open": 12
         },
         {
           "blocked": 0,
