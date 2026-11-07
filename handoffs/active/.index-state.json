@@ -2,9 +2,9 @@
   "domains": {
     "inference-research-index.md": {
       "blocked": 51,
-      "handoffs": 14,
+      "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 670
+      "open": 669
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1558,46 +1558,6 @@
         }
       ]
     },
-    "model-architecture-readiness.md": {
-      "blocked": 0,
-      "closed": 10,
-      "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 1,
-      "owner_index": "inference-research-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "INF-33",
-      "state": "active",
-      "total": 11,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 10,
-          "gates": [
-            "INF-48"
-          ],
-          "guarded": 0,
-          "line": 12,
-          "markers": 1,
-          "name": "log-linear-gated-deltanet-readiness",
-          "open": 1
-        },
-        {
-          "blocked": 0,
-          "closed": 0,
-          "gates": [],
-          "guarded": 0,
-          "line": 589,
-          "markers": 1,
-          "name": "engram-conditional-memory",
-          "open": 0
-        }
-      ]
-    },
     "model-evaluation-queue.md": {
       "blocked": 1,
       "closed": 130,
@@ -2709,23 +2669,12 @@
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
       "track": "autokernel research loop"
     },
-    "INF-33": {
-      "deps": [
-        "INF-48"
-      ],
-      "handoff": "model-architecture-readiness.md",
-      "id": "INF-33",
-      "index": "inference-research-index.md",
-      "line": 24,
-      "next_action": "B1: MI210 #27442 boundary sweep on C7r + C8-GDN (row b1-27442-mi210-sweep-20261107), then close the handoff",
-      "track": "log linear gated deltanet readiness"
-    },
     "INF-45": {
       "deps": [],
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 24,
       "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
       "track": "numa topology cutover resume"
     },
@@ -2736,7 +2685,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 25,
       "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
       "track": "rocm verify profile backend"
     },
@@ -2745,7 +2694,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 26,
       "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
       "track": "speculative decoding mtp refresh"
     },
@@ -2756,7 +2705,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 27,
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
       "track": "yarn context extension research"
     },

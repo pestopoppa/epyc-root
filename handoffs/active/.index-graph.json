@@ -23,11 +23,6 @@
       "to": "EVL-47"
     },
     {
-      "from": "INF-33",
-      "kind": "dep",
-      "to": "INF-48"
-    },
-    {
       "from": "INF-48",
       "kind": "dep",
       "to": "EVL-47"
@@ -387,12 +382,6 @@
     {
       "from": "INF-65",
       "kind": "ref",
-      "to": "INF-33",
-      "weight": 2
-    },
-    {
-      "from": "INF-65",
-      "kind": "ref",
       "to": "INF-70",
       "weight": 5
     },
@@ -709,7 +698,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T22:53:47Z",
+  "generated_at": "2026-11-07T23:01:06Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1246,7 +1235,7 @@
         "unblocks": 4,
         "unblocks_rows": []
       },
-      "priority_rank": 22,
+      "priority_rank": 21,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -1442,7 +1431,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 12,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1628,62 +1617,6 @@
       ]
     },
     {
-      "age_days": 0,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-48"
-      ],
-      "closed": 10,
-      "dispatchable": 1,
-      "domain": "inference-research",
-      "guarded": 0,
-      "handoff": "model-architecture-readiness.md",
-      "id": "INF-33",
-      "last_advanced": "2026-11-07",
-      "next_action": "B1: MI210 #27442 boundary sweep on C7r + C8-GDN (row b1-27442-mi210-sweep-20261107), then close the handoff",
-      "open": 1,
-      "priority": 0.5896,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 72,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 21,
-      "readiness": "blocked",
-      "state": "active",
-      "track": "log linear gated deltanet readiness",
-      "tracks": [
-        {
-          "blocked_by": [
-            "INF-48"
-          ],
-          "dispatchable": 1,
-          "gates": [
-            "INF-48"
-          ],
-          "line": 12,
-          "name": "log-linear-gated-deltanet-readiness",
-          "open": 1,
-          "readiness": "blocked"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 0,
-          "gates": [],
-          "line": 589,
-          "name": "engram-conditional-memory",
-          "open": 0,
-          "readiness": "no_open"
-        }
-      ]
-    },
-    {
       "age_days": 4,
       "blocked": 3,
       "blocked_by": [],
@@ -1708,7 +1641,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 27,
+      "priority_rank": 26,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -1846,7 +1779,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 11,
+        "unblocks": 10,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -2479,13 +2412,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Land AKX-AUTO-4 branch (suite, re-pin); build AKX-P1e classifier; wire ALL-31 gates; then AKX-P0a census",
       "open": 68,
-      "priority": 0.0032,
+      "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel akx program (keep gate + all dims)",
@@ -2547,13 +2480,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion",
       "open": 10,
-      "priority": 0.0032,
+      "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "v11 promotion checklist"
@@ -2573,13 +2506,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
       "open": 6,
-      "priority": 0.0032,
+      "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
@@ -2697,7 +2630,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "ready",
       "state": "active",
       "track": "glm52 reviewer capability gates",
@@ -3008,7 +2941,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 23,
+      "priority_rank": 22,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -3130,7 +3063,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 24,
+      "priority_rank": 23,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3523,7 +3456,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 25,
+      "priority_rank": 24,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3857,7 +3790,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 26,
+      "priority_rank": 25,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -3921,6 +3854,7 @@
       "INF-29",
       "INF-30",
       "INF-31",
+      "INF-33",
       "INF-34",
       "INF-37",
       "INF-40",
@@ -4024,7 +3958,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 28,
+      "file": 27,
       "heuristic": 3,
       "override": 0
     },
@@ -4040,7 +3974,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 5,
+    "blocked": 4,
     "no_open": 0,
     "ready": 26
   },

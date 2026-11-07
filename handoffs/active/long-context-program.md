@@ -1003,7 +1003,7 @@ Evidence: intake-1196#record (KVFlow, dive-overturned), intake-1207 (SGLang Rust
 **Created**: 2026-04-04 (via research intake)
 **Updated**: 2026-10-24 (G1 finished on the MI210 path; previous: 2026-08-27 recovery at 161/200)
 **Categories**: kv_cache, inference_serving, ssm_hybrid
-**Scope note**: This handoff expanded beyond Multiscreen evaluation into a comprehensive sub-quadratic attention mechanism survey. Multiscreen-specific evaluation is Section 1. Log-Linear GDN readiness tracked in [log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness).
+**Scope note**: This handoff expanded beyond Multiscreen evaluation into a comprehensive sub-quadratic attention mechanism survey. Multiscreen-specific evaluation is Section 1. Log-Linear GDN readiness tracked in [log-linear-gated-deltanet-readiness.md](../completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness).
 
 #### Start here — 2026-10-24
 
@@ -1203,7 +1203,7 @@ No sub-quadratic attention mechanism has a llama.cpp implementation today, but *
 ##### Updated Priority Ranking (incorporating deep dive)
 
 1. **Diff Attn V2** — Highest near-term priority. All ops exist in ggml, can build now. Standard attention models.
-2. **Log-Linear Gated DeltaNet** — Highest strategic priority for EPYC specifically. Directly upgrades 75% of our production stack's architecture. CPU-friendly (matmul-rich, no sparse kernels). Blocked on pretrained models. Tracked in: [log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness).
+2. **Log-Linear Gated DeltaNet** — Highest strategic priority for EPYC specifically. Directly upgrades 75% of our production stack's architecture. CPU-friendly (matmul-rich, no sparse kernels). Blocked on pretrained models. Tracked in: [log-linear-gated-deltanet-readiness.md](../completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness).
 3. **MoBA** — Existing model available for GGUF testing. Benefit unclear at our 8K-32K context range.
 4. **IHA/MEA/KHA** — FlashAttention-compatible, standard inference stack preserved.
 5. **NSA** — GPU-only. Monitor.
@@ -1321,7 +1321,7 @@ No sub-quadratic attention mechanism has a llama.cpp implementation today, but *
 These are the deep-dive actions queued from intake-598 — slotted here because this handoff already coordinates the "evaluate a candidate non-transformer architecture before any production move" pattern across Multiscreen, KSA, GSA, Lightning-Attention, DSA.
 
 - *Moved to [`model-evaluation-queue.md`](model-evaluation-queue.md) § Track: meq-carve-multiscreen-attention-evaluation on 2026-11-03 (BRF-T1-MEQ, operator D2): **HRM-1**.*
-- **[declined: ws58 2026-11-03 content-review: waits on HRM-1, which is not an open task anywhere; a curiosity with no stack decision]** **HRM-2**: Decide explicitly whether HRM-Text architecture warrants **llama.cpp investment** (custom dual-timescale recurrent kernels in our fork) versus accepting **transformers-library CPU inference** at lower t/s for a cheap-draft / cheap-specialist role. Same decision shape we hit with Ouro [intake-332] and Log-Linear GDN (see [`log-linear-gated-deltanet-readiness.md`](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness)) — if HRM-Text and Ouro share enough recurrent infrastructure, one llama.cpp investment could unlock both. Tie-in: if HRM-1 collapses the headline efficiency, HRM-2 auto-resolves to "no investment". **Gated by**: HRM-1 result.
+- **[declined: ws58 2026-11-03 content-review: waits on HRM-1, which is not an open task anywhere; a curiosity with no stack decision]** **HRM-2**: Decide explicitly whether HRM-Text architecture warrants **llama.cpp investment** (custom dual-timescale recurrent kernels in our fork) versus accepting **transformers-library CPU inference** at lower t/s for a cheap-draft / cheap-specialist role. Same decision shape we hit with Ouro [intake-332] and Log-Linear GDN (see [`log-linear-gated-deltanet-readiness.md`](../completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness)) — if HRM-Text and Ouro share enough recurrent infrastructure, one llama.cpp investment could unlock both. Tie-in: if HRM-1 collapses the headline efficiency, HRM-2 auto-resolves to "no investment". **Gated by**: HRM-1 result.
 - **[declined: ws58 2026-11-03 content-review: a deferral note, not a task]** **HRM-3**: **Defer any production-side role assignment** (cheap-first worker, draft, specialist) until HRM-1 lands. The 100-900× claim is too dependent on the supervision-regime comparison framing to drive deployment decisions without a fair eval — same posture this handoff takes for Multiscreen / KSA / GSA / DSA pending checkpoint or kernel availability.
 
 ##### Activation Gates
@@ -1455,7 +1455,7 @@ lab** — before any throughput question is even reached. That ordering matters:
 [lightning-attention-port.md](model-evaluation-queue.md#track-lightning-attention-port) is gated on numerical correctness, and this
 row says that even a clean correctness result does not make the architectural swap attractive.
 See also the fifth GDN branch-map row in
-[log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness).
+[log-linear-gated-deltanet-readiness.md](../completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness).
 
 ##### Tasks
 
@@ -1598,7 +1598,7 @@ See also the fifth GDN branch-map row in
       `src/llama-arch.h:473-474` ("kimi: forget gate projection A / B"), mapped to
       `blk.{bid}.ssm_f_a` / `ssm_f_b` in `gguf-py/gguf/constants.py:1239-1240`. Verified read-only at
       `0db32c06e3e5`, 2026-08-23. **Informs `B9`** in
-      [log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness); validating that
+      [log-linear-gated-deltanet-readiness.md](../completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness); validating that
       a low-rank gate *retains the reported gain* is compute-gated and belongs to whoever runs B9(b),
       not here. No inference, no GPU — **executable now** (intake-1281#record). ✅ 2026-08-25 — analysis
       note complete: `epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`
@@ -1882,7 +1882,7 @@ After S8 runs, update this handoff with the artifact fields above and the decisi
   - [ ] **LSA-CPU-SPARSE (c)** [non-inference then inference] Owned by main-inf22 (operator 2026-11-06). Gated on LSA-QUALITY-32K not being FUTILE. Evaluate D-LSA key selection for pure-CPU deployments (27B CPU, A3B CPU; Q38FN excluded because it already has the native QSA indexer), reusing the LSA-H12-INDEXER scorer as a vectorised AVX512 CPU op feeding a sparse CPU FA path, not the serialised reference selector. Prior native CPU numbers measured a correctness oracle, not an optimised path. Stop-on-futility: op-level <1.10x at 32k decode-shaped KV reads. Stop-on-answer: >=3% e2e at 32k CPU decode keeps, else close. Cost M (1-2 engineer-weeks) + ~4 CPU-quarter-h bench. [no-belief: new box]
   - [ ] **LSA-YARN-512K** [non-inference then inference] model: Qwen3.8-27B Q8_0 under YaRN x2 (524,288 tokens, Track yarn-context-extension-research). The paper's whole-model gains start at ~512k (H200: 1.03x TTFT at 512k, 1.51x at 1M), so at our current 32k-128k LSA is expected to be quality-neutral with modest (~4-8%) gains, not the headline numbers; judge a1/b2 against that bar. LSA's main value to us is as an enabler for the YaRN 512k target, where attention/KV reads dominate. Gate: only after LSA-QUALITY-32K/128K is not FUTILE and YARN-E1-MEM fits; then measure dense vs LSA (GPU H12 path or CPU sparse path) at 256k/512k for TTFT, TPOT and retrieval quality. Keep if >=1.10x TTFT or TPOT at 512k with no quality loss. Operator 2026-11-06. [no-belief: new box]
     - [parked: operator 2026-11-07 — re-open when C8 long-context attention decode/verify fix lands; measured 27B decode 17/12/7 tok/s at 128k/240k/500k, attention KV reads ~10% of HBM; /mnt/raid0/llm/tmp/inf22-strategy-memo-20261107/MEMO.md] [no-belief: operator decision]
-  - (d) A3B: **LSA-MOE-1** lives in `model-architecture-readiness.md`, gated on this program: it starts only after LSA-QUALITY-32K = KEEP-QUALITY AND one 27B fast path (b2 or c) keeps. A3B runs entirely on CPU or entirely on GPU. [no-belief: pointer] *(moved here 2026-11-07, main-inf22)*
+  - (d) A3B: **LSA-MOE-1** (box below; formerly in `model-architecture-readiness.md`, closed 2026-11-07), gated on this program: it starts only after LSA-QUALITY-32K = KEEP-QUALITY AND one 27B fast path (b2 or c) keeps. A3B runs entirely on CPU or entirely on GPU. [no-belief: pointer] *(moved here 2026-11-07, main-inf22)*
   - [ ] **LSA-MOE-1 — Add frozen-teacher capture for Qwen3.6-35B-A3B and generate model-specific PCA projections for its ten global layers, with exact GQA/head aggregation and RoPE-free coordinate tests; run the same bounded screen and estimate full distillation only from a timed extraction/training pilot.**
     - Gate + owner 2026-11-06: owned by main-inf22 as step (d) of the D-LSA plan (`long-context-program.md` → D-LSA research intake). It starts only after the 27B LSA-QUALITY-32K reaches KEEP-QUALITY and one 27B fast path (LSA-H12-E2E or LSA-CPU-SPARSE) keeps. A3B runs entirely on CPU or entirely on GPU, with zero graph splits on GPU. Stop-on-futility: if the 27B gate is not met, do not start. Cost (PLAN): 1-2 engineer-weeks capture/PCA + a timed distillation pilot. [no-belief: gate note]
   - Receipts folded (2026-11-06): the ticked sub-boxes below are build/compile/oracle/filing receipts for the C5-based reference and native trees (selector built and validated, one 5k sentinel, one 8k window control). None of them is the paired screen. Kept verbatim and never unticked.

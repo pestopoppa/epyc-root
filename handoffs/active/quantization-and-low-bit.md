@@ -1071,7 +1071,7 @@ Table 4, never Appendix C.1**, which calls Qwen3.5 "a fixed 3:1 pattern" while s
 sentence that it has 40 layers with 10 full attention — the informal literal sense, contradicting the
 paper's own formula. The full convention record, with the corroborating read of
 `src/models/qwen35moe.cpp:25-36`, lives in
-[log-linear-gated-deltanet-readiness.md](model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness); it is not duplicated
+[log-linear-gated-deltanet-readiness.md](../completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness); it is not duplicated
 here.
 
 **2. At ρ = 4 our family shows the smallest massive activations of every hybrid the paper measured.**
