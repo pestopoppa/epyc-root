@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 5,
       "oldest_advance": "2026-11-03",
-      "open": 198
+      "open": 197
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 522
+      "open": 518
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -579,10 +579,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 347,
+      "closed": 351,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 56,
+      "open": 52,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -605,20 +605,20 @@
         },
         {
           "blocked": 0,
-          "closed": 31,
+          "closed": 35,
           "gates": [],
           "guarded": 0,
           "line": 2441,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 25
+          "open": 21
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2580,
+          "line": 2584,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -628,7 +628,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3054,
+          "line": 3058,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -643,7 +643,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3499,
+          "line": 3503,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -659,7 +659,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5012,
+          "line": 5016,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -675,7 +675,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5672,
+          "line": 5676,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -691,7 +691,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5860,
+          "line": 5864,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -701,7 +701,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6416,
+          "line": 6420,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1004,10 +1004,10 @@
     },
     "frontier-lab-automation.md": {
       "blocked": 0,
-      "closed": 78,
+      "closed": 79,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 3,
+      "open": 2,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1020,13 +1020,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 40,
+          "closed": 41,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -2403,7 +2403,7 @@
       "blocked": 1,
       "closed": 118,
       "guarded": 0,
-      "last_advanced": "2026-11-05",
+      "last_advanced": "2026-11-07",
       "open": 31,
       "owner_index": "inference-research-index.md",
       "prune": {

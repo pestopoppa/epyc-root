@@ -201,6 +201,12 @@
     {
       "from": "EVL-29",
       "kind": "ref",
+      "to": "INF-06",
+      "weight": 3
+    },
+    {
+      "from": "EVL-29",
+      "kind": "ref",
       "to": "PIP-04",
       "weight": 9
     },
@@ -703,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T18:41:53Z",
+  "generated_at": "2026-11-07T18:47:23Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1341,15 +1347,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 78,
-      "dispatchable": 3,
+      "closed": 79,
+      "dispatchable": 2,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-07",
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
-      "open": 3,
+      "open": 2,
       "priority": 0.6474,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
@@ -1369,12 +1375,12 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -1934,7 +1940,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 118,
@@ -1943,7 +1949,7 @@
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
-      "last_advanced": "2026-11-05",
+      "last_advanced": "2026-11-07",
       "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
       "open": 32,
       "priority": 0.9769,
@@ -3324,15 +3330,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 347,
-      "dispatchable": 56,
+      "closed": 351,
+      "dispatchable": 52,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-07",
       "next_action": "Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next",
-      "open": 56,
+      "open": 52,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3366,18 +3372,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 25,
+          "dispatchable": 21,
           "gates": [],
           "line": 2441,
           "name": "churn-pipeline",
-          "open": 25,
+          "open": 21,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2580,
+          "line": 2584,
           "name": "dashboard-architecture-restructure",
           "open": 6,
           "readiness": "ready"
@@ -3386,7 +3392,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3054,
+          "line": 3058,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3404,7 +3410,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3499,
+          "line": 3503,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3424,7 +3430,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5012,
+          "line": 5016,
           "name": "loop-owned-fleet-implementation",
           "open": 2,
           "readiness": "blocked"
@@ -3444,7 +3450,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5672,
+          "line": 5676,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3464,7 +3470,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5860,
+          "line": 5864,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
@@ -3473,7 +3479,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6416,
+          "line": 6420,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"

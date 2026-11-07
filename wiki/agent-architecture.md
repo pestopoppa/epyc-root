@@ -5784,3 +5784,16 @@ Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · 
 - **Filed work**: UFH-TE-1..4 and HIL-RE-1..4 in [harness-program.md](../handoffs/active/harness-program.md).
 
 Sources: [HarnessMM dive](../research/deep-dives/harness-inference-20261106/intake-2652.md) · [ActionEngine dive](../research/deep-dives/harness-inference-20261106/intake-2656.md) · [HARBOR dive](../research/deep-dives/harness-inference-20261106/intake-2659.md) · [schema-epoch dive](../research/deep-dives/harness-inference-20261106/intake-2658.md)
+
+## Compiled Update — 2026-11-07 (operator full wrap-up, Pipeline Management): containment learnings from a declined design
+
+**Confidence: verified** (commits cited in the progress log).
+
+- **A declined design still paid out.** The Fractal disposable-host trial (EVL-29 ID-14) was declined as a whole, but a gap audit against current code turned it into four churn boxes (RESERVE, SURVIVORS, SCOPE, COSTBASIS; TREE declined because churn rows and sessions are siblings under one dispatcher, so the only root is the fleet, which `token_guards.width_cap()` and `codex_budget_meter.py` already meter) and four AutoKernel boxes (AK-CONT-BUDGET/RESERVE/DRAIN-GRACE/SCOPE-PATHS). Each box names what already exists, so nothing was rebuilt.
+- **RESERVE landed (24c923aaf).** `token_guards` now has a 5% reserve tranche and `admit()` gates new session starts and work resumes in `handoff_sessions` dispatch; run-end filing resumes stay admitted and a missing meter fails closed for work. The landing dry-run read codex weekly_fraction 1.0 and claude 1.33 against 5.5B, so the next dispatcher restart will log ADMIT-REFUSED until usage falls under 95%. The refusal is the reserve working, not a defect.
+- **SCOPE landed (b7e5edb12).** `churn/filing.py` checks a filing's changed paths against the row's declared scope: enforced if the row declares one, otherwise a warning line to `filing-scope-warn.jsonl`. Default-warn was the operator's choice, so undeclared rows are measured before they are refused.
+- **SURVIVORS and COSTBASIS declined (operator).** SURVIVORS is already enforced by `filler_run15.sh` `kill_job` (a surviving process makes the reason `cleanup-failed` and the grant is retained); COSTBASIS is telemetry with no consumer. Reopen COSTBASIS only if a scheduling decision needs CPU or GPU-seconds.
+- **Custody rule for the AutoKernel loop.** Diffs to `loop/{run,loop,pipeline,actors}.py` go to AutoKernel for review and re-pin before any push.
+- **Cleanup must check references, not only liveness.** The reference-check guide records why an idle, clean, landed worktree can still be load-bearing (a launcher exports it and reads it at next launch).
+
+Sources: [progress, wrap-up 10](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md) · [churn-pipeline handoff, containment boxes](../handoffs/active/coordination-and-churn-pipeline.md) · [rowflow2 design](../docs/design/rowflow2-20261105.md) · [keeper friction review](../docs/reports/coordination/keeper-friction-review-20261105.md) · [cleanup reference check](../docs/guides/agent-workflows/cleanup-reference-check.md) · [EVL-29 closeout](../docs/reports/frontier-lab-automation-closeout-20261107.md)

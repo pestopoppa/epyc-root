@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 437,
+    "docs": 438,
     "handoff-active": 30,
     "handoff-blocked": 1,
     "handoff-completed": 374,
@@ -11,21 +11,25 @@
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 13,
-      "changed": 0,
+      "added": 0,
+      "changed": 2,
       "removed": 0
     },
-    "at": "2026-11-07T12:56:26Z",
+    "at": "2026-11-07T18:47:59Z",
     "scope_paths": [
-      "research/deep-dives/harness-inference-20261106",
-      "research/deep-dives/intake-digests/2026-11-06-ids-2650-2661.md"
+      "docs/design/rowflow2-20261105.md",
+      "docs/guides/agent-workflows/cleanup-reference-check.md",
+      "docs/reports/coordination/keeper-friction-review-20261105.md",
+      "docs/reports/frontier-lab-automation-closeout-20261107.md",
+      "handoffs/active/coordination-and-churn-pipeline.md",
+      "progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-07T12:56:26Z",
+  "scan_time": "2026-11-07T18:47:59Z",
   "schema_version": 1,
-  "source_set_hash": "14979304e9ded5bc48f78c305ddfd258616ff0ea500d79d7afc004cafc919833",
+  "source_set_hash": "1aa8760c07a8802b1cc77fc786fcb86b35bca1f1388cbb8f8cfb6a55e3dc054d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -68,10 +72,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fa0c34ee73e45692d4acfe091987370eead54d9f32984cc77a08a3914e2b9106",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "62b5d1b5735ceff7cfed79862f1ffaa07384c69ba6334f25c140f8777f6e95b9",
+      "modified": "2026-11-07T18:46:44Z",
       "path": "handoffs/active/coordination-and-churn-pipeline.md",
-      "size": 585698,
+      "size": 596250,
       "title": "Session Bus + Thin Coordinator \u2014 N-main-thread control structure",
       "type": "handoff-active"
     },
@@ -16396,10 +16400,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "4177e61756dea3a77e7a4b2d56c70b8290cd5b582aba343e257dc32fb4d5cd39",
-      "modified": "2026-11-07T11:15:45Z",
+      "content_hash": "0f32c1839abb0d72e8fe2a4ed8a3dc3611bd004ce48ba9aab23fb7ae6ee5f9a8",
+      "modified": "2026-11-07T18:46:44Z",
       "path": "progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md",
-      "size": 4015,
+      "size": 5678,
       "title": "Wrap-up 9 \u2014 2026-11-06 ~21:00Z to 2026-11-07",
       "type": "progress"
     },
@@ -17444,10 +17448,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "c35d853153e0c0715221b4df215d7a7a2257cb8e9935c2bd87cfce2481481083",
-      "modified": "2026-11-06T07:04:09Z",
+      "content_hash": "46a82c953bf7c9ddcd5b85161acfa06dc7f5ba887cd6f13c36a9b146c754f731",
+      "modified": "2026-11-07T18:44:04Z",
       "path": "docs/design/rowflow2-20261105.md",
-      "size": 12278,
+      "size": 14722,
       "title": "rowflow2 \u2014 minimal keeper, shadow week and cutover (2026-11-05)",
       "type": "docs"
     },
@@ -17620,10 +17624,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "8f584bd7d0e04863ca96bd0cf7fb529a8f6461aae3909fcf64e40d25afd92a30",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "8edf7e1cce89f4dbd29838af1311d6f1550819941131208b401f6ead4d2373fc",
+      "modified": "2026-11-07T18:44:04Z",
       "path": "docs/guides/agent-workflows/cleanup-reference-check.md",
-      "size": 8124,
+      "size": 8486,
       "title": "Cleanup reference check: \"unused\" includes environments and launchers",
       "type": "docs"
     },
@@ -19020,10 +19024,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "6aae633301d029a8f4e0add40c7fb1fc7b002a678df1e9c53a7d25b08338f113",
-      "modified": "2026-11-06T07:04:09Z",
+      "content_hash": "758ac6e9233ef381350d87242c87bbbe503b988951b44ed46420603c27adfa48",
+      "modified": "2026-11-07T18:44:04Z",
       "path": "docs/reports/coordination/keeper-friction-review-20261105.md",
-      "size": 132812,
+      "size": 155472,
       "title": "Keeper friction review \u2014 2026-11-05",
       "type": "docs"
     },
@@ -19041,6 +19045,14 @@
       "path": "docs/reports/evl38-schedule-retirement-20261101.md",
       "size": 2276,
       "title": "EVL38 scheduled gate retirement \u2014 2026-11-01",
+      "type": "docs"
+    },
+    {
+      "content_hash": "3be1064b938d3a0004a11072bf3c8942eb8c148d33c388ab4fb2ca99e8070f85",
+      "modified": "2026-11-07T18:44:04Z",
+      "path": "docs/reports/frontier-lab-automation-closeout-20261107.md",
+      "size": 966,
+      "title": "frontier-lab-automation (EVL-29) closeout notes, 2026-11-07",
       "type": "docs"
     },
     {
@@ -20036,7 +20048,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2501,
+  "total_new": 2502,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
