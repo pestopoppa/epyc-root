@@ -7137,3 +7137,14 @@ Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant
 - **C8-6-GDN-CHUNKED: KEEP by operator decision, while the row's own verdict is C8GDN_NO_KEEP.** Op level: 3.45x (27B T=2048), 4.25x (A3B). End to end: 27B pp2048 1.120x, pp8192 1.124x; A3B pp2048 1.204x, pp8192 1.189x; tg128 1.012x / 0.994x. Two pre-registered clauses failed and were accepted: A3B tg128 0.9939x vs 0.995 (inside that cell's 5.7% A/A floor) and 27B PPL 6.5277 -> 6.5279 (3.8 paired SE vs <= 1 SE; KLD 1.5e-5, top-1 99.95%). The C8 whole-candidate gate must re-check A3B decode (>= 0.99x) and PPL.
 
 Sources: [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) · [long-context-program](../handoffs/active/long-context-program.md) · [model-architecture-readiness](../handoffs/active/model-architecture-readiness.md)
+
+## Compiled Update — 2026-11-07 (operator wiki sweep 2, main-inf22): LCATTN runs, H18 finding, C8 fold base
+
+**Confidence: mixed** — LCATTN r3 is in flight; nothing below is a keep claim beyond what is labelled.
+
+- **LCATTN r1's REJECT was a harness artifact:** the correctness check parsed ANSI-coloured output. Lesson: strip ANSI before regex-matching tool output in gate jobs (same failure class as CH-LB1.1-C5-ANSI-RETIRE). r2 was INCONCLUSIVE: target B (n_q=1 re-split) REJECT at 0.90x @128k; np4 harness defects fixed for r3. r3's first decode-only np4 pair is 1.28x @32k (one pair, not a verdict); wiki prompts give only 15-27% DFlash2 acceptance, so np4 aggregate is a low-acceptance cell.
+- **H18 finding:** q8_0 KV never reached the CK hd256 FMHA path on C7r, so prior hd256 CK numbers do not describe q8_0-KV serving. The clang-24 build gives a spill-free code object.
+- **DFlash2 block_size=8 caps the draft at 7 tokens**, so the draft-length sweep is X in {3,5,7}.
+- **C8 fold base `eeab978ac`** = C7r + GDN chunked + LCATTN target A, conflict-free merges, CPU test-backend-ops all pass; the whole-candidate gate (C8-FOLD-GATE) is published only after LCATTN r3 keeps.
+
+Sources: [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) · [2026-11-07 main-inf22](../progress/2026-11/2026-11-07-main-inf22.md)
