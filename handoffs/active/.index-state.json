@@ -2769,7 +2769,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "C8 package (main-inf22): C8-1-H17-PROFILE row, then C8-1 attention fix, C8-2 H16 M=36, C8-3 H19 census; C8-4..6 prefill",
+      "next_action": "C8 rows published (C8-3 census, C8-1 H17, C8-2 H16 M=36, C8-6 GDN chunked): file verdicts as they land, then the C8-1 attention fix",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {

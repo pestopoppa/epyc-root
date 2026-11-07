@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T12:22:04Z",
+  "generated_at": "2026-11-07T12:25:46Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2084,7 +2084,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-07",
-      "next_action": "C8 package (main-inf22): C8-1-H17-PROFILE row, then C8-1 attention fix, C8-2 H16 M=36, C8-3 H19 census; C8-4..6 prefill",
+      "next_action": "C8 rows published (C8-3 census, C8-1 H17, C8-2 H16 M=36, C8-6 GDN chunked): file verdicts as they land, then the C8-1 attention fix",
       "open": 50,
       "priority": 0.9075,
       "priority_basis": {
