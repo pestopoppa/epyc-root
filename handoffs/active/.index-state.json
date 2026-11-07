@@ -1334,7 +1334,7 @@
           "closed": 9,
           "gates": [],
           "guarded": 0,
-          "line": 1851,
+          "line": 1852,
           "markers": 1,
           "name": "document-parser-table-bench",
           "open": 3
@@ -1344,7 +1344,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2468,
+          "line": 2470,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 6
@@ -1354,7 +1354,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2576,
+          "line": 2578,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 0
@@ -1364,7 +1364,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2945,
+          "line": 2947,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 1
