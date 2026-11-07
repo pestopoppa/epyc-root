@@ -2567,6 +2567,16 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 
 - **CHURN-WARM-1 phase B** (one live warm window; not a checkbox, the parent box above is phase A's closure) [declined: operator-adhoc-ops-20261105 2026-11-06 stop-rule fired in phase A (6.7% < 10%); revisit only if rowflow2 grant overhead changes]
 
+#### Containment learnings from the Fractal design (2026-11-07, operator: "learnings for the general churn pipeline — you should own those")
+
+Source: `docs/design/fractal-disposable-host-trial.md` (EVL-29 ID-14 declined; the AK-loop half is in [autokernel-loop.md](autokernel-loop.md) AK-CONT-*). Gap audit 2026-11-07 against current code; each box names what already exists so it is not rebuilt.
+
+- [ ] **CHURN-CONT-RESERVE** — token/time cleanup reserve. Exists: disk-only reserve (`rowflow/diskpause.py` 150/180/50 GiB); `token_guards.py` caps rate, not remaining budget. Build: a `reserve` tranche in `token_guards` DEFAULTS that stops new admissions once remaining weekly budget hits it; janitor/filing/teardown spend charged outside row accounting. Done when a test shows admission refused at reserve and filing still admitted. [no-belief: tooling]
+- [ ] **CHURN-CONT-SURVIVORS** — prove the kill. Exists: setsid group TERM→KILL after `--stop-grace` (`rowflow/filler_run15.sh:43-44,118`), killpg in `dryrun_check.py:398`, `churn_up.sh:291-293`. Gap: nothing verifies the group is gone, and a job that re-setsids escapes. Build: after the grace KILL, scan /proc for the pgid/session (or run the job in a cgroup scope and use `cgroup.kill`) and write `survivors=<n>` into the row's ended record; n>0 alarms. Keeper-side, so it ships via an approved `deploy_rowflow.sh --emergency`. [no-belief: tooling]
+- [ ] **CHURN-CONT-SCOPE** — scoped filing/commit paths. Exists: runtime write allowlist only (`job_templates/job_fence.py` Landlock + MAX_FILE_MIB). Gap: `churn/file_result.py` does not check a filing's changed paths. Build: reject a filing whose `git diff --name-only` (symlinks resolved, no traversal/gitlinks) leaves the row's declared scope; rows without a scope get a default of their output dir + their handoff. [no-belief: tooling]
+- [ ] **CHURN-CONT-COSTBASIS** — CPU/GPU-seconds as a metered cost. Exists: tokens (`codex_budget_meter.py`), disk (`row_disk_budget.py`), wall-clock estimate (1.5x rule in the inference-backlog-scheduling skill), CPU confinement (job_fence `repin_threads`, taskset grant). Gap: CPU- and GPU-seconds are confined, never measured or capped. Build: record per-row CPU-s (cgroup `cpu.stat` or /proc rusage of the group) and GPU-s (sampled KFD residency) next to tokens and disk in the ended record; surface in `queue_status.py`. Cap later, once a week of data sets the ceiling. [no-belief: tooling]
+- [x] **CHURN-CONT-TREE** — budget aggregation up a node tree: **declined 2026-11-07** — churn rows and sessions are siblings under one dispatcher, so the only root is the fleet, which `token_guards.width_cap()` + `codex_budget_meter.py` already meter; an unmetered seat failing closed is covered by CHURN-CONT-COSTBASIS. [no-belief: decline]
+
 ## Track: dashboard-architecture-restructure
 <!-- gate: none -->
 
