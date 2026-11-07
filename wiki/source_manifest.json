@@ -1,9 +1,9 @@
 {
   "by_type": {
-    "docs": 435,
-    "handoff-active": 29,
+    "docs": 437,
+    "handoff-active": 30,
     "handoff-blocked": 1,
-    "handoff-completed": 373,
+    "handoff-completed": 374,
     "progress": 1347,
     "research": 299
   },
@@ -11,24 +11,31 @@
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 0,
+      "added": 4,
+      "changed": 8,
       "removed": 0
     },
-    "at": "2026-11-07T11:20:44Z",
+    "at": "2026-11-07T12:22:49Z",
     "scope_paths": [
-      "docs/guides/agent-workflows/mi210-window-protocol.md",
-      "handoffs/active/engineering-hygiene-backlog.md",
-      "progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md",
-      "research/deep-dives/quant-compiler-20261106/linquant-paper.md",
-      "research/deep-dives/ydnlc-20261106/*transparent-compact.md"
+      "docs/design/long-context-and-c8-strategy-20261107.md",
+      "docs/design/q38fn-2xmi210-hybrid-plan-20261107.md",
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "docs/guides/agent-workflows/handoff-index-authoring.md",
+      "docs/reference/agent-config/INCIDENT_LOG.md",
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "handoffs/active/long-context-program.md",
+      "handoffs/active/model-architecture-readiness.md",
+      "handoffs/active/v11-promotion-checklist.md",
+      "handoffs/completed/engram-conditional-memory-archived-20261107.md",
+      "progress/2026-11/2026-11-06-main-inf22.md",
+      "progress/2026-11/2026-11-07-main-inf22.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-07T11:20:44Z",
+  "scan_time": "2026-11-07T12:22:49Z",
   "schema_version": 1,
-  "source_set_hash": "a97ee1bfe01c81bfae34f41ef43843f7d599acc723137e202c98ae1bbd7edf99",
+  "source_set_hash": "93682e02826f42f1c8eafad08384ba2b079213c3c933235422a7524ef2f2da66",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -151,10 +158,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9af289f5471b2a7e281af09ad2925a6a120a6f498443c43090f0afb67a0c4f06",
-      "modified": "2026-11-06T07:04:09Z",
+      "content_hash": "c8ac405632f16303f05d777d96fa25253c72ada361aceb461d2adb50f6483781",
+      "modified": "2026-11-07T12:16:09Z",
       "path": "handoffs/active/long-context-program.md",
-      "size": 298839,
+      "size": 325860,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -167,10 +174,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "cd7dd9b3f596d95f83b099cce011a9f4dbe8554fc3ad843aaa67191d6ec0addc",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "45f007299bdd089f7b070bd7466377ac6c662c941f3f60ee1fd2227c5ab5fae5",
+      "modified": "2026-11-07T12:19:51Z",
       "path": "handoffs/active/model-architecture-readiness.md",
-      "size": 100677,
+      "size": 58282,
       "title": "Log-Linear Gated DeltaNet \u2014 Readiness Tracker",
       "type": "handoff-active"
     },
@@ -252,6 +259,14 @@
       "path": "handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md",
       "size": 34344,
       "title": "Thesis Experiment \u2014 does the orchestrator beat the strongest model alone?",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "37f1ce89743e6ac9de3c7563a4fef66ff7e7e582c41a14a954a828dca06bbb31",
+      "modified": "2026-11-07T12:16:09Z",
+      "path": "handoffs/active/v11-promotion-checklist.md",
+      "size": 23181,
+      "title": "v11 promotion checklist \u2014 the requirements that close only at the v11 production promotion",
       "type": "handoff-active"
     },
     {
@@ -1052,6 +1067,14 @@
       "path": "handoffs/completed/earlyoom-oom-protection.md",
       "size": 21479,
       "title": "earlyoom \u2014 Userspace OOM Protection for the Multi-Model Box",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "9d56d08e13b210c252f12f55709491ad24b7efbb951db948717fd321b20966f9",
+      "modified": "2026-11-07T12:16:09Z",
+      "path": "handoffs/completed/engram-conditional-memory-archived-20261107.md",
+      "size": 50796,
+      "title": "Engram \u2014 Conditional Memory via Scalable Lookup (ARCHIVED)",
       "type": "handoff-completed"
     },
     {
@@ -16247,10 +16270,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "0d044ba7386fdd885755cb94e8094bbec573f7259f601db439a13846c54fc889",
-      "modified": "2026-11-07T08:21:36Z",
+      "content_hash": "68ff345a733999c1bc7aced0c5d24ecda3f573386e4ad0675c308b574601346a",
+      "modified": "2026-11-07T12:16:10Z",
       "path": "progress/2026-11/2026-11-06-main-inf22.md",
-      "size": 11500,
+      "size": 12111,
       "title": "2026-11-06 \u2014 main-inf22 (night 2026-11-05/06): AK-ASM MI300 -> MI210 port",
       "type": "progress"
     },
@@ -16271,10 +16294,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2b9053c8825ba245200493ea2823a71f5406b888748629c143e19b140a6b7083",
-      "modified": "2026-11-07T08:23:11Z",
+      "content_hash": "0f8f47c54cd78c63fafca3c1465fba5db000c3787739e1984ce1536ac6d21076",
+      "modified": "2026-11-07T12:18:55Z",
       "path": "progress/2026-11/2026-11-07-main-inf22.md",
-      "size": 5458,
+      "size": 11538,
       "title": "2026-11-07 \u2014 main-inf22: Wrap-up 4 (work since 496ceb8e5 \"Wrap-up 3\")",
       "type": "progress"
     },
@@ -17223,6 +17246,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "9d63b1b9c96386cf7445b76efab01ef9e4030262cde46ee514f9fa6c4d9f9616",
+      "modified": "2026-11-07T12:18:02Z",
+      "path": "docs/design/long-context-and-c8-strategy-20261107.md",
+      "size": 31958,
+      "title": "Long-context (YaRN \u2265256k) and C8 package strategy \u2014 2026-11-07",
+      "type": "docs"
+    },
+    {
       "content_hash": "e77c7000644c69582560a5b4682dda729f19ffcd020938fcf71a71fded6fed07",
       "modified": "2026-11-05T19:30:49Z",
       "path": "docs/design/p2-5j-host-thread-placement-sweep-protocol.md",
@@ -17244,6 +17275,14 @@
       "path": "docs/design/prefill-budget-8083-stack-change-package.md",
       "size": 6305,
       "title": "Stack-change package component (DRAFT): enable the decode-aware prefill budget on :8083",
+      "type": "docs"
+    },
+    {
+      "content_hash": "4e58ca46844ff41a392c3073574083c0d57a71a36926f3e1916f1b27c445993f",
+      "modified": "2026-11-07T12:16:09Z",
+      "path": "docs/design/q38fn-2xmi210-hybrid-plan-20261107.md",
+      "size": 11311,
+      "title": "Q38FN hybrid / 2x MI210 serving: experiment plan (PARKED)",
       "type": "docs"
     },
     {
@@ -17503,10 +17542,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "8903dd03ebe4822ae9fb2ea92c79db7c06f247af1e099869b8f4c8fdea4ec93d",
-      "modified": "2026-11-07T08:21:35Z",
+      "content_hash": "c6668c1125a4a6fc3bebb6d9a981e56190d49fca1dc59f322c5a8a1c525fc4a2",
+      "modified": "2026-11-07T12:18:34Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 39667,
+      "size": 12087,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -17551,10 +17590,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "7355d7365cb3e408524cac91342f0fce754868ee197cfbf14711fb42900fc444",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "5f5907adc006d3325c9ac86a8480a51897d11522a02c87b06fbf2baa1e42740f",
+      "modified": "2026-11-07T12:18:34Z",
       "path": "docs/guides/agent-workflows/handoff-index-authoring.md",
-      "size": 14230,
+      "size": 15140,
       "title": "Handoff Index Authoring",
       "type": "docs"
     },
@@ -17735,10 +17774,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "a55b72d009093334a8ff8ffc4f38423558c4341c21390903a724c08cbd0057ca",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "fc77db5477f24668e21ced69a0d9b4661ffb2e828a85109c6ecfa50b3c62a180",
+      "modified": "2026-11-07T12:18:34Z",
       "path": "docs/reference/agent-config/INCIDENT_LOG.md",
-      "size": 50329,
+      "size": 50863,
       "title": "Incident Log \u2014 origin narratives behind agent-file rules",
       "type": "docs"
     },
@@ -18247,10 +18286,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "2fc2bcdc076a53e37ac07ff2848794ac3114cdc860eb1736e8d54cdc06084f73",
-      "modified": "2026-11-07T08:21:35Z",
+      "content_hash": "1569d3d071d805732f9f6753ec3bb7af4128960cb5cfc5fe62e0f0156adb1050",
+      "modified": "2026-11-07T12:16:09Z",
       "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "size": 112718,
+      "size": 113125,
       "title": "llama.cpp v11 release manifest",
       "type": "docs"
     },
@@ -19903,7 +19942,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2484,
+  "total_new": 2488,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T11:34:04Z",
+  "generated_at": "2026-11-07T12:22:04Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1619,15 +1619,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 9,
-      "dispatchable": 3,
+      "closed": 10,
+      "dispatchable": 2,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "last_advanced": "2026-11-07",
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
-      "open": 3,
+      "open": 2,
       "priority": 0.5896,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
@@ -1649,20 +1649,20 @@
           "blocked_by": [
             "INF-48"
           ],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [
             "INF-48"
           ],
           "line": 12,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 2,
+          "open": 1,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 588,
+          "line": 589,
           "name": "engram-conditional-memory",
           "open": 1,
           "readiness": "ready"
@@ -2135,7 +2135,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1579,
+          "line": 1580,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2144,7 +2144,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1703,
+          "line": 1704,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2153,7 +2153,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2028,
+          "line": 2029,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2162,7 +2162,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2167,
+          "line": 2168,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2171,7 +2171,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2723,
+          "line": 2724,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2183,7 +2183,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2863,
+          "line": 2864,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2870,
+          "line": 2871,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
