@@ -4258,6 +4258,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             gpu_fence_breach(flags, grants, log, seen)
     except Exception as e:  # noqa: BLE001 - the net never stops allocation
         log(f"GPU-FENCE sampler failed: {type(e).__name__}: {e}")
+    held_back = []
     if gwhy:
         held_back = [c for c in cands if c["bench"] and any(GPU in o for o in c["options"])]
         cands = [c for c in cands if c not in held_back]
@@ -4366,6 +4367,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             break
         log(f"RE-PLAN same tick: {','.join(sorted(failed))} failed to arm/launch; free={','.join(compress(plan_free)) or '-'}")
     for r, why in idle.items():
+        if r == GPU and held_back:
+            continue   # already reported above with the actual reason; the planner never saw these rows
         log(f"IDLE-WHY {r}: {why}")
     for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # keeper-hotfix: idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
@@ -4441,12 +4444,21 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen):
     if not held:
         pids, v = gpu_foreign(occ)
         n = int(st.get("quiet_n") or 0) + 1 if v < GPU_FOREIGN_VRAM_MAX else 0
-        atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v})
-        why = None if n >= GPU_QUIET_SAMPLES else (
+        # own-exit fast path (2026-11-07): our grant ended + its tree dead -> one quiet sample; any foreign sighting drops the record
+        lo = st.get("last_owner") or {}
+        own_exit = bool(lo.get("ids")) and n >= 1 and all(
+            os.path.exists(os.path.join(flags, "grants", i + ".ended")) for i in lo["ids"]) and not any(
+            alive(x) for x in lo.get("pids") or [])
+        need = 1 if own_exit else GPU_QUIET_SAMPLES
+        keep = {"last_owner": lo} if lo and 1 <= n < need else {}
+        atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v, **keep})
+        why = None if n >= need else (
             f"device not quiet (host view): foreign KFD pids {','.join(map(str, pids[:8])) or '-'} hold {v / (1 << 30):.1f} GiB"
             if v >= GPU_FOREIGN_VRAM_MAX else f"device quiet {n}/{GPU_QUIET_SAMPLES} samples")
         return why
-    atomic_json(sp, {"quiet_n": 0, "at": now_iso()})
+    atomic_json(sp, {"quiet_n": 0, "at": now_iso(), "last_owner": {"ids": [g["id"] for g in held], "pids": sorted(
+        {p for g in held for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid"))
+         if str(x or "").isdigit() for p in tree_pids(int(x)) | {int(x)}})}})
     for g in held:
         d = allrows.get(g["id"]) or {}
         if not contract_of(d)["bench"]:
