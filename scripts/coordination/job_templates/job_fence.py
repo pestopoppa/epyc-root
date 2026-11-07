@@ -17,6 +17,7 @@ Fixes carried over from yarn-oolong v41/v42-gpu (port_v41_gpu.py, bump_v42.py), 
 CLI:
   job_fence.py fence [--gpu] <writable-dir>... -- /abs/exe args...     # exec under the fence
   job_fence.py smoke [--gpu] <smoke-root> -- /abs/exe args...           # smoke: only <smoke-root> + /dev/null (+gpu)
+  Env MAX_FILE_MIB (default 128, max 8192) sets the per-file size limit; output dirs allow mkdir/rm recursively.
   job_fence.py admit --cpus 20,21 [--granted 20-23,116-119]             # smoke admission check, prints JSON
 """
 import ctypes
@@ -24,6 +25,7 @@ import json
 import os
 import resource
 import shutil
+import signal
 import sys
 import time
 from pathlib import Path
@@ -34,13 +36,16 @@ PR_SET_NO_NEW_PRIVS = 38
 WRITE_FILE, REMOVE_DIR, REMOVE_FILE, MAKE_DIR, MAKE_REG, TRUNCATE = 1 << 1, 1 << 4, 1 << 5, 1 << 7, 1 << 8, 1 << 14
 HANDLED = sum(1 << i for i in (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14))
 ALLOW = WRITE_FILE | MAKE_REG | TRUNCATE
+OUT_ALLOW = ALLOW | MAKE_DIR | REMOVE_FILE | REMOVE_DIR  # declared output dirs, recursive (rocprofv3 trace/.rocprofv3)
 TMP_ALLOW = ALLOW | REMOVE_DIR | REMOVE_FILE | MAKE_DIR
 GPU_DEV = ("/dev/kfd", "/dev/dri")
 TMP_ROOT = "/mnt/raid0/llm/tmp/"
 HIP_TMP_MARKERS = ("comgr-",)
 FLAGS = Path("/mnt/raid0/llm/tmp/compute-flags")
 DISK_FLOOR = 151 * 1024 ** 3
-FSIZE_CAP = 128 * 1024 ** 2
+MIB = 1024 ** 2
+FSIZE_CAP = 128 * MIB
+MAX_FILE_MIB_DEFAULT, MAX_FILE_MIB_CEILING = 128, 8192
 
 
 class Ruleset(ctypes.Structure):
@@ -97,7 +102,7 @@ def apply(paths, gpu=False, extra=(), devices=GPU_DEV, tmpdir=None, lib=None):
             p = Path(name)
             if not p.is_absolute() or p.is_symlink() or not p.is_dir():
                 raise ValueError(f"invalid output directory {name}")
-            _add(lib, fd, p, ALLOW, directory=True)
+            _add(lib, fd, p, OUT_ALLOW, directory=True)
         for path, rights in extra:
             _add(lib, fd, path, rights)
         if gpu:
@@ -128,9 +133,52 @@ def set_thread_defaults(env=None, getaff=os.sched_getaffinity):
     return env
 
 
-def _exec(argv, env):
-    resource.setrlimit(resource.RLIMIT_FSIZE, (FSIZE_CAP, FSIZE_CAP))
-    os.execve(argv[0], argv, env)
+def max_file_mib(spec=None, env=None):
+    """Per-row RLIMIT_FSIZE in MiB: row spec `max_file_mib`, else env MAX_FILE_MIB, else 128; clamped to [1, 8192]."""
+    env = os.environ if env is None else env
+    raw = (spec or {}).get("max_file_mib", env.get("MAX_FILE_MIB", MAX_FILE_MIB_DEFAULT))
+    try:
+        v = int(raw)
+    except (TypeError, ValueError):
+        v = MAX_FILE_MIB_DEFAULT
+    return max(1, min(v, MAX_FILE_MIB_CEILING))
+
+
+def diagnose(rc_signal, saw_eacces, mib, dirs, err=None):
+    """Print the one-line diagnostics. rc_signal: signal that ended the child (or None)."""
+    err = err or sys.stderr
+    if rc_signal == signal.SIGXFSZ:
+        print(f"job_fence: file size limit {mib} MiB hit; set max_file_mib", file=err)
+    elif saw_eacces and (rc_signal == signal.SIGABRT or rc_signal is None):
+        print(f"job_fence: write fence allows {', '.join(dirs)}; a denied path ends the job", file=err)
+
+
+def _exec(argv, env, dirs=(), spec=None):
+    """Run argv under RLIMIT_FSIZE; wait, relay stderr, print fence diagnostics, return the child's rc."""
+    mib = max_file_mib(spec, env)
+    r, w = os.pipe()
+    pid = os.fork()
+    if pid == 0:
+        os.close(r)
+        os.dup2(w, 2)
+        os.close(w)
+        resource.setrlimit(resource.RLIMIT_FSIZE, (mib * MIB, mib * MIB))
+        os.execve(argv[0], argv, env)
+    os.close(w)
+    saw = False
+    while True:
+        chunk = os.read(r, 65536)
+        if not chunk:
+            break
+        saw = saw or b"Permission denied" in chunk or b"EACCES" in chunk
+        os.write(2, chunk)
+    os.close(r)
+    _, status = os.waitpid(pid, 0)
+    sig = os.WTERMSIG(status) if os.WIFSIGNALED(status) else None
+    rc = 128 + sig if sig else os.WEXITSTATUS(status)
+    if rc != 0:
+        diagnose(sig, saw, mib, dirs)
+    return rc
 
 
 def _split(args):
@@ -153,7 +201,7 @@ def fence_main(args):
     if gpu:
         env["TMPDIR"] = hip_tmpdir(paths[0])
     apply(paths, gpu=gpu, tmpdir=env.get("TMPDIR"))
-    _exec(argv, env)
+    return _exec(argv, env, paths)
 
 
 def smoke_main(args):
@@ -165,7 +213,7 @@ def smoke_main(args):
         raise ValueError("smoke root must be an absolute real directory")
     env = set_thread_defaults(dict(os.environ, TMPDIR=str(root)))
     apply([root], gpu=gpu, extra=[("/dev/null", WRITE_FILE | TRUNCATE)], tmpdir=str(root))
-    _exec(argv, env)
+    return _exec(argv, env, [str(root)])
 
 
 # ------------------------------------------------------------------ admission
@@ -259,9 +307,9 @@ def main(argv=None):
         return 64
     cmd, rest = argv[0], argv[1:]
     if cmd == "fence":
-        fence_main(rest)
+        return fence_main(rest)
     elif cmd == "smoke":
-        smoke_main(rest)
+        return smoke_main(rest)
     elif cmd == "admit":
         import argparse
         ap = argparse.ArgumentParser(prog="job_fence.py admit")

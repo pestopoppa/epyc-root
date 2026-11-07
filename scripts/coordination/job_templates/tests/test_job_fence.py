@@ -180,3 +180,53 @@ def test_lint_warns_on_unthreaded_ggml_binary(tmp_path):
     assert not tl.lint_dir(tmp_path)
     (tmp_path / "run.sh").write_text("/x/llama-bench -t 8 -m m\n")
     assert not tl.lint_dir(tmp_path)
+
+
+# ---- mkdir inside output dirs, size override, diagnostics
+MKDIR_PROBE = (
+    "import os,sys\n"
+    "os.makedirs(os.path.join(sys.argv[1],'trace','.rocprofv3')); print('mkdir-ok')\n"
+    "try:\n os.mkdir(os.path.join(sys.argv[2],'x'))\nexcept PermissionError: print('mkdir-denied')\n"
+)
+
+
+@pytest.mark.skipif(not _landlock(), reason="Landlock ABI < 3")
+def test_mkdir_allowed_inside_output_denied_outside(tmp_path):
+    out, other = tmp_path / "out", tmp_path / "other"
+    out.mkdir(); other.mkdir()
+    probe = tmp_path / "p.py"
+    probe.write_text(MKDIR_PROBE)
+    r = subprocess.run([sys.executable, str(MOD), "fence", str(out), "--", sys.executable, "-I", str(probe),
+                        str(out), str(other)], capture_output=True, text=True, check=True)
+    assert "mkdir-ok" in r.stdout and "mkdir-denied" in r.stdout
+    assert (out / "trace" / ".rocprofv3").is_dir() and not (other / "x").exists()
+
+
+def test_out_allow_has_mkdir_rights(monkeypatch, tmp_path):
+    lib = rules_of(jf.apply, monkeypatch, tmp_path)
+    for bit in (jf.MAKE_DIR, jf.REMOVE_FILE, jf.REMOVE_DIR):
+        assert lib.allowed(str(tmp_path), bit)
+
+
+def test_max_file_mib_default_override_cap():
+    assert jf.max_file_mib({}, {}) == 128
+    assert jf.max_file_mib({"max_file_mib": 512}, {}) == 512
+    assert jf.max_file_mib({}, {"MAX_FILE_MIB": "1024"}) == 1024
+    assert jf.max_file_mib({"max_file_mib": 10 ** 9}, {}) == 8192
+
+
+def test_size_limit_enforced_and_diagnosed(tmp_path, capfd):
+    out = tmp_path / "o"; out.mkdir()
+    code = f"import signal;signal.signal(signal.SIGXFSZ,signal.SIG_DFL);open({str(out / 'big')!r},'wb').write(b'x'*(3*1024*1024))"
+    rc = jf._exec([sys.executable, "-c", code], dict(os.environ, MAX_FILE_MIB="1"), [str(out)])
+    assert rc == 128 + 25
+    assert "job_fence: file size limit 1 MiB hit; set max_file_mib" in capfd.readouterr().err
+    rc = jf._exec([sys.executable, "-c", code], dict(os.environ, MAX_FILE_MIB="8"), [str(out)])
+    assert rc == 0
+
+
+def test_eacces_abort_diagnosed(tmp_path, capfd):
+    code = "import sys,os;sys.stderr.write('Permission denied\\n');sys.stderr.flush();os.abort()"
+    rc = jf._exec([sys.executable, "-c", code], dict(os.environ), ["/d1", "/d2"])
+    assert rc == 128 + 6
+    assert "job_fence: write fence allows /d1, /d2; a denied path ends the job" in capfd.readouterr().err
