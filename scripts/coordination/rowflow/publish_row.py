@@ -110,11 +110,51 @@ def prep_in_grant(launcher):
     return None
 
 
+# AKX-ALL-15 item 4 (operator 2026-11-07 "Guard into live keeper"; ported from rowflow2.gpu_quiet_guard_conflicts, 83edc1cc2).
+# Incident: c6-w3-halfb-census-20261105 died rc1 six seconds after grant ("exclusive GPU-quiet ancestor required") because a
+# launcher/job.py that demands the MI210 quiet lock was published as a CPU row. Refuse at publish unless the row books the GPU.
+_GPUQ_GUARD = re.compile(r"(gpu.?quiet[^\n]{0,80}ancestor|ancestor[^\n]{0,80}gpu.?quiet)", re.I)
+
+
+def books_gpu(spec, launcher_info=None):
+    """True when the row books the GPU: spec gpu exclusive/quiet, lane gpu, or engine --class gpu|cpu+gpu."""
+    if spec.get("gpu") in ("exclusive", "quiet") or spec.get("quiet") or spec.get("lane") == "gpu":
+        return True
+    return bool(launcher_info and launcher_info.get("class") in ("gpu", "cpu+gpu"))
+
+
+def gpu_quiet_guard_conflicts(spec, read=None, info=None):
+    """Refusal reasons ([] = ok). Reads only the launcher + sibling job.py (<=256 KiB each); an unreadable file never blocks."""
+    launcher = str(spec.get("launcher") or "")
+    if info is None:
+        try:
+            info = rf.parse_launcher(launcher)
+        except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+            info = None
+    if books_gpu(spec, info):
+        return []
+    read = read or (lambda f: open(f, errors="replace").read(262144))
+    d = os.path.dirname(os.path.abspath(launcher))
+    for f in dict.fromkeys([launcher, os.path.join(d, "job.py")]):
+        try:
+            m = _GPUQ_GUARD.search(read(f))
+        except (OSError, TypeError, ValueError):
+            continue
+        if m:
+            return [f"{os.path.basename(f)} requires an exclusive GPU-quiet ancestor ({m.group(0)[:60]!r}) but the row does not "
+                    f"book the GPU (lane={spec.get('lane')!r} gpu={spec.get('gpu')!r}): FIX: publish it as a GPU row "
+                    "(engine --class cpu+gpu --gpu-quiet exclusive, or spec gpu \"exclusive\"), or remove the guard from the job"]
+    return []
+
+
 def lint(spec):
     """Rewrite the known spec defects in place; returns the LINT notes. Everything else is rowflow.publish's job."""
     notes = []
     launcher = os.path.abspath(str(spec.get("launcher") or ""))
     if os.path.isfile(launcher):
+        errs = gpu_quiet_guard_conflicts(dict(spec, launcher=launcher))
+        if errs:
+            raise rf.Refused("gpu-quiet guard: " + "; ".join(errs))
         hit = prep_in_grant(launcher)
         if hit:  # operator 2026-11-03 (session review §5 item 8): WARN, never refuse; recorded in the row's publish_warnings
             w = f"prep-in-grant: {hit[0]} runs `{hit[1]}`; {PREP_MSG} (it spends grant time; publish continues)"
