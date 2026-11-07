@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T11:23:05Z",
+  "generated_at": "2026-11-07T11:25:21Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1619,15 +1619,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 28,
-      "dispatchable": 11,
+      "closed": 9,
+      "dispatchable": 3,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "last_advanced": "2026-11-07",
       "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
-      "open": 11,
+      "open": 3,
       "priority": 0.5896,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
@@ -1660,11 +1660,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 1,
           "gates": [],
           "line": 588,
           "name": "engram-conditional-memory",
-          "open": 9,
+          "open": 1,
           "readiness": "ready"
         }
       ]

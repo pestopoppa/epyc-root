@@ -58,7 +58,7 @@ target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
 - [GLM-5.3 AutoKernel source handoff](../../docs/reference/models/glm53-autokernel-handoff.md) — MTP rollback/replay gate contract and the lessons that transfer (row-exact verify, per-depth parity, multi-ubatch MTP width, cross-model regression)
 - [`../completed/deepseek-v4-flash-cpu-port.md`](../completed/deepseek-v4-flash-cpu-port.md) and [`../completed/deepseek-v4-flash-0731-dspark.md`](../completed/deepseek-v4-flash-0731-dspark.md) — V4 port history; the quality-gate runner and comparator carry forward
 - [`llama-cpp-dsa-contribution.md`](rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution) (INF-31) — owns the generic sparse-attention gates; do not duplicate them here
-- [`engram-conditional-memory.md`](model-architecture-readiness.md#track-engram-conditional-memory) (INF-13) — Engram research context; this model is the first production-scale Engram checkpoint on this host
+- [`engram-conditional-memory-archived-20261107.md`](../completed/engram-conditional-memory-archived-20261107.md) (INF-13, archived) — Engram research context; this model is the first production-scale Engram checkpoint on this host
 - [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md) — VB-DSV41 write-side hook
 
 ## Artifact identity
