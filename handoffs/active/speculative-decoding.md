@@ -863,6 +863,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
         0.6% (np8), all within the floor.
       - **Belief kernel:** pre-hook, zero rows (VB-GPU-RUNNER).
 - [ ] **SL-2 — verifier steps/s in the serving keep gate** (`loop/serving.py`): emit sum-over-slots
+      **Landed 2026-11-07 (AutoKernel):** research main `09e9646f7..7d1983baf` (steps/s keep gate with acceptance guard, either-metric regression fail-closed, run.py call sites, re-pin `7eec18fb`). Model: Qwen3.8-27B Q8_0 target + Qwen3.8-27B-DFlash2-Q8_0 drafter, np4, MI210. Next: M1 floor row `ak-sl2-m1-floor-20261107` (matched A/A, 24 pairs). Stop-on-answer when its RESULT.json is written (ADOPT / PREMISE_REFUTED / REMEASURE_REQUEST); stop-on-futility on HostDegradedDuringCalibration or residency refusal; gate-class = futility-only. DFlash2 `block_size=8` caps the draft at 7, so acceptance-guard arms use draft length in {3,5,7} (harvest #5, root `6a834e836`). [no-belief: code landed, no measurement yet]
       `n_draft_verif_steps`/wall (already counted at `server-context.cpp:295`) beside `aggregate_tok_s`.
       tok/s = steps/s × accepted/step; only steps/s is a kernel property. Our np4 floor 3.536% vs tg128
       0.638% is mostly acceptance-trajectory variance. Re-calibrate the floor on both; keep gate on
@@ -887,6 +888,7 @@ shipped MTP (1.5×) is a floor, not the ceiling.
       - [x] **SL-2 fresh CPU serializer validation:** publish a successor with isolated qualification and scheduled outputs, then file its end and ten actual serializer cases. Live slot/reset/streaming/concurrency, CPU/GPU regression checks, rate aggregation and a new floor remain open. ✅ 2026-11-01 [no-belief: serializer test result, no inference measurement]
         Scheduled row `df2-sl2-fresh-cpu-20261101` ended rc0 at 23:44:24Z; scheduled attempt `ab15d3eb5e464b1cb977e73174d087c4` started at 23:43:21Z and reports 10/10 serializer cases PASS, independently of qualification. [Result, qualification and end](../../docs/evidence/df2-runs-20261102/df2-sl2-fresh-cpu-20261101/). Qualification recorded repaired launcher SHA-256 `3a6723a4a07f7acd5d0eaa874a38aad446eecfe3c3f7cb9d5d651080b76c981f`; READY retained the older launcher digest, so preserve this binding limitation. Model-free serializer only; live serving and performance remain open.
 - [ ] **SL-4 — serving-gate hygiene**: add one long-context cell (~32k prompt) and randomise arm order
+      **Landed 2026-11-07 (AutoKernel):** research main `375972a63` (legacy instrument randomizes arm order; opt-in GPU C8 ~32k long-context cell `longctx_c8_comparison.py`). Box stays open until the long-context cell has run once on a real row. [no-belief: code landed, no measurement yet]
       after any prefill-heavy arm (external: cc64 read −15–20% after a 128k sweep; spec gain can collapse
       with context for some quants). Also gives a C8 sustained cell to confront the external
       "DFlash2 −19% at sustained C8 on Qwen3.8-27B" one-liner (contradicts our DF2-5 +47.8% at 8 in-flight).
