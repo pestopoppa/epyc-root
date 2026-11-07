@@ -380343,3 +380343,1649 @@
   - 'KC-4 (trigger): replace the two hand-built harnesses behind ROCm >=7.'
   - 'KC-5 (decline): never at the trust boundary.'
 
+
+- id: intake-2650
+  arxiv_id: null
+  url: https://github.com/pingdotgg/t3code
+  source_type: repo
+  title: 'T3 Code — provider-agnostic agent harness control surface (server + web/desktop/mobile clients over installed agent CLIs)'
+  authors:
+  - pingdotgg (T3 Tools)
+  key_claims:
+  - 'A local server controls installed agent CLIs (Claude Code, Codex, Cursor, Grok Build, OpenCode, Google Antigravity, Pi, Kiro, fx) and serves web, Electron and React Native clients over authenticated RPC (README; docs/internals/overview.md @ b90e554e0a942605c4de2d4ff5d4654caf998e27).'
+  - 'Execution stays in the environment that owns the workspace: provider behaviour sits behind adapters and a remote client must never substitute its own filesystem, credentials or machine state (docs/internals/overview.md).'
+  - 'Orchestration is event-sourced: the v2 orchestrator decides events and commits events + projections + accepted-command receipt + outbox effects in one DB transaction, giving idempotent command retries; effects run afterward in an EffectWorker (docs/internals/overview.md).'
+  - 'Context transfer is a durable record resolved lazily at first dispatch: same-provider forks prefer a provider-native fork, cross-provider handoff materialises a portable handoff (docs/orchestration-v2/thread-lineage-and-context-transfer.md).'
+  - 'Portable handoffs are a budgeted selection rather than an agent-written summary: 16,000-token default cap (clamp 1,024-64,000) with one-byte-per-token accounting, and the user request is never shortened (docs/user/portable-handoffs.md). The separate 240-character compaction applies to delta/merge-back summaries, not to portable selection (ContextHandoffService.ts:107-223).'
+  - 'Workspace checkpoints live in hidden Git refs and a revert must coordinate workspace state with the provider conversation or be rejected before touching files (docs/internals/overview.md).'
+  techniques:
+  - provider adapter boundary with a normalized per-provider capability model (native fork, conversation rollback, context telemetry)
+  - event-sourced orchestration with command receipts, projections, outbox effects and snapshot resume
+  - lazily-resolved ContextTransfer records (native fork / portable context / delta context / checkpoint context)
+  - deterministic budgeted context handoff with per-item compaction and pointers to omitted history
+  - workspace checkpoints in hidden Git refs with conversation-coordinated revert
+  - per-session scoped MCP bearer tokens and thread-scoped MCP server registration per provider
+  - ACP v1/v2 negotiation plus Registry and local-command agents
+  - bounded wire budgets (about 1 MiB encoded rows per history page; 128 events / 1 MiB replay before snapshot fallback) enforced by regression tests
+  reported_results:
+  - 'No latency, throughput, token-saving or task-success benchmarks are published in the fetched docs; the eval harness exists but CI does not run it because it calls paid models (evals/README.md).'
+  - 'Design constants, not measurements: 1 MiB wire payload budget; 128 events / 1 MiB replay budget; 240-char per-item handoff text; 16,000-token default handoff cap; 64,000-byte imported-history ceiling; 128,000-token assumed window when capacity is unknown; 8,192 tokens reserved per image.'
+  - 'Repository metadata at read time (GitHub API): MIT licence, created 2026-02-08, about 49.7k stars; the AGENTS.md claim of "over 500,000 users" is self-reported marketing text and is not machine-checkable.'
+  referenced_arxiv_ids: []
+  credibility_score: null
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  categories:
+  - agent_architecture
+  - context_management
+  - tool_implementation
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    - handoffs/active/context-and-token-economy.md
+    - handoffs/active/coordination-and-churn-pipeline.md
+    - handoffs/active/user-facing-harness-index.md
+    experiments: []
+    intake_entries:
+    - intake-1790
+    - intake-263
+    - intake-1204
+    - intake-473
+    - intake-426
+    intake_entry_notes:
+    - 'intake-1790 is the Agent Client Protocol spec; T3 is a shipping ACP v2 consumer, which changes the evidence base under the dormant ACP adapter decision.'
+    - 'intake-263, intake-1204, intake-473 are ACP/pi harness adapters; intake-426 is the Claude Code plumbing-ratio essay. None of them document a durable context-transfer record.'
+  contradicting_evidence:
+  - 'T3 controls only the provider sessions it creates; it cannot adopt pre-existing tmux-hosted mains, and only ACP agents that advertise session listing/import can attach to an existing native session (docs/user/providers-acp.md).'
+  - 'No llama.cpp, Ollama, vLLM or MLX integration exists in the provider layer; this is a control surface, not an inference path. Local models are reachable only through an underlying agent configured against a local endpoint.'
+  - 'Bounded current search surfaced only reviews and vendor-style comparisons (evomap.ai, skyflo.ai, flaviocopes.com, paralect.com, codeagentswarm.com); one claims the product is closed source with no public app repository, which contradicts the MIT-licensed public monorepo. Treat that claim as a restatement error, not evidence about the repo.'
+  notes: >-
+    Stage-1 fetch route: repo page + raw README main + selected docs, plus a sparse partial clone at commit
+    b90e554e0a942605c4de2d4ff5d4654caf998e27 (2026-11-06). All internals claims above are read at that SHA.
+    The product's novelty for EPYC is not the GUI but the documented mechanics: one durable ContextTransfer
+    primitive covering fork/handoff/merge-back/subagent, handoffs as a budgeted selection with pointers instead of
+    an agent-written summary, checkpoints in hidden Git refs, and per-thread scoped MCP tokens. EPYC already runs
+    OpenCode as its thin shell; T3 ships OpenCode 1.x/2.x adapters and ACP v2, so the integration surface is real,
+    but the product would compete with rather than slot under the orchestrator-owned UI. No empirical claims, so
+    credibility is unscored rather than high.
+  reader_should_conclude: >-
+    Stage-1 unverified. Cite the architecture and the named documents only as a design to be checked in a dive; do
+    not cite the 500,000-user figure, the star count as evidence of quality, or any token-saving number (none is
+    published). Do not treat T3 as an inference path or as a drop-in replacement for the retired delivery plane: it
+    cannot adopt sessions it did not create.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L5-L5 @ b90e554
+    quote: Works with your subscriptions on Claude Code, Codex, Cursor, Grok Build, OpenCode, Google Antigravity, and fx. If they're set up on your computer, T3 Code can control them.
+    quote_sha256: 0c27ed519a0373f3ec54d89cd7b524af0b1685ce20c3154c1d3be68514ec86d8
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: docs/internals/overview.md:L3-L4 @ b90e554
+    quote: T3 Code keeps execution in the environment that owns the workspace. Web, desktop, and mobile clients control it over authenticated RPC.
+    quote_sha256: 153d8b8a8011b6ee343d47864da29896b89b1abc97f836c9fe64f33394c66669
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: docs/internals/overview.md:L50-L53 @ b90e554
+    quote: '[EventSink](../../apps/server/src/orchestration-v2/EventSink.ts) commits events, persisted projections, the accepted command receipt, and outbox effects in one database transaction. Subscribers receive events after that commit. This keeps command retries idempotent and prevents a persisted projection from getting ahead of the event log.'
+    quote_sha256: 2d1485b6faa6be01a8a6793065c3a60dc39481c5b6f1bb7591d4542a1b9dc478
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: docs/orchestration-v2/thread-lineage-and-context-transfer.md:L110 @ b90e554
+    quote: Context transfer is the durable operational record that connects source and target. It is cheap to create and may stay unresolved until first use.
+    quote_sha256: 1472c53ff957f1eb9332c1ad6e70093b117a14ae1f6f23d5a80c1bcaa39bb103
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: packages/provider-core/src/server/handoffBudget.ts:L14-L19 @ b90e554
+    quote: export const DEFAULT_HANDOFF_TOKEN_CAP = 16_000; const HANDOFF_BYTE_CAP = 64_000; export const handoffTokenCapConfig = Config.Int("T3CODE_CONTEXT_HANDOFF_TOKEN_CAP").pipe( Config.withDefault(DEFAULT_HANDOFF_TOKEN_CAP), Config.map((value) => Math.max(1_024, Math.min(HANDOFF_BYTE_CAP, value))), );
+    quote_sha256: 2e1fabf2e6a58eddee80b4b708a3483451a2b51fbb629b1f5ae14ccceb080afc
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: docs/internals/overview.md:L88-L91 @ b90e554
+    quote: '[Checkpoints](../../apps/server/src/checkpointing/CheckpointStore.ts) use hidden Git refs to capture workspace state without adding commits to the user''s branch. A revert must coordinate workspace state with the provider conversation. A provider that cannot roll back its conversation must reject that operation before changing the filesystem.'
+    quote_sha256: a965293a43583eb8258695f2551d1be2a89785af3b4e2a91f5997ae168295bd0
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/internals/overview.md:L3-L4 @ b90e554
+    quote: T3 Code keeps execution in the environment that owns the workspace. Web, desktop, and mobile clients control it over authenticated RPC.
+    quote_sha256: 153d8b8a8011b6ee343d47864da29896b89b1abc97f836c9fe64f33394c66669
+    source_revision: pingdotgg/t3code@b90e554e0a942605c4de2d4ff5d4654caf998e27
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed in README and docs/internals/overview.md at b90e554.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Confirmed: execution stays in the workspace-owning environment; remote clients cannot substitute their own filesystem, credentials or machine state.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Single-transaction commit of events+projections+receipt+outbox is real, but ''event-sourced'' overstates durability: the docs say the event log is kept about a day and ProjectionMaintenance deletes events the projections cover, so projections cannot be rebuilt from the log; effects bound to a lost provider process are retired rather than replayed. Treat as command-idempotency + outbox, not an append-only audit ledger.'
+  - claim_index: 3
+    effect: unaffected
+    note: Durable record + lazy resolution confirmed. The implemented strategy set has five values, adding fork_delta_context (contracts/orchestrationV2.ts:189-212), which merge-back uses; the architecture page lists four.
+  - claim_index: 4
+    effect: narrowed
+    note: '16,000-token default cap clamped 1,024-64,000, one-byte-per-token accounting, and ''never shortens your request'' are confirmed. The 240-character rule is NOT a portable-selection rule: compactText()/summarizeDeltaItem() apply it to delta, merge-back and side-chat summaries; portable selection keeps full item text. Stage 1 merged the two artefacts.'
+  - claim_index: 5
+    effect: unaffected
+    note: Hidden refs refs/t3/orchestration-v2/checkpoints confirmed in production code; rollback is capability-gated to fail before filesystem work.
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; clone at b90e554e0a942605c4de2d4ff5d4654caf998e27). All seven examined claims resolved: five confirmed, two narrowed. Narrowed: (a) the orchestration is command-idempotent with an outbox, but the event log is a ~1-day buffer whose projections cannot be rebuilt, so it is not an audit-trail or replay guarantee; (b) the 240-character rule applies to delta/merge-back summaries, not to portable handoff selection, which keeps full item text. Also recorded: the implemented strategy set has a fifth value (fork_delta_context); evals are excluded from EXECUTION in CI, not from the build; and on an external OpenCode server the adapter skips MCP registration and its scoped token, so orchestration tools disappear in the one mode that attaches to a pre-existing server. No tmux integration exists anywhere in the tree, and no llama.cpp/vLLM/MLX/local-endpoint path exists; the managed Codex runtime actively deletes OPENAI_BASE_URL.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+
+- id: intake-2651
+  arxiv_id: null
+  url: https://github.com/microsoft/foundry-local
+  source_type: repo
+  title: 'Foundry Local — embeddable ONNX Runtime on-device inference runtime with SDKs, curated model catalog and automatic execution-provider selection'
+  authors:
+  - microsoft
+  key_claims:
+  - 'Ships as an in-process native library (~20 MB) with C ABI and SDKs for C, C++, C#, JavaScript, Python and Rust; all inference runs through ONNX Runtime (README, docs/README.md @ 48e4e629257a827a464bda9874d0dd2bd2012adf).'
+  - 'Automatic hardware acceleration: the runtime detects hardware and selects an execution provider and device, with CPU always available as fallback (README, architecture doc "Hardware abstraction").'
+  - 'Documented execution providers: NVIDIA CUDA (GPU, Windows/Linux), WebGPU via Dawn, AMD Vitis (NPU, Windows only), Qualcomm QNN (NPU, Windows only), Intel OpenVINO (GPU, Windows only), CPU (all three OSes), plus TensorRT-RTX and an AMDGPU/WinML umbrella. No ROCm or MIGraphX provider is supported or shipped for Linux (see dive correction: ORT-GenAI 0.19 has an AMDGPU/MIGraphX plugin path that Foundry enumerates but never registers).'
+  - 'Curated, versioned catalog of precompiled hardware-specific ONNX variants (CPU/GPU/NPU); models download via an explicit Model::Download() call, are cached locally, and a variant is auto-selected by device tier with cached-first preference (README, architecture doc "Foundry Catalog"; see dive correction: selection never ranks by measured throughput).'
+  - 'OpenAI-compatible API including the Responses API format, plus an optional in-process REST server; the product is explicitly single-user and not a server inference stack — no request queuing, continuous batching or GPU sharing (README FAQ, architecture doc "Optional REST API").'
+  techniques:
+  - ONNX Runtime (pinned 1.31.0) as the only inference engine
+  - onnxruntime-genai 0.19.0 (pinned in sdk_v2/deps_versions.json)
+  - execution-provider auto-selection with driver/EP lifecycle management
+  - hardware-variant model catalog with local cache and version pinning
+  - precompiled/quantised ONNX variants per device class
+  - WinML-mediated EP plugin acquisition (Windows only)
+  - in-process embedding plus optional OpenAI-compatible REST
+  - typed item/session API and stateful ChatSession rather than resending history
+  - BYOM: compile Hugging Face models to ONNX for the runtime
+  reported_results: []
+  referenced_arxiv_ids: []
+  credibility_score: null
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  categories:
+  - local_inference
+  - inference_serving
+  - hardware_optimization
+  - quantization
+  - multimodal
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 06-benchmarking-framework.md
+    handoffs:
+    - handoffs/active/speech-and-multimodal.md
+    - handoffs/active/routing-program.md
+    - handoffs/active/model-architecture-readiness.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes: []
+  contradicting_evidence:
+  - 'Its own FAQ states it is not a server inference stack and lacks continuous batching or concurrent-request queuing, which is the opposite of EPYC multi-session serving (llama-server + orchestrator + autopilot + agents on one host).'
+  - 'No AMD GPU execution provider is listed and a repo-wide search for ROCm/MIGraphX/AMD-GPU returns nothing; the only AMD path is Vitis AI NPU on Windows. The MI210 would run CPU-only or through WebGPU/Dawn.'
+  - 'No GGUF path: models are ONNX only, so nothing here reuses the v10 GGUF kernel, its IQK/quant coverage or the kernel store.'
+  - 'Bounded current search (2026-11-06) surfaced no evidence that Foundry Local targets ROCm on Linux; the only AMD Linux GPU path it surfaced was Ollama/vLLM/PyTorch, not Foundry Local. Provisional: a bounded search does not prove absence.'
+  notes: >-
+    Stage-1 fetch route: repo page, raw README on main, docs pages on learn.microsoft.com (what-is-foundry-local,
+    concepts/foundry-local-architecture, both updated 2026-11-03) and a depth-1 clone at commit
+    48e4e629257a827a464bda9874d0dd2bd2012adf (2026-11-06). Relevance is recorded as medium rather than low: the
+    source is a local-inference runtime in EPYC's own domain, even though it cannot serve the MI210 today. Its
+    distinctive content is packaging and lifecycle (detect hardware -> resolve best precompiled variant -> cache,
+    plus typed item/session API and tri-state tool-calling capability metadata), not inference performance. No
+    benchmarks, no tok/s figures, no arXiv references anywhere in README/docs/tree. Whether Linux means x86-64 only,
+    and the exact quantisation formats of catalog variants, are not stated.
+  reader_should_conclude: >-
+    Stage-1 unverified. Use this entry only as a packaging/lifecycle reference pattern (EP auto-selection,
+    hardware-variant catalog, capability descriptor). Never cite it as an AMD-capable or performant serving stack:
+    it lists no ROCm/MIGraphX EP, no GGUF path and no batching, and publishes no performance numbers.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L20 @ 48e4e62
+    quote: Foundry Local is an end-to-end local AI solution for building applications that run entirely on the user's device. It provides native SDKs (C, C++, C#, JavaScript, Python, and Rust), a curated catalog of optimized models, and automatic hardware acceleration - all in a lightweight package (~20 MB).
+    quote_sha256: 887e59f9af972bab9460d81161bc6d8db41c7c1d5e9175416872e8f7eb15a9fe
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: sdk_v2/cpp/src/ep_detection/ep_detector.cc:L123-L127 @ 48e4e62
+    quote: // Ensure CPU is always present - ORT always has CPUExecutionProvider but // GetEpDevices may not list it in some configurations. if (devices.find("CPU") == devices.end()) { devices["CPU"] = {"CPUExecutionProvider"}; }
+    quote_sha256: 07f2237195e7dd29c7c823a2ed5fe8ac5eb25ecfec8b898c4e5a8117ff397e6c
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: sdk_v2/cpp/docs/EpDetectionPlan.md:L33-L34 @ 48e4e62
+    quote: 1. Two-step explicit flow. GetDiscoverableEps() returns metadata, then DownloadAndRegisterEps() does the actual work. No auto-registration at startup.
+    quote_sha256: 5c23e349c79e5d96ea4da097beee013879824205cd19f7263a5682b16f32967c
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: sdk_v2/cpp/src/inferencing/execution_provider.h:L16-L24 @ 48e4e62
+    quote: kCPU = 2, kCUDA = 3, kWebGPU = 4, kOpenVINO = 5, kTensorRT_RTX = 6, kVitisAI = 7, kRyzenAI = 8, kQNN = 9, kAMDGPU = 10,
+    quote_sha256: 75e048b2c55fad138221104be59948828062db578af87ff287b3d3be99307a87
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: sdk_v2/cpp/src/ep_detection/webgpu_ep_bootstrapper.cc:L221-L226 @ 48e4e62
+    quote: 'bool WebGpuEpBootstrapper::IsSupportedPlatform() { #if (defined(_WIN32) && (defined(_M_ARM64) || defined(_M_X64))) || (defined(__APPLE__) && defined(__aarch64__)) return true; #else return false; #endif'
+    quote_sha256: d0cf02d7127dd73df230dbe732a25ba81da273d730d27ced0497b42d9ff25cf4
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: sdk_v2/cpp/src/model.cc:L372-L395 @ 48e4e62
+    quote: 'Model* best_eligible = nullptr; Model* best_cached = nullptr; for (auto& v : variants_) { if (is_eligible && !is_eligible(*v)) { continue; } if (!best_eligible) { best_eligible = v.get(); } if (v->IsCached()) { best_cached = v.get(); break; } } has_eligible_default_variant_ = best_eligible != nullptr; if (preserve_selection) { return false; } selection_is_explicit_ = false; selected_variant_.store(best_cached ? best_cached : (best_eligible ? best_eligible : variants_.front().get()),'
+    quote_sha256: 77470a9a8c42303261668f4780c097fc86885645f8ff1ef7b5f8039d2fd4c6f3
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: sdk_v2/cpp/src/model.cc:L46-L49 @ 48e4e62
+    quote: '/// Extract device-type priority from model_id. /// Format: <model_name>-<device>:<version> /// Returns: 0(NPU) < 1(vendor-GPU) < 2(CUDA-GPU) < 3(generic-GPU) /// < 4(vendor-CPU) < 5(generic-CPU) < 6(unknown)'
+    quote_sha256: 277e7c4615bc5bc33cb7b4c5dff85a2b9c2db6679673215231231739f9990206
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: sdk_v2/cpp/README.md:L349-L352 @ 48e4e62
+    quote: Concurrent Engine requests wait while resident turns make progress, including background coding-agent compaction. The capacity watchdog bounds stalled capacity, not total queue time; queued requests remain cancelable and do not expire merely because another healthy local generation lasts more than 30 seconds.
+    quote_sha256: e9b4f78ea9c332da665ec41343a0c0086a5b025686db5db6f86700407afe2c84
+    source_revision: microsoft/foundry-local@48e4e629257a827a464bda9874d0dd2bd2012adf
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'C ABI, six advertised SDKs (plus an unadvertised Java SDK) and ONNX Runtime are confirmed. ''~20 MB'' is the core library on Windows (win-x64 14.6 MB; linux-x64 lib 24.0 MB + 18.5 MB host binary), and the runtime package also pulls ORT 1.31 (~29 MB) and GenAI 0.19 (~36 MB) before weights. In-process is the default, not the only mode: useSharedHost routes the same APIs through foundry-local-host.'
+  - claim_index: 1
+    effect: narrowed
+    note: Hardware discovery is automatic but EP acquisition is a two-step explicit flow (GetDiscoverableEps then DownloadAndRegisterEps; no startup auto-registration). Catalog queries are pre-filtered by EPs already registered with ORT, so a GPU host that never registers EPs silently resolves CPU variants. CPU fallback is unconditional and confirmed. EP choice follows the model's own device hint, with CUDA->WebGPU only for generic-GPU models.
+  - claim_index: 2
+    effect: narrowed
+    note: '''No ROCm'' is correct for the supported matrix and the live catalog (261 variants, zero ROCm/MIGraphX), but the matrix is not exactly six entries (TensorRT, NvTensorRTRTX, AMDGPU/WinML, OpenVINO CPU/NPU also appear), WebGPU is not compiled or shipped on Linux despite the Learn table, and ORT-GenAI 0.19 exposes an AMDGPU umbrella EP (libamdgpu-ep.so, routes to MIGraphX/DirectX) that Foundry enumerates but never ships or registers.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Catalog, ONNX-only models, per-device variants, explicit download and local cache are confirmed. Download is an explicit Model::Download() call, not a first-lookup side effect, and selection is not ''best-performing'': it takes the first eligible variant under a device-tier sort (NPU > vendor GPU > CUDA GPU > generic GPU > vendor CPU > generic CPU) and prefers any cached variant over a better uncached one. It never ranks by measured throughput.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Confirmed: /v1/chat/completions, /v1/embeddings, /v1/audio/transcriptions and the full /v1/responses surface; README disclaims multi-user serving, request queuing, continuous batching and GPU sharing. Nuance: there is a serialized wait queue for concurrent engine requests and no authentication in the web service (loopback default).'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; foundry-local at 48e4e629257a827a464bda9874d0dd2bd2012adf, onnxruntime-genai v0.19.0 at d01b244, ORT 1.31.0, live catalog 2026-11-06). Four of five claims narrowed, one confirmed. Material corrections: 'automatic acceleration' is auto-DETECT plus explicit ACQUIRE (catalog queries are filtered by already-registered EPs, so an app that skips DownloadAndRegisterEps silently runs CPU); WebGPU is not compiled or shipped on Linux; '~20 MB' is the core library only, with ~65-90 MB per process before weights; 'best-performing variant' is device-tier order plus cached-first, never measured throughput; and although no ROCm EP is supported or shipped, ORT-GenAI 0.19 carries an AMDGPU/MIGraphX umbrella EP that Foundry enumerates and never registers. Port-cost estimate for the reusable detect->variant->select pattern: 4-6 engineer-days, excluding any fetch/cache layer.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+
+- id: intake-2652
+  arxiv_id: '2610.32813'
+  url: https://arxiv.org/abs/2610.32813
+  source_type: paper
+  title: 'HarnessMM: Recursive Self-Improvement for Harness Token Efficiency'
+  authors:
+  - Yuhua Jiang
+  - Chang Xu
+  - Feifei Gao
+  - Li Zhao
+  key_claims:
+  - 'A controller at the model-tool boundary stores an acyclic Executable Decision Graph of (action, literal args, predecessor, public guard), re-arms nodes from observed tool receipts, and on admission dispatches the stored action through the native tool interface while suppressing the registered slow callback (Sections 4.1-4.3).'
+  - 'Certified Callback Substitution is an omission proof, not a correctness proof: the certificate binds graph_hash, decision_id, predecessor_receipt, exact_args, tool_receipt and bypassed_callback_id, and Eq. 7 requires the parent slow-call count to exceed the HarnessMM count by at least one at that boundary (Section 4.3, Eq. 6-7, Appendix D.2).'
+  - 'Graph persistence (GDR) is the component the authors credit in their repaired ablation: full method 93.77% at 13.17k tokens vs 93.00% at 18.03k without GDR, a 26.91% complete-cost saving whose cost interval [4.01,45.57]% excludes zero while all correctness intervals include zero (Section 5.5, Figure 4, Appendix E Tables 3-4).'
+  - 'Substitution only pays when the removed slow call costs more than the introduced cost (authorship + routing + added context + fallback), i.e. K > (A+F)/c under a common-callback cost model; a short typed output alone does not establish that a callback was removed (Section 3.3 Eq. 3, Appendix D.3).'
+  - 'Harness RSI is training-guided iteration on the harness configuration, not the weights: eight iterations on 32 MiniWoB++ tasks move success 34.38% to 90.63% and tokens/task 3.26k to 1.06k (Section 5.6, Figure 5, Appendix A Table 2).'
+  techniques:
+  - Executable Decision Graphs (EDG)
+  - Guarded Decision Reuse (GDR)
+  - Certified Callback Substitution (CCS) with receipt-bound omission certificates
+  - Jev-motivated typed selector (candidate-ID or abstain, single control token)
+  - complete-task accounting ledger including authorship, selector, fallback, recovery and failed paid executions
+  - recursive self-improvement of the harness configuration with train/validation/test separation
+  reported_results:
+  - 'HumanEval n=98 Codex: 90.82% success at 66.72k tokens/task reduced to 47.02k (29.54% saving); 18 certificates (0.18/task); paired outcomes 5 better / 5 worse / 88 same (Table 1, Appendix F.1).'
+  - 'HumanEval n=98 DeepSeek Harness: success 71.43% to 85.71% while tokens/task 96.28k to 11.62k (87.93%); input/task 92.45k to 7.09k while output/task rises 3.83k to 4.53k (Table 1, Appendix F.1).'
+  - 'MBPP-sanitized n=257 DeepSeek: 90.27% at 53.98k to 91.83% at 10.61k (80.35%); CoT-only control is 93.39% at 15.04k, so the method is 29.46% cheaper but 1.56 points less accurate (Section 5.3, Appendix L.2).'
+  - 'ALFWorld 2,133 tasks: no-skill 42.29% at 34.05k; SkillOpt 63.29% at 101.33k; HarnessMM 66.20% at 31.12k (Figure 2a). GAIA2: 43.96% at 639.64k, below SkillOpt 46.88%. AIME, 560 questions: HarnessMM 87.14% at 5.90k vs No Skill 86.96% at 4.59k - 28.34% more expensive for +0.18pp, and below SkillOpt 87.86% and AutoSaddler 88.04% (Figure 2d, Section 5.4).'
+  - 'Negative typed-selector result: a complete CoT/Jev test executes fast actions in 94.44% of episodes yet costs 127.07% more than the original harness and loses 7.29 success points (Appendix D.8).'
+  - 'No latency, wall-clock, energy, hardware, batch size or concurrency measurement is reported; the paper explicitly says token cost is not latency or energy (Section 4.4).'
+  referenced_arxiv_ids:
+  - '2602.20502'
+  - '2605.08386'
+  - '2602.12662'
+  - '2609.20519'
+  - '2609.06396'
+  - '2604.05164'
+  - '2508.21433'
+  - '2505.22954'
+  - '2310.11324'
+  - '2310.02304'
+  - '2305.16291'
+  - '2305.18323'
+  - '2210.03629'
+  - '2211.01910'
+  - '2410.08328'
+  - '2509.17158'
+  - '2408.08435'
+  - '2108.07732'
+  credibility_score: 2
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  categories:
+  - agent_architecture
+  - context_management
+  - benchmark_methodology
+  - inference_serving
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - handoffs/active/harness-program.md
+    - handoffs/active/context-and-token-economy.md
+    - handoffs/active/routing-program.md
+    experiments:
+    - trimr-reasoning-pruning.md
+    - seal-concise-reasoning.md
+    intake_entries:
+    - intake-626
+    - intake-1350
+    - intake-1460
+    - intake-1470
+    - intake-2146
+    intake_entry_notes:
+    - 'intake-626 (SkillOpt) is one of the four comparison arms; the paper ALFWorld/AIME/GAIA2 figures for it are the paper re-runs, not SkillOpt own claims. Never merge the two evidence bases.'
+    - 'intake-1350 (SoL-Pi) is the sibling harness-efficiency line; the paper cites the SoL-Pi arXiv version only for a compiled-AIME continuation, so it adds no new SoL-Pi evidence.'
+    - 'intake-1460 and intake-1470 are the Jev typed-decision cluster; this paper negative CoT/Jev arm (Appendix D.8) bears directly on the open typed-decision rows.'
+    - 'intake-2146 (Recursive Harness Self-Improvement) is the predecessor line for harness RSI; this paper contributes the EDG/GDR/CCS contract rather than a new RSI mechanism.'
+  contradicting_evidence:
+  - 'The paper internal ablations disagree: Appendix E.1.3 Table 5 shows the single-use graph control beating the full method on both correctness (91.44% vs 90.27%) and cost (15.87k vs 16.15k), and the EDG-execution-disabled arm scoring 95.33% vs 93.77%.'
+  - 'The 87.93% headline is substantially context shrink, not substitution: input/task falls 92.45k to 7.09k while output/task rises and only 147 callbacks are certified; Section 5.3 concedes the integrated effect combines literal-bank reuse, context management and finalisation.'
+  - 'Independent critical coverage found in a bounded current search (FourWeekMBA summary, a Medium analysis titled around "18 cache hits in 98 tasks", a LinkedIn long-form analysis) makes the same point from the published table: the headline bundles prompt/context/finalisation changes and the substitution mechanism alone saves far less. These are analyses of the same paper, not independent replications.'
+  - 'Token accounting does not transfer to EPYC wall-clock: with llama.cpp prefix caching the removed input tokens are the cheapest tokens served, so a 29.54% token cut need not be a 29.54% time cut and may be negative if it trades cached-prefix calls for tool round-trips.'
+  - 'Bounded search found no independent replication of any HarnessMM number as of 2026-11-06; only restatements and commentary.'
+  notes: >-
+    Stage-1 fetch route: arXiv HTML v1 (https://arxiv.org/html/2610.32813v1, complete including Appendices A-L and 54
+    references) plus the abs page for version metadata; v1 submitted 23 October 2026, cs.AI, no venue, Tsinghua +
+    MSRA. Relevance raised to high at integration review because the mechanism targets active owners
+    (harness-program, context-and-token-economy) rather than a speculative future lane. All workloads are hosted
+    API models; no hardware, latency or concurrency datapoint transfers to MI210 or the CPU host directly. The
+    reproduction bundle referenced by the paper (evidence/*.json) was not fetched; the "shared backbone" behind the
+    Qwen comparisons is never named, and Appendix K records that PYTHONHASHSEED was unrecorded in 17 of 17 audited
+    GAIA2 launches.
+  reader_should_conclude: >-
+    Stage-1 unverified. Cite the EDG/GDR/CCS contract and its omission-certificate idea, not the percentage
+    headlines. Never present 87.93% as a substitution effect: it is mostly input-context shrink, output tokens rise,
+    and the authors own ablation contains a control that beats the full method on both axes. Do not transfer any
+    token percentage to wall-clock, latency or MI210 throughput; no such measurement exists in the source.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.4 §4.3 Eq. 6
+    quote: A substitution certificate binds κt = (graph hash,decision id,predecessor receipt, exact args,tool receipt,bypassed callback id).
+    quote_sha256: a836ac428dfb49502c0bd283b569ae76bc86b799e8d95f46f97afb1a4b1ae976
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.4 §4.2
+    quote: Each execution receipt updates the same graph.
+    quote_sha256: b7d9334b4a447a8473876d5133c7df35760a9f25d1a3237e5c68a87cfd7d2bd0
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.4 §4.1
+    quote: Edges connect the root or an earlier node to a successor, forming an acyclic graph.
+    quote_sha256: 5792ed294a2f68d0490e57d5369583a3fc47f1de01840faaa47c99a79b9131f6
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.4 §4.3
+    quote: It runs the exact authored action through the original tool interface and binds the resulting receipt to the omitted callback.
+    quote_sha256: 11fd74988cd7de983c3ccadc8834619ac53f947c9f91a4e9e36818b2c741278f
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.20 §F.1
+    quote: the audit checks no intervening slow request and unchanged slow-sequence count at the boundary.
+    quote_sha256: 639a447cac87dfd7e7d8891addead017e9476f64d72304c1c98ba09d1f42bb56
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.19 §E Table 3
+    quote: Full HarnessMM 93.77 13.17 1.58 W/o GDR 93.00 18.03 0.82
+    quote_sha256: 61287117de722d3e1c0aa615cd3221eb684213d53c6a488448831abb61537884
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.20 §E.1.3 Table 5
+    quote: W/o GDR (the single-use GDR control) 91.44 15.87 0.92
+    quote_sha256: a6c2ecb361dc16348fee604ebf6f7eb0c8884cbcf5b87cadff96da747a95d9ff
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.19 §E
+    quote: The reuse cost interval excludes zero; all three correctness intervals include zero.
+    quote_sha256: 7db11907f5fbcf1cb594e3c3f519b20d7d8a4932494b7c11c186f20e0f4bb0e3
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.20 §E.1.3
+    quote: The additional EDG reuse is active, but the single-use GDR control has slightly higher correctness and lower aggregate cost in this comparison.
+    quote_sha256: 329ede8aefd7e07d2af9130a0e45745f00742eebfb040e65b50571c23cae262c
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.16 §D.3
+    quote: CPU guards and native tools affect time and behavior, but their work cannot be added to a token total without an independently defined resource conversion.
+    quote_sha256: bb171595afd84ad1c133f9dd73b3957378cf3ec47584994dc8853937f5845669
+    source_revision: arXiv:2610.32813v1
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Mechanism confirmed at p.4 Sections 4.1-4.3; guards are admitted only when their truth is known, otherwise the slow actor runs.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed verbatim, including the six certificate fields and the Eq. 7 boundary check against the physical request ledger. Note the certificate proves omission, not correctness (p.16 D.2).
+  - claim_index: 2
+    effect: overturned
+    note: Stage 1 merged two different MBPP studies and inverted the interval statement. Table 3/4 (the repaired four-condition study) gives full 93.77% @13.17k vs W/o GDR 93.00% @18.03k; the reuse COST interval [4.01,45.57]% EXCLUDES zero while all CORRECTNESS intervals include it. The 95.33% @16.19k arm is 'W/o EDG execution' in Table 3, not Table 5. The single-use-beats-full reversal lives only in the earlier Table 5/6 study (91.44% @15.87k vs 90.27% @16.15k; delta +1.17pp [-3.11,+5.45], cost ratio 0.98 [0.81,1.22]) where nothing is resolvable at 257 tasks.
+  - claim_index: 3
+    effect: unaffected
+    note: The break-even/Substitution Paradox statement is read at Section 3.3 Eq. 3 and Appendix D.3 and is not disputed; D.3 also concedes CPU guard and tool work cannot be added to a token total without a defined resource conversion.
+  - claim_index: 4
+    effect: unaffected
+    note: MiniWoB++ RSI figures read at Appendix A Table 2 / Section 5.6; not disputed. Scope is 32 tasks, so it is a development-set result. NOTE (second-reader pass) - the mis-bound latency/energy anchor was removed; this claim currently has NO supporting anchor and must not be cited until re-anchored at p.8 section 5.6 / Appendix A Table 2.
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2610.32813v1 is the only version, 37 pages read from disk; the Apache-2.0 code release at github.com/YuhuaJiang2002/HarnessMM HEAD 8c4ff0f9 was also read). The mechanism and every headline number reproduce, but the ATTRIBUTION does not: pricing the bypassed calls at the baseline per-call cost, callback removal explains at most 11.6% (HumanEval Codex), 17.5% (HumanEval DeepSeek), 14.3% (MBPP Codex) and 36.0% (MBPP DeepSeek) of the reported saving; the rest is per-call context shrink (tokens/call falls 26-72%). Output tokens RISE in both HumanEval arms (+18.3% DeepSeek, +48.2% Codex) and input accounts for 100.8% of the DeepSeek net saving, so the mechanism as measured removes prefill-side tokens and adds decode - the opposite of what a decode-bound gfx90a deployment would want. Stage-1 errors corrected: the AIME accuracy direction was inverted (87.14% is above No Skill's 86.96%); the cost-interval claim was inverted (the cost interval excludes zero, only correctness includes it); and two MBPP studies were conflated. The code release discloses what the paper does not: the HumanEval DeepSeek-harness actor is a self-hosted Qwen3.5-4B, and the admission path gates on an estimated >1024-token net saving, i.e. a token heuristic rather than a time heuristic.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+
+- id: intake-2653
+  arxiv_id: '2606.02875'
+  url: https://arxiv.org/abs/2606.02875
+  source_type: paper
+  title: 'Handoff Debt: The Rediscovery Cost When Coding Agents Take Over Interrupted Tasks'
+  authors:
+  - Dipesh KC
+  - Anjila Budathoki
+  key_claims:
+  - 'Holds a checkpointed repository fixed and varies only the handoff view (repository only, raw trace, free-form summary, fixed structured schema), measuring both solved rate and cumulative prompt tokens (abstract).'
+  - 'A fixed structured schema — changed files, non-source artifacts, latest validation command, uncertainty, rollback risk, verification — is a concrete field-level specification for a durable context-transfer record (abstract).'
+  - 'Bounded notes land at roughly 10k characters median versus about 87k for raw trace (Table 8); raw trace also holds the largest solved-rate gain across all three successors (Table 7, see dive correction: unanchored, do not cite until re-anchored).'
+  - 'Structured handoff is not clearly cheaper than a predecessor-written summary on prompt tokens (about 660k versus 602k in the reported Qwen-to-Qwen comparison, -60% versus -63%).'
+  techniques:
+  - controlled handoff-view ablation on a fixed checkpointed repository
+  - fixed structured handoff schema (changed files, artifacts, validation command, uncertainty, rollback risk, verification)
+  - solved-rate plus cumulative-prompt-token accounting
+  reported_results:
+  - 'Structured handoff 660k prompt tokens versus free-form summary 602k in the reported Qwen-to-Qwen comparison (-60% versus -63%); raw trace buys the largest solved-rate gain (+6.1 to +14.9 points) at roughly 87k characters median.'
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - context_management
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    - handoffs/active/context-and-token-economy.md
+    experiments: []
+    intake_entries:
+    - intake-2650
+    intake_entry_notes:
+    - 'Found as a literature expansion of intake-2650 (T3 Code), whose durable ContextTransfer record plus budgeted portable handoff is the system this paper measures the artifact side of.'
+  contradicting_evidence:
+  - 'Its own numbers do not show the structured schema winning on cost; the free-form summary is cheaper on prompt tokens in the reported comparison. A structured schema may buy reliability, not tokens.'
+  notes: >-
+    Found by literature expansion from intake-2650. Stage-1 fetch route: abs page plus arXiv HTML v2; the expansion
+    agent also observed an ACL Anthology EMNLP 2026 main-track copy (aclanthology.org/2026.emnlp-main.738.pdf,
+    HTTP 200) which is the same work and is not a second entry. Reported scope is coding-agent takeover of an
+    interrupted task with the repository held fixed, so the cost it measures is rediscovery, not model quality.
+    Exact per-condition figures beyond the abstract-level comparison were not re-read at Stage 1.
+  reader_should_conclude: >-
+    Stage-1 unverified. Cite the handoff-view ablation design and the structured schema fields as a template
+    proposal; do not quote the solved-rate deltas or token totals as established until a dive reads the tables.
+    Note the direction of the result: structured handoff did not win on prompt tokens in the reported comparison.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.2 §1 (contributions)
+    quote: We compare four handoff views while holding the checkpointed repository fixed, isolating the effect of the handoff view.
+    quote_sha256: d6003ecf41135fb6133caffcb5f9e7737b2ee0308f1a45fbfe253966051c3efe
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.4 Table 1 caption
+    quote: The selected-75 task pool expands into 181 handoff points and 2,172 takeover runs across the three successor models.
+    quote_sha256: 4fd81180a8b4ef895866e403ce96cfb6504fdcc4c0d821267eab18452838efc0
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.2 §1 (contributions)
+    quote: We propose a structured handoff schema as a bounded continuation contract, with fixed fields for changed files, validation evidence, uncertainty, rollback risk, and verification.
+    quote_sha256: 4712838b27776e5557b182a54e67a2bb475027970a4ecda284add5c273a88c31
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.16 App C (rendered schema)
+    quote: Deterministic continuation-state fields:repository change state; changed source files; non-source artifacts observed; validation outcome after latest source change; latest predecessor validation command; latest validation evidence; continuation-state label.
+    quote_sha256: 1d78f46423bd8fd2c81fc39be66a13d0e641e446d88f79f10b107e9152d4a3dc
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.16 App C (rendered schema)
+    quote: Model-generated note fields:problem understanding; work completed; evidence observed; observed failures or error evidence; remaining uncertainty; rollback notes; recommended next action.
+    quote_sha256: 086b33b330ce0c509f769c5d65ac15bc1510d9d4fb9dd3122b582f9553031a59
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.13 Table 8 (row)
+    quote: Repository only543 7.2k 10k 30k
+    quote_sha256: 52e425fb3ad88196f728665c4134f743166e8ee3459f67879e84a555ec62783b
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.13 Table 8 (row)
+    quote: Raw trace543 87k 150k 471k
+    quote_sha256: dacf1e8d322791c75f95cc38d981cff7e7b0c4d9a36d6cf7b48738ade583120a
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.13 Table 8 (row)
+    quote: Structured notes543 10.0k 13k 33k
+    quote_sha256: 4e8bd2d5b553c967bb7addfda257de527107d89db1c43a177a66ed8b5990e49b
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.6 Table 2 (Qwen->Qwen, Structured notes)
+    quote: Structured notes181 50.8% (+4.4 pp) 55 (-44%) 660k (-60%)
+    quote_sha256: 6353302486e8209076d439f88a9e99ca30c1dd13d38060936b04900464b7a2d7
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.6 Table 2 (Qwen->Qwen, Summary notes)
+    quote: Summary notes181 51.4% (+5.0 pp) 53 (-46%) 602k (-63%)
+    quote_sha256: 1ba019694714dbda063b5b63865ce7562c97959e37e5685a1723204c81d971af
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.6 Table 2 (Qwen->Qwen, Repository only)
+    quote: Repository only181 46.4% 99 1.63M
+    quote_sha256: 1c94252456d0dacec9bf2cd7116f13ffaebfa312e2d5e530cbe07f5cabc06641
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.15 Appendix B (Runtime)
+    quote: Completion tokens and wall-clock time are retained for reproducibility, but we do not use wall-clock time or GPU-hours for cross-view comparisons
+    quote_sha256: b8ddc1117611f23a5f4138aec3d2a79a196a89e8eec6feb021c790ae4d3ed2de
+    source_revision: arXiv:2606.02875v2
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Design confirmed. Add the nesting when citing: 181 handoff points nest inside 75 source tasks, so the effective N is 181 paired observations, not the 724 runs (181 x 4 views) or 2,172 total across three successors.'
+  - claim_index: 1
+    effect: narrowed
+    note: The field list is not the schema. The paper proposes 'changed files, validation evidence, uncertainty, rollback risk, and verification' in the contribution bullet, but the rendered contract (App C) is 7 deterministic fields (repository change state; changed source files; non-source artifacts observed; validation outcome after latest source change; latest predecessor validation command; latest validation evidence; continuation-state label) plus 7 model-filled fields (problem understanding; work completed; evidence observed; observed failures/error evidence; remaining uncertainty; rollback notes; recommended next action). There is no field named 'verification'; it renders as 'rollback notes'.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Character ordering is exact: raw trace 87k median / 150k P90 / 471k max vs structured 10.0k and summary 9.8k. Raw trace holds the largest solved-rate delta for all three successors (+6.1, +6.6, +14.9 pp, CI-clear), but it is also 811k vs 602k prompt tokens in Qwen->Qwen, so ''largest gain'' is not ''best handoff''.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Numbers are literal but the basis must be stated: -60% and -63% are both against repository-only (1.63M), not against each other. Structured is 660k vs summary 602k, i.e. structure costs 9.6% MORE prompt tokens than free-form summary, and the Qwen->Qwen accuracy difference (+4.4 pp vs +5.0 pp) has a CI that crosses zero (p=0.134). ''Structured beats summary'' is not supported.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2606.02875v2, 17 pages read from disk; venue confirmed as EMNLP 2026 main, pp. 17110-17126, DOI 10.18653/2026.emnlp-main.738, same title and both authors). Direction of the result: structured handoff is not measurably better than a free-form summary - Qwen->Qwen +4.4pp (CI crosses zero, p=0.134) vs +5.0pp, at 660k vs 602k prompt tokens, i.e. structure costs 9.6% MORE. The measured payload is the evidence class: validation evidence at the handoff point is worth +14.7pp and failure evidence +16.1 to +19.4pp, while the changed-files list is worth only +4.0pp (successor can git diff it). No per-field ablation exists; the field list is a template, not a proven ranking. Caveats recorded: 34% of handoff points are 'already solved; preserve' (not takeovers), 181 points nest in 75 tasks and the bootstrap did not cluster, Table 2's prompt-token column is almost certainly a per-run median (the paper never says), wall-clock is collected and deliberately not compared, and an 'event' is an LLM action OR a tool observation, so 99->55 events is roughly 50->27 model calls.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2650
+
+- id: intake-2654
+  arxiv_id: null
+  url: https://github.com/agentclientprotocol/registry
+  source_type: repo
+  title: 'ACP Registry — machine-readable registry of agents implementing the Agent Client Protocol'
+  authors:
+  - agentclientprotocol org
+  key_claims:
+  - 'Publishes per-agent manifests (claude-acp, codex-acp, grok-build, opencode-v2, antigravity-acp, pi-acp, cursor, devin, github-copilot, kimi, kiro, qwen-code and others) with CI-enforced auth methods in the ACP handshake (repo README).'
+  - 'Version bumps are automated hourly from npm/PyPI/GitHub releases, with per-platform distribution targets and a quarantine list (repo README and tree).'
+  - 'A protocol-matrix directory records capability differences between agents, which is what a control plane needs instead of hand-maintaining per-CLI adapters (repo tree).'
+  techniques:
+  - per-agent manifest with CI-verified auth methods
+  - hourly automated version discovery across package registries
+  - quarantine list and protocol capability matrix
+  reported_results: []
+  referenced_arxiv_ids: []
+  credibility_score: null
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: adopt_patterns
+  categories:
+  - agent_architecture
+  - tool_implementation
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    experiments: []
+    intake_entries:
+    - intake-1790
+    - intake-263
+    intake_entry_notes:
+    - 'intake-1790 is the ACP specification; this registry is the ecosystem layer a control plane would consume instead of writing adapters.'
+  contradicting_evidence:
+  - 'A registry is a supply-chain dependency: manifests are CI-verified for auth methods but not for behavioural equivalence, and the quarantine list is a moving target.'
+  notes: >-
+    Found by literature expansion from intake-2650 (a reference link surfaced in a fetched ACP overview; the repo
+    itself was then fetched and HEAD-checked). Occupies the lane adjacent to intake-1790 (spec) rather than
+    duplicating it: the spec does not enumerate agents. Relevance high because EPYC harness work must decide
+    adapter-vs-registry for every agent it supports.
+  reader_should_conclude: >-
+    Stage-1 unverified. Treat as a candidate source of truth for the supported-agent matrix and auth handshake;
+    do not assume manifest presence implies capability parity. Verify any specific agent/platform entry at a pinned
+    commit before relying on it.
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: .github/workflows/build_registry.py:L784-L796 @ 7402d12
+    quote: 'for entry_dir in sorted(registry_dir.iterdir()): if not entry_dir.is_dir() or should_skip_dir(entry_dir.name): continue if agent_ids is not None and entry_dir.name not in agent_ids: continue agent_json_path = entry_dir / "agent.json" if not agent_json_path.exists(): print(f"Warning: {entry_dir.name}/ has no agent.json, skipping") continue entry, errors = process_entry(entry_dir, "agent.json", "agent", schema, base_url, seen_ids)'
+    quote_sha256: 50028e6c986a8be779d1baf1571b6e6392ba310243038c95d5737512fe9ef2fb
+    source_revision: agentclientprotocol/registry@7402d128935361c0f7c32842f5b98469b66f8d77
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L39-L41 @ 7402d12
+    quote: Automatic Version Updates Agent versions are automatically updated via a cron job that runs hourly. It checks for new releases across all supported distribution types (npm, PyPI, GitHub releases) and commits updates directly to main.
+    quote_sha256: 89c5250a401c9ac7f7494fbbf4385c5a36c2cae15b0d567d510840525e764a71
+    source_revision: agentclientprotocol/registry@7402d128935361c0f7c32842f5b98469b66f8d77
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: quarantine.json:L1-L8 @ 7402d12
+    quote: '{ "agoragentic-acp": "Postinstall script", "deepagents": "Missing npm dependency", "minion-code": "Python dependency issue", "qoder": "ACP initialize fails in qodercli 0.2.15/0.2.16", "vtcode": "Missing windows builds", "fast-agent": "Timeout after 120s waiting for initialize response" }'
+    quote_sha256: 65cb9a2a7a5088952843b9f9465541e0ab9e398bfa6da215c122c43459ab4467
+    source_revision: agentclientprotocol/registry@7402d128935361c0f7c32842f5b98469b66f8d77
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: AGENTS.md:L158-L162 @ 7402d12
+    quote: 'Agent versions are automatically updated via .github/workflows/update-versions.yml: - Schedule: Runs hourly at minute 17 (cron: 17 * * * *) - Scope: Checks all agents in the root directory - Supported distributions: npx (npm), uvx (PyPI), binary (GitHub releases only - non-GitHub repository URLs are skipped)'
+    quote_sha256: ea252b15041fc4d247e0c1d38aec72c71081213dd38601b8e5033d78873260a0
+    source_revision: agentclientprotocol/registry@7402d128935361c0f7c32842f5b98469b66f8d77
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: .protocol-matrix/latest.md:L1-L9 @ 7402d12
+    quote: '# ACP Protocol Adaptation Matrix - 2026-11-06 _Generated at 2026-11-06T12:58:47+00:00_ - Agents in report: 39 - Probed this run: 39 - Reused unchanged versions: 0 - initialize success: 38 - session/new returned auth_required: 24'
+    quote_sha256: 2d11c32abee69c501534947597b73c3b57833b296bbe04cc26731f920fa8a6d1
+    source_revision: agentclientprotocol/registry@7402d128935361c0f7c32842f5b98469b66f8d77
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: .github/workflows/protocol_matrix.py:L953-L960 @ 7402d12
+    quote: 'default_row["capabilities"] = { "loadSession": bool(agent_caps.get("loadSession", False)), "sessionList": capability_present(session_caps, "list"), "sessionFork": capability_present(session_caps, "fork"), "sessionResume": capability_present(session_caps, "resume"), "sessionStop": capability_present(session_caps, "stop"), "setModel": False, }'
+    quote_sha256: 1863c59fd24bbda21f00e07c745c704b2d64707b5d7cf7bab3a99df8e15d4e81
+    source_revision: agentclientprotocol/registry@7402d128935361c0f7c32842f5b98469b66f8d77
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: All 12 named ids exist, but the roster is 46 manifests, not 12. github-copilot is present in the repo but EXCLUDED from the default published registry.json (build_registry.py:820); kimi is archived by its vendor and superseded by kimi-code (added 2026-11-06).
+  - claim_index: 1
+    effect: narrowed
+    note: 'Hourly automation confirmed (cron 17 * * * *), but binary automation covers only GitHub-hosted repos; cursor, devin, kiro and grok-build are manual and three agents need bespoke sources. Per-platform targets are a manifest property, not automation output. quarantine.json gates update checks and auth verification only: build_registry.py never reads it, so quarantined entries ship unmarked. The separate auth gate launches each agent and requires >=1 method of type agent|terminal (client.py:102-112), but proves advertisement only, covers neither quarantined nor preview agents, and leaves the exempt set unmarked in the index.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The matrix exists (39 agents, 239 nightly snapshots) but does not track stable v1: it probes session/stop (renamed to session/close on 2026-03-09; 0/39 support), probes session/fork (unstable schema only), never records mcpCapabilities or promptCapabilities although both are in the initialize response it parses, and omits the current stable delete/close capabilities. It is a repo artifact, not in dist/ and not referenced by README.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth PARTIAL; registry cloned at 7402d128935361c0f7c32842f5b98469b66f8d77 with full history, ACP spec at 7ec5185c). The claim that the registry tells a client what an agent can do is OVERTURNED: the shipped agent schema carries no authMethods, no protocolVersion, no capability block and no MCP field, so only 1 of 5 client questions is answerable from the published index; a nightly capability matrix exists but is repo-internal. Confirmed: 46 manifests, hourly bot bumps (89.8% of last-30d commits), per-agent auth handshake check, quarantine list. But quarantine gates checks, not publication (6 agents ship unmarked), the auth check only proves advertisement, binary automation is GitHub-only with four manual agents, and the matrix probes a method renamed in March 2026 (session/stop -> session/close). Verdict for EPYC: no adoption - the lane's ACP arm was closed on layer grounds (north-facing editor protocol vs EPYC's south-facing injection point) and the registry removes no existing work; borrow only the pin source discipline (archive + sha256 + platform keys, refusing the 7/22 entries without sha256) and the nightly-capability-diff pattern.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2650
+
+- id: intake-2655
+  arxiv_id: null
+  url: https://zylos.ai/research/2026-04-27-durable-execution-agent-runtimes/
+  source_type: blog
+  title: 'Durable Execution for Agent Runtimes: Workflow Engines, Replay, and Recoverable AI Work'
+  authors:
+  - Zylos AI (vendor research note, 2026-04-27)
+  key_claims:
+  - 'Event-sourced agent runtimes must replay the orchestration and resume from recorded cognition rather than re-asking the model (vendor synthesis citing workflow-engine documentation).'
+  - 'Event-history growth needs a compaction analogue; the durable record, not the prompt summary, remains the recovery source of truth (synthesis of Temporal Continue-As-New semantics).'
+  - 'Idempotency windows are time-bounded in common workflow engines (an Inngest example of 24 hours), so long-lived agents need their own durable receipt layer.'
+  techniques:
+  - replay determinism for agent orchestration
+  - event-history compaction with a durable journal as recovery source
+  - time-bounded idempotency keys and durable command receipts
+  reported_results: []
+  referenced_arxiv_ids: []
+  credibility_score: null
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - tool_implementation
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    - handoffs/active/coordination-and-churn-pipeline.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+    - 'Nearest indexed neighbours are durable-execution adoption assessments rather than this constraint list; the source is a secondary synthesis, not a measurement.'
+  contradicting_evidence:
+  - 'Vendor-authored secondary synthesis with no byline and no experiments; all of its value is the constraint list and the primary documents it cites. It must not be cited as independent evidence of any property.'
+  notes: >-
+    Found by literature expansion from intake-2650. Stage-1 fetch route: direct fetch of the page (HTTP 200). The
+    three constraints it names are directly relevant to the event-sourced orchestration that intake-2650 documents:
+    replay determinism, event-history growth, and idempotency-window expiry. It also draws a distinction EPYC needs:
+    a context transfer is a prompt optimisation, while recovery must read the durable journal.
+  reader_should_conclude: >-
+    Stage-1 unverified. Use only as a checklist of three constraints to test an event-sourced control plane against.
+    Never cite it as evidence that a given engine behaves a certain way; follow its primary citations instead.
+  verification: dive-verified
+  read_depth: PARTIAL
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: page.txt:L124
+    quote: The right model for agents is "replay the orchestration, resume from recorded cognition." That means durable history should store enough of the agent's non-deterministic decisions to avoid asking the model to recreate them during recovery. At minimum, this includes model request metadata, model response, selected tool call, tool arguments, tool result, and any human approval decision.
+    quote_sha256: 0a7df8b88babf84ded3049b0706c85c5ecfd420a236d2de0294b31a2379e1c57
+    source_revision: https://zylos.ai/research/2026-04-27-durable-execution-agent-runtimes/ @ 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: temporal_workflows.txt:L155 (docs.temporal.io/workflows#how-workflow-replay-works)
+    quote: When a Workflow calls an Activity, the Activity runs once, its result is recorded in the Event History. During replay, that result is reused, not recomputed. So Activities aren't executed again during replay.
+    quote_sha256: 5f628cf69eda75491daee806febaa427ac7d984cc0746f2106f9cc7b8c12e868
+    source_revision: https://docs.temporal.io/workflows @ 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: page.txt:L51
+    quote: 'For very long agent sessions, the event-history lesson becomes a compaction lesson. A durable runtime should not keep every token, log line, and transient observation in one unbounded workflow. It should periodically roll forward: preserve semantic state, receipts, pending waits, and recovery metadata, then start a fresh execution segment. This is the workflow-engine equivalent of context compaction, but with stricter guarantees because the durable record, not the prompt summary, remains the recovery source of truth.'
+    quote_sha256: e8a7780b02e27e38181907f1a9f552ce58023c9ace3e3ddcd530b10c58d872b1
+    source_revision: https://zylos.ai/research/2026-04-27-durable-execution-agent-runtimes/ @ 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: temporal_can.txt:L123 (docs.temporal.io/workflow-execution/continue-as-new)
+    quote: The new Workflow Execution has the same Workflow Id, but a different Run Id, and starts its own Event History.
+    quote_sha256: 563674eb66f76743d1356fe32ad0d97c0770ad86c02ebb45e924d063cdf83180
+    source_revision: https://docs.temporal.io/workflow-execution/continue-as-new @ 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: page.txt:L95-96
+    quote: 'Inngest''s idempotency docs show a practical caveat: platform-level idempotency windows can be time-bounded. Inngest''s event and function idempotency examples use a 24-hour window. That is useful, but long-lived agents still need their own durable receipt layer when sessions can last beyond a vendor''s deduplication horizon.'
+    quote_sha256: 516ef92bb07476fca4f5e09b07e71bf106de0642301df6fe8a790dbbe67ff35e
+    source_revision: https://zylos.ai/research/2026-04-27-durable-execution-agent-runtimes/ @ 2026-11-06
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: inngest_idem.txt:L194 (inngest.com/docs/guides/handling-idempotency)
+    quote: Event IDs will only be used to prevent duplicate execution for a 24 hour period. After 24 hours, the event will be treated as a new event and will trigger any functions with that trigger.
+    quote_sha256: e2d26c45a535dd25446106170bd295db56aca8737b3768b17e787a12f59db827
+    source_revision: https://www.inngest.com/docs/guides/handling-idempotency @ 2026-11-06
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed against Temporal primaries: replay re-runs orchestration from the beginning and reuses journaled Activity results rather than recomputing them. Precision edit: the source says ''should'' (a prescription), and ''resume from recorded cognition'' is the author''s framing - the primitive is ''record the model/tool decision as an activity result''.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Clause 1 verified numerically (Event History warning at 10,240 events, termination at 51,200 events / 2,000 Updates / 10,000 Signals; Continue-As-New recommended to avoid the limit). But Continue-As-New is NOT compaction: it starts a new execution segment with the same Workflow Id and a different Run Id, retaining the old history. Clause 2 (durable record over prompt summary) has no primary counterpart and is the author''s design principle.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Confirmed twice from Inngest primaries: event-level idempotency is 24h on producer id, function-level 24h on a CEL expression. Primary is stronger than the source - idempotency is also ignored for debouncing, event batching, and while a function is paused.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth PARTIAL; page read from disk, every workflow-engine statement checked against Temporal and Inngest primaries fetched the same day). All three claims confirmed at the vector the source states, with two precision edits: Continue-As-New is a roll-forward to a new Run Id, not compaction, and 'durable record over prompt summary' is a design principle with no engine counterpart. The EPYC session-bus audit is the payload: rule 9's rebuildability is enforced by a runnable `rebuild` (BUS_PROTOCOL:85-91; session_bus.py:2538-2583), boundary receipts are keyed by boundary_id and deduped (BUS_PROTOCOL:533-553), and there is NO time-bounded idempotency anywhere - retention is cursor-gated and --stale-after-h only prints a label. So EPYC is not exposed to constraint 3, and importing a vendor-style TTL would be a regression. One real defect found: `append` honours a caller-supplied message id without a uniqueness check (session_bus.py:1607-1611) while every consumer dedupes by id, so a collision silently loses a message. The R6c rationale at coordination-and-churn-pipeline.md:437-441 is stale against current rebuild_state and should be re-screened.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2650
+
+- id: intake-2656
+  arxiv_id: '2602.20502'
+  url: https://arxiv.org/abs/2602.20502
+  source_type: paper
+  title: 'ActionEngine: From Reactive to Programmatic Web Agents via State Machine Memory'
+  authors:
+  - Hongbin Zhong
+  - Fazle Faisal
+  - Luis França
+  - Tanakorn Leesatapornwongsa
+  - Adriana Szekeres
+  - Kexin Rong
+  - Suman Nath
+  key_claims:
+  - 'An offline crawling agent builds an application state-machine memory (states, operations, transitions); a runtime agent synthesises one program that executes deterministically with no further planning calls (abstract).'
+  - 'A reactive fallback repairs and writes back to the memory when the interface changes, which is the authoring/re-arming/fallback triad in a different substrate (abstract).'
+  - 'Reports wall-clock and cost improvements where HarnessMM reports only tokens (abstract).'
+  techniques:
+  - application state-machine memory built offline
+  - program synthesis over the state machine at runtime
+  - reactive fallback with memory write-back on interface change
+  reported_results:
+  - 'On 655 WebArena tasks with Claude Opus 4.6 for every system: mean end-to-end latency 87s (Claude Code + Playwright MCP) to 27s (3.20x, task-weighted), cost $0.40 to $0.05 per task (7.49x task-weighted; 7.67x on the paper rounded endpoints, so 8x is a favourable rounding), success 91.2% vs 82.7% (+8.5pp). Single attempt per task, no p50/p95, no repeats. Table 2(b): cost is 2.5x from architecture x 3.2x from layered prefix caching.'
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - context_management
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    experiments: []
+    intake_entries:
+    - intake-2652
+    intake_entry_notes:
+    - 'intake-2652 (HarnessMM) cites this as reference [52] and states in Appendix D.4 that it does not compare against these planning systems experimentally.'
+  contradicting_evidence:
+  - 'Different substrate (web/GUI automation), so the reported speedups do not transfer to coding or tool-call harnesses without a probe.'
+  notes: >-
+    Expansion of intake-2652, which explicitly declines a head-to-head comparison. This is the closest independent
+    mechanism: state-machine memory + one deterministic program is EDG authoring + GDR re-arming + CCS fallback,
+    and it is the one source in this intake set that measures latency as well as cost. Stage-1 read is abstract-level
+    only; the 3.2x/8x figures are unverified.
+  reader_should_conclude: >-
+    Stage-1 unverified. Cite it as the mechanism HarnessMM declined to compare against, not as evidence that
+    HarnessMM gains are explained by it. Do not quote 3.2x/8x until a dive reads the tables and the workload.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.1 Abstract
+    quote: A Crawling Agent explores the application offline and constructs an updatable state-machine memory that represents its interface states, the operations available in each state, and the transitions between states.
+    quote_sha256: 02be5f1004a4790bbbe67efb464e1f00f9ada6ff927e896a5ce10008c05cf05a
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.1 Abstract
+    quote: At runtime, an Execution Agent uses this memory to synthesize a complete executable program in a single planning step, which is then executed deterministically without further planning calls.
+    quote_sha256: e7049bf4f30898155210844eed6075dda67512f8b0326039a3dd9eb2e37d5c1b
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.6 §4.2
+    quote: When a GUI action contains a symbolic input, the Executor resolves it against this context before issuing the corresponding Playwright call.
+    quote_sha256: d64bf87e348b6932a3d6a9e7616328aa3a583ed881a69adac5b6e6a5826d0ef5
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.1 Abstract
+    quote: When the interface changes or the memory is incomplete, a reactive fallback repairs the failed action and updates the memory for future tasks.
+    quote_sha256: 3ea827d135b1bbb651a40e8eb37a952fc4256ed17078c38b1a8ef964089f3996
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.7 §4.3
+    quote: If the failure reveals stale or incorrect knowledge in the SMG (e.g., wrong locator, poor operator description), the Patcher also commits the repair back to the SMG so that subsequent tasks reuse the corrected operation.
+    quote_sha256: 50bb929dca7e83e8eb62f040d2621a6ff0db30ec483351138d411f71af22b376
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.7 §5.1 Table 1 caption
+    quote: All systems use Claude Opus 4.6.
+    quote_sha256: 574864c15b14d1daec9481caf77fda7beee59193da772d5e95b4b77e44b4d09c
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.8 §5.2
+    quote: ActionEngine reduces average task latency to 27 seconds, a $29\times$ speedup over AgentOccam (787s) and $3.2\times$ over Claude Code (87s).
+    quote_sha256: 84df6ce761aed2324d9c9409485c8873b1e7b6132f33fdbd8279c8e095a15d42
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.7 §5.1
+    quote: The Patcher is disabled during evaluation, so each reported task reflects a single execution attempt without online repair.
+    quote_sha256: 140900a10a1e86485506d32459214ab2417f1271a64a1aee1fa2506bfb32e9a6
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.9 §5.3 Table 2(a)
+    quote: Relative to Claude Code, ActionEngine’s lower per-task execution cost recovers the one-time crawling cost after 39-101 tasks.
+    quote_sha256: 57b9b2371faec6a76a5a66d9c2ca5294dd2a3a9853a895f2041c29cf9f41f699
+    source_revision: arXiv:2602.20502v2
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'Confirmed, with a qualifier on ''no further planning calls'': true of the planner, not of the model. 1.5-3.5 calls/task remain (task-weighted 2.9) from an in-program LLM helper and a state-filter call that fires above 300 operations. Parameter binding is deterministic against the execution context, not a model call.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Write-back is real, but the condition is never tested: the Patcher is disabled for all 655 evaluation tasks, the only write-back is a warm-up over incomplete (not changed) memory, and there is no drift, rollback or poisoning experiment. Treat as a design claim, not a measured capability.'
+  - claim_index: 2
+    effect: narrowed
+    note: 3.20x latency is exact (87s -> 27s, task-weighted mean of ONE attempt per task, no p50/p95, no repeats, no host description). Cost is 7.49x task-weighted / 7.67x on the paper's rounded endpoints, not 8x, and Table 2(b) decomposes it as 2.5x architecture x 3.2x layered prefix caching. v1 of the same paper reports the same 106 Reddit tasks at 2x, so wall-clock is the unstable number while quality is stable (95.0% in both revisions).
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2602.20502v2, 19 pages plus v1 read for the revision delta). Claim 1 confirmed with a model-call qualifier (1.5-3.5 calls/task remain), claim 2 narrowed to a design claim (the Patcher is disabled in every evaluation run), claim 3 narrowed on both ratios. The transferable quantities are calls/task (14.7 -> 2.9) and input tokens (390k -> 29k), not the 3.2x wall-clock, which is a single-attempt mean against a hosted API; v1 reports the same Reddit tasks at 2x not 6.6x. Cost decomposes as 2.5x architecture x 3.2x prefix caching (Table 2b), so most of the '8x' is a price-list effect our own prefix cache already supplies. Authoring is amortised only over 39-101 tasks per application, with warm-up and engineering excluded, and Table 2(a) and Appendix C.1 disagree on the GitLab crawl cost by ~6x ($5 vs $29.5). The self-healing half has no measurement at all: no drift event, no repair-success rate, no rollback.
+    Second-reader pass (2026-11-06): the 7.49x/7.67x cost ratios are dive arithmetic from the printed endpoints, not a quoted figure; the 3.2x prefix-caching factor is anchored at section 5.3 Table 2(b).
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2652
+
+- id: intake-2657
+  arxiv_id: '2610.31712'
+  url: https://arxiv.org/abs/2610.31712
+  source_type: paper
+  title: 'Reuse, Rewrite, or Reject: Evidence-Constrained Trace Reuse for Repeated Mobile GUI Control'
+  authors:
+  - Bingyu Bai
+  - Cheng Zhang
+  - Erhu Feng
+  key_claims:
+  - 'Derives a per-transition reuse decision independently: graph-text templates built from verified executions, with each transition reused, adapted or discarded against live UI state (abstract).'
+  - 'On AndroidWorld across five base agents, tokens fall 78.0-89.6%, reuse is 82.0-87.5% and execution speedup is 1.2-1.9x (3/5 agents at or above 1.5x, none at 2x); the 70.7-79.8% reuse and 2-4x multipliers are the separate real-device blocks, not AndroidWorld (Table 1, Table 8).'
+  - 'Admission is a three-group evidence checklist - context alignment (task/UI match, unique visible anchor), input contract (typed slots bound from the live instruction, live precondition holds), and safety plus observability (bounded risk, measurable postcondition) - deciding REUSE / REWRITE / REJECT, with a failed post-check blocking the edge for the episode.'
+  techniques:
+  - evidence-constrained trace reuse
+  - per-transition reuse/rewrite/reject decision against live state
+  - graph-text templates from verified executions
+  reported_results:
+  - 'AndroidWorld, five agents: token reduction 78.0-89.6% (unweighted mean 82.8%, no aggregate reported by the authors), reuse 82.0-87.5%, speedup 1.2-1.9x; real-device blocks report 68.3-85.8% token reduction, 70.7-79.8% reuse and 1.8-3.9x. Speedup is the mean of per-task wall-clock ratios over pairs where BOTH arms succeeded; record and template construction are excluded.'
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - context_management
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    experiments: []
+    intake_entries:
+    - intake-2652
+    intake_entry_notes:
+    - 'Independent derivation of the per-transition reuse admission decision that intake-2652 calls GDR, with measured latency.'
+  contradicting_evidence:
+  - 'Mobile GUI control, not coding or tool-call harnesses; the reuse granularity and guard evidence differ from HarnessMM literal-argument guards.'
+  notes: >-
+    Expansion of intake-2652 via arXiv API search on procedure reuse. Stage-1 read is abstract-level only. Relevant
+    mainly as an independent lower bound on what transition-level reuse delivers and because it reports latency,
+    which is the axis EPYC actually pays for.
+  reader_should_conclude: >-
+    Stage-1 unverified. Treat as an independent mechanism datapoint and a source of the latency axis; do not quote
+    its percentages for our workload.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.2 §1
+    quote: live evidence determines whether each transition is reused, rewritten, or rejected
+    quote_sha256: dfba1173232d6d727e00860c925313cc22f46d298018da0ac3c761e5f4ba591e
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.5 Figure 3 caption
+    quote: 'Left: live context and contract checks determine whether to reuse, rewrite, or reject a candidate.'
+    quote_sha256: c879e4c310f1ae170d79e25a602f39b5fcdb8f56d51f66ce91d6dab45392496c
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.1 Abstract
+    quote: Given an execution trace, our framework reduces LLM inference token consumption by approximately 80% on average across five base agents on AndroidWorld, with most agents achieving at least 1.5xexecution speedup over LLM-only execution. In
+    quote_sha256: fe3a133ef52c5c073d826b7c5831ef741bc156c4c445abd71cf431b9690bd940
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.7 Table 1, AndroidWorld block, GUI-Owl-7B row
+    quote: GUI-Owl-7B 59.1 97.7 57.7 87.5 89.6 79.8 1.7x
+    quote_sha256: 8f11c7d4e5841ac48cc40a08823d89a353abe9bb377490e34af188de9c796e9b
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.21 Table 8, AndroidWorld row
+    quote: AndroidWorld 82.0-87.5 78.0-89.6 71.1-79.8 1.2-1.9x
+    quote_sha256: 8a8c19df95fc39801bd8de88c45655a45741ba0345b8258fc8a6431802591d52
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.20 §D.3
+    quote: 'The reported speedup is the arithmetic mean of the per-task time ratios:'
+    quote_sha256: 51916e3a6406df67d0a7bb014ef2a7c186467f008cfb7b43510a9d31653ca69b
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.5 §3
+    quote: Matching the historical page alone cannot justify copying its action payload.
+    quote_sha256: e1bb6987ccd277e4e863c534c14a06820ff27a8e625823529a576cbc8f65ba5c
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.5 §3
+    quote: High-risk entity/value pairs require stronger evidence and cannot be filled from preference alone.
+    quote_sha256: 85458de3c3d0bd2879b3d325ed54284a6edadd01f2c80eb77c107461bf7028b0
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.15 §A.4
+    quote: An admitted action executes once. Its postcheck verifies the expected semantic effect; a page change alone does not prove that a requested value or entity is correct.
+    quote_sha256: 1709fa53d83aa5379bbb917918d04367461f54836014cfad982adfd0fce582fe
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.15 §A.4
+    quote: Rejection executes no GUI action; fallback follows it, not as a fourth decision.
+    quote_sha256: 08578768b278fcc3f1d3ebe5df92b3bdd00d9f8fac256fa7cfe261147660bb5a
+    source_revision: arXiv:2610.31712v1
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Mechanism confirmed (p.1, p.5 Fig. 3). Two additions: the decision space is three-valued (REUSE / REWRITE / REJECT), and the memory unit is a transition with a checked outcome, reused locally rather than as a whole-script replay.'
+  - claim_index: 1
+    effect: overturned
+    note: The sentence merges two evaluations. On AndroidWorld (Table 1, Table 8) tokens fall 78.0-89.6%, reuse is 82.0-87.5%, and speedup is 1.2-1.9x with 3/5 agents >=1.5x and 0/5 >=2x (mean 1.54x). The 70.7-79.8% reuse and 2x+ multipliers belong to the REAL-DEVICE blocks (1.8-3.9x), not AndroidWorld. 'Approximately 80% on average' is the authors' aggregation and is not a reported mean.
+  - claim_index: 2
+    effect: unaffected
+    note: 'The admission gate is a three-group checklist (context alignment; input contract; safety + observability) plus pre-check/post-check/fallback and record-time exclusions - NOT a certificate: no numeric risk bound, no evidence threshold, no bound tool receipt. Contrast intake-2652''s six-field omission certificate.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2610.31712v1, 21 pages). The mechanism claim survives intact; the number sentence is OVERTURNED by a denominator swap. On AndroidWorld tokens fall 78.0-89.6%, reuse is 82.0-87.5% and speedup is 1.2-1.9x (3/5 agents >=1.5x, none at 2x); the 70.7-79.8% reuse and 2-4x multipliers are the real-device blocks. The speedup is honest wall-clock (end-to-end, matched boundaries) but averaged only over pairs where BOTH arms succeeded, with no variance, no per-cell N and no host description. Two success columns are constructed products, not measurements: AndroidWorld 'success with replay' is base x conditional (stated unable to exceed base), and the real-device column is an arithmetic product whose measured counterpart is 93.0-98.0%. The paper's own explanation of the modest AndroidWorld result is the transferable datum: pre- and post-action UI acquisition is 40.02% of wall-clock, which is why removing model calls yields only ~1.5x. The admission gate is a three-group checklist, not a certificate.
+    Second-reader pass (2026-11-06): the three-group enumeration used in claim 2 is rendered in Figure 3 and section A.4 but no single anchor quotes the enumeration; cite the groups as derived from the figure, not as a quoted list.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2652
+
+- id: intake-2658
+  arxiv_id: '2609.35088'
+  url: https://arxiv.org/abs/2609.35088
+  source_type: paper
+  title: 'When Valid Tool Calls Change Meaning: Formation-Consistent Dispatch for LLM Agents'
+  authors:
+  - Geonwoo Kim
+  - Brent ByungHoon Kang
+  key_claims:
+  - 'Names schema-epoch drift: an unchanged, schema-valid stored call can acquire a different effect at dispatch because standard dispatch omits the descriptor-handler relation (abstract).'
+  - 'Proposes provenance-bound effect over-approximation, a certificate carried across source retirement, and atomic admission (abstract).'
+  - 'A stock comparison on the GitHub MCP v1.4.0 -> v1.3.0 transition shows call-specific formation-consistent dispatch preserving all 3 safe calls and stopping all 3 unsafe ones with 0 violations, where release-wide allow produced 3 public exposures and exact pinning re-formed 6/6 calls (Table VI).'
+  techniques:
+  - schema-epoch drift analysis
+  - provenance-bound effect over-approximation
+  - certificate carried across source retirement
+  - atomic admission of stored calls
+  reported_results:
+  - 'Stock GitHub MCP v1.4.0 -> v1.3.0 transition, 2 call classes x 3 repetitions x 4 policies: exact pinning re-forms 6/6 calls (0/3 + 0/3) with 0 violations; release-wide allow executes 3/3 + 3/3 and produces 3 public exposures; call-specific formation-consistent dispatch completes 3/3 of the safe class and stops 3/3 of the unsafe class with 0 violations (Table VI).'
+  - 'Authority timing (Table VII): an identical safe certificate installed after formation governs 0/3 pending calls, while a fresh formation under the same policy succeeds 3/3. Reported over 29 of 32 releases needing no change, 3 escalated for review, 20/20 supported safe calls preserved.'
+  - 'Descriptor-stable handler changes are demonstrated separately (Reference Git 3/3, DBHub 5/5) and execution-context rebinding (OpenClaw 3/3); schema rereading produced no wire-level relist in eight trials, and 9 of 16 prompt-only control calls reached a release different from the visible schema (Section VII-C).'
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    experiments: []
+    intake_entries:
+    - intake-2652
+    - intake-2655
+    intake_entry_notes:
+    - 'Directly attacks the soundness of intake-2652 Certified Callback Substitution: binding a receipt to a call surface does not bind it to the implementation that executes.'
+  contradicting_evidence:
+  - 'Abstract-level only at Stage 1; the claimed preregistered comparison was not inspected.'
+  notes: >-
+    Expansion of intake-2652 via arXiv API search on omission certificates. This is the load-bearing adversarial
+    source for the batch: if a stored action can change effect without changing its schema-valid form, then an
+    omission certificate must bind descriptor and handler, not only args and receipt. Stage-1 read is abstract-level.
+  reader_should_conclude: >-
+    Stage-1 unverified. Cite it as the named failure mode a substitution certificate must survive, never as a
+    measured result. A dive must confirm whether the proposed provenance binding is implementable at our tool layer.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract, para 1
+    quote: Tool-enabled agents form calls from model-visible interfaces, while hosts later select their implementation. Standard dispatch omits the descriptor-handler relation. An unchanged and schema-valid call can therefore acquire a different security effect during rollout, reconnect, or delayed approval. We call this failure schema-epoch drift
+    quote_sha256: b776e27e3467eeeef49ac9dc9f5e06d4a39b983c1dcb5424c986a3d11d410af6
+    source_revision: arXiv:2609.35088v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §I, para 4
+    quote: A schema epoch binds a model-visible descriptor to an implementation and its security-relevant execution context. Drift occurs when a call formed under one epoch executes under another that assigns the same bytes a different security meaning.
+    quote_sha256: 653509159d29a1e4d3fbc3244cd1584215b0a12b651718a8f85bf3f8009a85f1
+    source_revision: arXiv:2609.35088v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Abstract, para 2
+    quote: Reviewed profiles produce provenance-bound over-approximations of declared in-scope effects from official source. Under a closed-target approval policy, a verifier applies each formed call to a summary and captures a successor only when its effects fit the call’s security contract. Atomic admission and a final-hop fence preserve this decision to the effect.
+    quote_sha256: 80f20fb11b4030079792327acab61f1339471cb94307e9f256038677c9e168a5
+    source_revision: arXiv:2609.35088v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §VI-C, para 1
+    quote: Both calls formed and received approval under stock GitHub MCP v1.4.0. Call A explicitly set private:true , which remains private under v1.3.0. Call B omitted private , which becomes public under v1.3.0. After v1.4 retirement, the preregistered comparison applied four policies to three repetitions of each call
+    quote_sha256: de8948b425dd37ca75c96df1ec37e4afa4f0d351702c41c388b44d979d06296d
+    source_revision: arXiv:2609.35088v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §VI-C, para 2
+    quote: FCD completed all three A calls under their existing formation and approval. It stopped all three B calls before the stock handler callback and required new approval only for B. An independent auditor reconstructed all four rows from raw records and passed 12/12 gates.
+    quote_sha256: 127ed8b8824ec191018c004682472ac70bd2cacffdb6fbf5b9806aa774ccf521
+    source_revision: arXiv:2609.35088v1
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed and stronger than Stage 1 implied: the paper also demonstrates descriptor-STABLE handler changes (Git 3/3, DBHub 5/5) and execution-context rebinding (OpenClaw 3/3), and kills the cheapest mitigation - schema rereading produced no wire-level relist in eight trials, and 9 of 16 prompt-only control calls reached a release different from the visible schema.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'All three components are present, but ''a certificate carried across source retirement'' must NOT be read as ''any valid certificate may govern a pending call''. The central negative result is authority timing: an identical safe certificate installed after formation produced 0/3 old-call callbacks while a fresh formation produced 3/3. Authority is captured at formation and can only contract. Also, the first inclusion (actual effects within the summary) is a reviewed premise, not a checked property.'
+  - claim_index: 2
+    effect: narrowed
+    note: 'Content confirmed, ''preregistered'' is qualified: no registry entry, frozen-manifest hash or artifact URL is given, and the section itself discloses a post-freeze fixture repair. Effective independent sample is 2 call classes on one tool/transition pair; the 3 repetitions are a determinism check. Four policies x 2 classes x 3 repetitions = 24 executions.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2609.35088v1, 17 pages, all 9 tables read). Claim 1 confirmed and strengthened; claim 2 narrowed by the authority-timing result (a certificate installed after formation governs 0/3 pending calls); claim 3 confirmed with 'preregistered' qualified and reported_results populated. Comparison to intake-2652: HarnessMM's six fields prove a callback was OMITTED, and none of them names the interpreter. The minimum sound addition is three fields, not fourteen - tool_epoch (descriptor digest, handler artifact and config digest, serving process start, catalog epoch), effect_class, and expires_at/revocation_handle - and a recorded digest without a recheck at dispatch is decoration. The reviewed-profile pipeline itself should not be ported: its soundness rests on a trusted premise and our tool surface is not statically analyzable to that depth.
+    Second-reader pass (2026-11-06): the section IV-F anchor is an elided splice of two non-adjacent sentences, and the section IV-G and Table VI anchors are condensed transcriptions; content was verified against the page text, but these are not contiguous spans.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2652
+
+- id: intake-2659
+  arxiv_id: '2604.20938'
+  url: https://arxiv.org/abs/2604.20938
+  source_type: paper
+  title: 'HARBOR: Automated Harness Optimization'
+  authors:
+  - Biswa Sengupta
+  - Jinhua Wang
+  key_claims:
+  - 'Formalises harness design as constrained noisy Bayesian optimisation over a mixed-variable flag space (abstract).'
+  - 'Names context compaction, tool caching, semantic memory, trajectory reuse and speculative tool prediction as flags, i.e. harness RSI over configuration rather than weights (abstract).'
+  - 'Searches with a budget of about 10 full-suite-equivalent units per week and reports a pick that ties the manual peak (17/89 vs 17/89) while the mean of five picks is 16.6/89 against a 15/89 all-flags-off baseline (Section VI-c, VIII-f).'
+  - 'Reports no grid, random or TPE control, one run per configuration, and defines but does not report the single-flag ablation that would separate search from known-good flags (Section V, Section VIII-c, Appendix A).'
+  techniques:
+  - constrained noisy Bayesian optimisation over harness flags
+  - automated harness configuration search
+  reported_results: []
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    - handoffs/active/autopilot-program.md
+    experiments: []
+    intake_entries:
+    - intake-2652
+    - intake-2146
+    intake_entry_notes:
+    - 'Contests intake-2652 framing that the EDG/GDR/CCS components must be hand-authored: the same flags could be found by search.'
+  contradicting_evidence:
+  - 'Abstract-level only at Stage 1; search cost and evaluation noise over a mixed flag space are not yet inspected.'
+  notes: >-
+    Expansion of intake-2652 via arXiv API search on harness self-improvement. Its value is attribution: if a few
+    harness flags explain the gains, a hand-authored decision graph is not the causal mechanism. Adjacent to
+    intake-2146 (Recursive Harness Self-Improvement) which is the predecessor line.
+  reader_should_conclude: >-
+    Stage-1 unverified. Use it to demand an attribution control in any HarnessMM-style probe; do not treat automated
+    flag search as a ready EPYC capability.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.1 Abstract
+    quote: constrained noisy Bayesian optimization over a mixed-variable, cost-heterogeneous configuration space with cold-start-corrected rewards
+    quote_sha256: ea8cc8f175ec1dc9675b782bdb75dd56cf152827867643357ec4f48e4d062e15
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.5 §VI Eq.1
+    quote: is either a Boolean flag, a numeric threshold, or a discrete preset
+    quote_sha256: e684faba59baabb7b03964f52f4bcd2418069df44dc0512216cd579c65871b55
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.1 Abstract
+    quote: context compaction, tool caching, semantic memory, trajectory reuse, speculative tool prediction
+    quote_sha256: defa4d14a1396de49608c056b4d96aaac5b641cea723c588740b504ab797e1c6
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.3 §III
+    quote: the nine relevant flags, all defaulting off, are five native harness feature flags (semantic tool-result cache, cross-session memory index, tiered conversation compressor, trajectory-replay experience library, speculative tool-prediction learner), plus the self-evaluation gate, the ACON observation-compression gate
+    quote_sha256: 5d320739a09ce8d9fdca89f1902dd0153bc0141a58e65b12d57a4f2fdbb3176d
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.8 §VI-c
+    quote: the optimizer cannot afford more than ∼10 full-suite samples; everything else must be spent at a cheaper fidelity. We
+    quote_sha256: 3328f193bbe7bffc63b09e11f0bce24edacf0bc324a2241552ecdea4c227e1b3
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.10 §VIII-f
+    quote: the effective configuration reduces to compression-only, which is precisely the strongest positive-coefficient single flag recovered by the block-additive surrogate
+    quote_sha256: d7dd5b7ad32aa88e5cb9407280554ae8f1b69796a115f4cf3ac464bfa277f7e9
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.10 §VIII-f
+    quote: the run-#4 peak of 19/89 is a lucky Bernoulli draw rather than an attribution to its nominal bundle
+    quote_sha256: f2150b3ee29d2928a43a616d848f42d211e634e0ec566cb9b1fbabcb9e61d740
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.10
+    quote: warm-starting the solver from the A-D evaluation log as a meta-learned posterior
+    quote_sha256: 45b2437619f511300d4639a087fd002263355f4530e1e1c4ce2d7ce5f69b9a36
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.5 §V
+    quote: ran the standard 7-way ablation (see Table I)
+    quote_sha256: f860109e43164b60b305160bd15d24617d12be785d8fade4b9f4ffb75ac0081b
+    source_revision: arXiv:2604.20938v1
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The formalisation is Bayesian optimisation, but the evaluated artifact replaces its three defining pieces: ridge for SAAS+NUTS, a linear tensor-product kernel for the Matern-5/2 prior, and per-candidate EHVI for joint qNEHVI (p.9 VII-e). The reported numbers test a reduced solver, not the section-VI spec.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The abstract''s five names map onto nine section-III flags, not five: context compaction is two flags (tiered compressor + ACON gate), speculative tool prediction is PASTE, and self-evaluation and Reflexion are also flags.'
+  - claim_index: 2
+    effect: overturned
+    note: 'The accounting does not close: five m=89 evaluations alone exceed the stated 3.5-unit budget; 19 m=8 evaluations = 152 task-runs = 1.71 m=89-equivalents, not 9.826; wall clock implies ~5.2 units. The unit is never defined. Payoff is not established: mean 16.6/89 vs baseline 15/89 (+1.6, inside the corrected +/-5.9 noise floor), a TIE with the manual B peak at 17/89, and the only +5 is against D (12/89), which is below baseline. The solver is warm-started from the manual A-D log it is compared against.'
+  - claim_index: 3
+    effect: narrowed
+    note: No grid, random, TPE or Hyperband control exists anywhere in section VIII or Appendix A; the only comparators are all-flags-off, two manual configs and the oracle. One run per config, no repeats, no seeds. The paper's +/-3-pass Wilson half-width is the ~68% value; the correct 90% width is +/-5.8 to 6.1 passes, which puts the reported gaps inside noise. The separating single-flag ablation is defined (Table I) but its pass counts are never reported.
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2604.20938v1, 14 pages). The formulation is competently stated but the evidence does not support the attribution role it was recruited for. HARBOR's best pick ties the manual peak (17/89 vs 17/89); the mean of five picks is 16.6/89 vs a 15/89 baseline (+1.6 passes, inside a corrected +/-5.9-pass 90% interval); there is no random/grid/TPE control; and the solver is warm-started from the manual A-D log it is compared against. The only +5 is against a manual config BELOW baseline. The search budget is unauditable: 3.5 units, 9.826 units, ~1.71 equivalents and ~5.2 from wall clock cannot all describe the same run, and the unit is never defined. The one experiment that would separate 'search found good flags' from 'the flags were already known-good' (single-flag pass counts, Table I) is defined and withheld, while the authors concede the pick reduces to compression-only. Its Oracle gap (17 vs 81 of 89) is an argument FOR conditional selection, i.e. for a decision graph, not against one. Second-reader note: arithmetic in reported_results (7.49x/7.67x) is dive arithmetic from printed endpoints, not a quoted figure.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2652
+
+- id: intake-2660
+  arxiv_id: '2609.33260'
+  url: https://arxiv.org/abs/2609.33260
+  source_type: paper
+  title: 'CORTEX: A Verified Experience Layer for Generalist Agents'
+  authors:
+  - Garapati Keerthana
+  - Manik Gupta
+  key_claims:
+  - 'Each episode stores task conditions, source and tool state, decisive predicates, proof trace, verifier and outcome (abstract).'
+  - 'A meta-controller chooses exact replay, checked adaptation, fresh synthesis or escalation, i.e. an explicit admission policy over reuse (abstract).'
+  - 'Formalises exact-replay and source-version-separation contracts (abstract).'
+  - 'Reports 62.6-69.6% fewer rule-node evaluations on synthetic recurrences while median latency rises by 0.14 ms in both domains, and label equality at +24.4% to +30.2% reasoning work on the transfer study (Section 7, Tables 3-4).'
+  techniques:
+  - verified experience record with proof trace and verifier
+  - meta-controller over replay/adaptation/synthesis/escalation
+  - exact-replay and source-version-separation contracts
+  reported_results: []
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - agent_architecture
+  - context_management
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    experiments: []
+    intake_entries:
+    - intake-2652
+    - intake-2658
+    intake_entry_notes:
+    - 'Closest independent analogue of the decision record itself; pairs with intake-2658 on source-version separation.'
+  contradicting_evidence:
+  - 'Abstract-level only at Stage 1; no independent replication observed in a bounded search.'
+  notes: >-
+    Expansion of intake-2652 via arXiv API search on verified replay. Relevant if EPYC formalises a decision record:
+    this source already carries proof-trace-plus-verifier and an admission policy, which would bound HarnessMM
+    novelty to the native-dispatch omission receipt.
+  reader_should_conclude: >-
+    Stage-1 unverified. Treat as prior art for a verified experience record; do not assume its admission policy is
+    cheaper than a guard.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: abstract, p.1
+    quote: Each episode records its task conditions, source and tool state, decisive predicates, proof trace, verifier, and outcome.
+    quote_sha256: a7adbfc05e37dc507e3310a6403cd240bfb6cdfc8db353b7fb1c6dc929d849fe
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §3 Experience graph, p.3
+    quote: A committed episode stores the task family, selected source and tool versions, decisive predicate signature, typed output, proof trace, verifier identity, uncertainty status, and challenge state.
+    quote_sha256: 0f7603bbd12641c25d263a4a96c7bfbabea0036a7148aa7b78cbeed709479d58
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: §4.2, p.4
+    quote: The certificate gamma records gate status and verifier version.
+    quote_sha256: 2c768b8048f6cc627bfa97ff53bfd11f64d1072dee15fa13d342d5edd0fa4f21
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Proposition 2, p.5
+    quote: If every current assertion must pass a gate requiring an active rule digest equal to the registry digest at the decision time, no assertion supported only by an invalidated prior version can be released as current.
+    quote_sha256: ec6a3fc8997b7b602b5f19cf313fdd61d30de05ef243ea9753dcfab7f1fffa26
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §7, p.7
+    quote: Warm reuse occurs on 93.6% of later clinical cases and 100% of later policy cases. Mean rule-node evaluations fall from 33.88 to 12.688 and from 52.072 to 15.836. Median cold and warm latency is 31.93 and 32.07 ms in the first domain, and 7.62 and 7.76 ms in the second.
+    quote_sha256: 4e39df660c62edc0eead3aac1450ef3278a6f3e5f959119f60c3778bda19f4d9
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §7, p.7
+    quote: The full deterministic baseline runs faster, while CORTEX emits the richer trace and verification artifacts.
+    quote_sha256: 235fac2199ff66254f2783da27a721dd7a1090f54dfd858c2a49e2f1736b7ce7
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Table 2 caption, p.7
+    quote: The scenario oracle and runtime share source interpretation, so exact agreement is not external expert validation.
+    quote_sha256: dd434b2a00eb33dacd5470fa51962b4eed6a4640335910914c37e5061cd0533c
+    source_revision: arXiv:2609.33260v1
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 'The field list is confirmed, but ''verifier'' is identity plus version only (gamma = gate status + verifier version). No verifier transcript, inputs or evidence pointer is stored: an auditor can see WHO checked, not WHAT they checked.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'The four-way policy is disclosed, not demonstrated: the headline runs use exact replay only, and checked adaptation and synthesis are future-work rungs. No controller-accuracy or mode-selection measurement exists.'
+  - claim_index: 2
+    effect: narrowed
+    note: Both propositions are conditional on Assumption 1 (a deterministic correct evaluator, a registry that binds scope and time without collision, and complete invalidations before use). Proposition 1 explicitly disclaims that the proof covers natural-language interpretation. Proposition 3 is a cost identity, not a safety contract.
+  - claim_index: 3
+    effect: narrowed
+    note: 'Gain is a rule-node counter, not wall-clock: median latency is +0.14 ms HIGHER in both domains when warm (32.07 vs 31.93; 7.76 vs 7.62). Transfer shows label equality at +24.4% and +30.2% reasoning work, with no token or currency cost reported. The pilot is four held-out cases. The ''verified'' oracle shares the author''s own source interpretation, so agreement is not external validation.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2609.33260v1, 14 pages). Claims 1-3 confirmed with scope narrowing; results added as claim 4 because the measured outcome inverts the naive reading: reuse cuts rule-node evaluations 62-70% while median latency rises by 0.14 ms in both domains, and the transfer study reports label equality at +24-30% reasoning work. 'Verified' means judged inside the authors' own encoding: the headline verifier is deterministic rule execution, the scenario oracle shares the runtime's source interpretation, and a model verifier appears only in a four-case pilot. Compared to EPYC's decision_receipt.v1, only two fields have a live consumer - validator identity/version and a conclusion valid-time interval distinct from offer expiry - and the source-version-separation contract is already implemented in routing_replay.py (frozen pre-purge snapshot, path + SHA-256). No reason to reopen HS-TD-4.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2652
+
+- id: intake-2661
+  arxiv_id: '2502.03771'
+  url: https://arxiv.org/abs/2502.03771
+  source_type: paper
+  title: 'vCache: Verified Semantic Prompt Caching'
+  authors:
+  - Luis Gaspar Schroeder
+  - Aditya Desai
+  - Alejandro Cuadron
+  - Kyle Chu
+  - Shu Liu
+  - Mark Zhao
+  key_claims:
+  - 'Per-prompt online-learned similarity thresholds with user-defined error-rate guarantees, in contrast to static thresholds that give no correctness guarantee (abstract).'
+  - 'Treats the skipped model call as a statistical decision with an error budget rather than a heuristic (abstract).'
+  - 'Reports up to 12.5x higher hit rate (SemCacheCombo) and up to 26x lower error (SemCacheLMArena) than static-threshold baselines; the two figures are different benchmarks and different points on a Pareto frontier (Sections F.2-F.3).'
+  - 'The guarantee is a per-prompt marginal expected-correctness bound conditional on the observed prompt set, under i.i.d. prompts and a correctly specified sigmoid family, and it is paid for by exploring some fraction of calls (Definition 4.1, Theorem 4.1, Eq. 7).'
+  techniques:
+  - per-prompt online-learned similarity thresholds
+  - user-defined error-rate guarantee for cache hits
+  reported_results:
+  - 'SemCacheCombo: up to 12.5x higher hit rate than the best static-threshold configuration at the same error bound. SemCacheLMArena: up to 26x lower error at matched latency. Do not present them as one result. Representative operating point: 18.1% hit at 0.4% total error (delta=0.01) on 45k classification prompts, which is about 2.2% error among cache-served answers.'
+  referenced_arxiv_ids: []
+  credibility_score: 3
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  verdict: worth_investigating
+  categories:
+  - inference_serving
+  - kv_cache
+  - benchmark_methodology
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/harness-program.md
+    - handoffs/active/numa-placement-and-contention.md
+    experiments: []
+    intake_entries:
+    - intake-2652
+    intake_entry_notes:
+    - 'The formal standard an omission certificate would be read against: a skip needs an error budget, not only a guard.'
+  contradicting_evidence:
+  - 'Semantic caching at the prompt level is not action omission; the transferable part is the guarantee, not the mechanism.'
+  notes: >-
+    Expansion of intake-2652 via arXiv API search on certified cache reuse. Included for the correctness standard it
+    sets for any "we safely skipped a call" claim. Stage-1 read is abstract-level only. Note EPYC already has a
+    prefix cache, which is exact, so this is a standards citation rather than an implementation candidate.
+  reader_should_conclude: >-
+    Stage-1 unverified. Cite the error-budget framing only; do not propose semantic caching of prompts without a
+    measured quality cost on our workloads.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.1
+    quote: However, we observe that static thresholds do not give formal correctness guarantees, result in unexpected error rates, and lead to suboptimal cache hit rates.
+    quote_sha256: 9ef2283712b031fe50ce5fa7d4fb7196c4eb47869504c4c7edc5f74e43eb429b
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.1
+    quote: It employs an online learning algorithm to estimate an optimal threshold for each cached prompt, enabling reliable cache responses without additional training.
+    quote_sha256: 518f6176f395a51cdda80f9d1327258d4af850531663a90b57040f7cc3cd66d4
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: p.6
+    quote: Note that these parameters belong to a specific embedding in the cache (specifically $\mathrm{nn}(x)$
+    quote_sha256: 637d997118bc78c14719e55788b3634a3c402a66476f8253e8b6b37fbcdfa843
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.5 Definition 4.1
+    quote: An error-rate guarantee of $\delta$ for vCache implies that the marginal probability of vCache returning the correct answer, given any arbitrary prompt $x$ , is lower bounded by
+    quote_sha256: 7f026a1291ab62c22672430d2f9bad496a45cadc63a1138aeb9ae4c6ee9d76a7
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: p.5
+    quote: Since generating a label requires an LLM inference, equivalent in cost to not using a cache, vCache minimizes such inferences
+    quote_sha256: ff6cfce0c0c7f055de13cc06af3c955b2ad1bbf112c719d3dad5a152b9d358cf
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.10 §5
+    quote: On SemCacheLMArena, it achieves up to 26x lower error, 12.5x higher hit rates, and reduced latency.
+    quote_sha256: b4fd6a6469daf8d6a171ec88fcdb3a19fca4627b95f29f04f7af26a1c68a0f24
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.21 F.2
+    quote: vCache attains up to $12.5\times$ higher cache hit rates than the best static-threshold configuration while still satisfying the user-defined error bound.
+    quote_sha256: 058d8d6ca1e1d19082dea8b1de53a283d273c8f7410d93225536f5c03203eec1
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: p.21 F.3
+    quote: At matched latency, vCache achieves up to $26\times$ lower error than the best static configuration.
+    quote_sha256: 678c5723d5872f59ec1be8253afe4acf32a22a03e55851acc055e956d0068b18
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.7 Theorem 4.1
+    quote: executed in an online manner in accordance with Algorithm 2, is guaranteed to be greator than $1-\delta$
+    quote_sha256: 5ab0126726af48845ebf8110f0e6fb85a0bbeca32cf97e6c6005dbffc207b8ee
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.18
+    quote: we only use confidence intervals for $t$
+    quote_sha256: ce33d6c2324c32651f3d47e970152f4e91a7755a31054cb86ba9e17641fbda7f
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: p.18
+    quote: we can use the confidence intervals by assuming a uniform prior on $t^{*}$ and $\gamma^{*}$
+    quote_sha256: ef0c4193f1d22b4a94b703544d45ea4fd74b0c524d1cad94c4cc70b4d806faca
+    source_revision: arXiv:2502.03771v5
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Confirmed at mechanism level: a per-cached-entry sigmoid fit by online MLE, versus static thresholds that carry no guarantee (Table 3 labels only LD3/vCache as providing guarantees). Precision: the guarantee is produced by the threshold PLUS a randomized exploration draw, so ''learned threshold'' is necessary but not sufficient.'
+  - claim_index: 1
+    effect: overturned
+    note: The error budget attaches to the CACHE, not to the skip. Definition 4.1 bounds the marginal probability that the cache returns a correct answer and pays for it by exploring (running the full call with probability tau); no per-skip false-positive bound exists. The paper's own Table 2 arithmetic (delta=0.01, 18.1% hit, 0.4% total error) implies about 2.2% of cache-served answers were wrong, i.e. per-hit error is roughly delta/hit-rate.
+  - claim_index: 2
+    effect: overturned
+    note: 'Numbers are verbatim but the joint attribution is wrong: 12.5x is SemCacheCombo (F.2) and 26x is SemCacheLMArena (F.3); section 5 merges both onto LMArena, contradicting F.2, and they are different points on a Pareto frontier. No single configuration delivers both. Weaker reported operating points: 18.1-40.2% hit at 0.4-1.4% error, and vCache is more conservative than baselines below a 1.5% bound.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'The guarantee is a per-prompt marginal expected-correctness bound conditional on the observed prompt set, not a per-skip false-positive rate and not a high-probability statement over the data distribution. Assumptions: i.i.d. prompts and a correctly specified sigmoid family. The implementation does not meet the proof''s own premise: Lemma C.2 needs a joint band on (t, gamma) but only t gets a band and gamma is plugged in at its point estimate, and the band is a flat-prior credible interval presented as a confidence interval. Calibration is label-starved: the best-labelled entries had 42 and 33 observations after 60,000 prompts.'
+  dive_corrections: >-
+    2026-11-06 Stage-2 dive (read_depth FULL; arXiv 2502.03771v5, ICLR 2026, 28 pages). Claim 1 confirmed; claim 2 OVERTURNED (the budget is on the cache's aggregate output, not on the skip - the guarantee is bought by exploring, i.e. by sometimes NOT skipping, so per-hit error is roughly delta/hit-rate: about 2.2% at delta=0.01 in their own table); claim 3 OVERTURNED as a joint attribution (12.5x is SemCacheCombo, 26x is SemCacheLMArena, and section 5 merges them while F.2 contradicts it); claim 4 narrowed (a marginal bound conditional on the observed prompt set, with an implementation that uses a 1-D band with gamma pinned and a flat-prior credible interval presented as confidence). The guarantee is label-hungry: the best-labelled entries had 42 and 33 observations after 60,000 prompts, and at n->0 the method explores and caches nothing. Applicability to EPYC: exact prefix caching satisfies the guarantee trivially and needs none of this; prompt-semantic caching is the applicable case; action omission cannot inherit it because an omitted call has no counterfactual label.
+  handoffs_updated: []
+  handoffs_created: []
+  ingested_date: '2026-11-06'
+  expanded_from: intake-2652
