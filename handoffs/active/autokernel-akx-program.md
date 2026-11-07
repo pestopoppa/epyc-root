@@ -1390,6 +1390,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     `d6b1a5ac` (not on research main), pending re-review (AKX-ALL-15b).
   - *(2026-11-07, operator-adhoc-ops-20261105.)* STATE: protocol written, `docs/guides/agent-workflows/mi210-window-protocol.md`; the manual cycle itself is not run. Box stays open: needs one real window with receipts.
   - [ ] **AKX-ALL-15a — arm the GPU-window watchdog (review F2) after today's :8083 restore.** (filed 2026-10-04,
+    - 2026-11-07: watchdog status reports `holder=production, verdict ok` every minute while the production stack has been deliberately DOWN since 2026-10-27 23:44Z (`orchestrator_stack.py stop server_8083`). Liveness is not checked, so the status is stale-true. Before ticking: watchdog must verify the holder is actually alive (pid + :8083 health) and report holder=none/down otherwise. [no-belief: not-a-result]
     - Owner: Pipeline Management (routed by AutoKernel; AK supplies requirements). Action: ROUTE:Pipeline Management. Next: Arm watchdog; verify against :8083 restore Evidence: Dispatcher/watchdog plumbing (AUDIT.md:151) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
     workspace-ec) Install `scripts/server/gpu_window_watchdog.cron` in the host crontab (`* * * * *` +
     `@reboot sleep 90`). Done when a tick is seen writing `mi210.json.executor-status.json` after the restore and
