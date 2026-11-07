@@ -215,18 +215,46 @@ def test_max_file_mib_default_override_cap():
     assert jf.max_file_mib({"max_file_mib": 10 ** 9}, {}) == 8192
 
 
-def test_size_limit_enforced_and_diagnosed(tmp_path, capfd):
+def _run_exec(argv, dirs, **env):
+    """Run jf._exec in a child interpreter (it execs and never returns)."""
+    prog = "import sys,json,job_fence as j;j._exec(json.loads(sys.argv[1]),dict(__import__('os').environ),json.loads(sys.argv[2]))"
+    import json
+    return subprocess.run([sys.executable, "-c", prog, json.dumps(argv), json.dumps(dirs)], cwd=str(HERE.parent),
+                          env=dict(os.environ, **env), capture_output=True, text=True)
+
+
+def test_size_limit_enforced_and_summarised(tmp_path):
     out = tmp_path / "o"; out.mkdir()
     code = f"import signal;signal.signal(signal.SIGXFSZ,signal.SIG_DFL);open({str(out / 'big')!r},'wb').write(b'x'*(3*1024*1024))"
-    rc = jf._exec([sys.executable, "-c", code], dict(os.environ, MAX_FILE_MIB="1"), [str(out)])
-    assert rc == 128 + 25
-    assert "job_fence: file size limit 1 MiB hit; set max_file_mib" in capfd.readouterr().err
-    rc = jf._exec([sys.executable, "-c", code], dict(os.environ, MAX_FILE_MIB="8"), [str(out)])
-    assert rc == 0
+    r = _run_exec([sys.executable, "-c", code], [str(out)], MAX_FILE_MIB="1")
+    assert r.returncode == -25
+    assert "file size limit 1 MiB" in r.stderr and "set max_file_mib" in r.stderr and "EACCES or SIGXFSZ" in r.stderr
+    assert _run_exec([sys.executable, "-c", code], [str(out)], MAX_FILE_MIB="8").returncode == 0
 
 
-def test_eacces_abort_diagnosed(tmp_path, capfd):
-    code = "import sys,os;sys.stderr.write('Permission denied\\n');sys.stderr.flush();os.abort()"
-    rc = jf._exec([sys.executable, "-c", code], dict(os.environ), ["/d1", "/d2"])
-    assert rc == 128 + 6
-    assert "job_fence: write fence allows /d1, /d2; a denied path ends the job" in capfd.readouterr().err
+def test_summary_lists_dirs():
+    r = _run_exec([sys.executable, "-c", "pass"], ["/d1", "/d2"])
+    assert "write fence allows /d1, /d2" in r.stderr and r.stderr.count("job_fence:") == 1
+
+
+def test_exec_keeps_pid_and_exports_job_fence_pid(tmp_path):
+    """Regression (27d2c704e forked): the fenced job's pid must equal the fence's Popen pid."""
+    pidfile = tmp_path / "pid"
+    code = f"import os;open({str(pidfile)!r},'w').write(f\"{{os.getpid()}} {{os.environ['JOB_FENCE_PID']}} {{os.getpgrp()}}\")"
+    prog = "import sys,json,job_fence as j;j._exec(json.loads(sys.argv[1]),dict(__import__('os').environ),[])"
+    import json
+    p = subprocess.Popen([sys.executable, "-c", prog, json.dumps([sys.executable, "-c", code])], cwd=str(HERE.parent),
+                         stderr=subprocess.DEVNULL, start_new_session=True)
+    assert p.wait() == 0
+    pid, envpid, pgrp = map(int, pidfile.read_text().split())
+    assert pid == p.pid == envpid and pgrp == p.pid
+
+
+@pytest.mark.skipif(not _landlock(), reason="Landlock ABI < 3")
+def test_fence_cli_job_pid_is_popen_pid(tmp_path):
+    out = tmp_path / "o"; out.mkdir()
+    code = f"import os;open({str(out / 'pid')!r},'w').write(str(os.getpid()))"
+    p = subprocess.Popen([sys.executable, str(MOD), "fence", str(out), "--", sys.executable, "-I", "-c", code],
+                         stderr=subprocess.DEVNULL)
+    assert p.wait() == 0
+    assert int((out / "pid").read_text()) == p.pid

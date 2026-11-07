@@ -25,7 +25,6 @@ import json
 import os
 import resource
 import shutil
-import signal
 import sys
 import time
 from pathlib import Path
@@ -144,41 +143,21 @@ def max_file_mib(spec=None, env=None):
     return max(1, min(v, MAX_FILE_MIB_CEILING))
 
 
-def diagnose(rc_signal, saw_eacces, mib, dirs, err=None):
-    """Print the one-line diagnostics. rc_signal: signal that ended the child (or None)."""
-    err = err or sys.stderr
-    if rc_signal == signal.SIGXFSZ:
-        print(f"job_fence: file size limit {mib} MiB hit; set max_file_mib", file=err)
-    elif saw_eacces and (rc_signal == signal.SIGABRT or rc_signal is None):
-        print(f"job_fence: write fence allows {', '.join(dirs)}; a denied path ends the job", file=err)
+def summary_line(mib, dirs):
+    return (f"job_fence: write fence allows {', '.join(dirs)}; file size limit {mib} MiB; "
+            f"EACCES or SIGXFSZ means the fence denied it (set max_file_mib for size)")
 
 
 def _exec(argv, env, dirs=(), spec=None):
-    """Run argv under RLIMIT_FSIZE; wait, relay stderr, print fence diagnostics, return the child's rc."""
+    """Print the fence summary once, set RLIMIT_FSIZE, then EXEC argv: the job KEEPS this pid (and process group).
+    PID identity is load-bearing: rows prove ownership of the server by Popen pid (socket inodes in /proc/<pid>/fd,
+    own-PID KFD, /proc/<pid>/maps). Never fork/wait here. No post-exit message: nothing survives the exec.
+    JOB_FENCE_PID (== the fence pid == the job pid) is exported in the job env."""
     mib = max_file_mib(spec, env)
-    r, w = os.pipe()
-    pid = os.fork()
-    if pid == 0:
-        os.close(r)
-        os.dup2(w, 2)
-        os.close(w)
-        resource.setrlimit(resource.RLIMIT_FSIZE, (mib * MIB, mib * MIB))
-        os.execve(argv[0], argv, env)
-    os.close(w)
-    saw = False
-    while True:
-        chunk = os.read(r, 65536)
-        if not chunk:
-            break
-        saw = saw or b"Permission denied" in chunk or b"EACCES" in chunk
-        os.write(2, chunk)
-    os.close(r)
-    _, status = os.waitpid(pid, 0)
-    sig = os.WTERMSIG(status) if os.WIFSIGNALED(status) else None
-    rc = 128 + sig if sig else os.WEXITSTATUS(status)
-    if rc != 0:
-        diagnose(sig, saw, mib, dirs)
-    return rc
+    print(summary_line(mib, [str(d) for d in dirs]), file=sys.stderr, flush=True)
+    resource.setrlimit(resource.RLIMIT_FSIZE, (mib * MIB, mib * MIB))
+    env = dict(env, JOB_FENCE_PID=str(os.getpid()))
+    os.execve(argv[0], argv, env)
 
 
 def _split(args):
