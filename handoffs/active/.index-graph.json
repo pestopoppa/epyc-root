@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T08:26:54Z",
+  "generated_at": "2026-11-07T09:06:14Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1369,15 +1369,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 787,
-      "dispatchable": 134,
+      "closed": 788,
+      "dispatchable": 133,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
       "next_action": "C7r is champion (`62cb6a6af`); AK-ASM program decided (H8b dropped E2E, FA r5 keep in C7r); next: GDN-SHARE-1 MI210 to pick the C8 target",
-      "open": 135,
+      "open": 134,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1414,7 +1414,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 37,
+          "dispatchable": 36,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1423,14 +1423,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 38,
+          "open": 37,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5913,
+          "line": 5914,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1439,7 +1439,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5993,
+          "line": 5994,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1458,7 +1458,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6290,
+          "line": 6291,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1475,7 +1475,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9505,
+          "line": 9506,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1488,7 +1488,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13855,
+          "line": 13856,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1522,7 +1522,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14067,
+          "line": 14068,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1917,7 +1917,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-07",
-      "next_action": "Re-plan YARN-128K-MI210 (128K items off CPU quarters); extension arms; optional YARN-AGG-1f power",
+      "next_action": "Fit DFlash2 draft at 512k (GPU 52.55>52 GiB; C7 server lacks -cd); run YARN-NATIVE-WINDOW-GATE",
       "open": 33,
       "priority": 0.8786,
       "priority_basis": {
