@@ -143,9 +143,10 @@ Each Codex worker reads ONE generated file, `compute-flags/BACKLOG-<worker>.md` 
 1. **Read the bins.** `region-lock status` (claims), `rocm-smi --showuse --showmemuse` (a held
    gpu-quiet at 0 % use is idle, not busy), `MemAvailable`, open `grants/*.grant`, live writer pids.
    Real utilisation, never the lock table alone.
-2. **Read the items.** `scripts/queue_status.py` (this skill) prints COMPLETE / RUNNING / BOOKED /
-   ARMED-UNBOOKED / BACKLOG per owner from FILLERS.md, the grants dir and the live writers. Only
-   ARMED-UNBOOKED rows are placeable. An ARMED-UNBOOKED row that cannot actually run (fix not
+2. **Read the items.** `scripts/queue_status.py` (this skill) prints RUNNING / GRANTABLE-QUEUED /
+   SMOKE-QUEUED-FAILED / PARKED-BLOCKED / IDLE (keeper IDLE-WHY) / UNFILED-ENDED from the live rowflow state
+   (`ready/`, `grants/`, `dryrun/`, `filing-done/`, keeper log); FILLERS.md is retired and not read. Only
+   GRANTABLE rows are placeable, and ended rows are not backlog. An ARMED-UNBOOKED row that cannot actually run (fix not
    pinned, held by a writer, decision pending) is a defect: demote it to BACKLOG now. Every
    BACKLOG row blocked on code gets a subagent (or a Codex assignment) **this turn**; unwritten code is never a recorded blocker, and a cleared blocker is armed and requested
    in the same turn as it clears.
@@ -357,7 +358,7 @@ CRITICAL PATH: <the chain whose last end is latest> → ETA <HH:MM>Z <date>; sla
 RAM ledger next 24 h: peak concurrent GiB per block (never two DS41-class items in one row)
 ```
 
-`scripts/queue_status.py [--owner X] [--json]` produces the first five sections read-only; the
+`scripts/queue_status.py [--owner X] [--json]` produces the first sections read-only (rowflow state, not FILLERS.md); the
 critical path and the RAM ledger come from the writers' chains and the row RAM figures.
 
 Add a `DECISIONS` line to the report: `python3 scripts/handoffs/verdict_count.py` (read-only) prints the DECIDED / RAN-NO-VERDICT / RAN-FAILED-ONLY / NEVER-RUN class counts and decisions per day, so the operator sees decisions/week (last 7 d vs prior 7 d), not only runs; `--json OUT` writes the full per-row table.

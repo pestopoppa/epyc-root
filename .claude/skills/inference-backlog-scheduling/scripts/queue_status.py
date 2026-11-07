@@ -1,28 +1,21 @@
 #!/usr/bin/env python3
-"""queue_status.py -- read-only COMPLETE / RUNNING / BOOKED / ARMED-UNBOOKED / BACKLOG overview.
+"""queue_status.py -- read-only live rowflow overview (ready/ manifests, grants, dryrun states, filing, keeper log).
 
-Classifies every row of the shared compute queue (FILLERS.md) from three read-only sources:
-the table itself, the grants dir (<id>.grant / .ended / .complete) and the live grant writers
-(compute-flags/grant-*.pid whose process is alive; the matching .sh is scanned for step ids).
+    queue_status.py [--flags DIR] [--owner SUBSTR] [--json]
 
-    queue_status.py [--flags DIR] [--validator PATH] [--owner SUBSTR] [--json]
+Sources (all under compute-flags, FILLERS.md is retired and never read):
+    ready/<id>.json (epyc.row.v3; *.withdrawn* names ignored)   grants/<id>.grant|.ended|.complete
+    dryrun/<id>/{PASS.json,FAIL-N.json,SMOKE-QUEUED.json,GPU-SMOKE-QUEUED.json,UNPARK.json}
+    filing-done/<id>.FILED                                      ws58-calendar-keeper.log (latest SNAPSHOT + IDLE-WHY)
 
-Buckets (first match wins):
-    COMPLETE        status COMPLETE/CANCELLED, or grants/<id>.complete exists
-    RUNNING         grants/<id>.grant exists (the window as written; the launcher may still be polling)
-    BOOKED          named as a step in a LIVE writer script, not yet granted
-    ARMED-UNBOOKED  status ARMED, ready=y, launcher pid alive -> placeable now
-    STALE-ARMED     status ARMED but the launcher pid is dead or missing (the validator refuses it)
-    BACKLOG         everything else; prints blocker=<kind> from notes
-
-Zero compute, stdlib only, never writes. Reuses parse_table()/launcher_pid()/proc_pid_alive() from
-scripts/coordination/validate_fillers.py (root repo) so the row schema has one owner.
-Exit 0; 3 when the table cannot be parsed.
+Sections: RUNNING, GRANTABLE/QUEUED, SMOKE-QUEUED/FAILED, PARKED/BLOCKED, IDLE, UNFILED-ENDED (count).
+A row that ended/completed is DONE and appears nowhere except the UNFILED-ENDED count (when not yet FILED).
+Zero compute, stdlib only, never writes. Exit 0.
 """
 from __future__ import annotations
 
 import argparse
-import importlib.util
+import glob
 import json
 import os
 import re
@@ -30,61 +23,26 @@ import sys
 from datetime import datetime, timezone
 
 DEFAULT_FLAGS = "/mnt/raid0/llm/tmp/compute-flags"
-VALIDATOR_CANDIDATES = (
-    "/workspace/scripts/coordination/validate_fillers.py",
-    os.path.join(DEFAULT_FLAGS, "validate_fillers.py"),
-)
-STEP_RE = re.compile(r"\bstep\s+([A-Za-z0-9][\w.-]*)\s")
-QUOTED_STEP_RE = re.compile(r'"([A-Za-z0-9][\w.-]*)\s+(?:\d+|ROW)\s+\d+\s+\d+\s+\d+"')
-ID_EQ_RE = re.compile(r"\bID=([A-Za-z0-9][\w.-]*)")
-GRANT_OK_RE = re.compile(r"grant_ok\.sh\s+([A-Za-z0-9][\w.-]*)\s")
-GRANT_FILE_RE = re.compile(r"/([A-Za-z0-9][\w.-]*)\.grant\b")
+KEEPER_LOG = "ws58-calendar-keeper.log"
+MAX_FAILS = 3
 GRANT_RE = re.compile(r"regions=(\S+)\s+start=(\S+)\s+end=(\S+)")
-BLOCKER_RE = re.compile(r"blocker\s*[=:]\s*([^;|]+)", re.I)
+LOG_TAIL_BYTES = 400_000
 
 
-def load_validator(path: str | None):
-    for p in ([path] if path else VALIDATOR_CANDIDATES):
-        if p and os.path.exists(p):
-            spec = importlib.util.spec_from_file_location("validate_fillers", p)
-            mod = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)  # type: ignore[union-attr]
-            return mod
-    sys.exit("validate_fillers.py not found (pass --validator)")
+def _load(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return None
 
 
-def pid_alive(pid: int) -> bool:
-    return os.path.exists(f"/proc/{pid}")
-
-
-def live_writers(flags: str) -> dict[str, set[str]]:
-    """{writer-name: {ids it can grant}} for every grant-*.pid whose process is alive."""
-    out: dict[str, set[str]] = {}
-    for fn in sorted(os.listdir(flags)):
-        if not (fn.startswith("grant-") and fn.endswith(".pid")):
-            continue
-        try:
-            pid = int(open(os.path.join(flags, fn)).read().strip())
-        except (OSError, ValueError):
-            continue
-        if not pid_alive(pid):
-            continue
-        base = fn[:-4]
-        # the .pid is written by whichever version is live; find the newest .sh that writes this .pid
-        cands = [f for f in os.listdir(flags)
-                 if f.startswith(base) and f.endswith(".sh")]
-        ids: set[str] = set()
-        for sh in cands:
-            try:
-                txt = open(os.path.join(flags, sh)).read()
-            except OSError:
-                continue
-            if f"{base}.pid" not in txt:
-                continue
-            for rx in (STEP_RE, QUOTED_STEP_RE, ID_EQ_RE, GRANT_OK_RE, GRANT_FILE_RE):
-                ids |= {i for i in rx.findall(txt) if i not in ("id", "ID", "*")}
-        out[f"{base} pid={pid}"] = ids
-    return out
+def _read(path):
+    try:
+        with open(path, errors="replace") as f:
+            return f.read()
+    except OSError:
+        return ""
 
 
 def _hostutil():
@@ -120,108 +78,165 @@ def _grant_covers(regions: str, q: str) -> bool:
     return want <= have
 
 
+def keeper_state(flags):
+    """Latest SNAPSHOT line (parsed) and the IDLE-WHY lines stamped with the latest tick."""
+    p = os.path.join(flags, KEEPER_LOG)
+    try:
+        with open(p, "rb") as f:
+            f.seek(0, 2)
+            f.seek(max(0, f.tell() - LOG_TAIL_BYTES))
+            lines = f.read().decode("utf-8", "replace").splitlines()
+    except OSError:
+        return {"snapshot": None, "snapshot_at": None, "idle_why": {}}
+    snap = at = None
+    tail = lines
+    for i in range(len(lines) - 1, -1, -1):
+        if " SNAPSHOT " in lines[i]:
+            snap, at = lines[i], lines[i].split()[0]
+            break
+    idle = {}
+    for ln in tail:
+        m = re.match(r"(\S+)\s+IDLE-WHY\s+(\S+?):\s*(.*)", ln)
+        if m and (at is None or m.group(1)[:19] >= at[:19]):
+            idle[m.group(2)] = m.group(3)
+    parsed = {}
+    if snap:
+        for k in ("free", "busy"):
+            m = re.search(rf"\b{k}=(\S*)", snap)
+            parsed[k] = [t for t in (m.group(1).split(",") if m else []) if t]
+    return {"snapshot": snap, "snapshot_at": at, "parsed": parsed, "idle_why": idle}
+
+
+def _wants_gpu(m):
+    blob = " ".join(str(m.get(k, "")) for k in ("shape", "declared_shape", "lane", "regions"))
+    return any(t in blob for t in ("gpu", "mi210"))
+
+
+def classify(flags, owner=None, now=None):
+    now = now or datetime.now(timezone.utc)
+    G = os.path.join(flags, "grants")
+    out = {k: [] for k in ("RUNNING", "GRANTABLE", "SMOKE-QUEUED", "FAILED", "PARKED", "BLOCKED")}
+    keeper = keeper_state(flags)
+    busy = keeper.get("parsed", {}).get("busy", [])
+    gpu_busy = [b for b in busy if b.startswith("gpu")]
+    unfiled = 0
+    for mp in sorted(glob.glob(os.path.join(flags, "ready", "*.json"))):
+        m = _load(mp)
+        if not isinstance(m, dict) or not m.get("id"):
+            continue
+        rid = m["id"]
+        if owner and owner.lower() not in str(m.get("owner", "")).lower():
+            continue
+        done = os.path.exists(os.path.join(G, rid + ".ended")) or os.path.exists(os.path.join(G, rid + ".complete"))
+        if done:
+            if not os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
+                unfiled += 1
+            continue
+        rec = {"id": rid, "owner": m.get("owner"), "shape": m.get("shape") or m.get("declared_shape"),
+               "rank": m.get("priority_rank"), "regions": m.get("regions"), "handoff_task": m.get("handoff_task")}
+        gp = os.path.join(G, rid + ".grant")
+        if os.path.exists(gp):
+            g = GRANT_RE.search(_read(gp))
+            if g:
+                rec.update(regions=g.group(1), start=g.group(2), end=g.group(3))
+                try:
+                    e = datetime.strptime(g.group(3), "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
+                    rec["ends_in_min"] = round((e - now).total_seconds() / 60)
+                except ValueError:
+                    pass
+            out["RUNNING"].append(rec)
+            continue
+        dd = os.path.join(flags, "dryrun", rid)
+        stop = m.get("stop_file")
+        if stop and os.path.exists(stop):
+            rec["reason"] = f"stop file exists: {stop}"
+            out["BLOCKED"].append(rec)
+            continue
+        fails = sorted(glob.glob(os.path.join(dd, "FAIL-*.json")),
+                       key=lambda p: int(re.search(r"FAIL-(\d+)\.json$", p).group(1)))
+        passed = os.path.exists(os.path.join(dd, "PASS.json"))
+        if passed:
+            rec["gpu_wait"] = (f"waiting on GPU ({', '.join(gpu_busy)})" if gpu_busy else None) if _wants_gpu(m) else None
+            out["GRANTABLE"].append(rec)
+            continue
+        queued = next((p for p in (os.path.join(dd, "SMOKE-QUEUED.json"), os.path.join(dd, "GPU-SMOKE-QUEUED.json"))
+                       if os.path.exists(p)), None)
+        if queued:
+            q = _load(queued) or {}
+            rec["reason"] = (f"{os.path.basename(queued)} queued_at={q.get('queued_at')}"
+                             + (" (waiting on GPU)" if "GPU" in queued else ""))
+            out["SMOKE-QUEUED"].append(rec)
+            continue
+        if fails:
+            last = _load(fails[-1]) or {}
+            rec["fails"] = len(fails)
+            rec["reason"] = str(last.get("reason") or last.get("fix_task") or "(no reason recorded)")[:160]
+            unparked = os.path.exists(os.path.join(dd, "UNPARK.json"))
+            out["PARKED" if len(fails) >= MAX_FAILS and not unparked else "FAILED"].append(rec)
+            continue
+        rec["reason"] = "no dry run yet (needs-dryrun)"
+        out["SMOKE-QUEUED"].append(rec)
+    out["UNFILED-ENDED"] = unfiled
+    out["keeper"] = keeper
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--flags", default=DEFAULT_FLAGS)
-    ap.add_argument("--validator")
-    ap.add_argument("--owner", help="substring filter on the owner column")
+    ap.add_argument("--owner", help="substring filter on the owner field")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
-    vf = load_validator(a.validator)
-    flags, grants = a.flags, os.path.join(a.flags, "grants")
-    try:
-        col, rows, _ = vf.parse_table(open(os.path.join(flags, "FILLERS.md")).read())
-    except (OSError, vf.Malformed) as e:
-        print(f"MALFORMED: {e}", file=sys.stderr)
-        return 3
-    writers = live_writers(flags)
-    booked_by: dict[str, str] = {}
-    for w, ids in writers.items():
-        for i in ids:
-            booked_by.setdefault(i, w)
     now = datetime.now(timezone.utc)
-    buckets: dict[str, list[dict]] = {k: [] for k in
-                                      ("COMPLETE", "RUNNING", "BOOKED", "ARMED-UNBOOKED", "STALE-ARMED", "BACKLOG")}
-    for _, cells in rows:
-        g = lambda n: cells[col[n]]  # noqa: E731
-        rid, owner = g("filler-id"), g("owner")
-        if a.owner and a.owner.lower() not in owner.lower():
-            continue
-        status = (g("status").split() or [""])[0]
-        rec = {"id": rid, "owner": owner.split("(")[0].strip()[:40], "status": status,
-               "resources": g("resources")[:60], "min_window": g("min window"), "ram_gib": g("max private ram"),
-               "class": g("class")}
-        gpath, cpath = os.path.join(grants, rid + ".grant"), os.path.join(grants, rid + ".complete")
-        if status in vf.TERMINAL or os.path.exists(cpath):
-            epath = os.path.join(grants, rid + ".ended")
-            if os.path.exists(epath):
-                rec["ended"] = open(epath).read().strip()[:80]
-            buckets["COMPLETE"].append(rec)
-            continue
-        if os.path.exists(gpath):
-            m = GRANT_RE.search(open(gpath).read())
-            if m:
-                rec.update(regions=m.group(1), start=m.group(2), end=m.group(3))
-                try:
-                    end = datetime.strptime(m.group(3), "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc)
-                    rec["ends_in_min"] = round((end - now).total_seconds() / 60)
-                except ValueError:
-                    pass
-            buckets["RUNNING"].append(rec)
-            continue
-        if rid in booked_by:
-            rec["writer"] = booked_by[rid]
-            buckets["BOOKED"].append(rec)
-            continue
-        pid = vf.launcher_pid(cells, col)
-        alive = pid is not None and vf.proc_pid_alive(pid, [rid, f"{rid}.grant"])
-        if status == "ARMED" and g("ready y/n").strip() == "y" and alive:
-            rec["pid"] = pid
-            buckets["ARMED-UNBOOKED"].append(rec)
-            continue
-        if status == "ARMED":
-            rec["pid"] = pid
-            buckets["STALE-ARMED"].append(rec)
-            continue
-        m = BLOCKER_RE.search(g("notes"))
-        rec["blocker"] = m.group(1).strip()[:90] if m else "(none stated)"
-        buckets["BACKLOG"].append(rec)
-
+    r = classify(a.flags, a.owner, now)
     util = measure_util()
     hu = _hostutil() if util else None
-    for r in buckets["RUNNING"]:   # measured, beside the grant: a grant file is never reported as work
-        if util and r.get("regions"):
-            toks = [t for t in ("q0", "q1", "q2", "q3") if _grant_covers(r["regions"], t)]
-            if "mi210" in r["regions"] or "gpu" in r["regions"]:
+    for x in r["RUNNING"]:   # measured beside the grant: a grant file is never reported as work
+        if util and x.get("regions"):
+            toks = [t for t in ("q0", "q1", "q2", "q3") if _grant_covers(x["regions"], t)]
+            if "mi210" in x["regions"] or "gpu" in x["regions"]:
                 toks.append("gpu-quiet")
-            r["util"] = hu.regions_pct(util, toks)
+            x["util"] = hu.regions_pct(util, toks)
             idle = hu.idle_regions(util, toks)
             if idle:
-                r["idle_held"] = idle
+                x["idle_held"] = idle
     if a.json:
-        json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "writers": {k: sorted(v) for k, v in writers.items()},
-                   "buckets": buckets}, sys.stdout, indent=1)
+        # compatible field set: as_of, util, buckets (RUNNING/BACKLOG keys kept; BACKLOG = GRANTABLE for old readers)
+        buckets = {"RUNNING": r["RUNNING"], "GRANTABLE": r["GRANTABLE"], "ARMED-UNBOOKED": r["GRANTABLE"],
+                   "BACKLOG": r["SMOKE-QUEUED"] + r["FAILED"] + r["PARKED"] + r["BLOCKED"],
+                   "SMOKE-QUEUED": r["SMOKE-QUEUED"], "FAILED": r["FAILED"], "PARKED": r["PARKED"],
+                   "BLOCKED": r["BLOCKED"]}
+        json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "buckets": buckets,
+                   "idle": r["keeper"]["idle_why"], "snapshot": r["keeper"]["snapshot"],
+                   "unfiled_ended": r["UNFILED-ENDED"]}, sys.stdout, indent=1)
         print()
         return 0
-    print(f"QUEUE STATUS {now.strftime('%H:%M')}Z {now.date()}  (read-only; {len(rows)} rows; "
-          f"{len(writers)} live writers)")
+    print(f"QUEUE STATUS {now.strftime('%H:%M')}Z {now.date()}  (read-only; rowflow state in {a.flags})")
     print(hu.line(util) if util else "util: unavailable (hostutil could not read /proc/stat or sysfs)")
-    for name, recs in buckets.items():
-        print(f"\n{name} ({len(recs)})")
-        for r in sorted(recs, key=lambda r: (r['owner'], r['id'])):
-            extra = {
-                "COMPLETE": r.get("ended", ""),
-                "RUNNING": f"{r.get('regions','?')} {r.get('start','?')}->{r.get('end','?')} ({r.get('ends_in_min','?')} min left)"
-                           + (" measured " + " ".join(f"{k}={'?' if v is None else f'{v:.0f}%'}" for k, v in r["util"].items()) if r.get("util") else "")
-                           + (f" IDLE-HELD {','.join(r['idle_held'])}" if r.get("idle_held") else ""),
-                "BOOKED": f"in {r.get('writer')}",
-                "ARMED-UNBOOKED": f"{r['resources']} | min {r['min_window']} | {r['ram_gib']} GiB | {r['class']}",
-                "STALE-ARMED": f"launcher pid={r.get('pid')} dead/absent -> fix the row",
-                "BACKLOG": f"blocker={r.get('blocker')}",
-            }[name]
-            print(f"  {r['owner']:<22} {r['id']:<40} {extra}")
-    print("\nLIVE WRITERS: " + (", ".join(writers) or "none"))
-    print("Next: fill IDLE NOW, CRITICAL PATH and the RAM ledger by hand (SKILL.md section 6).")
+    ow = lambda x: str(x.get("owner") or "?")[:18]  # noqa: E731
+    print(f"\nRUNNING ({len(r['RUNNING'])})")
+    for x in sorted(r["RUNNING"], key=lambda x: x["id"]):
+        print(f"  {ow(x):<18} {x['id']:<44} {x.get('regions','?')} until {x.get('end','?')} ({x.get('ends_in_min','?')} min left)"
+              + (" measured " + " ".join(f"{k}={'?' if v is None else f'{v:.0f}%'}" for k, v in x["util"].items()) if x.get("util") else "")
+              + (f" IDLE-HELD {','.join(x['idle_held'])}" if x.get("idle_held") else ""))
+    print(f"\nGRANTABLE/QUEUED ({len(r['GRANTABLE'])})  (dry run PASSED, waiting for a keeper placement)")
+    for x in sorted(r["GRANTABLE"], key=lambda x: (x.get("rank") is None, x.get("rank") or 0, x["id"])):
+        print(f"  {ow(x):<18} {x['id']:<44} shape={x.get('shape')} rank={x.get('rank')}"
+              + (f"\n    GPU: {x['gpu_wait']}" if x.get("gpu_wait") else ""))
+    for title, key in (("SMOKE-QUEUED", "SMOKE-QUEUED"), ("FAILED", "FAILED")):
+        print(f"\n{title} ({len(r[key])})")
+        for x in sorted(r[key], key=lambda x: x["id"]):
+            print(f"  {ow(x):<18} {x['id']:<44} {x.get('reason','')}")
+    print(f"\nPARKED/BLOCKED ({len(r['PARKED']) + len(r['BLOCKED'])})")
+    for x in sorted(r["PARKED"] + r["BLOCKED"], key=lambda x: x["id"]):
+        print(f"  {ow(x):<18} {x['id']:<44} {x.get('reason','')}")
+    k = r["keeper"]
+    print(f"\nIDLE (keeper snapshot {k['snapshot_at'] or 'none'})")
+    for res, why in sorted(k["idle_why"].items()):
+        print(f"  {res:<6} {why}")
+    if not k["idle_why"]:
+        print("  none reported")
+    print(f"\nUNFILED-ENDED: {r['UNFILED-ENDED']}")
     return 0
 
 
