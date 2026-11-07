@@ -914,7 +914,7 @@ def cmd_conclusion_add(args) -> int:
             category=args.category, direction=args.direction, actor=args.actor,
             at=args.at or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             retrofit=args.retrofit, task_id=args.task_id, also=also,
-            raw_paths=args.raw or (),
+            raw_paths=args.raw or (), rev=args.rev, supersedes=args.supersedes,
             mechanism=json.loads(args.mechanism_json) if args.mechanism_json else None)
     except (ValueError, ccm.ProjectionError) as exc:
         print(f"conclusion add refused: {exc}", file=sys.stderr)
@@ -1138,6 +1138,9 @@ def build_parser() -> argparse.ArgumentParser:
     ca.add_argument("--task-id")
     ca.add_argument("--also", action="append", help="secondary anchor path:line (at --ref)")
     ca.add_argument("--raw", action="append", help="raw evidence path (sha256 recorded)")
+    ca.add_argument("--rev", type=int, default=1,
+                    help="revision of this cc_id (a substantive correction mints rev+1)")
+    ca.add_argument("--supersedes", help="cc_id:rev this row replaces (with --rev > 1)")
     ca.add_argument("--actor", required=True)
     ca.add_argument("--at")
     ca.add_argument("--retrofit", action="store_true")

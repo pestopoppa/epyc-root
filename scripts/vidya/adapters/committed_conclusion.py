@@ -313,6 +313,7 @@ def native_rows(path: str | Path, *, repo: Path | None = None) -> list[dict]:
     rows = read_register(Path(path))
     seen: set[tuple[str, int]] = set()
     out: list[dict] = []
+    superseded = {r["supersedes"] for r in rows if r.get("supersedes")}
     for row in rows:
         check_row(row, repo=repo)
         key = (row["cc_id"], row["rev"])
@@ -321,6 +322,8 @@ def native_rows(path: str | Path, *, repo: Path | None = None) -> list[dict]:
         seen.add(key)
         if row["kind"] == "decision" or row.get("covered_by"):
             continue  # recorded, never projected (intent plane / native frames exist)
+        if f"{row['cc_id']}:{row['rev']}" in superseded:
+            continue  # replaced by a corrected rev (supersedes = "cc_id:rev"); kept as history
         metrics = row["stated"].get("metrics") or []
         for k in range(max(1, len(metrics))):
             out.append({"row": row, "k": k})
@@ -407,7 +410,8 @@ def build_row(*, path: str, line: int, ref: str = "origin/main", facet: str = ""
               category: str, direction: str, actor: str, at: str, retrofit: bool,
               task_id: str | None = None, also: Iterable[tuple[str, int]] = (),
               raw_paths: Iterable[str] = (), mechanism: dict | None = None,
-              repo: Path | None = None) -> dict:
+              repo: Path | None = None, rev: int = 1,
+              supersedes: str | None = None) -> dict:
     anchor = resolve_anchor(path, line, ref=ref, repo=repo)
     raw_paths = list(raw_paths)
     raw: dict[str, Any] = {}
@@ -419,12 +423,12 @@ def build_row(*, path: str, line: int, ref: str = "origin/main", facet: str = ""
         raw = {"paths": raw_paths, "status": "present" if all(digests.values()) else "lost",
                "sha256": digests}
     row = {
-        "schema": SCHEMA, "cc_id": cc_id(path, anchor["head_norm"], facet), "rev": 1,
+        "schema": SCHEMA, "cc_id": cc_id(path, anchor["head_norm"], facet), "rev": rev,
         "kind": kind, **({"facet": facet} if facet else {}), "anchor": anchor,
         "also_anchored": [resolve_also(p, n, ref=ref, repo=repo) for p, n in also],
         "task_id": task_id, "stated": stated, "scope": scope, "scope_evidence": scope_evidence,
         "category": category, "metric_direction": direction, "raw_evidence": raw or None,
-        "covered_by": None, "supersedes": None,
+        "covered_by": None, "supersedes": supersedes,
         "confirmed_by": {"actor": actor, "at": at, "method": "agent", "extractor": "hand"},
         "retrofit": retrofit, **({"mechanism": mechanism} if mechanism else {}),
     }
