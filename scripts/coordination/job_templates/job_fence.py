@@ -180,7 +180,8 @@ def fence_main(args):
         raise ValueError("--gpu needs at least one writable dir for the HIP TMPDIR")
     if gpu:
         env["TMPDIR"] = hip_tmpdir(paths[0])
-    apply(paths, gpu=gpu, tmpdir=env.get("TMPDIR"))
+    # /dev/null writable like smoke_main (2026-11-07: torch's import opens it 'r+b'; subprocess.DEVNULL opens it O_RDWR)
+    apply(paths, gpu=gpu, extra=[("/dev/null", WRITE_FILE | TRUNCATE)], tmpdir=env.get("TMPDIR"))
     return _exec(argv, env, paths)
 
 

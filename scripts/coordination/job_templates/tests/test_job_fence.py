@@ -258,3 +258,14 @@ def test_fence_cli_job_pid_is_popen_pid(tmp_path):
                          stderr=subprocess.DEVNULL)
     assert p.wait() == 0
     assert int((out / "pid").read_text()) == p.pid
+
+
+@pytest.mark.skipif(not _landlock(), reason="Landlock ABI < 3")
+def test_fence_allows_dev_null_rw(tmp_path):
+    """2026-11-07: fence_main denied /dev/null O_RDWR (torch's import opens it 'r+b'; subprocess.DEVNULL too)."""
+    out = tmp_path / "out"; out.mkdir()
+    probe = tmp_path / "devnull.py"
+    probe.write_text("import os\nf = open(os.devnull, 'r+b'); f.write(b'x'); f.close(); print('devnull-ok')\n")
+    r = subprocess.run([sys.executable, str(MOD), "fence", str(out), "--", sys.executable, "-I", str(probe)],
+                       capture_output=True, text=True)
+    assert r.returncode == 0 and "devnull-ok" in r.stdout, r.stderr
