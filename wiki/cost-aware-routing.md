@@ -628,3 +628,12 @@ Sources: [scoring-infra-standardization](../handoffs/active/eval-tower-program.m
 - intake-2539#record (Anthropic advisor strategy post): Confirmed as vendor-reported. Worth investigating; related sources were dived as intake-2541#record and inside intake-2540#record.
 - intake-2540#record (Claude Code docs: subagents, hook agent fields, advisor): Advisor doc read in full in wave 2; no further sources surfaced. Adopt-component for subagent and advisor configuration.
 - intake-2541#record (Anthropic doc: Optimizing for cost and intelligence): Full read; the benefit-shrinks-as-executor-approaches-advisor point is supported by two passages, not a curve. Adopt-patterns; surfaced sources declined at the two-wave cap.
+
+## Compiled Update — 2026-11-07 (operator wiki sweep, operator-adhoc-ops-20261105): token doctrine ratified
+
+- **Fan-out is a ceiling, not a floor**: the operator ratified the doctrine lines (7d06fe0a8, a3b0d739e) and the heading (73c15b32b): fan out when the work is parallel, at most 3-5 subagents. The delete-lens audit had shown the old "3-5 always" wording acting as a floor.
+- **Landed (a67569903)**: `token_guards.cfg()` deep-merges registry overrides, the Claude weekly meter feeds the dispatcher (registry `claude_weekly_tokens` 5.5B), the index regenerates once per batch, handoffs declare `model:`/`effort:`, and the dispatcher keeps a preflight restart gate.
+- **Not landed**: audit recommendation 6 (per-row token accounting at filing) and 7 (circuit breaker on rows that fail smoke or arming three times), plus a still-firing triple index regen; all filed as boxes in `engineering-hygiene-backlog.md`.
+
+### Source References (2026-11-07 operator-adhoc-ops-20261105 sweep)
+- `progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md`, `handoffs/active/engineering-hygiene-backlog.md`, `docs/reports/coordination/token-efficiency-audit-20261106.md`
