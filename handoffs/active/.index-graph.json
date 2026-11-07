@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T13:34:25Z",
+  "generated_at": "2026-11-07T13:37:09Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1516,7 +1516,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5953,
+          "line": 5954,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1525,7 +1525,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6033,
+          "line": 6034,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1544,7 +1544,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6330,
+          "line": 6331,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1561,7 +1561,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9545,
+          "line": 9546,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1574,7 +1574,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13895,
+          "line": 13896,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1608,7 +1608,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14107,
+          "line": 14108,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
