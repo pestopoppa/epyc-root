@@ -48,10 +48,28 @@ if [[ "$OPTS" =~ -C[[:space:]]+([^[:space:]]+) ]]; then
 fi
 TARGET=$(realpath -m "$TARGET" 2>/dev/null || echo "$TARGET")
 
+# Resolve the target repository: a linked worktree anywhere shares its main clone's common dir.
+TCOMMON=$(git -C "$TARGET" rev-parse --git-common-dir 2>/dev/null || true)
+if [[ -n "$TCOMMON" ]]; then
+  [[ "$TCOMMON" != /* ]] && TCOMMON="$TARGET/$TCOMMON"
+  TCOMMON=$(realpath -m "$TCOMMON" 2>/dev/null || echo "$TCOMMON")
+fi
+PROT_REPOS=(/workspace /mnt/raid0/llm/epyc-inference-research /mnt/raid0/llm/epyc-orchestrator)
+REPO_HIT=0
+if [[ -n "$TCOMMON" ]]; then
+  for R in "${PROT_REPOS[@]}"; do
+    RC=$(git -C "$R" rev-parse --git-common-dir 2>/dev/null || true)
+    [[ -z "$RC" ]] && continue
+    [[ "$RC" != /* ]] && RC="$R/$RC"
+    RC=$(realpath -m "$RC" 2>/dev/null || echo "$RC")
+    [[ "$TCOMMON" == "$RC" ]] && REPO_HIT=1
+  done
+fi
+
 PROTECTED=(/workspace /mnt/raid0/llm/epyc-inference-research /mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/worktrees)
 for P in "${PROTECTED[@]}"; do
   RP=$(realpath -m "$P" 2>/dev/null || echo "$P")
-  if [[ "$TARGET" == "$P" || "$TARGET" == "$P"/* || "$TARGET" == "$RP" || "$TARGET" == "$RP"/* ]]; then
+  if [[ "$REPO_HIT" == 1 || "$TARGET" == "$P" || "$TARGET" == "$P"/* || "$TARGET" == "$RP" || "$TARGET" == "$RP"/* ]]; then
     {
       echo "BLOCKED: 'git $VERB' in $TARGET."
       echo "Rule (CLAUDE.md, Process Management): worktree prune and gc destroyed all five lanes on"

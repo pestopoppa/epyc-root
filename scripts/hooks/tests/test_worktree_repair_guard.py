@@ -64,3 +64,23 @@ def test_temp_repo_verbs(tmp_path):
     # outside protected paths: hook allows (never executes the real verbs)
     for verb in ["worktree prune", "gc", "maintenance run"]:
         assert run_hook(f"git {verb}", str(repo))[0] == 0
+
+
+def test_blocks_linked_worktree_outside_protected_paths(tmp_path):
+    """Protected clone's linked worktree elsewhere on disk: -C + prune must be refused."""
+    wt = tmp_path / "elsewhere"
+    subprocess.run(["git", "-C", str(ROOT), "worktree", "list"], check=True, capture_output=True)
+    # temp-repo analogue is not protected, so use a real linked worktree of this clone via
+    # `git worktree add` into tmp_path, then remove it.
+    subprocess.run(["git", "-C", str(ROOT), "worktree", "add", "-q", "--detach", str(wt), "HEAD"], check=True)
+    try:
+        for cmd, cwd in [(f"git -C {wt} worktree prune", "/var/empty"), ("git worktree prune", str(wt))]:
+            rc, _ = run_hook(cmd, cwd)
+            assert rc == 2, cmd
+    finally:
+        subprocess.run(["git", "-C", str(ROOT), "worktree", "remove", "--force", str(wt)], check=True)
+
+
+def test_allows_prune_in_unrelated_temp_repo(tmp_path):
+    subprocess.run(["git", "init", "-q", str(tmp_path / "t")], check=True)
+    assert run_hook(f"git -C {tmp_path/'t'} worktree prune", "/var/empty")[0] == 0
