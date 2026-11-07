@@ -336,6 +336,20 @@ def retire_old_verdicts(flags, rid):
         os.replace(p, os.path.join(dst, os.path.basename(p)))
 
 
+def supersede_prior_attempts(flags, rid):
+    """Operator 2026-11-07: publishing <lineage>-rN files every earlier ended-unfiled attempt as SUPERSEDED-BY <rid> and reclaims
+    its scratch (shared-scratch guard + filing-no-reclaim.globs apply); ready/.withdrawn attempts are filed WITHDRAWN. Never raises."""
+    try:
+        for d in (os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "churn"),):
+            if d not in sys.path:
+                sys.path.insert(0, d)
+        import filing
+        return filing.supersede_on_publish(flags, rid)
+    except BaseException as e:  # noqa: BLE001
+        print(f"WARN supersede_prior_attempts {rid}: {type(e).__name__}: {e}")
+        return None
+
+
 def unpublished_path(flags, rid): return os.path.join(rf.dry_dir(flags, rid), "unpublished.json")
 
 
@@ -587,6 +601,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
     retire_old_verdicts(flags, rid)
+    supersede_prior_attempts(flags, rid)
     smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
     if spec.get("lane") == "gpu" and gpu_busy(flags):
         unpublish(flags, rid)

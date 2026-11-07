@@ -122,22 +122,35 @@ def notify(flags, kind, rid, disc, summary, owner, detail, action):
         log(flags, f"WARN notify {kind} {rid}: {type(e).__name__}: {e}")
 
 
-def run_pass(flags, bus_root, dry_run=False, owner_age_s=1800, min_age_s=1200, now=None):
+def run_pass(flags, bus_root, dry_run=False, owner_age_s=1800, min_age_s=1200, now=None, alert_max_age_s=86400):
     now = now or time.time()
     state_path = os.path.join(flags, "filing-autofile.state.json")
     state = load_json(state_path, {})
     queue_path = os.path.join(flags, "filing-owner-less.jsonl")
     queued = {r.get("id") for r in (json.loads(l) for l in open(queue_path) if l.strip())} if os.path.exists(queue_path) else set()
-    report = {"filed": [], "failed": [], "queued": [], "owner_live": [], "skipped": []}
+    report = {"filed": [], "failed": [], "queued": [], "owner_live": [], "skipped": [], "alerted": []}
     for row in due_rows(flags):
         rid = row["id"]
-        if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")) or rid in state or rid in queued:
+        if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
+            continue
+        if rid in state or rid in queued:
+            # already attempted/queued: the owner still gets its single filing-due alert (dedup is notify.emit's marker)
             continue
         mp, m = file_result.load_manifest(flags, rid)
         ep, _rc, _line = file_result.load_end(flags, rid)
         if not m or not ep:
             report["skipped"].append(rid); continue  # file_result.py would refuse (exit 2); the alarm owns these
         rule, owner = m.get("decision_rule"), str(m.get("owner") or "")
+        # filing-due: ONE alert per row to the owner's inbox/bus (notify.emit dedups on kind|row), only for runs that ended
+        # recently enough to still matter and have sat unfiled >= min_age_s; older backlog goes through the janitor sweeps.
+        try:
+            age = now - os.path.getmtime(ep)
+            if not dry_run and min_age_s <= age <= alert_max_age_s and not machine_checkable(rule):
+                import notify as nt
+                nt.filing_due(flags, rid, owner, _line)
+                report["alerted"].append(rid)
+        except Exception as e:  # noqa: BLE001 - never blocks filing
+            log(flags, f"WARN filing-due {rid}: {type(e).__name__}: {e}")
         if machine_checkable(rule):
             if dry_run:
                 report["filed"].append(rid); continue

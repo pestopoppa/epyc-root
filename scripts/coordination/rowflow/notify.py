@@ -185,6 +185,30 @@ def ack(flags, key, by=None, note=None):
     return True
 
 
+def unfiled_ended(flags, key):
+    """The row id of inbox alert `key` when that row has ENDED (grants/<id>.ended|.complete) without a
+    filing-done/<id>.FILED receipt, else None. An ack of such an alert must not stand in for filing (operator 2026-11-07)."""
+    for r in _read_jsonl(inbox_path(flags)):
+        if str(r.get("key")) == key:
+            rid = str(r.get("row_id") or "")
+            if not rid:
+                return None
+            ended = any(os.path.exists(os.path.join(flags, "grants", rid + s)) for s in (".ended", ".complete"))
+            filed = os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED"))
+            return rid if ended and not filed else None
+    return None
+
+
+def filing_due(flags, rid, owner, ended_line=""):
+    """ONE filing-due alert per row (key sha256(kind|row|v1) + O_EXCL claim in emit = dedup): rowflow-alerts.jsonl, the
+    inference mailbox (owner field: alerts_for() hands it to the owner's dispatcher) and a session-bus msg to the owner when it
+    is a roster id, else to `inference` with payload.row_owner. Reason it never reached main-inf22 before: only the coordinator
+    was nudged (filing_takeover_alarm, after 1 h), owner-less ids are not roster ids, and live-owner rows were skipped silently."""
+    summary = (f"FILING DUE: row {rid} ended ({ended_line[:80]}) with no filing-done/{rid}.FILED. Record the verdict with "
+               f"`file_result.py {rid} --receipt <commit>:<handoff>#<BOX-ID>` (a pushed box commit is not filing) or `--verdict-json`.")
+    return emit(flags, "filing-due", rid, "v1", summary, "warning", owner, {"reason": "filing-due", "ended": ended_line[:200]}, action=True)
+
+
 def _norm(x):
     return os.path.basename(str(x or "")).removesuffix(".md").lower()
 

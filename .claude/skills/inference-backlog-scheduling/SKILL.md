@@ -102,6 +102,7 @@ Threads default from affinity (`job_fence.py` sets `OMP_NUM_THREADS`, `GGML_N_TH
   0-95`. The publish smoke runs the real launcher against the real grant line, so a mismatch fails at publish, not in
   the window.
 - Idle host with queued rows → read the keeper's `IDLE-WHY` / `DRAIN` lines and fix the over-booked row.
+- **A box commit or an alert ack is not filing; only `filing-done/<id>.FILED` is** (operator 2026-11-07): file with `file_result.py <id> --receipt <commit>:<handoff>#<BOX-ID>` (or `--verdict SUPERSEDED|WITHDRAWN`); a `-rN` publish files its earlier attempts SUPERSEDED, the janitor auto-links one-commit matches, `rowflow alerts --ack` refuses an unfiled ended row without `--force-ack`, and reclaim skips any dir a live row overlaps (`RECLAIM-SKIPPED-SHARED`).
 
 ## 3. Packing procedure
 

@@ -9,6 +9,8 @@
 #                 the keeper loop no longer reaps (operator 2026-11-03). Skipped while the reap stamp
 #                 (ws58-keeper-state/reap-last, touched by every --reap-now pass, e.g. a manual one) is younger than 30 min.
 #   every 60 min  `trash-sweep.sh --older-than 1` for /mnt/raid0/llm/.trash and, if it exists, /mnt/raid0/llm/.trash-reap.
+#   every 30 min  LINK: filing.py autolink --apply (zero-token: an ended-unfiled row is FILED when exactly ONE origin/main commit ticks or
+#                 annotates a handoff box naming its id; ambiguous matches are listed, never filed; operator 2026-11-07).
 #   every 30 min  BUDGET: row_disk_budget.py --alert (per-row disk budget: used vs budget_gib for every live grant; alert only).
 #   every 24 h    the LIFECYCLE pass (operator 2026-11-07, "we can't have so much disk leak"; all zero-token, all trash-first):
 #                   WTREAP  worktree_reaper.py --apply   agent worktrees: clean+landed idle >= 3 d removed; dirty/unlanded idle
@@ -114,6 +116,11 @@ budget() {  # per-row disk budget check over live grants: alert only (row_disk_b
   run_tool BUDGET python3 "$TOOLS/coordination/churn/row_disk_budget.py" "${flags[@]}"
 }
 
+autolink() {  # zero-token filing sweep: ONE origin/main box commit per ended-unfiled row -> FILED; ambiguous matches are only listed
+  local mode=(--apply); [ "$MODE" = dry ] && mode=()
+  run_tool LINK python3 "$TOOLS/coordination/churn/filing.py" autolink --flags "$F" --repo "${JANITOR_LINK_REPO:-/workspace}" "${mode[@]}"
+}
+
 codex_rotate() {  # report (writes a manifest + token) then apply on that exact manifest; dry mode reports only
   local tool=$TOOLS/system/codex_retention_reaper.py rep=$F/codex-retention-report.json rc=0 tok out
   [ -f "$tool" ] || { log "CODEX-SKIP tool missing: $tool"; return 0; }
@@ -146,7 +153,7 @@ lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel 
   log "LIFECYCLE end"
 }
 
-if [ "$MODE" != loop ]; then free_line; reap force; sweep; budget; lifecycle force; free_line; exit 0; fi
+if [ "$MODE" != loop ]; then free_line; reap force; sweep; budget; autolink; lifecycle force; free_line; exit 0; fi
 
 # loop: one instance (pidfile pid alive with our argv, and not us -> exit)
 old=$(tr -d ' \n' < "$PIDF" 2>/dev/null || true)
@@ -158,7 +165,7 @@ log "disk_janitor start pid=$$ (reap+budget every ${REAP_EVERY_S}s via $KEEPER -
 last_reap=0; last_sweep=0
 while :; do
   now=$(date +%s)
-  if [ $(( now - last_reap )) -ge "$REAP_EVERY_S" ]; then free_line; reap || log "REAP error rc=$?"; budget || log "BUDGET error rc=$?"; last_reap=$now; free_line; fi
+  if [ $(( now - last_reap )) -ge "$REAP_EVERY_S" ]; then free_line; reap || log "REAP error rc=$?"; budget || log "BUDGET error rc=$?"; autolink || log "LINK error rc=$?"; last_reap=$now; free_line; fi
   if [ $(( now - last_sweep )) -ge "$SWEEP_EVERY_S" ]; then sweep || log "SWEEP error rc=$?"; last_sweep=$now; fi
   lifecycle || log "LIFECYCLE error rc=$?"
   sleep "$TICK_S"

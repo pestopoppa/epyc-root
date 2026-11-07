@@ -15,6 +15,9 @@ never looser than it:
     manifest mtime), KEEP markers (worktree_gate.KEEP_MARKERS, *.epyc-keep) at any depth, evidence names
     (worktree_gate.EVIDENCE_RE), FILED/receipt files, registered git worktrees (released separately), anything
     resolving outside scratch_root.
+  * SHARED-LIVE GUARD: another NON-TERMINAL row (ready/, armed, open grant) whose scratch_root, workdir, --workdir or
+    result_path resolves (realpath) to the same dir, a parent or a child, or a row pinned in <flags>/filing-no-reclaim.globs
+    -> nothing reclaimed, RECLAIM-SKIPPED-SHARED (scratch_guard.py; filing still stands).
   * BUSY (a live cwd/argv/environ names the root, or an open fd under it) -> nothing done. SHARED (another
     manifest naming an overlapping scratch_root is not filed) -> nothing done.
   * --apply: each candidate goes through scripts/safety/guarded_rm.sh (TRASH_ROOT = $RECLAIM_TRASH_ROOT or
@@ -40,6 +43,7 @@ for _p in (HERE, os.path.join(SCRIPTS, "system"), os.path.join(SCRIPTS, "coordin
     if _p not in sys.path:
         sys.path.insert(0, _p)
 import file_result as fr  # noqa: E402
+import scratch_guard  # noqa: E402
 import row_worktree as rw  # noqa: E402
 import worktree_gate as wg  # noqa: E402
 import worktree_salvage as ws  # noqa: E402
@@ -286,6 +290,14 @@ def main(argv=None) -> int:
     wts = rw.row_worktrees(root)
     if not raw and not wts:
         return finish("NO-RAW", "no raw declaration (keeper 1-day backstop applies)")
+    pin = scratch_guard.pinned(flags, rid)
+    if pin:
+        print(f"RECLAIM-SKIPPED-SHARED {rid}: pinned by filing-no-reclaim.globs ({pin}); a successor will reuse {root}")
+        return finish("SHARED", f"pinned by filing-no-reclaim.globs: {pin}")
+    live = scratch_guard.live_overlap(flags, rid, root)
+    if live:
+        print(f"RECLAIM-SKIPPED-SHARED {rid}: live row {live} overlaps {root}")
+        return finish("SHARED", f"live row {live} overlaps scratch_root")
     sh = shared_unfiled(flags, rid, root)
     if sh:
         return finish("SHARED", f"unfiled row {sh} names an overlapping scratch_root")

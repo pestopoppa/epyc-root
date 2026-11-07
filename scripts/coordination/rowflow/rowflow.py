@@ -4687,9 +4687,40 @@ def main(argv=None):
     s.add_argument("--since", help="ISO time, e.g. 2026-11-05T07:00:00Z"); s.add_argument("--row", help="row-id glob")
     s.add_argument("--unacked", action="store_true"); s.add_argument("--json", action="store_true")
     s.add_argument("--ack", metavar="KEY"); s.add_argument("--by"); s.add_argument("--note")
+    s.add_argument("--force-ack", action="store_true", help="ack even though the row ended without a FILED receipt")
+    s.add_argument("--file", metavar="VERDICT", help="with --ack and --commit: file the row via file_result.py --receipt, then ack")
+    s.add_argument("--commit", metavar="SHA", help="the verdict commit (on origin/main) whose handoff box records the verdict")
     a = ap.parse_args(argv)
     if a.cmd == "alerts":
         if a.ack:
+            unfiled = notify.unfiled_ended(a.flags, a.ack)
+            if unfiled and a.file and a.commit:
+                import subprocess as _sp
+                task = str((load_json(os.path.join(a.flags, "ready", unfiled + ".json")) or {}).get("handoff_task") or "")
+                if ":" not in task:
+                    for _m in glob.glob(os.path.join(a.flags, "ready", "*", unfiled + ".json")) + glob.glob(os.path.join(a.flags, "ready", ".withdrawn", unfiled + ".json")):
+                        task = str((load_json(_m) or {}).get("handoff_task") or ""); break
+                if ":" not in task:
+                    print(f"REFUSED: {unfiled} has no handoff_task <handoff.md>:<BOX-ID> in its manifest; run file_result.py {unfiled} --receipt <commit>:<handoff>#<BOX> yourself")
+                    return 2
+                hp, box = task.rsplit(":", 1)
+                fr_py = next((p for p in (os.path.join(_HERE, "..", "churn", "file_result.py"), "/workspace/scripts/coordination/churn/file_result.py") if os.path.isfile(p)), None)
+                if not fr_py:
+                    print("REFUSED: churn/file_result.py not found"); return 2
+                r = _sp.run([sys.executable, fr_py, unfiled, "--flags", a.flags, "--receipt", f"{a.commit}:{hp}#{box}", "--verdict", a.file],
+                            capture_output=True, text=True, timeout=300)
+                print((r.stdout + r.stderr).strip())
+                if r.returncode != 0:
+                    print(f"REFUSED: filing {unfiled} through the receipt path failed (rc={r.returncode}); alert NOT acked")
+                    return 2
+                unfiled = notify.unfiled_ended(a.flags, a.ack)
+            if unfiled and not a.force_ack:
+                print(f"WARNING: row {unfiled} has ENDED with no filing-done/{unfiled}.FILED receipt. Acking an alert is not filing "
+                      f"(124 INF-22 rows were left unfiled that way). File it: `file_result.py {unfiled} --receipt <commit>:<handoff>#<BOX-ID>` "
+                      f"or `rowflow.py alerts --ack {a.ack} --file <verdict> --commit <sha>`; or pass --force-ack to ack anyway.")
+                return 3
+            if unfiled:
+                print(f"FORCE-ACK: row {unfiled} acked without a FILED receipt")
             if not notify.ack(a.flags, a.ack, a.by, a.note):
                 print(f"REFUSED: no alert with key {a.ack} in {notify.inbox_path(a.flags)}")
                 return 2

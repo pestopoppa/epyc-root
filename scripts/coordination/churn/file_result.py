@@ -18,6 +18,11 @@ missing / bad --verdict-json; 5 checkbox tick failed (verdict still written, FIL
 6 REFUSED: the manifest has no absolute scratch_root under the tmp root ($RECLAIM_TMP_ROOT, default
 /mnt/raid0/llm/tmp) — nothing written; `--allow-no-scratch-root` files anyway (operator 2026-11-07: a row with
 no scratch_root can never be reclaimed).
+COMMIT RECEIPT (operator 2026-11-07): `file_result.py <id> --receipt <commit>:<handoff.md>#<BOX-ID> [--verdict V] [--answer A]
+[--repo DIR]` files a row from a verified verdict commit: the commit must be on origin/main, touch the named box line, and that
+box line must mention the row id or its lineage; FILED quotes the box line. `--verdict SUPERSEDED|WITHDRAWN` (+ `--superseded-by ID`)
+files a row that has no result of its own; `--answer NAME` (e.g. SURFACE_E2E_OK) is stored in the receipt. Every path is a no-op
+(exit 0, NOOP) when filing-done/<id>.FILED exists, and FILED is written atomically (filing.write_filed). Exit 8: receipt refused.
 RECLAIM-AT-FILING: once the FILED receipt is written, reclaim_row.py <id> --apply --pre-filed frees the row's
 declared raw scratch and row-owned worktrees (`--no-reclaim` skips; --dry-run runs it in dry-run mode). A reclaim
 error or non-zero exit prints RECLAIM-ERROR and never changes the filing outcome.
@@ -280,8 +285,29 @@ def main(argv=None):
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--allow-no-scratch-root", action="store_true")
     ap.add_argument("--no-reclaim", action="store_true")
+    ap.add_argument("--receipt", metavar="COMMIT:HANDOFF#BOX", help="file from a verified verdict commit on origin/main")
+    ap.add_argument("--verdict", help="with --receipt: the verdict word; alone: SUPERSEDED|WITHDRAWN (no result needed)")
+    ap.add_argument("--answer", help="named answer stored in the receipt, e.g. SURFACE_E2E_OK")
+    ap.add_argument("--superseded-by", metavar="ID")
+    ap.add_argument("--filed-by", default=None)
+    ap.add_argument("--repo", default=os.path.abspath(os.path.join(HERE, "..", "..", "..")))
+    ap.add_argument("--no-fetch", action="store_true")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
+    import filing
+    if filing.is_filed(flags, rid):
+        print(f"NOOP {rid}: already FILED ({filing.filed_path(flags, rid)})"); return 0
+    if a.receipt:
+        code, msg = filing.file_receipt(flags, rid, a.receipt, repo=a.repo, verdict=a.verdict or "RECEIPT", answer=a.answer,
+                                        by=a.filed_by or "file_result --receipt", reclaim=not a.no_reclaim, fetch=not a.no_fetch)
+        if code != 0:
+            print(msg, file=sys.stderr if code == 2 else sys.stdout)
+        return {0: 0, 1: 0, 2: 8}[code]
+    if a.verdict and a.verdict.upper() in filing.TERMINAL_VERDICTS and not a.verdict_json:
+        r = filing.file_terminal(flags, rid, a.verdict, by=a.filed_by or "file_result", superseded_by=a.superseded_by,
+                                 answer=a.answer, reclaim=not a.no_reclaim, dry_run=a.dry_run)
+        print(r)
+        return 0 if r in ("FILED", "NOOP") else 2
     mp, m = load_manifest(flags, rid)
     if not m:
         print(f"ERROR {rid}: no manifest in {flags}/ready/ or eligible completed-smoke archive", file=sys.stderr); return 2
@@ -293,9 +319,14 @@ def main(argv=None):
         try:
             with open(a.verdict_json) as fh:
                 agent = json.load(fh)
+            if str(agent.get("verdict")).upper() in filing.TERMINAL_VERDICTS:
+                r = filing.file_terminal(flags, rid, str(agent["verdict"]), by=str(agent.get("filed_by") or "agent"),
+                                         superseded_by=agent.get("superseded_by"), answer=agent.get("answer"),
+                                         note=str(agent.get("rationale") or ""), reclaim=not a.no_reclaim, dry_run=a.dry_run)
+                print(r); return 0 if r in ("FILED", "NOOP") else 2
             assert agent.get("verdict") in ("pass", "fail", "inconclusive")
         except (OSError, ValueError, AssertionError) as e:
-            print(f"ERROR {rid}: bad --verdict-json ({e}); need {{verdict: pass|fail|inconclusive, rationale}}", file=sys.stderr); return 2
+            print(f"ERROR {rid}: bad --verdict-json ({e}); need {{verdict: pass|fail|inconclusive|SUPERSEDED|WITHDRAWN, rationale[, answer]}}", file=sys.stderr); return 2
     rule = str(m.get("decision_rule") or "")
     result_path, fmt = str(m.get("result_path") or ""), str(m.get("result_format") or "json")
     metrics, sha = load_result(result_path, fmt) if result_path else ({}, None)
@@ -321,7 +352,8 @@ def main(argv=None):
                        "result": verdict}, "native_result_path": result_path, "result_exists": sha is not None,
            "row_verdict": verdict, "rule": rule, "machine_checkable": machine, "values": values, "rc": rc, "end_line": endline,
            "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
-           "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run}
+           "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run,
+           "answer": (agent or {}).get("answer") or a.answer}
     kt = keep_tail_report(m, metrics, rid, flags)
     if kt is not None:
         rec["keep_tail"] = kt
@@ -334,8 +366,10 @@ def main(argv=None):
             run_reclaim([rid, "--flags", flags, "--pre-filed"])
         return 0
     os.makedirs(done, exist_ok=True)
-    with open(os.path.join(done, rid + ".verdict.json"), "w") as fh:
+    vtmp = os.path.join(done, f".{rid}.verdict.{os.getpid()}.tmp")
+    with open(vtmp, "w") as fh:
         json.dump(rec, fh, indent=1, sort_keys=True)
+    os.replace(vtmp, os.path.join(done, rid + ".verdict.json"))
     if kt and kt.get("reported"):
         with open(os.path.join(done, "keep_tail_counter.jsonl"), "a") as fh:
             fh.write(json.dumps({"row": rid, "at": now, "P_pct": kt["P_pct"], "F_pct": kt["F_pct"], "refused": kt["refused"]}, sort_keys=True) + "\n")
@@ -352,8 +386,10 @@ def main(argv=None):
             print(f"ERROR tick failed: {e}", file=sys.stderr); return 5
     else:
         print("TICK " + tick_line(rid, rc, verdict, values, filed_by))
-    with open(os.path.join(done, rid + ".FILED"), "w") as fh:
-        fh.write(summary + "\n")
+    if rec.get("answer"):
+        summary += f" answer={rec['answer']}"
+    if not filing.write_filed(flags, rid, summary, rec):
+        print(f"NOOP {rid}: filed concurrently by another filer"); return 0
     if not a.no_reclaim:
         run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
     return 0
