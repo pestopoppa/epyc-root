@@ -1601,10 +1601,20 @@ def cmd_append(args: argparse.Namespace) -> int:
         )
 
     row.setdefault("ts", _utcnow_iso())
+    existing, _ = _read_jsonl(path)
+    if "id" in row:
+        # A caller-supplied id is an identity, not a hint: every consumer dedupes
+        # by it (BUS_PROTOCOL rule 3), so a duplicate would silently collapse the
+        # second message into the first. Refuse at the author instead of losing
+        # it in delivery.
+        if any(previous.get("id") == row["id"] for previous in existing):
+            raise BusError(
+                f"duplicate id {row['id']!r} already present in "
+                f"{path.relative_to(bus_root)}; refusing a second row with the same id"
+            )
     if definition == "msg":
         row.setdefault("schema_version", MSG_SCHEMA_VERSION)
         row.setdefault("from", args.agent)
-        existing, _ = _read_jsonl(path)
         # Compact UTC stamp: sortable and free of '+' / offset punctuation, so
         # the id stays a single clean token. `ts` keeps the full ISO form.
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")

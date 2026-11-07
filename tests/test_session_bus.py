@@ -2340,6 +2340,27 @@ def test_authoring_without_jsonschema_still_accepts_a_compliant_row(
     bus.validate_row(bus_root, written[0], "msg")
 
 
+def test_append_refuses_a_duplicate_caller_supplied_id(
+        bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    """Identity, not a hint: consumers dedupe by id (BUS_PROTOCOL rule 3), so a
+    second row carrying an existing id would be silently collapsed into the
+    first. Measured 2026-11-06: `cmd_append` used `setdefault`, which honours a
+    caller-supplied id verbatim and never checked it."""
+    _provision(bus_root, *AGENTS)
+    row = {"to": "bob", "kind": "status", "payload": {"summary": "once"},
+           "id": "msg-20261106T000000Z-1-alice"}
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json", json.dumps(row)]) == 0
+    captured = capsys.readouterr()
+    assert "duplicate id" not in captured.err
+
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json", json.dumps(row)]) != 0
+    captured = capsys.readouterr()
+    assert "duplicate id" in captured.err
+    assert len(_read_jsonl(bus_root / "outbox" / "alice.jsonl")) == 1
+
+
 def test_append_refuses_an_unrelayable_row_at_the_author(
         bus_root: Path, capsys: pytest.CaptureFixture[str]) -> None:
     """Failing at the author is the correct place: the rows this refuses were

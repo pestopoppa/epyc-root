@@ -6408,7 +6408,7 @@ narrow subagent-writer exception.
 Source batch: 12 entries ingested 2026-11-06 (t3code, Foundry Local, HarnessMM + 9 expansion entries). Plan: `research/intake-stage3-plan-2026-11-06-harness-inference.md`.
 - [ ] **CTX-HO-2 — Add a typed handoff-transfer record and ledger to the session bus.** Add a `handoff-transfer` message kind and a coordinator-owned append-only `transfers/` ledger with transfer_id, source point, base point, coverage, selected and omitted ids, budget_bytes, status, consumer, consumed_at; lazy resolution on first dispatch; ack deduped on transfer_id. Acceptance: schema, single-writer rule and a two-main fixture test.
 
-- [ ] **BUS-ID-1 — Refuse duplicate message ids in session_bus append.** `cmd_append` exits non-zero when a caller-supplied id already exists in the destination, instead of trusting it; add a regression test. Acceptance: a second append with the same explicit id fails and leaves one row.
+- [x] **BUS-ID-1 — Refuse duplicate message ids in session_bus append. ✅ 2026-11-07 [no-belief: build/landing]** `cmd_append` exits non-zero when a caller-supplied id already exists in the destination, instead of trusting it; add a regression test. Acceptance: a second append with the same explicit id fails and leaves one row.
 
 - [ ] **BUS-ID-2 — Record the unbounded-dedup invariant in BUS_PROTOCOL.** State that messages never expire, retention is cursor-gated, `--stale-after-h` labels but never drops, and a time-bounded TTL must not be introduced. Acceptance: the invariant appears with the rule number and the code references.
 
