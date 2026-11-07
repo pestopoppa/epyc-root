@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T12:43:57Z",
+  "generated_at": "2026-11-07T12:45:29Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1455,7 +1455,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 791,
+      "closed": 792,
       "dispatchable": 142,
       "domain": "inference-research",
       "guarded": 0,
@@ -1516,7 +1516,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5930,
+          "line": 5931,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1525,7 +1525,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6010,
+          "line": 6011,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1544,7 +1544,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6307,
+          "line": 6308,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1561,7 +1561,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9522,
+          "line": 9523,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1574,7 +1574,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13872,
+          "line": 13873,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1608,7 +1608,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14084,
+          "line": 14085,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
