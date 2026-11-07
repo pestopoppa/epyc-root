@@ -13,30 +13,18 @@ work is a reportable failure, not a resting state.
 
 Canonical protocol (read it once per session): `docs/guides/agent-workflows/compute-fillers.md`.
 
-> **2026-11-05 FREEZE: `rowflow.py`, `publish_row.py`, `filler_run15.sh` are frozen at `9218dffd1`** (operator: "Freeze
-> current + build rowflow2"). Do not write allocator fixes against them; `deploy_rowflow.sh` refuses such a deploy
-> unless `--emergency "<reason>"` (logged in `bin/rowflow/DEPLOYED.json`). Scheduling changes go to rowflow2
-> (`scripts/coordination/rowflow2/`, `docs/design/rowflow2-20261105.md`): tokens c0..c95 + `gpu` + ram/disk counters, a
-> 12-field declared spec, reconcile → admit (strict priority with a hold) → file, a fixed 4-core smoke lane, no
-> inference from job text. It runs in SHADOW (`SHADOW-GRANT` / `SHADOW-IDLE-WHY`, zero side effects) beside the live
-> keeper. **Exit criterion:** rowflow2 passes its shadow week and is cut over (compute-fillers.md → *Deploying rowflow*).
->
-> **2026-11-01 simplified row flow (operator: "remove every gate that is not indispensable").** For NEW rows the
-> owner writes TWO things: the launcher (on `filler_run15.sh`) and a small spec; `scripts/coordination/rowflow/publish_row.py`
-> derives the rest into `compute-flags/ready/<id>.json` (`epyc.row.v3`). The keeper is the qualifier: ONE deterministic
-> dry run on the REAL lane (`compute-flags/dryrun/<id>/PASS.json` | `FAIL-n.json`), and a passing row is grantable while its
-> launcher sha is unchanged. **Retired for new rows**: the 18-cell FILLERS.md row, `ready/<id>.row.md`, `epyc.ready.v2`
-> manifests, nonces/receipts, the owner-wide worker breaker, the registry-row check, `validate_fillers.py` in `grant_ok`
-> (v4). Where this file still says "FILLERS row" below, read "v3 row" for new rows; FILLERS.md stays as the legacy
-> registry of rows armed before 2026-11-01. Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`.
->
-> **2026-11-05 inference mailbox: a publisher MUST watch it.** Every row alert (row-ended, smoke-fail, disk-floor) lands
-> in `compute-flags/notify/inbox/inference.jsonl`; read with `rowflow.py alerts --unacked`, mark handled with
-> `rowflow.py alerts --ack <key>`. Headless owners get their alerts injected by the dispatcher and the keeper escalates a
-> critical alert unacked for 30 min to the operator alarm; an interactive session that publishes rows arms the one-line
-> background watcher in `scripts/coordination/rowflow/README.md` → *The inference mailbox* right after `publish_row.py`.
->
-> **2026-11-01 evening: one allocator.** The two grant writers, `grant_ok*.sh`, `ram_admit.sh` and the legacy `grant_ok_launcher.py` copy are deleted from git. `rowflow.py allocate`, run by keeper v11 every 120 s tick, is the only writer of grants and dry runs, working from one snapshot per tick. Its self-healing invariants log `SNAPSHOT`, `GRANT`, `DRYRUN-START`, `IDLE-WHY`, `HEAL`, `CONFLICT`, `UNDERUSED` and `ALERT`; see `docs/guides/agent-workflows/backlog-churn-flow.md` → *The allocator*.
+> **Current state (consolidated 2026-11-07).** Rows are `epyc.row.v3` manifests: the owner writes a launcher (on
+> `filler_run15.sh`) and a small spec, `scripts/coordination/rowflow/publish_row.py` derives the rest, the keeper
+> (`rowflow.py allocate`, every 120 s, the ONLY grant writer) smokes it once on the real lane (`dryrun/<id>/PASS.json`),
+> grants it and files it. Row alerts land in the inference mailbox (`rowflow.py alerts --unacked` / `--ack`; a
+> publishing session arms the watcher in `scripts/coordination/rowflow/README.md`). `rowflow.py`, `publish_row.py`
+> and `filler_run15.sh` are **FROZEN** (operator 2026-11-05): scheduling fixes go to **rowflow2**
+> (`scripts/coordination/rowflow2/`, `docs/design/rowflow2-20261105.md`, read-only SHADOW until its shadow week passes),
+> and a frozen-keeper change needs `deploy_rowflow.sh --emergency`. FILLERS.md, writers, `grant_ok*.sh`,
+> `ram_admit.sh` and `grant_ok_launcher.py` are retired (2026-11-01, "one allocator"); where this file still says
+> "FILLERS row" or "writer", read "v3 row" and "keeper". Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`;
+> launcher contract and job-side rules: `docs/guides/agent-workflows/compute-fillers.md`.
+
 Live state lives outside the repo: queue `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md`, grants
 `compute-flags/grants/`, calendar `/mnt/raid0/llm/tmp/compute-calendar-<date>.md` (append-only
 REVISION lines). **The calendar's input is the prioritized backlog
@@ -69,83 +57,51 @@ reaching 100 % and an ORCH ENOSPC on 10-27).
 
 ## 2. Compatibility rules (what may share a bin)
 
-- **GPU rows never need the whole host (operator, 2026-11-05).** Size every row by what it actually
-  runs (threads, `OMP_NUM_THREADS`, `--workers`, measured busy), never by what it declares.
-  - **Thread defaults come from affinity:** `job_fence.py fence/smoke` sets `OMP_NUM_THREADS`, `AUTOKERNEL_BACKEND_THREADS`, `AUTOKERNEL_CPU_N_THREADS`, `GGML_N_THREADS`, `LLAMA_ARG_THREADS` to the logical-CPU count of `sched_getaffinity` (never overriding set values), because ggml's `hardware_concurrency()` is 192 and ignores `taskset`; `template_lint.py` warns on unthreaded `test-backend-ops`/`llama-*`.
-  - **GPU timing/bench/profile/AK-keep row** → shape `gpu-q3` **NARROW (operator 2026-11-05, "Narrow +
-    emergency deploy")**: gpu-quiet + its host threads 184-191 + their SMT-sibling physical cores 88-95 —
-    and **never the rest of q3**. Cores 72-87 (siblings 168-183) stay grantable to ANY CPU row beside a
-    GPU timing run (not only ≤4-thread coexist rows); q0-q2 keep running CPU work; 184-191 are never
-    touched. This replaces "a GPU timing run holds all of q3" (q38p4b-int8 sat refused "needs
-    gpu-quiet,q3,t184..t191: q3 busy" while an 8-core AITER build held 80-87/176-183). A timing row
-    that really needs a quieter neighbourhood declares it: explicit regions (e.g. `mi210_0,72-95,184-191`)
-    plus `shape_override "operator: <who> <date>: <why>"`; the keeper honours them verbatim.
-  - **Width beyond the evidence contract (CPU rows only, operator 2026-11-06)**: a `multi-quarter(n)` declaration is admitted
-    without `shape_override` when the spec carries `width_justification` (>= 20 chars naming why extra width helps, e.g.
-    "width-agnostic prefill; throughput scales with threads"); it is logged in the row and the publish output. Never for GPU/timing
-    rows (placement rules above unchanged); a smoke footprint is still no width evidence and a declared quarter is still a floor.
-  - **Any other GPU row (correctness, builds, qualification) and production** → shape `gpu`: the GPU +
-    its own threads 184-191 only. q3 cores stay grantable to CPU work in parallel (measured: GPU at 100%
-    while 88-95 sit ~1%; co-residency cost below).
-  - **Whole host** only for rows that measure whole-host CPU serving (e.g. -t 48 interleaved over 0-95,
-    npd1-step5), cite a decision-grade baseline, or carry an explicit operator override. A 1-thread job
-    gets a quarter at most.
-  - Idle host with queued rows → read the keeper's `DRAIN` / `IDLE-WHY` lines and fix the over-booked row.
-- **Quiet host** (gpu-quiet exclusive + all of 0-95, nothing else running) is earned only by
-  decision-grade baselines and AK keep gates. Indicative timing shares with a labelled GPU job (and
-  the GPU-on/off difference is itself a wanted measurement). Correctness shares with anything but
-  CPU timing. Builds are correctness.
-- **The q3 fold.** `region-lock --cpu-list 184-191` folds into a claim on all of q3. A folded GPU
-  job conflicts with any q3 or 0-95 CPU claim, and a q3 build makes the MI210 idle behind it. A
-  GPU-only job claims gpu-quiet with **no CPU region** and tasksets 184-191 itself (`filler_run7+
-  --class gpu --no-fold-siblings`); region-lock's own `--no-fold-siblings` on an SMT-only list is
-  refused ("maps to no regions"). Decide per GPU row: *no-fold* (co-runs with whole-CPU
-  correctness) or *folded* (needs q3 empty; keep q3 free while it runs).
-- **q3 beside a GPU timing row (2026-11-05, coexist2 → NARROW).** Book a GPU timing row `gpu-q3` with
-  regions `mi210_0,88-95,184-191` (or the default `mi210_0,184-191`; the contract adds 88-95 either way);
-  filler_run15 (GRANT_CPUS) locks `--cpu-list 88-95 --no-fold-siblings` = LOCK_SH GLOBAL.q3 + LOCK_EX per
-  core, never GLOBAL.q3 exclusive (rowflow refuses a gpu-q3 claim folding onto 72-87). Since NARROW the
-  keeper books only gpu-quiet + c88-95 + t184-191 for it, so 72-87 are plainly free: any CPU row that
-  fits there (an 8-core build, single-worker gitnexus, ...) is granted beside it on per-core locks — the
-  old "lends/coexist ≤4 threads" carve-out is inert. A whole-q3 CPU row still waits (88-95 are held), and
-  a CPU timing row keeps off q3 while a GPU grant is open (SMT-sibling rule below). Nothing co-runs beside
-  a host / quiet-host row that measures CPU serving (npd1-step5, -t 48 over 0-95).
-- **Interim, frozen keeper (until rowflow2 cutover).**
-  - **Timing rows: publish on q0-q2, or on q3 only with gpu-quiet declared.** A whole-q3 CPU timing grant
-    does not hold siblings 168-191, and 184-191 are the MI210 host lane: iqk-q8-prefill-ab-r6 (q3) shared
-    8 of 24 decode cores with c6-gpu-27b-identity's 27B reload, requests 20-70% slow (main-inf22,
-    2026-11-05). rowflow2 enforces this (`timing: true`, design doc decision 7); the mirror rule for GPU
-    timing rows (gpu exclusive ⇒ + cores 88-95, never 72-87) is decision 8.
-  - **GPU correctness suites (test-backend-ops etc.) rank BELOW every waiting GPU timing row, or batch
-    them into one row**: lower rank NUMBER = higher priority and a tie can go to the suite, so give the
-    suite a rank number STRICTLY GREATER than every waiting GPU timing row's (use >= 60; c6q4isum-gpu-suite
-    at 50 beat q38p4b-int8 at 50, 2026-11-05), until rowflow2's correctness-shares-gpu token is live. Each holds exclusive
-    gpu-quiet ~40 min at ~2 % busy (c6q4opt2-gpu-suite, 2026-11-05) and four timing rows waited behind it.
-  - **IDLE-HELD grants are told, not tolerated (operator 2026-11-05).** A grant measured under 10 % busy on a held
-    region for 300 s gets ONE `[warning]` to its owner (`rowflow-alerts.jsonl`, inference inbox, session bus; log line
-    `IDLE-HELD-WARN`), then one repeat per 15 min; the frozen keeper never ends it — the owner unsticks or stops the job.
-    rowflow2 ends a wholly idle grant (every core < 2 %, no own KFD pid) at 900 s with `rc=75` and re-queues the row once,
-    then terminal (`design doc decision 9`). Origin: rock-aiter-tests-r3 held the MI210 20 min at 0 % while 7 GPU rows queued.
-- **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to
-  184-191, CPU decode -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT
-  channel (88-95 vs 184-191) prefill -9.6 %. Whole-host CPU models eat it; partial-host models go
-  off q3 when a GPU job is live. One ROCr thread escapes `taskset`; pin with
-  `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` (P1 PASS 10-23) or `taskset -a -p` after health.
-- **A correctness job that carries a cross-arm timing check** (an overhead gate, an M-vs-G ratio)
-  is timing-sensitive for that check. Book it with the GPU idle, and before booking it, check that
-  the harness compares **same-source arms in alternating order** (ABAB, not AAAA-BBBB). Quiet
-  hardware alone does not save it. akx-lb3-2 was INVALID with a GPU co-tenant on 10-24 (overhead
-  -5.79 % > 5 %) and INVALID again on a whole-host quiet run on 10-25 (-5.93/-6.30 %, M
-  consistently faster than G). The cause was the fixed arm order and the different-source arms,
-  not co-tenancy. The fix is AKX-LB32-OVERHEAD-1, a same-source control arm.
-- **RAM is a bin.** `ram_admit.sh <peak_gib> [ds41]` before every grant and every model load.
-  At most ONE DS41-class (≥200 GiB; 1017 = 739 GiB) server host-wide: `ram_admit 739 ds41`
-  refuses while any process maps a 1017 shard. Keep ≥20 min between DS41 handovers.
-- **Launcher class must match the grant shape it will receive.** `--class cpu+gpu` refuses a
-  `regions=0-95` grant (no `mi210_0` token, `.ended rc=2`, slot lost). A CPU timing job that needs
-  the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (filler_run8). Dry-check
-  the launcher's region parser against the exact grant line before arming.
-- **A CPU multi-quarter booking is q0-q2 only, and docker started under a row dies with the row.** q3's 88-95 are the physical cores behind GPU host threads 184-191 (lsa-quality-32k-r5-pca got q1+q3, MI210 idle ~40 min behind it); the keeper and rowflow2 wait for q0-q2 instead. filler_run15 labels containers the job starts (`epyc.filler.row=<id>`, via a `docker` shim) and stops+removes exactly those at STOP / hard end / exit (operator 2026-11-06).
+Owners **declare** cpus, threads and GPU use; the keeper validates and measures, it never infers from job text.
+Threads default from affinity (`job_fence.py` sets `OMP_NUM_THREADS`, `GGML_N_THREADS`, `LLAMA_ARG_THREADS`, … from
+`sched_getaffinity`, because ggml sees 192 and ignores `taskset`).
+
+| Row | Shape it gets | What stays free beside it |
+|---|---|---|
+| GPU correctness, build, qualification, production (`shape: gpu`) | MI210 + its host threads 184-191 | all of q0-q3 for CPU work (measured: GPU 100 % while 88-95 sit ~1 %) |
+| GPU timing / bench / profile / AK keep gate (`gpu-q3`, **NARROW**, operator 2026-11-05) | gpu-quiet + 184-191 + their SMT-sibling cores 88-95, **never the rest of q3** | 72-87 to any CPU row; q0-q2 unchanged. A row needing a quieter neighbourhood declares it: explicit regions (`mi210_0,72-95,184-191`) + `shape_override "operator: <who> <date>: <why>"`, honoured verbatim |
+| CPU single quarter | the declared quarter (q3 allowed for correctness) | the rest |
+| CPU multi-quarter (`multi-quarter(n)`) | **q0-q2 only** (keeper `ec6aba4b1`, rowflow2 decision 10): 88-95 are the cores behind the GPU host lane | q3 for GPU timing |
+| CPU timing | q0-q2; q3 only with gpu-quiet declared (a q3 timing grant shares 88-95 with the MI210 host lane; iqk-q8-prefill-ab-r6 ran 20-70 % slow beside a 27B reload) | — |
+| Whole host (`0-95`) | only rows that measure whole-host CPU serving (npd1-step5, `-t 48` interleaved), cite a decision-grade baseline, or carry an operator override; a 1-thread job gets a quarter at most | nothing |
+| Quiet host (gpu-quiet exclusive + 0-95) | decision-grade baselines and AK keep gates only | nothing |
+
+- **Width beyond the evidence contract (CPU rows only, operator 2026-11-06):** a `multi-quarter(n)` declaration is
+  admitted without `shape_override` when the spec carries `width_justification` (>= 20 chars naming why extra width
+  helps). A smoke footprint is never width evidence and a declared quarter is a floor. Never for GPU/timing rows.
+- **Priority.** Lower `priority_rank` = higher priority; smokes drain strictly by rank. Give a GPU correctness suite
+  (test-backend-ops etc.) a rank number STRICTLY GREATER than every waiting GPU timing row (use >= 60; a tie went to
+  the suite and four timing rows waited ~40 min behind a 2 %-busy suite, 2026-11-05), or batch suites into one row.
+  Caveat for the frozen keeper: `plan_order` orders by lane starvation before rank for ranks >= 10, so only rank < 10
+  is strictly ordered; rowflow2 ranks at grant time and a shared-class suite does not block the GPU token at all.
+- **Idle grants are told, not tolerated (operator 2026-11-05).** Frozen keeper: a grant under 10 % busy for 300 s
+  gets ONE `[warning]` to its owner (`IDLE-HELD-WARN`), then one per 15 min; GPU grants are judged by their own KFD
+  client / device busy, never CPU %. rowflow2 ends a wholly idle grant (every core < 2 %, no own KFD pid) at 900 s with
+  `rc=75`, re-queues once, then terminal (design decision 9).
+- **Containers die with the row.** `filler_run15` labels containers the job starts (`epyc.filler.row=<id>`, `docker`
+  shim) and stops + removes exactly those at STOP / hard end / exit (operator 2026-11-06). Containers carry
+  `--cpuset-cpus "$FILLER_CPUS"`.
+- **Co-residency cost, measured 2026-10-22 (gpu-cpu-noise):** with every GPU thread pinned to 184-191, CPU decode
+  -0.7..-1.05 %, prefill -4.3..-4.8 %, variance not inflated; on the SMT channel (88-95 vs 184-191) prefill -9.6 %.
+  Whole-host CPU models eat it; partial-host models go off q3 when a GPU job is live. One ROCr thread escapes
+  `taskset`; pin with `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` or `taskset -a -p` after health.
+- **A correctness job that carries a cross-arm timing check** (overhead gate, M-vs-G ratio) is timing-sensitive for
+  that check: book it with the GPU idle AND make the harness compare same-source arms in alternating order (ABAB).
+  akx-lb3-2 was INVALID twice (co-tenant and quiet host) because of fixed arm order, not co-tenancy; fix = a
+  same-source control arm (AKX-LB32-OVERHEAD-1).
+- **RAM is a bin.** `ram_gib` = private/anon peak **plus** file-mapped weights (DS41-1017 = 739); the keeper admits
+  against `MemAvailable` with a 64 GiB margin above earlyoom's 40 GiB trigger. At most ONE DS41-class (>= 200 GiB)
+  server host-wide; keep >= 20 min between DS41 handovers.
+- **Launcher class must match the grant it will receive.** `--class cpu+gpu` refuses a `regions=0-95` grant (`.ended
+  rc=2`, slot lost). A CPU timing job that needs the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus
+  0-95`. The publish smoke runs the real launcher against the real grant line, so a mismatch fails at publish, not in
+  the window.
+- Idle host with queued rows → read the keeper's `IDLE-WHY` / `DRAIN` lines and fix the over-booked row.
 
 ## 3. Packing procedure
 
@@ -216,6 +172,13 @@ Each Codex worker reads ONE generated file, `compute-flags/BACKLOG-<worker>.md` 
    night chain were reported "passed" with no verdict read.
 
 ## 4. Invariants, each bought by an incident (`references/incident-ledger.md` has dates and ids)
+
+> **Reading guide (2026-11-07).** Most items below name writer-era tools (`grant_ok.sh`, grant writers, `.wsg-granted`
+> stamps, FILLERS cells, `filler_run12`) that the 2026-11-01 "one allocator" ruling retired; the keeper's publish
+> smoke, grant and reap paths now enforce the same invariants in code (`rowflow.py`, replay gate scenarios). Read each
+> item for the *rule it bought* and treat the tool names as history. Pass 5 of the keeper-friction review proposes
+> folding this section, `references/grant-writer-pattern.md`, `scripts/queue_status.py` and the two evals into
+> `references/incident-ledger.md` once rowflow2 is cut over.
 
 **New-row launch gate (T1, 2026-10-27).** Before arming any new row, run
 `scripts/coordination/dryrun_check.py run` against that row's real launcher
@@ -401,12 +364,10 @@ Add a `DECISIONS` line to the report: `python3 scripts/handoffs/verdict_count.py
 
 ## Shared job templates: import, never copy (operator 2026-11-06)
 
-Two vendored lane templates caused most lost compute in Pass 4 of `docs/reports/coordination/keeper-friction-review-20261105.md`: the gitnexus-impact `job.py` (~40 copies, 40 rc!=0 runs after a good 29-min analyze, ~9 host-h) and the yarn `write_fence.py` / `smoke_admission.py` / `smoke_root_exec.py` trio (no GPU devices, no HIP TMPDIR, `len(cpus)!=2`, HIP temp vanish). **New rows import the shared modules from `/mnt/raid0/llm/tmp/compute-flags/bin/job_templates/`** (source and tests: `scripts/coordination/job_templates/`; redeploy with a plain copy after the tests pass). Existing rows are not rewritten.
-
-- `gitnexus_impact.py --config job.json --phase analyze|scan|all`: analyze writes `out/ANALYZED.json` and is skipped while the graph stays fresh (status = head, no parse-cache staleness from `parse_probes`, e.g. the KPF-41 `__launch_bounds__` misparse). A scan never re-analyzes. An unresolved, partial, or vacuous scan is rc 0 with `out/INCONCLUSIVE`, HIGH/CRITICAL is rc 3, and a failed analyze or a parser defect is rc 1.
-- `job_fence.py fence [--gpu] <dirs> -- /abs/exe ...` / `smoke [--gpu] <root> -- ...` / `admit --cpus .. --granted ..`: `--gpu` (GPU-token rows) allows `/dev/kfd` and `/dev/dri/*` and gives HIP a writable `TMPDIR` inside the fence. Admission is affinity **subset of the grant**. `repin_threads()` pulls a ROCr thread born with full-host affinity into the grant. `tree_usage()` skips `comgr-*` / `.hip-tmp` entries that vanish mid-scan.
-- **Fence mkdir + file size (2026-11-06):** declared output dirs allow mkdir/rmdir/unlink recursively (rocprofv3 `trace/.rocprofv3`; nothing outside changes), and `max_file_mib` (row spec or env `MAX_FILE_MIB`, default 128, cap 8192) sets RLIMIT_FSIZE; `job_fence` now waits on the child and prints a one-line diagnostic on an EACCES abort or SIGXFSZ.
-- Publish lint (warn only): `rowflow2.publish` runs `template_lint.py` and warns when a job dir vendors a known-bad sha (`known_bad_templates.json`) or a one-process gitnexus job. It lives in rowflow2 because `rowflow/publish_row.py` is frozen and changing it would need a keeper deploy. Run it by hand with `python3 .../job_templates/template_lint.py <launcher>`.
+New rows import `job_fence.py` / `gitnexus_impact.py` from `/mnt/raid0/llm/tmp/compute-flags/bin/job_templates/`
+(source and tests `scripts/coordination/job_templates/`) instead of vendoring copies; `template_lint.py <launcher>`
+warns on a vendored fence that does not import `job_fence`. Contract and flags:
+`docs/guides/agent-workflows/compute-fillers.md` → *Shared job templates*.
 
 ## When not to apply this skill
 

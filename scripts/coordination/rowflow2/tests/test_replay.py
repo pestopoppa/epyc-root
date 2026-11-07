@@ -150,16 +150,12 @@ def test_reconcile_releases_idle_cores_and_unused_gpu_then_regrants(tmp_path):
     assert os.path.exists(os.path.join(sim.flags, "grants", "next.grant")), sim.lines[-10:]
 
 
-def test_supersede_withdraws_and_lineage_counts_since_fix_ref(tmp_path):
+def test_supersede_withdraws(tmp_path):
     sim = Sim(tmp_path)
     sim.publish(spec("a-r1", cpus="q2", threads=12))
     sim.publish(spec("a-r2", cpus="q2", threads=12, supersedes="a-r1"))
     e = rf.ended_fields(rf.head1(os.path.join(sim.flags, "grants", "a-r1.ended")))
     assert e["base"] == "superseded" and os.path.exists(os.path.join(sim.root, "stops", "a-r1.STOP"))
-    specs = {"x1": {}, "x2": {"supersedes": "x1"}, "x3": {"supersedes": "x2", "fix_ref": "abc123"}, "x4": {"supersedes": "x3"}}
-    fails = {"x1": 2, "x2": 1, "x3": 0, "x4": 1}
-    assert rf.lineage_fails("x4", specs, fails) == 1          # x4 + x3 (fix_ref) only
-    assert rf.lineage_fails("x2", specs, fails) == 3
 
 
 def test_measured_feedback_refuses_overdeclared_successor(tmp_path):

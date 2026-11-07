@@ -1,12 +1,14 @@
 #!/usr/bin/python3
-"""Publish-time WARN-only lint: does a row's job dir vendor a known-bad lane template instead of importing the
-shared module (job_templates/job_fence.py, job_templates/gitnexus_impact.py)? Never refuses.
+"""Publish-time WARN-only lint: does a row's job dir vendor a lane template (write_fence.py / smoke_admission.py /
+smoke_root_exec.py) that does not import the shared job_templates/job_fence.py, or a one-process gitnexus-impact
+job.py instead of job_templates/gitnexus_impact.py? Never refuses.
+
+Delete lens: a hand-harvested SHA list protected only against the copies harvested on 2026-11-06; the name-based
+rule catches those and every copy never harvested.
 
   template_lint.py <launcher-or-job-dir>      # prints one WARN per finding, exit 0 always
 Used by rowflow2.publish (rowflow/publish_row.py is frozen; operator 2026-11-06).
 """
-import hashlib
-import json
 import os
 import re
 import sys
@@ -15,13 +17,6 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 FENCE_NAMES = ("write_fence.py", "smoke_admission.py", "smoke_root_exec.py")
 MAX_FILES = 400
-
-
-def _bad():
-    try:
-        return json.loads((HERE / "known_bad_templates.json").read_text())
-    except (OSError, ValueError):
-        return {"bad": {}, "fixed_vendored_v42": []}
 
 
 THREAD_VARS = ("OMP_NUM_THREADS", "AUTOKERNEL_BACKEND_THREADS", "AUTOKERNEL_CPU_N_THREADS", "GGML_N_THREADS",
@@ -47,8 +42,6 @@ def lint_dir(path):
     root = p if p.is_dir() else p.parent
     if not root.is_dir():
         return []
-    db = _bad()
-    bad, fixed = db.get("bad", {}), set(db.get("fixed_vendored_v42", []))
     warns, seen = [], 0
     for dirpath, dirs, files in os.walk(root):
         dirs[:] = [d for d in dirs if not d.startswith((".", "out", "smoke-", "gitnexus-home", "__pycache__"))]
@@ -59,14 +52,12 @@ def lint_dir(path):
             f = Path(dirpath) / n
             if n in FENCE_NAMES:
                 try:
-                    h = hashlib.sha256(f.read_bytes()).hexdigest()
+                    t = f.read_text(errors="replace")
                 except OSError:
                     continue
-                if h in bad:
-                    warns.append(f"template-lint: {f} vendors known-bad {bad[h]} sha {h[:12]} (no GPU device/TMPDIR/"
-                                 "affinity-subset/HIP-temp fixes); import compute-flags/bin/job_templates/job_fence.py")
-                elif h in fixed:
-                    warns.append(f"template-lint: {f} vendors a fixed copy; import job_templates/job_fence.py instead")
+                if "job_fence" not in t:
+                    warns.append(f"template-lint: {f} is a vendored fence/smoke copy that does not import "
+                                 "job_templates/job_fence.py; import compute-flags/bin/job_templates/job_fence.py")
             elif n.endswith((".py", ".sh")):
                 try:
                     t = f.read_text(errors="replace")

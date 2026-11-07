@@ -32,7 +32,9 @@ def run(tool: str, path: str, env: dict | None = None) -> int:
         ["bash", str(HOOK)],
         input=json.dumps({"tool_name": tool, "tool_input": {"file_path": path}}),
         capture_output=True, text=True, cwd=str(REPO_ROOT),
-        env={**os.environ, **(env or {})},
+        # Pin the hook's repo root to THIS checkout: it defaults to $CLAUDE_PROJECT_DIR
+        # (else /workspace), so a worktree run was testing the wrong tree.
+        env={**os.environ, "CLAUDE_PROJECT_DIR": str(REPO_ROOT), **(env or {})},
     ).returncode
 
 
@@ -58,7 +60,9 @@ CASES: list[tuple[str, str, int, str]] = [
     ("Edit",  "measurement/protocols/bench-cpu.md", 2, "Annex B (wildcard, relative path)"),
     # must allow — ordinary work
     ("Edit",  str(REPO_ROOT / "coordination/session-bus/config.yaml"), 0, "bus config (agent-editable)"),
-    ("Edit",  str(REPO_ROOT / "CLAUDE.md"), 0, "CLAUDE.md"),
+    # CLAUDE.md joined the gate list in 5fad27d56 (AUD-15): it is now human-only, so it
+    # moves from the must-allow block to a must-block case.
+    ("Edit",  str(REPO_ROOT / "CLAUDE.md"), 2, "CLAUDE.md (auto-loaded instruction surface, gate-listed)"),
     ("Edit",  str(REPO_ROOT / "handoffs/active/session-bus-thin-dispatcher.md"), 0, "a handoff"),
     ("Write", str(REPO_ROOT / "scripts/coordination/session_bus.py"), 0, "a source file"),
     ("Edit",  str(REPO_ROOT / "MEASUREMENT_NOTES.md"), 0, "similarly-named non-boundary file"),

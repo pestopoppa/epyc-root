@@ -28,6 +28,7 @@ import itertools
 import json
 import os
 import re
+import shlex
 import sys
 import time
 from dataclasses import dataclass, field, replace
@@ -133,6 +134,62 @@ def sha256(path):
         for b in iter(lambda: f.read(1 << 20), b""):
             h.update(b)
     return h.hexdigest()
+
+
+_ENGINE_RE = re.compile(r"filler_run(\d+)\.sh$")
+_ABS_TOKEN = re.compile(r"(?<![\w.])(/[^\s'\"`;|&()<>]+)")
+
+
+def launcher_refs(path):
+    """Port of rowflow parse_launcher + referenced_paths (K:347, K:601), file-reference rule only: the absolute, existing
+    paths the filler engine line executes or uses (engine, --cmd / --complete-cmd tokens, --workdir) after resolving the
+    launcher's top-level VAR= assignments and $(dirname "$0"). No engine line -> [] (the launcher alone is hashed)."""
+    text = open(path, errors="replace").read()
+    assigns = {m[1]: m[3] for m in re.finditer(r'^(?:export\s+)?([A-Za-z_][A-Za-z_0-9]*)=("?)([^\n"]*)\2\s*$', text, re.M)}
+    assigns.setdefault("HERE", os.path.dirname(path))
+
+    def expand(x):
+        for _ in range(3):
+            x = re.sub(r"\$\{([A-Za-z_][A-Za-z_0-9]*)(?::[-?][^}]*)?\}|\$([A-Za-z_][A-Za-z_0-9]*)",
+                       lambda m: assigns.get(m.group(1) or m.group(2), m.group(0)), x)
+            x = x.replace('$(dirname "$0")', os.path.dirname(path)).replace("$(dirname $0)", os.path.dirname(path))
+        return x
+    line = next((el for el in (expand(l) for l in re.sub(r"\\\n", " ", text).splitlines())
+                 if re.search(r"filler_run\d+\.sh", el) and "--id" in el), None)
+    if not line:
+        return []
+    toks = shlex.split(line, comments=True)
+    i = next((i for i, t in enumerate(toks) if _ENGINE_RE.search(t)), None)
+    if i is None:
+        return []
+    o, opt = {"engine": toks[i], "workdir": "/workspace"}, {"--cmd": "cmd", "--complete-cmd": "complete_cmd", "--workdir": "workdir"}
+    for j in range(i + 1, len(toks) - 1):
+        if toks[j] in opt:
+            o[opt[toks[j]]] = toks[j + 1]
+    out = []
+    for v in (o.get("engine", ""), o.get("cmd", ""), o.get("complete_cmd", ""), o.get("workdir", "")):
+        for t in _ABS_TOKEN.findall(" " + str(v)):
+            t = t.rstrip("/.,:") or t
+            if os.path.exists(t) and t not in out:
+                out.append(t)
+    return out
+
+
+def job_sha(launcher_path, sha_cache=None):
+    """sha256 over the launcher and every existing file it references (rowflow job_sha, K:255, operator 2026-11-06): a
+    changed job.py under an unchanged launcher is a new attempt. Raises OSError when the launcher is unreadable."""
+    sha_cache = {} if sha_cache is None else sha_cache
+    try:
+        refs = launcher_refs(launcher_path)
+    except (ValueError, StopIteration):
+        refs = []
+    files = sorted({os.path.realpath(x) for x in refs if os.path.isfile(x)} | {os.path.realpath(launcher_path)})
+    parts = []
+    for f in files:
+        st = os.stat(f)
+        key = (f, st.st_mtime, st.st_size)
+        parts.append(f"{f} {sha_cache.get(key) or sha_cache.setdefault(key, sha256(f))}")
+    return hashlib.sha256("\n".join(parts).encode()).hexdigest()
 
 
 def head1(path):
@@ -332,7 +389,14 @@ def cpu_multi_quarter_need(need):
     cores behind the gpu host threads 184-191 (inc. lsa-quality-32k-r5-pca granted q1+q3: c7-q38-ppl-bisect-r5 waited 600 s
     on q3, rc75, MI210 idle ~40 min). A width need wider than one quarter drops q3 from its pool and waits for q0-q2 when
     they are busy; a host-wide width that cannot fit q0-q2 (> 3 quarters) and concrete / one-quarter needs are unchanged."""
-    if need.options is not None or need.width is None or need.width < _MULTI_QUARTER_MIN_WIDTH:
+    if need.options is not None:   # any-N-quarters (legacy accepted multi-quarter(N)): drop every option touching q3
+        multi = [o for o in need.options if len(o) >= _MULTI_QUARTER_MIN_WIDTH]
+        if len(need.options) > 1 and multi and len(multi) == len(need.options):
+            opts = tuple(o for o in need.options if not (o & _Q3_CORES))
+            if opts:
+                return Need(opts, need.pool - _Q3_CORES, None)
+        return need
+    if need.width is None or need.width < _MULTI_QUARTER_MIN_WIDTH:
         return need
     pool = need.pool - _Q3_CORES
     return Need(None, pool, need.width, need.fixed) if len(pool) >= need.width else need
@@ -348,9 +412,17 @@ def grant_need(s):
         need = timing_need(need)
         if need is None:
             return None
-    if s["gpu"] == "exclusive" and not s["quiet"]:
+    if is_gpu_timing(s):
         need = gpu_timing_need(need)
     return need
+
+
+def is_gpu_timing(s):
+    """decision 10 (2026-11-07): only a GPU TIMING row holds 88-95 beside the gpu - `timing: true` (legacy block-timing-*)
+    or legacy shape gpu-q3. A class-less legacy `shape: gpu` row stays gpu-exclusive (decision 1) but holds gpu + 184-191
+    only, as in the keeper (SKILL.md: shape gpu = GPU + 184-191, q3 stays grantable)."""
+    return (s["gpu"] == "exclusive" and not s["quiet"]
+            and bool(s.get("timing") or (s.get("legacy") or {}).get("shape") == "gpu-q3"))
 
 
 def fits_need(need, cores):
@@ -1035,21 +1107,6 @@ def file_decisions(ended, specs, claims, now):
     return acts
 
 
-# ============================================================== lineage / supersede
-def lineage_fails(rid, specs, fails):
-    """FAIL count along the supersedes chain back to (and including) the nearest row naming fix_ref."""
-    n, cur, seen = 0, rid, set()
-    while cur and cur not in seen:
-        seen.add(cur)
-        n += fails.get(cur, 0)
-        d = specs.get(cur) or {}
-        if d.get("fix_ref"):
-            break
-        sup = d.get("supersedes")
-        cur = sup[0] if isinstance(sup, list) and sup else sup if isinstance(sup, str) else None
-    return n
-
-
 # ============================================================== IO: the world
 @dataclass
 class World:
@@ -1145,9 +1202,16 @@ def load_world(flags, now, sha_cache=None):
             w.unmapped[rid], w.state[rid] = "admit: launcher unreadable", "unmapped"
             continue
         w.launcher_sha[rid] = cur
+        try:
+            jcur = job_sha(lp, sha_cache)
+        except OSError:
+            jcur = None
+
+        def same(rec):   # decision 10: launcher sha AND job sha (an unrecorded job sha matches, as in rowflow fresh_attempt)
+            return rec.get("launcher_sha256") == cur and rec.get("job_sha256") in (None, jcur)
         pk = load_json(os.path.join(D, rid, "PARKED.json"))   # P4.3 #1: a refusal park binds the row AS PUBLISHED
         if pk:
-            if pk.get("launcher_sha256") == cur and pk.get("spec_sha256") == spec_sha(d):
+            if same(pk) and pk.get("spec_sha256") == spec_sha(d):
                 w.parked[rid], w.state[rid] = pk, "parked"
                 continue
             w.stale_parks.append(rid)   # the launcher or the manifest changed: the park no longer binds (tick removes it)
@@ -1155,10 +1219,10 @@ def load_world(flags, now, sha_cache=None):
         un_at = os.path.getmtime(os.path.join(D, rid, "UNPARK.json")) if os.path.exists(os.path.join(D, rid, "UNPARK.json")) else 0.0
         smoke_fails = [f for f in glob.glob(os.path.join(D, rid, "FAIL-*.json"))
                        if not os.path.basename(f).startswith("FAIL-refused-") and os.path.getmtime(f) > un_at]   # an unpark forgives older smoke FAILs
-        if p and p.get("launcher_sha256") == cur:
+        if p and same(p):
             w.pending.append(spec)
             w.state[rid] = "pending"
-        elif any((load_json(f) or {}).get("launcher_sha256") == cur for f in smoke_fails):
+        elif any(same(load_json(f) or {}) for f in smoke_fails):
             w.state[rid] = "failed"
         else:
             w.smoke_queue.append(spec)
@@ -1325,6 +1389,20 @@ def smoke_alert(flags, rid, now, deadline=False):
         pass
 
 
+def stamp_job_sha(flags, rid):
+    """The harness writes PASS / FAIL-* with the launcher sha only: copy the job sha the smoke started under (SMOKE.json)
+    into this smoke's verdicts, so a later job.py edit under the same launcher re-smokes the row (decision 10)."""
+    dd = os.path.join(flags, "dryrun", rid)
+    sm = load_json(os.path.join(dd, "SMOKE.json")) or {}
+    if not sm.get("job_sha256"):
+        return
+    for f in glob.glob(os.path.join(dd, "PASS.json")) + glob.glob(os.path.join(dd, "FAIL-*.json")):
+        r = load_json(f)
+        if r is not None and "job_sha256" not in r and os.path.getmtime(f) >= float(sm.get("start", 0)) - 1:
+            r["job_sha256"] = sm["job_sha256"]
+            write_text(f, json.dumps(r) + "\n")
+
+
 def park(flags, rid, spec, kind, e, now, log):
     """P4.3 #1: ONE FAIL-refused record + ONE alert per refusal episode; PARKED.json binds the row as published (launcher
     sha + spec sha); the refusing .ended is kept as evidence under dryrun/ and the grant is dropped, so the row is neither
@@ -1332,14 +1410,14 @@ def park(flags, rid, spec, kind, e, now, log):
     dd, G = os.path.join(flags, "dryrun", rid), os.path.join(flags, "grants")
     n = len(glob.glob(os.path.join(dd, "FAIL-refused-*.json"))) + 1
     try:
-        lsha = sha256(spec["launcher"])
+        lsha, jsha = sha256(spec["launcher"]), job_sha(spec["launcher"])
     except (OSError, KeyError):
-        lsha = None
+        lsha = jsha = None
     ssha = spec_sha(load_json(os.path.join(flags, "ready", rid + ".json")) or spec)
     fix = (f"{rid}: launcher refused at admission ({kind}, rc={e.get('rc')}, reason={e.get('reason') or '-'}); parked - "
            f"fix the launcher/precond target or the manifest and republish, or `rowflow2.py unpark --id {rid}`")
     rec = {"id": rid, "kind": "refused", "refusal": kind, "rc": e.get("rc"), "reason": e.get("reason"), "at": iso(now),
-           "launcher_sha256": lsha, "spec_sha256": ssha, "attempt": n, "fix_task": fix}
+           "launcher_sha256": lsha, "job_sha256": jsha, "spec_sha256": ssha, "attempt": n, "fix_task": fix}
     write_text(os.path.join(dd, f"FAIL-refused-{n}.json"), json.dumps(rec) + "\n")
     write_text(os.path.join(dd, "PARKED.json"), json.dumps(rec) + "\n")
     if _ex(G, rid + ".ended"):
@@ -1455,6 +1533,7 @@ def tick(flags, now, meas, state, log, runner=None):
             state.setdefault("measured_done", []).append(gid)
     grants = list(byid.values())
     for rid in w.smoke_finished:
+        stamp_job_sha(flags, rid)
         smoke_alert(flags, rid, now)
         os.remove(os.path.join(flags, "dryrun", rid, "SMOKE.json"))
     pend, waiting = smoke_rank_gate(w.pending, w.smoke_queue)
@@ -1478,6 +1557,7 @@ def tick(flags, now, meas, state, log, runner=None):
             spec = w.specs[a[1]]
             write_text(os.path.join(dd, "SMOKE.json"), json.dumps({"id": a[1], "start": a[2], "deadline": a[3],
                        "cores": cpulist(SMOKE_CORES), "launcher_sha256": sha256(spec["launcher"]),
+                       "job_sha256": job_sha(spec["launcher"]),
                        "env": smoke_env(spec)}) + "\n")
             log(f"SMOKE-START {a[1]} cores={cpulist(SMOKE_CORES)} deadline={iso(a[3])}")
             if runner:
@@ -1487,7 +1567,8 @@ def tick(flags, now, meas, state, log, runner=None):
                 runner.kill(a[1])
             spec = w.specs.get(a[1]) or {}
             write_text(os.path.join(dd, "FAIL-deadline.json"), json.dumps({"reason": "smoke deadline", "at": iso(now),
-                       "launcher_sha256": sha256(spec["launcher"]) if spec else None}) + "\n")
+                       "launcher_sha256": sha256(spec["launcher"]) if spec else None,
+                       "job_sha256": (load_json(os.path.join(dd, "SMOKE.json")) or {}).get("job_sha256")}) + "\n")
             smoke_alert(flags, a[1], now, deadline=True)
             os.remove(os.path.join(dd, "SMOKE.json"))
             log(f"SMOKE-DEADLINE {a[1]} killed")

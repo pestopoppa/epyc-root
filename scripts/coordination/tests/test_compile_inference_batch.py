@@ -15,6 +15,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+pytest.importorskip("jsonschema", reason="compile_inference_batch needs jsonschema (orchestrator venv has it; system python3 does not)")
+
 # Make the sibling modules importable without packaging.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 

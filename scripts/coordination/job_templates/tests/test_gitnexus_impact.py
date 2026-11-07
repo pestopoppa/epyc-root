@@ -83,8 +83,20 @@ def test_template_lint_warns_on_vendored_copies(tmp_path):
     (tmp_path / "write_fence.py").write_bytes((HERE / "fixtures" / "write_fence_v40_template.py").read_bytes())
     (tmp_path / "job.py").write_text('run(["gitnexus","analyze"]); run(["gitnexus", "impact"]) # "impact"')
     w = template_lint.lint_dir(tmp_path / "launch.sh")
-    assert any("known-bad write_fence.py" in x for x in w) and any("gitnexus-impact" in x for x in w)
+    assert any("write_fence.py" in x for x in w) and any("gitnexus-impact" in x for x in w)
     ok = tmp_path / "ok"
     ok.mkdir()
     (ok / "job.py").write_text("import gitnexus_impact")
     assert template_lint.lint_dir(ok) == []
+
+
+def test_fence_lint_import_rule(tmp_path):
+    bad, good, none = (tmp_path / n for n in ("bad", "good", "none"))
+    for d in (bad, good, none):
+        d.mkdir()
+    (bad / "smoke_admission.py").write_text("def apply(paths): pass\n")
+    (good / "write_fence.py").write_text("from job_fence import fence\n")
+    (none / "job.py").write_text("print(1)\n")
+    assert any("smoke_admission.py" in x and "job_fence" in x for x in template_lint.lint_dir(bad))
+    assert template_lint.lint_dir(good) == []
+    assert template_lint.lint_dir(none) == []

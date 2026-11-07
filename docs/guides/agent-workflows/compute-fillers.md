@@ -1,214 +1,135 @@
 # Compute Fillers
 
-Early-ending compute blocks leave gaps. Registered **fillers** use them, without ever competing with the calendar.
+Inference rows run on the shared host only inside a **grant** the keeper writes. This page is the launcher-side
+contract: how a row is published, smoked, granted, run and ended, and the job-side rules bought by incidents.
 
-- Registry: `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` (one row per filler: id, owner, launcher + PID, resources, minimum useful window, max private RAM, STOP file, status). This is a separate file from the calendar; never edit the calendar from it.
-- Grants dir: `/mnt/raid0/llm/tmp/compute-flags/grants/`.
-- How the calendar owner PACKS the queue onto the host (bins, derived classes, grant-writer invariants,
-  the operator STATUS/ETA report, `queue_status.py`): project skill `.claude/skills/inference-backlog-scheduling/`.
+- **Flow** (publish → smoke → grant → run → file): `backlog-churn-flow.md` → *The row flow* and *The allocator*.
+- **Packing** (bins, shapes, priority, the STATUS/ETA report): project skill `.claude/skills/inference-backlog-scheduling/`.
+- **Code**: `scripts/coordination/rowflow/` (`publish_row.py`, `rowflow.py allocate`, `filler_run15.sh`, `notify.py`;
+  its README has the inference-mailbox watcher) and the successor `scripts/coordination/rowflow2/` (design
+  `docs/design/rowflow2-20261105.md`).
+- **Live state**: `/mnt/raid0/llm/tmp/compute-flags/` — `ready/<id>.json` (`epyc.row.v3`), `dryrun/<id>/PASS.json |
+  FAIL-n.json`, `grants/<id>.grant|.ended|.complete`, `notify/inbox/inference.jsonl`, keeper log
+  `ws58-calendar-keeper.log`.
+- Plan long measurements with [measurement sufficiency](measurement-sufficiency.md); a grant end is a resource
+  boundary, not a scientific completion criterion.
 
-Plan long measurements and intermediate decisions using [measurement sufficiency](measurement-sufficiency.md); a grant end is a resource boundary, not a scientific completion criterion.
+Consolidated 2026-11-07 (keeper-friction review pass 5). The writer-era protocol (FREED flags, grant writers,
+`grant_ok.sh`, `ram_admit.sh`, FILLERS 18-cell rows, `filler_run2..8`, owner duties 1-30, the *Queue semantics* and
+*Grant validator* sections) was retired by the 2026-11-01 "one allocator" ruling; its text is in this file's git
+history before this date and its incidents in the skill's incident ledger
+(`.claude/skills/inference-backlog-scheduling/references/incident-ledger.md`). Those tools stay on disk for rows
+armed before 2026-11-01 only.
 
 ## Deploying rowflow: `deploy_rowflow.sh` is the ONLY sanctioned path (operator 2026-11-05)
 
 > **FROZEN (operator 2026-11-05, "Freeze current + build rowflow2").** `rowflow.py`, `publish_row.py` and
-> `filler_run15.sh` are frozen at the deployed `9218dffd1` (`bin/rowflow/DEPLOYED.json`). `deploy_rowflow.sh` refuses
-> (exit 77) any deploy that would change one of them unless `--emergency "<reason>"` is given; the reason is recorded
-> in `DEPLOYED.json` (`emergency`, `emergency_log`) and the unit + replay gates still run. No new rules, no
-> per-incident `if` in `plan()`/`contract_of`: a scheduling fix lands in **rowflow2**
-> (`scripts/coordination/rowflow2/`, design `docs/design/rowflow2-20261105.md`), which runs in read-only SHADOW beside
-> the live keeper. **Exit criterion:** rowflow2 passes its shadow week (switch-over criteria in the design doc) and is
-> cut over; until then the freeze holds. Other `bin/rowflow/` files (`notify.py`, `hostutil.py`, …) deploy as before.
+> `filler_run15.sh` are frozen (`bin/rowflow/DEPLOYED.json`). `deploy_rowflow.sh` refuses (exit 77) any deploy that
+> would change one of them unless `--emergency "<reason>"` is given; the reason is recorded in `DEPLOYED.json` and the
+> unit + replay gates still run. No new rules, no per-incident `if` in `plan()`/`contract_of`: a scheduling fix lands in
+> **rowflow2**, which runs in read-only SHADOW beside the live keeper. **Exit criterion:** rowflow2 passes its shadow
+> week (criteria in the design doc) and is cut over; until then the freeze holds. Other `bin/rowflow/` files
+> (`notify.py`, `hostutil.py`, …) deploy as before.
 
-Nothing may copy files into `compute-flags/bin/rowflow/` by hand. The one path is
-`scripts/coordination/rowflow/deploy_rowflow.sh [--ref origin/main] [--check-only]`: it stages a detached worktree
-of `<ref>`, runs its unit tests (`tests/test_rowflow*.py`, `test_allocator.py`) **and the replay gate**
-(`scripts/coordination/tests/replay/test_replay_gate.py` against the staged `rowflow/`), refuses on any failure,
-refuses to swap `filler_run15.sh` under open grants, then backs up each changed file (`<f>.bak-<UTC>-deploy`), installs
-via `<f>.part` + `mv -f`, writes `bin/rowflow/DEPLOYED.json`, and requires a keeper `SNAPSHOT` with no traceback
-within 300 s, rolling back otherwise. Run `--check-only` before asking for a deploy.
+Nothing may copy files into `compute-flags/bin/rowflow/` by hand. `scripts/coordination/rowflow/deploy_rowflow.sh
+[--ref origin/main] [--check-only] [--emergency "<reason>"]` stages a detached worktree of `<ref>`, runs the unit tests
+and the replay gate (`scripts/coordination/tests/replay/`), refuses on any failure, refuses to swap `filler_run15.sh`
+under open grants, backs up each changed file, installs via `<f>.part` + `mv -f`, writes `DEPLOYED.json`, and requires a
+keeper `SNAPSHOT` with no traceback within 300 s, rolling back otherwise. Run `--check-only` before asking for a deploy.
+A new incident class = a new scenario in `tests/replay/scenarios.py`, never a new `if`.
 
-The replay harness (`scripts/coordination/tests/replay/`, design in `replay_lib.py`): `record_trace.py` writes
-`epyc.rowflow.trace.v1` traces read-only (`live` from the flags dir, `from-log` reconstructing a day from the keeper
-log); `replay_allocator.py` runs any `rowflow.py` (a dir, or `versions --commits`) through a trace in a sandboxed
-flags dir with a fake clock and simulated jobs, and checks invariants with its own oracle: no STOPped row granted, no
-regrant after a release without `.ended`, a <= 4-thread row never gets the whole host, no >= 2-quarter / whole-host
-booking without evidence (declared shape never bypasses it), GPU-timing keeps q3 quiet while GPU work leaves it
-grantable, whole-host CPU serving (npd1-step5) admitted, coexist decided by engine lock sets, a queued smoke under a
-whole-host grant WAITs, a wedged dry run is reaped past its deadline and a dead one frees its cpus within one tick,
-and every idle region names its blocking rule. Each replay reports idle quarter-hours and gpu-hours with candidates
-pending, so two versions can be compared on the same trace. A new incident class = a new scenario in `scenarios.py`.
+## The grant contract (what a launcher must do)
 
-## Protocol
+1. **No grant, no run.** The launcher (`filler_run15.sh --id <id> --class cpu|gpu|cpu+gpu --cmd ... --min-window S
+   --stop <abs STOP>`) polls `grants/<id>.grant` (`regions=<...> start=<UTC> end=<UTC hard>`), shell `sleep` only, and
+   runs only inside the window, under exactly the granted regions (`FILLER_CPUS`, `FILLER_THREADS`, `FILLER_END_ISO`
+   in the job env). The keeper is the only grant writer; peers never write grants.
+2. **One row = one STOP file, absolute, never shared with a sibling row** (one withdraw killed every sibling,
+   2026-11-06). STOP is honoured before start, between items and mid-job.
+3. **At `end` or STOP:** stop new items, SIGTERM then SIGKILL by the pid / process group the launcher itself created
+   (never a name pattern), verify dead, stop + remove the docker containers the row started (`epyc.filler.row=<id>`
+   label, via the `docker` shim), release the claim, delete the grant, write `grants/<id>.ended` (`rc=<n> time=<UTC>
+   reason=<...>`). `rc=75` = window/deadline, `124` = hard end, `5` = `--precond-cmd` build missing, `2` = unusable
+   grant for the class, `4` = port/lock refused, `78` = fenced GPU test that never touched the GPU.
+4. **All work done:** write `grants/<id>.complete`; the launcher exits for good. Only a *grant* may complete a row; a
+   smoke's outputs never count.
+5. **Resumable** where the work allows it (resume-skip on already-written units); a run over 1.5x its estimate is a
+   failure to explain; a row whose predecessor ended `rc=75 deadline` republishes with a larger `estimate_s`.
+6. **Watch your own rows.** Every row alert lands in the inference mailbox; arm the zero-token watcher in
+   `scripts/coordination/rowflow/README.md` right after `publish_row.py`, read with `rowflow.py alerts --unacked`, ack
+   with `--ack <key>`. On any `.ended rc!=0`: read the log, name the cause, fix, republish (`-rN`, `supersedes`), never
+   re-grant a failure blind.
 
-1. A block that ends before its booked end writes `/mnt/raid0/llm/tmp/compute-flags/<block>_FREED`. The calendar owner (workspace-58) consumes it.
-2. The calendar owner grants the gap to a registered filler by writing `grants/<filler-id>.grant`, one line: `regions=<...> start=<UTC> end=<UTC hard>`.
-3. The filler launcher polls its own grant file (every 30-60 s, shell `sleep` only, no LLM) and runs only between `start` and `end`, under its own **build-role** region-lock claim. **No grant, no run.** One grant is one run; then it waits for the next.
-4. At `end`: stop new items, SIGTERM then SIGKILL the run (kill by captured PID / the process group the launcher itself created, never by name pattern), verify dead, release the claim, delete the grant, write `grants/<filler-id>.ended` (`rc=<n> time=<UTC> reason=<...>`).
-5. All work done: write `grants/<filler-id>.complete`, mark the registry row COMPLETE, exit for good.
+## Job-side rules (each bought by an incident; dates in the skill's incident ledger)
 
-## Rules for a filler
-
-- Resumable: a slice of any size must be useful (resume-skip on already-written rows).
-- Honours a STOP file between items (a started item is finished).
-- Build-role claims only; never runs inside a timing block unless the grant says so.
-- Respects the host rule of at most ONE DS41-class CPU server (>= 200 GiB) at a time.
-- Mutual exclusion: refuses to start while the scheduled runner for the same results file is live (its server port listening, or the per-arm runner lock held) and reports it as `.ended rc=4`.
-- Test before arming: `bash -n`, then a dry-run with a fake grant in a temp grants dir (`FILLER_GRANTS_DIR`) and a stub runner (`FILLER_STUB_CMD`) proving poll, start, end, cleanup, `.ended`.
-
-## Queue semantics and launcher rules (2026-10-22)
-
-The operator's ruling: "Being queued implies BEING ready."
-
-- **QUEUED** means status ARMED and `ready=y`, with a live launcher pid that is polling its grant id. Every other row is **BACKLOG**, with a named `blocker=` and an owner. A row that is "ready but nobody armed it" is BACKLOG (`blocker=missing launcher`), not QUEUED. The calendar owner grants only QUEUED rows. `scripts/coordination/validate_fillers.py` enforces this (see *Grant validator* below).
-- **ARMED means ready to run, waiting only for a window** (operator, 2026-10-25: "only arm into the calendar inference tasks that are actually ready to go but need a window"). A row blocked on anything else (a code fix, an operator decision, a HOLD, a missing or unproven launcher) is BACKLOG with `blocker=`, even while its poller is alive.
-- **A failed or HELD end demotes the row in the read-out step itself.** The step that reads the result and files the fix also sets the row to BACKLOG, `ready=n`, `blocker=<task/fix>` in notes. Writers park items in their own `.done`/`.held` files and never write FILLERS, so only the owner can do this. Re-ARM (`ready=y`, live `pid=`) only after the fix is pinned in what the launcher runs. At every task boundary, run `queue_status.py`: an ARMED-UNBOOKED row that cannot actually run is a defect, fixed that turn. Origin: 10-25, four stale ARMED rows (inf66, akx-lb3-2, hpr-b, nib2-gnx1-reindex-2) nearly starved the KPF-64.3 EB one-shot writer, whose gate waits until no ARMED whole-host row is pending.
-- **One live launcher per grant id.** A launcher keeps polling its id after its window ends, so two live launchers on one id race for the next grant. To re-arm, kill the old poller by its captured PID, verify it is dead, then start the new one.
-- **A filler's inner claim must match its FILLERS resources.** If the job claims more than the row books, it times out behind other holders. `akx-all-27b-run` asked for `gpu-quiet` excl + q0-q3 while booked for the GPU plus 184-191, hit rc=75, and left the MI210 idle for 40 min.
-- **Never grant q3 while a GPU runner holds it.** A GPU job's host threads (184-191) are SMT siblings in q3 and claim that quarter. A CPU grant on q3 during a GPU window only queues behind the GPU job. On 2026-10-22 the calendar owner granted `v11-086-fa-vkq-build` q3 while f8's KPF-18 S1 GPU sweep held it until ~13:02Z, and the build waited. Check the GPU calendar before granting q3.
-- **region-lock folds `--cpu-list 184-191` into a q3 claim.** The MI210 sat idle 12:24-12:41Z behind a q3 build that the calendar owner had granted (the second q3 violation on 2026-10-22). The first fix, `region-lock --no-fold-siblings`, does not work: `--cpu-list 184-191 maps to no regions`, rc=1 (12:44Z). The working pattern is `filler_run6.sh`: the GPU job claims **GPU-quiet only** (no CPU region) and tasksets 184-191 itself.
-- **No timing-class CPU work on q3 during GPU windows.** Correctness and build work may use q3 only when no GPU runner holds it. An exception is a job that deliberately keeps its folded timing claim (`kpf60` does), which needs q3 empty for its short timing step.
-- **No ungranted region-lock claims.** A subagent started `cs8l-asr2` (a CS-8.L second-ASR job) on q2 at 12:50Z with no grant. It was found from the region holder list, its owner was identified, and the owner killed it by its own PIDs (~12:55Z). Every claim needs a `grants/<id>.grant`; re-queue as a filler row if the work is wanted.
-- **Use an explicit interpreter under region-lock**, for example `/usr/bin/python3` or the venv path you mean. A bare `python3` inside `region-lock run` resolves to the orchestrator `.venv` 3.11, and f8-day-q0 failed with rc=2 that way.
-- **Never wrap a check in `strings <bin> | grep -q` under `set -o pipefail`.** `grep -q` exits on its first match and `strings` dies of SIGPIPE, so the pipeline fails even though the match was found (f8's "wrong build" false alarm). Capture first (`strings <bin> > f; grep -q PAT f`), or use `grep -c` with no early exit.
-
-## Owner duties (2026-10-22)
-
-Operator directive, relayed by the calendar owner. Every session that owns a filler is bound by these.
-
-1. **Watch your own jobs.** Keep a zero-token watcher on your armed PIDs and their end/FAILED/SKIPPED flags and grant `.ended`/`.complete` files. On any change, investigate WHY, fix it, and re-queue through FILLERS.md and grant requests without waiting for the operator. A run over 1.5x its estimate is a failure to explain.
-2. **RAM admission.** Host RAM is booked. FILLERS.md column 6 ("peak host RAM GiB") = private/anon peak + file-mapped weight bytes. Every subagent brief that loads a model runs `/mnt/raid0/llm/tmp/compute-flags/ram_admit.sh <peak_host_GiB> [ds41]` first and stops if it refuses. At most one DS41-class CPU server runs on the host at a time.
-3. **Quiet windows.** While a quiet-host timing window is active, subagent briefs forbid clones, builds, tests, servers and heavy scripts. Any activity that happens anyway is logged in that run's HOST_ACTIVITY_DISCLOSURES file.
-4. **Before idling for the night,** list every armed job with its end flag and confirm a watcher covers each one.
-5. **Wrap-up** at each task boundary.
-6. **Re-arming after killing a poller.** Use `/mnt/raid0/llm/tmp/fillers-3c4ca599/filler_run5.sh`; older launchers (`filler_run.sh` to `filler_run4.sh`) need the manual capture: their orphaned `sleep 45` child keeps the launcher lock fd, so an immediate re-arm exits with "another launcher ... already running"; capture the child sleep (`pgrep -P <pid>`) before killing, kill it too, verify both dead, and only then re-arm. `filler_run5.sh` is `filler_run2.sh` with the same CLI plus `--repeat`: it closes the lock fds (7 launcher lock, 8 runner lock) on its poll and watch `sleep`s and fd 7 on the job group (CTC-Q-H), exits after ONE window that started the job unless `--repeat` is given, and never deletes or ends a grant while another process holds the same id's runner lock (CTC-Q-G). A re-arm only swaps the script name (add `--repeat` to keep the old keep-polling behaviour). Dry-run evidence: `/mnt/raid0/llm/tmp/fillers-3c4ca599/dryrun5_out.txt` (the harness, `dryrun5_test.sh`, sits beside it). Seen twice on 2026-10-22.
-7. **Never edit a job script a running poller may execute.** Version it instead (the `kpf64_job2.sh` pattern).
-8. **Two pollers can split one experiment** only over disjoint result dirs. Analysis and the done-marker go to whichever job sees all arms complete.
-9. **GPU jobs use `filler_run6.sh --no-fold-siblings`.** A GPU-class run claims `gpu-quiet` only and the job tasksets itself onto its host threads. Never pass region-lock's own `--no-fold-siblings` with an SMT-only `--cpu-list` (e.g. `184-191`): region-lock refuses with "maps to no regions" (akx died rc=1 in 4 s, 2026-10-22). Without it the same list folds into a whole-q3 claim and the MI210 idles behind a q3 build. A GPU-only claim is `--gpu-quiet` with no `--cpu-list`.
-10. **Never edit a launcher a live poller is executing.** Version it (`filler_run5.sh` to `filler_run6.sh`), as item 7 does for job scripts, then re-arm pollers onto the new name.
-11. **A subagent brief must say that ANY model execution needs a filler row plus a grant, ASR and TTS included.** "Allowed if no inference" is ambiguous for ASR: a subagent ran an ungranted whisper large-v3 second-ASR job on q2 (2026-10-22; killed and verified dead by main).
-12. **The Bash containment hook refuses variable-expanded write targets.** Use literal paths in launch commands.
-13. **New arms use `filler_run7.sh`** (`/mnt/raid0/llm/tmp/fillers-3c4ca599/`; run6 plus one change). `--class gpu --gpu-quiet exclusive` with neither `--claim-cpus` nor `--no-fold-siblings` exits 64 instead of silently claiming CPUs 0-95. Whole-host timing jobs say `--claim-cpus 0-95` explicitly; GPU-only jobs use `--no-fold-siblings`. Existing pollers migrate at their next re-arm (never edit a live launcher). Dry-run proof: `dryrun7_test.sh`. Containers launched by a GPU job must also carry `--cpuset-cpus "$FILLER_CPUS"`, since `taskset` on the docker client does not confine the container.
-
-### Subagent brief rules (2026-10-22 additions)
-
-14. **Never delete or modify the coordinator's scratchpad (`/tmp/claude-1000/...`) or any path you did not create.** A HIL-6 subagent's scratch cleanup deleted main's watcher script; main's watcher now lives at `/mnt/raid0/llm/tmp/fillers-3c4ca599/own_jobs_watch.sh`. Put anything long-lived under `/mnt/raid0/llm/tmp`.
-15. **Qwen3.6+ endpoints: every harness request on the chat path sends `chat_template_kwargs {enable_thinking:false}`** unless thinking is pre-registered. It bit cme7 and hsprof1 the same way (empty content, all tokens spent on reasoning). Harnesses fail loudly on an empty reply. **Server side (source-level fix, 2026-10-22):** jobs launching Qwen3.x servers MUST `. jobs/qwen_thinking_lib.sh`, pass `$(qwen_reasoning_args "$MODEL")` (-> `--reasoning off`) in the server argv, and run `qwen_first_reply_preflight $PORT` after the own-PID port proof and before the workload (rc 9 = thinking still on / empty content). A per-request `enable_thinking:true` still overrides the server default (`server-common.cpp:1074-1087`), so pre-registered thinking-ON arms are unaffected.
-16. **Never run a CPU-wide preflight or bench inside a GPU-only grant.** `run_benchmark` now auto-skips the canonical tripwire under `--existing-server-port`. Containers need `--cpuset-cpus` (item 13).
-17. **Pinned-worktree jobs refuse a dirty tree,** and a shared lib must not reassign a job's pinned tree variable (the pyarrow/shared-lib clobber of RESEARCH in hsprof1 run 1). Yarn jobs are tracked in YARN-DIRTY-TREE-REFUSE.
-18. **Never push when `index_state.py --check` reports a problem.** Fix the row first, then push.
-19. **Never chain a check that only PRINTS with the action it should gate.** Gate in code, failing closed: `if check; then act; fi`. For a shared-clone fast-forward, run a read-only `/proc` cwd/argv walk (never `pgrep`) and refuse if any non-MCP, non-dashboard process uses the clone. Origin (2026-10-22): main's second orchestrator ff (`c69ba5a1` to `cdbca26b`) printed a live-process check but did not gate on it, and ran under workspace-7b's `ak-q38fn-fa` campaign (started 16:14:59Z). The changes were inert for that loop, but the gate was missing. Agreement with 7b: no shared-clone git ops until 18:00Z; later ffs are gated in code.
-20. **Before asking the operator to lift a deferment or approve a run, show its compute cost estimate first** (whole-host hours, windows). The HIL-6 pilot lift was asked before its cost was known; the estimate then came back at about 232-300 whole-host hours, and the operator leaned to a redesign.
-21. **Check a diagnosis of a slow harness against the server logs before naming a cause.** KPF-64 was attributed to thinking-on; the server logs show the cause was decode contention across 4 slots (0.80 tok/s per slot), with outputs feeding later prompts (`progress/2026-10/2026-10-22-kpf64-decode-fix.md`).
-22. **A filler's `--class` must match the grant shape the calendar owner actually writes.** `--class cpu+gpu` requires an `mi210_0` token in the grant; a whole-host CPU timing grant is `regions=0-95`, so a cpu+gpu launcher refuses it (`.ended rc=2`) and the quiet slot is lost. A CPU timing job that needs the GPU quiet is `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (`filler_run8.sh` allows it). Origin: 2026-10-22 19:27Z, C2 b-rerun #3 grant lost in 30 s. Before re-arming under a new launcher, dry-check its region parser against the grant line you expect.
-23. **Every subagent brief that creates a worktree must say "remove with `git worktree remove <path>`; NEVER `git worktree prune`" — for the sub-repos too.** The orchestrator and research clones are reachable at two paths (`/workspace/repos/<name>` and `/mnt/raid0/llm/<name>`), the same shape that let `prune` destroy all five root lanes on 2026-08-12. Origin: 2026-10-22, a task-set subagent ran `git worktree remove … && git worktree prune` in epyc-orchestrator; a scan of every orchestrator worktree's admin dir found no damage this time. Verify after any prune report: resolve each worktree's `.git` gitdir relative to the worktree dir and check it exists.
-23. **One live grant writer per region set; retire a superseded writer's every branch.** Before arming a new chain version, kill the old writer by its PID (verify dead) and list every OTHER live writer that can grant the same regions, including conditional early-trigger branches that fire on another job's end flag. Origin: 2026-10-22 16:47Z, an old `grant-f8-gitnexus` writer's early-7b branch granted f8 q0-q3 25 s before chain v11 granted gpu-cpu-noise the whole host; the double grant put 17.8 foreign cores under the noise run's warm-up and the session aborted (calendar owner error).
-24. **A window must exceed the job's min-window by the poll margin.** A launcher that polls every 45 s sees a grant up to a poll late, so a window equal to `--min-window` is refused (`.ended rc=3`). Write `end >= start + min_window + poll + 60 s`. Origin: 2026-10-22, `kpf60-p0-gpu` refused on a 1800 s window that equalled its minimum. `grant_ok.sh --window-s` enforces it from the launcher's own argv (CTC-Q-A2; see *Grant gate* below).
-25. **Pinned GPU jobs re-pin every task after start until GPS-PIN-1 lands.** ROCr creates one early thread with an all-CPU affinity attribute, so `taskset -c 184-191` leaves 1 of ~196 llama-server tasks on 0-191 and a residency check that reads only the main thread passes falsely. Run `taskset -a -p -c <cpus> <own pid>` after health and check every `/proc/<pid>/task/*/status`; the package STACKCHG-GPUPIN-20261022 does it in production (`HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` plus re-pin plus refuse). Origin: gpu-cpu-noise session 20261022T164830Z (`residency_ok=false`), fixed in its driver by research `a1e94a002`. **The same helper thread fails a job driver's own read-back.** If a driver checks every task's affinity, it must either set `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` before launching the server (that knob alone keeps 196/196 tasks on 184-191: P1 PASS, GPS-PIN-1c) or exempt the ROCr helper thread. Otherwise the check rejects the one thread on 0-191 and the job exits rc 1. Origin: kpf13-1-reduced and kpf17-4-19-1a rc 1 at ~14:2xZ on 2026-10-23. f8 fixed both ways: the knob in the shim plus driver pin research `922113ff7`.
-26. **A quality job runs under the role's registered serving env.** Copy the serving env from `model_registry.yaml` into the job's environment, not just the binary. Origin: 2026-10-22 19:36Z, the NEW-10 smoke ran Q38FN without `GGML_FUSED_DECODE_OFF=1`; the fused decode path (off in production) hit a repack bug and aborted with a heap corruption (FD-DIV-1 in `handoffs/active/kernel-champion-and-promotion.md`).
-
-### Owner duties (2026-10-23 additions)
-
-27. **Operator directive (2026-10-23): blockers are cleared the same turn.** (a) A row blocked on CODE gets a subagent dispatched by its owner now; unwritten code is never a recorded blocker. (b) When a blocked row unblocks, its owner arms it and sends the calendar owner a grant request in the same turn. (c) The calendar owner places it in the next free slot, with no batching and no wait for a re-plan. The packing procedure that applies it is `.claude/skills/inference-backlog-scheduling/SKILL.md` (Phase 1 step 2). (d) **Operator directive (2026-10-23, relayed by 3c4ca599): every non-inference blocker or follow-up gets a subagent dispatched immediately, not filed.** Filing a `- [ ]` task is the record, not the response; the dispatch happens in the same turn. A follow-up whose only use is to unblock a test held by an operator ruling is declined in writing instead, naming the ruling. Example: f8 declined DS41-CED.1 on 2026-10-23, because it unblocks only KPF-28, which the 10-22 DS41 hold keeps held.
-28. **A job must not re-claim a device its own engine already holds.** `filler_run*.sh` takes the region-lock claim (for a GPU job, the `mi210_0` flock) before it runs the job; a job script that then calls region-lock for the same device waits on itself and exits rc=75 at its claim timeout. That looks like a grant-timing refusal but is not one. Pass `--no-device-claim` (or equivalent) inside the job. Origin: `kpf18-item3-v2-sameshape` rc=75 at 00:40Z on 2026-10-23; first mis-attributed to grant timing in the calendar, corrected 11:4xZ, fixed by f8 with operator approval.
-29. **Linkage gates compare real paths.** `kernels/production/{cpu,gpu}` are symlinks into `kernels/builds/<id>/`; `ldd` reports the resolved `kernels/builds/...` paths. A gate that expects libraries under the symlink's own path false-FAILs on a correct binary. Resolve the root with `realpath` and put the store `bin` on `LD_LIBRARY_PATH`. Origin: `s5-rtepfx2-stagger` rc=7 at 08:46Z on 2026-10-23 (fixed in orch `a5c300d4`).
-30. **GPU llama-server jobs guard against the HIP-graph VRAM leak (GPU-LEAK-1, `handoffs/completed/mi210-serving-program.md`, owner 3c4ca599).** With HIP graphs on, the v10 GPU build leaks own-PID VRAM per request on eval/scratch server shapes (290 MiB/request in the GPU-LEAK-1a probe at the YaRN E1 shape `-np 1 -ub 2048 --cache-ram 0` with varied ~8k prompts; +390 MiB over 13 requests in one KPF-LB1.1 capture); `GGML_CUDA_DISABLE_GRAPHS=1` gives 0. The exact production :8083 argv is NOT exposed (GPU-LEAK-1d: 1.7 MiB/request with graphs on and off), so this rule is for harness servers, not for production launches. Correctness jobs run with graphs OFF; timing jobs keep graphs ON (production-shaped) with a fresh server per session. Both carry an own-PID VRAM guard (e.g. 60 GiB) that ends the run with a clean `.ended`, not an OOM. Confirm the knob is in the binary before relying on it (`strings <lib> | grep GGML_CUDA_DISABLE_GRAPHS`). Origin: yarn-native-gate OOM 2026-10-22 23:23Z; f8's 7-job GPU chain was leak-audited 2026-10-23 13:4xZ.
-
-## Codex NI client contract (2026-10-24/25)
-
-The canonical calendar-side contract with the Codex NI session (`codex-ni-20261024`, roster `codex-ni-01a16d6b`). Codex has no compute authority. It is not reachable by `SendMessage`; all IPC goes through files in `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/` (`/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/IPC-CONTRACT.md`). The binding rule text Codex passes verbatim into every worker brief is `/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/RULES-FROM-WS58.md`. Codex's own harness sizing stays in `agents/shared/OPERATING_CONSTRAINTS.md` → *Codex Delegation & Long-Horizon Throughput*.
-
-- **Assign, don't offer.** The calendar owner ASSIGNS every non-inference blocker of a calendar item to Codex: job-script and harness fixes, adapters, test fixes. Each assignment carries a spec, acceptance tests and a deadline tied to the window the fix unblocks. Record it in `DEADLINES-FROM-WS58.json` (and `tasks-from-ws58/`). A single standalone coding task goes to Codex by default; Claude subagent fan-out is for complex multi-agent work (operator, 10-24).
-- **Announce windows, never wait to be asked.** Keep `OPEN-WINDOWS.json` current at every calendar change: open windows with their hard ends and allowed regions, plus closed windows and the reason. When a gap opens, write `OPEN_WINDOW_NOW` in `OWNER-REPLY.json` with the hard end and the candidate work. Read Codex's `ROWS-FOR-OWNER` file at every task boundary, not only when it messages.
-- **Codex executes nothing outside a grant.** Any interpreter or toolchain run is compute: `python`, `pytest`, `py_compile`, import checks, `cmake`/`make`, compilers, `gitnexus analyze`. Reading and editing text is not. **While any `compute-flags/HOLD_*` file exists, nothing of Codex's runs at all**, not even a one-second check.
-- **Codex writes only its own files and its own refs.** It files one row per request in `ROWS-FOR-OWNER` with a live poller pid, and never writes FILLERS, queues, grants, writers or HOLD files. It pushes only to `codex/*` refs, always with an explicit refspec (`git push <remote> HEAD:refs/heads/codex/<name>`). It never pushes to kernel `experimental`/`ak`/`main` branches or to a branch it did not create, and never modifies a shared clone, the frozen production tree or the kernel store. On a failed run it diagnoses the failure and re-queues the same id with a reviewed fix; no blind retries.
-
-Origin: 10-24 ~18:14Z, an ungranted Codex test run inside a quiet-gate block, and a Codex push onto a kernel experimental branch the same day. Also 10-24: idle CPU gaps that were never announced to Codex.
-
-### Codex worker loop since 2026-11-01: the churn flow
-
-The per-worker contract above is superseded in its day-to-day form by the five-step churn flow, `docs/guides/agent-workflows/backlog-churn-flow.md`: each worker reads `compute-flags/BACKLOG-<worker>.md`, does the non-inference tasks under its blocked inference rows, prepares the launcher, lets the keeper qualify it (`READY-QUAL`, the realistic dry run) and goes on to the next blocked row. The owner assigns nothing by message; it edits the backlog inputs. `[unblocks: <ready-id>]` on a task line links it to the row it frees.
-
-## RAM admission (2026-10-22)
-
-Operator ask: structure the inference calendar with RAM in mind. Host RAM is a booked resource, like regions.
-
-- Checker: `/mnt/raid0/llm/tmp/compute-flags/ram_admit.sh <need_gib> [ds41]` (live copy; the durable root copy `scripts/coordination/ram_admit.sh` is pending an operator D9 ack, since that path is loop plane). Read-only; exit 0 = admit, 1 = refuse with a reason.
-- Rule: admit only if `MemAvailable - need >= 64 GiB` (earlyoom fires at 40 GiB available). With `ds41` it also refuses while any process maps or names a DS41-1017 shard (one DS41-class server host-wide).
-- Unit: FILLERS.md column 6 is **peak host RAM in GiB = private/anon + file-mapped weights**. The DS41-1017 server is 739 GiB (276 private + 463 mapped).
-- Callers: grant writers (evening chains v4 to v9, the day and night GPU chains, the day CPU grants), the W6.2 `memgate.sh` (`ram_admit 739 ds41`; W6.2 was cancelled 2026-10-22), f8's job 67 launcher (cancelled 2026-10-22), and every subagent brief that loads a model. The calendar carries a 24 h RAM ledger beside the region table.
-- Not yet wired: AutoKernel `run.py` server launches (tracked in `handoffs/active/deepseek-v41-flash-evaluation.md`, DS41-W8d).
-
-## Grant gate: `grant_ok.sh` v2 (2026-10-23, CTC-Q-A2 + CTC-Q-C.1)
-
-`/mnt/raid0/llm/tmp/compute-flags/grant_ok.sh <row-id> <need_gib> [ds41]` is the one admission check a grant writer runs immediately before writing `grants/<id>.grant`: `validate_fillers.py --row <id> --for-grant`, then `ram_admit.sh`. v2 (`grant_ok.v2.sh` until the calendar owner swaps it in) keeps that legacy form byte-for-byte and adds optional launcher checks for the two rules writers kept breaking:
-
-```
-grant_ok.sh <row-id> <need_gib> [ds41] [--window-s N] [--regions R] [--reserve R] [--pid P]
-```
-
-- **The launcher** is `--pid P`, or by default the row's `pid=`. A wrapper pid (`bash -c '... setsid nohup bash launch.sh ...'`) is followed to its nearest live `filler_run*.sh` child with `--id <row-id>`; the `--inner` region-lock child is skipped. Its argv is read from `/proc/<pid>/cmdline` (read-only) and parsed the way `filler_run{,2..8}.sh` parse it: `--min-window --class --claim-cpus --gpu-quiet --no-fold-siblings --self-claim --gpu-threads`.
-- **`--window-s N`** (the window the writer is about to write): `N >= --min-window + 300 s`. Exactly-equal windows were refused `rc=3` three times (kpf60 10-22, rtepfx2 10-23, ch28 near-miss). The gate reads the minimum from the launcher's argv, not from the writer's hand-typed copy.
-- **`--regions R`** (the grant's `regions=` value) must pass the launcher's own `parse_regions` for its class: `cpu` takes no `mi210_0`, while `gpu` and `cpu+gpu` need `mi210_0`. This was the c2 `rc=2` on 10-22. R must also cover every region the launcher's region-lock claim takes: the `--claim-cpus` list folded onto quarters, plus `gpu-quiet` when it claims the GPU. `mi210_0` in R counts as gpu-quiet. A 0-95 claim therefore needs `0-95` or `q0,q1,q2,q3`.
-- **`--reserve R`** names regions the writer's claim-wait keeps free besides the grant. Two cases need it:
-  - `gpu-quiet` for `--class cpu --gpu-quiet exclusive --claim-cpus 0-95` (the grant is CPU-only);
-  - `0-95` for a GPU job whose claim is the whole host (`--class gpu --gpu-quiet exclusive` with no `--claim-cpus` on `filler_run2/6`).
-- **Class report (CTC-Q-C.1).** With any new flag, success prints `class=<derived>` from `validate_fillers.py --print-class`, followed by the launcher's claim. Callers set gpu-quiet from it rather than hand-picking quiet. `warn=quiet-claim-on-<class>-row` flags a whole-host exclusive launcher on a non-quiet row; `warn=quiet-row-launcher-not-whole-host-exclusive` flags the reverse.
-- **QUEUED check.** With any new flag, a row that is not `ARMED` with `ready=y` is refused. `--for-grant` alone passes a well-formed BACKLOG or COMPLETE row.
-
-Exit codes:
-
-| Code | Meaning |
-|---|---|
-| 0 | Admit |
-| 10 | Validator refuse (with the new flags, also: row not QUEUED) |
-| 11 | RAM refuse |
-| 12 | Window short |
-| 13 | Class/region mismatch: `parse_regions` refuses, the claim is not covered, a `--no-fold-siblings` claim is SMT-only, or a region token is unknown |
-| 14 | Launcher dead: no pid, a zombie, or a wrapper whose engine is gone |
-| 15 | Launcher argv unrecognised: no `filler_run*.sh --id <row>` under the pid. With `--window-s` only, the gate falls back to the row's min-window; `--regions` needs a recognised launcher |
-| 16 | Internal error |
-| 64 | Usage |
-
-Every refusal is one stdout line starting `refuse:`. Tests: `compute-flags/test_grant_ok_v2.sh`, which uses fixture `/proc` trees and compares the legacy form against v1 on the live queue. The writer-side call is in `.claude/skills/inference-backlog-scheduling/references/grant-writer-pattern.md`. Tracked copies: only `scripts/coordination/validate_fillers.py` is tracked, and it is identical to the live copy. A durable `scripts/coordination/grant_ok.sh` + `grant_ok_launcher.py` would be loop plane and is gated by D9, like `ram_admit.sh` (OP-RAMADMIT-D9).
-
-## Owner duty: watch, why, fix, re-queue
-
-Canonical list: *Owner duties* above. The incident behind it (2026-10-22 overnight): CT-18 HTTP 400 context overflow, chunk-KV P0 and speech D1 rc=64 from a bad region-lock argv, and D4 k5_s4 rc=125 all sat unnoticed, and the 05:19Z CPU gap went unused because the calendar owner's FREED watcher died on a zsh no-match glob. The replacement watcher keys on mtime over `FAILED`, `.ended`, `_ENDED` and `_FREED` flags under `/mnt/raid0/llm/tmp` (`compute-flags/event-watch-ws58.sh`); quote or `setopt nonomatch`-guard every glob in a watcher. Owner flow on any event: why (read the log), fix, re-queue, wrap up. Worked example: D4 root cause in `/mnt/raid0/llm/tmp/d4-why-20261022/REPORT.md` (the estimator was wrong, not contention).
+- **Derive CPUs and thread counts from the granted affinity**, never hardcode a CPU list, and set the CPU-backend
+  thread count explicitly (`-t`, `GGML_N_THREADS`, `OMP_NUM_THREADS`): under `taskset` ggml still defaults to 192
+  threads (H8b correctness took 16 min per pass, 2026-11-06). `job_fence.py` sets the thread env from
+  `sched_getaffinity` when unset.
+- **GPU rows prove residency by their own PID**: hold own-PID VRAM for >= 40 s (the 1 s sampler), re-pin every task
+  after start (`HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` or `taskset -a -p`; one ROCr thread is born with full-host
+  affinity), and never run a CPU-wide preflight or bench inside a GPU-only grant. Containers carry `--cpuset-cpus
+  "$FILLER_CPUS"`; the docker client's `taskset` does not confine them.
+- **Harness servers guard the HIP-graph VRAM leak** (GPU-LEAK-1): correctness jobs run `GGML_CUDA_DISABLE_GRAPHS=1`,
+  timing jobs keep graphs on with a fresh server per session, both with an own-PID VRAM guard that ends cleanly
+  (`.ended`, not OOM). Prove the knob is in the binary first (`strings <lib> | grep GGML_CUDA_DISABLE_GRAPHS`).
+- **Never use `run_direct` for GPU work while the keeper runs**: it counts as a foreign KFD user and stalls the
+  keeper's GPU queue. Route GPU jobs through grants.
+- **A job must not re-claim a device its launcher already holds** (`--no-device-claim` inside the job; a self-claim
+  waits on itself and dies `rc=75`).
+- **A quality or correctness job runs the role's registered serving env** from `model_registry.yaml`, never the bare
+  binary (Q38FN without `GGML_FUSED_DECODE_OFF=1` aborted on a fused-decode repack bug). Qwen3.x servers: `.
+  jobs/qwen_thinking_lib.sh`, `$(qwen_reasoning_args "$MODEL")` in the argv, `qwen_first_reply_preflight $PORT`
+  before the workload; chat-path requests send `enable_thinking:false` unless thinking is pre-registered.
+- **Linkage gates compare real paths** (`kernels/production/{cpu,gpu}` are symlinks into `kernels/builds/`); resolve
+  with `realpath`. Never `strings <bin> | grep -q` under `pipefail` (SIGPIPE false FAIL); capture first.
+- **Use an explicit interpreter** (`/usr/bin/python3` or the venv path); a bare `python3` under region-lock resolves
+  to the orchestrator `.venv`.
+- **Never edit a running launcher or job script**; version it (`job2.sh`) and re-arm.
+- **Pinned-worktree jobs refuse a dirty tree**, and a shared lib must not reassign a job's pinned tree variable.
+- **A model-free correctness row needs an exec tripwire** that fails on `llama-*`/`.gguf` execs, proven on a control.
+- **Verify every fast "complete" against its per-gate lines**, not the summary verdict (`fail=1` set inside a `$(...)`
+  subshell never reached a `GATE gpu PASS` summary).
+- **Subagent briefs**: any model execution (ASR and TTS included) needs a row and a grant; never touch another
+  session's scratchpad; worktrees are removed with `git worktree remove <path>`, never `prune`; the Bash containment
+  hook refuses variable-expanded write targets, so launch commands use literal paths.
+- `WINDOW_CONFIRMED=1` may be exported only inside a live grant naming the job's regions (OP-KPF64-ARM, 2026-10-22).
 
 ## Shared job templates: import, never copy (operator 2026-11-06)
 
-Two vendored lane templates caused most lost compute in Pass 4 of `docs/reports/coordination/keeper-friction-review-20261105.md`: the gitnexus-impact `job.py` (~40 copies, 40 rc!=0 runs after a good 29-min analyze, ~9 host-h) and the yarn `write_fence.py` / `smoke_admission.py` / `smoke_root_exec.py` trio (no GPU devices, no HIP TMPDIR, `len(cpus)!=2`, HIP temp vanish). **New rows import the shared modules from `/mnt/raid0/llm/tmp/compute-flags/bin/job_templates/`** (source and tests: `scripts/coordination/job_templates/`; redeploy with a plain copy after the tests pass). Existing rows are not rewritten.
+Two vendored lane templates caused most lost compute in Pass 4 of
+`docs/reports/coordination/keeper-friction-review-20261105.md`: the gitnexus-impact `job.py` (~40 copies, 40 rc!=0
+runs after a good 29-min analyze, ~9 host-h) and the yarn `write_fence.py` / `smoke_admission.py` /
+`smoke_root_exec.py` trio. **New rows import the shared modules from
+`/mnt/raid0/llm/tmp/compute-flags/bin/job_templates/`** (source and tests: `scripts/coordination/job_templates/`;
+redeploy with a plain copy after the tests pass). Existing rows are not rewritten.
 
-- `gitnexus_impact.py --config job.json --phase analyze|scan|all`: analyze writes `out/ANALYZED.json` and is skipped while the graph stays fresh (status = head, no parse-cache staleness from `parse_probes`, e.g. the KPF-41 `__launch_bounds__` misparse). A scan never re-analyzes. An unresolved, partial, or vacuous scan is rc 0 with `out/INCONCLUSIVE`, HIGH/CRITICAL is rc 3, and a failed analyze or a parser defect is rc 1.
-- `job_fence.py fence [--gpu] <dirs> -- /abs/exe ...` / `smoke [--gpu] <root> -- ...` / `admit --cpus .. --granted ..`: `--gpu` (GPU-token rows) allows `/dev/kfd` and `/dev/dri/*` and gives HIP a writable `TMPDIR` inside the fence. Admission is affinity **subset of the grant**. `repin_threads()` pulls a ROCr thread born with full-host affinity into the grant. `tree_usage()` skips `comgr-*` / `.hip-tmp` entries that vanish mid-scan.
-- Publish lint (warn only): `rowflow2.publish` runs `template_lint.py` and warns when a job dir vendors a known-bad sha (`known_bad_templates.json`) or a one-process gitnexus job. It lives in rowflow2 because `rowflow/publish_row.py` is frozen and changing it would need a keeper deploy. Run it by hand with `python3 .../job_templates/template_lint.py <launcher>`.
+- `gitnexus_impact.py --config job.json --phase analyze|scan|all`: analyze writes `out/ANALYZED.json` and is skipped
+  while the graph is fresh; a scan never re-analyzes. Unresolved / partial / vacuous scan = rc 0 with
+  `out/INCONCLUSIVE`; HIGH/CRITICAL = rc 3; failed analyze or parser defect = rc 1.
+- `job_fence.py fence [--gpu] <dirs> -- /abs/exe ...` / `smoke [--gpu] <root> -- ...` / `admit --cpus .. --granted ..`:
+  `--gpu` allows `/dev/kfd` and `/dev/dri/*` and gives HIP a writable `TMPDIR` inside the fence; admission is affinity
+  **subset of the grant**; `repin_threads()` pulls the ROCr thread into the grant; `tree_usage()` skips `comgr-*` /
+  `.hip-tmp` entries; declared output dirs allow mkdir/rmdir/unlink; `max_file_mib` (spec or `MAX_FILE_MIB`, default
+  128, cap 8192) sets RLIMIT_FSIZE, with a one-line EACCES / SIGXFSZ diagnostic.
+- Publish lint (warn only): `template_lint.py <launcher>` warns on a vendored `write_fence.py` /
+  `smoke_admission.py` / `smoke_root_exec.py` that does not import `job_fence`, and on a one-process gitnexus job.
+  `rowflow2.publish` runs it; the frozen `publish_row.py` does not, so run it by hand until cutover.
 
-## Job-side rules learned 2026-11-06 (main-inf22)
+## Codex NI client contract (2026-10-24/25)
 
-- **GPU smoke rows must hold own-PID VRAM for >= 40 s.** The 1 s VRAM sampler verifies residency by the job's own PID; a smoke that exits sooner cannot prove it ran on the GPU.
-- **Derive taskset CPUs from the granted affinity**, never hardcode a CPU list in the job.
-- **Set CPU-backend thread counts explicitly** (`-t`/`GGML_N_THREADS`). Under taskset the ggml CPU backend still defaulted to 192 threads; the oversubscription made H8b correctness take 16 min per pass.
-- **Never use `run_direct` for GPU work while the keeper runs.** A `run_direct` process counts as a foreign KFD user, so the keeper sees the GPU as occupied and stalls its own queue; route GPU jobs through rowflow grants.
-- **Never share a STOP file across sibling rows.** One row's withdraw then kills every sibling; give each row its own STOP path.
+Codex has no compute authority and is not reachable by `SendMessage`; IPC is files under
+`/mnt/raid0/llm/tmp/codex-ni-20261024-scheduling/` (the IPC contract and the rule text Codex passes into every worker
+brief live there). Harness sizing: `agents/shared/OPERATING_CONSTRAINTS.md` → *Codex Delegation & Long-Horizon
+Throughput*.
 
-## Reference implementation
-
-CT-18 Skill-Inject: `/mnt/raid0/llm/tmp/ct18-run-20261021/filler_worker.sh` (`ct18-worker`, CPU) and `filler_arch.sh` (`ct18-arch`, mi210_0 + host threads 184-191). They are generated from one template; `.ended` rc 124 = hard end, 4 = refused, 2 = unusable grant, 143 = launcher signalled.
-
-## Prior check (proposed 2026-10-21, pending workspace-58 / stage-3 agreement)
-
-Origin: `/mnt/raid0/llm/tmp/inference-backlog-audit-20261021/REPORT.md` section 4 (change B) -- bookings were armed without anyone checking prior results, so the same instrument was booked twice on one build. This is a **proposal**: nothing validates it yet, and no queue row or GRANT line is required to carry it until workspace-58 (calendar owner) and stage-3 agree.
-
-- Before a row enters the QUEUE table (and before a GRANT is written for it), run `scripts/coordination/prior_check.py` (stdlib, zero compute, read-only, nice 19, self-limits to 20 s). It searches the belief ledger, AutoKernel campaign stores (`experiments.db` opened `mode=ro`, `serving-floor.*`, `serving-beliefs/`), research `artifacts/`, and the run records under `/mnt/raid0/llm/tmp/*/`.
-- Pass the model (file or basename), the recipe/argv (file, hash or `--argv "..."`), the decision/metric keywords, and the build sha or execution digest the booking will use: e.g. `prior_check.py --model <gguf> --argv "<launch argv>" --metric floor --decision KVU-12.1 --build <sha>`. Add `--tag` for campaign aliases the model name does not contain (`ds41`, `q38fn`).
-- Put its last line in the row notes / GRANT context, verbatim: `prior=<path> [(<flag>)]` or `prior=none (checked <UTC ts>)`. `none` is a dated statement that the lookup ran; a path is a **lead the booker opens and cites or rejects in one line** -- the tool never declares a booking redundant. Flags: `STALE-transferable` (other build, quality axis -- transfers once parity is proven, MEASUREMENT_POLICY), `STALE` (other build, axis unclear), `build-unknown` (the record states no build), `RETRACTED`. A `STALE-speed` hit (other build, speed axis: era-fenced) is listed in the output but never emitted as `prior=` -- the speed axis must be re-measured.
-- `--json` gives the ranked candidate list for machine use (`epyc.prior_check.v1`). Exit 0 always except 2 for malformed inputs. Full contract: the module docstring.
-
-### Grant validator (proposed 2026-10-21, pending workspace-58 agreement)
-
-`scripts/coordination/validate_fillers.py [--file F] [--row ID] [--for-grant]` checks the 18-column QUEUE table in `/mnt/raid0/llm/tmp/compute-flags/FILLERS.md` (column 6 `peak host RAM GiB` (formerly `max private RAM`) must be a number in GiB such as `48` or `48 GiB` -- definition (workspace-58, 2026-10-22): private/anon peak PLUS file-mapped weight bytes, counting mapped weights even with mmap; `ram_admit.sh` compares it with MemAvailable (margin 64 GiB); `class`, `status`, `DS41-class`, `ready`, `substrate` enums; `prior` a path or `none found (<who>, <date>)`; `decision` one line; `min_effect` with a unit or `n/a (build)`; `block-timing-quiet` additionally needs a champion/candidate baseline in `decision` and a floor file cited in `notes` or `prior`). The grant writer runs it with `--row <filler-id> --for-grant` immediately before writing `grants/<filler-id>.grant`: exit 0 = grant, 2 = refused (violations printed as `REFUSE`), 3 = malformed table/row. Without `--for-grant` every violation is only a `WARN` (other owners' rows may still carry `-`). Queue semantics (2026-10-22 ruling "being queued implies being ready"): ready=y needs status ARMED plus a live launcher (`pid=<N>` in the launcher cell or notes; `/proc/<N>` must exist and name the row id, a grant id or the launcher path); every ready=n row is status BACKLOG with `blocker=<missing launcher|harness fix|build|operator decision>` in notes and an owner; REGISTERED with ready=n is an error. Since root `a367d1df0` (2026-10-22), finished rows (COMPLETE/CANCELLED) skip all field checks, and `min_effect` accepts `n/a (<reason>)`; a bare `n/a` is still refused. Rule text: the module docstring.
-
-## Operator ruling: WINDOW_CONFIRMED (2026-10-22)
-
-A compute-filler job may export `WINDOW_CONFIRMED=1` **only inside a calendar-granted window** (a live `grants/<id>.grant` naming its regions). Outside a grant the flag must not be set. Operator-approved 2026-10-22 (OP-KPF64-ARM).
+- **Assign, don't offer.** Every non-inference blocker of a row is ASSIGNED to Codex with a spec, acceptance tests and
+  a deadline tied to the window it unblocks. A standalone coding task goes to Codex by default.
+- **Codex executes nothing outside a grant.** Any interpreter or toolchain run (`python`, `pytest`, `py_compile`,
+  `cmake`, compilers, `gitnexus analyze`) is compute; while any `compute-flags/HOLD_*` exists nothing of Codex's runs.
+- **Codex writes only its own files and refs**: `codex/*` with an explicit refspec, never a kernel `experimental` /
+  `ak` / `main` branch, a shared clone, the frozen production tree or the kernel store. On a failed run it diagnoses and
+  republishes the same id with a reviewed fix; no blind retries.
+- **Since 2026-11-01** the day-to-day form is the churn flow (`backlog-churn-flow.md`): each worker reads
+  `compute-flags/BACKLOG-<worker>.md`, clears the non-inference tasks under its blocked rows, prepares the launcher,
+  lets the keeper qualify it and moves on. `[unblocks: <ready-id>]` on a task line links it to the row it frees.

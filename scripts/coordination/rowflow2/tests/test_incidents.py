@@ -147,7 +147,7 @@ def test_8_gpu_timing_grant_holds_88_95_never_the_rest_of_q3():
     build = rf.Grant("rock-aiter-prebuild-r4", frozenset(range(80, 88)), "none", False, 8, 1, T0, T0 + 7200, 3600)
     busy = [rf.Grant(f"b{i}", rf.QUARTERS[i], "none", False, 8, 1, T0, T0 + 3600, 1800) for i in (0, 1, 2)]
     # the live refusal: GPU timing row (cpus 0 = host threads only) beside the 8-core q3 build -> granted, holds gpu + 88-95
-    plan = rf.admit([spec("q38p4b-int8", cpus=0, threads=8, gpu="exclusive", rank=50)], [build] + busy, T0)
+    plan = rf.admit([spec("q38p4b-int8", cpus=0, threads=8, gpu="exclusive", rank=50, timing=True)], [build] + busy, T0)
     assert [g.id for g in plan.grants] == ["q38p4b-int8"], plan.skipped
     g = plan.grants[0]
     assert g.gpu == "exclusive" and g.cores == sib, sorted(g.cores)
@@ -166,11 +166,11 @@ def test_8_gpu_timing_grant_holds_88_95_never_the_rest_of_q3():
     plan = rf.admit([spec("c6-gpu-suite", cpus=0, threads=8, gpu="shared", rank=70)], [build] + busy, T0)
     assert [(x.gpu, x.cores) for x in plan.grants] == [("shared", frozenset())]
     # a timing row that wants a quieter neighbourhood declares it: explicit cpus 72-87 + gpu exclusive = all of q3
-    plan = rf.admit([spec("quiet-q3-timing", cpus="72-87", threads=16, gpu="exclusive", rank=50)], busy, T0)
+    plan = rf.admit([spec("quiet-q3-timing", cpus="72-87", threads=16, gpu="exclusive", rank=50, timing=True)], busy, T0)
     assert [x.cores for x in plan.grants] == [rf.QUARTERS[3]]
     # grant_need is the single rule: option and width needs both gain exactly 88-95
-    assert rf.grant_need(spec("a", cpus="q0", threads=24, gpu="exclusive")).options == (rf.QUARTERS[0] | sib,)
-    w = rf.grant_need(spec("b", cpus=4, threads=4, gpu="exclusive"))
+    assert rf.grant_need(spec("a", cpus="q0", threads=24, gpu="exclusive", timing=True)).options == (rf.QUARTERS[0] | sib,)
+    w = rf.grant_need(spec("b", cpus=4, threads=4, gpu="exclusive", timing=True))
     assert w.fixed == sib and not (w.pool & sib) and w.width == 4
     assert rf.fits_need(w, frozenset(range(0, 4)) | sib) and not rf.fits_need(w, frozenset(range(0, 4)))
     assert rf.grant_need(spec("c", cpus=4, threads=4, gpu="shared")).fixed == frozenset()
@@ -182,7 +182,7 @@ def test_9_rock_aiter_tests_r3_idle_held_gpu_grant_warns_then_ends_rc75_and_requ
     300 s of whole-grant idleness, the grant ends rc=75 at 900 s and the row is re-queued (one retry); a second idle end
     is terminal (.ended rc=75 reason=idle-held) and the next GPU row gets the device."""
     sim = Sim(tmp_path)
-    assert sim.publish(spec("rock-aiter-tests-r3", cpus=0, threads=8, gpu="exclusive", rank=40, est=7200)) == []
+    assert sim.publish(spec("rock-aiter-tests-r3", cpus=0, threads=8, gpu="exclusive", rank=40, est=7200, timing=True)) == []
     G = os.path.join(sim.flags, "grants")
     gp = os.path.join(G, "rock-aiter-tests-r3.grant")
     for _ in range(10):               # its smoke (20-300 s) then admission
@@ -191,7 +191,7 @@ def test_9_rock_aiter_tests_r3_idle_held_gpu_grant_warns_then_ends_rc75_and_requ
         sim.step()
     assert os.path.exists(gp), "fixture: r3 never granted"
     # a GPU timing row arrives and queues behind the hung grant (7 did on 2026-11-05)
-    assert sim.publish(spec("q38p4b-int8", cpus=0, threads=8, gpu="exclusive", rank=50, est=3600)) == []
+    assert sim.publish(spec("q38p4b-int8", cpus=0, threads=8, gpu="exclusive", rank=50, est=3600, timing=True)) == []
     for r in sim.runs.values():
         r["end"] = float("inf")       # the hung job never finishes on its own
     hung = lambda: rf.Measurement(core_busy={c: 0.0 for c in range(96)},  # noqa: E731

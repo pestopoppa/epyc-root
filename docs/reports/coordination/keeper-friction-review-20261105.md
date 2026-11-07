@@ -1391,3 +1391,171 @@ awk '$1>="2026-11-05T22:05" && $2=="IDLE-HELD" && $3=="gpu-quiet"{print $4}' $F/
 # disk-floor by day (resolved)
 for f in $F/grants/*.ended; do head -1 $f | grep -q disk-floor && head -1 $f | sed -n 's/.*time=\(..........\).*/\1/p'; done | sort | uniq -c
 ```
+
+
+---
+
+# Pass 5 — consolidation review 2026-11-07
+
+**Operator ask (2026-11-07, verbatim):** "A lot of incremental pipeline fixes have been done. Review the work and clean up
+unnecessary bloat and friction."
+
+**Scope.** Every pipeline commit on root `origin/main` since 2026-11-05 under `scripts/coordination`, `scripts/hooks`,
+`.claude/skills/inference-backlog-scheduling`, `docs/design/rowflow2-20261105.md`, plus the research AK harness
+(`dd3ab6326`, `189b1d29b`, `86bb55dd8`). Read first: passes 1-4 above and
+`token-efficiency-audit-20261106.md`. Line numbers are from `origin/main` at `89b630987`; K = the frozen
+`rowflow/rowflow.py`, R2 = `rowflow2/rowflow2.py`. The frozen trio was not edited; nothing was deployed.
+
+## P5.1 Headline
+
+1. **The last approved keeper fix is not running.** `ec6aba4b1` (CPU multi-quarter never books q3; docker containers
+   die with the row) is committed but `bin/rowflow/rowflow.py` is byte-identical to `15804eaf5` (`DEPLOYED.json`
+   `emergency.sha`), and the deployed `filler_run15.sh` is still the freeze commit `9218dffd1`. The auto-deploy "once
+   grants drain" never fired. The operator-approved placement rule and the container cleanup are both inert.
+2. **95 % of the keeper log is the reaper.** 402,732 of 422,546 lines since 11-05 are `REAP-*` (`REAP-BLOCKED` 45.5k
+   over 637 dirs, `REAP-IDLE-WAIT` 34.9k, `REAP-WAIT` 15.5k, `REAP-VAULT-REFUSED` 2.1k for 29 dirs — identical every
+   tick). Every agent reading the log pays for it; none of it changes between ticks. Source: the keeper wrapper
+   `ws58-calendar-keeper-v12.sh:476,525`, not the frozen trio.
+3. **The P4.4 noise is mostly gone.** Precond re-refusal alerts 171 → 6 → 0 per day; rc=14 false FAILs 0;
+   `OVER-DECLARED` on GPU rows suppressed (K:2769-2775); `IDLE-HELD` by CPU % on GPU rows gone (1,645 → 74 → 27 lines).
+   Still open: `ALERT-ROUTE … alarm_channel.py missing` (87 lines; K:4314 resolves to
+   `compute-flags/coordination/alarm_channel.py`, which does not exist anywhere under `compute-flags/`) and
+   `UNDERUSED` on gpu-quiet grants (595 lines; it re-judges GPU grants by CPU % after `idle_held` already used the KFD
+   signal).
+4. **rowflow2 mirrors are partial in four places that would regress the keeper's current behaviour at cutover**
+   (P5.3); three are fixed in this pass, one is recorded as a known gap.
+5. **Docs: 614 → ~500 lines across SKILL.md + compute-fillers.md**, with compute-fillers.md 206 → 135 after the
+   writer-era protocol was retired to git history, and the verbatim-duplicated *Shared job templates* section kept in
+   one place.
+
+## P5.2 Accretion — verdicts
+
+| Item | Where | Verdict | Delete lens (what it protected → why covered) |
+|---|---|---|---|
+| Six always-on switches `FRESH_ATTEMPT_ON_SHA_CHANGE`, `PRECOND_PARK_ONCE`, `COMPLETE_BEFORE_RC14`, `OVERRIDE_BOOKS_WIDTH`, `WIDTH_JUSTIFICATION`, `GPU_IDLE_BY_DEVICE` | K:222-228 | KEEP (frozen; zero runtime cost) | the replay gate's negative controls flip them to prove the pre-fix keeper fails the scenario; deleting them deletes the proof |
+| `COEXIST_MAX_THREADS` K:1562, `COEXIST_Q3` K:980, the whole `lends`/`coexist_holds`/`quiet_held` path (K:1807, 1952, 2146-2164, 2207, 2301, 2335, 3441, 4072) | keeper | DEAD — emergency batch item 6 | protected the pre-NARROW "≤4-thread coexist on q3" carve-out; since `9b69b7131` a GPU timing grant holds only 88-95 so 72-87 are plainly free and `lends` is always `frozenset()` |
+| `FALLBACK_OWNER` K:3667 | keeper | alias of `notify.FALLBACK_ASSIGNEE` — batch item 6 | nothing |
+| Four idle signals: `IDLE-HELD` (10 %, 60 s), `UNDERUSED` (5 %, 10 min), `IDLE-HELD-WARN` (300 s), `IDLE-VIOLATION` | K:3486-3547, 3610 | MERGE — batch items 3-4 | each was added for one incident; `idle_held` + the KFD signal now carries all of them for GPU grants |
+| "rank correctness suites ≥ 60" | SKILL.md §2 | KEEP, reworded | **not redundant and not sufficient in the frozen keeper**: there is no share token (every GPU row holds `GPU`), the smoke-queue commits only order *smokes*, and `plan_order` K:2126 sorts `(arm_fails, min(rank,10), lane_count, rank)`, so for ranks ≥ 10 lane starvation beats rank — a suite at 60 in a starved lane can still beat a timing row at 50. Only rank < 10 is strictly ordered. In rowflow2 it is redundant once the suite declares a shared class (R2:498). §2 now says exactly that |
+| `known_bad_templates.json` (49 hand-harvested SHAs) + `_bad()` | `job_templates/template_lint.py` | DELETED (this pass) | protected against the copies harvested on 11-06; the name-based rule (vendored `write_fence.py` / `smoke_admission.py` / `smoke_root_exec.py` without `import job_fence`) catches those and every copy never harvested |
+| Template lint runs only in `rowflow2.publish` (shadow) | R2:1250-1282 | KEEP; **inert until cutover** — doc now says "run by hand" | the live `publish_row.py` is frozen; moving the lint into it is a keeper deploy |
+| `CONTEXT_ROTATE_TOKENS` | `handoff_sessions.py:1129` | DEAD (no reader; code uses `gc['context_rotate_tokens']`) — owner | nothing |
+| Triple debounce on index regen (`index-regen.started` 600 s, `index-regen.stamp` 570 s, `batch_verdict` quiet-180 s) | `handoff_sessions.py:1343-1357`, `index_regen.py:44-60,96-138,189-191` | MERGE to batch verdict + one stamp — owner | the interval protected against regen storms; TOKEN-REGEN-ONCE-PER-BATCH is the general rule |
+| `claude_weekly_tokens: None` | `token_guards.py:41` | defaults-off knob that silences the Claude 50/80 % alarms (`codex_budget_meter.py:181`) | needs the operator's weekly allowance; until set, half the meter is silent |
+| Token audit §5 recommendations | — | #1-5 landed; **#6 per-row `tokens_spent` in FILED and #7 circuit breaker with successor cooldown did not** | dispatcher owner |
+| `check_destructive_git.sh:51` protects by *path*, not by repo | hooks | **DEFECT** (medium): `git -C <linked worktree> worktree prune` passes and prunes `/workspace`'s registrations — the 2026-08-12 failure the hook exists to stop; `cd X && git gc` is checked against the hook's cwd | fix: resolve `git -C TARGET rev-parse --git-common-dir` against the protected repos; one list shared with `check_core_bare.sh:11` (4 vs 3 paths today). Hook is trust-boundary: MAIN applies |
+| `scripts/nightshift/run_wrapper.sh:252` runs `git worktree prune` itself | nightshift | contradicts `WORKTREE_MIGRATION.md:192`; the hook does not see it (not agent-typed) | owner |
+| `test_harness_guard_parity.py` | hooks tests | does not assert `check_destructive_git.sh` is registered in `.claude/settings.json:70`; `test_worktree_repair_guard.py` carries the pre-rename name cited at `check_destructive_git.sh:16` | owner |
+| `keep_tail.py:58,66` | keep_tail | `x == "c7r"` special case + a code default duplicating `scope.json`; `counter()`/`TARGET_ROWS=10` is a one-time closure check | generalise `\d*` to every excluded token; delete the counter when KEEP-TAIL-1 closes. `file_result._gpu_row` and `keep_tail.applies` are *not* duplicates (report vs enforce) |
+| AK `actors.py:113-129` probe + legacy `--dir/--variant` branch `:216-218` | research | probe returns *legacy* on any failure, so a timeout emits argv that the only installed opencode (v2.2.5) rejects | make v2 the fallback or delete the probe; one binary on the host |
+| AK `test_actor_author_thinking.py:48` `AK_OPENCODE_WIRE` | research | nothing sets it in either repo: the wire tests never run | move to an explicit manual smoke or delete |
+| AK `build_parallel_proof.py:23,31` `_sha`/`digest_manifest` vs `build_store_lookup.py:49,57` | research | duplicate helpers — import from store_lookup | low |
+
+## P5.3 Divergence — frozen keeper vs rowflow2
+
+| Keeper fix | K | R2 | Mirror |
+|---|---|---|---|
+| `9b69b7131` gpu-q3 NARROW | 1558, 984-987 | `gpu_timing_need` 315, `grant_need` 341 | **was partial + contradicting**: R2 added 88-95 to *every* gpu-exclusive row and `map_legacy` (500) made every class-less GPU row exclusive, so a legacy `shape: gpu` build row held 88-95 that the keeper leaves free. **Fixed this pass** (decision 10: 88-95 only for timing rows) |
+| `ec6aba4b1` CPU multi-quarter never q3 | 1870-1875 (not deployed) | `cpu_multi_quarter_need` 330 | **was partial**: covered width needs only; `any-2-quarters` option lists still offered q0+q3 / q1+q3 / q2+q3 — the incident row's exact shape. **Fixed this pass** |
+| `cc5277b53` fresh attempt on new sha | `job_sha` 255 (launcher + referenced files) | 1154-1163 | **was partial**: launcher sha only, so a `job.py` fix under an unchanged launcher stayed "failed". **Fixed this pass** |
+| `lineage_fails` R2:1039 | `MAX_FAILS` lineage park 2834 | dead code, used only by `test_replay.py:161` | see P5.6 for the resolution taken |
+| `4646e1a3c` owner alert on every non-PASS smoke | `alert_queued_nonpass` publish_row:346 | `smoke_alert` 1307 | **partial, left open**: writes only `rowflow2-alerts.jsonl` (no inbox, no bus, no QUEUED-DROPPED). Recorded in the design doc's known gaps; belongs to the cutover notify-path work |
+| `6a77ba071` rank at grant time | `plan_order` 2126 (lane starvation before rank for rank ≥ 10) | `RANK_AT_GRANT_TIME` 85 | **contradicts by design** — R2 is strict priority. Cutover changes who wins ties; say so in the cutover note |
+| `4b78e3716` IDLE-HELD warn / `c8e3820ca` GPU idle by device | 3618 (10 %, 300 s) / 3531 (device ≥ 10 %) | 802, 1433-1447 (2 %, 900 s, rc=75) / 792 (device < 5 %) | deliberate (decision 9); thresholds differ 10 % vs 2 % / 10 % vs 5 % |
+| pass-4 #1 park once, #2 complete≠rc14, `83e8f3433` width_justification, `15804eaf5` multi-quarter, smoke rank order, unpark, NEEDS-OWNER, predicate smokes, residency | — | — | full |
+
+By design, not drift: hold + plain backfilling vs drains/RANK-HOLD; fixed smoke lane c20-23 vs smokes-as-fillers; CPU
+timing rows lose only 88-95 in R2 while §2 keeps keeper users off q3 entirely.
+
+## P5.4 Friction
+
+Keeper log tags since 11-05: `REAP-BLOCKED` 45,526 · `REAP-IDLE-WAIT` 34,942 · `REAP-WAIT` 15,456 · `REAP-HOLD` 5,289 ·
+`RANK-SKIP` 2,767 (0 on 11-07) · `REAP-VAULT-REFUSED` 2,104 · `IDLE-HELD` 1,746 · `REAP-INPUT-BLOCKED` 881 ·
+`UNDERUSED` 595 · `WAIT` 565 · `SKIP` 491 · `REAP-SKIP-ERR` 449 (9 dirs, PermissionError) · `DRAIN-HELD` 351 ·
+`REAP-REAP-FAIL` 311 · `IDLE-VIOLATION` 259 · then `ALERT` 179, `SMOKE-WAIT` 169, `WAIT-FOR-SMOKE` 91,
+`ALERT-ROUTE` 87, `ALERT-UNACKED` 69.
+
+Steps agents keep tripping on, and the default that would remove each:
+
+| Friction | Evidence | Default |
+|---|---|---|
+| **D9-ack trailer** on every `scripts/coordination/` commit, rowflow2 shadow code and tests included | `check_d9_loop_plane.py:121-122` guards the whole prefix; 56 of 299 commits since 11-05 carried the trailer | narrowing the prefix (e.g. exempt `rowflow2/tests/`, `*/tests/`) crosses a trust boundary — **operator decision**, not a code default |
+| **Push with no upstream** | `serialized_push.py:1001-1009` refuses `no-upstream` | default to `origin/<branch>` when `branch != main`; keep refusing for `main` (a branch made from `origin/main` pushes to main) |
+| **Publish refuses what it could derive** | K:794 `--id` must equal spec id; K:799 `lane` must match `--class`; K:886 `min_window_s` must equal `--min-window`; K:922 `stop_file` must resolve | derive `lane`, `min_window_s` and `id` from the launcher argv when the spec omits them; refuse only on a *conflict*. Frozen → rowflow2 schema |
+| **Pinned regions** | K:1829-1832 treats any concrete sub-quarter list as pinned | rowflow2 `any-N-of-qX` is the declared form; §2 now says so |
+| **Launchers in reaped dirs** | 88 of 903 `ready/` manifests point at launchers that no longer exist; no imports from removed `.worktrees/` remain — the failure now shows as a missing launcher | `publish_row --migrate` / rowflow2 `file()` should write a terminal `.ended reason=launcher-missing` instead of leaving the manifest pending |
+| **Reaper log** | 95 % of lines, unchanged tick to tick | log once per (dir, verdict) — batch item 7 |
+| **Shadow-only lint** | the template lint never ran on a real row | documented as "run by hand" until cutover |
+
+## P5.5 Proposed emergency batch for the frozen keeper (ONE deploy; operator approval required)
+
+Nothing below changes a placement decision except item 1, which is the operator-approved fix that never deployed.
+
+| # | Change | Protected → why now covered | Risk | Friction removed | Proof |
+|---|---|---|---|---|---|
+| 1 | **Deploy `ec6aba4b1`** (`deploy_rowflow.sh --emergency`): CPU multi-quarter never books q3 (K:1870-1875); `filler_run15.sh` stops row-started containers | the rule is approved ("Yes, both", 2026-11-06) and tested; only the deploy is missing | **medium** — engine digest changes, so sealed-engine rows must be checked in `deploy_rowflow`; `filler_run15.sh` swaps only under no open grants | the lsa-quality class (MI210 idle 40 min behind a q1+q3 booking); leaked containers | `diff <(git show ec6aba4b1:…/rowflow.py) bin/rowflow/rowflow.py` empty; `test_rowflow_no_q3_multiquarter.py`, `test_filler_docker_cleanup.py` pass |
+| 2 | **`ALARM_CHANNEL` K:4314** falls back to `/workspace/scripts/coordination/alarm_channel.py` when the `compute-flags/coordination/` path is absent | the route protected the operator from unacked criticals; today it routes nothing | low-med — previously dropped alerts start reaching the operator (deduped by alarm_channel's emit-once) | ~37 `ALERT-ROUTE … missing` lines/day; a dead escalation path | `python3 -c "import rowflow,os;assert os.path.isfile(rowflow.ALARM_CHANNEL)"` |
+| 3 | **`underused` skips GPU grants** when `GPU_IDLE_BY_DEVICE` (K:3486-3489) | UNDERUSED protected against a hung GPU job; `idle_held` + `gpu_grant_busy` (K:3531) now judges it by own KFD client / device busy | low — log + `UNDERUSED.json` only | ~14 `UNDERUSED` lines/day on gpu-quiet grants and their follow-on ALERT → ALERT-UNACKED → ALERT-ROUTE chain | `underused()` with `holders={GPU: rid}` returns `[]` |
+| 4 | **`IDLE-HELD` logged on transition, then every `IDLE_WARN_REPEAT_S`** (K:3547) | per-tick lines gave no new information after the first | low — log only | 20-30 lines/day | replay idle-held scenarios show one line per grant per 15 min |
+| 5 | **`WAIT-FOR-SMOKE` logged only when the waiting set changes** (K:4051) | same | low | ~40 lines/day | two ticks with the same queue produce one line |
+| 6 | **Delete the dead coexist/`lends` path** (`COEXIST_MAX_THREADS` K:1562, `COEXIST_Q3` K:980, `lends`/`coexist_holds`/`quiet_held` branches K:1807-3442, `place_smokes(reserved=quiet_held)` K:4072, `FALLBACK_OWNER` K:3667) | the ≤4-thread q3 coexist carve-out; superseded by NARROW (72-87 free by construction) | medium — touches `plan()`/`_avail` signatures; `lends` is provably always empty so no decision changes | ~60 lines and the recurring "is coexist live?" question in briefs | replay gate: identical decisions on every scenario before/after |
+| 7 | **Keeper wrapper `-v13`**: log each `REAP-*` message once per (dir, verdict); never edit the running `v12.sh` (up since 11-04), swap at a boundary | the reaper lines protected nothing after the first occurrence | low | **~400k lines since 11-05 (95 % of the log)**; every log reader's cost | two reaper passes over unchanged dirs produce zero new lines |
+
+Order: 7 (wrapper, independent of the trio) → 1 → 2-6 in one `--emergency` deploy at a grant-quiet boundary, replay gate
+green. Not proposed: any new `if` in `plan()`/`contract_of`; thresholds; the rank-ordering change (that is rowflow2's
+cutover).
+
+## P5.6 Cleanups made in this pass (non-frozen files; one commit, `D9-ack` trailer)
+
+| Change | Files | Delete lens |
+|---|---|---|
+| **rowflow2 decision 10** (pre-cutover mirrors): `any-N-quarters` option lists drop every option touching q3 for CPU rows; cores 88-95 held only for GPU *timing* rows (`timing: true`, legacy `gpu-q3`, `block-timing-*`) while class-less GPU rows stay `exclusive` with gpu + 184-191 only; `job_sha` = launcher + referenced files (`launcher_refs`: engine, `--cmd`, `--complete-cmd`, `--workdir`, ported from K:255, no new inference), stamped into SMOKE/PASS/FAIL records so a `job.py` fix under an unchanged launcher re-arms the row; `lineage_fails` deleted | `rowflow2.py`, `tests/rf2.py` (oracle), `tests/test_incidents.py`, `tests/test_replay.py`, new `tests/test_decision10.py` (4 tests), design doc decision 10 + 2 known gaps | q3 options protected "some quarter pair always exists" — q0-q2 pairs remain so the row waits instead of taking 88-95; 88-95-for-all-exclusive protected timing siblings — timing rows keep them, builds never needed them; launcher-only sha protected against FAIL loops — the job sha is a superset; `lineage_fails` protected nothing (no caller) and wiring it needs MAX_FAILS + a park reason + fresh-attempt interplay (recorded as a gap) |
+| **template_lint**: SHA list → name rule | `job_templates/template_lint.py`, `known_bad_templates.json` (deleted), `tests/test_gitnexus_impact.py` (+1 test) | see P5.2 |
+| **Docs** consolidated | `compute-fillers.md` (206→135), `SKILL.md` (408→369), design doc | P5.7 |
+| **Test hygiene** | `scripts/coordination/tests/test_compile_inference_batch.py` (`importorskip("jsonschema")`: system python lacks it, the orchestrator venv has it — an ImportError at collection hid every other test in the file); `scripts/hooks/tests/test_fixture_snapshot_provenance.py` + `test_policy_snapshot_provenance.py` (`NI31_*_ORIGINALS` unset → precise `skip`, not a bare assert: the original CI custody prefixes are not in the repo); `test_hook_worktree_resolution.py` (skip in a linked worktree where `.git` is a file — re-running the installer there would rewrite the SHARED hooks); `test_trust_boundary_edit.py` (pins `CLAUDE_PROJECT_DIR` to the checkout under test — a worktree run was testing `/workspace`; `CLAUDE.md` moved from must-allow to must-block because `5fad27d56` AUD-15 gate-listed it; the test was asserting the pre-change policy) | each skip names the missing input; each former hard assert was an environment fact, not a code defect |
+
+## P5.7 Doc consolidation
+
+- `compute-fillers.md` 206 → 135 lines. Retired to git history: the FREED-flag protocol, *Rules for a filler*, *Queue
+  semantics*, *Owner duties* 1-30 (`filler_run5..8`, region-lock fold lore), *RAM admission* (`ram_admit.sh`), *Grant
+  gate v2* with its exit-code table, *Owner duty: watch*, *Reference implementation* (CT-18), *Prior check* and *Grant
+  validator* proposals. Kept: the freeze/deploy section, a six-point grant contract (`filler_run15` / `.ended` rc
+  codes / STOP / `.complete` / mailbox), the still-true job-side rules as one list, *Shared job templates* (single
+  copy), *Codex NI client contract* (heading preserved for `OPERATING_CONSTRAINTS.md:647`). Delete lens per section:
+  each retired section names a tool the 2026-11-01 ruling deleted from git; the surviving rule, if any, is in the
+  job-side list or in `rowflow.py`'s publish checks.
+- `SKILL.md` 408 → 369 lines. The four stacked preamble notes (FREEZE, 11-01 flow, mailbox, one allocator) are one
+  *Current state* block; §2's eleven overlapping bullets (NARROW stated three times, "q3 fold" region-lock lore, the
+  coexist carve-out described as live, the interim frozen-keeper sub-list) are one shape table + eight rules; the
+  duplicated *Shared job templates* section is a pointer. The ≥ 60 rank rule stays with its honest caveat.
+- **Proposed next consolidation (not done; needs the operator's view on the skill's evals):** SKILL.md §3 steps 1-6,
+  §4 and §5, `references/grant-writer-pattern.md`, `scripts/queue_status.py` and both evals
+  (`places-idle-quarters-safely`, `status-eta-report`) are writer-era (`grant_ok`, writers, `.wsg-granted` stamps,
+  FILLERS cells) — ~50 mentions remain. Fold the rules into `references/incident-ledger.md`, re-fixture the evals on
+  `rowflow.py status --json`, and the skill drops to ~150 lines. A reading-guide note at §4 says so meanwhile.
+
+## P5.8 Test hygiene
+
+| Suite | Before | After | Note |
+|---|---|---|---|
+| `rowflow2/tests` | 93 passed | **97 passed** | +4 decision-10 tests |
+| `job_templates/tests` | 21 passed, 1 xfail | **22 passed, 1 xfail** | the xfail is the pre-existing v40 fixture |
+| `scripts/hooks/tests` (worktree) | 3 failed, 487 passed | 3 failed, 487 passed, 33 skipped | the 3 are `test_harness_guard_parity` `TestOpencodeConfigParity` / `TestPluginSurfaces`: `~/.config/opencode/opencode.jsonc` has drifted from the generated block ("run `generate_opencode_permissions.py --write-global`"). Host state, not repo state; the test file is also modified-uncommitted in `/workspace`. **Owner: regenerate the global block or pin the test to the project surface** |
+| `test_compile_inference_batch.py` | ImportError at collection (hid the whole file under system python) | `importorskip("jsonschema")` | real tests run under the orchestrator venv |
+| `test_churn_file_result.py` | 5 failed, 21 passed | **unchanged, 5 failed** | stale fixtures, category (b): the `row()` manifest predates three frozen-keeper publish checks — `completed_result` needs `scratch_root` + absolute declared path (`publish_row.py:409`, `3e9d53426`), then "PASS result differs from the declared result", then "completed smoke launcher identity missing"; `test_queued_smoke_completion…` also expects `dryrun/<id>/completed-manifest.json`. Adding `scratch_root` alone moves every test one refusal further, so the fix is a fixture rewrite against the current `completed_result` contract. They hide nothing today but will mask the next `file_result.py` regression. Owner: churn/file_result |
+| `test_discard_invariant` pins | — | — | keeper-state fixtures (`destructive_scratch_pins.json`) consistent with `check_destructive_scratch.sh`; nothing to unpin |
+
+## P5.9 Evidence commands (pass 5)
+
+```bash
+F=/mnt/raid0/llm/tmp/compute-flags; W=/mnt/raid0/llm/tmp/pass5-root-20261107
+# deployed keeper == 15804eaf5, not ec6aba4b1
+diff <(git -C $W show 15804eaf5:scripts/coordination/rowflow/rowflow.py) $F/bin/rowflow/rowflow.py && echo same
+python3 -c "import json;print(json.load(open('$F/bin/rowflow/DEPLOYED.json'))['emergency'])"
+# tag census since 11-05
+awk '$1>="2026-11-05"{print $2}' $F/ws58-calendar-keeper.log | sort | uniq -c | sort -rn | head -20
+# alarm channel path
+grep -n 'ALARM_CHANNEL *=' $W/scripts/coordination/rowflow/rowflow.py; ls $F/coordination/alarm_channel.py
+# D9 trailer share
+git -C $W log --since=2026-11-05 --format=%B origin/main | grep -c '^D9-ack'
+```
