@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 5,
       "oldest_advance": "2026-11-03",
-      "open": 210
+      "open": 208
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -1004,10 +1004,10 @@
     },
     "frontier-lab-automation.md": {
       "blocked": 0,
-      "closed": 76,
+      "closed": 78,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 5,
+      "open": 3,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1020,20 +1020,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 38,
+          "closed": 40,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 3
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 382,
+          "line": 384,
           "markers": 1,
           "name": "agent-file-prose-compression",
           "open": 1
@@ -1043,7 +1043,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 478,
+          "line": 480,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 1
@@ -1053,7 +1053,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 561,
+          "line": 563,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 0
@@ -1063,7 +1063,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 753,
+          "line": 755,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 0
@@ -1428,7 +1428,7 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 103,
+      "closed": 104,
       "guarded": 0,
       "last_advanced": "2026-11-07",
       "open": 32,
@@ -1440,7 +1440,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 136,
+      "total": 137,
       "tracks": [
         {
           "blocked": 0,
@@ -1486,7 +1486,7 @@
         },
         {
           "blocked": 1,
-          "closed": 27,
+          "closed": 28,
           "gates": [],
           "guarded": 0,
           "line": 1758,

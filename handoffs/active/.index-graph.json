@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T17:57:39Z",
+  "generated_at": "2026-11-07T17:59:53Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1335,15 +1335,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 76,
-      "dispatchable": 5,
+      "closed": 78,
+      "dispatchable": 3,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-07",
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
-      "open": 5,
+      "open": 3,
       "priority": 0.6474,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
@@ -1363,18 +1363,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 382,
+          "line": 384,
           "name": "agent-file-prose-compression",
           "open": 1,
           "readiness": "ready"
@@ -1383,7 +1383,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 478,
+          "line": 480,
           "name": "frontier-f2-self-running-lab",
           "open": 1,
           "readiness": "ready"
@@ -1392,7 +1392,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 561,
+          "line": 563,
           "name": "frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -1401,7 +1401,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 753,
+          "line": 755,
           "name": "stale-open-audit-2026-07-18",
           "open": 0,
           "readiness": "no_open"
@@ -1996,7 +1996,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 103,
+      "closed": 104,
       "dispatchable": 32,
       "domain": "inference-research",
       "guarded": 0,
