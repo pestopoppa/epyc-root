@@ -430,3 +430,12 @@ Sources: [long-context program](../handoffs/active/long-context-program.md) · [
 ### YaRN oolong ownership handover (2026-11-06)
 
 The YaRN oolong program (YARN-OOLONG-V38-RESUME) moved from the operator ad-hoc session to main-inf22 at the operator's direction, and the operator lifted the YaRN pause ("he owns the YaRN work, so he's free to schedule it as needed"). The CPU path is abandoned (about 7 h per 112k-token item with no checkpoint); the GPU recipe uses the shared `job_fence` module and four GPU job fixes. Source: `progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md`, `handoffs/active/long-context-program.md`.
+
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): long-context decode is the bottleneck; ≥256k YaRN parked
+
+- **Measured 27B Q8_0 decode on MI210 (no draft, q8_0 KV):** 17.4 / 12.4 / ~7 tok/s at 128k / 240k / 500k. The fit is ms/token ≈ 29.7 + 0.217·ctx_k. The context term reads KV at ≈160 GB/s, about 10% of HBM. Cold prefill takes 5.1 min at 128k and 63 min at 499k. At 512k the model is not interactively usable.
+- **VRAM is not the constraint.** The usable ceiling is ~63.8 GiB, with a 62 GiB KFD operating gate. The 55/52 GiB YaRN-E1 gates were judgement margins. With the DFlash2 drafter on GPU, 512k loads at 52.55 GiB and is projected to peak at ~54 GiB, so it fits. Moving KV to host (`-nkvo` or a per-layer mask) is strictly worse, because attention moves to slower memory.
+- **Operator decision 2026-11-07 (`a33e52917`):** park all ≥256k YaRN work until the C8 attention-decode fix lands. The kept items are YARN-NATIVE-WINDOW-GATE, native-window inertness, KSHIFT-FIX-MODEL-TEST, the YARN-AGG-1 spec and YARN-E1-PROOF.
+- **Native-window gate r2 abort.** The root cause was checkpoint min-spacing of 8192, which erased the question checkpoints, so cache reuse missed. r3 runs with `--checkpoint-min-step 0`.
+- **streaming-llm stays closed.** A hybrid attention-only eviction carve-out is feasible, but the payoff is dominated by the harness route and C8-1.
+- Sources: `docs/design/long-context-and-c8-strategy-20261107.md`, `handoffs/active/long-context-program.md`, `progress/2026-11/2026-11-07-main-inf22.md`.

@@ -3293,3 +3293,19 @@ Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · 
 
 ### Source References (2026-11-07 operator-adhoc-ops-20261105 sweep)
 - `progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md`, `docs/guides/agent-workflows/mi210-window-protocol.md`, `handoffs/active/engineering-hygiene-backlog.md`
+
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): watcher re-arm, C7-local smoke fixes, splits and owners
+
+- **Re-arm the completion watcher after every event.** One watcher was not re-armed after 01:22 on 11-07, so two row failures (02:05 and 23:03) went unnoticed and left the GPU idle for ~6 GPU-h.
+- **Do not `run_direct` while a row is grantable.** Publish the row and let the keeper grant it (`docs/guides/agent-workflows/compute-fillers.md`).
+- **C7-local smoke fixes:**
+  - The prompt build moved outside the preflight guard.
+  - The smoke marker is now fresh.
+  - The Q38FN load at 4 cores takes ~21 min, which needs a longer timeout.
+  - The port-owner check walks descendants, because a job_fence fork (`27d2c704e`, reverted to exec in `f546a71db`) broke the direct-pid check.
+- **Handoff governance (operator 2026-11-07):**
+  - Split a handoff only when justified or indispensable.
+  - No owner is never a reason to decline; adopt the box instead.
+
+  Both rules are in `docs/guides/agent-workflows/handoff-index-authoring.md` as rules 5–6.
+- **sed hazard:** with an empty `L`, `sed -i "${L}a"` appends after every line. See `docs/reference/agent-config/INCIDENT_LOG.md`, INC-20261107-sed-empty-line-number.

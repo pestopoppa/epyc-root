@@ -7101,3 +7101,27 @@ Sources: [autokernel-loop AK-ASM-FOLD](../handoffs/active/autokernel-loop.md) ·
 - **Filed work**: build-cost packet `AK-SETUP-1/2` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md); ROCm-gated adoption stays a durable trigger.
 
 Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [Kerncap dive](../research/deep-dives/quant-compiler-20261106/kerncap.md)
+
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): GDN share on MI210, the C8 package, data-audit disclosures
+
+- **GDN-SHARE-1, MI210 half (C7r 62cb6a6af).** The 27B GDN_CORE kernel-time share is:
+  - pp2048: 15.8%
+  - pp32768: 14.6%
+  - decode: 1.4–1.6%
+  - verify: ≤6.5% (np4, 36 tokens)
+
+  For A3B, pp2048 is 21.2%. GDN is a **prefill lever**: a 2x core gives about +8.6% on 27B prefill and under 1% on decode. The prefill kernel runs at about 1.85 TFLOP/s, roughly 8% of FP32 peak, and is bound by serial latency. A chunked (WY/UT) form is the fix. The tg@d32768 cell is invalid because depth-prefill contamination enters the profile.
+- **C8 package (operator 2026-11-07; the goal is HBM saturation):**
+  - C8-1: H17 long-context attention-decode profile, then the fix. Decode at ≥32k uses about 10% of HBM.
+  - C8-2: H16 at the production verify M=36.
+  - C8-3: zero-split census.
+  - C8-6: GDN chunked core, included now rather than deferred to C9.
+
+  The expected gains are inferred design priors, not measurements.
+- **Data audit (`4378a207d`, `031c7aa1b`):**
+  - The H1+H7 27B selection is disclosed as 1.21x, not 1.94x. r6 was GATE_FAIL before r7 PASS, and the 6 MiB rule was post hoc.
+  - The H12/H1b dispatch gates are labelled post hoc.
+  - The q8_1 figures are unsourced.
+  - The cc register gained `--rev`/`--supersedes`, so a corrected row supersedes the old one, which stays as history.
+- **The Q38FN 2xMI210 hybrid is parked** (AK-ASM-H22) until a second MI210 is installed. Plan: `docs/design/q38fn-2xmi210-hybrid-plan-20261107.md`.
+- Sources: `handoffs/active/model-architecture-readiness.md` GDN-SHARE-1, `docs/design/long-context-and-c8-strategy-20261107.md`, `docs/reference/kernel-manifests/llama-v11-manifest.md`.
