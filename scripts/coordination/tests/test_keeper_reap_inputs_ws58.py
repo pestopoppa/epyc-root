@@ -17,7 +17,7 @@ import time
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-KEEPER = os.path.join(os.path.dirname(HERE), "rowflow", "ws58-calendar-keeper-v12.sh")
+KEEPER = os.path.join(os.path.dirname(HERE), "rowflow", "ws58-calendar-keeper-v13.sh")
 DAY = 86400
 
 

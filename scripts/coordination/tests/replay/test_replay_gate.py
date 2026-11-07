@@ -139,6 +139,7 @@ P4_CONTROLS = [
     ("GPU_IDLE_BY_DEVICE", "p4-gpu-harness-with-kfd-never-idle-held", ("read IDLE-HELD",)),
     ("GPU_IDLE_BY_DEVICE", "p4-gpu-grant-cpu-regions-not-judged", ("by CPU %",)),
     ("OVERRIDE_BOOKS_WIDTH", "override-multiquarter-books-two", ("2-quarter row granted",)),   # negative control: old code grants 1
+    ("LOG_ON_TRANSITION", "p5-idle-held-logs-once", ("transition only",)),   # Pass 5 item 3: the pre-fix keeper logs every tick
 ]
 
 

@@ -207,7 +207,7 @@ class GpuQ3(Fx):
         free = ALL_TOKENS - held
         c = {"id": "q", "kind": "grant", "lane": "cpu", "rank": 50, "lane_count": 0, "gib": 4, "bench": False,
              "options": [frozenset({q}) for q in rf.QUARTERS], "shape": "quarter", "since": time.time(), "window_s": 600}
-        out, _, _ = rf.plan(free, [c], 1000, gpu_grant_open=True, quiet_held=held)
+        out, _, _ = rf.plan(free, [c], 1000, gpu_grant_open=True)
         self.assertIn(next(iter(out[0][1])), ("q0", "q1", "q2"))
 
     def test_coexist_backfills_q3_cores_never_gpu_threads(self):
@@ -217,10 +217,10 @@ class GpuQ3(Fx):
               "options": [frozenset(rf.cpu_tokens("72-73"))], "shape": "quarter", "coexist": True, "busy_fraction": 0.05,
               "since": time.time(), "window_s": 600}
         lent = rf.COEXIST_Q3   # keeper class fix 2026-11-05: quiet_held = the tokens the gpu-q3 grant LENDS (72-87 + siblings)
-        out, _, _ = rf.plan(free, [cx], 1000, gpu_grant_open=True, quiet_held=lent)
+        out, _, _ = rf.plan(free, [cx], 1000, gpu_grant_open=True)
         self.assertEqual([c["id"] for c, _ in out], ["gx"])
         bad = dict(cx, id="gy", options=[frozenset(rf.cpu_tokens("88-89"))])
-        out, _, _ = rf.plan(free, [bad], 1000, gpu_grant_open=True, quiet_held=lent)
+        out, _, _ = rf.plan(free, [bad], 1000, gpu_grant_open=True)
         self.assertEqual(out, [])
 
     def test_timing_never_backfills_q3(self):
@@ -228,7 +228,7 @@ class GpuQ3(Fx):
         free = ALL_TOKENS - held
         t = {"id": "tb", "kind": "grant", "lane": "cpu", "rank": 50, "lane_count": 0, "gib": 4, "bench": True,
              "options": [frozenset(rf.cpu_tokens("72-79"))], "shape": "quarter", "since": time.time(), "window_s": 600}
-        out, _, _ = rf.plan(free, [t], 1000, gpu_grant_open=True, quiet_held=held)
+        out, _, _ = rf.plan(free, [t], 1000, gpu_grant_open=True)
         self.assertEqual(out, [])
 
 

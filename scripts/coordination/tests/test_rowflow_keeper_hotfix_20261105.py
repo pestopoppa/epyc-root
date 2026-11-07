@@ -70,10 +70,6 @@ class D14GpuShape(Fx):
 
     def test_absent_declared_threads_is_unknown_not_zero(self):
         self.assertIsNone(rf.row_threads({"declared_threads": None}))
-        # unknown threads is never a coexist row (coexist needs KNOWN threads <= COEXIST_MAX_THREADS)
-        o = {"class": "cpu"}
-        self.assertFalse(rf.contract_of({"regions": "any-cpu-quarter", "declared_threads": None}, o)["coexist"])
-        self.assertTrue(rf.contract_of({"regions": "any-cpu-quarter", "declared_threads": 4}, o)["coexist"])
 
 
 # ---------------------------------------------------------------- item 2: supersede never stops a RUNNING predecessor

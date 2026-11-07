@@ -4,7 +4,7 @@
 # Origin: 2026-11-02 /mnt/raid0/llm/tmp reached ~534 GiB, free disk 147 GiB. Reaping lived only inside the keeper loop, so a
 # stopped keeper meant no reaping, and /mnt/raid0/llm/.trash was freed only when someone remembered to sweep it.
 #
-#   every 30 min  the keeper's reap-only pass: `bash <keeper> --reap-now` (step 6 of ws58-calendar-keeper-v12.sh: filed
+#   every 30 min  the keeper's reap-only pass: `bash <keeper> --reap-now` (step 6 of ws58-calendar-keeper-v13.sh: filed
 #                 manifests + the idle rule at REAP_IDLE_DAYS=1, every keeper guard intact). This is the ONLY scheduled reaper:
 #                 the keeper loop no longer reaps (operator 2026-11-03). Skipped while the reap stamp
 #                 (ws58-keeper-state/reap-last, touched by every --reap-now pass, e.g. a manual one) is younger than 30 min.
@@ -23,7 +23,7 @@
 set -euo pipefail
 
 F=${JANITOR_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
-KEEPER=${JANITOR_KEEPER:-$F/ws58-calendar-keeper-v12.sh}
+KEEPER=${JANITOR_KEEPER:-$F/ws58-calendar-keeper-v13.sh}
 SWEEP=${JANITOR_SWEEP:-/workspace/scripts/safety/trash-sweep.sh}
 LOG=${JANITOR_LOG:-$F/disk-janitor.log}
 PIDF=${JANITOR_PIDFILE:-$F/disk-janitor.pid}

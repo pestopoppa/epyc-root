@@ -726,6 +726,21 @@ def sc_gpu_grant_quiet_device_idle_after_two_samples(path):
     return write(path, ticks), check
 
 
+def sc_p5_idle_held_logs_once(path):
+    """Pass 5 item 3 (2026-11-07): a GPU grant that stays quiet reads IDLE-HELD from tick 2 and the keeper must say so ONCE
+    (a state transition), not on every one of the following ticks. The grant itself is still judged idle every tick."""
+    rows, world = _gpu_harness_rows(0)
+    rows["ak-asm-t1-harness"]["kfd_own"] = False
+    ticks = [(rows, world)] * 8
+
+    def check(d):
+        held = [i for i, _ in _lines(d, "IDLE-HELD gpu-quiet ak-asm-t1-harness")]
+        if len(held) != 1 or held[0] != 2:
+            return [f"IDLE-HELD logged on ticks {held} over 8 quiet ticks; expected exactly one line, at tick 2 (transition only)"]
+        return []
+    return write(path, ticks), check
+
+
 def sc_override_multiquarter_books_two(path):
     """lsa-quality-32k-20261106-r4-pca: regions any-cpu-quarter, declared multi-quarter(2) accepted via shape_override, threads
     unknown. It was granted ONE quarter (q1) while q3 sat idle. A 2-quarter row is granted two whole quarters or waits."""
@@ -799,6 +814,7 @@ SCENARIOS = {
     "p4-gpu-harness-with-kfd-never-idle-held": sc_gpu_harness_with_kfd_never_idle,
     "p4-gpu-grant-cpu-regions-not-judged": sc_gpu_grant_cpu_regions_not_judged,
     "p4-gpu-grant-quiet-device-idle-after-two-samples": sc_gpu_grant_quiet_device_idle_after_two_samples,
+    "p5-idle-held-logs-once": sc_p5_idle_held_logs_once,
 }
 
 # which global invariants each scenario is ABOUT (the others are still checked; these are its subject)

@@ -161,7 +161,6 @@ class GpuHostThreads(unittest.TestCase):
         opts, _ = rf.row_shape(row)
         self.assertEqual(len(opts), 1)
         self.assertIn("q3", opts[0]); self.assertIn(rf.GPU, opts[0])
-        self.assertEqual(rf.contract_of(row)["lends"], frozenset())   # its legacy engine locks q3: nothing lent
         # gpu-q3 NARROW (operator 2026-11-05): a GRANT_CPUS GPU-timing row is gpu-q3 = gpu-quiet + 88-95 + 184-191;
         # q3 cores 72-87 are not held (and nothing is lent)
         open(eng, "a").write("# GRANT_CPUS\n")
@@ -169,7 +168,6 @@ class GpuHostThreads(unittest.TestCase):
         self.assertEqual(c["shape"], "gpu-q3")
         self.assertNotIn("q3", c["options"][0]); self.assertIn(rf.GPU, c["options"][0]); self.assertIn("c88", c["options"][0])
         self.assertFalse(rf.expand(c["options"][0]) & rf.GPU_TIMING_NEVER_HELD)
-        self.assertEqual(c["lends"], frozenset())
 
 class FarDrain(unittest.TestCase):
     def test_far_T_still_drains_and_backfills(self):

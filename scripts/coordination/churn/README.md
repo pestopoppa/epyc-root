@@ -6,7 +6,7 @@ cleans reboot residue, starts what is down, and `--status` proves installed sha 
 
 | installed at (`F/…`) | git source | runs as |
 |---|---|---|
-| `ws58-calendar-keeper-v12.sh` (+ `ws58-calendar-keeper.current`) | `../rowflow/ws58-calendar-keeper-v12.sh` | started by the watchdog; pid in `ws58-calendar-keeper.pid`; runs `rowflow.py allocate` each tick (wakes within 5 s on a grants/ or ready/ change, 120 s fallback) |
+| `ws58-calendar-keeper-v13.sh` (+ `ws58-calendar-keeper.current`) | `../rowflow/ws58-calendar-keeper-v13.sh` | started by the watchdog; pid in `ws58-calendar-keeper.pid`; runs `rowflow.py allocate` each tick (wakes within 5 s on a grants/ or ready/ change, 120 s fallback) |
 | `ws58-keeper-watchdog.sh` | `ws58-keeper-watchdog.sh` | loop; `ws58-keeper-watchdog.pid` (written by churn_up) |
 | `ws58-backlog-gen-v1.sh` → `bin/backlog_gen.py` | `ws58-backlog-gen-v1.sh`, `../backlog_gen.py` | loop (10 min); `ws58-backlog-gen.pid` |
 | `ws58-flow-scoreboard-v1.sh` → `bin/flow_scoreboard.py` | `ws58-flow-scoreboard-v1.sh`, `../flow_scoreboard.py` | loop (10 min); `ws58-flow-scoreboard.pid` |

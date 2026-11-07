@@ -9,7 +9,7 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CO = os.path.dirname(HERE)
-KEEPER = os.path.join(CO, "rowflow", "ws58-calendar-keeper-v12.sh")
+KEEPER = os.path.join(CO, "rowflow", "ws58-calendar-keeper-v13.sh")
 JANITOR = os.path.join(CO, "churn", "disk_janitor.sh")
 CHURN_UP = os.path.join(CO, "churn", "churn_up.sh")
 

@@ -45,7 +45,7 @@ for a in "$@"; do case "$a" in
   *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
 esac; done
 [ $MODE = status ] && [ $STOP = 1 ] && { echo "usage: --status and --stop are exclusive" >&2; exit 2; }
-KEEPER=ws58-calendar-keeper-v12.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
+KEEPER=ws58-calendar-keeper-v13.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
 RC=0
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 LOG=$F/churn-up.log
