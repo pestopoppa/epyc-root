@@ -23,7 +23,7 @@ frozen_tree: /mnt/raid0/llm/llama.cpp @ production-consolidated-v10 (ffc1bac82ee
 verdict: dive-verified-with-corrections
 ---
 
-# intake-2641 — LinQuant (arXiv 2610.39418v1) — Stage-2 dive
+# intake-2641#record — LinQuant (arXiv 2610.39418v1) — Stage-2 dive
 
 **One-line verdict.** The paper is methodologically solid and its invariance algebra is correct, but
 its contribution is *conditional on owning a low-precision recurrent core that we do not have*: all

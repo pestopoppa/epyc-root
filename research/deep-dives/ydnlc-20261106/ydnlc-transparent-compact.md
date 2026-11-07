@@ -1,4 +1,4 @@
-# intake-2632 — transparent-compact (arXiv 2610.20116v1)
+# intake-2632#record — transparent-compact (arXiv 2610.20116v1)
 
 **Dive date**: 2026-11-06 · **Read depth**: FULL · **Source revision**: 2610.20116v1 (2026-10-14)
 **Verdict**: dive-verified; the commitment claim is OVERTURNED as stated.

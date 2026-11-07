@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T11:13:24Z",
+  "generated_at": "2026-11-07T11:20:43Z",
   "nodes": [
     {
       "age_days": 4,
@@ -3176,18 +3176,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 248,
-      "dispatchable": 109,
+      "closed": 249,
+      "dispatchable": 116,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
-      "last_advanced": "2026-11-06",
+      "last_advanced": "2026-11-07",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 109,
+      "open": 116,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3207,18 +3207,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 62,
+          "dispatchable": 69,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 62,
+          "open": 69,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1168,
+          "line": 1176,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3227,7 +3227,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1207,
+          "line": 1215,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3236,7 +3236,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1314,
+          "line": 1322,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3245,7 +3245,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1414,
+          "line": 1422,
           "name": "loop-state-offraid-backup",
           "open": 5,
           "readiness": "ready"
@@ -3254,7 +3254,7 @@
           "blocked_by": [],
           "dispatchable": 35,
           "gates": [],
-          "line": 1460,
+          "line": 1468,
           "name": "refactoring-multirepo-2026-10",
           "open": 35,
           "readiness": "ready"
@@ -3263,7 +3263,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2033,
+          "line": 2041,
           "name": "repo-readiness-scorer",
           "open": 4,
           "readiness": "ready"

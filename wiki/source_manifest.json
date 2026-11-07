@@ -1,36 +1,34 @@
 {
   "by_type": {
-    "docs": 434,
+    "docs": 435,
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
-    "progress": 1346,
+    "progress": 1347,
     "research": 299
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 3,
-      "changed": 4,
+      "added": 0,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-07T08:24:07Z",
+    "at": "2026-11-07T11:20:44Z",
     "scope_paths": [
-      "docs/guides/agent-workflows/compute-fillers.md",
-      "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "progress/2026-11/2026-11-05-inf22.md",
-      "progress/2026-11/2026-11-06-inf22-vbcc.md",
-      "progress/2026-11/2026-11-06-main-inf22.md",
-      "progress/2026-11/2026-11-06-rowflow-friction-pass4.md",
-      "progress/2026-11/2026-11-07-main-inf22.md"
+      "docs/guides/agent-workflows/mi210-window-protocol.md",
+      "handoffs/active/engineering-hygiene-backlog.md",
+      "progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md",
+      "research/deep-dives/quant-compiler-20261106/linquant-paper.md",
+      "research/deep-dives/ydnlc-20261106/*transparent-compact.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-07T08:24:07Z",
+  "scan_time": "2026-11-07T11:20:44Z",
   "schema_version": 1,
-  "source_set_hash": "e7e73bb5618561605d334bdff7536750b790396c267b0e7d44da2d20d076af66",
+  "source_set_hash": "a97ee1bfe01c81bfae34f41ef43843f7d599acc723137e202c98ae1bbd7edf99",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -97,10 +95,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "780a8599ddf125b4b00bcc48685d3eb0c6533a9ada0607a5a418405005b86e0a",
-      "modified": "2026-11-06T17:01:42Z",
+      "content_hash": "a3b7e751aa0592cec828f2e42af2ad363feb25b75e1f221ff4caa18143a946c7",
+      "modified": "2026-11-07T11:15:45Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 430614,
+      "size": 434598,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -4961,11 +4959,11 @@
       "type": "research"
     },
     {
-      "content_hash": "8f9c325f8a1d9c3e32b0beac3ebb1ca26b57d632c6ee902c51625b3549213e0f",
-      "modified": "2026-11-06T19:53:03Z",
+      "content_hash": "2becbcdd7f160b6f3c4c5b315f83d80361993d15b09d50533d476b04dfdcbbda",
+      "modified": "2026-11-07T11:17:22Z",
       "path": "research/deep-dives/quant-compiler-20261106/linquant-paper.md",
-      "size": 46067,
-      "title": "intake-2641 \u2014 LinQuant (arXiv 2610.39418v1) \u2014 Stage-2 dive",
+      "size": 46074,
+      "title": "intake-2641#record \u2014 LinQuant (arXiv 2610.39418v1) \u2014 Stage-2 dive",
       "type": "research"
     },
     {
@@ -5601,14 +5599,6 @@
       "type": "research"
     },
     {
-      "content_hash": "6e0bbb10b36b5bc303ea0c08ffab4e84f9fc31f6de2339135a7890f4d3288d8c",
-      "modified": "2026-11-06T17:05:20Z",
-      "path": "research/deep-dives/ydnlc-20261106/intake-2632-transparent-compact.md",
-      "size": 2811,
-      "title": "intake-2632 \u2014 transparent-compact (arXiv 2610.20116v1)",
-      "type": "research"
-    },
-    {
       "content_hash": "6ef9072902f1772657c807cadc1e6760d234aaed7d67509ef3554344c920e1bb",
       "modified": "2026-11-06T15:08:48Z",
       "path": "research/deep-dives/ydnlc-20261106/intake-2636-governance-decay.md",
@@ -5646,6 +5636,14 @@
       "path": "research/deep-dives/ydnlc-20261106/intake-2640-access-control.md",
       "size": 2230,
       "title": "intake-2640 \u2014 From Alignment to Access Control (arXiv 2609.26682v1)",
+      "type": "research"
+    },
+    {
+      "content_hash": "2e3b4025edc5b3e6ddb6b2985f21364b30a6060c9c015490290e43647b1d7a1c",
+      "modified": "2026-11-07T11:17:14Z",
+      "path": "research/deep-dives/ydnlc-20261106/ydnlc-transparent-compact.md",
+      "size": 2818,
+      "title": "intake-2632#record \u2014 transparent-compact (arXiv 2610.20116v1)",
       "type": "research"
     },
     {
@@ -16281,6 +16279,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "4177e61756dea3a77e7a4b2d56c70b8290cd5b582aba343e257dc32fb4d5cd39",
+      "modified": "2026-11-07T11:15:45Z",
+      "path": "progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md",
+      "size": 4015,
+      "title": "Wrap-up 9 \u2014 2026-11-06 ~21:00Z to 2026-11-07",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-05T19:30:50Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -17566,6 +17572,14 @@
       "path": "docs/guides/agent-workflows/measurement-sufficiency.md",
       "size": 4663,
       "title": "Measurement sufficiency and early stopping",
+      "type": "docs"
+    },
+    {
+      "content_hash": "bd3d978c6b409d92d9e0a189d1c06e9ed9c2648007db402e725c38b8f192fa49",
+      "modified": "2026-11-07T11:11:48Z",
+      "path": "docs/guides/agent-workflows/mi210-window-protocol.md",
+      "size": 2491,
+      "title": "MI210 window and handover protocol (AKX-ALL-15 / 15a / 15b)",
       "type": "docs"
     },
     {
@@ -19889,7 +19903,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2482,
+  "total_new": 2484,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
