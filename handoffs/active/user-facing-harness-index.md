@@ -15,7 +15,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | UFH-13 | thesis experiment (ACTIVE 2026-10-29) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
-| UFH-01 | harness selection and integration | [harness-program.md](harness-program.md) | Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits | RTG-09 |
+| UFH-01 | harness selection and integration | [harness-program.md](harness-program.md) | Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel | RTG-09 |
 
 ## Cross-domain
 

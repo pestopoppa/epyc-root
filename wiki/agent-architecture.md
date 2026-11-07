@@ -5774,3 +5774,13 @@ Sources: [friction review pass 4](../docs/reports/coordination/keeper-friction-r
 - **Filed work**: `P1`/`P2`/`P3` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md) and [coordination-and-churn-pipeline.md](../handoffs/active/coordination-and-churn-pipeline.md).
 
 Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · [intake stage-3 plan](../research/intake-stage3-plan-2026-11-06-linquant-tkcc.md)
+
+## Compiled Update — 2026-11-07 (harness/inference intake: reuse is over-attributed)
+
+- **Token savings from action reuse are mostly context shrink.** HarnessMM's 87.93% headline reproduces, but pricing the bypassed calls at baseline per-call cost shows callback removal explains only 12-36% of the saving; output tokens rise in both HumanEval arms. Any reuse claim now carries a call-count decomposition (HIL-RE-1).
+- **The load-bearing soundness gap is interpreter identity.** A schema-valid stored call can change effect when the handler changes; our dispatch fingerprint covers catalog and read-set hashes but not the handler, process start or serving-tree commit (UFH-TE-2). The minimum certificate addition is three fields, not fourteen: `tool_epoch`, `effect_class`, `expires_at`/revocation.
+- **Search does not beat hand design in the one measured attempt.** HARBOR ties the manual peak (17/89 vs 17/89), has no random/grid control, and is warm-started from the manual log it claims to replace; its Oracle gap (17 vs 81 of 89) argues for conditional selection.
+- **Harness RSI has a silent-flag failure mode**: a flag can fire on the write side with a zero consumer counter. The transferable invariant is a telemetry read/write asymmetry check (HIL-RE-3).
+- **Filed work**: UFH-TE-1..4 and HIL-RE-1..4 in [harness-program.md](../handoffs/active/harness-program.md).
+
+Sources: [HarnessMM dive](../research/deep-dives/harness-inference-20261106/intake-2652.md) · [ActionEngine dive](../research/deep-dives/harness-inference-20261106/intake-2656.md) · [HARBOR dive](../research/deep-dives/harness-inference-20261106/intake-2659.md) · [schema-epoch dive](../research/deep-dives/harness-inference-20261106/intake-2658.md)

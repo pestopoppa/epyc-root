@@ -5,37 +5,27 @@
     "handoff-blocked": 1,
     "handoff-completed": 374,
     "progress": 1347,
-    "research": 299
+    "research": 312
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 4,
-      "changed": 8,
+      "added": 13,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-07T12:22:49Z",
+    "at": "2026-11-07T12:56:26Z",
     "scope_paths": [
-      "docs/design/long-context-and-c8-strategy-20261107.md",
-      "docs/design/q38fn-2xmi210-hybrid-plan-20261107.md",
-      "docs/guides/agent-workflows/compute-fillers.md",
-      "docs/guides/agent-workflows/handoff-index-authoring.md",
-      "docs/reference/agent-config/INCIDENT_LOG.md",
-      "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "handoffs/active/long-context-program.md",
-      "handoffs/active/model-architecture-readiness.md",
-      "handoffs/active/v11-promotion-checklist.md",
-      "handoffs/completed/engram-conditional-memory-archived-20261107.md",
-      "progress/2026-11/2026-11-06-main-inf22.md",
-      "progress/2026-11/2026-11-07-main-inf22.md"
+      "research/deep-dives/harness-inference-20261106",
+      "research/deep-dives/intake-digests/2026-11-06-ids-2650-2661.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-07T12:22:49Z",
+  "scan_time": "2026-11-07T12:56:26Z",
   "schema_version": 1,
-  "source_set_hash": "93682e02826f42f1c8eafad08384ba2b079213c3c933235422a7524ef2f2da66",
+  "source_set_hash": "14979304e9ded5bc48f78c305ddfd258616ff0ea500d79d7afc004cafc919833",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -3870,6 +3860,102 @@
       "type": "research"
     },
     {
+      "content_hash": "5ce63919af3ba6e43f3d6322fdf7e8ff598053cfb592ef875d42f1514381bcd7",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2650.md",
+      "size": 3021,
+      "title": "T3 Code \u2014 provider-agnostic agent harness control surface (server + web/desktop/mobile clients over installed agent CLIs)",
+      "type": "research"
+    },
+    {
+      "content_hash": "ffa0e911f4490caa307ac22cf709906ae4273bf9c7e1ffc222c22cba85ce7d31",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2651.md",
+      "size": 3670,
+      "title": "Foundry Local \u2014 embeddable ONNX Runtime on-device inference runtime with SDKs, curated model catalog and automatic execution-provider selection",
+      "type": "research"
+    },
+    {
+      "content_hash": "a6dc1667da999caae6bac3276480beb89a6cc40aad99168a8101f78c9b12ef64",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2652.md",
+      "size": 3386,
+      "title": "HarnessMM: Recursive Self-Improvement for Harness Token Efficiency",
+      "type": "research"
+    },
+    {
+      "content_hash": "59947c8710ffa849db233ebd388d0dd570eddc36319c2bd10012666fc83fc3ae",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2653.md",
+      "size": 3337,
+      "title": "Handoff Debt: The Rediscovery Cost When Coding Agents Take Over Interrupted Tasks",
+      "type": "research"
+    },
+    {
+      "content_hash": "0f901fcdfb87d53fea60977a0e5f4df4ece0a0a9c7c205785d030cf631fd5b15",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2654.md",
+      "size": 3117,
+      "title": "ACP Registry \u2014 machine-readable registry of agents implementing the Agent Client Protocol",
+      "type": "research"
+    },
+    {
+      "content_hash": "d853f070c7a72c6bfb3528d3d89c5e1e197a7b4112a2acdf92ab325b03bd08db",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2655.md",
+      "size": 2864,
+      "title": "Durable Execution for Agent Runtimes: Workflow Engines, Replay, and Recoverable AI Work",
+      "type": "research"
+    },
+    {
+      "content_hash": "1d98478fa808c4de73e9d90f3ec45eb1da9d14d49ad8a03ab0a56a08b343edf9",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2656.md",
+      "size": 2778,
+      "title": "ActionEngine: From Reactive to Programmatic Web Agents via State Machine Memory",
+      "type": "research"
+    },
+    {
+      "content_hash": "5729e43fd5729b9b7ed93c5235d34472ad3f6fb89cf8141bac3aad8df40783ca",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2657.md",
+      "size": 2795,
+      "title": "Reuse, Rewrite, or Reject: Evidence-Constrained Trace Reuse for Repeated Mobile GUI Control",
+      "type": "research"
+    },
+    {
+      "content_hash": "16c6bb36c8a00a098a114b8f10898cecaec1d7c9016fc7f7ff15d7ad6d7740ac",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2658.md",
+      "size": 2954,
+      "title": "When Valid Tool Calls Change Meaning: Formation-Consistent Dispatch for LLM Agents",
+      "type": "research"
+    },
+    {
+      "content_hash": "095140acad81e60b3dbea63e884c87f54e8e5978966551da5c7f2f72294c3d74",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2659.md",
+      "size": 3226,
+      "title": "HARBOR: Automated Harness Optimization",
+      "type": "research"
+    },
+    {
+      "content_hash": "ea92b280e19098a35f1dc384b47a670665183e909bb17b252147ebaf8728a7b4",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2660.md",
+      "size": 2677,
+      "title": "CORTEX: A Verified Experience Layer for Generalist Agents",
+      "type": "research"
+    },
+    {
+      "content_hash": "28df829d41807a9cdb3ae3b58b9563753de1a8e748f4561fc00fae9f12c67cb6",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/harness-inference-20261106/intake-2661.md",
+      "size": 3459,
+      "title": "vCache: Verified Semantic Prompt Caching",
+      "type": "research"
+    },
+    {
       "content_hash": "4fd683ee7df3c91054123a147a75877d3bf11d8b6c4fbdfa99dc911209cc547c",
       "modified": "2026-11-05T19:30:50Z",
       "path": "research/deep-dives/hazy-megakernel-llm-inference.md",
@@ -4667,6 +4753,14 @@
       "path": "research/deep-dives/intake-digests/2026-11-06-ids-2628-2640.md",
       "size": 35054,
       "title": "Intake dive digest \u2014 2026-11-06, intake-2628#record .. intake-2640#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "cd7e684a178afce8eeaab44ba6f29364d15d8e6d3b2cdcef8a41468265dd5c5a",
+      "modified": "2026-11-07T12:52:32Z",
+      "path": "research/deep-dives/intake-digests/2026-11-06-ids-2650-2661.md",
+      "size": 75068,
+      "title": "Intake dive digest \u2014 2026-11-06, intake-2650#record .. intake-2661#record",
       "type": "research"
     },
     {
@@ -19942,7 +20036,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2488,
+  "total_new": 2501,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -3309,3 +3309,12 @@ Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · 
 
   Both rules are in `docs/guides/agent-workflows/handoff-index-authoring.md` as rules 5–6.
 - **sed hazard:** with an empty `L`, `sed -i "${L}a"` appends after every line. See `docs/reference/agent-config/INCIDENT_LOG.md`, INC-20261107-sed-empty-line-number.
+
+## Compiled Update — 2026-11-07 (execution-provider paths and omission evidence)
+
+- **Foundry Local is ONNX-only, single-user, no batching, and ships no ROCm EP** - but its runtime enumerates an AMDGPU umbrella and ORT-GenAI 0.19 can route it to MIGraphX/HIP. The path to gfx90a is a plugin build, not a wall: RTG-EP-1 probes it and prices the Linux EP-selection port.
+- **"Automatic acceleration" is auto-detect plus explicit acquire.** Catalog queries are filtered by already-registered execution providers, so an app that skips `DownloadAndRegisterEps` silently resolves CPU variants. Variant selection is device-tier order plus cached-first, never measured throughput.
+- **A skipped call needs a denominator, not just a guard.** vCache's bound is on the cache's aggregate output (bought by exploring), not on individual skips; per-hit error is roughly delta/hit-rate (~2.2% at their 1% bound). Omission certificates can be identity receipts or rate-tau audited populations, never statistical claims without an audited denominator.
+- **Filed work**: RTG-EP-1, RTG-VAR-1/2 in [routing-program.md](../handoffs/active/routing-program.md); UFH-TE-3 in [harness-program.md](../handoffs/active/harness-program.md).
+
+Sources: [Foundry Local dive](../research/deep-dives/harness-inference-20261106/intake-2651.md) · [vCache dive](../research/deep-dives/harness-inference-20261106/intake-2661.md)

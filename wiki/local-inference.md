@@ -758,3 +758,10 @@ Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.
 - **Launcher**: `scripts/session/launch_local_inference.sh` defaults CPU `t96 + MTP + np4/262144 + f16` and GPU `np4/262144 + f16 + n8 + cache flags`.
 
 Sources: [progress](../progress/2026-11/2026-11-06-inference-serving-launch.md) · [artifact](../artifacts/compute/local-launch-optimization-20261106/) · [launcher](../scripts/session/launch_local_inference.sh) · [C6 handoff](../handoffs/active/kernel-champion-and-promotion.md)
+
+## Compiled Update — 2026-11-07 (on-device packaging patterns)
+
+- **The reusable part of Foundry Local is lifecycle, not inference**: detect hardware, resolve the best precompiled per-device variant, cache it locally, and expose a typed item/session API with capability metadata. Port cost for the detect-to-select pattern without the downloader is 4-6 engineer-days (RTG-VAR-1/2).
+- **Its constraints are real for our workload**: no GGUF path, no AMD GPU provider shipped, no continuous batching or request queuing, and no published throughput numbers.
+
+Sources: [Foundry Local dive](../research/deep-dives/harness-inference-20261106/intake-2651.md)

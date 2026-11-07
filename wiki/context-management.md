@@ -1281,3 +1281,12 @@ Sources: [tool-output-compression](../handoffs/active/context-and-token-economy.
 ### Run 2026-10-31, IDs 2535–2544 — [digest](../research/deep-dives/intake-digests/2026-10-31-ids-2535-2544.md)
 
 - intake-2544#record (SWE-Pruner): Headline token cut narrowed to the Table 1 figure of -23.1%. Worth investigating; history/observation compression sources declined, owned by the tool-output-compression lineage.
+
+## Compiled Update — 2026-11-07 (handoff art, measured)
+
+- **Structured handoff is not measurably better than a free-form summary.** On AndroidWorld-style takeovers the structured arm is +4.4 pp against a summary's +5.0 pp, at 660k vs 602k prompt tokens - structure costs 9.6% more. Adopt the field list for inspectability, not for a measured win.
+- **Validation evidence is the highest-value field; changed files is the lowest.** Handoff points carrying "what was run and what it returned" gain +14.7 pp; failure evidence +16.1 to +19.4 pp; the changed-files list +4.0 pp (the successor can `git diff` it for free). CF-AB-1 A6 now carries the measured 7+7 schema and an events-per-solved-task co-metric.
+- **Handoffs are a budgeted selection with pointers, not an agent-written summary.** t3code's transfer record is created cheaply and resolved lazily at first dispatch; raw trace buys the largest solved-rate gain but costs 37-256 s of CPU cold prefill per takeover on our measured rates.
+- **Filed work**: CTX-HO-1 and CTX-HO-3 in [context-and-token-economy.md](../handoffs/active/context-and-token-economy.md).
+
+Sources: [Handoff Debt dive](../research/deep-dives/harness-inference-20261106/intake-2653.md) · [t3code dive](../research/deep-dives/harness-inference-20261106/intake-2650.md)
