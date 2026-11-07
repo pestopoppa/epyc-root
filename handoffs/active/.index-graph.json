@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:34:43Z",
+  "generated_at": "2026-11-07T19:36:33Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2636,7 +2636,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1851,
+          "line": 1852,
           "name": "document-parser-table-bench",
           "open": 3,
           "readiness": "ready"
@@ -2645,7 +2645,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2468,
+          "line": 2470,
           "name": "opendataloader-pipeline-integration",
           "open": 6,
           "readiness": "ready"
@@ -2654,7 +2654,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2576,
+          "line": 2578,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "no_open"
@@ -2663,7 +2663,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2945,
+          "line": 2947,
           "name": "sliders-local-validation",
           "open": 1,
           "readiness": "ready"
