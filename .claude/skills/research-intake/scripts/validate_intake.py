@@ -36,6 +36,10 @@ REQUIRED_FIELDS = {
     "novelty", "relevance", "discovered_via", "verdict", "ingested_date",
 }
 READ_DEPTH_ENFORCED_FROM = "2026-10-07"
+# ID-RI-ANCHOR-GATE: dive-verified entries ingested on/after this date need a script-written
+# anchor_mark (found: true). Earlier entries are grandfathered.
+ANCHOR_MARK_ENFORCED_FROM = "2026-11-08"
+ANCHOR_VERIFIER_ID = "validate_intake.py/check-anchors/v1"
 SOURCE_TYPES = {"paper", "blog", "repo"}
 NOVELTY_VALUES = {"high", "medium", "low", "duplicate"}
 RELEVANCE_VALUES = {"high", "medium", "low", "none"}
@@ -615,6 +619,13 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                                   "DIGEST/WebFetch reads stay stage1-unverified")
                 if not entry.get("claim_anchors"):
                     errors.append(f"{eid}: {entry.get('verification')} requires non-empty claim_anchors")
+                elif str(entry.get("ingested_date") or "") >= ANCHOR_MARK_ENFORCED_FROM:
+                    for ai, anc in enumerate(entry["claim_anchors"]):
+                        mark = anc.get("anchor_mark") if isinstance(anc, dict) else None
+                        if not isinstance(mark, dict) or mark.get("found") is not True:
+                            errors.append(
+                                f"{eid}: claim_anchors[{ai}] has no passing anchor_mark; run "
+                                "validate_intake.py --check-anchors --write-marks (only the script writes it)")
 
         # depends_on: the evidential edge (schema § depends_on). Shape-checked here because a
         # malformed dependency is worse than an absent one -- it looks like propagation coverage
@@ -670,6 +681,191 @@ def validate_index(entries: list[dict], valid_categories: set[str],
 
 
 _ARXIV_URL_RE = re.compile(r"arxiv\.org/(?:abs|pdf)/([0-9v.]+)", re.I)
+
+
+# ---------------------------------------------------------------------------
+# ID-RI-ANCHOR-GATE: quote re-find as a gate the author cannot satisfy by assertion.
+# ---------------------------------------------------------------------------
+def _anchor_quote_sha(quote: str) -> str:
+    from canonical import normalized_quote
+    return hashlib.sha256(normalized_quote(quote).encode("utf-8")).hexdigest()
+
+
+def check_anchors(entries: list[dict]) -> tuple[list[dict], list[str]]:
+    """Verify every claim_anchor. Returns (findings, errors); each finding is
+    {entry, index, verdict, detail, anchor_mark}. Verdicts: verified, quote_sha_mismatch,
+    quote_not_found, no_retained_source, cross_pasted. Passing proves containment, not entailment.
+    """
+    from machine_anchor import verify_source_anchor
+    findings: list[dict] = []
+    owners: dict[str, list[tuple[str, int]]] = {}
+    for e in entries:
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if isinstance(a, dict) and isinstance(a.get("quote"), str) and a.get("quote_sha256"):
+                owners.setdefault(str(a["quote_sha256"]), []).append((str(e.get("id")), i))
+    for e in entries:
+        eid = str(e.get("id"))
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if not isinstance(a, dict):
+                continue
+            quote = a.get("quote")
+            f = {"entry": eid, "index": i, "verdict": None, "detail": "", "anchor_mark": None}
+            findings.append(f)
+            if not isinstance(quote, str) or not quote:
+                f.update(verdict="no_quote", detail="anchor carries no quote text (hash-only/legacy); nothing to re-find")
+                continue
+            if not a.get("quote_sha256"):
+                f.update(verdict="no_quote_sha", detail="anchor has a quote but no quote_sha256 (legacy)")
+                continue
+            if _anchor_quote_sha(quote) != a.get("quote_sha256"):
+                if hashlib.sha256(quote.encode("utf-8")).hexdigest() == a.get("quote_sha256"):
+                    f.update(verdict="legacy_raw_sha",
+                             detail="hash of the raw (un-normalised) quote; accepted for legacy entries")
+                else:
+                    f.update(verdict="quote_sha_mismatch", detail="recomputed quote_sha256 differs")
+                    continue
+                if not isinstance(a.get("source_artifact"), dict):
+                    continue
+            ids = {o[0] for o in owners.get(str(a["quote_sha256"]), [])}
+            if len(ids) > 1:
+                f.update(verdict="cross_pasted",
+                         detail="same quote_sha256 under " + ", ".join(sorted(ids)))
+                continue
+            if not isinstance(a.get("source_artifact"), dict):
+                f.update(verdict="no_retained_source",
+                         detail="no source_artifact; containment cannot be re-found (legacy/unretained)")
+                continue
+            ok, why = verify_source_anchor(a, entry_url=e.get("url") if isinstance(e.get("url"), str) else None)
+            art = a["source_artifact"]
+            if not ok and why.startswith("unknown: no artifact root"):
+                f.update(verdict="source_unavailable", detail=why)
+                continue
+            f["anchor_mark"] = {"verifier": ANCHOR_VERIFIER_ID,
+                                "source_raw_sha256": art.get("raw_sha256"), "found": bool(ok)}
+            f.update(verdict="verified" if ok else "quote_not_found", detail=why)
+    errs = []
+    dates = {str(e.get("id")): str(e.get("ingested_date") or "") for e in entries}
+    for f in findings:
+        if f["verdict"] in ("quote_sha_mismatch", "quote_not_found", "cross_pasted"):
+            f["grandfathered"] = dates.get(f["entry"], "") < ANCHOR_MARK_ENFORCED_FROM
+            if not f["grandfathered"]:
+                errs.append(f"{f['entry']}: claim_anchors[{f['index']}] {f['verdict']}: {f['detail']}")
+    return findings, errs
+
+
+def write_anchor_marks(index_path: Path, findings: list[dict]) -> int:
+    """Insert `anchor_mark` after the anchor's quote_sha256 line (textual, so the 90k-line index is
+    not re-serialised). Only this function emits marks; the author never does."""
+    text = index_path.read_text(encoding="utf-8")
+    lines = text.split("\n")
+    n = 0
+    for f in findings:
+        mark = f.get("anchor_mark")
+        if not mark:
+            continue
+        sha = _find_sha_for(f)
+        hits = [k for k, ln in enumerate(lines)
+                if re.match(r"^\s*(- )?quote_sha256:\s*['\"]?" + re.escape(sha) + r"['\"]?\s*$", ln)]
+        if len(hits) != 1:
+            continue
+        ln = lines[hits[0]]
+        indent = len(ln) - len(ln.lstrip(" "))
+        if ln.lstrip(" ").startswith("- "):
+            indent += 2
+        if hits[0] + 1 < len(lines) and lines[hits[0] + 1].lstrip().startswith("anchor_mark:"):
+            del lines[hits[0] + 1]
+        raw = mark["source_raw_sha256"]
+        lines.insert(hits[0] + 1, " " * indent + "anchor_mark: {verifier: %s, source_raw_sha256: %s, found: %s}" % (
+            mark["verifier"], raw if raw else "null", "true" if mark["found"] else "false"))
+        n += 1
+    if n:
+        index_path.write_text("\n".join(lines), encoding="utf-8")
+    return n
+
+
+def _find_sha_for(f: dict) -> str:
+    return f.get("quote_sha256", "")
+
+
+def check_anchor_marks(entries: list[dict], findings: list[dict]) -> list[str]:
+    """A recorded anchor_mark must equal what the script recomputes (a hand-written mark is a forgery)."""
+    by = {(f["entry"], f["index"]): f for f in findings}
+    errs = []
+    for e in entries:
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if isinstance(a, dict) and "anchor_mark" in a:
+                f = by.get((str(e.get("id")), i))
+                got = f["anchor_mark"] if f else None
+                if got is None or a["anchor_mark"] != got:
+                    errs.append(f"{e.get('id')}: claim_anchors[{i}] anchor_mark does not match script recomputation")
+    return errs
+
+
+# ---------------------------------------------------------------------------
+# ID-RI-LANE-HEAD: pin the revision in-house citations were read at; refuse stale ones.
+# ---------------------------------------------------------------------------
+_LANE_LOC = re.compile(
+    r"^(?P<path>[\w./-]+?):L?\d+(?:-L?\d+)?\b.*@\s*(?P<sha>[0-9a-f]{7,40})\s*$")
+
+
+def _git(root: Path, *args: str) -> tuple[int, str]:
+    import subprocess
+    r = subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
+    return r.returncode, r.stdout
+
+
+def _squash(t: str) -> str:
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def _quote_in(blob: str, quote: str) -> bool:
+    hay = _squash(blob)
+    frags = [_squash(x) for x in re.split(r"\s*(?:\.\.\.|…|\s\|\s)\s*", quote) if _squash(x)]
+    pos = 0
+    for fr in frags:
+        k = hay.find(fr, pos)
+        if k < 0:
+            return False
+        pos = k + len(fr)
+    return bool(frags)
+
+
+def check_lane_anchors(entries: list[dict], root: Path | None = None,
+                       upstream: str = "origin/main") -> list[dict]:
+    """Findings for in-house `path:Lx-Ly @ sha7` anchors. A locator is in-house when its sha resolves
+    as a commit in this repo. Verdicts: ok, stale_epoch (path changed/moved/removed since sha7),
+    quote_not_at_sha, path_absent_at_sha. Anchors whose sha is not in this repo are skipped
+    (external-repo locators)."""
+    root = root or ROOT
+    out = []
+    for e in entries:
+        for i, a in enumerate(e.get("claim_anchors") or []):
+            if not isinstance(a, dict):
+                continue
+            m = _LANE_LOC.match(str(a.get("locator", "")).strip().split(" (")[0].strip()) or \
+                _LANE_LOC.match(str(a.get("locator", "")).strip())
+            if not m:
+                continue
+            sha, path = m["sha"], m["path"]
+            rc, _ = _git(root, "cat-file", "-e", f"{sha}^{{commit}}")
+            if rc != 0:
+                continue
+            f = {"entry": str(e.get("id")), "index": i, "path": path, "sha": sha, "verdict": "ok", "detail": ""}
+            out.append(f)
+            rc, blob = _git(root, "show", f"{sha}:{path}")
+            if rc != 0:
+                f.update(verdict="path_absent_at_sha", detail=f"{path} not present at {sha}")
+                continue
+            if not _quote_in(blob, str(a.get("quote", ""))):
+                f.update(verdict="quote_not_at_sha", detail="quote not found in git show output")
+                continue
+            rc, names = _git(root, "diff", "--name-only", f"{sha}..{upstream}", "--", path)
+            if rc != 0:
+                f.update(verdict="stale_epoch", detail=f"cannot diff {sha}..{upstream}")
+            elif names.strip():
+                f.update(verdict="stale_epoch",
+                         detail=f"{path} changed since {sha} (re-read before Stage-3 citation)")
+    return out
 
 
 def _locator_key(entry: dict) -> str:
@@ -1455,7 +1651,40 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan-file", type=Path)
     parser.add_argument("--session-file", type=Path)
+    parser.add_argument("--check-anchors", action="store_true",
+                        help="re-find every claim_anchors quote, flag cross-pasted quotes (ID-RI-ANCHOR-GATE)")
+    parser.add_argument("--write-marks", action="store_true",
+                        help="with --check-anchors: script-write anchor_mark into the index")
+    parser.add_argument("--check-lane-anchors", action="store_true",
+                        help="validate in-house path:Lx-Ly @ sha7 anchors; stale_epoch on changed path (ID-RI-LANE-HEAD)")
     args = parser.parse_args()
+    if args.check_anchors or args.check_lane_anchors:
+        raw = load_yaml(INDEX_PATH)
+        ents = raw if isinstance(raw, list) else raw.get("entries", [])
+        rc = 0
+        if args.check_anchors:
+            findings, errs = check_anchors(ents)
+            errs += check_anchor_marks(ents, findings)
+            for f in findings:
+                f["quote_sha256"] = next((a.get("quote_sha256") for e in ents if str(e.get("id")) == f["entry"]
+                                          for j, a in enumerate(e.get("claim_anchors") or []) if j == f["index"]), "")
+            if args.write_marks:
+                print(f"anchor_marks written: {write_anchor_marks(INDEX_PATH, findings)}")
+            from collections import Counter
+            print("anchor verdicts:", dict(Counter(f["verdict"] for f in findings)))
+            print("legacy-grandfathered flags (warning only):",
+                  sum(1 for f in findings if f.get("grandfathered")))
+            for e in errs:
+                print(f"  ERROR: {e}")
+            rc |= 1 if errs else 0
+        if args.check_lane_anchors:
+            lf = check_lane_anchors(ents)
+            bad = [f for f in lf if f["verdict"] != "ok"]
+            print(f"lane anchors checked: {len(lf)}, flagged: {len(bad)}")
+            for f in bad:
+                print(f"  {f['verdict']}: {f['entry']}[{f['index']}] {f['path']} @ {f['sha']}: {f['detail']}")
+            rc |= 1 if bad else 0
+        return rc
     if (args.plan_file is None) != (args.session_file is None):
         parser.error("--plan-file and --session-file must be supplied together")
     errors = []
