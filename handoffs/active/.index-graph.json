@@ -268,7 +268,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 5
+      "weight": 7
     },
     {
       "from": "INF-06",
@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T20:00:16Z",
+  "generated_at": "2026-11-07T20:43:17Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1468,14 +1468,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 802,
-      "dispatchable": 147,
+      "dispatchable": 150,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 148,
+      "open": 151,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1512,7 +1512,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 50,
+          "dispatchable": 53,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1521,14 +1521,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 51,
+          "open": 54,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5965,
+          "line": 5968,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1537,7 +1537,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6045,
+          "line": 6048,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1556,7 +1556,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6342,
+          "line": 6345,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1573,7 +1573,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9557,
+          "line": 9560,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1586,7 +1586,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13907,
+          "line": 13910,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1620,7 +1620,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14119,
+          "line": 14122,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1943,15 +1943,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 119,
-      "dispatchable": 28,
+      "closed": 120,
+      "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-07",
       "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
-      "open": 29,
+      "open": 28,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1994,14 +1994,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 16,
+          "dispatchable": 15,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 733,
+          "line": 734,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 16,
+          "open": 15,
           "readiness": "blocked"
         }
       ]
@@ -2588,15 +2588,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 105,
-      "dispatchable": 13,
+      "closed": 106,
+      "dispatchable": 12,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-07",
       "next_action": "Fix PIP02-R36-DEVNULL-FENCE, republish R36; file ODL-013/G14/OCR r2 rows; operator ratifies P-DOCPARSE-1 annex",
-      "open": 14,
+      "open": 13,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2634,11 +2634,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 1852,
           "name": "document-parser-table-bench",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
