@@ -1397,6 +1397,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     the hub probe is green.
     - *(2026-11-07, operator-adhoc-ops-20261105.)* STATE: the watchdog is already ticking every minute (status rewritten 11:08Z, `verdict ok`, `holder production`). Not ticked: the post-restore tick and hub probe were not checked against the restore event itself.
     Manual `gpu_window park` only writes the window file and does NOT stop servers or free the GPU. Stop servers through `gpu_window_executor open` with a schedule entry and compute grant (60 min default cap; approved schedule policy may allow longer windows). See APP `c7d573c2661dc90aa83494d2b3f9e680742cf1d1` for the CLI warning.
+    - 2026-11-07: watchdog liveness check FIXED (orchestrator 35cdc460, `gpu_window_executor.production_liveness`: registered pid via `ps` + :8083 /health, else `holder: none` verdict down/stale; operator-stop marker `logs/stack_stopped_by_operator.json` gives `stopped-by-operator`, no alarm). Box stays open: needs one live restore check once the operator restarts the stack.
   - [x] **AKX-ALL-15b — close review F3/F4/F5/F6 so that AK-requested windows can be ACKed.** (filed 2026-10-04,
     - Owner: Pipeline Management (routed by AutoKernel; AK supplies requirements). Action: ROUTE:Pipeline Management. Next: Close F3/F4/F5/F6 items Evidence: Dispatcher plumbing (AUDIT.md:152) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
     workspace-ec; needs a coordinator grant path)
