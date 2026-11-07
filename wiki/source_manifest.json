@@ -4,27 +4,33 @@
     "handoff-active": 29,
     "handoff-blocked": 1,
     "handoff-completed": 373,
-    "progress": 1343,
+    "progress": 1346,
     "research": 299
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-05T19:33:25Z",
   "last_touch": {
     "advanced": {
-      "added": 9,
-      "changed": 0,
+      "added": 3,
+      "changed": 4,
       "removed": 0
     },
-    "at": "2026-11-06T19:53:55Z",
+    "at": "2026-11-07T08:24:07Z",
     "scope_paths": [
-      "research/deep-dives/quant-compiler-20261106"
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "progress/2026-11/2026-11-05-inf22.md",
+      "progress/2026-11/2026-11-06-inf22-vbcc.md",
+      "progress/2026-11/2026-11-06-main-inf22.md",
+      "progress/2026-11/2026-11-06-rowflow-friction-pass4.md",
+      "progress/2026-11/2026-11-07-main-inf22.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-06T19:53:55Z",
+  "scan_time": "2026-11-07T08:24:07Z",
   "schema_version": 1,
-  "source_set_hash": "ed9c209529a894901fb8c2d638e1c3d0129663b52cde15db8a18bcae6a9219ec",
+  "source_set_hash": "e7e73bb5618561605d334bdff7536750b790396c267b0e7d44da2d20d076af66",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16203,10 +16209,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e81c36a69c783a279b94e6816dc38e794560e045b25bf748a8d07b8faf599e7a",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "beb757549de6ba01fa165dac8350f0558f00fa25d8bb12c9e8cc0fd07f5fafe5",
+      "modified": "2026-11-07T08:21:36Z",
       "path": "progress/2026-11/2026-11-05-inf22.md",
-      "size": 4070,
+      "size": 7374,
       "title": "2026-11-05 \u2014 INF-22 (MI210 serving tie-in), main-inf22",
       "type": "progress"
     },
@@ -16227,6 +16233,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "31dc0bfce1ebd457bdb80c548862026ccf1a2065018fd30972686bbbe97469f6",
+      "modified": "2026-11-07T08:21:36Z",
+      "path": "progress/2026-11/2026-11-06-inf22-vbcc.md",
+      "size": 2599,
+      "title": "2026-11-06 \u2014 main-inf22: committed-conclusion register (VB-CC-PILOT) + AK-ASM verdict capture",
+      "type": "progress"
+    },
+    {
       "content_hash": "8663bbeb05456a62e515fc740946bbe601815140ca9d3ddae2410ef5892ee609",
       "modified": "2026-11-06T16:02:24Z",
       "path": "progress/2026-11/2026-11-06-inference-serving-launch.md",
@@ -16235,10 +16249,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "6e2be19522d931aa8a143e9363fb1a2d2ba9b659a36e0e2773871b4804ef1c6f",
-      "modified": "2026-11-06T08:48:40Z",
+      "content_hash": "0d044ba7386fdd885755cb94e8094bbec573f7259f601db439a13846c54fc889",
+      "modified": "2026-11-07T08:21:36Z",
       "path": "progress/2026-11/2026-11-06-main-inf22.md",
-      "size": 6541,
+      "size": 11500,
       "title": "2026-11-06 \u2014 main-inf22 (night 2026-11-05/06): AK-ASM MI300 -> MI210 port",
       "type": "progress"
     },
@@ -16248,6 +16262,22 @@
       "path": "progress/2026-11/2026-11-06-operator-adhoc-ops-20261105.md",
       "size": 7755,
       "title": "Wrap-up 6 \u2014 2026-11-05 ~21:00Z to 2026-11-06 (operator-adhoc-ops-20261105)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c9cc57342c1ac5622fed8cc34c2d013f0f15992a673df1ab3857a106f131c0c7",
+      "modified": "2026-11-07T08:21:36Z",
+      "path": "progress/2026-11/2026-11-06-rowflow-friction-pass4.md",
+      "size": 2043,
+      "title": "2026-11-06 \u2014 keeper friction pass-4 fixes (operator-adhoc-ops-20261105, emergency deploy)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2b9053c8825ba245200493ea2823a71f5406b888748629c143e19b140a6b7083",
+      "modified": "2026-11-07T08:23:11Z",
+      "path": "progress/2026-11/2026-11-07-main-inf22.md",
+      "size": 5458,
+      "title": "2026-11-07 \u2014 main-inf22: Wrap-up 4 (work since 496ceb8e5 \"Wrap-up 3\")",
       "type": "progress"
     },
     {
@@ -17467,10 +17497,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "d9b944b8928588a6c560b662c428aecc76cdcf32623212868fd1493a20dbf15f",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "8903dd03ebe4822ae9fb2ea92c79db7c06f247af1e099869b8f4c8fdea4ec93d",
+      "modified": "2026-11-07T08:21:35Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 36886,
+      "size": 39667,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -18203,10 +18233,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "b854076ea23e28176f258d593899ea6f32781487b56b708213ec7c1859a3cba4",
-      "modified": "2026-11-05T19:30:50Z",
+      "content_hash": "2fc2bcdc076a53e37ac07ff2848794ac3114cdc860eb1736e8d54cdc06084f73",
+      "modified": "2026-11-07T08:21:35Z",
       "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "size": 109014,
+      "size": 112718,
       "title": "llama.cpp v11 release manifest",
       "type": "docs"
     },
@@ -19859,7 +19889,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2479,
+  "total_new": 2482,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

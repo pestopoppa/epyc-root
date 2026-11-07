@@ -5,6 +5,16 @@
 **Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): YaRN 512k fits the MI210 once GPU-LEAK-1 is fixed; D-LSA GPU fast path is futile at 32k
+
+- **YARN-512K-MEMFIT: PASS** (Qwen3.8-27B Q8_0, YaRN x2 at 524,288 tokens, MI210, C7 store with GPU-LEAK-1 fix `a9c38f8e0`). Load 47.27 GiB; 60 requests graphs-on leak slope **0.0 MiB/request**, peak 47.62 GiB; 498,729-token needle answered correctly; in-request peak 48.7 GiB ≤ 55 GiB bound; prefill 3,802 s. The earlier +15 GiB overshoot was **GPU-LEAK-1** (HIP-graph capture churn, 0.283 GiB/request), not static budget (~47.5 GiB). Open: the DFlash2 draft on GPU needs 52.55 GiB (> 52 bound), and draft-on-CPU crashed rc -6 because the C7 llama-server lacks `-cd` (draft context). Evidence `/mnt/raid0/llm/tmp/yarn-e1-mem-c7-20261106/out/RESULT.json`.
+- **LSA-H12-INDEXER: FUTILE** — PCA scorer feeding the H12 fused sparse FA on the 27B: dense/LSA op time at kv 32k = 0.368 (LSA 2.7x slower) vs pre-registered ≥1.10; scoring + top-k over all keys and re-projecting f16 K per ubatch costs more than attending 4,612 of 32k keys saves. GPU fast path closed at 32k; LSA-H12-E2E not run. D-LSA's remaining value is quality (LSA-QUALITY-32K) and the 512k YaRN regime, where the paper's whole-model gains start.
+- **LSA-QUALITY-32K**: the v1 screen had no no-think wrapper and was discarded; re-run with the nothink renderer. Phase A window arm: 0/8 pass; dense and PCA arms still running.
+- Ownership (operator 2026-11-07): main-inf22 owns the whole YaRN track, including the former workspace-ec Jet-Long/K-shift/DCA boxes.
+
+### Source References (2026-11-07 main-inf22 sweep)
+- `progress/2026-11/2026-11-07-main-inf22.md`, `progress/2026-11/2026-11-06-main-inf22.md`
+
 ## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): the native LSA sentinel passes one 5,132-token case, the S8-C recency planner needed a float-rounding fix, and N10 is unscorable
 
 **Confidence: verified** (scoped single-case results; no quality or speed claim).

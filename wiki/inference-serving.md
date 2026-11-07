@@ -6,6 +6,17 @@
 **Sources**: (+ sweep 2 sources, see its Source References) 157 native document references (source review 2026-10-07)
 
 
+## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): rowflow friction pass-4, job_fence, and job-side lessons
+
+- **Keeper friction pass-4** (emergency deploy, 2026-11-06): 88% of dry-run FAILs and smoke alerts carried no information. Fixes: a precondition refusal parks the row once (retry only on launcher/manifest change or `rowflow.py unpark`); a row already complete is never reported `rc=14 launcher pid dead`; GPU-token grants are judged idle by own KFD clients plus device busy %, not CPU % (43/72 idle flags had been false). GPU grant ordering is applied at grant time.
+- **job_fence** (`27d2c704e`): the fence now creates/removes inside output dirs, accepts a `max_file_mib` override, and diagnoses EACCES/SIGXFSZ — it had blocked the GDN-SHARE-1 MI210 row.
+- **Job-side lessons** (in `docs/guides/agent-workflows/compute-fillers.md`): `run_direct` counts as a foreign KFD user and stalls the keeper; GPU smoke rows must hold own-PID VRAM ≥40 s; derive taskset CPUs from the granted affinity; set CPU-backend thread counts explicitly (ggml oversubscribed to 192 threads under taskset); no shared STOP file across sibling rows; row ranks live in `spec.json`/`unpublished.json`.
+- **KVU-16g**: the prefill-budget overshoot came from a mean-centring controller against a 32-row cost staircase; fix `--prefill-budget-align 32 --prefill-budget-tail-k 1.0`. Operator chose 256/900 (KVU-16g-5).
+- **Edit hygiene**: `sed -i "${L}a ..."` with an empty `L` appends after every line (1f677fd05 injected one line after all 1,878 lines of `long-context-program.md`; repaired in `c19a8e33c`). Use edits that assert exactly one match.
+
+### Source References (2026-11-07 main-inf22 sweep)
+- `progress/2026-11/2026-11-06-rowflow-friction-pass4.md`, `progress/2026-11/2026-11-05-inf22.md`, `progress/2026-11/2026-11-06-main-inf22.md`, `docs/guides/agent-workflows/compute-fillers.md`
+
 ## Compiled Update — 2026-11-04 (operator wiki sweep, main-inf22): PF1 control drift is a covariate not a fix, SRPF's M4 fold items are declined, and YARN E1 memory closes under the 55 GiB criterion
 
 **Confidence: verified** for filings; PF1 and P12 remain open.
