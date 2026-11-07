@@ -25,12 +25,15 @@ hide. Freshness/sync is deliberately not exercised (it would ingest into the cop
   AC7  (needs --before) every claim in the pre-backfill copy keeps its grade, verdict and gate
        outcome; the pre-backfill frames are an unchanged prefix of the post-backfill copy.
        Adapter-fixture frame ids are pinned by tests/vidya/test_claim_tuple.py (lane A), not here.
-  AC9  (belief redesign §12.7, as decided 2026-10-21) role architect_critic (27B gpu; spec_draft,
-       kv_profile, routing): PB-HOL-1 AND the 27B KPF-18 item-7 claims each appear on the knob OR
-       target tier, shown with their value lines (they are `slot_serving`, so target tier is
-       expected; the tier is reported); role frontdoor (Qwen3.6-35B cpu): the 35B KPF-18 item-7
-       arms likewise; the lineup target (--stack-regime) returns "No beliefs at this regime"
-       until the first post-restart trial.
+  AC9  (belief redesign §12.7, as decided 2026-10-21; KPF-18 clause amended 2026-11-07, operator
+       option B of P1-AC9-TARGET-CROWDING) role architect_critic (27B gpu; spec_draft, kv_profile,
+       routing): PB-HOL-1 appears on the knob OR target tier, shown with its value line; the 27B
+       KPF-18 item-7 claims are on the knob OR target tier in the reader's COLLECTED evidence and
+       are counted in the section's `Shown n of N <tier>` line (N equals the collected tier count,
+       so a claim the bounded budget does not show is still counted); role frontdoor (Qwen3.6-35B
+       cpu): the 35B KPF-18 item-7 arms likewise; the lineup target (--stack-regime) returns
+       "No beliefs at this regime" until the first post-restart trial. How many KPF-18 claims are
+       shown with a value line is reported, not required.
   AC8  10 random mechanism ids from the DS41 and Q38FN experiments.db stores each appear in the
        answer (detailed line, section index or answer `tried_index`) with an outcome. The pool is
        the mechanisms with at least one row the experiments adapter projects (its own `classify`;
@@ -389,6 +392,35 @@ def _tiers(rows: list[dict[str, Any]]) -> str:
     return ",".join(sorted({x["tier"] for x in rows})) or "none"
 
 
+COUNT_LINE_RE = re.compile(r"Shown (\d+) of (\d+) knob, (\d+) of (\d+) target,")
+
+
+def _counted(col: dict[str, Any], ev: dict[str, Any],
+             hits: list[dict[str, Any]]) -> tuple[bool, str]:
+    """AC9 as amended 2026-11-07 (option B): every hit sits on the knob/target tier of the
+    collected evidence AND the section's count line counts that tier's whole collected set.
+
+    The count line's N is the number of collected rows on the tier, so N equal to the collected
+    count proves a hit the bounded budget leaves out is still counted, not dropped before render.
+    """
+    if not hits:
+        return False, "no claim in the collected evidence"
+    match = COUNT_LINE_RE.search(ev.get("section") or "")
+    if match is None:
+        return False, "section has no `Shown n of N knob, n of N target` line"
+    counts = {"knob": (int(match[1]), int(match[2])), "target": (int(match[3]), int(match[4]))}
+    every = col["rows"] + [x for b in lb.FLAG_BUCKETS for x in col["flagged"][b]]
+    bad = []
+    for tier in sorted({x["tier"] for x in hits}):
+        collected = sum(1 for x in every if x["tier"] == tier)
+        total = counts[tier][1]
+        if total != collected:
+            bad.append(f"{tier} line says {total}, collected {collected}")
+    detail = ", ".join(f"Shown {counts[t][0]} of {counts[t][1]} {t}"
+                       for t in sorted({x["tier"] for x in hits}))
+    return not bad, (detail + (f" (MISMATCH: {'; '.join(bad)})" if bad else ""))
+
+
 def ac9(r: Reader, stack_regime: str) -> dict[str, Any]:
     """KPF-18 and PB-HOL-1 are tagged `slot_serving` (stack topology, outside AutoPilot's action
     space), so they are expected on the knob OR target tier -- the tier is reported, not forced."""
@@ -402,15 +434,18 @@ def ac9(r: Reader, stack_regime: str) -> dict[str, Any]:
     col, ev = reads["architect_critic"]
     pb_hits, pb_valued = _shown_value_rows(col, ev, PBHOL_RE, item7=False)
     kpf_hits, kpf_valued = _shown_value_rows(col, ev, KPF_RE, item7=True)
-    ok &= bool(pb_valued) and bool(kpf_valued)
+    kpf_ok, kpf_count = _counted(col, ev, kpf_hits)
+    ok &= bool(pb_valued) and kpf_ok
     details.append(f"architect_critic: PB-HOL-1 {len(pb_hits)} claim(s) on tier {_tiers(pb_hits)}"
                    f", {len(pb_valued)} shown with a value line; KPF-18 item 7 {len(kpf_hits)} on "
-                   f"tier {_tiers(kpf_hits)}, {len(kpf_valued)} shown with a value line")
+                   f"tier {_tiers(kpf_hits)} counted: {kpf_ok} ({kpf_count}), "
+                   f"{len(kpf_valued)} shown with a value line")
     col, ev = reads["frontdoor"]
     arms, arms_valued = _shown_value_rows(col, ev, KPF_RE, item7=True)
-    ok &= bool(arms_valued)
-    details.append(f"frontdoor: KPF-18 item-7 arms {len(arms)} on tier {_tiers(arms)}, "
-                   f"{len(arms_valued)} shown with a value line")
+    arms_ok, arms_count = _counted(col, ev, arms)
+    ok &= arms_ok
+    details.append(f"frontdoor: KPF-18 item-7 arms {len(arms)} on tier {_tiers(arms)} counted: "
+                   f"{arms_ok} ({arms_count}), {len(arms_valued)} shown with a value line")
     lineup = lb.Target.from_mapping({"scope": "lineup", "stack_regime": stack_regime,
                                      "knob_families": ["kv_compaction", "orchestrator"],
                                      "label": "lineup"})

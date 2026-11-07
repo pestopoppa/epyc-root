@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T17:53:34Z",
+  "generated_at": "2026-11-07T17:57:39Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1332,18 +1332,18 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 75,
-      "dispatchable": 6,
+      "closed": 76,
+      "dispatchable": 5,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
-      "last_advanced": "2026-11-02",
+      "last_advanced": "2026-11-07",
       "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
-      "open": 6,
+      "open": 5,
       "priority": 0.6474,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
@@ -1372,18 +1372,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 382,
           "name": "agent-file-prose-compression",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 488,
+          "line": 478,
           "name": "frontier-f2-self-running-lab",
           "open": 1,
           "readiness": "ready"
@@ -1392,7 +1392,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 571,
+          "line": 561,
           "name": "frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -1401,7 +1401,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 763,
+          "line": 753,
           "name": "stale-open-audit-2026-07-18",
           "open": 0,
           "readiness": "no_open"
@@ -1409,18 +1409,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 358,
-      "dispatchable": 102,
+      "closed": 360,
+      "dispatchable": 100,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
-      "last_advanced": "2026-11-06",
+      "last_advanced": "2026-11-07",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 103,
+      "open": 101,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",

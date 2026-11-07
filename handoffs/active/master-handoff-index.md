@@ -144,7 +144,7 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 14 | 668 | 50 | 2026-11-03 |
 | pipeline-integration | 1 | 20 | 3 | 2026-11-03 |
-| research-evaluation | 5 | 213 | 4 | 2026-11-02 |
+| research-evaluation | 5 | 210 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
 | routing-and-optimization | 8 | 518 | 14 | 2026-11-03 |
 | user-facing-harness | 2 | 87 | 18 | 2026-10-03 |

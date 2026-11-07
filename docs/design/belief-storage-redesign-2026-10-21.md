@@ -855,3 +855,13 @@ Total: **2.5 d**, plus 1.0 d if DP-4 = A. KVU-12 and PB-QCOST-1 stay in Phase 2.
   returns PB-HOL-1 (22.05×, off arms) and KPF-18 item 7 (27B fork on/off) in the knob tier.
 - `prepare` for role `frontdoor` (Qwen3.6-35B cpu) returns the KPF-18 item 7 arms as context.
 - The lineup target returns "no beliefs at this regime" until the first post-restart trial.
+
+*Amended 2026-11-07 (operator, P1-AC9-TARGET-CROWDING: "Option B: amend AC9").* Under the bounded
+16-claim model budget, higher-ranked target-tier claims (outcome groups 1-3 plus the serving floor)
+can fill every slot before a plain measurement such as KPF-18 item 7, so the KPF-18 clauses above
+now read: KPF-18 item 7 is on the knob or target tier in the reader's **collected** evidence and is
+counted in the section's `Shown n of N <tier>` line (N equals the collected tier count). Being
+shown with a value line is reported, not required. PB-HOL-1 and the lineup clause are unchanged.
+Chosen over (C) raising the budget to 24 and (D) leaving AC9 failing. Implemented in
+`scripts/vidya/p1_acceptance.py` (`ac9`, `_counted`); test
+`tests/vidya/test_p1_acceptance_ac9_counted.py`.
