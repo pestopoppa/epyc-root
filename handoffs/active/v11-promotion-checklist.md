@@ -11,6 +11,7 @@
 ## Champion carry-in log (update on every champion CAS)
 
 - **C7r `62cb6a6af`** (CAS from C6 `65da39eb1` on 2026-11-06, `a6a560d9d`; manifest row V11-124, the MI210 asm/HIP port bundle). The promotion must carry and re-gate the hc-fuse fix (H13b/c hc fusions plus the buffer-lifetime guard), the hd128 asm route default-off (FA128-OFF), the CK-tile FA hd256 port (H5-PORT), and the rest of V11-124 (H10, H1b, H12, H11, H15, the topk-moe fix). Take the exact list from the V11-124 manifest row, not from this summary. Next champion (C8) folds named at the CAS are H8b and FA hd256 long-ctx r5. Record them here when C8 lands.
+- **C8 (PLANNED, operator 2026-11-07; nothing built or CAS'd yet)**: planned contents = C8-1 long-context attention decode/verify efficiency (after the H17 profile), C8-2 H16 at the np4 verify shape M=36, C8-3 H19 zero-split census (mandatory, 27B + A3B), C8-4 H18 long-context prefill attention, C8-5 H20 prefill GEMM tuning, C8-6 GDN chunked core. Ledger: `kernel-champion-and-promotion.md` → C8 package (operator 2026-11-07). Re-log here with the real contents at the C8 CAS.
 
 ## From the champion track (V11-122, CH-17, CH-18, CH-24)
 
