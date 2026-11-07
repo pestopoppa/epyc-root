@@ -1102,7 +1102,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
 
 ##### P0: setup and coordination
 
-- [ ] **AKX-ALL-1: belief-kernel wiring, VB-AK-LONGCTX.** Prepared at filing in
+- [ ] **AKX-ALL-1: belief-kernel wiring, VB-AK-LONGCTX.** **Checked 2026-11-07 (AutoKernel, owner): NOT complete.** (b) is on main (`vidya-belief-substrate-program.md` VB-AK-LONGCTX, line ~2952). (a) is missing: the adapters README has no source row for the context-bucket analysis or the C1/G4 surfaces, and `PREPARED_ROWS.md` no longer exists in tmp, so the row has to be redrafted. Remaining: draft and apply (a); the AKX-ALL-4 runner writes `belief_measurements.jsonl` (blocked on ALL-4). Original text: Prepared at filing in
   - Owner: AutoKernel (adopted; loop work only, no AK loop launch -- compute via granted rowflow rows). Action: ADOPT (narrowed). Next: Reduce box to its last clause: ALL-4 runner writes `belief_measurements.jsonl`; re-point at the VB-AK-LONGCTX box (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
   `/mnt/raid0/llm/tmp/ak-alldims-handoff-20261004/PREPARED_ROWS.md`: (a) a source row for
   `scripts/vidya/adapters/README.md` covering the production context-bucket analysis and the C1/G4 long-context
@@ -1119,7 +1119,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
   `src/runtime/gpu_quiet_lock.py`). `--cpu-measurement-gpu-quiet {off,lock}` defaults to `lock` (`q3` is a
   deprecated spelling of it); CPU measurements hold it SHARED, GPU measurements EXCLUSIVE, so a CPU measurement waits
   behind a GPU bench. Proven by `loop/test_gpu_quiet_measurement_window.py`; not yet observed live.
-- [ ] **AKX-ALL-3: GPU measurements take the q3 CPU-region claim.** The GPU host threads 184-191 are the SMT
+- [ ] **AKX-ALL-3: GPU measurements take the q3 CPU-region claim.** **Checked 2026-11-07 (AutoKernel, owner): NOT complete.** The remaining clause is the receipt listing `mi210_0` + gpu-quiet (mechanism per f1d1d9eb). Its fix is still on unmerged research branch `ak/gpu-run1-20261004` (4d62beb78, 4375b5aa4, e747d45e3; 2026-10-04). It touches custody-pinned `run.py`, so it merges after `ak/planner-same-state-stop` lands, with a re-pin and a full loop suite; then one small GPU row produces the receipt. The GPU host threads 184-191 are the SMT
   - Owner: AutoKernel (adopted; loop work only, no AK loop launch -- compute via granted rowflow rows). Action: ADOPT (re-text). Next: Rewrite box to the remaining clause; review/merge research branch `ak/gpu-run1-20261004` (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
   siblings of q3 (cores 88-95). Every GPU measurement (serving A/B, profile, microbench) acquires the q3 region claim
   in addition to `mi210_0`, through the existing claim API, and releases both in a `finally`. Done when a GPU batch's
