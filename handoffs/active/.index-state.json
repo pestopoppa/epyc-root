@@ -9,7 +9,7 @@
     "pipeline-integration-index.md": {
       "blocked": 3,
       "handoffs": 1,
-      "oldest_advance": "2026-11-03",
+      "oldest_advance": "2026-11-07",
       "open": 16
     },
     "research-evaluation-index.md": {
@@ -82,7 +82,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 919,
+          "line": 920,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 51
@@ -1297,7 +1297,7 @@
       "blocked": 3,
       "closed": 104,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-07",
       "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "prune": {

@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:05:18Z",
+  "generated_at": "2026-11-07T19:07:42Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2525,7 +2525,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 919,
+          "line": 920,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 52,
           "readiness": "blocked"
@@ -2585,7 +2585,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 4,
+      "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
       "closed": 104,
@@ -2594,7 +2594,7 @@
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-07",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
       "open": 19,
       "priority": 0.6185,
