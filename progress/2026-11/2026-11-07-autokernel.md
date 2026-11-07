@@ -46,3 +46,18 @@ Full loop suite from a lane worktree: 6023 passed, 1 failed (fixed by `529036ed8
 ## Handoff changes (this wrap-up)
 
 `autokernel-loop.md`: dated result sub-bullets on AK-GFX90A-ASM-SURFACE (rows A, B) and AK-MMQ-H3; ticked AK-BUILD-CAP, AK-CUSTODY-REPIN, AK-TESTENV-FIX (`[no-belief: tooling-repair]`); new boxes AK-BUILD-MEM-1, AK-H5-VERIFY, AK-MMQ-IGLP1-DNR (futility-only gate class).
+
+## Afternoon (loop management and efficiency)
+
+**Tooling handback.** PM's AK tooling work was integrated into research main (ending 40179e3f0). The full loop suite gave 6185 passed and 1 isolated-pass flake. Four boxes were ticked: CHAMPION-CONTEXT, UNSOURCED-LINT, PROF-TWO-DENOM and SWITCH-BISECT. One behaviour change: launch refuses a non-champion anchor unless `AK_NON_CHAMPION_ANCHOR_REASON` is set.
+
+**Efficiency replays.** Both were offline, pre-registered and read-only on the DS41 store.
+- **P1, typed pre-screen:** DECLINED as designed. The heads cannot decide at the planner->author seam. Route-out catches 77% of avoidable wall but refuses 5 keeps, and 19/21 avoidable rows are planner abstentions. Only a k=4 retry budget refuses 0 keeps, and it is in-sample with 93% of its catch in one row. It stays log-only. Evidence: `/mnt/raid0/llm/tmp/ak-eff-p1-replay-20261107/`.
+- **P2, typed planner:** PROCEED-TO-AB on three conditions: an `exhausted` option, >=25% reserved exploration, and DNR rows kept selectable. Of 24 planner keeps, 6 were novel and 2 came from a class marked DEAD. Evidence: `/mnt/raid0/llm/tmp/ak-eff-p2-replay-20261107/`.
+- **Shared finding:** the waste is repeated planner abstention on an unchanged state (13 identical calls, 3.14 h). This became the new box AK-EFF-SAME-STATE-STOP, now in implementation on branch `ak/planner-same-state-stop`. Root commit 561faee82.
+
+**Queue.** At 16:43Z the admissions hold (ops session, set 12:52Z) was removed by another session. Proof A2 and the C7r census are grantable and waiting behind higher-ranked GPU rows.
+
+**Filing.** PM found 1 ended-unfiled AK row: `ak-surface-proof-b-20261106`. The verdict was in the handoff (946ea35af) but the FILED receipt was missed, because `rowflow alerts --ack` does not mention it. It was filed via `file_result.py` (pass). PM is now making `--ack` warn on a missing receipt (operator-approved).
+
+**Dispatched (in flight).** The e2e same-run-ABBA check in `serving_gate.e2e_evidence`, the AK-BUILD-MEM-1 row prep, the AK-H5-VERIFY row prep, and the AKX-ALL-LB3.2b affinity-readback fix with re-book prep.
