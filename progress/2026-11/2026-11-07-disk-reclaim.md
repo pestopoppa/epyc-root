@@ -29,3 +29,8 @@ See `.claude/skills/inference-backlog-scheduling/references/disk-bin.md` → *Au
 
 Verified: `scratch_cleanup.py` honours a KEEP at a declared root on origin/main already (7f1aa593d); the remaining gap was a KEEP below the
 top level — fixed, with negative controls.
+
+## Janitor activation + keeper lifecycle patch (operator 2026-11-07, session operator-adhoc-ops-20261105)
+- Keeper v13 lifecycle patch applied (INPUT-ONLY -> manifest-mtime cutoff; filler_run15 chmod + OWNER-RESIDUE); v13 pin updated; compute-flags v13 copied (keeper picks it up on next restart, not restarted).
+- ~/.codex rotation re-enabled (rollouts >7 d, vault-verified, --no-packages): reverses the 2026-10-04 rule for ~/.codex only.
+- New janitor step COMGR (`comgr_cache_reaper.py`, /tmp/.*-00000000.so >3 d, unmapped/unopen). 23 legacy armed/refused/withdrawn manifests got scratch_root (ledger: compute-flags/scratch-root-backfill-20261107.json).

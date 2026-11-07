@@ -149,14 +149,14 @@ class LogTransition(unittest.TestCase):
 class KeeperWrapperV13(unittest.TestCase):
     KEEPER = os.path.join(RF_DIR, "ws58-calendar-keeper-v13.sh")
 
-    def test_v12_kept_and_v13_differs_only_in_reap_logging(self):
+    def test_v12_kept_and_v13_differs_only_in_reap_logging_and_input_only_manifest_mtime_fallback(self):
         self.assertTrue(os.path.isfile(os.path.join(RF_DIR, "ws58-calendar-keeper-v12.sh")))
         d = subprocess.run(["diff", os.path.join(RF_DIR, "ws58-calendar-keeper-v12.sh"), self.KEEPER], capture_output=True, text=True).stdout
         changed = [l for l in d.splitlines() if l[:1] in "<>" and "v12" not in l and "v13" not in l]
         self.assertTrue(all(("DEDUP" in l or "LOGGED" in l or "ALWAYS" in l or "_save_logged" in l or "atexit" in l or "k = " in l
                              or "return" in l or "try:" in l or "except" in l or "def out" in l or "def _save" in l or "print(" in l
                              or "tmp = " in l or l[2:].lstrip().startswith("#") or "if k in" in l or "LOGGED[k]" in l
-                             or "if DEDUP" in l) for l in changed), changed)
+                             or "if DEDUP" in l or "mt = [" in l or "if mt:" in l) for l in changed), changed)
 
     def reaper_lines(self, dedup):
         """Run the real reaper python (extracted from v13) twice over the same unchanged fixture; return per-pass lines."""

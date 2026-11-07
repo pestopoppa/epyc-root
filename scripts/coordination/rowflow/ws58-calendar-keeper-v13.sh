@@ -382,7 +382,13 @@ def first_start(ids):
         if e: pub.append(e)
     if st: return min(st), 'first job start'
     if pub: return min(pub), 'publish time'
-    return None, 'no started= in grants/<id>.ended and no published_at in the manifest'
+    # 2026-11-07 (operator: automatic reclamation; 99 groups sat INPUT-ONLY forever): a row that recorded neither still
+    # has a published manifest file and an end record on disk. The manifest's mtime is never later than the job start
+    # (a republish rewrites it before the keeper re-dry-runs and re-grants), so it is a CONSERVATIVE cutoff: anything
+    # older stays input; only files the job wrote after publication can be reclaimed.
+    mt = [os.path.getmtime(mans[rid][1]) for rid in sorted(ids) if rid in mans and os.path.isfile(mans[rid][1])]
+    if mt: return min(mt), 'manifest mtime (no started=/published_at)'
+    return None, 'no started= in grants/<id>.ended, no published_at and no manifest file'
 def input_set(root, cutoff):
     '''every file / symlink / empty dir under root whose mtime is before cutoff (+1 s: recorded times are whole seconds):
     written before the job started => INPUT, never deleted. Any walk error raises (the item is skipped).'''

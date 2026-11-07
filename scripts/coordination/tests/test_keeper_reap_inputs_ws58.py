@@ -114,14 +114,14 @@ class ReapInputs(unittest.TestCase):
         self.assertEqual(handed, ["helper", "mixed/new.tmp", "out/big.tmp", "work"], out)
         self.assertIn("publish time", out)
 
-    def test_no_recorded_start_or_publish_time_deletes_nothing(self):
+    def test_no_recorded_start_or_publish_time_falls_back_to_manifest_mtime(self):
+        # v13 lifecycle patch (operator 2026-11-07): the manifest's mtime is a conservative cutoff, so a row that recorded
+        # neither started= nor published_at no longer sits INPUT-ONLY forever; files older than the manifest stay inputs.
         self.packet(keep=[], published_d=None, started_d=None)
         out, handed = self.run_reaper()
-        self.assertEqual(handed, [], out)
-        line = [l for l in out.splitlines() if l.startswith("REAP-INPUT-ONLY")]
-        self.assertEqual(len(line), 1, out)
-        self.assertIn("fix: bash /workspace/scripts/safety/guarded_rm.sh", line[0])
-
+        self.assertEqual(handed, [], out)              # every fixture file predates the just-written manifest
+        self.assertIn("manifest mtime", out)
+        self.assertIn("inputs kept=", out)
 
 if __name__ == "__main__":
     unittest.main()

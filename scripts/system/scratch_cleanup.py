@@ -99,6 +99,8 @@ def parse_scratch(text: str) -> Decl | None:
 # ALLOWED_PARENTS: any path under these prefixes is refused outright, whatever a handoff declares.
 # Extended 2026-10-04 to every third-party agent harness's state (operator: "what about opencode and any
 # other 3rd party harness really?").
+# 2026-11-07: ~/.codex rollout rotation is done by the janitor via codex_retention_reaper.py (operator decision,
+# vault-verified, >7 d); scratch_cleanup itself still refuses /home/node/.codex.
 NEVER_TOUCH = ("/home/node/.codex", "/home/node/.claude", "/home/node/.local/share/claude",
                "/home/node/.local/share/opencode", "/home/node/.config/opencode", "/home/node/.hermes",
                "/mnt/raid0/llm/hermes-agent", "/mnt/raid0/llm/claude-backups", "/mnt/raid0/llm/cloud-llm-vault",

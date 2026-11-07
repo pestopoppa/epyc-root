@@ -24,7 +24,7 @@
     "approval": "operator 2026-10-31: 'Approve pin + deploy' - keeper v7e = v7d + LOOP-23 reap gate (every id complete + filing-done receipt; REAP_DAYS default 1)"
   },
   "/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper-v13.sh": {
-    "sha256": "421af15f738d7177f6dc9356864247b4b3ce63deccf7a99c0cda290a163a523e",
-    "approval": "operator 2026-11-07 (session operator-adhoc-ops-20261105): \"Wrapper v13 swap\" - keeper v13 = v12 + REAP-* log lines once per (dir, verdict), same delete scope (d9c9e95e5)"
+    "sha256": "e96df5f1ecbd28e844f15c51ac7091ffe27cc5744e40da4385a60e03b38a62fe",
+    "approval": "operator 2026-11-07 (session operator-adhoc-ops-20261105): \"Wrapper v13 swap\" - keeper v13 = v12 + REAP-* log lines once per (dir, verdict), same delete scope (d9c9e95e5); 2026-11-07 lifecycle patch: INPUT-ONLY dirs fall back to manifest mtime (D9-ack operator 2026-11-07)"
   }
 }

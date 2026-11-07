@@ -27,6 +27,8 @@ does not show up in either until the next launch.
 
 ## Never a candidate: harness state and session transcripts (operator hard rule, 2026-10-04)
 
+> **Amended 2026-11-07 (operator decision, session operator-adhoc-ops-20261105): `/home/node/.codex` rollouts older than 7 days with a sha256-identical vault copy are now rotated by the disk janitor (`codex_retention_reaper.py apply --no-packages`); the newest 7 days stay. This reverses the rule for `~/.codex` ONLY; every other row below stays never-touch.**
+
 Some trees are excluded before the check below even starts. **Claude and Codex backup logs and session transcripts
 are never touched:** not deleted, moved, truncated, vacuumed, compacted or "reaped". That holds under disk pressure,
 holds when an operator has approved a cleanup, and holds for any retention script. In the operator's words:

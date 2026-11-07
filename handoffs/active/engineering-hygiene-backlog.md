@@ -269,6 +269,7 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
     historical transcripts. Its `apply` path is therefore **permanently disabled** (`722b7196`; exit 4,
     report-only). The acceptance line above (hold `~/.codex` flat) is withdrawn: growth is reported, never reaped. The
     report-only run and `host_hygiene_tick.py`'s grower ranking are the only remaining surface.
+    **REVERSED 2026-11-07** (operator decision 2026-11-07, session operator-adhoc-ops-20261105, REVERSED for ~/.codex ONLY: the janitor's CODEX step deletes vault-verified rollouts older than 7 days and keeps the newest 7 days; claude, opencode, hermes, vault and every other harness tree stay never-touch). `apply` re-enabled (rollouts only, `--no-packages`).
 - [x] **NIB2-85** (MED): **`verify_ggml_linkage.sh` FAILs falsely on a symlinked kernel store.** Found 2026-09-27 by
   the MMQ J-cap GPU window (research `6b8feb9e` worked around it in the window script): the tool compares unresolved
   paths, so a binary under `kernels/production/{cpu,gpu}` (a symlink into the store) reads its own ggml libraries
@@ -384,7 +385,7 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       transcripts used by a root filesystem project far more senior to anything performed in this project repo"*,
       extended to every third-party harness: opencode, hermes, claude share, harness codex homes). Enforced in code:
       `codex_retention_reaper.py` apply permanently disabled (`722b7196`), and `scratch_cleanup.py` `NEVER_TOUCH`
-      refuses those trees whatever a handoff declares (`722b7196`, `b639dc8e`). Written into
+      refuses those trees whatever a handoff declares (`722b7196`, `b639dc8e`). **2026-11-07 amendment: ~/.codex rollouts are now rotated at 7 days** (operator decision 2026-11-07, session operator-adhoc-ops-20261105, REVERSED for ~/.codex ONLY: the janitor's CODEX step deletes vault-verified rollouts older than 7 days and keeps the newest 7 days; claude, opencode, hermes, vault and every other harness tree stay never-touch). Written into
       `docs/guides/agent-workflows/cleanup-reference-check.md` and `docs/design/autokernel-disk-hygiene-20260915.md`.
       ✅ 2026-10-04
   - [x] **LR-9a** (operator) — **ratify the hard rule into `agents/shared/OPERATING_CONSTRAINTS.md` → *Destructive

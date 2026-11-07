@@ -21,9 +21,14 @@
 #                   OWNER   owner_check.py --fix-modes      root-owned or unwritable dirs under tmp/, .trash*, worktrees/ (a
 #                                                        build that left a 555 root tree defeated trash-sweep, 11-07): modes we
 #                                                        own are repaired; foreign-uid trees are flagged with the sudo chown line.
-#                   CODEX   codex_retention_reaper.py report --json  REPORT ONLY (operator hard rule 2026-10-04: ~/.codex is never
-#                                                        touched; apply is permanently disabled). The report is the 7-day rotation
-#                                                        preview the operator asked for, ready to act on if that rule is reversed.
+#                   CODEX   codex_retention_reaper.py report+apply  ~/.codex rollouts older than JANITOR_CODEX_KEEP_DAYS (7)
+#                                                        whose sha256-identical vault copy exists are deleted (apply re-verifies each
+#                                                        file); the newest 7 days stay. packages/ and sqlite untouched (--no-packages).
+#                                                        Operator decision 2026-11-07 REVERSED the 2026-10-04 never-touch rule for
+#                                                        ~/.codex only; every other harness tree stays NEVER_TOUCH.
+#                   COMGR   comgr_cache_reaper.py --apply   /tmp/.<hex>-00000000.so ROCm comgr JIT cache files older than 3 d that
+#                                                        no process has mapped/open (regenerable; /tmp is outside the trash FS, so
+#                                                        direct unlink; operator 2026-11-07).
 #   every pass    one FREE line (GiB available on /mnt/raid0) so disk-janitor.log carries the free-disk trend.
 #
 # This script deletes nothing itself: deletes happen only inside the keeper's guarded reaper (guarded_rm.sh -> its own trash),
@@ -54,6 +59,7 @@ TOOLS=${JANITOR_TOOLS:-/workspace/scripts}          # the repo's scripts/ (same 
 LIFECYCLE_STAMP=${JANITOR_LIFECYCLE_STAMP:-$F/ws58-keeper-state/lifecycle-last}
 WT_MAX=${JANITOR_WT_MAX:-20}; KGC_MAX=${JANITOR_KGC_MAX:-10}; KGC_MIN_AGE_D=${JANITOR_KGC_MIN_AGE_D:-7}
 LEASE_TTL_D=${JANITOR_LEASE_TTL_D:-14}
+CODEX_KEEP_DAYS=${JANITOR_CODEX_KEEP_DAYS:-7}; COMGR_MIN_AGE_D=${JANITOR_COMGR_MIN_AGE_D:-3}
 TICK_S=${JANITOR_TICK_S:-60}
 MODE=loop
 case "${1:-}" in
@@ -108,6 +114,19 @@ budget() {  # per-row disk budget check over live grants: alert only (row_disk_b
   run_tool BUDGET python3 "$TOOLS/coordination/churn/row_disk_budget.py" "${flags[@]}"
 }
 
+codex_rotate() {  # report (writes a manifest + token) then apply on that exact manifest; dry mode reports only
+  local tool=$TOOLS/system/codex_retention_reaper.py rep=$F/codex-retention-report.json rc=0 tok out
+  [ -f "$tool" ] || { log "CODEX-SKIP tool missing: $tool"; return 0; }
+  python3 "$tool" report --json --older-than-days "$CODEX_KEEP_DAYS" > "$rep.part" 2>>"$F/codex-retention-report.err" && mv -f "$rep.part" "$rep" || rc=$?
+  tok=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("confirm_token") or "")' "$rep" 2>/dev/null || true)
+  log "CODEX report rc=$rc keep=${CODEX_KEEP_DAYS}d token=${tok:-none} -> $rep"
+  [ "$MODE" = dry ] && return 0
+  if [ "$rc" = 0 ] && [ -n "$tok" ]; then
+    rc=0; out=$(python3 "$tool" apply --older-than-days "$CODEX_KEEP_DAYS" --confirm-token "$tok" --no-packages 2>&1) || rc=$?
+    log "CODEX apply rc=$rc $(printf '%s\n' "$out" | tr -d '\n ' | grep -o '"unlinked":[0-9]*,"unlinked_bytes":[0-9]*,"rmtree":[0-9]*,"rmtree_bytes":[0-9]*,"skipped":[0-9]*,"errors":[0-9]*' || printf '%s' "$out" | tail -1 | cut -c1-160)"
+  else log "CODEX apply skipped (nothing eligible or report failed)"; fi
+}
+
 lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel store GC, KEEP leases, codex report)
   local age apply=(--apply) dryf=()
   [ "$LIFECYCLE" = 1 ] || { log "LIFECYCLE-SKIP disabled (JANITOR_LIFECYCLE=0)"; return 0; }
@@ -121,11 +140,9 @@ lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel 
   else run_tool OWNER python3 "$TOOLS/system/owner_check.py" --fix-modes --log "$F/owner-check.log"; fi
   if [ "$MODE" = dry ]; then run_tool LEASE python3 "$TOOLS/system/scratch_lease.py" backfill --dry-run --ttl-days "$LEASE_TTL_D"
   else run_tool LEASE python3 "$TOOLS/system/scratch_lease.py" backfill --apply --ttl-days "$LEASE_TTL_D"; fi
-  if [ -f "$TOOLS/system/codex_retention_reaper.py" ]; then
-    local rep=$F/codex-retention-report.json rc=0
-    python3 "$TOOLS/system/codex_retention_reaper.py" report --json > "$rep.part" 2>>"$F/codex-retention-report.err" && mv -f "$rep.part" "$rep" || rc=$?
-    log "CODEX report rc=$rc -> $rep (report only; ~/.codex is never touched: operator 2026-10-04)"
-  fi
+  codex_rotate
+  if [ "$MODE" = dry ]; then run_tool COMGR python3 "$TOOLS/system/comgr_cache_reaper.py" --min-age-days "$COMGR_MIN_AGE_D"
+  else run_tool COMGR python3 "$TOOLS/system/comgr_cache_reaper.py" --apply --min-age-days "$COMGR_MIN_AGE_D"; fi
   log "LIFECYCLE end"
 }
 

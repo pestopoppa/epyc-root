@@ -38,7 +38,7 @@ janitor loop or at filing:
 | Root-owned / mode-555 residue | `owner_check.py --fix-modes` flags it (`sudo chown` line) ; row end `chmod -R u+rwX` (keeper patch) | daily / at row end |
 | Trash (`.trash`, `.trash-reap`) | `trash-sweep.sh --older-than 1` | hourly |
 | Per-row growth vs `budget_gib` | `row_disk_budget.py --alert` (alert `disk-budget` in rowflow-alerts.jsonl) | every 30 min |
-| `~/.codex` rollouts | `codex_retention_reaper.py report --json` — REPORT ONLY (operator hard rule 2026-10-04) | daily |
+| `~/.codex` rollouts | `codex_retention_reaper.py report` + `apply --no-packages` — rollouts >7 d with a vault copy deleted (operator reversed the 2026-10-04 rule for ~/.codex on 2026-11-07) | daily |
 
 Declare, never infer: a row says what is disposable (`raw`), what it keeps (`keep`), how much it
 will write (`budget_gib`) and where (`scratch_root`). `template_lint.py` WARNs at publish when

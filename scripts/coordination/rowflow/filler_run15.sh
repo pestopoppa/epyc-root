@@ -259,6 +259,14 @@ write_ended() { # rc reason
   rm -f "$ENDED.tmp"
   rm -f "$GRANT"
   log "ended rc=$1 reason=$2 (grant deleted)"
+  # 2026-11-07 (coordinator: a build row left a ROOT-owned mode-555 tree of ~42 GB that trash-sweep could not delete):
+  # at row end the job dir must be reclaimable by the keeper's uid. Modes we own are repaired here (best effort, never
+  # fatal); a foreign-uid residue is logged with the exact chown so the janitor's OWNER step and the operator see it.
+  case "${WORKDIR:-}" in /mnt/raid0/llm/tmp/*) if [ -d "$WORKDIR" ]; then
+    chmod -R u+rwX "$WORKDIR" 2>/dev/null || true
+    foreign=$(find "$WORKDIR" -maxdepth 3 ! -user "$(id -un)" -print -quit 2>/dev/null || true)
+    [ -z "$foreign" ] || log "OWNER-RESIDUE: $foreign is not owned by $(id -un); fix: sudo chown -R $(id -u):$(id -g) $WORKDIR"
+  fi;; esac   # only a job dir under tmp/ (never the default /workspace)
   notify_end "$1" "$2"
 }
 # 2026-11-04 incident (disk-floor kill, nobody told for 3 h): push every terminal event to the row owner (session bus)
