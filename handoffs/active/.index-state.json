@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 670
+      "open": 671
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -45,7 +45,7 @@
       "closed": 107,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 64,
+      "open": 65,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 172,
+      "total": 173,
       "tracks": [
         {
           "blocked": 0,
@@ -68,7 +68,7 @@
           "line": 11,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 12
+          "open": 13
         },
         {
           "blocked": 1,
@@ -82,7 +82,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 918,
+          "line": 919,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 52
@@ -2401,7 +2401,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 1,
-      "closed": 117,
+      "closed": 118,
       "guarded": 0,
       "last_advanced": "2026-11-05",
       "open": 31,
@@ -2413,11 +2413,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 149,
+      "total": 150,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 75,
+          "closed": 76,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2433,7 +2433,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 709,
+          "line": 725,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14
@@ -2746,7 +2746,7 @@
       "id": "INF-50",
       "index": "inference-research-index.md",
       "line": 27,
-      "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
+      "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
       "track": "speculative decoding mtp refresh"
     },
     "INF-59": {

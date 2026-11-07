@@ -703,7 +703,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T18:30:57Z",
+  "generated_at": "2026-11-07T18:41:53Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1937,14 +1937,14 @@
       "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 117,
+      "closed": 118,
       "dispatchable": 31,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-05",
-      "next_action": "Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold",
+      "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
       "open": 32,
       "priority": 0.9769,
       "priority_basis": {
@@ -1993,7 +1993,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 709,
+          "line": 725,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 14,
           "readiness": "blocked"
@@ -2465,14 +2465,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 107,
-      "dispatchable": 64,
+      "dispatchable": 65,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
       "next_action": "Work the triage owner lines (42 adopt, 4 C7r re-files); re-file P0d-W3-HALFB-C6 after the job.py:46 fix; then AKX-P0a census",
-      "open": 65,
+      "open": 66,
       "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
@@ -2490,7 +2490,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 12,
+          "dispatchable": 13,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2498,7 +2498,7 @@
           ],
           "line": 11,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 12,
+          "open": 13,
           "readiness": "blocked"
         },
         {
@@ -2519,7 +2519,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 918,
+          "line": 919,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53,
           "readiness": "blocked"

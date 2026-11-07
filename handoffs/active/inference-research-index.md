@@ -24,7 +24,7 @@
 | INF-33 | log linear gated deltanet readiness | [model-architecture-readiness.md](model-architecture-readiness.md) | B1: MI210 #27442 boundary sweep on C7r + C8-GDN (row b1-27442-mi210-sweep-20261107), then close the handoff | INF-48 |
 | INF-45 | numa topology cutover resume | [numa-placement-and-contention.md](numa-placement-and-contention.md) | P0-3 — cold-start the stack, re-bench the contention matrix, commit + push all three repos | — |
 | INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | Repair audited C6 carriers, wire oracle/Ghost boundary | EVL-47 |
-| INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold | — |
+| INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes) | — |
 | INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); ≥256k YaRN parked until C8-1 | RTG-58 |
 ## Cross-domain
 
