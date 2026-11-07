@@ -23,6 +23,10 @@ COMMIT RECEIPT (operator 2026-11-07): `file_result.py <id> --receipt <commit>:<h
 box line must mention the row id or its lineage; FILED quotes the box line. `--verdict SUPERSEDED|WITHDRAWN` (+ `--superseded-by ID`)
 files a row that has no result of its own; `--answer NAME` (e.g. SURFACE_E2E_OK) is stored in the receipt. Every path is a no-op
 (exit 0, NOOP) when filing-done/<id>.FILED exists, and FILED is written atomically (filing.write_filed). Exit 8: receipt refused.
+SCOPE (CHURN-CONT-SCOPE): with --receipt, the commit's changed paths (`git diff-tree --raw`) must stay inside the row's
+`scope` (optional manifest list of repo-relative globs; else default = the row's scratch_root/workdir/output_dir/result dir where
+inside the repo, plus the receipt's handoff). `..`/absolute paths, gitlinks (160000), paths under a symlinked dir and symlinks
+resolving outside scope are refused (exit 8, REFUSED ... scope: ...). The receipt's handoff is always in scope.
 RECLAIM-AT-FILING: once the FILED receipt is written, reclaim_row.py <id> --apply --pre-filed frees the row's
 declared raw scratch and row-owned worktrees (`--no-reclaim` skips; --dry-run runs it in dry-run mode). A reclaim
 error or non-zero exit prints RECLAIM-ERROR and never changes the filing outcome.

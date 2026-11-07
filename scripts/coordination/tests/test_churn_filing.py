@@ -164,6 +164,85 @@ class TestReceipt(Git):
             self.assertEqual(fr.main(base + ["--receipt", f"{sha}:h.md#BOX-1"]), 0)  # NOOP
 
 
+class TestScope(Git):
+    """CHURN-CONT-SCOPE: a receipt commit's changed paths must stay inside the row's declared (or default) scope."""
+
+    def commit_files(self, files, *, links=None, gitlink=False):
+        for rel, txt in files.items():
+            p = Path(self.repo, rel)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(txt)
+        for rel, target in (links or {}).items():
+            p = Path(self.repo, rel)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            os.symlink(target, p)
+        Path(self.h).write_text("# H\n\n- [x] **BOX-1** lineage-a-r1 done\n- [ ] **BOX-2** other\n")
+        sh(self.repo, "git", "add", "-A")
+        if gitlink:
+            sh(self.repo, "git", "update-index", "--add", "--cacheinfo", "160000," + "a" * 40 + ",sub/mod")
+        sh(self.repo, "git", "commit", "-qm", "verdict")
+        sh(self.repo, "git", "push", "-q", "origin", "main")
+        return sh(self.repo, "git", "rev-parse", "HEAD")
+
+    def receipt(self, sha, rid="lineage-a-r1"):
+        return filing.file_receipt(self.flags, rid, f"{sha}:h.md#BOX-1", repo=self.repo, verdict="pass")
+
+    def test_default_scope_handoff_only_passes(self):
+        self.row("lineage-a-r1")
+        self.assertEqual(self.receipt(self.commit_files({}))[0], 0)
+
+    def test_default_scope_includes_row_output_dir_inside_repo(self):
+        self.row("lineage-a-r1", scratch_root=os.path.join(self.repo, "out"))
+        self.assertEqual(self.receipt(self.commit_files({"out/res.json": "{}"}))[0], 0)
+
+    def test_default_scope_refuses_other_path(self):
+        self.row("lineage-a-r1", scratch_root=os.path.join(self.repo, "out"))
+        code, msg = self.receipt(self.commit_files({"scripts/evil.py": "x"}))
+        self.assertEqual(code, 2)
+        self.assertIn("scripts/evil.py", msg)
+        self.assertIn("outside scope", msg)
+        self.assertFalse(self.filed("lineage-a-r1"))
+
+    def test_declared_scope_inside_passes(self):
+        self.row("lineage-a-r1", scope=["docs/x/**", "notes/*.md"])
+        self.assertEqual(self.receipt(self.commit_files({"docs/x/a/b.md": "1", "notes/n.md": "2"}))[0], 0)
+
+    def test_declared_scope_outside_refused(self):
+        self.row("lineage-a-r1", scope=["docs/x/**"])
+        code, msg = self.receipt(self.commit_files({"docs/y.md": "3"}))
+        self.assertEqual(code, 2)
+        self.assertIn("docs/y.md", msg)
+
+    def test_symlink_escape_refused(self):
+        self.row("lineage-a-r1", scope=["docs/**"])
+        code, msg = self.receipt(self.commit_files({}, links={"docs/link": "../scripts/secret"}))
+        self.assertEqual(code, 2)
+        self.assertIn("escapes scope", msg)
+
+    def test_symlink_inside_scope_passes(self):
+        self.row("lineage-a-r1", scope=["docs/**"])
+        self.assertEqual(self.receipt(self.commit_files({"docs/real.md": "r"}, links={"docs/ok": "real.md"}))[0], 0)
+
+    def test_gitlink_refused(self):
+        self.row("lineage-a-r1", scope=["sub/**"])
+        code, msg = self.receipt(self.commit_files({}, gitlink=True))
+        self.assertEqual(code, 2)
+        self.assertIn("gitlink", msg)
+
+    def test_traversal_never_matches_scope(self):
+        self.assertFalse(filing._in_scope("../docs/a", ["docs/**"]))
+        self.assertTrue(filing._in_scope("docs/a/b", ["docs/**"]))
+
+    def test_cli_scope_refusal_exit_8(self):
+        self.row("lineage-a-r1", scope=["docs/**"])
+        sha = self.commit_files({"scripts/evil.py": "x"})
+        with redirect_stderr(io.StringIO()) as out:
+            code = fr.main(["lineage-a-r1", "--flags", self.flags, "--repo", self.repo, "--no-reclaim", "--receipt", f"{sha}:h.md#BOX-1"])
+        self.assertEqual(code, 8)
+        self.assertIn("REFUSED", out.getvalue())
+        self.assertIn("scope", out.getvalue())
+
+
 class TestAtomic(Base):
     def test_concurrent_writers_exactly_one_wins(self):
         self.row("r-1")

@@ -313,6 +313,100 @@ def read_no_reclaim(flags):
         return []
 
 
+def _tree_entry(repo, commit, path, cache):
+    """-> (mode, blob sha) of `path` in `commit`'s tree, or (None, None) when absent there."""
+    if path not in cache:
+        rc, out, _e = git(repo, "ls-tree", commit, "--", path)
+        meta = out.split("\t")[0].split() if rc == 0 and out.strip() else []
+        cache[path] = (meta[0], meta[2]) if len(meta) >= 3 else (None, None)
+    return cache[path]
+
+
+def scope_patterns(repo, m, handoff):
+    """The row's filing scope as repo-relative globs. A declared `scope` (list of globs, or one str) wins; otherwise the default
+    is the row's own output/scratch dirs (scratch_root, workdir, output_dir, result_path's dir) where they sit inside the repo,
+    plus the handoff named in the receipt. The receipt's handoff is always in scope (the box tick itself touches it)."""
+    pats = []
+    declared = (m or {}).get("scope")
+    if isinstance(declared, str):
+        declared = [declared]
+    if isinstance(declared, list) and declared:
+        pats += [str(x) for x in declared]
+    else:
+        root = os.path.realpath(repo)
+        for k in ("scratch_root", "workdir", "output_dir", "result_path"):
+            v = (m or {}).get(k)
+            if not isinstance(v, str) or not os.path.isabs(v):
+                continue
+            d = os.path.dirname(v) if k == "result_path" else v
+            rel = os.path.relpath(os.path.realpath(d), root)
+            if rel != "." and not rel.startswith(".."):
+                pats.append(rel.rstrip("/") + "/**")
+    pats.append(handoff)
+    return pats
+
+
+def _in_scope(path, pats):
+    import fnmatch
+    for p in pats:
+        if p.startswith("./"):
+            p = p[2:]
+        if p.endswith("/**") or p.endswith("/"):
+            base = p[:-3] if p.endswith("/**") else p.rstrip("/")
+            if path == base or path.startswith(base + "/"):
+                return True
+        elif fnmatch.fnmatchcase(path, p):
+            return True
+    return False
+
+
+def check_scope(repo, commit, m, handoff):
+    """CHURN-CONT-SCOPE: None when every path the receipt commit changes lies inside the row's scope, else a refusal string.
+    Refuses `..`/absolute paths, gitlinks (mode 160000), a path under a symlinked directory, and a symlink whose target
+    resolves outside the scope."""
+    rc, out, err = git(repo, "diff-tree", "-r", "-m", "--first-parent", "--no-renames", "--root", "--no-commit-id", "-z", "--raw", commit)
+    if rc:
+        return f"scope check could not read the diff of {commit[:12]}: {err[:200]}"
+    toks = [t for t in out.split("\0") if t != ""]
+    entries = []
+    for i in range(0, len(toks) - 1, 2):
+        meta = toks[i].lstrip(":").split()
+        if len(meta) < 5:
+            return f"scope check: unparseable diff entry {toks[i]!r}"
+        entries.append((meta[0], meta[1], toks[i + 1]))
+    pats = scope_patterns(repo, m, handoff)
+    cache, bad = {}, []
+    for old_mode, new_mode, path in entries:
+        norm = os.path.normpath(path).replace(os.sep, "/")
+        if os.path.isabs(path) or ".." in path.split("/") or norm == ".." or norm.startswith("../"):
+            bad.append(f"{path} (path traversal)")
+            continue
+        if "160000" in (old_mode, new_mode):
+            bad.append(f"{path} (gitlink/submodule)")
+            continue
+        parts = norm.split("/")
+        link_parent = next(("/".join(parts[:j]) for j in range(1, len(parts))
+                            if _tree_entry(repo, commit, "/".join(parts[:j]), cache)[0] == "120000"), None)
+        if link_parent:
+            bad.append(f"{path} (under symlinked directory {link_parent})")
+            continue
+        if "120000" in (old_mode, new_mode):
+            mode, blob = _tree_entry(repo, commit, norm, cache)
+            if mode == "120000":
+                _rc, target, _e = git(repo, "cat-file", "blob", blob)
+                target = target.strip()
+                tnorm = os.path.normpath(os.path.join(os.path.dirname(norm), target)).replace(os.sep, "/")
+                if os.path.isabs(target) or tnorm == ".." or tnorm.startswith("../") or not _in_scope(tnorm, pats):
+                    bad.append(f"{path} (symlink to {target[:80]!r} escapes scope)")
+                    continue
+        if not _in_scope(norm, pats):
+            bad.append(f"{path} (outside scope)")
+    if bad:
+        return (f"commit {commit[:12]} changes paths outside the row's scope {pats}: " + "; ".join(bad[:10])
+                + (f" (+{len(bad) - 10} more)" if len(bad) > 10 else ""))
+    return None
+
+
 def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, by="file_result --receipt", reclaim=True,
                  fetch=True, log=print):
     """Path 1. -> (code, msg). code: 0 filed, 1 noop (already FILED), 2 refused."""
@@ -328,6 +422,9 @@ def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, b
     ok, info = verify_receipt(repo, receipt, rid, lin, fetch=fetch)
     if not ok:
         return 2, f"REFUSED {rid}: {info}"
+    serr = check_scope(repo, info["commit"], m, info["handoff"])
+    if serr:
+        return 2, f"REFUSED {rid}: scope: {serr}"
     verdict = verdict.upper() if verdict.upper() in TERMINAL_VERDICTS else verdict
     rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(m.get("owner") or "?"), "filed_at": now_iso(),
            "at": now_iso(), "outcome_class": "RECEIPT", "phase": "filing", "compute_burned": True, "root_cause_family": None,
