@@ -37,12 +37,26 @@ REQUIRED_LINKS = ("wiki/", "research/")
 
 
 def owned_repos(root: Path) -> list[Path]:
-    """Prefer umbrella entries, including broken symlinks, over sibling clones."""
+    """Prefer umbrella entries, including broken symlinks, over sibling clones.
+
+    Lane worktrees usually carry no ``repos/`` symlinks at all (they are created
+    only in the shared clone), so fall back to the canonical sibling tree before
+    declaring a README missing. Measured 2026-11-07: the checker reported both
+    child READMEs missing from a wrap-up lane while they existed at
+    ``/mnt/raid0/llm/<name>``.
+    """
     root = root.expanduser().resolve()
     repos = [root]
     for name in CHILD_REPOS:
         entry = root / "repos" / name
-        repos.append(entry if entry.exists() or entry.is_symlink() else root.parent / name)
+        if entry.exists():
+            repos.append(entry)
+        elif (root.parent / name).exists():
+            repos.append(root.parent / name)
+        elif (Path("/mnt/raid0/llm") / name).exists():
+            repos.append(Path("/mnt/raid0/llm") / name)
+        else:
+            repos.append(entry)
     return repos
 
 
