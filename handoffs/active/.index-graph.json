@@ -685,7 +685,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T09:22:10Z",
+  "generated_at": "2026-11-07T09:33:55Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2062,7 +2062,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 156,
@@ -2071,7 +2071,7 @@
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-05",
+      "last_advanced": "2026-11-07",
       "next_action": "C8 fold ledger (main-inf22): C6-LOCAL-SERVING-PROFILE + CODE28K on C7r, then triage adopted fold candidates",
       "open": 42,
       "priority": 0.9075,
@@ -2408,7 +2408,7 @@
       ]
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2426,7 +2426,7 @@
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": null,
+      "last_advanced": "2026-11-07",
       "next_action": "workspace-a6: adopt or route each stale AKX box (no staleness declines), then AKX-P0a census producer",
       "open": 69,
       "priority": 0.0021,
@@ -2483,7 +2483,7 @@
       ]
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2494,7 +2494,7 @@
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
-      "last_advanced": null,
+      "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion",
       "open": 10,
       "priority": 0.0021,
@@ -2509,7 +2509,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": null,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2520,7 +2520,7 @@
       "guarded": 0,
       "handoff": "workspace-58-champion-calibration.md",
       "id": "INF-84",
-      "last_advanced": null,
+      "last_advanced": "2026-11-07",
       "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
       "open": 6,
       "priority": 0.0021,
