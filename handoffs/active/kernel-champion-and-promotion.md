@@ -2859,3 +2859,17 @@ it against this handoff by association.
   artifact §01 "Design decision — the recipe carries `ngram-mod`".
 
 - **KEEP-TAIL-1** moved 2026-11-07 to [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) (operator decision C, INF-22 split). [moved: handoffs/active/workspace-58-champion-calibration.md]
+
+## Track: autokernel-all-devices-all-dimensions
+
+Compatibility pointer (restored 2026-11-07): the INF-81 body was archived at
+`handoffs/completed/autokernel-all-devices-all-dimensions.md`, which retains the
+original track verbatim. References resolve through this pointer; no work is
+tracked here.
+
+## Track: autokernel-cross-workload-keep-gate
+
+Compatibility pointer (restored 2026-11-07): the INF-75 body was archived at
+`handoffs/completed/autokernel-cross-workload-keep-gate.md`, which retains the
+original track verbatim. References resolve through this pointer; no work is
+tracked here.

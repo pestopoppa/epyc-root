@@ -28,13 +28,13 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 514
+      "open": 523
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 86
+      "open": 94
     }
   },
   "duplicates": {},
@@ -474,7 +474,7 @@
       "closed": 150,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 45,
+      "open": 47,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -483,7 +483,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 197,
+      "total": 199,
       "tracks": [
         {
           "blocked": 0,
@@ -564,6 +564,16 @@
           "markers": 1,
           "name": "tool-output-compression",
           "open": 5
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 3589,
+          "markers": 0,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 2
         }
       ]
     },
@@ -572,7 +582,7 @@
       "closed": 341,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 52,
+      "open": 56,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -581,7 +591,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 393,
+      "total": 397,
       "tracks": [
         {
           "blocked": 0,
@@ -685,6 +695,16 @@
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 6406,
+          "markers": 0,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 4
         }
       ]
     },
@@ -1055,7 +1075,7 @@
       "closed": 231,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 79,
+      "open": 87,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1064,7 +1084,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 328,
+      "total": 336,
       "tracks": [
         {
           "blocked": 12,
@@ -1157,6 +1177,16 @@
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 3589,
+          "markers": 0,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 8
         }
       ]
     },
@@ -1240,6 +1270,26 @@
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 2863,
+          "markers": 0,
+          "name": "autokernel-all-devices-all-dimensions",
+          "open": 0
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 2870,
+          "markers": 0,
+          "name": "autokernel-cross-workload-keep-gate",
+          "open": 0
         }
       ]
     },
@@ -2234,7 +2284,7 @@
       "closed": 177,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 62,
+      "open": 65,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2243,7 +2293,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 240,
+      "total": 243,
       "tracks": [
         {
           "blocked": 0,
@@ -2336,6 +2386,16 @@
           "markers": 1,
           "name": "routing-intelligence",
           "open": 8
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 4045,
+          "markers": 0,
+          "name": "research-intake-harness-inference-2026-11-06",
+          "open": 3
         }
       ]
     },
