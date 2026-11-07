@@ -85,6 +85,16 @@ these bands. Do not use intake-1309#record's 10/40 constants: they are unmeasure
    derived per node, so a gate on an inline box either blocks the whole parent or is invisible —
    unless the parent is a folded handoff with **per-track gates** (below).
 
+5. **Splitting an existing handoff needs a stated justification (operator, 2026-11-07).** A split
+   is allowed only when it is justified and indispensable — a different owner, a different gate, or
+   a first screen that no longer answers "what next?" — and the reason goes in the split commit.
+   Size alone is not one (see the compaction rule in the wrap-up routine: move completed detail to a
+   sibling instead). Worked example: `95bb8998b`/`af8a96c7f` split kernel-champion-and-promotion into
+   the AKX program (workspace-a6), the v11 checklist (main-inf22) and ws58 calibration, by owner.
+6. **"No owner" is never a decline reason (operator, 2026-11-07).** An orphaned box, or a stale lane's
+   box, is *adopted* by the session whose handoff it sits in (or routed to a named owner) — never
+   declined or dropped because nobody claims it. 38 orphans were adopted on that rule in the 11-07 split.
+
 ### Per-track gates in a folded handoff (route 1b)
 
 A folded handoff has one `## Track: <name>` section per source. A track declares its own gates with

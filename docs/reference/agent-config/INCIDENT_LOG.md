@@ -638,3 +638,13 @@ proposed/unbuilt; all KPF-62 pins stay 786a30078
 (`/mnt/raid0/llm/tmp/batch-20261024/kpf62/PROPOSED-0a9fa2c29-ON-EXPERIMENTAL.md`).
 
 Remedy: push only to `codex/*` with an explicit refspec; never rely on an inherited upstream.
+
+## INC-20261107-sed-empty-line-number
+
+`sed -i "${L}a <line>"` with `L` empty (a failed grep) is `sed -i "a <line>"`: GNU sed appends the
+line after **every** line. Commit `1f677fd05` injected one result line after each of the 1,878 lines
+of `handoffs/active/long-context-program.md`; repaired in `c19a8e33c`.
+
+Remedy: edit handoffs with a short script that asserts exactly one match of the anchor and fails
+otherwise; check `git diff --stat` is small before committing. Never compute a sed address from an
+unchecked shell variable.

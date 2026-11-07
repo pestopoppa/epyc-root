@@ -74,7 +74,10 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
   timing jobs keep graphs on with a fresh server per session, both with an own-PID VRAM guard that ends cleanly
   (`.ended`, not OOM). Prove the knob is in the binary first (`strings <lib> | grep GGML_CUDA_DISABLE_GRAPHS`).
 - **Never use `run_direct` for GPU work while the keeper runs**: it counts as a foreign KFD user and stalls the
-  keeper's GPU queue. Route GPU jobs through grants.
+  keeper's GPU queue. Route GPU jobs through grants. More generally (operator, 2026-11-07): **do not
+  `run_direct` anything while a row is grantable** — publish it as a row and let the keeper grant it;
+  `run_direct` is for the case where no keeper/grant path exists. And re-arm your completion watcher after
+  EVERY event (11-07: a watcher not re-armed after 01:22 let two failures sit ~6 GPU-h unnoticed).
 - **A job must not re-claim a device its launcher already holds** (`--no-device-claim` inside the job; a self-claim
   waits on itself and dies `rc=75`).
 - **A quality or correctness job runs the role's registered serving env** from `model_registry.yaml`, never the bare

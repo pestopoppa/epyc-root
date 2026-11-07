@@ -166,3 +166,31 @@ def test_vbcc3_register_marker_makes_a_changed_register_stale(repo, tmp_path):
     assert vsync.cc_status(ledger_path, changed)["cc_fresh"] is False
     assert vsync._fold_cc(led, ledger_path, changed, WHEN) == 6  # only the new row
     assert vsync.cc_status(ledger_path, None)["cc_fresh"] is True
+
+
+def test_rev_supersedes_projects_only_the_corrected_rev(repo, tmp_path):
+    """031c7aa1b: `conclusion add --rev/--supersedes`; native_rows skips a superseded rev."""
+    r1 = row(repo)
+    r2 = row(repo, rev=2, supersedes=f"{r1['cc_id']}:1",
+             stated={"verdict_native": "KEEP", "metrics": [
+                 {"metric": "op_speedup", "value": 1.21, "unit": "x"}]})
+    assert (r2["cc_id"], r2["rev"], r2["supersedes"]) == (r1["cc_id"], 2, f"{r1['cc_id']}:1")
+    natives = ccm.native_rows(write(tmp_path, [r1, r2]), repo=repo)
+    assert len(natives) == 1 and natives[0]["row"]["rev"] == 2
+    assert ccm.project(natives[0]).observation is not None
+    # alone, rev 1 projects both metrics: the skip comes from the supersedes link
+    assert len(ccm.native_rows(write(tmp_path, [r1]), repo=repo)) == 2
+
+
+def test_cli_conclusion_add_passes_rev_and_supersedes():
+    import cli
+    args = cli.build_parser().parse_args(
+        ["conclusion", "add", "--rev", "2", "--supersedes", "cc:v1:abc:1", "--actor", "t",
+         *_cli_required()])
+    assert args.rev == 2 and args.supersedes == "cc:v1:abc:1"
+    default = cli.build_parser().parse_args(["conclusion", "add", "--actor", "t", *_cli_required()])
+    assert default.rev == 1 and default.supersedes is None
+
+
+def _cli_required():
+    return ["--path", HANDOFF, "--line", "2", "--stated-json", "{}"]
