@@ -397,30 +397,20 @@ campaign is fully prepared and **HELD — inference is operator-gated**.
 
 Exactly two things remain:
 
-- [ ] **AFC-P5.E3 — run the n=30 compliance campaign.** READY but HELD (operator: "I will tell Decision (absorbs E4): per model/level, compliance >= 0.95 x the level-none baseline keeps the level; re-take the rollout decision on the n=30 evidence.
-  you when you can proceed" with inference). Launch:
-  `region-lock run --cpu-list 0-95 -- bash /workspace/tests/compliance/agent_file/run_n30_campaign.sh`
-  (queues behind any held bench claim; starts automatically on release). Shape: 4 current-stack
-  models {worker_general gemma4-26B-Q4KM, frontdoor Qwen3.6-35B-Q8, ingest Qwen3-Next-80B-Q4KM,
-  architect Qwen3.5-122B-UD-Q4KM} × 4 levels × 90 tasks, 8-way concurrent (est. ~2–4h wall),
-  per-model fail-fast probe, sequential bench servers on :18099 (v8 binary 10107,
-  teardown-verified), incremental JSON per (model,level) →
-  `data/compliance/2026-07-30-n30-curve/`. Smoke probe passed 6/6. Notes: worker_fast retired
-  (4-model roster); the earlier ingest "registry drift" claim was RETRACTED (depth-capped find);
-  the parallel perf re-measurement does NOT gate this (within-instrument baseline,
-  deterministic scoring at temp 0).
+- [ ] **AFC-P5.E3 — run the n=30 compliance campaign.** Operator released inference 2026-11-07 (adhoc-ops directive). **Re-planned 2026-11-07 on the CURRENT roster and kernel store**: the 2026-07-30 roster (gemma4-26B, Qwen3-Next-80B, Qwen3.5-122B) is overtaken (3 of 4 GGUFs no longer on disk) and the old script ran the v9 build dir. Now 3 unique GGUFs, one quarter-shape row each (v10 production CPU kernel from the kernel store, llama-server 10303 ffc1bac82, `quant_build` = Q8_0 / Q8_0 / UD-IQ4_XS on production v10): `afc-p5e3-n30-q36_35b-20261107` (Qwen3.6-35B-A3B-MTP-Q8_0 = worker_general + frontdoor), `afc-p5e3-n30-q38_27b-20261107` (Qwen3.8-27B-Q8_0 = ingest), `afc-p5e3-n30-q38_flash-20261107` (Qwen3.8-Flash-Next-UD-IQ4_XS = architect_general); suite v2 30/30/30 x 4 levels x 90 tasks, 8-way, temp 0, scratch `/mnt/raid0/llm/tmp/afc-p5e3-n30-20261107/`. Decision (absorbs E4): per model/level, compliance >= 0.95 x the level-none baseline keeps the level; compliance, procedure >= 0.95 x baseline, recall >= 0.90 absolute; baseline recall < 0.90 => operating point `none`. Stop rules: stop-on-answer when all four levels of a model are scored (the keep table needs all four); stop-on-futility on a live_runner failure or a config probe failure (row ends, remaining levels INCONCLUSIVE); gate-class = futility-only at interim looks. File the result into this box when each row ends.
 - **[declined: ws58 2026-11-03 content-review: merged into E3 as its decision step]** **AFC-P5.E4 — re-take the rollout decision on the n=30 evidence.** Gate per model/level:
   `compliance ≥ 0.95 × level-none baseline`, `procedure ≥ 0.95 × baseline`, `recall ≥ 0.90`
   absolute; baseline recall < 0.90 ⇒ operating point `none`. Decision-fork table below. Factor
   in post-restructure savings (mild 1.6% / medium 20% / aggressive 39% of words) — the
   structural-deletion pass already captured most of the original win.
-- [ ] **AFC-P5.E5 — denominate the compression target in WORDS, not lines, and re-derive the
+- [x] **AFC-P5.E5 — denominate the compression target in WORDS, not lines, and re-derive the
   savings table.** External corpus evidence (intake-1199#record, re-derived from the authors' Zenodo
   replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile by words but
   only the 85.4th by lines** — 10.5 words per line. **A pass that targets LINES systematically
   under-finds**, and E4's savings table above is already denominated in words, so the two are
   currently measuring different things. Re-express the mild/medium/aggressive figures against a
   word baseline before E4 consumes them.
+  ✅ 2026-11-07 (operator-adhoc-ops-20261105): re-derived on the live tree with `wc -w`/`wc -l` against `agents/shared/ENGINEERING_STANDARDS.md` (735 words / 103 lines): mild 674 w (-8.3%) / 104 l (+1.0%), medium 545 w (-25.9%) / 101 l (-1.9%), aggressive 421 w (-42.7%) / 94 l (-8.7%). The old 1.6/20/39% figures predate the later restructure; the WORD figures are the E4 consumption basis and the line deltas show why a line target under-finds (aggressive saves 4.9x more in words than lines). Table: `docs/reports/frontier-lab-automation-closeout-20261107.md`. [no-belief: arithmetic re-derivation from tracked files, committed as a doc table]
 - **[declined: ws58 2026-11-03 content-review: a framing correction, bookkeeping]** **AFC-P5.E6 — correct the "we exceed the corpus maximum" framing before it propagates.**
   Measured 2026-08-20 (`research/sources/intake-20260819/EVIDENCE-agent-file-and-moe-measurements.md`):
   the widely-repeated version of this claim does **not** survive scrutiny, in two ways. (a) The
