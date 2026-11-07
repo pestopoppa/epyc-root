@@ -1305,6 +1305,23 @@ def test_harness_claims_reach_only_their_consumer_and_are_never_evidence(tmp_pat
     assert not hid & {c["claim_id"] for c in other["evidence"]["claims"]}
 
 
+def test_harness_keeps_one_line_when_target_fills_the_byte_budget(tmp_path, alarm):
+    """2026-11-07 offline AK-wire canary: the Q38FN target tier filled 14000 bytes and the trim
+    dropped every harness line first, so the matrix finding never reached the planner."""
+    own = [_loop(f"ds41-own-{i}", mech=f"akm-own-{i}") for i in range(30)]
+    frames = _harness_frames(tmp_path)
+    path = _write(tmp_path, *own, frames)
+    kw = dict(ledger=path, index_path=tmp_path / "index.yaml", as_of="2026-11-04T12:00:00+00:00",
+              sync_module=FakeSync(), known_good=tmp_path / "known_good.json", **alarm)
+    tight = lb.prepare("autokernel.planner", DS41_Q4_T, max_bytes=4000, **kw)["evidence"]
+    assert 0 < tight["section_bytes"] <= 4000
+    assert tight["tiers_shown"]["harness"] == 1               # best harness unit survives
+    assert tight["tiers_shown"]["target"] >= 1                 # but never at the target's cost
+    assert "Loop-infrastructure facts (harness tier)" in tight["section"]
+    roomy = lb.prepare("autokernel.planner", DS41_Q4_T, **kw)["evidence"]
+    assert roomy["tiers_shown"]["harness"] >= tight["tiers_shown"]["harness"]
+
+
 # ------------------------------------------------------------------------------ LOOP-SAFETY C1/C2, D-A1
 
 

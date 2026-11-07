@@ -1687,7 +1687,14 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         return "\n".join(head + body + [count] + tail)
 
     def trim_once() -> bool:
-        for tier in ("harness", "host", "sibling"):
+        # The harness tier keeps its best unit until only FORCED model-tier lines are left:
+        # it is consumer-scoped and reaches no other reader, so trimming it first made the
+        # actor-wire matrix finding unreachable whenever the target tier filled the byte budget
+        # (VB-AK-WIRE-PLANNER-TIER offline canary 2026-11-07: harness 35 rows, 0 shown).
+        if len(selected["harness"]) > 1:
+            selected["harness"].pop()
+            return True
+        for tier in ("host", "sibling"):
             if selected[tier]:
                 selected[tier].pop()
                 return True
@@ -1703,6 +1710,9 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                 if not _forced(units[i]):
                     units.pop(i)
                     return True
+        if selected["harness"]:
+            selected["harness"].pop()
+            return True
         for tier in ("target", "knob"):
             if selected[tier]:
                 selected[tier].pop()
