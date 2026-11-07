@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:00:54Z",
+  "generated_at": "2026-11-07T19:05:18Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2091,15 +2091,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 159,
-      "dispatchable": 49,
+      "closed": 160,
+      "dispatchable": 48,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-07",
       "next_action": "C8 rows published (C8-3 census, C8-1 H17, C8-2 H16 M=36, C8-6 GDN chunked): file verdicts as they land, then the C8-1 attention fix",
-      "open": 50,
+      "open": 49,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2133,7 +2133,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 44,
+          "dispatchable": 43,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2142,14 +2142,14 @@
           ],
           "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 45,
+          "open": 44,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1595,
+          "line": 1596,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2158,7 +2158,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1719,
+          "line": 1720,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2167,7 +2167,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2044,
+          "line": 2045,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2176,7 +2176,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2183,
+          "line": 2184,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2185,7 +2185,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2739,
+          "line": 2740,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2197,7 +2197,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2879,
+          "line": 2880,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2209,7 +2209,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2886,
+          "line": 2887,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2470,15 +2470,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 107,
-      "dispatchable": 65,
+      "closed": 108,
+      "dispatchable": 64,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
       "next_action": "Work the triage owner lines (42 adopt, 4 C7r re-files); re-file P0d-W3-HALFB-C6 after the job.py:46 fix; then AKX-P0a census",
-      "open": 66,
+      "open": 65,
       "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
@@ -2516,7 +2516,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 52,
+          "dispatchable": 51,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2527,7 +2527,7 @@
           ],
           "line": 919,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 53,
+          "open": 52,
           "readiness": "blocked"
         }
       ]
@@ -2588,15 +2588,15 @@
       "age_days": 4,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 100,
-      "dispatchable": 20,
+      "closed": 104,
+      "dispatchable": 16,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-03",
       "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 23,
+      "open": 19,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2616,20 +2616,20 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 3,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 5,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 1104,
           "name": "colbert-reranker-web-research",
-          "open": 3,
+          "open": 2,
           "readiness": "ready"
         },
         {
@@ -2643,11 +2643,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 7,
           "gates": [],
           "line": 2468,
           "name": "opendataloader-pipeline-integration",
-          "open": 8,
+          "open": 7,
           "readiness": "ready"
         },
         {

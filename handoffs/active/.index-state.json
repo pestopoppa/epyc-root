@@ -4,13 +4,13 @@
       "blocked": 50,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 665
+      "open": 663
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
       "handoffs": 1,
       "oldest_advance": "2026-11-03",
-      "open": 20
+      "open": 16
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 107,
+      "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 65,
+      "open": 64,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -72,7 +72,7 @@
         },
         {
           "blocked": 1,
-          "closed": 67,
+          "closed": 68,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -85,7 +85,7 @@
           "line": 919,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 52
+          "open": 51
         }
       ]
     },
@@ -1192,10 +1192,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 159,
+      "closed": 160,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 49,
+      "open": 48,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1208,7 +1208,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 118,
+          "closed": 119,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1219,14 +1219,14 @@
           "line": 15,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 44
+          "open": 43
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1595,
+          "line": 1596,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1719,
+          "line": 1720,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2044,
+          "line": 2045,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2183,
+          "line": 2184,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2739,
+          "line": 2740,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2879,
+          "line": 2880,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2886,
+          "line": 2887,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1295,10 +1295,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 3,
-      "closed": 100,
+      "closed": 104,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 20,
+      "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1311,23 +1311,23 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 44,
+          "closed": 46,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 5
+          "open": 3
         },
         {
           "blocked": 1,
-          "closed": 18,
+          "closed": 19,
           "gates": [],
           "guarded": 0,
           "line": 1104,
           "markers": 1,
           "name": "colbert-reranker-web-research",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1341,13 +1341,13 @@
         },
         {
           "blocked": 0,
-          "closed": 9,
+          "closed": 10,
           "gates": [],
           "guarded": 0,
           "line": 2468,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 8
+          "open": 7
         },
         {
           "blocked": 1,
