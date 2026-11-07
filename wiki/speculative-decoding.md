@@ -3179,3 +3179,15 @@ Sources: [MTP progress](../progress/2026-11/2026-11-05-handoff-speculative-decod
 - **INF-50 split (operator, 2026-11-07):** boxes are now owned by main-inf22, Pipeline Management or AutoKernel. DF2-20's row-exact verify prototype (experimental branch at `a6c0377e7`, base `e1d9ba2f6`) prices an UPPER BOUND, since it splits a k-token verify into k single-column passes that read the weights k times.
 
 Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) · [SR-8 predeclared](../docs/reports/sr8-fresh-edit-20261105/PREDECLARED.md)
+
+## Compiled Update — 2026-11-07 (CAFE-2 verify-cost census and DF2-13 reuse diagnostic, both INCONCLUSIVE)
+
+**Confidence: verified** (rows filed by operator-adhoc-ops-20261105; both verdicts are INCONCLUSIVE and carry no adoption claim).
+
+- **CAFE-2 r1 (`cafe2-verify-cost-native-20261107`) timing arm is noise-dominated.** T(5)/T(1) = 1.72 with a 95% t interval 0.25-3.18 over 5 paired reps, straddling both thresholds (1.25 and 1.6); per-width medians are non-monotone (w3 111 ms, w4 418 ms), fit RMSE 79 ms, and the run saw host loadavg around 46. CAFE-3 keeps probe-before-veto.
+- **The expert-union census from the same row is valid:** mean per-layer union 8.0 / 17.9 / 34.4 experts at 1 / 5 / 9 verified rows (E=256, K=8), i.e. verify width grows the touched-expert set far below linearly in rows but well above the single-row set.
+- **The r2 repeat is sized from r1 variance:** sd of paired ratios 1.178 means a 95% half-width under 0.15 needs about 237 reps (about 48 invocations of 5 reps, roughly 20 min), with a pre/post idle check (at most 5% busy on the granted cpus) that discards and counts noisy invocations.
+- **DF2-13 r2 (`df2-13-reuse-cpu-r2-20261107`): warm and cold B tokens diverge at token 33** (draft counts 119 vs 112; Qwen3.8-27B-Q8_0 + DFlash2-Q8_0 on v10 `ffc1bac82`, n=1 pair). No checkpoint-versus-live restore was observed, so the checkpoint route is UNKNOWN; the divergence is classified, not passed. DF2-13-CLASSIFY (logprob margin at token 33 plus a native route trace) separates a near-tie from a degenerate divergence.
+- **Two boxes are not runnable as written:** mtp-target-precision lost its `/dev/shm` inputs (volatile scratch), and the EXL3 codec repeat has no target weights on disk and adds nothing to the existing CPU codec evidence (EXL3-2, 719,096 checks).
+
+Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) · [wiki: inference-serving](inference-serving.md) · [wiki: moe-optimization](moe-optimization.md)
