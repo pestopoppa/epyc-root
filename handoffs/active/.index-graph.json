@@ -685,7 +685,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T09:33:55Z",
+  "generated_at": "2026-11-07T09:35:53Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2420,15 +2420,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 103,
-      "dispatchable": 68,
+      "closed": 104,
+      "dispatchable": 67,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
       "next_action": "workspace-a6: adopt or route each stale AKX box (no staleness declines), then AKX-P0a census producer",
-      "open": 69,
+      "open": 68,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2466,7 +2466,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 55,
+          "dispatchable": 54,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2477,7 +2477,7 @@
           ],
           "line": 908,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 56,
+          "open": 55,
           "readiness": "blocked"
         }
       ]
