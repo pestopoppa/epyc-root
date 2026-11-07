@@ -4,13 +4,13 @@
       "blocked": 51,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 667
+      "open": 668
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
       "handoffs": 1,
       "oldest_advance": "2026-11-07",
-      "open": 12
+      "open": 13
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1298,7 +1298,7 @@
       "closed": 105,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 12,
+      "open": 13,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1307,7 +1307,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 118,
+      "total": 119,
       "tracks": [
         {
           "blocked": 0,
@@ -1337,14 +1337,14 @@
           "line": 1852,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2470,
+          "line": 2473,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 6
@@ -1354,7 +1354,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2578,
+          "line": 2581,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 0
@@ -1364,7 +1364,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2947,
+          "line": 2950,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 1
@@ -2404,7 +2404,7 @@
       "closed": 119,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 27,
+      "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2413,7 +2413,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 147,
+      "total": 148,
       "tracks": [
         {
           "blocked": 1,
@@ -2433,10 +2433,10 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 732,
+          "line": 733,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 15
+          "open": 16
         }
       ]
     },
@@ -2685,7 +2685,7 @@
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
       "line": 16,
-      "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
+      "next_action": "Re-open ID-3/AP-21 on corrected trial support; W3 reliability ladder stays open; ID-14 now AK-CONT-* in autokernel-loop.md",
       "track": "intake derived work 2026 07 25"
     },
     "EVL-47": {
@@ -2694,7 +2694,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 17,
-      "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
+      "next_action": "Run VB-CANARY-B-FRONTIER once post-fence AutoPilot trials exist; VB-CC-PILOT register; GNX-REINDEX-1 receipt; file r18d/r234 rows",
       "track": "vidya belief substrate program"
     },
     "INF-06": {
@@ -2746,7 +2746,7 @@
       "id": "INF-50",
       "index": "inference-research-index.md",
       "line": 27,
-      "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
+      "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
       "track": "speculative decoding mtp refresh"
     },
     "INF-59": {
@@ -2853,7 +2853,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
+      "next_action": "Fix PIP02-R36-DEVNULL-FENCE, republish R36; file ODL-013/G14/OCR r2 rows; operator ratifies P-DOCPARSE-1 annex",
       "track": "internal kb rag"
     },
     "REV-02": {

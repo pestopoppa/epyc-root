@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | Source-review remaining K2/web contracts and independent dependency consumers | — |
+| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | Fix PIP02-R36-DEVNULL-FENCE, republish R36; file ODL-013/G14/OCR r2 rows; operator ratifies P-DOCPARSE-1 annex | — |
 
 ## Cross-domain
 

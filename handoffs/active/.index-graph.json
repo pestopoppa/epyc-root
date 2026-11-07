@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:36:33Z",
+  "generated_at": "2026-11-07T19:56:44Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1354,7 +1354,7 @@
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-07",
-      "next_action": "Re-open ID-3/AP-21 on corrected trial support; dispatch accepted retrospective proposals through their application owners",
+      "next_action": "Re-open ID-3/AP-21 on corrected trial support; W3 reliability ladder stays open; ID-14 now AK-CONT-* in autokernel-loop.md",
       "open": 2,
       "priority": 0.6474,
       "priority_basis": {
@@ -1431,7 +1431,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-07",
-      "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
+      "next_action": "Run VB-CANARY-B-FRONTIER once post-fence AutoPilot trials exist; VB-CC-PILOT register; GNX-REINDEX-1 receipt; file r18d/r234 rows",
       "open": 89,
       "priority": 0.8902,
       "priority_basis": {
@@ -1944,14 +1944,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 119,
-      "dispatchable": 27,
+      "dispatchable": 28,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-07",
-      "next_action": "Split 2026-11-07: main-inf22 owns MI210 DFlash2/np4 boxes; AK + Pipeline Mgmt own the rest (see per-box owner notes)",
-      "open": 28,
+      "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
+      "open": 29,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1994,14 +1994,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 15,
+          "dispatchable": 16,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 732,
+          "line": 733,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 15,
+          "open": 16,
           "readiness": "blocked"
         }
       ]
@@ -2589,14 +2589,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 105,
-      "dispatchable": 12,
+      "dispatchable": 13,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-07",
-      "next_action": "Source-review remaining K2/web contracts and independent dependency consumers",
-      "open": 13,
+      "next_action": "Fix PIP02-R36-DEVNULL-FENCE, republish R36; file ODL-013/G14/OCR r2 rows; operator ratifies P-DOCPARSE-1 annex",
+      "open": 14,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2634,18 +2634,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": [],
           "line": 1852,
           "name": "document-parser-table-bench",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2470,
+          "line": 2473,
           "name": "opendataloader-pipeline-integration",
           "open": 6,
           "readiness": "ready"
@@ -2654,7 +2654,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2578,
+          "line": 2581,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "no_open"
@@ -2663,7 +2663,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2947,
+          "line": 2950,
           "name": "sliders-local-validation",
           "open": 1,
           "readiness": "ready"
