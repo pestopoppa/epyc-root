@@ -1,0 +1,18 @@
+test_empty_dir_refused (__main__.T.test_empty_dir_refused) ... ok
+test_missing_manifest_is_fatal_when_required (__main__.T.test_missing_manifest_is_fatal_when_required) ... ok
+test_missing_tensor (__main__.T.test_missing_tensor) ... ok
+test_positive (__main__.T.test_positive) ... ok
+test_renamed_tensor (__main__.T.test_renamed_tensor) ... ok
+test_sha_mismatch_bitflip_same_size (__main__.T.test_sha_mismatch_bitflip_same_size) ... ok
+test_truncated_inside_header (__main__.T.test_truncated_inside_header) ... ok
+test_truncated_shard (__main__.T.test_truncated_shard) ... ok
+test_unexpected_extra_tensor (__main__.T.test_unexpected_extra_tensor) ... ok
+test_wrong_K_vs_config (__main__.T.test_wrong_K_vs_config) ... ok
+test_wrong_dtype (__main__.T.test_wrong_dtype) ... ok
+test_wrong_mul1_value (__main__.T.test_wrong_mul1_value) ... ok
+test_wrong_shape (__main__.T.test_wrong_shape) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.018s
+
+OK

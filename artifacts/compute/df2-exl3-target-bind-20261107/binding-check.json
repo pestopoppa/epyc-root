@@ -1,0 +1,13 @@
+{
+ "verdict": "PASS",
+ "dir": "/mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw",
+ "notes": {
+  "tensors": 2426,
+  "exl3_modules": 409,
+  "described": 1910,
+  "shards": 2,
+  "sha": "6 files, weights hashed"
+ },
+ "fail_count": 0,
+ "fails": []
+}
