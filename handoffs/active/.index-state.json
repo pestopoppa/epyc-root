@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 667
+      "open": 674
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -94,7 +94,7 @@
       "closed": 792,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 142,
+      "open": 149,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -103,7 +103,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 935,
+      "total": 942,
       "tracks": [
         {
           "blocked": 1,
@@ -118,14 +118,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 45
+          "open": 52
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5931,
+          "line": 5938,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -135,7 +135,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6011,
+          "line": 6018,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -150,7 +150,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6308,
+          "line": 6315,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -164,7 +164,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9523,
+          "line": 9530,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -176,7 +176,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13873,
+          "line": 13880,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -200,7 +200,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14085,
+          "line": 14092,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
