@@ -460,7 +460,7 @@
       "from": "INF-82",
       "kind": "ref",
       "to": "EVL-47",
-      "weight": 6
+      "weight": 7
     },
     {
       "from": "INF-82",
@@ -685,7 +685,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T09:35:53Z",
+  "generated_at": "2026-11-07T09:40:53Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2475,7 +2475,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 908,
+          "line": 918,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
