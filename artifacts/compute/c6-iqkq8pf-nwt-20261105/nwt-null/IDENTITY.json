@@ -1,0 +1,93 @@
+{
+ "packet": "c6-iqkq8pf-nwt-null-20261105",
+ "handoff": "handoffs/active/autokernel-loop.md:AK-CPU-INT8-PREFILL",
+ "stores": {
+  "C": {
+   "store": "cpu-20261105-21232569a-llg",
+   "bin": "/mnt/raid0/llm/kernels/builds/cpu-20261105-21232569a-llg/bin",
+   "commit": "21232569a88ab106b89c543205bf2102b6388dbc",
+   "libggml_cpu_sha256": "79e0c13edd0f598f0ce9dbd4311fc20ae2ef8d4494b1a59834e20e9456148cc7",
+   "marker": "iqk_q8_0_act=Q8_2_X4_H",
+   "marker_expected": false,
+   "role": "C6 CPU reference (base logits)"
+  },
+  "F": {
+   "store": "cpu-20261105-65da39eb1-c6fold2",
+   "bin": "/mnt/raid0/llm/kernels/builds/cpu-20261105-65da39eb1-c6fold2/bin",
+   "commit": "65da39eb1fe7fddbfa7de81cc2f39d54a6b2a428",
+   "libggml_cpu_sha256": "c5ee1d5be374148733bfcf582e1e31ededb66ce56015352d404c866955931f23",
+   "marker": "iqk_q8_0_act=Q8_2_X4_H",
+   "marker_expected": true,
+   "role": "candidate: fold + fp16-scale fix, full Q8_0 prefill route"
+  },
+  "N": {
+   "store": "cpu-20261105-fff2c6909-nullknob",
+   "bin": "/mnt/raid0/llm/kernels/builds/cpu-20261105-fff2c6909-nullknob/bin",
+   "commit": "fff2c69095008a051fc69040effd7fc9ed119d45",
+   "libggml_cpu_sha256": "FROM_BUILD_RESULT",
+   "marker": "iqk_q8_0_route_only_knob",
+   "marker_expected": true,
+   "role": "null-arm measurement store: 65da39eb1 + GGML_IQK_Q8_0_ROUTE_ONLY (route restricted to one tiny op class; codes identical to C6, only summation order differs)"
+  }
+ },
+ "null_arms": {
+  "ssm_alpha": "ssm_alpha",
+  "ssm_beta": "ssm_beta",
+  "blk0_shexp": "blk.0.+_shexp",
+  "blk20_shexp": "blk.20.+_shexp",
+  "lm_head": "=output.weight",
+  "attn_k": "attn_k.weight"
+ },
+ "precondition": {
+  "build_result": "/mnt/raid0/llm/tmp/c6-iqkq8pf-nullknob-build-20261105/out/RESULT.json",
+  "verdict": "BUILD_OK",
+  "source_sha": "fff2c69095008a051fc69040effd7fc9ed119d45"
+ },
+ "tool": {
+  "dir": "/mnt/raid0/llm/tmp/c6-iqkq8pf-nwt-null-20261105/tool",
+  "built_from": "/mnt/raid0/llm/worktrees/llama-c6-iqkq8pf-fold-20261105 @ f3a6a4baa8f293baffe1f730d9b0ddf8a87f8316 (clean)",
+  "build": "cmake out-of-tree /mnt/raid0/llm/tmp/c6-iqkq8pf-nwt-gate-20261105/tools-build, Release, GGML_NATIVE=ON, GGML_HIP=OFF, LLAMA_LLGUIDANCE=OFF (no llg symbol in common/include headers: ABI-identical to the llg stores), CMAKE_SKIP_RPATH=ON; target llama-perplexity only; only the executable + libllama-perplexity-impl.so are used, all ggml/llama/common libs come from the arm store",
+  "sha256": {
+   "llama-perplexity": "6edda1e8b34067b5893b11594b8c7f124ca2b601a77beb37ca2d46cacc4c7819",
+   "libllama-perplexity-impl.so": "074d827b9b15ba649244325bee93c94aa65b7dd098cff02215e961faaa62fa0f"
+  },
+  "note": "copied unchanged from c6-iqkq8pf-nwt-gate-20261105/tool"
+ },
+ "models": {
+  "a3b": {
+   "name": "Qwen3.6-35B-A3B-MTP Q8_0 (production)",
+   "gguf": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+   "gguf_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+   "extra_args": [],
+   "env": {}
+  },
+  "q38": {
+   "name": "Qwen3.8-Flash-Next UD-IQ4_XS (production quant; 502 Q8_0 tensors)",
+   "gguf": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+   "shard1_sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+   "extra_args": [
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16"
+   ],
+   "env": {
+    "GGML_FA_SPLIT_KV": "0",
+    "GGML_FUSED_DECODE_OFF": "1",
+    "GGML_NOHUGEPAGE_PROCESS": "1",
+    "OMP_DYNAMIC": "false",
+    "OMP_PLACES": "cores",
+    "OMP_PROC_BIND": "spread",
+    "OMP_WAIT_POLICY": "active"
+   },
+   "note": "frozen r3 q38fn-cpu launch env (minus LD_LIBRARY_PATH) and KV types; MTP drafter not used by llama-perplexity"
+  }
+ },
+ "corpus": "/mnt/raid0/llm/data/wiki.test.raw copied to corpus.txt (wikitext-2 test, held-out natural text)",
+ "corpus_sha256": "bfe9eb16ab9987fb88bde4ea9a30a00f2a45db01dfc14bad78d05325789c4f12",
+ "env": {
+  "GGML_IQK": "1",
+  "GGML_IQK_* other than GGML_IQK_Q8_0_ROUTE_ONLY": "unset"
+ },
+ "base_logits_note": "r1/r2 base logits (c6-iqkq8pf-nwt-gate-r2-20261105/out/logits/a3b-C.bin) carry no recorded sha256 from their creating run, so they are not reused; the base is regenerated once here and its sha256 recorded."
+}

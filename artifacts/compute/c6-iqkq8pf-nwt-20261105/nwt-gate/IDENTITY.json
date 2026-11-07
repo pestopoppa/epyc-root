@@ -1,0 +1,70 @@
+{
+ "packet": "c6-iqkq8pf-nwt-gate-20261105",
+ "handoff": "handoffs/active/autokernel-loop.md:AK-CPU-INT8-PREFILL",
+ "supersedes_quality_part_of": "c6-iqkq8pf-fold-gate-20261105 (4b_q38fn_screen, 4b_q8_screen)",
+ "arms": {
+  "C": {
+   "store": "cpu-20261105-21232569a-llg",
+   "bin": "/mnt/raid0/llm/kernels/builds/cpu-20261105-21232569a-llg/bin",
+   "commit": "21232569a88ab106b89c543205bf2102b6388dbc",
+   "role": "C6 CPU reference (C6 729599d69 + V11-122 llg). 21232569a..9e9d7f291 touches ggml-cuda only (mmvq.cu, quantize.cu, vecdotq.cuh), and its libggml-cpu.so sha256 equals cpu-20261030-729599d69-c6's, so it is the CPU image of the 9e9d7f291 C6 head (no CPU store exists at 9e9d7f291)",
+   "libggml_cpu_sha256": "79e0c13edd0f598f0ce9dbd4311fc20ae2ef8d4494b1a59834e20e9456148cc7",
+   "marker": "GGML_IQK_Q8_0_PREFILL_MIN_ROWS",
+   "marker_expected": false
+  },
+  "F": {
+   "store": "cpu-20261105-f3a6a4ba-c6fold",
+   "bin": "/mnt/raid0/llm/kernels/builds/cpu-20261105-f3a6a4ba-c6fold/bin",
+   "commit": "f3a6a4baa8f293baffe1f730d9b0ddf8a87f8316",
+   "role": "fold candidate: 9e9d7f291 + cherry-pick -x 9b78d1408 (CPU iqk Q8_0 prefill default ON, >= 32 rows)",
+   "libggml_cpu_sha256": "129daf998ce9e93bf961f7c275fabc68c488743066d72b411e701ec9a21e627b",
+   "marker": "GGML_IQK_Q8_0_PREFILL_MIN_ROWS",
+   "marker_expected": true
+  }
+ },
+ "tool": {
+  "dir": "/mnt/raid0/llm/tmp/c6-iqkq8pf-nwt-gate-20261105/tool",
+  "built_from": "/mnt/raid0/llm/worktrees/llama-c6-iqkq8pf-fold-20261105 @ f3a6a4baa8f293baffe1f730d9b0ddf8a87f8316 (clean)",
+  "build": "cmake out-of-tree /mnt/raid0/llm/tmp/c6-iqkq8pf-nwt-gate-20261105/tools-build, Release, GGML_NATIVE=ON, GGML_HIP=OFF, LLAMA_LLGUIDANCE=OFF (no llg symbol in common/include headers: ABI-identical to the llg stores), CMAKE_SKIP_RPATH=ON; target llama-perplexity only; only the executable + libllama-perplexity-impl.so are used, all ggml/llama/common libs come from the arm store",
+  "sha256": {
+   "llama-perplexity": "6edda1e8b34067b5893b11594b8c7f124ca2b601a77beb37ca2d46cacc4c7819",
+   "libllama-perplexity-impl.so": "074d827b9b15ba649244325bee93c94aa65b7dd098cff02215e961faaa62fa0f"
+  }
+ },
+ "models": {
+  "a3b": {
+   "name": "Qwen3.6-35B-A3B-MTP Q8_0 (production)",
+   "gguf": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+   "gguf_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+   "extra_args": [],
+   "env": {}
+  },
+  "q38": {
+   "name": "Qwen3.8-Flash-Next UD-IQ4_XS (production quant; 502 Q8_0 tensors)",
+   "gguf": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+   "shard1_sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+   "extra_args": [
+    "-ctk",
+    "f16",
+    "-ctv",
+    "f16"
+   ],
+   "env": {
+    "GGML_FA_SPLIT_KV": "0",
+    "GGML_FUSED_DECODE_OFF": "1",
+    "GGML_NOHUGEPAGE_PROCESS": "1",
+    "OMP_DYNAMIC": "false",
+    "OMP_PLACES": "cores",
+    "OMP_PROC_BIND": "spread",
+    "OMP_WAIT_POLICY": "active"
+   },
+   "note": "frozen r3 q38fn-cpu launch env (minus LD_LIBRARY_PATH) and KV types; MTP drafter not used by llama-perplexity"
+  }
+ },
+ "corpus": "/mnt/raid0/llm/data/wiki.test.raw copied to corpus.txt (wikitext-2 test, held-out natural text)",
+ "corpus_sha256": "bfe9eb16ab9987fb88bde4ea9a30a00f2a45db01dfc14bad78d05325789c4f12",
+ "env": {
+  "GGML_IQK": "1",
+  "GGML_IQK_*": "unset"
+ }
+}

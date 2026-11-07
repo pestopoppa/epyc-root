@@ -1,0 +1,75 @@
+{
+ "complete": true,
+ "verdict": "NWT_FAIL",
+ "at": "2026-11-05T22:52:04Z",
+ "decision_basis": "Operator decision 2026-11-05 (relayed by the coordinator): the quality gate for numerics-changing Q8_0 routes is no-worse-than-C6 by perplexity on the production weights, long prompts; no higher-precision reference model. Per model (Qwen3.6-35B-A3B Q8_0 first, then Q38FN UD-IQ4_XS): PASS iff Mean ln(PPL_F/PPL_C) <= its SE (paired, llama-perplexity --kl-divergence against C logits) AND PPL_F <= PPL_C + SE(PPL_C). NWT_PASS iff both pass. Supersedes, for this route, the KLD(C||F) < 1e-3 / top-1 screen of c6-iqkq8pf-fold-gate-20261105.",
+ "failed_models": [
+  "a3b"
+ ],
+ "models": {
+  "a3b": {
+   "model": "a3b",
+   "pass": false,
+   "ln_ratio_le_1se": false,
+   "pplF_le_pplC_plus_se": true,
+   "ppl_C": 5.9837,
+   "ppl_C_se": 0.08069,
+   "ppl_C_in_kld_run": 5.981072,
+   "ppl_F": 5.998355,
+   "ppl_F_se": 0.080939,
+   "mean_ln_ratio_F_over_C": 0.002885,
+   "mean_ln_ratio_se": 0.000815,
+   "ppl_diff": 0.017282,
+   "ppl_diff_se": 0.004895,
+   "kld_C_F_mean": 0.006336,
+   "kld_C_F_se": 0.00054,
+   "kld_max": 9.115068,
+   "kld_p99": 0.047737,
+   "kld_median": 0.001437,
+   "per_chunk_ln_ratio": [
+    0.00279,
+    0.01099,
+    0.00026,
+    0.0012,
+    -0.00024,
+    0.0018,
+    -0.00357,
+    0.00061,
+    0.00173,
+    0.00893,
+    0.00047,
+    0.00179,
+    0.0047,
+    0.00396,
+    -0.00167,
+    0.01249
+   ],
+   "per_chunk_mean": 0.00289,
+   "per_chunk_se": 0.0011097601092127977,
+   "per_chunk_n_positive": 13,
+   "units": [
+    "a3b-C-base",
+    "a3b-F-kld"
+   ]
+  }
+ },
+ "stop_on_answer": "q38 not run: a3b failed",
+ "method": {
+  "ctx": 4096,
+  "chunks": 16,
+  "scored_tokens_per_chunk": 2047,
+  "corpus": "wikitext-2 test raw",
+  "corpus_sha256": "bfe9eb16ab9987fb88bde4ea9a30a00f2a45db01dfc14bad78d05325789c4f12",
+  "scoring": "second half of each chunk (llama-perplexity first = n_ctx/2), full chunk prefilled at -ub 512"
+ },
+ "arms": {
+  "C": {
+   "store": "cpu-20261105-21232569a-llg",
+   "commit": "21232569a88ab106b89c543205bf2102b6388dbc"
+  },
+  "F": {
+   "store": "cpu-20261105-65da39eb1-c6fold2",
+   "commit": "65da39eb1fe7fddbfa7de81cc2f39d54a6b2a428"
+  }
+ }
+}
