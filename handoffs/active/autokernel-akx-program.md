@@ -820,7 +820,7 @@ Global constraints:
   Say it plainly in the fold record — **the champion headline cannot move, because nothing reaches
   this op**; a headline re-measure is a *control on the fold*, expected at the floor, and reading it
   as "no cost" would be a bounded null with no fired-knob control.
-- [ ] **AKX-P4c — belief kernel write side.**
+- [x] **AKX-P4c — belief kernel write side.** ✅ 2026-11-07 DECLINED as a duplicate pointer (AutoKernel, owner): the work is carried entirely by **SC81** in `vidya-belief-substrate-program.md` (row EVL-47); no AK work remains here, so track it there. [no-belief: duplicate pointer]
   - Owner: none -- DECLINE recommended (duplicate pointer), awaiting SC81; not ticked. Action: DECLINE (duplicate pointer). Next: Replace box with a one-line pointer to SC81 (owning session applies); no AK work remains Evidence: Box text H:815 says "tick when SC81 lands"; SC81 is open and carries the work at `origin/main:handoffs/active/vidya-belief-substrate-program.md:1280` (REFINE KEEP 11-03) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
   - Census rows and blast-radius rows are verified structural findings. Filed 2026-09-15 as **SC81** in `vidya-belief-substrate-program.md`, with a candidate source row in `scripts/vidya/adapters/README.md` (CLAUDE.md: surface the wiring immediately, not at P0). Tick this item when SC81 lands with AKX-P0a.
   - Non-regression rows reuse the existing serving A/B archive/belief export (INF-73 "Aggregate serving gates feed the original archive and belief consumer").
