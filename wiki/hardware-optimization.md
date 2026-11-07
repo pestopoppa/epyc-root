@@ -7095,9 +7095,9 @@ Sources: [autokernel-loop AK-ASM-FOLD](../handoffs/active/autokernel-loop.md) ·
 
 ## Compiled update — 2026-11-06 (intake-quant-compiler-20261106): extraction, rotation and integer-dot facts
 
-- **gfx90a already has the int8 primitives** (`v_dot4_i32_i8`, `mfma_i32_16x16x16i8`), so a missing integer dot is not what blocks a low-precision GDN path; the operand path is (intake-2641).
+- **gfx90a already has the int8 primitives** (`v_dot4_i32_i8`, `mfma_i32_16x16x16i8`), so a missing integer dot is not what blocks a low-precision GDN path; the operand path is (intake-2641#record).
 - **Kerncap extracts one dispatch from a running HIP/Triton app** via an HSA interposer and address-space closure, on MI210/gfx90a among others, with a 5.4x inner-loop recompile workflow; it needs ROCm >= 7.0 and cannot replace the C6/native harness because its oracle is identity-to-capture (intake-2649).
-- **Rotation cost is a fused-pass property.** A key rotation is free only when fused into an existing split-and-quantize pass; in a tree without one it is a new per-layer matmul (intake-2641, intake-2642).
+- **Rotation cost is a fused-pass property.** A key rotation is free only when fused into an existing split-and-quantize pass; in a tree without one it is a new per-layer matmul (intake-2641#record, intake-2642).
 - **Filed work**: build-cost packet `AK-SETUP-1/2` in [autokernel-loop.md](../handoffs/active/autokernel-loop.md); ROCm-gated adoption stays a durable trigger.
 
 Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [Kerncap dive](../research/deep-dives/quant-compiler-20261106/kerncap.md)
@@ -7125,3 +7125,15 @@ Sources: [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant
   - The cc register gained `--rev`/`--supersedes`, so a corrected row supersedes the old one, which stays as history.
 - **The Q38FN 2xMI210 hybrid is parked** (AK-ASM-H22) until a second MI210 is installed. Plan: `docs/design/q38fn-2xmi210-hybrid-plan-20261107.md`.
 - Sources: `handoffs/active/model-architecture-readiness.md` GDN-SHARE-1, `docs/design/long-context-and-c8-strategy-20261107.md`, `docs/reference/kernel-manifests/llama-v11-manifest.md`.
+
+## Compiled Update — 2026-11-07 (C8 package results: H17 profile, H16 no-keep, zero-split, GDN chunked)
+
+**Confidence: verified** (result lines in the kernel-champion handoff; baseline is champion C7r `62cb6a6af`; all gates are futility-only until OP-ABSEQ/OP-PQP/OP-ALPHAWIN).
+
+- **C8-1-H17-PROFILE named the attention kernels (verdict INCONCLUSIVE on 2 of 12 cells, neither decisive).** Misses: dflash@d8k had 1 of 2 valid reps, and tg@d128k had an FA GB/s spread of 0.12 against 0.10. Achieved FA bandwidth at d8k/d32k/d128k (% of 1.6 TB/s HBM): n_q=1 `flash_attn_ext_vec<256,1,q8_0,q8_0>` 102/133/132 GB/s (6.4/8.3/8.2%, 52% of the step at 128k); `gv_fattn_kernel` v9 verify 92/177/222 (5.7/11.1/13.9%); DFlash2 step 89/175/226 (5.5/11.0/14.1%). The M=36 np4 verify falls off `gv_fattn` onto `flash_attn_ext_f16<256,16,4,64>` at 28/27/25 GB/s (1.6-1.7%), with attention 67% of the step (271.5 ms) at 128k. That is the C8-1-LCATTN first target. The parent box stays open until LCATTN re-profiles.
+- **C8-1-LCATTN keep rule was split per target before the first grant:** A (multi-sequence verify, `GGML_HIP_GV_MULTISEQ`) keeps iff np4 DFlash2 aggregate >= 1.20x at d128k and >= 1.05x at d32k; B (n_q=1 long-context split) keeps at >= 1.10x d128k / >= 1.05x d32k no-draft. The gate row is `c8-lcattn-gate-20261107`; no verdict is recorded in the handoff yet.
+- **C8-2-H16-M36: NO_KEEP_OP_FUTILE.** Correctness passed on all 5 suites, but the op-level M=36 matmul over the real 27B shape census (7 shapes, 407 matmuls) was slower: 81.1 vs 69.4 ms, 0.854x. The futility stop fired before e2e; MMQ at M=36 stays as C7r.
+- **C8-3-H19 zero-split census: FAIL as pre-registered, single cause.** Every graph in 27B and A3B has exactly 2 splits and 1 CPU node, the input-embedding GET_ROWS (`token_embd.weight` sits in a CPU buffer at -ngl 99; also `inp_noise_embd` and `mtp_tok_embd`). Estimated crossing cost 43-45 us/token at decode (0.2-0.3% of a ~18-20 ms step). No other CPU fallback.
+- **C8-6-GDN-CHUNKED: KEEP by operator decision, while the row's own verdict is C8GDN_NO_KEEP.** Op level: 3.45x (27B T=2048), 4.25x (A3B). End to end: 27B pp2048 1.120x, pp8192 1.124x; A3B pp2048 1.204x, pp8192 1.189x; tg128 1.012x / 0.994x. Two pre-registered clauses failed and were accepted: A3B tg128 0.9939x vs 0.995 (inside that cell's 5.7% A/A floor) and 27B PPL 6.5277 -> 6.5279 (3.8 paired SE vs <= 1 SE; KLD 1.5e-5, top-1 99.95%). The C8 whole-candidate gate must re-check A3B decode (>= 0.99x) and PPL.
+
+Sources: [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) · [long-context-program](../handoffs/active/long-context-program.md) · [model-architecture-readiness](../handoffs/active/model-architecture-readiness.md)

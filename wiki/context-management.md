@@ -1290,3 +1290,14 @@ Sources: [tool-output-compression](../handoffs/active/context-and-token-economy.
 - **Filed work**: CTX-HO-1 and CTX-HO-3 in [context-and-token-economy.md](../handoffs/active/context-and-token-economy.md).
 
 Sources: [Handoff Debt dive](../research/deep-dives/harness-inference-20261106/intake-2653.md) · [t3code dive](../research/deep-dives/harness-inference-20261106/intake-2650.md)
+
+## Compiled Update — 2026-11-07 (compaction-governance work filed from the 2611.05306 intake waves)
+
+**Confidence: inferred** (synthesis of filed box text; no measurement has run yet).
+
+- **A detector bug is filed first**: TOC-CMP-1 notes the orchestrator summary path's reference-miss detector is inverted (it reads the compacted text instead of `seg.granular_blocks`), so a destroyed identifier cannot fire. The fix requires a unit test whose only passing outcome is the destroyed-identifier case firing.
+- **Governance retention is to be measured as a ceiling, compliance as the result** (TOC-CMP-2): 5-8 EPYC rules with hard/soft/prose enforcement classes and a sibling-target control, four arms (full history, intact rule, degraded residue, rule absent).
+- **Compaction contract and reproducibility** (TOC-CMP-3/4): a six-field execution brief, a pinned-governance buffer exempt from folding, and a verbatim_manifest arm; the A/B pre-registers a minimum detectable effect of 0.10 blocked actions per step, >= 30 paired compaction points per model with 8-12 repeats, three arms (raw tail, summary, FIFO) and Pass^3 reporting.
+- **Role-boundary regression** (TOC-CMP-5): hostile tool output containing `[User]:` or `<|im_start|>` must not survive `build_consolidation_prompt` as an un-neutralised boundary. DEPTH-ENV-1 (cpu-decode-roofline-program) will assemble the prefill/decode envelope at 16K/32K/48K/128K from existing runs for the launch-flag session.
+
+Sources: [context-and-token-economy](../handoffs/active/context-and-token-economy.md) · [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)

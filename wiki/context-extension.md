@@ -439,3 +439,14 @@ The YaRN oolong program (YARN-OOLONG-V38-RESUME) moved from the operator ad-hoc 
 - **Native-window gate r2 abort.** The root cause was checkpoint min-spacing of 8192, which erased the question checkpoints, so cache reuse missed. r3 runs with `--checkpoint-min-step 0`.
 - **streaming-llm stays closed.** A hybrid attention-only eviction carve-out is feasible, but the payoff is dominated by the harness route and C8-1.
 - Sources: `docs/design/long-context-and-c8-strategy-20261107.md`, `handoffs/active/long-context-program.md`, `progress/2026-11/2026-11-07-main-inf22.md`.
+
+## Compiled Update — 2026-11-07 (LSA-QUALITY-32K parked; LSA-MOE-1 relocated)
+
+**Confidence: verified** (checkpoint text in the long-context handoff; no quality verdict was produced).
+
+- **LSA-QUALITY-32K r8 was parked 2026-11-07 17:57Z by main-inf22 after an operator ROI review.** It is a checkpoint, not a result: dense was in phase B dev with 17 dev cells done, pca in phase C heldout at 10/32. Each item takes 25-45 min on a 24-core quarter, leaving 10+ h of wall time.
+- **Why it was parked:** the screen gates speed paths that are closed. LSA-H12-INDEXER is FUTILE (0.37x), and LSA's strategic target (LSA-YARN-512K) is parked at >=256k. The quarters went to C8 kernel builds.
+- **Resume conditions:** an LSA speed path becomes live again (a new indexer design, or LSA-CPU-SPARSE), or YaRN >=256k is unparked. The runner exits 75 on STOP and re-runs only missing cells, so resuming continues from the ledger; its scratch must not be reclaimed.
+- **LSA-MOE-1** (A3B frozen-teacher capture and PCA projections for its ten global layers) moved from `model-architecture-readiness.md` to step (d) of the D-LSA plan in the long-context program, keeping its gate: it starts only after the 27B screen reaches KEEP-QUALITY and one 27B fast path keeps. The move lets INF-33 (Engram) close independently.
+
+Sources: [long-context-program](../handoffs/active/long-context-program.md) · [model-architecture-readiness](../handoffs/active/model-architecture-readiness.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)

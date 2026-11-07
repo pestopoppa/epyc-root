@@ -4431,3 +4431,14 @@ Sources: [compute-claim admission](../docs/reference/gitnexus-compute-claims.md)
 - **gitnexus 1.6.8 mis-parsed CUDA `__global__` kernels** preceded by `__launch_bounds__(...)` and drew no `<<<>>>` launch edges, so impact on a kernel came back vacuously LOW. Patched (f9d1d46a3, plus a parse-cache version bump so stale CUDA parses are not replayed); KPF-41 impact r10 then PASSED with all four targets LOW on real edges. Pushing a new branch still bypasses the push lock because `serialized_push.py` cannot publish one (box SERIALIZED-PUSH-NEW-BRANCH).
 
 Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [gitnexus compute claims](../docs/reference/gitnexus-compute-claims.md) · [kv-cache program](../handoffs/active/kv-cache-program.md)
+
+## Compiled Update — 2026-11-07 (Vidya Track C canary gate and P1 AC9 amendment)
+
+**Confidence: verified** (progress entry and design-doc amendment; commit ids as recorded there)
+
+- **Operator scope:** advance the Vidya program without spinning up AutoPilot; no inference ran. Codex LOOP-SAFETY-C C1-C3 items were done here because Codex is down until 11-11.
+- **Reader hardening (ROOT `1b3570a18`..`e2fab70b8`):** the `loop_beliefs` CLI refuses with `reader_stale` when the checkout lacks origin/main commits older than 900 s; a `belief-target-tier-emptied` warning alarm is raised; the reader picks `as_of` after the ingest it ran (D-A1); canary B no longer asserts trial 1472 (not a keep, predates the epoch fence). Orchestrator `0c9aea3e`/`a4963aa3` fail closed on a missing journal or `strategies.db` and accept the `harness` tier (previously every such answer was `reader_invalid_answer`).
+- **Verdicts:** canary A PASS; canary B hash mode UNKNOWN by design; offline model-free AutoKernel actor-wire planning canary PASS. The live-embedder canary B is only published (row `vb-canary-b-r2-20261107`, rank 70); VB-CANARY-GATE-1 and VB-CANARY-GATE close when it exits 0, so they remain open. Row `vb-ak-wire-canary-r3-20261104` has the wrong source_kind in its job predicate and would report a false FAIL.
+- **AC9 amended (operator, "Option B"):** under the bounded 16-claim budget, higher-ranked target-tier claims can fill every slot before a plain measurement such as KPF-18 item 7. That item now counts when it is in the reader's collected evidence and in the `Shown n of N <tier>` line; being shown with a value line is reported, not required. Options C (budget 24) and D (leave failing) were rejected.
+
+Sources: [vidya trackc canary progress](../progress/2026-11/2026-11-07-vidya-trackc-canary.md) · [belief-storage-redesign](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)

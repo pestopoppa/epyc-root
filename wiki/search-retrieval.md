@@ -1656,3 +1656,14 @@ Sources: [ColBERT reranker web research](../handoffs/active/knowledge-pipelines.
 
 - ColBERT G14 is a FAILED-RUN: a path-custody error modified ten prior experimental candidate paths whose original graph bytes were not recovered. All 32 canonical source-model files matched their SHA-256 manifest (including the 92,079,820-byte INT8 baseline). Native process identities and the drain receipt were not captured, so cleanup cannot be proven; measurement validity is not accepted. [colbert](../handoffs/active/knowledge-pipelines.md#track-colbert-reranker-web-research)
 - REPL-EMB-5.1 lexical BM25 SEARCH primitive published (see memory-augmented). [repl](../handoffs/active/harness-program.md#track-repl-embedding-retrieval)
+
+## Compiled Update — 2026-11-07 (KB encoder decisions: Keep GTE, K2 closed, PREFIX-3 completed)
+
+**Confidence: verified** (operator decisions and tick text in the knowledge-pipelines handoff; numbers quoted from the handoff, not re-measured here)
+
+- **B6 declined, "Keep GTE" (operator 2026-11-07).** answerai-colbert-small-v1 shows 54.67 vs 53.35 BEIR (1.32 pp, inside the ~2 pp noise floor) with 4.46x fewer parameters and a -24.3 % index footprint. The swap would force a full re-embed (qd-v2 refuses mixed indexes) and need the upstream literal-prefix serving guard. G11's INT8 gate was not met (59/70). Revisit only if index footprint becomes a real constraint. The G11 disagreement clause is declined as moot (11 near-ties already documented).
+- **S5 declined as superseded.** Request-path reranking has been NO-GO since 2026-06-14 (<10 % irrelevant pages over >=50 synthesized pages), AR-3 Package D was archived 2026-05-27, and the three-slot selector stays landed. Reopen only if live role traffic shows >20 % irrelevant-page waste.
+- **K2 closed** by `epyc-orchestrator` `d0a35287`: declared `uses_token_type_ids` and `embedding_dim` are validated against the loaded graph at load time, and a contradiction or malformed value refuses the load (`_validate_graph_contract`; 9 new cases, 148 colbert/kb_rag unit tests pass; an absent key declares nothing).
+- **G13 ticked** with the matched baseline 0.367857 recall@10 as comparator (best arm +0.007143, below the +0.02 trigger); the historical 0.5690 baseline used a different corpus and is unassessable. **PREFIX-3 ticked as completed by PREFIX-4**: 44 cosine-computable rows, LateOn 22 PASS (max per-token divergence 0.001205), Reason 19 PASS / 3 NUMERIC_FAIL (max 0.012337 vs the unchanged 1e-2 threshold); the older 8.24e-03 / 2.72e-03 figures stay unusable. This is parity evidence, not an adoption verdict.
+
+Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md)

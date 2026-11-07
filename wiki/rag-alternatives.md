@@ -121,3 +121,14 @@ Document the closure scope explicitly in the closure block when the gate is deci
 - **Retrieval over compaction is prior art, not a new technique.** The Mainplane pointer-only hand-off keeps the full transcript searchable and drops the summary; MemGPT, Cursor dynamic context discovery, Claude Code and OpenClaw already keep transcripts searchable beside a summary, and our REPL already emits read_file/peek pointers. The only new element is dropping the summary, and its evidence is n=1 hand-off cost with no accuracy measurement. Stage 4 files TOC-MP-1..4 plus monitor notes rather than an adoption. ([progress 2026-10-30](../progress/2026-10/2026-10-30.md); [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity))
 
 Sources: [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) · [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
+
+## Compiled Update — 2026-11-07 (SLIDERS answered, ODL-011 declined, ODL-013 re-run authorised)
+
+**Confidence: verified** (tick and decision text in the knowledge-pipelines handoff; no new measurement)
+
+- **SLIDERS Phase 0 is on: "evaluate now, low-priority filler"** (operator E4, 2026-11-07), answering the K7-precondition decision. Box 0.4 (`data/sliders_validation/04_phase0_verdict.md`) is the open work item: clone stanford-oval/sliders into scratch, catalogue every GPT-4.1 call site, substitute the local OpenAI-compatible coder endpoint, run FinQ5 end to end, then write the verdict. Non-inference prep runs first. No verdict exists yet.
+- **ODL-011 declined (operator).** Intrinsic chunk scores cannot gate alone, the routing default is unchanged, and the arm needs an LLM judge plus a RAG answer-correctness endpoint with no current consumer. Re-file only if the ODL-013 P-DOCPARSE-1 verdict leads to a routing change.
+- **ODL-013 re-run authorised (operator E2 "Ratify + Re-run")**: row `pip04-odl013-rerun-r2-20261107`, four arms on the 200-PDF corpus. The default stays unchanged until the decision-capable gate closes.
+- **Unlimited-OCR default is quant-compliant**: `Unlimited-OCR-Q5_K_M-outq8.gguf` re-hashed to the recorded SHA-256 `b4c9ba49...c926e2`; 155 tensors, only `output.weight` changed Q6_K to Q8_0, 154 byte-identical to the Q5_K_M source.
+
+Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md)

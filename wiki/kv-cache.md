@@ -1674,3 +1674,15 @@ Sources: [kv-cache-program KVU-16g-3](../handoffs/active/kv-cache-program.md) ·
 The p99 overshoot behind KVU-16g-3 is a controller-shape defect, not noise. The budgeter centres the *mean* iteration time on its target, but iteration cost is a staircase in 32-row tiles (~60 ms per tile), so a linear EWMA dithers across a step edge: closed-loop iteration sd is 25-33 ms with lag-1 autocorrelation -0.33, against 8 ms open loop. The fix (`0a6c69991`, experimental, off C6) aligns the budget to the tile (`--prefill-budget-align 32`) and sizes it against the tail (`--prefill-budget-tail-k 1.0`); in simulation p99 drops 726->665 ms at target 670 and 949->890 at 900. On this scenario the neighbour-TTFT criterion and the p99 criterion cannot both pass (>= ~1.39x TTFT at p99 <= 670), so both settings are being measured (KVU-16g-4b). Confidence: inferred (simulation + unit test; live A/B pending).
 
 Sources: [kv-cache-program KVU-16g-4](../handoffs/active/kv-cache-program.md) · [progress](../progress/2026-11/2026-11-06-main-inf22.md)
+
+## Compiled Update — 2026-11-07 (KVU-16g-4b result and the :8083 prefill-budget decision)
+
+**Confidence: verified** (two completed paired rows, 4/4 launches valid; criteria are the pre-registered ones, read from the handoff).
+
+- **Both settings are NONE-PASS as pre-registered, yet the overshoot fix works.** With the aligned budgeter, ON p99 iteration time at 256/670 was 669.8 / 678.6 ms against a 670.7 ms target (legacy 748 / 751 ms); at 256/900 it was 896.2 / 899.6 ms (legacy 953 / 949 ms). This matches the offline replay prediction (665 / 890 ms).
+- **256/670 fails on neighbour TTFT**: 1.61x / 1.52x ON/OFF against the 1.30 bound (legacy 1.58 / 1.59), and its second pair misses p99 by +7.9 ms. Worst-case 0.464 / 0.441, decode tok/s 1.96 / 1.87 and solo 1.003 / 0.999 pass.
+- **256/900 passes criteria 2-5** (worst 0.640 / 0.691, decode 1.46 / 1.39, neighbour TTFT 1.269 / 1.295 with a margin of only 0.005 on pair 2, solo 0.973 / 1.001). Criterion 1 fails by construction because the p99 target exceeds TPOT; it lands within target+5 ms.
+- **The pre-registered prediction held: criteria 1 and 4 cannot both pass** at a single operating point, so the choice is a trade, not a tuning problem.
+- **Operator decision KVU-16g-5 (2026-11-06): 256/900** goes into the v11 runbook; a decode p99 of about 900 ms is accepted.
+
+Sources: [kv-cache-program KVU-16g-4b / KVU-16g-5](../handoffs/active/kv-cache-program.md) · [main-inf22 decision package](../progress/2026-11/2026-11-06-main-inf22.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)

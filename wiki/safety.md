@@ -552,3 +552,14 @@ Sources: [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-t
 - intake-2294#record (The Attacker Moves Second): Twelve recent jailbreak and prompt-injection defences are bypassed by adaptive attacks, mostly above 90% ASR despite near-zero reported static ASR. Adopt-patterns, integrated; linked to qwen-chat-template-evaluation.
 - intake-2302#record (Design Patterns for Securing LLM Agents): Six patterns (action-selector, plan-then-execute, LLM map-reduce, dual LLM, code-then-execute, context-minimisation) give structural isolation of untrusted data independent of model. Adopt-patterns, integrated; linked to qwen-chat-template-evaluation.
 - intake-2313#record (Spotlighting indirect-injection defence): Delimiting, datamarking and encoding of untrusted input plus a system-prompt sentence cut ASR on GPT-family models from over 50% to under 2-3% on a synthetic single-keyword corpus. Adopt-patterns, integrated; linked to qwen-chat-template-evaluation.
+
+## Compiled Update — 2026-11-07 (stored-call effect contracts, registry trust, provenance of evidence)
+
+**Confidence: verified** (handoff ticks and audit file; the last bullet's framing is inferred).
+
+- **Unknown effect blocks reuse.** `orchestration/tool_effect_contracts.yaml` (orchestrator main `d827fd05`, UFH-TE-4) assigns every one of the 55 registry tools an effect class with destination and principal; 13 are `unknown`, and `unknown` blocks reuse of a stored call with no inference. UFH-TE-1 adds optional `validator_id`, `validator_version` and `conclusion_valid_until_ns` to the decision receipt so a conclusion can expire.
+- **A third-party registry is not a trust source.** The ACP registry has 7 of 22 binary manifests without sha256 and hides quarantine from clients (intake-2654#record); only pin-source discipline is adopted.
+- **Compaction provenance is an open hazard, not a measured one here.** UFH-21 queues a hostile-tool-output test of whether `/compact` carries a forged `[User]:` approval as user authority in the shipped OpenCode shell; no outcome is recorded.
+- **Evidence trails need re-find, not self-written marks.** A second-reader audit of 40 intake anchors found 40 of 40 hashes matching while 4 anchors failed to support their claim and 1 was not in the source; the landed anchor gate flags fabricated, whitespace-altered and cross-pasted fixtures, but its 2657-entry replay is vacuous for re-find (raw root unset).
+
+Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/active/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)

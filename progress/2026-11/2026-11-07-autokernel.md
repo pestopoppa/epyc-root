@@ -61,3 +61,37 @@ Full loop suite from a lane worktree: 6023 passed, 1 failed (fixed by `529036ed8
 **Filing.** PM found 1 ended-unfiled AK row: `ak-surface-proof-b-20261106`. The verdict was in the handoff (946ea35af) but the FILED receipt was missed, because `rowflow alerts --ack` does not mention it. It was filed via `file_result.py` (pass). PM is now making `--ack` warn on a missing receipt (operator-approved).
 
 **Dispatched (in flight).** The e2e same-run-ABBA check in `serving_gate.e2e_evidence`, the AK-BUILD-MEM-1 row prep, the AK-H5-VERIFY row prep, and the AKX-ALL-LB3.2b affinity-readback fix with re-book prep.
+
+## Evening (loop safety, admission, calibration; operator wrap-up)
+
+All commits below are on `epyc-inference-research` main unless marked root. Full suites for the loop were run from lane worktrees, not the shared clone.
+
+**Landed and ticked.**
+
+| Item | Commit | Result |
+|---|---|---|
+| AK-EFF-SAME-STATE-STOP | `e33cf3cd1`, refined `5707436fd` (re-pins `ead06f91e`) | A lane whose planner abstained on a state key is not re-asked on the same key; typed `planner_same_state_skip`, then the lane parks. `5707436fd` scopes the park to the lane: the run parks only when every lane is parked. `retry_budget_shadow` is log-only at >=4 prior `patch_rejected` (never refuses). Motivated by 13 identical abstentions = 3.14 h. Root tick `4fabb02f2`. |
+| AK-OP-E2E-PENDING | `cae39d8c3` | `serving_gate.e2e_evidence` verifies the same-run ABBA design from the record instead of hard-coding it; unpaired, separate-run and fixed-order rows stay `pending`. Root tick `a30fe410a`. |
+| AKX-ALL-LB3.2b | `6d75bd331` | Root cause was the pair harness `control_checks.py:affinity()` reading the main-TID mask after OMP pinned it (not llama.cpp). Process-wide two-snapshot readback committed as `scripts/benchmark/akx_lb32_affinity/`. Fixture under the recipe OMP env: legacy rc=68, v3 rc=0. Pair `akx-lb3-2-cv6-pair-20261107` re-booked (r2 spec queued). Root tick `315eb9771`. |
+| AKX-AUTO-7 | `c8b3cbbc5` | Drain needs `--confirm-drain <lane>`; drain stays terminal (guard option, no resume path). Root tick `6366ad1eb`. |
+| AKX-P4c, AK-EFF-P1 | root `c9d2a4bc7`, `561faee82` | Both declined with reasons (P4c is a duplicate pointer to SC81; P1 declined by the offline replay). |
+
+**Landed, parent box stays open.**
+
+| Item | Commit | What remains |
+|---|---|---|
+| AKX-P1d fixtures | `be1b808e3` | 17 control fixtures; found and fixed a `footprint.py` bug (comment hunks produced phantom dispatch sites and env-knob reads). Live half and the production classifier (AKX-P1e) open. |
+| AKX-P5a module | `65cc983bc` | `loop/forward_admission.py` + 16 tests: structural evidence only, closed schema, mandatory expiry. Wiring rides with P1e. |
+| AKX-ALL-31 gates | `c27655708` | `loop/numerics_gates.py` + 10 tests, opt-in (`NUMERICS_GATES_DEFAULT = False`). Native CPU/HIP leg, `gates.py` wiring and the default-on ratification are filed as child boxes (below). |
+| Hermetic tests | `b420fa015` | Tests no longer need `EPYC_ROOT` in the caller env (10 `test_actor_context` failures + 1 collection error without it before; 88 pass, 1 skip after). |
+| Harvest #3 | `13b9e8f86` | main-inf22 H16 M=36 op-futile negative, H17 profile, LCATTN seeds into the planner context. |
+| LOOP-SAFETY-C C2a/C2b + D-A3 | `86319c468` | Refuse missing store or inbox; ranked path keeps the pinned `keep_candidate`. Landed in the same window under the operator's no-autopilot instruction. |
+
+**In flight (NOT landed, nothing ticked).**
+
+- AKX-AUTO-4 floor self-check: branch `ak/akx-auto4-floor-spread` (research `854aadbab`, `e4560c879`, `4047d8584`; wired before both source-floor writes, `run.py` re-pinned). Full suite log `/mnt/raid0/llm/tmp/ak-auto4-suite-20261107.log` was about 62% through with one `F` seen; not yet judged as pre-existing flake or regression.
+- SL-2 / SL-4 serving gate: branch `ak/sl2-sl4-serving-gate` (`a07b3ace4`, `f12fa6c0d`, `4418500c6`). Awaiting rebase on current main, the `run.py` 5-hunk diff, custody re-pin and the suite. The M1 floor-row package `/mnt/raid0/llm/tmp/ak-sl2-m1-floor-20261107/` publishes only after SL-2 lands (it changes the calibrated metric).
+- DF2-20: `df2-20-correct-20261107` published; the cost row waits on ROWEXACT_PASS. Cost number is an upper bound (k single-column passes).
+- Queued rows (published, armed, ready): `ak-surface-proof-a2-20261107`, `inf75-c7r-w3-halfb-census-20261107`, `ak-h5-verify-20261107`, `ak-build-mem-1-20261107`, `akx-lb3-2-cv6-pair-20261107-r2`.
+
+**Handoff changes (root).** Ticks: AK-EFF-SAME-STATE-STOP, AK-OP-E2E-PENDING, AKX-ALL-LB3.2b, AKX-AUTO-7, AKX-P4c (declined), AK-EFF-P1 (declined); all carry `[no-belief: ...]` or `[belief: cc]` tags (checked with `belief_capture_check.py`; the three advisory warnings in range belong to other sessions' files). Added in this wrap-up: AK-TESTENV-HERMETIC and AK-HARVEST-3 (done boxes), AKX-ALL-31.NATIVE / .WIRE (open), in-flight notes under AKX-AUTO-4, SL-2 and SL-4.

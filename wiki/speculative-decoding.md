@@ -3168,3 +3168,14 @@ Sources: [filing drain](../progress/2026-11/2026-11-04-codex-fleet-cleanup-and-f
 - Production server (v10 `ffc1bac82`) logging is identical across arms so initialization is visible even when no tokens are proposed; startup logging can perturb timing, so the paired comparison is limited to that capture configuration.
 
 Sources: [MTP progress](../progress/2026-11/2026-11-05-handoff-speculative-decoding-mtp.md) · [MTP 11-04](../progress/2026-11/2026-11-04-handoff-speculative-decoding-mtp.md) · [SR-8 predeclared](../docs/reports/sr8-fresh-edit-20261105/PREDECLARED.md) · [SR-8 corpus](../docs/reports/sr8-fresh-edit-20261105/CORPUS.md) · [SR-8 store provenance](../docs/reports/sr8-fresh-edit-20261105/store-provenance.md) · [operator ad-hoc ops](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.md) · [speculative-decoding handoff](../handoffs/active/speculative-decoding.md)
+
+## Compiled Update — 2026-11-07 (SR-8 closed FAIL; grammar-decoding boxes declined)
+
+**Confidence: verified** (decline/closure notes in the speculative-decoding handoff, operator-adhoc-ops-20261105).
+
+- **SR-8 (draft from the file being edited) is closed as FAIL on the decision rule (lookup >= 1.5x DFlash2).** Paired ratio 0.381, every block 0.35-0.42, so even the best block is 3.6x short. Prompt-lookup ran 28.2 tok/s, slower than no drafter (33.1); mean accepted draft tokens were 2.33 versus 6.05. The earlier held-out and sealed attempts were UNKNOWN, not contrary evidence, and a larger corpus cannot move an effect this far below the threshold. This supersedes the SR-8 successor diagnostic described in the 2026-11-05 section.
+- **SPEC-GRAM.4, .6 and .7 declined on measured ceilings.** SPEC-GRAM.3 already cut reject cost from 26.4 to 0.33 ms (grammar share 15% to 0.15-0.25%), so a validate_tokens path has a ceiling under 0.25% of the step. Compact whitespace (SPEC-GRAM.6) has a ceiling of 1.02-1.04x, below the 10% bar, and exists only on an llguidance build (production v10 builds it OFF). The HIP mask-overlap half of SPEC-GRAM.7 is moot at 0.04-0.06 ms/token (about 0.5% of MI210 step time). Re-open only with the llguidance v-next adoption.
+- **SPEC-GRAM.7 draft-side masking half is ticked**: json_schema costs draft-mtp -1.95 pp acceptance (CI -7.86 to +3.52), inside the 10 pp threshold. SPEC-CANARY.1 (passive acceptance-collapse counter) is ticked complete.
+- **INF-50 split (operator, 2026-11-07):** boxes are now owned by main-inf22, Pipeline Management or AutoKernel. DF2-20's row-exact verify prototype (experimental branch at `a6c0377e7`, base `e1d9ba2f6`) prices an UPPER BOUND, since it splits a k-token verify into k single-column passes that read the weights k times.
+
+Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) · [SR-8 predeclared](../docs/reports/sr8-fresh-edit-20261105/PREDECLARED.md)
