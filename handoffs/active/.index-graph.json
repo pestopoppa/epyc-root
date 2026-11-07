@@ -261,6 +261,12 @@
     {
       "from": "INF-06",
       "kind": "ref",
+      "to": "INF-65",
+      "weight": 5
+    },
+    {
+      "from": "INF-06",
+      "kind": "ref",
       "to": "INF-70",
       "weight": 29
     },
@@ -369,6 +375,12 @@
     {
       "from": "INF-65",
       "kind": "ref",
+      "to": "INF-06",
+      "weight": 5
+    },
+    {
+      "from": "INF-65",
+      "kind": "ref",
       "to": "INF-33",
       "weight": 2
     },
@@ -388,7 +400,7 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-82",
-      "weight": 3
+      "weight": 5
     },
     {
       "from": "INF-65",
@@ -484,7 +496,7 @@
       "from": "INF-83",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 7
+      "weight": 8
     },
     {
       "from": "INF-84",
@@ -685,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T09:40:53Z",
+  "generated_at": "2026-11-07T09:45:12Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1504,7 +1516,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5914,
+          "line": 5915,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1513,7 +1525,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 5994,
+          "line": 5995,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1532,7 +1544,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6291,
+          "line": 6292,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1549,7 +1561,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9506,
+          "line": 9507,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1562,7 +1574,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13856,
+          "line": 13857,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1596,7 +1608,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14068,
+          "line": 14069,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1991,7 +2003,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-07",
-      "next_action": "Fit DFlash2 draft at 512k (GPU 52.55>52 GiB; C7 server lacks -cd); run YARN-NATIVE-WINDOW-GATE",
+      "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
       "open": 33,
       "priority": 0.8786,
       "priority_basis": {
@@ -2027,7 +2039,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 611,
+          "line": 623,
           "name": "attention-matching-kv-compaction",
           "open": 1,
           "readiness": "ready"
@@ -2036,7 +2048,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 983,
+          "line": 995,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2045,7 +2057,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1599,
+          "line": 1611,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -2054,7 +2066,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1746,
+          "line": 1758,
           "name": "triattention-kv-selection",
           "open": 10,
           "readiness": "ready"
@@ -2066,14 +2078,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 156,
-      "dispatchable": 41,
+      "dispatchable": 49,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-07",
-      "next_action": "C8 fold ledger (main-inf22): C6-LOCAL-SERVING-PROFILE + CODE28K on C7r, then triage adopted fold candidates",
-      "open": 42,
+      "next_action": "C8 package (main-inf22): C8-1-H17-PROFILE row, then C8-1 attention fix, C8-2 H16 M=36, C8-3 H19 census; C8-4..6 prefill",
+      "open": 50,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2107,7 +2119,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 36,
+          "dispatchable": 44,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2116,14 +2128,14 @@
           ],
           "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 37,
+          "open": 45,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1556,
+          "line": 1579,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2132,7 +2144,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1680,
+          "line": 1703,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2141,7 +2153,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2005,
+          "line": 2028,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2150,7 +2162,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2144,
+          "line": 2167,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2159,7 +2171,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2700,
+          "line": 2723,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -3605,14 +3617,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 231,
-      "dispatchable": 78,
+      "dispatchable": 79,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-05",
       "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
-      "open": 96,
+      "open": 97,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3714,7 +3726,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 17,
+          "dispatchable": 18,
           "gates": [
             "RTG-08",
             "INF-06",
@@ -3724,7 +3736,7 @@
           ],
           "line": 2273,
           "name": "repl-embedding-retrieval",
-          "open": 19,
+          "open": 20,
           "readiness": "blocked"
         },
         {
@@ -3737,7 +3749,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2720,
+          "line": 2721,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"

@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 660
+      "open": 668
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -34,7 +34,7 @@
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 85
+      "open": 86
     }
   },
   "duplicates": {},
@@ -125,7 +125,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5914,
+          "line": 5915,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -135,7 +135,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 5994,
+          "line": 5995,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -150,7 +150,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6291,
+          "line": 6292,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -164,7 +164,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9506,
+          "line": 9507,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -176,7 +176,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13856,
+          "line": 13857,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -200,7 +200,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14068,
+          "line": 14069,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -1055,7 +1055,7 @@
       "closed": 231,
       "guarded": 0,
       "last_advanced": "2026-11-05",
-      "open": 78,
+      "open": 79,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1064,7 +1064,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 327,
+      "total": 328,
       "tracks": [
         {
           "blocked": 12,
@@ -1143,7 +1143,7 @@
           "line": 2273,
           "markers": 1,
           "name": "repl-embedding-retrieval",
-          "open": 17
+          "open": 18
         },
         {
           "blocked": 0,
@@ -1153,7 +1153,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2720,
+          "line": 2721,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1165,7 +1165,7 @@
       "closed": 156,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 41,
+      "open": 49,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1174,7 +1174,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 198,
+      "total": 206,
       "tracks": [
         {
           "blocked": 1,
@@ -1189,14 +1189,14 @@
           "line": 15,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 36
+          "open": 44
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1556,
+          "line": 1579,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1206,7 +1206,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1680,
+          "line": 1703,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1216,7 +1216,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2005,
+          "line": 2028,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1226,7 +1226,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2144,
+          "line": 2167,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1236,7 +1236,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2700,
+          "line": 2723,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1409,7 +1409,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 611,
+          "line": 623,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 1
@@ -1419,7 +1419,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 983,
+          "line": 995,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1429,7 +1429,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1599,
+          "line": 1611,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1439,7 +1439,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1746,
+          "line": 1758,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 9
@@ -2697,7 +2697,7 @@
       "id": "INF-59",
       "index": "inference-research-index.md",
       "line": 28,
-      "next_action": "Fit DFlash2 draft at 512k (GPU 52.55>52 GiB; C7 server lacks -cd); run YARN-NATIVE-WINDOW-GATE",
+      "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
       "track": "yarn context extension research"
     },
     "INF-65": {
@@ -2709,7 +2709,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "C8 fold ledger (main-inf22): C6-LOCAL-SERVING-PROFILE + CODE28K on C7r, then triage adopted fold candidates",
+      "next_action": "C8 package (main-inf22): C8-1-H17-PROFILE row, then C8-1 attention fix, C8-2 H16 M=36, C8-3 H19 census; C8-4..6 prefill",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {

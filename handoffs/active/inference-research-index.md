@@ -13,7 +13,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | C7r is champion (`62cb6a6af`); AK-ASM program decided (H8b dropped E2E, FA r5 keep in C7r); next: GDN-SHARE-1 MI210 to pick the C8 target | INF-48, EVL-47 |
-| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | C8 fold ledger (main-inf22): C6-LOCAL-SERVING-PROFILE + CODE28K on C7r, then triage adopted fold candidates | INF-06, INF-50 |
+| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | C8 package (main-inf22): C8-1-H17-PROFILE row, then C8-1 attention fix, C8-2 H16 M=36, C8-3 H19 census; C8-4..6 prefill | INF-06, INF-50 |
 | INF-82 | autokernel akx program (keep gate + all dims) | [autokernel-akx-program.md](autokernel-akx-program.md) | workspace-a6: adopt or route each stale AKX box (no staleness declines), then AKX-P0a census producer | INF-06, INF-65 |
 | INF-83 | v11 promotion checklist | [v11-promotion-checklist.md](v11-promotion-checklist.md) | Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion | INF-65 |
 | INF-84 | workspace-58 champion calibration | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) | CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable | INF-65 |
@@ -25,7 +25,7 @@
 | INF-45 | numa topology cutover resume | [numa-placement-and-contention.md](numa-placement-and-contention.md) | P0-3 — cold-start the stack, re-bench the contention matrix, commit + push all three repos | — |
 | INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | Repair audited C6 carriers, wire oracle/Ghost boundary | EVL-47 |
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Run XGRAMMAR-A2 raw p95 and 16-prompt parity; qualify new benchmark symbols separately before any fold | — |
-| INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Fit DFlash2 draft at 512k (GPU 52.55>52 GiB; C7 server lacks -cd); run YARN-NATIVE-WINDOW-GATE | RTG-58 |
+| INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); ≥256k YaRN parked until C8-1 | RTG-58 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.
