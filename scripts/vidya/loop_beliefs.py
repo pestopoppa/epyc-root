@@ -269,12 +269,21 @@ def _ingest_sources(ledger_path: Path, source_roots: Iterable[str | Path], *,
     return reports
 
 
-def reader_checkout(root: str | Path | None = None) -> dict[str, Any]:
+#: How old the oldest origin/main commit missing from the reader's checkout may be before the
+#: checkout counts as stale. The freshness check fetches origin on every read and pushes land
+#: several times an hour, so a hub view refreshed seconds ago is routinely a commit or two
+#: behind; the 2026-10-25 failure was 466 commits / days behind. 900 s separates the two.
+DEFAULT_READER_STALE_GRACE_S = 900.0
+
+
+def reader_checkout(root: str | Path | None = None, *,
+                    grace_s: float = DEFAULT_READER_STALE_GRACE_S) -> dict[str, Any]:
     """LOOP-SAFETY C1 reader pin: is the ROOT checkout this reader runs from current?
 
-    Current = its HEAD contains the local `origin/main` ref (`git merge-base --is-ancestor`).
-    A checkout AHEAD of origin/main (unpushed lane commits) is current; one that LACKS commits
-    on origin/main is stale, because a lagging checkout reads a lagging ledger, index and
+    Current = its HEAD contains the local `origin/main` ref (`git merge-base --is-ancestor`), or
+    every origin/main commit it lacks was committed less than `grace_s` ago (refresh lag). A
+    checkout AHEAD of origin/main (unpushed lane commits) is current; one that LACKS older
+    origin/main commits is stale, because a lagging checkout reads a lagging ledger, index and
     reader (2026-10-25 canary D-A4/D-B3: the default `/workspace` was the stale ROOT). Any
     git failure is `current: None`, which the caller treats as not current (fail closed)."""
     root = Path(root) if root is not None else REPO_ROOT
@@ -297,8 +306,18 @@ def reader_checkout(root: str | Path | None = None) -> dict[str, Any]:
             return out
         out["current"] = anc.returncode == 0
         if not out["current"]:
-            behind = git("rev-list", "--count", f"{out['head']}..{out['origin_main']}")
-            out["behind"] = int(behind.stdout.strip()) if behind.returncode == 0 else None
+            missing = git("rev-list", "--format=%ct", "--no-commit-header",
+                          f"{out['head']}..{out['origin_main']}")
+            if missing.returncode:
+                out["current"] = None
+                out["error"] = (missing.stderr or "rev-list failed").strip()[:300]
+                return out
+            stamps = [int(x) for x in missing.stdout.split()]
+            out["behind"] = len(stamps)
+            age = (datetime.now(timezone.utc).timestamp() - min(stamps)) if stamps else 0.0
+            out["oldest_missing_age_s"] = round(age, 1)
+            out["current"] = age < grace_s
+            out["within_grace"] = out["current"]
     except (OSError, subprocess.SubprocessError, ValueError) as exc:
         out["error"] = f"{type(exc).__name__}: {exc}"[:300]
     return out

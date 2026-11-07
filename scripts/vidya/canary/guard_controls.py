@@ -71,7 +71,8 @@ assert result.returncode == 0 and "guarded child ok" in result.stdout, result.st
 print("PASS trusted Python child rewrapped")
 
 for path in ("/mnt/raid0/llm/state/vidya/ledger.jsonl",
-             "/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl"):
+             "/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl",
+             "/mnt/raid0/llm/epyc-orchestrator/orchestration/seeding_batch_telemetry.jsonl"):
     try:
         open(path, "a")
     except PermissionError:
@@ -91,10 +92,12 @@ repo = str(here)
 z = "0" * 40
 for tail in (["rev-parse", "--verify", "HEAD^{commit}"],
              ["merge-base", "--is-ancestor", z, z],
-             ["rev-list", "--count", f"{z}..{z}"]):
+             ["rev-list", "--format=%ct", "--no-commit-header", f"{z}..{z}"]):
     subprocess.run(["git", "-C", repo, *tail], capture_output=True)  # may exit non-zero; allowed
 for tail in (["fetch", "origin"], ["merge-base", "--is-ancestor", "origin/main", "HEAD"],
-             ["rev-list", "--count", "HEAD..origin/main"], ["rev-list", "--count", f"{z}...{z}"],
+             ["rev-list", "--format=%ct", "--no-commit-header", "HEAD..origin/main"],
+             ["rev-list", "--format=%ct", "--no-commit-header", f"{z}...{z}"],
+             ["rev-list", "--count", f"{z}..{z}"],
              ["update-ref", "refs/remotes/origin/main", z]):
     try:
         subprocess.run(["git", "-C", repo, *tail], capture_output=True)

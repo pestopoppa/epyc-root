@@ -1355,21 +1355,22 @@ def test_da1_negative_control_explicit_cutoff_before_ingest_hides_it(tmp_path, a
     assert ans["as_of"] == cutoff
 
 
-def _git(repo, *args):
-    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
-                   env={"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t",
-                        "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t",
-                        "PATH": "/usr/bin:/bin", "HOME": str(repo)})
+def _git(repo, *args, date=None):
+    env = {"GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t",
+           "GIT_COMMITTER_EMAIL": "t@t", "PATH": "/usr/bin:/bin", "HOME": str(repo)}
+    if date:
+        env["GIT_COMMITTER_DATE"] = env["GIT_AUTHOR_DATE"] = date
+    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env=env)
 
 
-def _checkout(tmp_path, behind):
+def _checkout(tmp_path, behind, missing_date="2026-10-01T00:00:00Z"):
     repo = tmp_path / "rootco"
     repo.mkdir(parents=True)
     _git(repo, "init", "-q", "-b", "main")
     _git(repo, "commit", "-q", "--allow-empty", "-m", "one")
     _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
     if behind:
-        _git(repo, "commit", "-q", "--allow-empty", "-m", "two")
+        _git(repo, "commit", "-q", "--allow-empty", "-m", "two", date=missing_date)
         _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
         _git(repo, "reset", "-q", "--hard", "HEAD~1")
     else:
@@ -1382,6 +1383,17 @@ def test_c1_reader_checkout_current_when_ahead_stale_when_behind(tmp_path):
     assert ahead["current"] is True and ahead["error"] is None
     behind = lb.reader_checkout(_checkout(tmp_path / "b", behind=True))
     assert behind["current"] is False and behind["behind"] == 1
+
+
+def test_c1_refresh_lag_within_grace_is_current(tmp_path):
+    """A commit pushed seconds ago that the view has not pulled yet is refresh lag, not staleness."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    lag = lb.reader_checkout(_checkout(tmp_path, behind=True, missing_date=now))
+    assert lag["current"] is True and lag["behind"] == 1 and lag["within_grace"] is True
+    strict = lb.reader_checkout(_checkout(tmp_path / "s", behind=True, missing_date=now),
+                                grace_s=0)
+    assert strict["current"] is False
 
 
 def test_c1_stale_reader_refuses_and_alarms(tmp_path, alarm):

@@ -29,7 +29,7 @@ ORCH = Path(os.environ["CANARY_ORCH_SOURCE"]).resolve()
 DATA = Path("/mnt/raid0/llm/epyc-orchestrator")
 CANON_LEDGER = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
 SCR_STATE = BASE / "state" / "B-autopilot"
-TELEMETRY = Path("/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl")
+TELEMETRY = Path("/mnt/raid0/llm/epyc-orchestrator/orchestration/seeding_batch_telemetry.jsonl")  # LOOP-SAFETY C3 default
 
 
 def sha(p: Path) -> str | None:
@@ -611,8 +611,9 @@ result = {"loop": "B", "live_embedder": bool(EMBED_URL),
 if not EMBED_URL:
     result.update(status="UNKNOWN", reason="hash-only embedder cannot reproduce semantic ranking")
     code = 2
-elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) or summary.get("errors"):
-    result.update(status="UNKNOWN", reason="live embedder failed/unused, assembly error, or protected state changed")
+elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) or summary.get("errors") \
+        or not result["belief_ready"]:
+    result.update(status="UNKNOWN", reason="live embedder failed/unused, belief reader not ready, assembly error, or protected state changed")
     code = 2
 elif known and frontier_section:
     result.update(status="PASS", reason="numeric_trial 0+/N- insight (incl. 1500) and the live toolrunner convention row present; frontier section assembled (T1 count recorded; empty is the intended post-rebase state)")

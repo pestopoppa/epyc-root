@@ -75,7 +75,7 @@ def main() -> int:
     ledger = state / "ledger.jsonl"
     ledger_sha_before = sha(ledger)
     canonical = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
-    telemetry = Path("/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl")
+    telemetry = Path("/mnt/raid0/llm/epyc-orchestrator/orchestration/seeding_batch_telemetry.jsonl")  # C3 default
     canonical_before = sha(canonical)
     telemetry_before = optional_digest(telemetry)
 

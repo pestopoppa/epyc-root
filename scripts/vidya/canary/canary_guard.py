@@ -161,8 +161,8 @@ def _hook(event: str, args) -> None:
             hexsha = lambda v: bool(re.fullmatch(r"[0-9a-f]{40}", v))
             if len(tail) == 4 and tail[:2] == ["merge-base", "--is-ancestor"]:
                 allowed = hexsha(tail[2]) and hexsha(tail[3])
-            if len(tail) == 3 and tail[:2] == ["rev-list", "--count"]:
-                parts = tail[2].split("..")
+            if len(tail) == 4 and tail[:3] == ["rev-list", "--format=%ct", "--no-commit-header"]:
+                parts = tail[3].split("..")
                 allowed = len(parts) == 2 and all(hexsha(x) for x in parts)
             if allowed and (env or {}).get("GIT_OPTIONAL_LOCKS") == "0":
                 return

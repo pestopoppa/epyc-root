@@ -43,14 +43,30 @@ so a live refusal is impossible from this regime regardless of row count. The sy
 controls therefore use a fully populated regime; `live_regime_quant_resolved` is reported
 informationally and does not gate.
 
+## Known conclusions and the reader pin (re-pinned 2026-11-07)
+
+Canary B no longer asserts trial 1472. The journal records 1472 as `keep_revert_decision=excluded`,
+`reproduction_confirmed` (not a keep), and it predates the ratified epoch fence
+`pareto_exclude_before_ts=2026-08-10T16:23Z`; the strategy store and ledger hold no row for it. Its
+absence is correct, so it is now an observation (`observed_1472_keep_with_numbers`). B gates on two
+fence-surviving conclusions: the journal insight `numeric_trial (... confidence, 0+/N- across
+trials [... 1500 ...])` and the strategy-store convention row `toolrunner backend and REPL
+extraction fix` with `bind=live`, plus the assembled frontier section. A belief reader that is not
+`ready` is UNKNOWN. Evidence: `RESULTS-2026-11-07.md`.
+
+The ROOT reader CLI now refuses `reader_stale` when its checkout lacks origin/main commits older
+than 900 s (LOOP-SAFETY C1). Point `CANARY_ROOT` at a current checkout (the hub view
+`/mnt/raid0/llm/views/epyc-root-main`) when the canary code itself is pinned to an older commit.
+The audit guard allows exactly the pin's read-only git forms.
+
 ## Canary B with the live embedder (2026-11-03)
 
 Set `CANARY_EMBED_URL=http://127.0.0.1:<port>` (port >= 10000) to a canary-owned BGE-large-en-v1.5
 llama-server (`--embeddings --pooling cls`, production CPU kernel store). The audit guard then
 permits socket connects to exactly that loopback host:port and nothing else; the strategy-store copy
 embeds its planner queries through it and fails closed on any error or degenerate vector (no hash
-degrade). With the URL set, B asserts the known conclusion: trial 1472's keep with `2.025` and
-`ingest_triviality_guard` in the assembled prompt, and an assembled frontier section. The T1 count is
+degrade). With the URL set, B asserts the known conclusions above (until 2026-11-07: trial 1472's keep with
+`2.025` and `ingest_triviality_guard`), and an assembled frontier section. The T1 count is
 recorded; an empty frontier is the intended post-rebase state and is not a failure. PASS exits 0,
 a missing conclusion exits 1, a dead embedder, assembly error or changed protected state is UNKNOWN
 (exit 2). Without the URL, B is unchanged (UNKNOWN, hash-only).
