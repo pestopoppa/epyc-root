@@ -173,13 +173,14 @@ Phase 1 (operator-approved, 2026-08-23): `/mnt/raid0/llm/tmp/` 285G → 2.9G via
   2026-09-15 PARTIAL: the 7 files + 5 husks deleted (~4.3 G), each ledgered in orchestrator `model_registry.yaml`
   `deprecated_models` (branch `sub/nib2-65-ledger` `8e1bd269`). HELD: `Qwen3-4B-Thinking-2507-GGUF`, because the rationale above is
   wrong — `gpu-cot-scaffold-sidecar.md` (active) uses it as a control-arm generator. Operator call.
-- [ ] **NIB2-66** (LOW): **stale kernel trees ~18G** — `llama.cpp-experimental-preserved-20260724T135832Z`
+- [x] **NIB2-66** (LOW): **stale kernel trees ~18G** — `llama.cpp-experimental-preserved-20260724T135832Z`
   (14G, superseded), `llama.cpp-v6-iqk` (1.9G, iqk shipped in v9), `llama.cpp-v7-sanitize-audit`
   (1.6G), `llama.cpp-k28-prototype-20260720` (0.9G). Keep `llama.cpp-dflash2-qwen38-20260820`
   (active handoff `dflash2-block-drafter-experimental-build.md`).
   2026-09-15 PARTIAL: `llama.cpp-v6-iqk` and `llama.cpp-v7-sanitize-audit` removed (clean, fully pushed, `git worktree remove`).
   HELD: `llama.cpp-k28-prototype-20260720` (dirty: uncommitted GDN `.cu` edit + doc — commit/push or discard first);
   `llama.cpp-experimental-preserved-*` (dirty worktree of the production clone, operator-owned).
+  2026-11-07 DONE (operator-approved): `llama.cpp-experimental-preserved-20260724T135832Z` salvaged (tracked.diff of 11 dirty files + HEAD.txt under `/mnt/raid0/llm/salvage/worktrees-20261107/llama.cpp-experimental-preserved/`, 0 untracked files, HEAD 8bb53c520 already on fork; `llama-tts-qwen3` sha256 97ba7e14… at `/mnt/raid0/llm/salvage/llama-tts-qwen3-20260423/`), trashed via guarded_rm, `git worktree remove` run. k28 tree already gone. [no-belief: not-a-result]
 - **[declined: ws58 2026-11-03 content-review: no action by its own text (in active use, re-downloadable)]** **NIB2-67** (LOW): **`cache/huggingface` 127G** — re-downloadable HF cache, all files touched
   <30d ago (in active use by sessions). Reclaim only when disk pressure returns; `pip`/`uv`/`dflash`
   caches also live under `cache/`.
