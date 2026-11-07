@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 14,
       "oldest_advance": "2026-11-03",
-      "open": 672
+      "open": 671
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 518
+      "open": 522
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 106,
+      "closed": 107,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 65,
+      "open": 64,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -58,7 +58,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 39,
+          "closed": 40,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -68,7 +68,7 @@
           "line": 11,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 13
+          "open": 12
         },
         {
           "blocked": 1,
@@ -579,10 +579,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 346,
+      "closed": 347,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 52,
+      "open": 56,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -591,7 +591,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 398,
+      "total": 403,
       "tracks": [
         {
           "blocked": 0,
@@ -605,20 +605,20 @@
         },
         {
           "blocked": 0,
-          "closed": 30,
+          "closed": 31,
           "gates": [],
           "guarded": 0,
           "line": 2441,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 21
+          "open": 25
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2570,
+          "line": 2580,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -628,7 +628,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3044,
+          "line": 3054,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -643,7 +643,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3489,
+          "line": 3499,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -659,7 +659,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5002,
+          "line": 5012,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -675,7 +675,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5662,
+          "line": 5672,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -691,7 +691,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5850,
+          "line": 5860,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -701,7 +701,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6406,
+          "line": 6416,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1431,7 +1431,7 @@
       "closed": 104,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 32,
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1440,7 +1440,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 137,
+      "total": 138,
       "tracks": [
         {
           "blocked": 0,
@@ -1492,7 +1492,7 @@
           "line": 1758,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 9
+          "open": 10
         }
       ]
     },
@@ -1563,7 +1563,7 @@
       "closed": 10,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 2,
+      "open": 1,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1572,7 +1572,7 @@
       },
       "row_id": "INF-33",
       "state": "active",
-      "total": 12,
+      "total": 11,
       "tracks": [
         {
           "blocked": 0,
@@ -1594,7 +1594,7 @@
           "line": 589,
           "markers": 1,
           "name": "engram-conditional-memory",
-          "open": 1
+          "open": 0
         }
       ]
     },
@@ -2717,7 +2717,7 @@
       "id": "INF-33",
       "index": "inference-research-index.md",
       "line": 24,
-      "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
+      "next_action": "B1: MI210 #27442 boundary sweep on C7r + C8-GDN (row b1-27442-mi210-sweep-20261107), then close the handoff",
       "track": "log linear gated deltanet readiness"
     },
     "INF-45": {

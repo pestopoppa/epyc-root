@@ -472,7 +472,7 @@
       "from": "INF-82",
       "kind": "ref",
       "to": "EVL-47",
-      "weight": 7
+      "weight": 9
     },
     {
       "from": "INF-82",
@@ -619,6 +619,12 @@
       "weight": 4
     },
     {
+      "from": "RTG-34",
+      "kind": "ref",
+      "to": "INF-06",
+      "weight": 2
+    },
+    {
       "from": "RTG-58",
       "kind": "ref",
       "to": "EVL-02",
@@ -697,7 +703,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T18:18:55Z",
+  "generated_at": "2026-11-07T18:29:16Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1618,16 +1624,18 @@
     {
       "age_days": 0,
       "blocked": 0,
-      "blocked_by": [],
+      "blocked_by": [
+        "INF-48"
+      ],
       "closed": 10,
-      "dispatchable": 2,
+      "dispatchable": 1,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "model-architecture-readiness.md",
       "id": "INF-33",
       "last_advanced": "2026-11-07",
-      "next_action": "Wire hattention_recurrent() into HGatedDeltaNetAttention.forward and confirm it reproduces chunk-path logits on CPU",
-      "open": 2,
+      "next_action": "B1: MI210 #27442 boundary sweep on C7r + C8-GDN (row b1-27442-mi210-sweep-20261107), then close the handoff",
+      "open": 1,
       "priority": 0.5896,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G16b \u2014 diagnostic arm if a dispatch-proven G16 fails 1e-7. Rerun the failing shapes on a t",
@@ -1641,7 +1649,7 @@
         "unblocks_rows": []
       },
       "priority_rank": 21,
-      "readiness": "ready",
+      "readiness": "blocked",
       "state": "active",
       "track": "log linear gated deltanet readiness",
       "tracks": [
@@ -1660,12 +1668,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 589,
           "name": "engram-conditional-memory",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
@@ -1997,14 +2005,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 104,
-      "dispatchable": 32,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-07",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 33,
+      "open": 34,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -2064,11 +2072,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 10,
           "gates": [],
           "line": 1758,
           "name": "triattention-kv-selection",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         }
       ]
@@ -2456,16 +2464,16 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 106,
-      "dispatchable": 65,
+      "closed": 107,
+      "dispatchable": 64,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
       "next_action": "Work the triage owner lines (42 adopt, 4 C7r re-files); re-file P0d-W3-HALFB-C6 after the job.py:46 fix; then AKX-P0a census",
-      "open": 66,
-      "priority": 0.0021,
+      "open": 65,
+      "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2482,7 +2490,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 13,
+          "dispatchable": 12,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2490,7 +2498,7 @@
           ],
           "line": 11,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 13,
+          "open": 12,
           "readiness": "blocked"
         },
         {
@@ -2533,7 +2541,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion",
       "open": 10,
-      "priority": 0.0021,
+      "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2559,7 +2567,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
       "open": 6,
-      "priority": 0.0021,
+      "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -3316,15 +3324,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 346,
-      "dispatchable": 52,
+      "closed": 347,
+      "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-07",
       "next_action": "Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next",
-      "open": 52,
+      "open": 56,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3358,18 +3366,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 21,
+          "dispatchable": 25,
           "gates": [],
           "line": 2441,
           "name": "churn-pipeline",
-          "open": 21,
+          "open": 25,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2570,
+          "line": 2580,
           "name": "dashboard-architecture-restructure",
           "open": 6,
           "readiness": "ready"
@@ -3378,7 +3386,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3044,
+          "line": 3054,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3396,7 +3404,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3489,
+          "line": 3499,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3416,7 +3424,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5002,
+          "line": 5012,
           "name": "loop-owned-fleet-implementation",
           "open": 2,
           "readiness": "blocked"
@@ -3436,7 +3444,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5662,
+          "line": 5672,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3456,7 +3464,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5850,
+          "line": 5860,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
@@ -3465,7 +3473,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6406,
+          "line": 6416,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -4026,9 +4034,9 @@
     }
   },
   "readiness_counts": {
-    "blocked": 4,
+    "blocked": 5,
     "no_open": 0,
-    "ready": 27
+    "ready": 26
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",
