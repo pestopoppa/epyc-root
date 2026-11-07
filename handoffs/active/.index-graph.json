@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T12:56:42Z",
+  "generated_at": "2026-11-07T12:58:15Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2980,7 +2980,7 @@
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-05",
-      "next_action": "Amend CF-AB-1 A6 to the 7+7 handoff fields with an events co-metric; render validation evidence in /log (CTX-HO-1/3)",
+      "next_action": "CF-L5 \u2014 Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune",
       "open": 49,
       "priority": 0.5087,
       "priority_basis": {
@@ -3093,7 +3093,7 @@
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-03",
-      "next_action": "Run RTG-EP-1 gfx90a EP probe; then RTG-VAR-1 host manifest and RTG-VAR-2 variant dimension",
+      "next_action": "Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (2026-09-29); then unfreeze DAR-LAT, DAR-SPLIT-1 first",
       "open": 66,
       "priority": 0.1445,
       "priority_basis": {
@@ -3313,18 +3313,18 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 342,
-      "dispatchable": 55,
+      "closed": 341,
+      "dispatchable": 56,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-07",
-      "next_action": "Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next",
-      "open": 55,
+      "last_advanced": "2026-11-06",
+      "next_action": "ROWFLOW-KILLBYNAME \u2014 make dry-run/smoke cleanup kill only its own pid/pgid, never by argv/row id; add a bystander-survives test",
+      "open": 56,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3463,11 +3463,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": null,
           "line": 6406,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         }
       ]
@@ -3674,7 +3674,7 @@
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-05",
-      "next_action": "Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel",
+      "next_action": "Resolve HS-OD-4 token contract; prepare P6 shared tools and HS-19d.P0 source audits",
       "open": 105,
       "priority": 0.9364,
       "priority_basis": {

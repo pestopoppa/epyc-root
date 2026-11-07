@@ -21,3 +21,27 @@ every other row's writes (ENOSPC), so disk is admitted the same way RAM is.
 
 Origin: raid0 reached 100 % on 10-27 (98 GB of unswept trash plus about 45 GB of HSF raw rocprof
 output), and an ORCH run died with ENOSPC.
+
+## Automatic lifecycle (operator 2026-11-07: "we can't have so much disk leak")
+
+Nothing on this list needs a manual triage pass; every step is zero-token and runs from the disk
+janitor loop or at filing:
+
+| Bytes class | Reclaimed by | When |
+|---|---|---|
+| Row raw/intermediates | `file_result.py` → `reclaim_row.py --apply` (declared `raw` globs or `raw_globs=` in notes; `raw_days` retention, default 0) | at filing |
+| Row scratch not declared raw | keeper `--reap-now` (keep set + INPUT RULE, 1-day hold) | every 30 min |
+| Row-owned worktrees (`<scratch_root>/worktrees/<name>`, made by `row_worktree.py add`) | `reclaim_row.py` → `worktree_salvage.retire` | at filing |
+| Agent worktrees (`worktrees/*`, `.worktrees/*`) | `worktree_reaper.py --apply`: clean+landed idle ≥ 3 d removed; dirty/unlanded idle ≥ 7 d salvaged (bundle + `salvage/` branch), trashed, deregistered | daily |
+| Kernel builds (`kernels/builds/*`) | `kernel_store_gc.py --apply` (unreferenced, not production/champion/C7r lineage, idle ≥ 7 d) | daily |
+| KEEP markers under tmp/ | `scratch_lease.py backfill --apply --ttl-days 14` (marker expires with its lease) | daily |
+| Root-owned / mode-555 residue | `owner_check.py --fix-modes` flags it (`sudo chown` line) ; row end `chmod -R u+rwX` (keeper patch) | daily / at row end |
+| Trash (`.trash`, `.trash-reap`) | `trash-sweep.sh --older-than 1` | hourly |
+| Per-row growth vs `budget_gib` | `row_disk_budget.py --alert` (alert `disk-budget` in rowflow-alerts.jsonl) | every 30 min |
+| `~/.codex` rollouts | `codex_retention_reaper.py report --json` — REPORT ONLY (operator hard rule 2026-10-04) | daily |
+
+Declare, never infer: a row says what is disposable (`raw`), what it keeps (`keep`), how much it
+will write (`budget_gib`) and where (`scratch_root`). `template_lint.py` WARNs at publish when
+`budget_gib` or the raw declaration is missing; `file_result.py` refuses to file a row with no
+`scratch_root`. A KEEP marker at ANY depth keeps its entry (`scratch_cleanup.py`, negative
+control in `tests/test_scratch_cleanup.py`).

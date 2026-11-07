@@ -590,3 +590,60 @@ def test_sweep_cli_dry_run(sw, capsys):
     rc = sc.main(["sweep", "--base", str(sw["base"]), "--flags", str(sw["flags"]), "--dry-run", "--no-fetch"])
     out = capsys.readouterr().out
     assert rc == 0 and "SCRATCH-REAP-DRYRUN" in out and "cli-old" in out and (sw["base"] / "cli-old").exists()
+
+
+# --------------------------------------------------------------------------- deep KEEP (operator 2026-11-07)
+@pytest.mark.parametrize("marker", ["KEEP", ".epyc-keep", "LOAD-BEARING", ".epyc-load-bearing"])
+def test_keep_marker_at_any_depth_keeps_the_entry_plan_and_apply(env, monkeypatch, marker):
+    """Negative control: a KEEP marker two levels below a top-level scratch entry keeps that entry;
+    the unmarked sibling is still trashed; nothing under the marked entry is touched."""
+    root = env["scratch"]
+    deep = root / "x" / "y" / "z"
+    deep.mkdir(parents=True)
+    (deep / marker).write_text("why: deep marker")
+    (root / "x" / "payload.bin").write_text("payload")
+    (root / "plain.txt").write_text("plain")
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+    d = sc.Decl(dirs=[str(root)])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert verdicts(entries) == {"x": "KEEP-MARKED", "plain.txt": "REMOVE"}
+    assert next(e for e in entries if e.path.endswith("/x")).reason == str(deep / marker)
+    sc.apply_plan(entries, d, guarded_rm=env["rm"], fetch=False)
+    assert (deep / marker).read_text() == "why: deep marker"
+    assert (root / "x" / "payload.bin").read_text() == "payload"
+    assert not (root / "plain.txt").exists() and (env["trash"] / "plain.txt").exists()
+
+
+def test_deep_sidecar_marker_keeps_the_entry(env, monkeypatch):
+    root = env["scratch"]
+    (root / "x" / "y").mkdir(parents=True)
+    (root / "x" / "y" / "custody.bin").write_text("bytes")
+    (root / "x" / "y" / "custody.bin.epyc-keep").write_text("why: custody")
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+    entries = sc.build_plan(sc.Decl(dirs=[str(root)]), repos=[str(env["repo"])], probe=wg.Probe())
+    assert verdicts(entries) == {"x": "KEEP-MARKED"}
+
+
+def test_marker_written_between_plan_and_apply_keeps_the_entry(env, monkeypatch):
+    root = env["scratch"]
+    (root / "x" / "y").mkdir(parents=True)
+    (root / "x" / "y" / "f").write_text("f")
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+    d = sc.Decl(dirs=[str(root)])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert verdicts(entries) == {"x": "REMOVE"}
+    (root / "x" / "y" / "KEEP").write_text("late")
+    sc.apply_plan(entries, d, guarded_rm=env["rm"], fetch=False)
+    assert verdicts(entries) == {"x": "KEEP-MARKED"}
+    assert (root / "x" / "y" / "f").exists() and not (env["trash"] / "x").exists()
+
+
+def test_deep_marker_walk_cap_fails_closed(env, monkeypatch):
+    root = env["scratch"]
+    (root / "x" / "y").mkdir(parents=True)
+    for i in range(5):
+        (root / "x" / "y" / f"f{i}").write_text("f")
+    monkeypatch.setattr(sc, "DEEP_MARKER_WALK_CAP", 2)
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+    entries = sc.build_plan(sc.Decl(dirs=[str(root)]), repos=[str(env["repo"])], probe=wg.Probe())
+    assert verdicts(entries) == {"x": "KEEP-UNVERIFIABLE"}

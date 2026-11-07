@@ -152,6 +152,34 @@ def _keep_marker(path: str) -> str | None:
     return side if os.path.exists(side) and scratch_lease.marker_blocks(path) else None
 
 
+DEEP_MARKER_WALK_CAP = 200_000
+
+
+def _deep_marker(path: str) -> str | None:
+    """A KEEP marker at ANY depth inside a plain dir keeps the whole dir (operator 2026-11-07:
+    "a KEEP at any level is never removed"). Returns the marker path, or the string
+    "WALK-CAP" when the walk hit its cap (fail closed: the caller keeps the dir), else None.
+    Top-level markers are handled by _keep_marker (lease-aware); a deeper marker is lease-aware
+    for the directory that holds it."""
+    if not os.path.isdir(path) or os.path.islink(path):
+        return None
+    seen = 0
+    for dirpath, dirnames, filenames in os.walk(path):
+        dirnames[:] = [d for d in dirnames if not os.path.islink(os.path.join(dirpath, d))]
+        for name in list(dirnames) + filenames:
+            seen += 1
+            if seen > DEEP_MARKER_WALK_CAP:
+                return "WALK-CAP"
+            if name in wg.KEEP_MARKERS:
+                if scratch_lease.marker_blocks(dirpath):
+                    return os.path.join(dirpath, name)
+            elif name.endswith(".epyc-keep") and name != ".epyc-keep":
+                target = os.path.join(dirpath, name[:-len(".epyc-keep")])
+                if os.path.exists(target) and scratch_lease.marker_blocks(target):
+                    return os.path.join(dirpath, name)
+    return None
+
+
 def _evidence(path: str) -> tuple[list[str], bool]:
     if not os.path.isdir(path) or os.path.islink(path):
         return ([path] if wg.EVIDENCE_RE.search(os.path.basename(path)) else []), True
@@ -286,10 +314,12 @@ def build_plan(decl: Decl, *, repos: list[str] | None = None, probe: wg.Probe | 
                 entries.append(e)
                 continue
         nested = [w for w in wts if w.startswith(real + "/")]
-        marker = _keep_marker(p)
+        marker = _keep_marker(p) or _deep_marker(p)
         busy = outside_probe.busy(p)
         ref = outside_probe.referenced(p)
-        if marker:
+        if marker == "WALK-CAP":
+            e.verdict, e.reason = "KEEP-UNVERIFIABLE", "marker walk hit its cap"
+        elif marker:
             e.verdict, e.reason = "KEEP-MARKED", marker
         elif busy:
             e.verdict, e.reason = "KEEP-BUSY", busy
@@ -379,6 +409,10 @@ def apply_plan(entries: list[Entry], decl: Decl, *, base: str = wg.DEFAULT_BASE,
         busy = probe.busy(e.path)
         if busy:
             e.verdict, e.reason, e.result = "KEEP-BUSY", busy, "kept (busy at apply time)"
+            continue
+        marker = _keep_marker(e.path) or _deep_marker(e.path)   # a marker written since the plan
+        if marker:
+            e.verdict, e.reason, e.result = "KEEP-MARKED", marker, "kept (marker present at apply time)"
             continue
         if not guarded_rm.exists():
             e.result = f"REFUSED: {guarded_rm} missing (trash-first rule; never rm -rf scratch)"

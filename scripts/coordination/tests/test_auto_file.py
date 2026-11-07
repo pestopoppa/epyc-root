@@ -22,15 +22,17 @@ class AutoFile(unittest.TestCase):
         for sub in ("ready", "grants", "filing-done"):
             os.makedirs(os.path.join(self.flags, sub))
         os.makedirs(os.path.join(self.bus, "heartbeats"))
+        os.environ["RECLAIM_TMP_ROOT"] = self.d   # inherited by the file_result.py subprocess
 
     def tearDown(self):
+        os.environ.pop("RECLAIM_TMP_ROOT", None)
         shutil.rmtree(self.d, ignore_errors=True)
 
     def row(self, rid, rule, owner="dead-owner", rc=0, result=None, age_s=3600):
         res = os.path.join(self.d, rid + ".json")
         json.dump(result if result is not None else {"tps": 12.0}, open(res, "w"))
         json.dump({"schema": "epyc.row.v3", "id": rid, "owner": owner, "decision_rule": rule, "result_path": res,
-                   "result_format": "json"}, open(os.path.join(self.flags, "ready", rid + ".json"), "w"))
+                   "result_format": "json", "scratch_root": os.path.join(self.d, "scratch", rid)}, open(os.path.join(self.flags, "ready", rid + ".json"), "w"))
         ended = os.path.join(self.flags, "grants", rid + ".ended")
         open(ended, "w").write(f"rc={rc} time=2026-11-05T00:00:00Z reason=complete\n")
         t = time.time() - age_s
