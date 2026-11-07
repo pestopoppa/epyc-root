@@ -216,7 +216,7 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 
 The new CPU Qwen3.6-35B-A3B leg reached 323K with 5/5 retrieval; native and YaRN ×2 matched at 133K and 253K. At matched depth, YaRN's decode cost was at most 4%, while decode fell with depth in both arms and 8K append cost grew to about 600 seconds around 351K. DCA beat raw extrapolation in one-window 64K PPL runs, but DCA-vs-YaRN remains suggestive only and the CPU/GPU offset is unresolved.
 
-Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [AutoKernel all-devices/all-dimensions](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
+Sources: [YaRN context-extension research](../handoffs/active/long-context-program.md#track-yarn-context-extension-research), [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions), [GPU serving tie-in program](../handoffs/completed/mi210-serving-program.md), [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout).
 
 ### Supplemental changed-source coverage — Oct 3–6
 

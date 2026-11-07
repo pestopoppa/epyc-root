@@ -4071,7 +4071,7 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
   (`build_top_k_mask`), and `ggml_concat(raw_k, comp_k)` copies the full compressed plane every layer, every step
   (~29 KiB per context token per step; arithmetic, not measured). Recorded as INF-77 DS41-C123 in
   [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md); AutoKernel's route onto that graph path is
-  INF-81 AKX-ALL-12 in [`autokernel-all-devices-all-dimensions.md`](kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions). The
+  INF-81 AKX-ALL-12 in [`autokernel-all-devices-all-dimensions.md`](autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions). The
   generic sparse-gather kernel stays here (D2.4/D2.5).
   - **2026-07-19 note — D2 is also the LONG-CONTEXT GLM-quality enabler.** GLM-5.2 emits malformed output past ~12K prompt tokens (32K needle FAILS) because the `indexer_top_k` cap doesn't scale with context; only hand-tuned next-power-of-two caps stay coherent (`2048`≤2K, `4096`≤3K, `16384`≤12K). Finishing D2 (a real sparse/indexed final-attention path with a correct, length-scaling top-k) is the **durable fix** for >12K GLM coherence. **But it is ORTHOGONAL to GLM's reviewer/judge quality** — those prompts fit ≤12K and are being tested NOW on external ground-truth benchmarks (see [`glm52-reviewer-capability-gates.md`](reviewer-control-plane.md#track-glm52-reviewer-capability-gates) 2026-07-19 directive). Do not gate the reviewer-quality verdict on D2.
 

@@ -2868,7 +2868,7 @@ production-shape measurement (Q38-T7) is still owed.
 - [Stack-change governance pipeline](../handoffs/active/stack-lifecycle-program.md) — STACKCHG-DFLASH2, DRAFT-SEL-1, DRAFT-SEL-2, SCG-RULING-TO-FIELD.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-dflash2-ruling-never-compiled, INC-20261003-urgent-fix-slowed-by-bundling.
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the fast path, the bring-up and the VRAM sampler.
-- [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — CH-17 and V6R-4d.2.
+- [AutoKernel champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — V6R-4d.2; CH-17 moved 2026-11-07 to [v11-promotion-checklist.md](../handoffs/active/v11-promotion-checklist.md).
 - [Speculative decoding MTP refresh](../handoffs/active/speculative-decoding.md#track-speculative-decoding-mtp-refresh) — SW-9 on GPU; SR-5 is next.
 - [KV unified stack rollout](../handoffs/active/kv-cache-program.md#track-kv-unified-stack-rollout) — KVU-1b / M-3b superseded; the n-max 7 saving rides KVU-16.
 
@@ -2919,9 +2919,9 @@ The 2026-10-20 intake (records `intake-2037#record`, `intake-2039#record`, `inta
 
 ### Source References (2026-10-20 verify numerics)
 
-- [AutoKernel all-devices handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — AKX-ALL-26/27 and the claim-hygiene rule.
+- [AutoKernel all-devices handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — AKX-ALL-26/27 and the claim-hygiene rule.
 - [DFlash2 experimental build handoff](../handoffs/active/speculative-decoding.md#track-dflash2-block-drafter-experimental-build) — DF2-17/18 and the M6 exactness monitor.
-- [AutoKernel cross-workload keep gate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate) — refuse-mode width-invariance keep gating (monitor).
+- [AutoKernel cross-workload keep gate](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate) — refuse-mode width-invariance keep gating (monitor).
 - [2026-10-20 progress note](../progress/2026-10/2026-10-20.md) — batch scope and second-reader corrections.
 
 ## Compiled Update — 2026-10-20 (second pass): two open tasks on the DFlash2 serving contract

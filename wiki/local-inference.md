@@ -52,7 +52,7 @@ Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.
 
 ### Source References (2026-10-22 wrap-up sweep 10)
 
-- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — floor-registry tests, AKX-AUTO-6/11 exercise criteria, Q38FN longctx unregistered floor
+- [handoffs/active/kernel-champion-and-promotion.md](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — floor-registry tests, AKX-AUTO-6/11 exercise criteria, Q38FN longctx unregistered floor
 - [handoffs/active/autokernel-loop.md](../handoffs/active/autokernel-loop.md#track-autokernel-rebuild-program) — real-server shakedown result
 - [progress/2026-10/2026-10-22-workspace-f8.md](../progress/2026-10/2026-10-22-workspace-f8.md) — master-registry floor decision, DS41 floor sensitivity
 - [progress/2026-10/2026-10-22-workspace-58.md](../progress/2026-10/2026-10-22-workspace-58.md) — cancelled post-CAS floor, grant context
@@ -105,8 +105,8 @@ Sources: [non-inference-backlog](../handoffs/active/engineering-hygiene-backlog.
 
 - [Progress 2026-10-20](../progress/2026-10/2026-10-20.md) — thread/depth sweep, reclaim, EG2 parity, speech threads, manifests.
 - [Progress 2026-10-20 workspace-f8](../progress/2026-10/2026-10-20-workspace-f8.md) — champion fold and lane state.
-- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold ledger, builds, CH-18.
-- [All-devices program](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-all-devices-all-dimensions) — GPU queue results.
+- [Champion aggregate](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) — fold ledger, builds; CH-18 is now in [v11-promotion-checklist.md](../handoffs/active/v11-promotion-checklist.md).
+- [All-devices program](../handoffs/active/autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) — GPU queue results.
 - [Qwen3.8-27B handoff](../handoffs/completed/mi210-serving-program.md#track-qwen38-27b-replace-qwen36) — throughput ratios used for serving.
 - [EG2 adoption package](../docs/design/eg2-embedder-adoption-stack-change-package.md) — launch recipe and gates.
 

@@ -37,7 +37,7 @@
    "track": "attention-matching-kv-compaction"
   },
   "autokernel-all-devices-all-dimensions.md": {
-   "target": "kernel-champion-and-promotion.md",
+   "target": "autokernel-akx-program.md",
    "track": "autokernel-all-devices-all-dimensions"
   },
   "autokernel-champion-aggregate.md": {
@@ -49,7 +49,7 @@
    "track": "autokernel-concurrent-target-coordination"
   },
   "autokernel-cross-workload-keep-gate.md": {
-   "target": "kernel-champion-and-promotion.md",
+   "target": "autokernel-akx-program.md",
    "track": "autokernel-cross-workload-keep-gate"
   },
   "autokernel-orchestrator-actor-backend.md": {

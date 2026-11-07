@@ -372,6 +372,7 @@ step, nothing is measured beyond its 4096 training length, and it was withdrawn 
       any backend but Metal**. Our shared hybrid/recurrent code is byte-identical to the reproducing
       build. Exposure is a live *unknown*, not a confirmed risk — and no greedy trial exists anywhere.
 - [ ] **B1 (G) — repeat the #27442 boundary sweep on the MI210 HIP path.** G1 (CPU) closed 2026-08-27 NOT REPRODUCIBLE, so the comparison baseline exists. Same design as G1: greedy temp 0 seed 27442, cache_prompt=false, np 1, no speculation, two prompt classes, 5 lengths 15.4k-24k, first-sampled-token id per trial, on the current :8083 GPU build and the 27B Q8 + DFlash2 off. Decision: 10/10 trials engage the instruction -> close (#27442 does not reproduce on our HIP path either); any degenerate-EOS trial -> file a kernel defect against the HIP GDN kernel. One GPU window, <= 1 h.
+  - *(2026-11-07, main-inf22, operator decision B: adopted as the C8 fold ledger owner; not ticked)* Owner: **main-inf22**. Triage: needs measurement: an MI210 HIP #27442 boundary sweep, about 1 GPU-hour, which rides a main-inf22 MI210 window. [no-belief: ownership/triage note]
 - **[declined: ws58 2026-11-03 content-review: curiosity with no path to a stack decision — by its own argument the production hybrid's 10 full-attention layers already supply the recall HOLA's cache restores, so a pure-GDN retrofit gain is only an upper bound; it also requires training on third-party 340M/360M checkpoints]** **G5 (G, blocked on G6 in `rocm-verify-profile-backend.md`) — HOLA frozen-backbone retrofit.**
       Run it as a *within-checkpoint delta*: measure ppl with `use_gdn_swa` false, freeze, fit the
       12,480 trainable scalars, measure again. **Needs neither a corpus nor a layer-count match to
@@ -974,8 +975,11 @@ _Via `/research-intake` Stage-4 (intake-888 CORE, intake-930 ReasoningBank, inta
 - [x] Track A LongCat CPU probe closed NEGATIVE (Phases 0-6 complete, deep-dive + intake-504 recorded) ✅
 - [x] Track B Phase 0a non-inference prep (vendored module, zero-init, identity test, splicing helper) ✅
 - [ ] Track B Phase 0b: rent/allocate GPU (or MI210 smoke) and run frozen-vs-cotrained proxy on SmolLM-1.7B (~$50-150) (re-scoped 2026-11-03 from downstream Qwen3.6 surgery target superseded by Qwen3.8-27B (Qwen3.6-27B deleted); SmolLM-1.7B proxy not on disk)
+  - *(2026-11-07, main-inf22, operator decision A: routed, not adopted, not declined)* Routed to the operator decision queue (OP-TRACKB-0B): it needs paid GPU training, and the SmolLM-1.7B proxy is not on disk. Not declined (operator ruling A). [no-belief: ownership/triage note]
 - [ ] Track B Phase 0b: build canonicalizer, train both configs on 5-20B tokens, compute >=30% recovery-ratio gate
+  - *(2026-11-07, main-inf22, operator decision A: routed, not adopted, not declined)* Routed with the box above (OP-TRACKB-0B). [no-belief: ownership/triage note]
 - [ ] If gate B0 passes: file engram-retrofit-qwen36-spike.md and proceed to Phase 1-4 Qwen3.8-27B surgery (re-scoped 2026-11-03 from Qwen3.6-27B surgery target: deleted; now Qwen3.8-27B)
+  - *(2026-11-07, main-inf22, operator decision A: routed, not adopted, not declined)* Conditional on gate B0; routed with Track B Phase 0b (OP-TRACKB-0B). [no-belief: ownership/triage note]
 
 #### 2026-08-03 — intake Stage-2/2b: the memory cluster, and where its value actually is
 

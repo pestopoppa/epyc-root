@@ -48,7 +48,7 @@ Verified research-intake findings (dive-verified entries not previously compiled
 
 - RT-10 DS41 trace and RT-6/RT-7 analysis were **prepared with model-free verification only**: frozen C5 tool build `c72ec82f5` completed, two native CTests and selftest passed, and trace/analysis manifests are sealed in a private packet. No trace was collected and no locality claim follows. [handoff](../handoffs/active/cpu-decode-roofline-program.md#track-moe-routing-tap-and-locality-measurement)
 - The iqk handoff records a prepared (not executed) one-repetition synthetic Q38FN decode profile comparison (C-L3-Q38FN-PROFILE-PREP); it does not reproduce the historical teacher-forced slowdown. [handoff](../handoffs/active/quantization-and-low-bit.md#track-iqk-iquant-enablement)
-- INF-75 W5s census of `architect_general` counted target-only geometry (graphs 3/49/17; 1,224 primary tensors; MTP head excluded); acceptance withheld. [handoff](../handoffs/active/kernel-champion-and-promotion.md#track-autokernel-cross-workload-keep-gate)
+- INF-75 W5s census of `architect_general` counted target-only geometry (graphs 3/49/17; 1,224 primary tensors; MTP head excluded); acceptance withheld. [handoff](../handoffs/active/autokernel-akx-program.md#track-autokernel-cross-workload-keep-gate)
 
 ## Compiled Update — 2026-10-24 (wrap-up sweep 21, 3c4ca599 delta): the routing-tap schema ticks on its FILE ONLY criterion
 
