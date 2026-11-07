@@ -318,10 +318,11 @@ kill_job() { # TERM the whole run, wait up to the grace, KILL, verify by ps; ret
   local grace=${1:-20} i pids
   pids=$(job_pids)
   [ -n "$pids" ] || { rm -f "$INNERPG"; return 0; }
+  kill -CONT $pids 2>/dev/null   # disk-pause (2026-11-07): a SIGSTOPped group never handles TERM
   kill -TERM $pids 2>/dev/null
   for i in $(seq "$grace"); do
     pids=$(job_pids); [ -n "$pids" ] || { log "run ended after TERM"; rm -f "$INNERPG"; return 0; }
-    kill -TERM $pids 2>/dev/null; sleep 1 7>&- 8>&-
+    kill -CONT $pids 2>/dev/null; kill -TERM $pids 2>/dev/null; sleep 1 7>&- 8>&-
   done
   kill -KILL $pids 2>/dev/null; sleep 1
   pids=$(job_pids); [ -n "$pids" ] || { log "run killed"; rm -f "$INNERPG"; return 0; }
@@ -443,6 +444,12 @@ run_one() {
   now=$(date -u +%s)
   if [ "$now" -ge "$e" ]; then write_ended 3 "grant-expired-unrun"; return; fi
   if [ "$now" -lt "$s" ]; then GRANT_WAIT=$(( s - now )); return 9; fi
+  # disk-pause (2026-11-07): no row STARTS while the host is paused for disk; the grant waits (logged once per pause)
+  if [ "${FILLER_SMOKE:-0}" != 1 ] && [ -e "$FLAGS/disk-pause/PAUSED" ]; then
+    [ "${_dp_wait:-0}" = 1 ] || { log "DISK-PAUSE: start deferred until free disk is back above the resume level"; _dp_wait=1; }
+    GRANT_WAIT=$POLL; return 9
+  fi
+  _dp_wait=0
   [ ! -e "$ENDED" ] || { log "REFUSED: .ended exists; use new id"; return 66; }
   if ! parse_regions "$regions"; then write_ended 2 "regions-unusable-for-$ID($CLASS):$regions"; return; fi
   if [ $(( e - now )) -lt "$MINWIN" ]; then write_ended 3 "window-$(( e - now ))s-below-min-$MINWIN"; return; fi
@@ -543,8 +550,20 @@ run_one() {
       reason=stopped; log "STOP seen mid-run ($STOPFILE): TERM job group(s), KILL after ${STOP_GRACE}s"
       kill_job "$STOP_GRACE" || reason=cleanup-failed; break; fi
     if [ "$(date -u +%s)" -ge "$e" ]; then reason=hard-end; kill_job || reason=cleanup-failed; break; fi
-    if [ "$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9)" -lt "${FILLER_DISK_FLOOR_GIB:-150}" ] 2>/dev/null; then
+    # operator 2026-11-07 "Pause with hysteresis": below the floor the row is PAUSED (SIGSTOP of its captured group by
+    # diskpause.py, resumed at FILLER_DISK_RESUME_GIB) - never killed. Only below the EMERGENCY floor is it killed.
+    # A smoke (FILLER_SMOKE=1, floor 20) keeps the single-threshold kill: it writes little and must not run the pause machine.
+    _free=$(df -BG --output=avail /mnt/raid0 2>/dev/null | tail -1 | tr -dc 0-9)
+    _floor=${FILLER_DISK_FLOOR_GIB:-150}; _emerg=${FILLER_DISK_EMERGENCY_GIB:-50}
+    if [ "${FILLER_SMOKE:-0}" = 1 ] || [ "$_emerg" -gt "$_floor" ] 2>/dev/null; then _emerg=$_floor; fi
+    if [ "$_free" -lt "$_emerg" ] 2>/dev/null; then
+      log "DISK-EMERGENCY free=${_free}GiB < emergency floor ${_emerg}GiB: killing the row"
       reason=disk-floor; kill_job || reason=cleanup-failed; break; fi
+    if [ "${FILLER_SMOKE:-0}" != 1 ] && [ $(( SECONDS - ${_dp_last:--999} )) -ge 15 ] \
+       && { [ -e "$FLAGS/disk-pause/PAUSED" ] || [ "$_free" -lt "$_floor" ] 2>/dev/null; }; then
+      _dp_last=$SECONDS
+      python3 -I "$HERE/diskpause.py" tick --flags "$FLAGS" 7>&- 8>&- 2>&1 | sed "s/^/$(ts) [$ID] /" || true
+    fi
     sleep 3 7>&- 8>&-
   done
   wait "$CUR" 2>/dev/null; rc=$?

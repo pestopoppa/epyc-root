@@ -56,8 +56,11 @@ PROC = os.environ.get("ROWFLOW2_PROC", "/proc")
 RAM_BOOKABLE_GIB = float(os.environ.get("ROWFLOW2_RAM_GIB", "1069"))     # rowflow QUARTER_RAM_GIB x 4, rounded
 DISK_PATH = os.environ.get("ROWFLOW2_DISK_PATH", "/mnt/raid0")
 DISK_FLOOR_GIB = float(os.environ.get("ROWFLOW2_DISK_FLOOR_GIB", "150"))  # == filler_run15 FILLER_DISK_FLOOR_GIB
+DISK_RESUME_GIB = float(os.environ.get("ROWFLOW2_DISK_RESUME_GIB", str(max(180.0, DISK_FLOOR_GIB + 30.0))))  # pause-with-hysteresis (operator 2026-11-07)
+DISK_EMERGENCY_GIB = min(float(os.environ.get("ROWFLOW2_DISK_EMERGENCY_GIB", "50")), DISK_FLOOR_GIB)       # the only hard-kill floor (the launcher's)
+HOLD_FILE = "HOLD-ADMISSIONS"
 GPU_BUSY_GLOB = os.environ.get("ROWFLOW2_GPU_BUSY_GLOB", "/sys/class/drm/card*/device/gpu_busy_percent")  # amdgpu utilisation
-CONFIG = ("FLAGS", "KFD_PROC", "PROC", "RAM_BOOKABLE_GIB", "DISK_PATH", "DISK_FLOOR_GIB", "GPU_BUSY_GLOB")
+CONFIG = ("FLAGS", "KFD_PROC", "PROC", "RAM_BOOKABLE_GIB", "DISK_PATH", "DISK_FLOOR_GIB", "DISK_RESUME_GIB", "DISK_EMERGENCY_GIB", "GPU_BUSY_GLOB")
 
 # ============================================================== host facts + vocabulary (not tunables)
 NCORES = 96
@@ -706,7 +709,32 @@ def gpu_quiet_step(n, foreign_kfd):
     return n, n >= IDLE_SAMPLES
 
 
-def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False, gpu_quiet=True, quiet_n=None):
+def disk_pause_step(paused, free_gib, floor=None, resume=None):
+    """Hysteresis (mirror of rowflow/diskpause.next_paused): < floor -> paused; >= resume -> running; between -> unchanged.
+    rowflow2 only GATES admissions on it; SIGSTOP/SIGCONT of running rows is the launcher's job (filler_run15 + diskpause)."""
+    floor = DISK_FLOOR_GIB if floor is None else floor
+    resume = DISK_RESUME_GIB if resume is None else resume
+    return True if free_gib < floor else (False if free_gib >= resume else bool(paused))
+
+
+def admission_hold(flags, paused_prev=False, free_gib=None, log=None, prev_reason=None):
+    """(reason|None, paused). Reason when HOLD-ADMISSIONS exists (owner/reason lines) or the disk is paused (hysteresis state
+    or the launcher's disk-pause/PAUSED marker). Logs ONLY when the reason changes (prev_reason carried by the caller)."""
+    reasons = []
+    hp = os.path.join(flags, HOLD_FILE)
+    if os.path.exists(hp):
+        kv = dict(ln.split("=", 1) for ln in _text(hp).splitlines() if "=" in ln)
+        reasons.append(f"HOLD-ADMISSIONS owner={kv.get('owner', '?').strip()} reason={kv.get('reason', '?').strip()}")
+    paused = disk_pause_step(paused_prev, free_gib) if free_gib is not None else bool(paused_prev)
+    if paused or os.path.exists(os.path.join(flags, "disk-pause", "PAUSED")):
+        reasons.append("DISK-PAUSE free disk under the floor")
+    why = "; ".join(reasons) or None
+    if log and why != prev_reason:
+        log(f"ADMISSIONS {'HELD: ' + why if why else 'resumed'}")
+    return why, paused
+
+
+def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_busy=False, gpu_quiet=True, quiet_n=None, hold=None):
     """Strict priority by rank (ties: publish time, id). Each row that fits the free tokens is granted. The FIRST row
     that does not fit holds the tokens it needs: a later (worse-ranked) row may take a held token only if its whole
     window ends by the held row's ETA (plain backfilling: no budget, no counter, the top row's
@@ -719,6 +747,10 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
     NOW, so the best-ranked exclusive row is granted - never the one whose wait happened to start first, and never one
     that arrived mid-wait unless it is the best-ranked."""
     plan, seen = Plan(), set()
+    if hold:   # operator 2026-11-07: nothing NEW is granted; open grants are untouched
+        for s0 in pending:
+            plan.skipped[s0["id"]] = "admissions held: " + hold
+        return plan
     quiet_why = None if gpu_quiet else ("device not quiet: foreign KFD client" if not quiet_n else
                                         f"device quiet {quiet_n}/{IDLE_SAMPLES} samples")
     order = _order(pending) if RANK_AT_GRANT_TIME else sorted(pending, key=lambda s: s["id"])   # False = legacy control
@@ -1245,10 +1277,10 @@ def _text(path):
         return ""
 
 
-def disk_free_gib(path=DISK_PATH):
+def disk_free_gib(path=DISK_PATH, raw=False):
     try:
         s = os.statvfs(path)
-        return s.f_bavail * s.f_frsize / (1 << 30) - DISK_FLOOR_GIB
+        return s.f_bavail * s.f_frsize / (1 << 30) - (0 if raw else DISK_FLOOR_GIB)
     except OSError:
         return None
 
@@ -1562,8 +1594,11 @@ def tick(flags, now, meas, state, log, runner=None):
     pend, waiting = smoke_rank_gate(w.pending, w.smoke_queue)
     if waiting:
         log(f"WAIT-FOR-SMOKE: queued GPU smoke runs first; GPU row(s) {','.join(s['id'] for s in waiting[:5])} (worse rank) wait")
+    hold, state["disk_paused"] = admission_hold(flags, state.get("disk_paused", False), disk_free_gib(raw=True), log,
+                                                state.get("hold_reason"))
+    state["hold_reason"] = hold
     plan = admit(pend, grants, now, disk_free=None, smoke_busy=bool(w.smoke_running), gpu_quiet=gpu_quiet,
-                 quiet_n=state["gpu_quiet_n"])
+                 quiet_n=state["gpu_quiet_n"], hold=hold)
     plan.basis = grants
     for g in plan.grants:
         write_grant(flags, g)
@@ -1700,8 +1735,11 @@ def shadow_once(flags, log_path, now=None, seen=None, sha_cache=None, ctx=None):
         w.grants = list(byid.values())
         ctx["gpu_quiet_n"], ctx["gpu_quiet"] = gpu_quiet_step(int(ctx.get("gpu_quiet_n") or 0), meas.foreign_kfd)
     gq = ctx.get("gpu_quiet", True) if ctx is not None else True
+    sh_hold, paused_now = admission_hold(flags, (ctx or {}).get("disk_paused", False), disk_free_gib(raw=True))
+    if ctx is not None:
+        ctx["disk_paused"] = paused_now
     plan = admit(smoke_rank_gate(w.pending, w.smoke_queue)[0], w.grants, now, disk_free=disk_free_gib(), smoke_busy=False, gpu_quiet=gq,
-                 quiet_n=(ctx or {}).get("gpu_quiet_n"))
+                 quiet_n=(ctx or {}).get("gpu_quiet_n"), hold=sh_hold)
     for rid, why in sorted(w.unmapped.items()):
         if ("SHADOW-UNMAPPED", rid) not in seen:
             seen.add(("SHADOW-UNMAPPED", rid))

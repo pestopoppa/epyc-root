@@ -33,7 +33,7 @@ LOG="$FLAGS/ws58-calendar-keeper.log"
 CHECK_ONLY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
 FROZEN=(rowflow.py publish_row.py filler_run15.sh)
 FROZEN_AT=9218dffd131008117a5f341848dce572b4669486
-FILES=(rowflow.py publish_row.py notify.py hostutil.py grant_ok_launcher.py filler_run15.sh filler_lib.sh run_direct.py run_direct.sh)
+FILES=(rowflow.py publish_row.py notify.py diskpause.py hostutil.py grant_ok_launcher.py filler_run15.sh filler_lib.sh run_direct.py run_direct.sh)
 SCRATCH=${REPLAY_SCRATCH:-/mnt/raid0/llm/tmp/rowflow-replay}
 
 while [ $# -gt 0 ]; do

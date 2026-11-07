@@ -81,6 +81,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 if _HERE not in sys.path:   # the keeper runs `python3 -I`: isolated mode does not put the script's directory on sys.path
     sys.path.insert(0, _HERE)
 import hostutil  # noqa: E402  - measured CPU%/GPU% for every status surface (2026-11-03 session review item 2)
+import diskpause  # noqa: E402  - disk floor = pause with hysteresis + HOLD-ADMISSIONS (operator 2026-11-07)
 import notify  # noqa: E402  - push every terminal event / smoke FAIL / disk-floor crossing (incident 2026-11-04)
 
 SCHEMA = "epyc.row.v3"
@@ -3990,6 +3991,16 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             finish_withdrawals(flags, log)
         except Exception as e:  # noqa: BLE001 - never stops allocation
             log(f"WITHDRAW-FINISH failed: {type(e).__name__}: {e}")
+    admit_hold = None
+    if not dry:
+        try:   # operator 2026-11-07: disk pause state machine (SIGSTOP/SIGCONT of captured groups) then the admission gate
+            diskpause.tick(flags, log=log)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"DISK-PAUSE tick failed: {type(e).__name__}: {e}")
+    try:   # HOLD-ADMISSIONS file and/or disk pause: no NEW grant/admission; running rows and healing continue
+        admit_hold = diskpause.admission_gate(flags, log=log, persist=not dry, log_transition=log_transition)
+    except Exception as e:  # noqa: BLE001 - a gate fault must not stop allocation
+        log(f"ADMISSION-GATE failed: {type(e).__name__}: {e}")
     allrows = rows(flags)
     if not dry:
         try:   # keeper-hotfix 2026-11-05 (D9): dead / past-deadline dry runs release their holds this tick
@@ -4001,7 +4012,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     gids = {g["id"] for g in grants}
     busy, free, holders = host_snapshot(flags, grants, rl)
     gpu_open = any(GPU in g["holds"] for g in grants)
-    if GPU in free and not dry and start_gpu_batch(flags, log):
+    if GPU in free and not dry and not admit_hold and start_gpu_batch(flags, log):
         free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     counts = lane_counts(flags, allrows)
     cands = []
@@ -4020,6 +4031,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
                       "claim": k["claim"]})
+    if admit_hold:
+        cands = []   # operator 2026-11-07: nothing new is granted; the reason was logged once on its transition
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
     wait_lines = {}
     if qr is not None:
@@ -4049,7 +4062,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             for c in held_back:
                 log(f"WAIT {c['id']}: gpu-quiet EXCLUSIVE needs a quiet device: {gwhy}")
     wholeq = whole_quarter_reservation(cands, free, mem_available_gib())
-    place_smokes(flags, free, log, dry=dry, keep_whole=wholeq)
+    if not admit_hold:
+        place_smokes(flags, free, log, dry=dry, keep_whole=wholeq)
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}

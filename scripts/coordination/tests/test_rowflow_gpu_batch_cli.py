@@ -80,7 +80,7 @@ class GpuBatchCliTests(unittest.TestCase):
 
     def test_allocator_path_unchanged(self):
         src = open(os.path.join(os.path.dirname(_TESTS), "rowflow", "rowflow.py")).read()
-        self.assertIn("if GPU in free and not dry and start_gpu_batch(flags, log):", src)
+        self.assertIn("if GPU in free and not dry and not admit_hold and start_gpu_batch(flags, log):", src)
 
 
 if __name__ == "__main__":
