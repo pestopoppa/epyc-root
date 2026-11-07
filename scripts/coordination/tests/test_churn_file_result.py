@@ -21,6 +21,7 @@ for p in (str(_COORD), str(_COORD / "churn"), str(_COORD / "rowflow")):
         sys.path.insert(0, p)
 
 import file_result as fr  # noqa: E402
+import reclaim_row  # noqa: E402
 import publish_row as publisher  # noqa: E402
 
 HANDOFF = "# H\n\n- [ ] **ROW-1** tune the thing\n- [ ] **ROW-2** other\n"
@@ -35,8 +36,18 @@ class Base(unittest.TestCase):
             os.makedirs(os.path.join(self.flags, d))
         os.makedirs(os.path.join(self.lane, "handoffs/active"))
         Path(self.lane, "handoffs/active/h.md").write_text(HANDOFF)
+        # RECLAIM-AT-FILING: scratch roots live under a temp tmp root; reclaim is recorded, never run here
+        # tmp root = parent of the temp dir, so scratch_root = the temp dir (which holds the result files)
+        self.tmproot = os.path.dirname(os.path.realpath(self.tmp.name))
+        self._env = patch.dict(os.environ, {"RECLAIM_TMP_ROOT": self.tmproot})
+        self._env.start()
+        self.reclaims = []
+        self._rc = patch.object(reclaim_row, "main", lambda argv: self.reclaims.append(list(argv)) or 0)
+        self._rc.start()
 
     def tearDown(self):
+        self._rc.stop()
+        self._env.stop()
         self.tmp.cleanup()
 
     def row(self, rid, rule, result, fmt="json", rc=0, armed=False, end=".ended"):
@@ -47,7 +58,8 @@ class Base(unittest.TestCase):
             else:
                 Path(rp).write_text(json.dumps(result))
         man = {"schema": "epyc.row.v3", "id": rid, "owner": "t", "result_path": rp, "result_format": fmt,
-               "decision_rule": rule, "handoff_task": f"handoffs/active/h.md:{rid}"}
+               "decision_rule": rule, "handoff_task": f"handoffs/active/h.md:{rid}",
+               "scratch_root": os.path.realpath(self.tmp.name)}
         sub = "ready/armed" if armed else "ready"
         Path(self.flags, sub, rid + ".json").write_text(json.dumps(man))
         Path(self.flags, "grants", rid + end).write_text(f"rc={rc} time=2026-11-01T00:00:00Z reason=x\njob_id={rid}\n")
@@ -352,6 +364,63 @@ class TestFileResult(Base):
             with self.assertRaises(fr.RuleError, msg=bad):
                 fr.parse(bad)
 
+
+
+class TestScratchRootAndReclaim(Base):
+    def drop_scratch_root(self, rid):
+        mp = Path(self.flags, "ready", rid + ".json")
+        m = json.loads(mp.read_text()); m.pop("scratch_root"); mp.write_text(json.dumps(m))
+
+    def test_no_scratch_root_refused_exit6_nothing_written(self):
+        self.row("R-NS", "tps >= 10", {"tps": 12})
+        self.drop_scratch_root("R-NS")
+        code, _out, err = self.run_main("R-NS")
+        self.assertEqual(code, 6)
+        self.assertIn("REFUSED R-NS", err)
+        self.assertFalse(os.path.exists(os.path.join(self.flags, "filing-done", "R-NS.verdict.json")))
+        self.assertFalse(self.filed("R-NS"))
+        self.assertEqual(self.reclaims, [])
+
+    def test_scratch_root_outside_tmp_root_refused(self):
+        self.row("R-OUT", "tps >= 10", {"tps": 12})
+        mp = Path(self.flags, "ready", "R-OUT.json")
+        m = json.loads(mp.read_text()); m["scratch_root"] = "/elsewhere/x"; mp.write_text(json.dumps(m))
+        self.assertEqual(self.run_main("R-OUT")[0], 6)
+
+    def test_allow_no_scratch_root_files(self):
+        self.row("R-AL", "tps >= 10", {"tps": 12})
+        self.drop_scratch_root("R-AL")
+        code, _o, _e = self.run_main("R-AL", "--allow-no-scratch-root")
+        self.assertEqual(code, 0)
+        self.assertTrue(self.filed("R-AL"))
+
+    def test_filing_calls_reclaim_after_filed(self):
+        self.row("R-RC", "tps >= 10", {"tps": 12})
+        self.assertEqual(self.run_main("R-RC")[0], 0)
+        self.assertEqual(self.reclaims, [["R-RC", "--flags", self.flags, "--apply", "--pre-filed"]])
+
+    def test_no_reclaim_flag_and_dry_run(self):
+        self.row("R-NR", "tps >= 10", {"tps": 12})
+        self.assertEqual(self.run_main("R-NR", "--no-reclaim")[0], 0)
+        self.assertEqual(self.reclaims, [])
+        self.row("R-DR", "tps >= 10", {"tps": 12})
+        self.assertEqual(self.run_main("R-DR", "--dry-run")[0], 0)
+        self.assertEqual(self.reclaims, [["R-DR", "--flags", self.flags, "--pre-filed"]])
+
+    def test_raising_reclaim_still_returns_0_with_filed(self):
+        self.row("R-RX", "tps >= 10", {"tps": 12})
+
+        def boom(argv):
+            raise RuntimeError("disk on fire")
+        with patch.object(reclaim_row, "main", boom):
+            code, out, _e = self.run_main("R-RX")
+        self.assertEqual(code, 0)
+        self.assertTrue(self.filed("R-RX"))
+        self.assertIn("RECLAIM-ERROR R-RX", out)
+        with patch.object(reclaim_row, "main", lambda argv: 7):
+            self.row("R-R7", "tps >= 10", {"tps": 12})
+            code, out, _e = self.run_main("R-R7")
+        self.assertEqual((code, "RECLAIM-ERROR R-R7" in out, self.filed("R-R7")), (0, True, True))
 
 
 class TestWithdrawnManifest(unittest.TestCase):

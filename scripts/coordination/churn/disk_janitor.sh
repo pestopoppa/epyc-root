@@ -9,10 +9,26 @@
 #                 the keeper loop no longer reaps (operator 2026-11-03). Skipped while the reap stamp
 #                 (ws58-keeper-state/reap-last, touched by every --reap-now pass, e.g. a manual one) is younger than 30 min.
 #   every 60 min  `trash-sweep.sh --older-than 1` for /mnt/raid0/llm/.trash and, if it exists, /mnt/raid0/llm/.trash-reap.
+#   every 30 min  BUDGET: row_disk_budget.py --alert (per-row disk budget: used vs budget_gib for every live grant; alert only).
+#   every 24 h    the LIFECYCLE pass (operator 2026-11-07, "we can't have so much disk leak"; all zero-token, all trash-first):
+#                   WTREAP  worktree_reaper.py --apply   agent worktrees: clean+landed idle >= 3 d removed; dirty/unlanded idle
+#                                                        >= 7 d salvaged (patch bundle + salvage branch) then trashed, then
+#                                                        deregistered. Never --force, never prune. mains/, pool/, locked, KEEP: skipped.
+#                   KGC     kernel_store_gc.py --apply   kernels/builds/* not production/archive/candidate targets, not named by
+#                                                        a manifest/handoff/ready row/champion file, not busy, idle >= 7 d -> trash.
+#                   LEASE   scratch_lease.py backfill    every KEEP marker under tmp/ without a lease gets a 14-day lease, so a
+#                                                        marker can no longer hold bytes forever (scratch-lease Phase 1).
+#                   OWNER   owner_check.py --fix-modes      root-owned or unwritable dirs under tmp/, .trash*, worktrees/ (a
+#                                                        build that left a 555 root tree defeated trash-sweep, 11-07): modes we
+#                                                        own are repaired; foreign-uid trees are flagged with the sudo chown line.
+#                   CODEX   codex_retention_reaper.py report --json  REPORT ONLY (operator hard rule 2026-10-04: ~/.codex is never
+#                                                        touched; apply is permanently disabled). The report is the 7-day rotation
+#                                                        preview the operator asked for, ready to act on if that rule is reversed.
 #   every pass    one FREE line (GiB available on /mnt/raid0) so disk-janitor.log carries the free-disk trend.
 #
-# This script deletes nothing itself: deletes happen only inside the keeper's guarded reaper (guarded_rm.sh -> its own trash)
-# and inside trash-sweep.sh. It never starts, stops or kills another process.
+# This script deletes nothing itself: deletes happen only inside the keeper's guarded reaper (guarded_rm.sh -> its own trash),
+# inside trash-sweep.sh, and inside the lifecycle tools above (guarded_rm.sh / `git worktree remove`, never rm). It never
+# starts, stops or kills another process. JANITOR_LIFECYCLE=0 disables the daily pass; each tool has its own log in $F.
 #
 # Usage: disk_janitor.sh            the loop (pidfile disk-janitor.pid; a second copy exits 0 at once)
 #        disk_janitor.sh --once     one live pass (reap + sweep), then exit
@@ -32,13 +48,19 @@ TRASHES=${JANITOR_TRASHES:-/mnt/raid0/llm/.trash /mnt/raid0/llm/.trash-reap}
 DISK=${JANITOR_DISK:-/mnt/raid0}
 REAP_EVERY_S=${JANITOR_REAP_EVERY_S:-1800}
 SWEEP_EVERY_S=${JANITOR_SWEEP_EVERY_S:-3600}
+LIFECYCLE_EVERY_S=${JANITOR_LIFECYCLE_EVERY_S:-86400}
+LIFECYCLE=${JANITOR_LIFECYCLE:-1}
+TOOLS=${JANITOR_TOOLS:-/workspace/scripts}          # the repo's scripts/ (same tree trash-sweep.sh comes from)
+LIFECYCLE_STAMP=${JANITOR_LIFECYCLE_STAMP:-$F/ws58-keeper-state/lifecycle-last}
+WT_MAX=${JANITOR_WT_MAX:-20}; KGC_MAX=${JANITOR_KGC_MAX:-10}; KGC_MIN_AGE_D=${JANITOR_KGC_MIN_AGE_D:-7}
+LEASE_TTL_D=${JANITOR_LEASE_TTL_D:-14}
 TICK_S=${JANITOR_TICK_S:-60}
 MODE=loop
 case "${1:-}" in
   "") ;;
   --once) MODE=once;;
   --dry-run) MODE=dry;;
-  -h|--help) sed -n 2,23p "$0"; exit 0;;
+  -h|--help) sed -n 2,38p "$0"; exit 0;;
   *) echo "usage: disk_janitor.sh [--once|--dry-run]" >&2; exit 2;;
 esac
 
@@ -73,7 +95,41 @@ sweep() {  # trash-sweep --older-than 1 on every trash root that exists
   done
 }
 
-if [ "$MODE" != loop ]; then free_line; reap force; sweep; free_line; exit 0; fi
+run_tool() {  # run_tool TAG <cmd...>: run one lifecycle tool, log its last line and rc; a missing tool is a SKIP, never an error
+  local tag=$1; shift; local out rc=0
+  [ -f "$1" ] || [ -f "$2" ] || { log "$tag-SKIP tool missing: $*"; return 0; }
+  out=$("$@" 2>&1) || rc=$?
+  log "$tag rc=$rc ${out:+last: $(printf '%s\n' "$out" | grep -v '^$' | tail -1 | cut -c1-200)}"
+  if [ "$MODE" = dry ]; then printf '%s\n' "$out" | tail -n 25 | while IFS= read -r l; do log "$tag $l"; done; fi
+}
+
+budget() {  # per-row disk budget check over live grants: alert only (row_disk_budget.py), never stops a row
+  local flags=(--flags "$F" --log "$F/disk-budget.log"); [ "$MODE" = dry ] || flags+=(--alert)
+  run_tool BUDGET python3 "$TOOLS/coordination/churn/row_disk_budget.py" "${flags[@]}"
+}
+
+lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel store GC, KEEP leases, codex report)
+  local age apply=(--apply) dryf=()
+  [ "$LIFECYCLE" = 1 ] || { log "LIFECYCLE-SKIP disabled (JANITOR_LIFECYCLE=0)"; return 0; }
+  age=$(( $(date +%s) - $(stat -c %Y "$LIFECYCLE_STAMP" 2>/dev/null || echo 0) ))
+  if [ "${1:-}" != force ] && [ "$age" -lt "$LIFECYCLE_EVERY_S" ]; then return 0; fi
+  if [ "$MODE" = dry ]; then apply=(); dryf=(--dry-run); else mkdir -p "$(dirname "$LIFECYCLE_STAMP")"; touch "$LIFECYCLE_STAMP"; fi
+  log "LIFECYCLE start (apply=${apply[*]:-no})"
+  run_tool WTREAP python3 "$TOOLS/system/worktree_reaper.py" "${apply[@]}" --max "$WT_MAX" --log "$F/worktree-reap.log"
+  run_tool KGC    python3 "$TOOLS/system/kernel_store_gc.py" "${apply[@]}" --max "$KGC_MAX" --min-age-days "$KGC_MIN_AGE_D" --log "$F/kernel-gc.log"
+  if [ "$MODE" = dry ]; then run_tool OWNER python3 "$TOOLS/system/owner_check.py" --log "$F/owner-check.log"
+  else run_tool OWNER python3 "$TOOLS/system/owner_check.py" --fix-modes --log "$F/owner-check.log"; fi
+  if [ "$MODE" = dry ]; then run_tool LEASE python3 "$TOOLS/system/scratch_lease.py" backfill --dry-run --ttl-days "$LEASE_TTL_D"
+  else run_tool LEASE python3 "$TOOLS/system/scratch_lease.py" backfill --apply --ttl-days "$LEASE_TTL_D"; fi
+  if [ -f "$TOOLS/system/codex_retention_reaper.py" ]; then
+    local rep=$F/codex-retention-report.json rc=0
+    python3 "$TOOLS/system/codex_retention_reaper.py" report --json > "$rep.part" 2>>"$F/codex-retention-report.err" && mv -f "$rep.part" "$rep" || rc=$?
+    log "CODEX report rc=$rc -> $rep (report only; ~/.codex is never touched: operator 2026-10-04)"
+  fi
+  log "LIFECYCLE end"
+}
+
+if [ "$MODE" != loop ]; then free_line; reap force; sweep; budget; lifecycle force; free_line; exit 0; fi
 
 # loop: one instance (pidfile pid alive with our argv, and not us -> exit)
 old=$(tr -d ' \n' < "$PIDF" 2>/dev/null || true)
@@ -81,11 +137,12 @@ if [ -n "$old" ] && [ "$old" != "$$" ] && ps -o args= -p "$old" 2>/dev/null | gr
   echo "disk_janitor already running pid $old"; exit 0
 fi
 echo $$ > "$PIDF"
-log "disk_janitor start pid=$$ (reap every ${REAP_EVERY_S}s via $KEEPER --reap-now; sweep every ${SWEEP_EVERY_S}s: $TRASHES)"
+log "disk_janitor start pid=$$ (reap+budget every ${REAP_EVERY_S}s via $KEEPER --reap-now; sweep every ${SWEEP_EVERY_S}s: $TRASHES; lifecycle every ${LIFECYCLE_EVERY_S}s from $TOOLS)"
 last_reap=0; last_sweep=0
 while :; do
   now=$(date +%s)
-  if [ $(( now - last_reap )) -ge "$REAP_EVERY_S" ]; then free_line; reap || log "REAP error rc=$?"; last_reap=$now; free_line; fi
+  if [ $(( now - last_reap )) -ge "$REAP_EVERY_S" ]; then free_line; reap || log "REAP error rc=$?"; budget || log "BUDGET error rc=$?"; last_reap=$now; free_line; fi
   if [ $(( now - last_sweep )) -ge "$SWEEP_EVERY_S" ]; then sweep || log "SWEEP error rc=$?"; last_sweep=$now; fi
+  lifecycle || log "LIFECYCLE error rc=$?"
   sleep "$TICK_S"
 done

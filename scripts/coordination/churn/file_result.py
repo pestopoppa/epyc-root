@@ -3,6 +3,7 @@
 
     python3 scripts/coordination/churn/file_result.py <row-id> [--flags DIR] [--verdict-json FILE]
                                                           [--lane DIR] [--dry-run]
+                                                          [--allow-no-scratch-root] [--no-reclaim]
 
 Reads the epyc.row.v3 manifest (<flags>/ready/<id>.json or ready/*/<id>.json), the end record
 (<flags>/grants/<id>.ended|.complete, first line `rc=N ...`) and the result at `result_path`
@@ -13,7 +14,13 @@ sign are notation only: the metric is compared against the bare number.
 
 Exit codes: 0 verdict filed (pass|fail|inconclusive — a missing metric is inconclusive, never pass);
 4 NEEDS-AGENT-VERDICT (rule not machine-checkable and no --verdict-json); 2 manifest or end record
-missing / bad --verdict-json; 5 checkbox tick failed (verdict still written, FILED not touched).
+missing / bad --verdict-json; 5 checkbox tick failed (verdict still written, FILED not touched);
+6 REFUSED: the manifest has no absolute scratch_root under the tmp root ($RECLAIM_TMP_ROOT, default
+/mnt/raid0/llm/tmp) — nothing written; `--allow-no-scratch-root` files anyway (operator 2026-11-07: a row with
+no scratch_root can never be reclaimed).
+RECLAIM-AT-FILING: once the FILED receipt is written, reclaim_row.py <id> --apply --pre-filed frees the row's
+declared raw scratch and row-owned worktrees (`--no-reclaim` skips; --dry-run runs it in dry-run mode). A reclaim
+error or non-zero exit prints RECLAIM-ERROR and never changes the filing outcome.
 The verdict record validates against scripts/coordination/filed_verdict.schema.json
 (epyc.filed.verdict.v1, additionalProperties) and adds {row, verdict, rule, values, rc, result_path,
 filed_by, at}. Stdlib only.
@@ -249,6 +256,21 @@ def handoff_path(lane, hpath):
     return target
 
 
+def run_reclaim(argv):
+    """Call reclaim_row.main(argv); any exception or non-zero exit prints RECLAIM-ERROR, never raises."""
+    try:
+        if HERE not in sys.path:
+            sys.path.insert(0, HERE)
+        import reclaim_row
+        code = reclaim_row.main(argv)
+        if code:
+            print(f"RECLAIM-ERROR {argv[0]}: reclaim_row exit {code}")
+        return code
+    except BaseException as e:  # noqa: BLE001 — SystemExit from argparse too
+        print(f"RECLAIM-ERROR {argv[0]}: {type(e).__name__}: {e}")
+        return -1
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("row_id")
@@ -256,6 +278,8 @@ def main(argv=None):
     ap.add_argument("--verdict-json", help="agent-written {verdict, rationale[, tick_text, filed_by]}")
     ap.add_argument("--lane", default=os.getcwd(), help="worktree root that holds handoffs/ (for --verdict-json tick_text)")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--allow-no-scratch-root", action="store_true")
+    ap.add_argument("--no-reclaim", action="store_true")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
     mp, m = load_manifest(flags, rid)
@@ -282,6 +306,13 @@ def main(argv=None):
         if agent is None:
             print(f"NEEDS-AGENT-VERDICT {rid}: {rule}"); return 4
         verdict, filed_by, reason = agent["verdict"], str(agent.get("filed_by") or "agent"), str(agent.get("rationale") or "")
+    if not a.allow_no_scratch_root:
+        sys.path.insert(0, os.path.join(HERE, "..", "job_templates"))
+        import row_worktree
+        serr = row_worktree.scratch_root_error(m.get("scratch_root"))
+        if serr:
+            print(f"REFUSED {rid}: {serr}; a row with no scratch_root can never be reclaimed "
+                  f"(--allow-no-scratch-root to file anyway)", file=sys.stderr); return 6
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
     rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(m.get("owner") or "?"), "filed_at": now, "at": now,
            "outcome_class": "SCIENCE-VERDICT" if verdict in ("pass", "fail") else "PARTIAL-VERDICT", "phase": "filing",
@@ -298,7 +329,10 @@ def main(argv=None):
     summary = f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}" + (" (dry-run)" if a.dry_run else "")
     print(summary)
     if a.dry_run:
-        print("TICK " + tick_line(rid, rc, verdict, values, filed_by)); return 0
+        print("TICK " + tick_line(rid, rc, verdict, values, filed_by))
+        if not a.no_reclaim:
+            run_reclaim([rid, "--flags", flags, "--pre-filed"])
+        return 0
     os.makedirs(done, exist_ok=True)
     with open(os.path.join(done, rid + ".verdict.json"), "w") as fh:
         json.dump(rec, fh, indent=1, sort_keys=True)
@@ -320,6 +354,8 @@ def main(argv=None):
         print("TICK " + tick_line(rid, rc, verdict, values, filed_by))
     with open(os.path.join(done, rid + ".FILED"), "w") as fh:
         fh.write(summary + "\n")
+    if not a.no_reclaim:
+        run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
     return 0
 
 

@@ -9,6 +9,7 @@ rule catches those and every copy never harvested.
   template_lint.py <launcher-or-job-dir>      # prints one WARN per finding, exit 0 always
 Used by rowflow2.publish (rowflow/publish_row.py is frozen; operator 2026-11-06).
 """
+import json
 import os
 import re
 import sys
@@ -36,13 +37,39 @@ def thread_warn(path, text):
             "Run under job_templates/job_fence.py or pass -t <affinity CPUs>")
 
 
+def manifest_warns(root):
+    """WARN-only: a row manifest (top-level *.json with schema epyc.row.v3 or an id) with no numeric budget_gib / no
+    raw declaration. No manifest found = nothing to say."""
+    out = []
+    try:
+        names = sorted(n for n in os.listdir(root) if n.endswith(".json"))[:50]
+    except OSError:
+        return out
+    for n in names:
+        try:
+            d = json.loads((Path(root) / n).read_text(errors="replace"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(d, dict) or not (d.get("schema") == "epyc.row.v3" or "id" in d):
+            continue
+        b = d.get("budget_gib")
+        if isinstance(b, bool) or not isinstance(b, (int, float)):
+            out.append("budget_gib missing: row declares no disk budget "
+                       "(DEFAULT 1 GiB is enforced/alerted by row_disk_budget.py)")
+        if not d.get("raw") and "raw_globs=" not in str(d.get("notes") or ""):
+            out.append("raw declaration missing: no 'raw' list and no raw_globs= in notes, so nothing is reclaimed "
+                       "at filing (keeper 1-day backstop only)")
+        break
+    return out
+
+
 def lint_dir(path):
     """WARN strings for the job dir of `path` (a launcher file or a directory)."""
     p = Path(path)
     root = p if p.is_dir() else p.parent
     if not root.is_dir():
         return []
-    warns, seen = [], 0
+    warns, seen = manifest_warns(root), 0
     for dirpath, dirs, files in os.walk(root):
         dirs[:] = [d for d in dirs if not d.startswith((".", "out", "smoke-", "gitnexus-home", "__pycache__"))]
         for n in files:
