@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 523
+      "open": 522
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -94,7 +94,7 @@
       "closed": 792,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 149,
+      "open": 150,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -103,7 +103,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 942,
+      "total": 943,
       "tracks": [
         {
           "blocked": 1,
@@ -118,14 +118,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 52
+          "open": 53
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5938,
+          "line": 5939,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -135,7 +135,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6018,
+          "line": 6019,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -150,7 +150,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6315,
+          "line": 6316,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -164,7 +164,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9530,
+          "line": 9531,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -176,7 +176,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13880,
+          "line": 13881,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -200,7 +200,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14092,
+          "line": 14093,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -798,10 +798,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 249,
+      "closed": 250,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 116,
+      "open": 115,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -814,20 +814,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 144,
+          "closed": 145,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 69
+          "open": 68
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1176,
+          "line": 1178,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -837,7 +837,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1215,
+          "line": 1217,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -847,7 +847,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1322,
+          "line": 1324,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -857,7 +857,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1422,
+          "line": 1424,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 5
@@ -867,7 +867,7 @@
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1468,
+          "line": 1470,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -877,7 +877,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2041,
+          "line": 2043,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 4
@@ -2063,10 +2063,10 @@
     },
     "quantization-and-low-bit.md": {
       "blocked": 0,
-      "closed": 69,
+      "closed": 70,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
-      "open": 29,
+      "last_advanced": "2026-11-07",
+      "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2089,13 +2089,13 @@
         },
         {
           "blocked": 0,
-          "closed": 28,
+          "closed": 29,
           "gates": [],
           "guarded": 0,
           "line": 208,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,

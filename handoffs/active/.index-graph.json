@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T13:07:00Z",
+  "generated_at": "2026-11-07T13:20:25Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1456,14 +1456,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 792,
-      "dispatchable": 149,
+      "dispatchable": 150,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 150,
+      "open": 151,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1500,7 +1500,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 52,
+          "dispatchable": 53,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1509,14 +1509,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 53,
+          "open": 54,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5938,
+          "line": 5939,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1525,7 +1525,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6018,
+          "line": 6019,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1544,7 +1544,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6315,
+          "line": 6316,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1561,7 +1561,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9530,
+          "line": 9531,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1574,7 +1574,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13880,
+          "line": 13881,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1608,7 +1608,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14092,
+          "line": 14093,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2385,18 +2385,18 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 69,
-      "dispatchable": 29,
+      "closed": 70,
+      "dispatchable": 28,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-07",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 29,
+      "open": 28,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2425,11 +2425,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 208,
           "name": "iqk-iquant-enablement",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {
@@ -3221,15 +3221,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 249,
-      "dispatchable": 116,
+      "closed": 250,
+      "dispatchable": 115,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-07",
       "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
-      "open": 116,
+      "open": 115,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3249,18 +3249,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 69,
+          "dispatchable": 68,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 69,
+          "open": 68,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1176,
+          "line": 1178,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3269,7 +3269,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1215,
+          "line": 1217,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3278,7 +3278,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1322,
+          "line": 1324,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3287,7 +3287,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1422,
+          "line": 1424,
           "name": "loop-state-offraid-backup",
           "open": 5,
           "readiness": "ready"
@@ -3296,7 +3296,7 @@
           "blocked_by": [],
           "dispatchable": 35,
           "gates": [],
-          "line": 1468,
+          "line": 1470,
           "name": "refactoring-multirepo-2026-10",
           "open": 35,
           "readiness": "ready"
@@ -3305,7 +3305,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2041,
+          "line": 2043,
           "name": "repo-readiness-scorer",
           "open": 4,
           "readiness": "ready"
