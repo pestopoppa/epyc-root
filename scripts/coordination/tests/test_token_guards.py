@@ -205,5 +205,35 @@ class DryRun(unittest.TestCase):
             self.assertNotIn("parked", reg["sessions"]["b"], "dry run mutates nothing")
 
 
+class ReserveTranche(unittest.TestCase):
+    """CHURN-CONT-RESERVE: new work refused at the reserve; janitor/filing/teardown still admitted."""
+    conf = tg.cfg({})
+
+    def test_default(self):
+        self.assertEqual(tg.DEFAULTS["reserve_fraction"], 0.05)
+
+    def test_refused_at_reserve(self):
+        for used in (0.95, 0.97, 1.0):
+            ok, why = tg.admit(self.conf, {"weekly_fraction": used})
+            self.assertFalse(ok, why)
+        self.assertFalse(tg.admit(self.conf, {"claude_weekly_fraction": 0.96}, "work")[0])
+        self.assertEqual(tg.width_cap(self.conf, {"weekly_fraction": 0.96, "resets_at": 2e9}, 1e9)[0], 0)
+
+    def test_filing_admitted_at_reserve(self):
+        for kind in ("janitor", "filing", "teardown"):
+            self.assertTrue(tg.admit(self.conf, {"weekly_fraction": 0.99}, kind)[0])
+
+    def test_missing_meter(self):
+        for b in (None, {}, {"weekly_fraction": None}):
+            self.assertFalse(tg.admit(self.conf, b)[0])
+            self.assertTrue(tg.admit(self.conf, b, "filing")[0])
+
+    def test_below_reserve_unchanged(self):
+        self.assertTrue(tg.admit(self.conf, {"weekly_fraction": 0.5})[0])
+        self.assertTrue(tg.admit(self.conf, {"weekly_fraction": 0.94})[0])
+        ample = {"weekly_fraction": 0.1, "resets_at": 1e9 + 20 * 3600}
+        self.assertEqual(tg.width_cap(self.conf, ample, 1e9, live=1)[0], 2)
+
+
 if __name__ == "__main__":
     unittest.main()

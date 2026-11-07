@@ -39,6 +39,7 @@ DEFAULTS = {
     # G5
     "max_live": 2,
     "claude_weekly_tokens": None,          # operator-stated weekly Claude allowance (tokens); None = meter without alarms
+    "reserve_fraction": 0.05,              # CHURN-CONT-RESERVE: weekly-budget tranche held back for janitor/filing/teardown
     "per_session_frac_per_h": 0.012,       # fallback weekly-fraction burn per live session (audit W2: ~1.2 %/h)
 }
 EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
@@ -262,12 +263,42 @@ def width_cap(conf: dict, budget: dict | None, now: float, live: int = 0) -> tup
         return cap, f"configured cap {cap} (budget unknown)"
     if budget_paused_until(budget, now):
         return 0, f"budget exhausted; paused until {budget.get('paused_until')}"
+    rem = remaining_fraction(budget)
+    if rem is not None and rem <= float(conf.get("reserve_fraction", DEFAULTS["reserve_fraction"])):
+        return 0, f"reserve reached: remaining {rem:.4f} <= reserve {conf.get('reserve_fraction', DEFAULTS['reserve_fraction'])}"
     hours = max((float(budget["resets_at"]) - now) / 3600.0, 0.25)
     allowed = max(0.0, 1.0 - float(budget["weekly_fraction"])) / hours
     burn = float(budget.get("burn_frac_per_h") or 0)
     per = burn / live if live and burn > 0 else float(conf["per_session_frac_per_h"])
     derived = int(math.floor(allowed / per + 1e-9)) if per > 0 else cap
     return min(cap, derived), f"min(cap {cap}, derived {derived} = {allowed:.4f}/h allowed / {per:.4f}/h per session)"
+
+
+# ---------------------------------------------------------------- reserve tranche (CHURN-CONT-RESERVE)
+# Work kinds that stay admitted once the reserve is reached: they CLOSE work (janitor/filing/teardown) and are
+# charged outside row accounting. Everything else (the default "work") is new-work admission.
+RESERVE_ELIGIBLE_KINDS = ("janitor", "filing", "teardown")
+
+
+def remaining_fraction(budget: dict | None) -> float | None:
+    """Remaining weekly fraction = 1 - the highest known used fraction (codex weekly_fraction, claude_weekly_fraction);
+    None when the meter carries neither."""
+    used = [float(budget[k]) for k in ("weekly_fraction", "claude_weekly_fraction") if budget and budget.get(k) is not None]
+    return round(max(0.0, 1.0 - max(used)), 9) if used else None
+
+
+def admit(conf: dict, budget: dict | None, kind: str = "work") -> tuple[bool, str]:
+    """May new work of `kind` be admitted (session/row dispatch)? Refused once remaining weekly budget <= reserve_fraction.
+    Reserve-eligible kinds are always admitted; a missing/unreadable meter fails CLOSED for "work", open for those."""
+    if kind in RESERVE_ELIGIBLE_KINDS:
+        return True, f"{kind}: reserve-eligible"
+    rem = remaining_fraction(budget)
+    if rem is None:
+        return False, "meter missing or unreadable: fail closed for new work"
+    reserve = float(conf.get("reserve_fraction", DEFAULTS["reserve_fraction"]))
+    if rem <= reserve:
+        return False, f"reserve reached: remaining {rem:.4f} <= reserve {reserve} (only {'/'.join(RESERVE_ELIGIBLE_KINDS)} admitted)"
+    return True, f"remaining {rem:.4f} > reserve {reserve}"
 
 
 # ---------------------------------------------------------------- restart gate (TOKEN-DISPATCHER-RESTART-GATE)

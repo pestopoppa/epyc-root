@@ -67,6 +67,7 @@ class AutoStartFixture(unittest.TestCase):
         self.reg = {"schema": "epyc.handoff-sessions.v1", "max_live": 2, "paused_until": None, "default_engine": "claude",
                     "sessions": {}}
         hs.save(hs.reg_path(self.flags), self.reg)
+        json.dump({"weekly_fraction": 0.1}, open(os.path.join(self.flags, "budget.json"), "w"))  # reserve admission fails closed without a meter
         self.calls = []
 
         self._lane = patch.object(hs, "ensure_lane", lambda slug, repo=None: (self.repo, "fast-forwarded"))
@@ -402,6 +403,31 @@ class DSHTests(_DSHBase):
         with patch.object(hs, "alive", lambda pid: pid == os.getpid()):
             reg, st = self.dispatch()
         self.assertEqual(len(self.calls), 1, "max_live is full, yet the run-end filing resume is dispatched")
+        self.assertIn("row `row-a`", self.calls[0]["prompt"])
+
+    def _budget(self, d):
+        if d is None:
+            os.remove(os.path.join(self.flags, "budget.json"))
+        else:
+            json.dump(d, open(os.path.join(self.flags, "budget.json"), "w"))
+
+    def test_reserve_refused_admit_dispatches_no_new_work(self):  # CHURN-CONT-RESERVE
+        for b in ({"weekly_fraction": 0.96}, None):  # at the reserve, and a missing meter (fail closed)
+            self.calls.clear()
+            self._budget(b)
+            reg, _ = self.dispatch()
+            self.assertEqual(self.calls, [], f"budget={b}: no session may start")
+            self.assertEqual([k for k in reg["sessions"] if k != "codex-gen"], [])
+            self.assertIn("ADMIT-REFUSED work", self.log_text())
+
+    def test_reserve_still_admits_run_end_filing(self):
+        self.reg["max_live"] = 1
+        self.session()
+        hs.save(hs.reg_path(self.flags), self.reg)
+        _w(os.path.join(self.flags, "grants", "row-a.ended"), "rc=0\n")
+        self._budget({"weekly_fraction": 0.99})
+        reg, st = self.dispatch()
+        self.assertEqual(len(self.calls), 1, "filing is reserve-eligible")
         self.assertIn("row `row-a`", self.calls[0]["prompt"])
 
     def test_dsh3_error_resumes_with_go_on(self):

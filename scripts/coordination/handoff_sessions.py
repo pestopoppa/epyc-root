@@ -1605,6 +1605,9 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     cap, cap_why = tg.width_cap(gc, budget, now, live)  # G5: min(configured cap [2], budget-derived)
     if reg.get("dispatcher", {}).get("cap") != cap:
         log(flags, f"WIDTH-CAP {cap}: {cap_why}")
+    adm_ok, adm_why = tg.admit(gc, budget, "work")  # CHURN-CONT-RESERVE: new work refused at the reserve; filing/teardown below stay admitted
+    if not adm_ok:
+        log(flags, f"ADMIT-REFUSED work: {adm_why}")
     if not paused:
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
         for ev in q:  # events: run-ends (filing), dry-run FAILs, awaited files
@@ -1666,6 +1669,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
             if h is not None:
+                if not adm_ok:
+                    continue  # reserve reached: no new session
                 new = start_handoff(flags, reg, h, runner, st, live, cap) if live < cap and not engine_paused(reg, reg.get("default_engine", "codex"), now) else None
                 if new:
                     for ev in (st.get("unowned") or {}).pop(hkey(h["handoff"]), []):
@@ -1681,6 +1686,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 tg.park(e, why, now_iso())
                 log(flags, f"PARK {slug}: {why}; unpark: handoff_sessions.py unpark {slug}")
                 continue
+            if not adm_ok:
+                continue  # reserve reached: no resume of work (parking above is bookkeeping, not admission)
             tg.note_resume(e, now)
             if not wrapped(e, lcache):
                 push(slug, e)

@@ -44,6 +44,7 @@ class _Fixture(unittest.TestCase):
         self.flags = os.path.join(self.td.name, "flags")
         self.repo = os.path.join(self.td.name, "repo")
         os.makedirs(self.flags)
+        _w(os.path.join(self.flags, "budget.json"), '{"weekly_fraction": 0.1}')  # reserve admission fails closed without a meter
         self.slug = "yarn"
         self.handoff = "handoffs/active/yarn-context-extension-research.md"
         _w(os.path.join(self.repo, self.handoff), "# YaRN handoff\n- [ ] HANDOFF-TASK-MARKER do the sweep\n")
