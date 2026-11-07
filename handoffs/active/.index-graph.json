@@ -611,7 +611,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T00:30:43Z",
+  "generated_at": "2026-11-07T00:32:29Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1376,7 +1376,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
-      "next_action": "C7r is champion (`62cb6a6af`); next C8-incremental folds: H8b (AK-ASM-H8B-GATE r2) and FA hd256 long-ctx r5",
+      "next_action": "C7r is champion (`62cb6a6af`); AK-ASM program decided (H8b dropped E2E, FA r5 keep in C7r); next: GDN-SHARE-1 MI210 to pick the C8 target",
       "open": 135,
       "priority": 0.896,
       "priority_basis": {

@@ -12,7 +12,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | C7r is champion (`62cb6a6af`); next C8-incremental folds: H8b (AK-ASM-H8B-GATE r2) and FA hd256 long-ctx r5 | INF-48, EVL-47 |
+| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | C7r is champion (`62cb6a6af`); AK-ASM program decided (H8b dropped E2E, FA r5 keep in C7r); next: GDN-SHARE-1 MI210 to pick the C8 target | INF-48, EVL-47 |
 | INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Qualify C6 serving gates; confirm local t96/MTP profile and 28k code prompt before canonical recipe change | INF-06, INF-50 |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-65 |
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-48, RTG-58 |
