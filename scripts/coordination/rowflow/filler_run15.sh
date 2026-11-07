@@ -49,6 +49,21 @@
 set -uo pipefail
 HERE=$(dirname "$(readlink -f "$0")")
 SELF=$(readlink -f "$0")
+# ENGINE SNAPSHOT (operator 2026-11-07 "no-hold deploys"): the keeper copies this engine and every file a running poller
+# or launcher re-reads (filler_lib.sh, notify.py, diskpause.py, loop_metrics_hook.sh) into the row's own directory
+# (<flags>/dryrun/<id>/engine/) at arm time and passes FILLER_ENGINE_SNAPSHOT. The live engine re-execs that copy at once,
+# so a running row executes only its snapshot and a deploy may swap bin/rowflow/ under open grants. The live directory
+# stays the home of shared state (FILLER_ENGINE_HOME: fence-shim cache, session bus, the rowflow.py named in alerts).
+if [ "${1:-}" != --inner ] && [ -n "${FILLER_ENGINE_SNAPSHOT:-}" ]; then
+  _snap="$FILLER_ENGINE_SNAPSHOT/$(basename "$SELF")"
+  if [ -f "$_snap" ] && [ "$(readlink -f "$_snap")" != "$SELF" ]; then
+    export FILLER_ENGINE_HOME=${FILLER_ENGINE_HOME:-$HERE} FILLER_FENCE_DIR=${FILLER_FENCE_DIR:-$HERE/state} FILLER_STATE_DIR=${FILLER_STATE_DIR:-$HERE/state}
+    [ -n "${ROWFLOW_SESSION_BUS:-}" ] || [ ! -f "$(dirname "$HERE")/session_bus.py" ] || export ROWFLOW_SESSION_BUS="$(dirname "$HERE")/session_bus.py"
+    unset FILLER_ENGINE_SNAPSHOT
+    exec /bin/bash "$_snap" "$@"
+  fi
+  unset FILLER_ENGINE_SNAPSHOT
+fi
 ID=""; CLASS=""; JOBCMD=""; MINWIN=0; STOPFILE=""; COMPLETE_CMD=""; PORTS=""; SCHED_PORTS=""; EXCL_LOCK=""; GPUTHR="184-191"; WORKDIR=/workspace; SELFCLAIM=0; GPUQ=""; ROLE=""; CLAIM_CPUS=""; PRECOND_CMD=""; STOP_GRACE=""; REPEAT=0; NOFOLD=0; REQUIRES_TOOLS=(); QUAL_INTERPRETER=""
 if [ "${1:-}" = "--inner" ]; then INNER=1; shift; else INNER=0; fi
 while [ $# -gt 0 ]; do

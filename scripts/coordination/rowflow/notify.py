@@ -35,6 +35,7 @@ NON_COMPLETE_HIGHLIGHT = ("disk-floor", "hard-end", "job-rc-", "cleanup-failed",
                           "launcher-signalled", "grant-expired-unrun", "build-missing", "refused", "malformed-grant",
                           "regions-unusable", "window-")
 _HERE = os.path.dirname(os.path.abspath(__file__))
+_HOME = os.environ.get("FILLER_ENGINE_HOME") or _HERE   # a row's engine snapshot runs this copy; rowflow.py lives in the live dir
 
 
 def _now():
@@ -209,7 +210,7 @@ def alerts_block(alerts, flags):
     lines = [f"- [{a.get('severity')}] {a.get('summary')} (key {a.get('key')})" for a in alerts[:10]]
     more = f"\n- ... {len(alerts) - 10} more: rowflow.py alerts --unacked" if len(alerts) > 10 else ""
     return (f"UNHANDLED ROW ALERTS (inference mailbox {inbox_path(flags)}): handle each, then ack it with "
-            f"`python3 {os.path.join(_HERE, 'rowflow.py')} alerts --ack <key>`:\n" + "\n".join(lines) + more + "\n")
+            f"`python3 {os.path.join(_HOME, 'rowflow.py')} alerts --ack <key>`:\n" + "\n".join(lines) + more + "\n")
 
 
 def escalate_stale(flags, route, now=None, after_s=None, log=print):

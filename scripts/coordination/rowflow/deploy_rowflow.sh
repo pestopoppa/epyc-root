@@ -9,7 +9,9 @@
 # 2. test     the staged tree's unit tests (tests/test_rowflow*.py, test_allocator.py) AND the replay gate
 #             (tests/replay/test_replay_gate.py from THIS script's tree, run against the staged rowflow/). Any failure
 #             refuses the deploy; nothing under bin/ is touched.
-# 3. guard    filler_run15.sh is never swapped under open grants (running pollers re-read it) unless --allow-open-grants
+# 3. guard    an engine file a running poller re-reads (filler_run15.sh, filler_lib.sh, notify.py, diskpause.py) is never
+#             swapped while LEGACY grants are open (pollers on the live path) unless --allow-open-grants; snapshot-launched
+#             grants (armed since 2026-11-07, engine copied into dryrun/<id>/engine/) never block (rowflow.py deploy-guard)
 # 4. install  per changed file: backup <f>.bak-<UTC>-deploy, copy to <f>.part, chmod, mv -f (atomic), verify sha256
 # 5. record   bin/rowflow/DEPLOYED.json {ref, sha, at, files{name: sha256}, gate}
 # 6. verify   the keeper log must show a SNAPSHOT after the install and no Traceback within --verify-s (300 s);
@@ -46,7 +48,7 @@ while [ $# -gt 0 ]; do
     --verify-s) VERIFY_S=$2; shift 2 ;;
     --emergency) EMERGENCY=${2:-}; shift 2
       [ -n "${EMERGENCY// /}" ] || { echo "REFUSED: --emergency needs a non-empty reason" >&2; exit 64; } ;;
-    -h|--help) sed -n 2,27p "$0"; exit 0 ;;
+    -h|--help) sed -n 2,29p "$0"; exit 0 ;;
     *) echo "unknown arg $1" >&2; exit 64 ;;
   esac
 done
@@ -101,15 +103,15 @@ for f in "${FILES[@]}"; do
   if [ ! -f "$BIN/$f" ] || [ "$(sha256sum < "$CAND/$f")" != "$(sha256sum < "$BIN/$f")" ]; then CHANGED+=("$f"); fi
 done
 [ ${#CHANGED[@]} -gt 0 ] || { echo "deploy_rowflow: bin/rowflow already equals $SHA"; exit 0; }
-OPEN=$(find "$FLAGS/grants" -maxdepth 1 -name '*.grant' | wc -l)
-for f in "${CHANGED[@]}"; do
-  if [ "$f" = filler_run15.sh ] || [ "$f" = filler_lib.sh ]; then
-    if [ "$OPEN" -gt 0 ] && [ "$ALLOW_OPEN" = 0 ]; then
-      echo "REFUSED: $f changes while $OPEN grant(s) are open (running pollers re-read the engine); retry when grants/ is empty or pass --allow-open-grants" >&2
-      exit 75
-    fi
-  fi
-done
+# no-hold deploys (operator 2026-11-07): rows armed by a snapshot-aware keeper run their own engine copy
+# (<flags>/dryrun/<id>/engine/), so only LEGACY open grants - pollers that still read bin/rowflow/ - can block a change to
+# a file a running poller re-reads (rowflow.ENGINE_REREAD). The candidate's own deploy_guard decides.
+GUARD_ARGS=(); [ "$ALLOW_OPEN" = 1 ] && GUARD_ARGS=(--allow-open-grants)
+if ! GUARD=$(ROWFLOW_FLAGS="$FLAGS" python3 -I "$CAND/rowflow.py" --flags "$FLAGS" deploy-guard --changed "${CHANGED[@]}" "${GUARD_ARGS[@]}" 2>&1); then
+  echo "$GUARD" >&2
+  exit 75
+fi
+echo "deploy_rowflow: guard: $GUARD"
 
 # ---- 4. install
 T0=$(date -u +%s)

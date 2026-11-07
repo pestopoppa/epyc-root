@@ -781,7 +781,81 @@ def sc_multiquarter_never_q3(path):
     return write(path, [({rid: r}, world)] * 3), check
 
 
+def _backfill_rows(gpu=True):
+    """2026-11-07 incident: lsa-quality-32k-20261106-r8-{dense,pca} hold q0+q1 for 10 h; the whole-host row
+    c7-local-code28k-20261106-r3 (q0-q3) waits; rows that need only q2 / q3 / the GPU are ready."""
+    lsa_d = row("lsa-r8-dense", regions="any-of q0", extra="python3 job.py --workers 24", est=36000, rank=20)
+    lsa_p = row("lsa-r8-pca", regions="any-of q1", extra="python3 job.py --workers 24", est=36000, rank=20)
+    wide = row("c7-code28k-r3", regions="q0,q1,q2,q3", claim="0-95", extra="make -j 96", est=5400, rank=40,
+               man={"shape": "host", "declared_shape": "host", "baseline_ref": "replay fixture: whole-host serving"})
+    wide["pass"]["passed_at"] = _iso(T0 - 4 * 3600)   # waited > DRAIN_AFTER_S: the wide row drains
+    q2 = row("bf-q2-build", regions="any-of q2", extra="make -j 24", est=3 * 3600, rank=60)
+    q3 = row("bf-q3-build", regions="any-of q3", extra="make -j 24", est=3 * 3600, rank=60)
+    rows = {"lsa-r8-dense": lsa_d, "lsa-r8-pca": lsa_p, "c7-code28k-r3": wide, "bf-q2-build": q2, "bf-q3-build": q3}
+    if gpu:
+        rows["bf-gpu-tests"] = row("bf-gpu-tests", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=2 * 3600,
+                                   rank=60, extra="ctest --test-dir build-hip", man={"admission_class": "correctness"})
+    return rows
+
+
+def sc_backfill_if_fits(path):
+    """Backfill-if-fits (operator 2026-11-07 "Approve + deploy"): LSA holds q0+q1 (10 h left), a whole-host row waits;
+    the q2 / q3 / GPU rows end long before the whole-host row's earliest feasible start (the LSA grants' end), so they
+    are granted. A foreign hold with no known end on q1 (tick 1) makes the start UNKNOWN: no reservation at all."""
+    rows = _backfill_rows()
+    lsa = {k: rows[k] for k in ("lsa-r8-dense", "lsa-r8-pca")}
+    ticks = [(lsa, {})] + [(rows, {})] * 4
+
+    def check(d):
+        out = []
+        if not _granted(d, "lsa-r8-dense") or not _granted(d, "lsa-r8-pca"):
+            return ["fixture: the LSA rows were not granted on tick 0"]
+        for rid in ("bf-q2-build", "bf-q3-build", "bf-gpu-tests"):
+            if not _granted(d, rid):
+                out.append(f"{rid} never granted: q2/q3/gpu idled behind the whole-host row's drain")
+        if _granted(d, "c7-code28k-r3"):
+            out.append("fixture: the whole-host row was granted while q0+q1 are busy")
+        return out
+    return write(path, ticks), check
+
+
+def sc_backfill_reserve_binds(path):
+    """Counter-case: a row that would END AFTER the whole-host row's earliest feasible start may not take its regions."""
+    rows = _backfill_rows(gpu=False)
+    long_q2 = row("bf-q2-long", regions="any-of q2", extra="make -j 24", est=20 * 3600, rank=60)
+    rows = {k: v for k, v in rows.items() if k not in ("bf-q2-build", "bf-q3-build")}
+    rows["bf-q2-long"] = long_q2
+    lsa = {k: rows[k] for k in ("lsa-r8-dense", "lsa-r8-pca")}
+    ticks = [(lsa, {})] + [(rows, {})] * 3
+
+    def check(d):
+        return [f"bf-q2-long (ends after the whole-host start) granted at tick {i}" for i, _ in _granted(d, "bf-q2-long")]
+    return write(path, ticks), check
+
+
+def sc_backfill_expired_drain(path):
+    """Expired drains never block: a persisted drain T in the past (the wide row's T may only move earlier) must not
+    keep q2/q3 idle. Ticks 0-16: q0+q1 foreign (no end known); from tick 16 the drain's persisted T has expired."""
+    rows = _backfill_rows(gpu=False)
+    wide = {"c7-code28k-r3": rows["c7-code28k-r3"]}
+    world = {"foreign": {"q0": "foreign-lsa-dense", "q1": "foreign-lsa-pca"}}
+    tw = TraceWriter(path, "scenario", "")
+    for i in range(16):
+        tw.tick(T0 + i * TICK, wide, **world)
+    rest = {k: rows[k] for k in ("c7-code28k-r3", "bf-q2-build", "bf-q3-build")}
+    for i in range(16, 20):
+        tw.tick(T0 + i * TICK, rest, **world)
+    tw.close()
+
+    def check(d):
+        return [f"{rid} never granted after the drain expired" for rid in ("bf-q2-build", "bf-q3-build") if not _granted(d, rid)]
+    return path, check
+
+
 SCENARIOS = {
+    "backfill-if-fits-lsa-whole-host": sc_backfill_if_fits,
+    "backfill-reserve-binds-long-row": sc_backfill_reserve_binds,
+    "backfill-expired-drain-never-blocks": sc_backfill_expired_drain,
     "multiquarter-never-q3": sc_multiquarter_never_q3,
     "override-multiquarter-books-two": sc_override_multiquarter_books_two,
     "stopped-never-granted": sc_stopped,

@@ -59,6 +59,11 @@ DISK_FLOOR_GIB = float(os.environ.get("ROWFLOW2_DISK_FLOOR_GIB", "150"))  # == f
 DISK_RESUME_GIB = float(os.environ.get("ROWFLOW2_DISK_RESUME_GIB", str(max(180.0, DISK_FLOOR_GIB + 30.0))))  # pause-with-hysteresis (operator 2026-11-07)
 DISK_EMERGENCY_GIB = min(float(os.environ.get("ROWFLOW2_DISK_EMERGENCY_GIB", "50")), DISK_FLOOR_GIB)       # the only hard-kill floor (the launcher's)
 HOLD_FILE = "HOLD-ADMISSIONS"
+HOLD_NAME_RE = re.compile(r"^HOLD_[A-Za-z0-9_-]+$")   # operator emergency stop: EXACT names only (mirror rowflow.operator_holds)
+NO_RESERVE_UNKNOWN = True    # operator 2026-11-07 (mirror rowflow BACKFILL_IF_FITS): the first non-fitting row reserves NOTHING
+                             # when its earliest start is unknown (a needed grant without an end), not in the future (expired
+                             # grants: they free any moment) or beyond the longest busy window. False = the pre-fix rule (a hold
+                             # with eta=now that no lower row can ever satisfy): the negative control.
 GPU_BUSY_GLOB = os.environ.get("ROWFLOW2_GPU_BUSY_GLOB", "/sys/class/drm/card*/device/gpu_busy_percent")  # amdgpu utilisation
 CONFIG = ("FLAGS", "KFD_PROC", "PROC", "RAM_BOOKABLE_GIB", "DISK_PATH", "DISK_FLOOR_GIB", "DISK_RESUME_GIB", "DISK_EMERGENCY_GIB", "GPU_BUSY_GLOB")
 
@@ -102,7 +107,8 @@ SPEC_OPTIONAL = {"quiet_reason": str, "measured_ack": str, "supersedes": (str, l
 FACTS = ("NCORES", "GPU_HOST_THREADS", "GPU_SIBLING_CORES", "QUARTERS", "ROW_CORES", "SCHEMA", "LEGACY_SCHEMA", "GPU_MODES",
          "ENDED_REASONS", "SPEC_FIELDS", "SPEC_OPTIONAL", "FACTS", "TUNABLES", "CONFIG", "IDLE_WARN_S", "IDLE_HELD_RETRY",
          "PARK_ON_REFUSAL", "REFUSAL_RCS", "REFUSAL_REASONS", "COMPLETE_BEATS_DEAD", "GPU_IDLE_BY_GPU_SIGNALS", "GPU_IDLE_PCT",
-         "RANK_AT_GRANT_TIME", "SMOKE_RANK_GATE", "VRAM_SAMPLE_S", "RESIDENCY_SCHEMA", "RESIDENCY_MIN_BYTES")
+         "RANK_AT_GRANT_TIME", "SMOKE_RANK_GATE", "VRAM_SAMPLE_S", "RESIDENCY_SCHEMA", "RESIDENCY_MIN_BYTES",
+         "HOLD_FILE", "HOLD_NAME_RE", "NO_RESERVE_UNKNOWN")
 
 
 # ============================================================== util
@@ -717,10 +723,25 @@ def disk_pause_step(paused, free_gib, floor=None, resume=None):
     return True if free_gib < floor else (False if free_gib >= resume else bool(paused))
 
 
+def operator_holds(flags):
+    """<flags>/HOLD_<NAME> files with an exact name resolving to an existing file; HOLD_X.lifted-symlink, *.disabled and
+    dangling links never hold (2026-11-07: a renamed HOLD_ADMISSIONS.lifted-symlink idled q2/q3/GPU for hours)."""
+    out = []
+    for p in sorted(glob.glob(os.path.join(flags, "HOLD_*"))):
+        n = os.path.basename(p)
+        if ".lifted" in n or ".disabled" in n or not HOLD_NAME_RE.match(n) or not os.path.isfile(p):
+            continue
+        out.append(n)
+    return out
+
+
 def admission_hold(flags, paused_prev=False, free_gib=None, log=None, prev_reason=None):
     """(reason|None, paused). Reason when HOLD-ADMISSIONS exists (owner/reason lines) or the disk is paused (hysteresis state
     or the launcher's disk-pause/PAUSED marker). Logs ONLY when the reason changes (prev_reason carried by the caller)."""
     reasons = []
+    ops = operator_holds(flags)
+    if ops:
+        reasons.append("operator emergency stop " + ",".join(ops))
     hp = os.path.join(flags, HOLD_FILE)
     if os.path.exists(hp):
         kv = dict(ln.split("=", 1) for ln in _text(hp).splitlines() if "=" in ln)
@@ -746,7 +767,7 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
     run beside foreign clients); the moment it is True the ranking below runs over EVERY grantable row as it stands
     NOW, so the best-ranked exclusive row is granted - never the one whose wait happened to start first, and never one
     that arrived mid-wait unless it is the best-ranked."""
-    plan, seen = Plan(), set()
+    plan, seen, hold_tried = Plan(), set(), False
     if hold:   # operator 2026-11-07: nothing NEW is granted; open grants are untouched
         for s0 in pending:
             plan.skipped[s0["id"]] = "admissions held: " + hold
@@ -811,7 +832,8 @@ def admit(pending, grants, now, ram_cap=RAM_BOOKABLE_GIB, disk_free=None, smoke_
                 why = "cpus busy" if _pick(need, free) is None else f"cpus held-for {h.id} until {iso(h.eta)}"
         if why:
             plan.skipped[rid] = why
-            if plan.hold is None:
+            if plan.hold is None and not hold_tried:   # only the FIRST non-fitting row may reserve (it may reserve nothing)
+                hold_tried = True
                 plan.hold = _make_hold(s, need, gpu_need, free_at, gpu_free_at, shared_free_at, now, grants, ram_cap)
             continue
         g = Grant(rid, pick, gpu_need if not s["quiet"] else "exclusive", bool(s["quiet"]), float(s["ram_gib"]),
@@ -850,6 +872,10 @@ def _make_hold(s, need, gpu_need, free_at, gpu_free_at, shared_free_at, now, gra
             break
         ram -= g.ram_gib
         eta = max(eta, g.end)
+    if NO_RESERVE_UNKNOWN:
+        longest = max(list(free_at.values()) + [gpu_free_at, shared_free_at] + [g.end for g in grants])   # incl. this plan's grants
+        if eta <= now or eta > longest:   # unknown / expired / beyond the longest busy window: no reservation at all
+            return None
     return Hold(s["id"], float(s["priority_rank"]), cores, gpu_need != "none", eta)
 
 

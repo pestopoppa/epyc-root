@@ -140,6 +140,7 @@ P4_CONTROLS = [
     ("GPU_IDLE_BY_DEVICE", "p4-gpu-grant-cpu-regions-not-judged", ("by CPU %",)),
     ("OVERRIDE_BOOKS_WIDTH", "override-multiquarter-books-two", ("2-quarter row granted",)),   # negative control: old code grants 1
     ("LOG_ON_TRANSITION", "p5-idle-held-logs-once", ("transition only",)),   # Pass 5 item 3: the pre-fix keeper logs every tick
+    ("BACKFILL_IF_FITS", "backfill-expired-drain-never-blocks", ("never granted after the drain expired",)),   # 2026-11-07
 ]
 
 
@@ -208,3 +209,25 @@ def test_negative_control_multiquarter_q3_rule_off_grants_q1_q3(work):
     assert dec is not None, err
     viol = list(check(dec))
     assert viol and any("q3" in v for v in viol), f"without the rule the row should be granted q1+q3; got {viol}"
+
+
+def test_negative_control_strict_reserve_fails_backfill_incident(work):
+    """operator 2026-11-07 (backfill-if-fits; mirrors rowflow2's "fit check removed" control): a copy of the candidate whose
+    drain lets NO lower row take the wide row's regions, fit or not, must FAIL the LSA / whole-host incident scenario -
+    proving it detects q2/q3/GPU idling behind a waiting whole-host row."""
+    import re
+    import shutil
+    old = os.path.join(work, "strict-reserve-cand")
+    shutil.copytree(CAND, old, ignore=shutil.ignore_patterns("__pycache__", "*.bak*"))
+    src = os.path.join(old, "rowflow.py")
+    text, n = re.subn(r"late = drain is not None and c is not drain and now \+ .*\n",
+                      "late = drain is not None and c is not drain\n", open(src).read(), count=1)
+    assert n == 1, "the drain fit check (late = ...) was not found in the candidate"
+    open(src, "w").write(text)
+    name = "backfill-if-fits-lsa-whole-host"
+    tpath, check = SC.SCENARIOS[name](os.path.join(work, name + ".neg.trace.jsonl"))
+    dec, err = RA.worker(old, tpath, os.path.join(work, "out", name + "-strict"))
+    assert dec is not None, err
+    viol = list(check(dec))
+    assert viol and any("idled behind the whole-host row" in v for v in viol), \
+        f"a strict reservation should keep q2/q3/gpu idle behind the whole-host row; got {viol}"

@@ -23,6 +23,7 @@ CLI:
 import ctypes
 import json
 import os
+import re
 import resource
 import shutil
 import sys
@@ -241,7 +242,8 @@ def check(cpus, granted=None, flags=FLAGS, disk_path=None, floor=DISK_FLOOR, own
     own = set(os.sched_getaffinity(0)) if own is None else set(own)
     if not affinity_subset(cpus, granted) or not affinity_subset(own, granted):
         raise RuntimeError(f"smoke affinity outside grant: own={sorted(own)} granted={sorted(granted)}")
-    if list(Path(flags).glob("HOLD_*")):
+    if [h for h in Path(flags).glob("HOLD_*") if re.fullmatch(r"HOLD_[A-Za-z0-9_-]+", h.name) and h.is_file()]:   # exact
+        # names only (rowflow.operator_holds, 2026-11-07): a renamed HOLD_X.lifted-symlink / .disabled never holds
         raise RuntimeError("global HOLD")
     if shutil.disk_usage(disk_path or Path(__file__).resolve().parent).free < floor:
         raise RuntimeError("disk below 150 GiB floor plus 1 GiB output reserve")

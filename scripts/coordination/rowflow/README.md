@@ -48,3 +48,31 @@ can prove the pre-fix keeper fails the incident scenario (`tests/replay/scenario
    only (never by the CPU % of the regions it holds); it reads `IDLE-HELD gpu-quiet` only after `GPU_IDLE_SAMPLES` (2)
    consecutive quiet samples (state `ws58-keeper-state/allocator/gpu_idle.json`). The dry run never raises
    `OVER-DECLARED busy_fraction` for a GPU-token row.
+
+## No-hold deploys and backfill-if-fits (operator 2026-11-07, emergency deploy into the frozen keeper)
+
+Origin: a global `HOLD-ADMISSIONS`, set so a keeper deploy could go out safely, idled q2, q3 and the GPU for hours; a
+renamed `HOLD_ADMISSIONS.lifted-symlink` still matched the keeper's `HOLD_*` glob; and the whole-host row
+`c7-local-code28k-20261106-r3` (q0-q3) was reported as keeping q2/q3 drained while the LSA rows held q0/q1 for 10+ h.
+
+1. **Engine snapshot at row launch** (`ENGINE_SNAPSHOT`). `arm_one` copies `filler_run15.sh` and every file a running
+   poller or launcher re-reads (`filler_lib.sh`, `notify.py`, `diskpause.py`, `loop_metrics_hook.sh`) into
+   `<flags>/dryrun/<id>/engine/` (read-only, `ENGINE.json` with sha256s) and passes `FILLER_ENGINE_SNAPSHOT`; the live
+   engine re-execs that copy at once, so a running row executes only its snapshot. `ARMED.json` records
+   `engine_snapshot`. The live directory stays the home of shared state (`FILLER_ENGINE_HOME`).
+2. **Deploys need no hold.** `deploy_rowflow.sh` refuses (exit 75) only while LEGACY grants are open - pollers armed
+   before this change that still read `bin/rowflow/` (`rowflow.py --flags F legacy-grants` lists them;
+   `deploy-guard` decides) - unless `--allow-open-grants`. `deploy_when_drained.sh` sets no hold any more: it waits
+   for the legacy grants only, admissions continue.
+3. **Hold names.** `HOLD_<NAME>` stays the explicit operator emergency stop, matched by EXACT name only (no dot, no
+   suffix, an existing file): `*.lifted*`, `*.disabled*` and dangling links never hold (`operator_holds`).
+4. **Backfill-if-fits** (`BACKFILL_IF_FITS`, port of rowflow2 59f09b81e). A wide row that waited `DRAIN_AFTER_S`
+   reserves its regions only until its earliest feasible start S = the latest end of the grants (live smokes:
+   `SMOKE_HOLD_S`) holding the regions of its best option; a lower row may take them (free quarters or the GPU) iff
+   now + its estimate <= S. S unknown (a needed region held with no known end), not in the future, or beyond the
+   longest busy window -> no reservation at all (`NO-RESERVE` line). A persisted drain T is used only while it is
+   still in the future: an expired drain never blocks.
+
+Tests: `tests/test_rowflow_nohold_deploy.py` (a real poller on its snapshot survives a broken live engine set; the
+pre-fix guard refuses; hold names), `tests/test_rowflow_backfill_if_fits.py`; replay scenarios `backfill-*` with
+negative controls (`BACKFILL_IF_FITS` off; a strict reservation fails the LSA / whole-host incident scenario).

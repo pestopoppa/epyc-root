@@ -100,6 +100,11 @@ def test_idle_gate_is_not_vacuous(tmp_path, monkeypatch):
         plan.grants = [g for g in plan.grants if not g.cores & rf.QUARTERS[3] and g.gpu == "none"]
         return plan
     monkeypatch.setattr(rf, "admit", reserving)
+    # the wrapper strips grants AFTER admit, so the two-sided priority oracle would flag the mutation itself (it used to
+    # pass only by accident while an eta=now hold covered it; such holds are gone since NO_RESERVE_UNKNOWN, 2026-11-07).
+    # This control is about the idle budget only.
+    import rf2 as _rf2
+    monkeypatch.setattr(_rf2, "check_plan", lambda *a, **k: None)
     sim = run_day(tmp_path, 20261105)
     assert sim.idle_q > IDLE_BUDGET_QH and sim.idle_gpu > IDLE_BUDGET_GPUH, (sim.idle_q, sim.idle_gpu)
 
