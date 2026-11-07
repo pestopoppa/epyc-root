@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 51,
+      "blocked": 50,
       "handoffs": 11,
       "oldest_advance": "2026-11-03",
-      "open": 676
+      "open": 662
     },
     "pipeline-integration-index.md": {
       "blocked": 3,
@@ -1359,11 +1359,11 @@
       ]
     },
     "long-context-program.md": {
-      "blocked": 2,
-      "closed": 101,
+      "blocked": 1,
+      "closed": 103,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
-      "open": 43,
+      "last_advanced": "2026-11-07",
+      "open": 32,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1372,36 +1372,36 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 146,
+      "total": 136,
       "tracks": [
         {
-          "blocked": 1,
-          "closed": 57,
+          "blocked": 0,
+          "closed": 58,
           "gates": [
             "RTG-58"
           ],
           "guarded": 0,
-          "line": 33,
+          "line": 17,
           "markers": 1,
           "name": "yarn-context-extension-research",
-          "open": 26
+          "open": 22
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1189,
+          "line": 598,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
-          "open": 5
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1931,
+          "line": 970,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1411,20 +1411,20 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 3163,
+          "line": 1586,
           "markers": 1,
           "name": "streaming-llm-baseline",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 1,
-          "closed": 26,
+          "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 3457,
+          "line": 1733,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 11
+          "open": 9
         }
       ]
     },
@@ -1492,10 +1492,10 @@
     },
     "model-architecture-readiness.md": {
       "blocked": 0,
-      "closed": 27,
+      "closed": 28,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 14,
+      "last_advanced": "2026-11-07",
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1504,11 +1504,11 @@
       },
       "row_id": "INF-33",
       "state": "active",
-      "total": 41,
+      "total": 39,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 9,
           "gates": [
             "INF-48"
           ],
@@ -1516,7 +1516,7 @@
           "line": 12,
           "markers": 1,
           "name": "log-linear-gated-deltanet-readiness",
-          "open": 5
+          "open": 2
         },
         {
           "blocked": 0,
