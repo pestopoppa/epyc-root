@@ -4442,3 +4442,13 @@ Sources: [progress](../progress/2026-11/2026-11-05-operator-adhoc-ops-20261105.m
 - **AC9 amended (operator, "Option B"):** under the bounded 16-claim budget, higher-ranked target-tier claims can fill every slot before a plain measurement such as KPF-18 item 7. That item now counts when it is in the reader's collected evidence and in the `Shown n of N <tier>` line; being shown with a value line is reported, not required. Options C (budget 24) and D (leave failing) were rejected.
 
 Sources: [vidya trackc canary progress](../progress/2026-11/2026-11-07-vidya-trackc-canary.md) · [belief-storage-redesign](../docs/design/belief-storage-redesign-2026-10-21.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md)
+
+## Compiled Update — 2026-11-07 (Vidya canary B live PASS, frontier path unexercised, run-prep triage)
+
+**Confidence: verified** (handoff ticks and audit note; commit ids as recorded there).
+
+- **Canary B with the live embedder PASSED.** VB-CANARY-B-LIVE-EMBEDDER, VB-CANARY-GATE-1 and VB-CANARY-GATE are ticked. This closes the Track C canary gate described in the earlier 2026-11-07 update.
+- **Coverage gap found by audit (`6de195a39`):** trial 1472 is `pareto_status=frontier` but `keep_revert_decision=excluded` and predates the epoch fence (2026-08-10T16:23Z), so hiding it is correct. There are zero journal trials after the fence, so the live-frontier path to the planner is unexercised: canary B proves the belief and strategy channels only. New box VB-CANARY-B-FRONTIER fires on the first post-fence non-excluded frontier keep.
+- **Run-prep triage (`aad79a11b`):** two GPU rows were published (`vidya-r18d-aa-wire-20261104`, `vidya-r234-native-sweep-20261104`); the kvq-v10 sweep is held until no llama-server is live. Nothing was ticked. Boxes without a producer run now carry dated trigger notes (SR-8 acceptance wire, AK GPU controls, elementwise UNSUPPORTED follow-up). The seven VB-PARK-* umbrellas and SC21 are decline candidates awaiting an operator decision; none was declined.
+
+Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [operator-adhoc-ops progress](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md) · [vidya trackc canary progress](../progress/2026-11/2026-11-07-vidya-trackc-canary.md)

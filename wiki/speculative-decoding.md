@@ -3191,3 +3191,14 @@ Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.
 - **Two boxes are not runnable as written:** mtp-target-precision lost its `/dev/shm` inputs (volatile scratch), and the EXL3 codec repeat has no target weights on disk and adds nothing to the existing CPU codec evidence (EXL3-2, 719,096 checks).
 
 Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) · [wiki: inference-serving](inference-serving.md) · [wiki: moe-optimization](moe-optimization.md)
+
+## Compiled Update — 2026-11-07 (INF-50 triage, CAFE-4 rewind diagnostic, DF2-EXL3 target, graph writer-race r4)
+
+**Confidence: verified** (handoff records and filings by operator-adhoc-ops-20261105; the CAFE-4 and DF2-13 results are narrow diagnostics, not adoption claims).
+
+- **INF-50 triage (orchestrator `f92a89b8`, root `69daecf69`):** SPEC-CANARY.1, the passive per-request acceptance-collapse canary, is built. SPEC-GRAM.4, .6 and .7-HIP are declined, and SR-8 (edit speculation) is closed as FAIL. Six reassigned boxes have row specs drafted.
+- **CAFE-4 r2 PASS is the one-prompt rewind diagnostic only.** The parent box was un-ticked (`38ddd01b8`) because the pass does not cover the `-ngl` and verify-batch parts, which remain open. A pass on a narrow diagnostic must not close a wider parent.
+- **DF2-EXL3 target chosen (operator):** `turboderp/Qwen3.8-27B-exl3` at the `4.00bpw` branch, downloaded to `/mnt/raid0/llm/models/turboderp/Qwen3.8-27B-exl3-4.00bpw` with a pinned revision. The download writes a `REVISION` file on completion, and the codec CPU gate row binds that revision. This lifts the earlier "no target weights on disk" blocker.
+- **INF-50-GRAPH-WRITER-RACE r4** (`inf50-graph-writerrace-r4-20261107`, q0 19-worker private-HOME run of the pidfd writer fix) was running at 19:55Z with its precheck integrity PASS; it is filed only when its `.ended` marker appears.
+
+Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) · [operator-adhoc-ops progress](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md) · [wiki: inference-serving](inference-serving.md)
