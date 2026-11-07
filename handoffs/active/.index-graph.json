@@ -238,7 +238,7 @@
       "from": "EVL-47",
       "kind": "ref",
       "to": "PIP-04",
-      "weight": 1
+      "weight": 2
     },
     {
       "from": "EVL-47",
@@ -697,7 +697,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T15:04:07Z",
+  "generated_at": "2026-11-07T17:53:34Z",
   "nodes": [
     {
       "age_days": 4,
@@ -1410,17 +1410,17 @@
     },
     {
       "age_days": 1,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 356,
-      "dispatchable": 103,
+      "closed": 358,
+      "dispatchable": 102,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-06",
       "next_action": "VB-CANARY-GATE-1: re-run both loop canaries after Codex C1-C3 land; VB-CC-PILOT register; GNX-REINDEX-1 receipt",
-      "open": 105,
+      "open": 103,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1455,7 +1455,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 797,
+      "closed": 798,
       "dispatchable": 145,
       "domain": "inference-research",
       "guarded": 0,
@@ -1516,7 +1516,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5957,
+          "line": 5958,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1525,7 +1525,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6037,
+          "line": 6038,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1544,7 +1544,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6334,
+          "line": 6335,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1561,7 +1561,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9549,
+          "line": 9550,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1574,7 +1574,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13899,
+          "line": 13900,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1608,7 +1608,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14111,
+          "line": 14112,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2077,15 +2077,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 158,
-      "dispatchable": 49,
+      "closed": 159,
+      "dispatchable": 48,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-07",
       "next_action": "C8 rows published (C8-3 census, C8-1 H17, C8-2 H16 M=36, C8-6 GDN chunked): file verdicts as they land, then the C8-1 attention fix",
-      "open": 50,
+      "open": 49,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2119,7 +2119,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 44,
+          "dispatchable": 43,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2128,14 +2128,14 @@
           ],
           "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 45,
+          "open": 44,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1593,
+          "line": 1594,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2144,7 +2144,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1717,
+          "line": 1718,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2153,7 +2153,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2042,
+          "line": 2043,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2162,7 +2162,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2181,
+          "line": 2182,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2171,7 +2171,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2737,
+          "line": 2738,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2183,7 +2183,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2877,
+          "line": 2878,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2195,7 +2195,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2884,
+          "line": 2885,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
