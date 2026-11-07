@@ -9,10 +9,24 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-07T19:32:06Z",
-  "mode": "touch",
-  "scan_time": "2026-11-07T19:32:06Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 3,
+      "removed": 0
+    },
+    "at": "2026-11-07T19:58:15Z",
+    "scope_paths": [
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/speculative-decoding.md",
+      "progress/2026-11/2026-11-07-main-inf22.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-07T19:58:15Z",
   "schema_version": 1,
-  "source_set_hash": "c192cf20fe4e3036d3b0b1d9a4b759d64c0e37f02a92aa0c8c3d7df726b0ce06",
+  "source_set_hash": "e6107bc90a47a5e7839eafbbab89a7d8755f23f222dd214e3eb497850e15b051",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -119,10 +133,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "94b63f0c7be831a4bd6c9fd3af6e10a0eeac38b9dc4bc7744e97ae69de22e10e",
-      "modified": "2026-11-07T19:30:26Z",
+      "content_hash": "54d40217897d686f692e1eb6de59197557faa841174ed4344c55032ff22389aa",
+      "modified": "2026-11-07T19:55:38Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 581883,
+      "size": 583042,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -215,10 +229,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "70f6990310f783a444ae96297b27229102cb03427a7afb4def475989587928fc",
-      "modified": "2026-11-07T19:31:28Z",
+      "content_hash": "ea03c0417d714fc84e2c8ce16c7825d5a911be71969e711fcf07116d1f65f241",
+      "modified": "2026-11-07T19:54:34Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 349309,
+      "size": 349488,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -16447,10 +16461,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "0f8f47c54cd78c63fafca3c1465fba5db000c3787739e1984ce1536ac6d21076",
-      "modified": "2026-11-07T12:42:05Z",
+      "content_hash": "5283b9a860522d2fac4da0f02dbd929541bec3b2eac3f73ded399367caf2daac",
+      "modified": "2026-11-07T19:55:38Z",
       "path": "progress/2026-11/2026-11-07-main-inf22.md",
-      "size": 11538,
+      "size": 14052,
       "title": "2026-11-07 \u2014 main-inf22: Wrap-up 4 (work since 496ceb8e5 \"Wrap-up 3\")",
       "type": "progress"
     },

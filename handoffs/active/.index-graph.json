@@ -709,7 +709,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-07T19:36:33Z",
+  "generated_at": "2026-11-07T19:57:42Z",
   "nodes": [
     {
       "age_days": 4,
@@ -2098,7 +2098,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-07",
-      "next_action": "C8 rows published (C8-3 census, C8-1 H17, C8-2 H16 M=36, C8-6 GDN chunked): file verdicts as they land, then the C8-1 attention fix",
+      "next_action": "C8 gates in flight: LCATTN r3, H18, H20, 3a, X-sweep; then publish c8-fold0-gate and re-fold keeps",
       "open": 50,
       "priority": 0.9075,
       "priority_basis": {
@@ -2149,7 +2149,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1597,
+          "line": 1601,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2158,7 +2158,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1721,
+          "line": 1725,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2167,7 +2167,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2046,
+          "line": 2050,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2176,7 +2176,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2185,
+          "line": 2189,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2185,7 +2185,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2741,
+          "line": 2745,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2197,7 +2197,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2881,
+          "line": 2885,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2209,7 +2209,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2888,
+          "line": 2892,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2645,7 +2645,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2470,
+          "line": 2471,
           "name": "opendataloader-pipeline-integration",
           "open": 6,
           "readiness": "ready"
@@ -2654,7 +2654,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2578,
+          "line": 2579,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "no_open"
@@ -2663,7 +2663,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2947,
+          "line": 2948,
           "name": "sliders-local-validation",
           "open": 1,
           "readiness": "ready"
