@@ -4810,7 +4810,11 @@ def test_audit_shadow_preserves_source_done_and_synthesizes_one_targeted_audit(
     assert len(request) == 1
     bus.validate_row(bus_root, request[0], "msg")
     assert request[0]["payload"]["completion_msg_id"] == done["id"]
-    assert coordinator.apply_assignment(bus_root, config, epoch=8) == []
+    # BUS-AUD-1: P3-4 (860fac3d9, 2026-08-16) made every tick end with one
+    # `fleet-health` advisory, so the 2026-08-13 `== []` expectation went stale. Idempotence means
+    # no second audit work, not a silent tick: assert nothing but the health advisory.
+    second = coordinator.apply_assignment(bus_root, config, epoch=8)
+    assert [r for r in second if r.get("kind") != "fleet-health"] == []
     assert len([r for r in _read_jsonl(bus_root / "queue.jsonl") if r["task_id"] == audit_id]) == 2
 
 
@@ -5310,3 +5314,66 @@ def test_R16_the_write_path_refuses_even_when_the_pick_path_is_bypassed(
     assert "write path" in refusals[0]["reason"], refusals[0]
     assert bus.fold_queue(bus_root)["T-bypassed"]["status"] == "READY"
     assert _task_assigns(bus_root, "alice") == []
+
+
+# ---------------------------------------------------------------- CTX-HO-2
+def _transfer_row(tid: str = "xfer-1", **over: object) -> dict:
+    row = {"transfer_id": tid, "source_point": "msg-A-10", "base_point": "msg-A-4",
+           "coverage": "msg-A-5..msg-A-10", "selected_ids": ["msg-A-6", "msg-A-9"],
+           "omitted_ids": ["msg-A-7"], "budget_bytes": 4096, "status": "pending"}
+    row.update(over)
+    return row
+
+
+def _transfer_append(root: Path, agent: str, row: dict) -> int:
+    return bus.main(["--bus-root", str(root), "append", "--agent", agent,
+                     "--target", "transfer", "--json", json.dumps(row)])
+
+
+def test_transfer_ledger_two_mains_consume_once(bus_root: Path) -> None:
+    """Two mains race for one transfer: exactly one consume wins, the ledger holds
+    pending + one consumed, and the loser is deduped on transfer_id."""
+    _provision(bus_root, *AGENTS)
+    assert _transfer_append(bus_root, bus.COORDINATOR_DAEMON, _transfer_row()) == 0
+    assert bus.consume_transfer(bus_root, "xfer-1", "alice") is True
+    assert bus.consume_transfer(bus_root, "xfer-1", "bob") is False
+    ledger = _read_jsonl(bus_root / "transfers" / "ledger.jsonl")
+    assert [r["status"] for r in ledger] == ["pending", "consumed"]
+    assert ledger[1]["consumer"] == "alice" and ledger[1]["consumed_at"]
+    with pytest.raises(bus.BusError):
+        bus.consume_transfer(bus_root, "no-such", "alice")
+
+
+def test_transfer_ledger_single_writer_and_negative_controls(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    # a main may not write the coordinator-owned ledger
+    assert _transfer_append(bus_root, "alice", _transfer_row()) != 0
+    assert not (bus_root / "transfers" / "ledger.jsonl").exists()
+    assert _transfer_append(bus_root, bus.COORDINATOR_DAEMON, _transfer_row()) == 0
+    # duplicate pending, consumed-without-consumer, skipping to a missing id: all refused
+    assert _transfer_append(bus_root, bus.COORDINATOR_DAEMON, _transfer_row()) != 0
+    assert _transfer_append(bus_root, bus.COORDINATOR_DAEMON,
+                            _transfer_row(status="consumed")) != 0
+    assert _transfer_append(bus_root, bus.COORDINATOR_DAEMON,
+                            _transfer_row("other", status="consumed",
+                                          consumer="alice", consumed_at="t")) != 0
+    # coverage may not drift after the first event
+    assert _transfer_append(bus_root, bus.COORDINATOR_DAEMON,
+                            _transfer_row(status="superseded", budget_bytes=1)) != 0
+    assert len(_read_jsonl(bus_root / "transfers" / "ledger.jsonl")) == 1
+
+
+def test_handoff_transfer_message_kind_is_coordinator_authored(bus_root: Path) -> None:
+    _provision(bus_root, *AGENTS)
+    msg = {"to": "bob", "kind": "handoff-transfer", "payload": {"transfer_id": "xfer-1"}}
+    assert bus.main(["--bus-root", str(bus_root), "append", "--agent", "alice",
+                     "--target", "outbox", "--json", json.dumps(msg)]) != 0
+    assert not _read_jsonl(bus_root / "outbox" / "alice.jsonl")
+    bad = dict(msg, payload={"transfer_id": ""})
+    with pytest.raises(bus.BusError):
+        bus.validate_row(bus_root, dict(bad, schema_version=bus.MSG_SCHEMA_VERSION, id="msg-20261107T000000Z-1-coordinator-agent",
+                         ts="t", **{"from": "coordinator-agent"}), "msg")
+    good = dict(msg, schema_version=bus.MSG_SCHEMA_VERSION, id="msg-20261107T000000Z-2-coordinator-agent", ts="t",
+                **{"from": "coordinator-agent"})
+    bus.validate_row(bus_root, good, "msg")
+    bus.check_checkpoint_lifecycle_message(good)

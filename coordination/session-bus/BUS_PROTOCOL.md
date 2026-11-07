@@ -695,3 +695,5 @@ at `session-bus-thin-dispatcher.md` → C23.)
 
 An earlier attempt mis-flagged 11 of 25 scripts, because superseded and repaired scripts never
 receive receipts.
+
+`handoff-transfer` (CTX-HO-2) is coordinator-authored and carries only a `transfer_id`; the coverage record lives in the daemon-owned append-only `transfers/ledger.jsonl` (pending -> consumed|superseded). The first dispatch consumes it lazily; a second consume of the same transfer_id is refused.

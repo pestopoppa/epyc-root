@@ -50,6 +50,7 @@
             "checkpoint-integration-ready",
             "wrapup-request",
             "wrapup-complete",
+            "handoff-transfer",
             "compute-idle",
             "resource-lease-request",
             "resource-lease-grant",
@@ -409,6 +410,15 @@
               "audit_task_id": {"type": "string", "minLength": 1},
               "audit_verdict_id": {"type": "string", "minLength": 1}
             }
+          }}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "handoff-transfer"}}, "required": ["kind"]},
+          "then": {"required": ["payload"], "properties": {"payload": {
+            "description": "CTX-HO-2 (2026-11-07). Coordinator -> main pointer to a ledgered handoff transfer. The message carries only the transfer_id; the coverage record lives in transfers/ledger.jsonl and is resolved lazily on first dispatch.",
+            "type": "object", "additionalProperties": false,
+            "required": ["transfer_id"],
+            "properties": {"transfer_id": {"type": "string", "minLength": 1}}
           }}}
         },
         {
@@ -1183,6 +1193,29 @@
           }
         }
       ]
+    },
+    "transfer_record": {
+      "$id": "#transfer_record",
+      "title": "session_bus.transfer.v1",
+      "description": "CTX-HO-2. One append-only event in transfers/ledger.jsonl, written by the coordinator-daemon ONLY. Events per transfer_id: pending -> consumed (or superseded). Lazy resolution: the first dispatch that consumes a transfer appends `consumed` with consumer + consumed_at; a second consume of the same transfer_id is refused (ack deduped on transfer_id).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "ts", "transfer_id", "source_point", "base_point", "coverage",
+                   "selected_ids", "omitted_ids", "budget_bytes", "status", "consumer", "consumed_at"],
+      "properties": {
+        "schema_version": {"const": "session_bus.transfer.v1"},
+        "ts": {"type": "string", "minLength": 1},
+        "transfer_id": {"type": "string", "minLength": 1},
+        "source_point": {"type": "string", "minLength": 1},
+        "base_point": {"type": "string", "minLength": 1},
+        "coverage": {"type": "string", "minLength": 1},
+        "selected_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "omitted_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "budget_bytes": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["pending", "consumed", "superseded"]},
+        "consumer": {"type": ["string", "null"]},
+        "consumed_at": {"type": ["string", "null"]}
+      }
     },
     "queue_row": {
       "$id": "#queue_row",

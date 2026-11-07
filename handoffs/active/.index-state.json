@@ -28,13 +28,13 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 522
+      "open": 518
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 94
+      "open": 87
     }
   },
   "duplicates": {},
@@ -579,10 +579,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 342,
+      "closed": 346,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 56,
+      "open": 52,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -698,13 +698,13 @@
         },
         {
           "blocked": 0,
-          "closed": 1,
+          "closed": 5,
           "gates": null,
           "guarded": 0,
           "line": 6406,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 4
+          "open": 0
         }
       ]
     },
@@ -1072,10 +1072,10 @@
     },
     "harness-program.md": {
       "blocked": 18,
-      "closed": 231,
+      "closed": 238,
       "guarded": 0,
-      "last_advanced": "2026-11-05",
-      "open": 87,
+      "last_advanced": "2026-11-07",
+      "open": 80,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1180,13 +1180,13 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 7,
           "gates": null,
           "guarded": 0,
           "line": 3589,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 8
+          "open": 1
         }
       ]
     },

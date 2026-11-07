@@ -224,6 +224,8 @@ def required_writer(bus_root: Path, target: Path) -> str:
     if rel.name in {"queue.jsonl", "advisory.jsonl", "boundary_state.json",
                     "stuck_state.json", "operator_escalation_state.json"} and len(parts) == 1:
         return COORDINATOR_DAEMON
+    if parts == ("transfers", "ledger.jsonl"):
+        return COORDINATOR_DAEMON
     if len(parts) == 2:
         area, fname = parts
         stem = fname.split(".")[0]
@@ -1507,6 +1509,54 @@ def check_task_assign(row: dict) -> list[str]:
     return warnings
 
 
+TRANSFER_SCHEMA_VERSION = "session_bus.transfer.v1"
+_TRANSFER_NEXT = {None: {"pending"}, "pending": {"consumed", "superseded"}}
+
+
+def check_transfer_event(existing: list[dict], row: dict) -> None:
+    """CTX-HO-2 ledger invariants (append-only, one lifecycle per transfer_id).
+
+    pending -> consumed | superseded; nothing follows a terminal state, so a
+    second consume of the same transfer_id is refused (ack deduped on
+    transfer_id). `consumed` must name its consumer and consumed_at; the other
+    states must not.
+    """
+    tid = row["transfer_id"]
+    prior = [r for r in existing if r.get("transfer_id") == tid]
+    last = prior[-1]["status"] if prior else None
+    if row["status"] not in _TRANSFER_NEXT.get(last, set()):
+        raise BusError(f"transfer {tid!r}: {last or 'no prior event'} -> {row['status']} is not "
+                       "a legal ledger transition (already consumed or superseded?)")
+    has = bool(row.get("consumer")) and bool(row.get("consumed_at"))
+    if (row["status"] == "consumed") != has:
+        raise BusError(f"transfer {tid!r}: consumer and consumed_at are required exactly on "
+                       "a `consumed` event")
+    if prior and any(row[k] != prior[0][k] for k in
+                     ("source_point", "base_point", "coverage", "selected_ids",
+                      "omitted_ids", "budget_bytes")):
+        raise BusError(f"transfer {tid!r}: coverage fields may not change after the first event")
+
+
+def consume_transfer(bus_root: Path, transfer_id: str, consumer: str) -> bool:
+    """Lazy resolution on first dispatch. Returns True for the one consume that
+    wins, False for any later one (deduped). Writes the ledger as the daemon."""
+    path = bus_root / "transfers" / "ledger.jsonl"
+    existing, _ = _read_jsonl(path)
+    prior = [r for r in existing if r.get("transfer_id") == transfer_id]
+    if not prior:
+        raise BusError(f"unknown transfer {transfer_id!r}")
+    if prior[-1]["status"] != "pending":
+        return False
+    row = {k: prior[-1][k] for k in ("transfer_id", "source_point", "base_point", "coverage",
+                                     "selected_ids", "omitted_ids", "budget_bytes")}
+    row.update(schema_version=TRANSFER_SCHEMA_VERSION, ts=_utcnow_iso(), status="consumed",
+               consumer=consumer, consumed_at=_utcnow_iso())
+    validate_row(bus_root, row, "transfer_record")
+    check_transfer_event(existing, row)
+    _append_jsonl(path, row)
+    return True
+
+
 def check_checkpoint_lifecycle_message(row: dict) -> None:
     """Authoring invariants for checkpoint, audit, and wrap lifecycle messages.
 
@@ -1536,6 +1586,10 @@ def check_checkpoint_lifecycle_message(row: dict) -> None:
         if (row.get("from") != COORDINATOR_DAEMON or
                 row.get("to") != "coordinator-agent"):
             raise BusError("checkpoint-integration-ready is daemon -> coordinator-agent only")
+        return
+    if kind == "handoff-transfer":
+        if row.get("from") not in {"coordinator-agent", COORDINATOR_DAEMON}:
+            raise BusError("handoff-transfer may be authored only by coordinator authority")
         return
     if kind == "wrapup-request":
         if row.get("from") != "coordinator-agent" or row.get("to") != "auditor":
@@ -1582,6 +1636,12 @@ def cmd_append(args: argparse.Namespace) -> int:
     elif args.target == "outbox":
         path = bus_root / "outbox" / f"{args.agent}.jsonl"
         definition = "msg"
+    elif args.target == "transfer":
+        path = bus_root / "transfers" / "ledger.jsonl"
+        definition = "transfer_record"
+        row.setdefault("schema_version", TRANSFER_SCHEMA_VERSION)
+        row.setdefault("consumer", None)
+        row.setdefault("consumed_at", None)
     else:  # heartbeat
         path = bus_root / "heartbeats" / f"{args.agent}.json"
         owner = required_writer(bus_root, path)
@@ -1621,6 +1681,8 @@ def cmd_append(args: argparse.Namespace) -> int:
         row.setdefault("id", f"msg-{stamp}-{len(existing) + 1}-{args.agent}")
 
     validate_row(bus_root, row, definition)
+    if definition == "transfer_record":
+        check_transfer_event(existing, row)
     if definition == "msg":
         _check_routing_intent(bus_root, row)
         check_checkpoint_lifecycle_message(row)
@@ -2693,7 +2755,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     ap = sub.add_parser("append", help="append a schema-validated row to a file you own")
     ap.add_argument("--agent", required=True)
-    ap.add_argument("--target", required=True, choices=["queue", "inbox", "outbox", "heartbeat"])
+    ap.add_argument("--target", required=True, choices=["queue", "inbox", "outbox", "heartbeat", "transfer"])
     ap.add_argument("--to", help="recipient agent (required for --target inbox)")
     ap.add_argument("--json", required=True, help="the row/message as a JSON object")
     ap.set_defaults(func=cmd_append)
