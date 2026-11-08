@@ -2,8 +2,17 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
+**Last compiled**: 2026-11-08 (operator wiki sweep, main-inf22). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): YaRN 128K MI210 R10 READY, aggregate-1g interim, CPU/GPU PPL offset unexplained, five harness failures. Earlier: 2026-10-28 (HELMET restoration and fresh Oolong cohort approved, not run). Earlier: 2026-10-27 19:06Z (YaRN extension arms remain NOT-FAIL-underpowered; HELMET restoration is preparation only). Earlier: 2026-10-27 (operator wiki sweep, workspace-58): YaRN extension arms are NOT-FAIL-underpowered, Oolong-synth@400k reads 0.093, and the YaRN K-shift fix passes its test. Earlier: 2026-10-22 (wrap-up sweep 10: native-window answer change is not regression, agent-made judge labels). Earlier: 2026-10-22 (wrap-up sweep 9: the native-window gate reads NOT-FAIL on 2 discordant pairs). Earlier: 2026-10-21 (wrap-up sweep 5: YARN-AGG-1/JUDGE-1 spec, Oolong adapter, K-shift fix queued). Earlier: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
+
+## Compiled Update — 2026-11-08 (operator wiki sweep, main-inf22): the YaRN x2 native-window gate ends NOT-FAIL but borderline
+
+- Row `yarn-native-window-gate-20261106` (rows r4-r6; 756 paired probes, 24 chains, 0 invalid; C7 store, Qwen3.8-27B Q8_0, native -c 262144 vs YaRN x2 -c 524288): primary one-sided cluster sign-flip p = 0.0558 (FAIL iff <= 0.05); b 28 (native right, YaRN wrong) vs c 15; accuracy 67.3% vs 65.6% (-1.7 pp). Item-level McNemar p 0.033 is descriptive only. The difference sits at long depth (long zone 57.9% vs 54.2%; 128k b 6 / c 1); short zone 72.7% vs 73.1%. Not an equivalence or safety claim: the no-regression concern at 128k remains open, and YaRN >= 256k stays parked.
+
+### Source References (2026-11-08 main-inf22 operator wiki sweep)
+- `progress/2026-11/2026-11-08-main-inf22.md`
+- `handoffs/active/kernel-champion-and-promotion.md` (C8 package boxes; rows filed with their RESULT.json paths)
+- `handoffs/active/long-context-program.md` (YARN-NATIVE-WINDOW-GATE)
 
 ## Compiled Update — 2026-11-07 (operator wiki sweep, main-inf22): YaRN 512k fits the MI210 once GPU-LEAK-1 is fixed; D-LSA GPU fast path is futile at 32k
 
@@ -449,4 +458,4 @@ The YaRN oolong program (YARN-OOLONG-V38-RESUME) moved from the operator ad-hoc 
 - **Resume conditions:** an LSA speed path becomes live again (a new indexer design, or LSA-CPU-SPARSE), or YaRN >=256k is unparked. The runner exits 75 on STOP and re-runs only missing cells, so resuming continues from the ledger; its scratch must not be reclaimed.
 - **LSA-MOE-1** (A3B frozen-teacher capture and PCA projections for its ten global layers) moved from `model-architecture-readiness.md` to step (d) of the D-LSA plan in the long-context program, keeping its gate: it starts only after the 27B screen reaches KEEP-QUALITY and one 27B fast path keeps. The move lets INF-33 (Engram) close independently.
 
-Sources: [long-context-program](../handoffs/active/long-context-program.md) · [model-architecture-readiness](../handoffs/active/model-architecture-readiness.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)
+Sources: [long-context-program](../handoffs/active/long-context-program.md) · [model-architecture-readiness](../handoffs/completed/model-architecture-readiness-completed-20261107.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)

@@ -49,7 +49,7 @@ Nothing in this pass changes the standing finding that sequential Delta Net veri
 
 ### Source References (2026-08-12)
 
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) — the three fired gates, checkpoint identity and license, and the inverted state-size derivation.
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the three fired gates, checkpoint identity and license, and the inverted state-size derivation.
 - [`progress/2026-08/2026-08-12.md`](../progress/2026-08/2026-08-12.md) — the retraction in its session context and the "three gates fired and were never checked" framing.
 - [`qwen36-27b-cpu-feasibility.md`](../handoffs/archived/qwen36-27b-cpu-feasibility.md) — CPU-side feasibility context for hybrid residents on this host.
 
@@ -176,7 +176,7 @@ Slot-promotion Phase 1 testing candidates: Qwen3.5-35B-A3B (75% Delta Net + 25% 
 
 ### Log-Linear Gated DeltaNet readiness (monitoring)
 
-Per [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness). Monitoring target (intake-356, ICLR 2026, by Songlin Yang + Tri Dao + Yoon Kim — the architecture creators). Gate criteria: pretrained checkpoint public + reference inference code available.
+Per [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness). Monitoring target (intake-356, ICLR 2026, by Songlin Yang + Tri Dao + Yoon Kim — the architecture creators). Gate criteria: pretrained checkpoint public + reference inference code available.
 
 The strategic appeal of Log-Linear Gated DeltaNet is direct: the O(L log L) hidden state size is 4–10× smaller at 262K context (~2 GB → ~200–500 MB) and 20–25× smaller at 1M context. If state replay cost drops by the same factor, the verification-wall cost model assumption that closed the 7 prior approaches is fundamentally weakened — slot-promotion + Log-Linear could compound, or Log-Linear alone could unblock the K-token-batch approach. Currently blocked on pretrained models. Highest strategic priority for the SSM-hybrid stack independent of slot-promotion outcome.
 
@@ -366,7 +366,7 @@ Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep
 
 From the intake-694 open-weights roundup triage: **NVIDIA Nemotron-3-Ultra-550B-A55B** (hybrid Transformer-**Mamba2** MoE, 55B active, 1M ctx, MMLU 89.1). The deep-dive **corrects the roundup's "GPU/NVFP4-gated" framing**: CPU-runnable GGUFs already exist (unsloth / DevQuasar BF16 + Q4; **Q4_K_M ≈ 300 GB RAM, fits our 1.1 TB host**; build `-DGGML_CUDA=OFF`). This is **not** Log-Linear Gated DeltaNet and **does not fire the GDN readiness gate** — but it is the first production-scale Mamba2-hybrid MoE available as a concrete artifact to smoke-test the **hybrid-SSM CPU decode / state-management path** on our llama.cpp fork. **Pre-req before any load**: verify it doesn't hit the Nemotron-Nano `mamba-base.cpp:173 GGML_ASSERT` regression (ggml-org/llama.cpp#20570) that has bitten sibling Nemotron GGUFs; MTP is unsupported in GGUF. Flagged as a P1 own-entry follow-up.
 
-Sources: [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/model-architecture-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness), intake-694.
+Sources: [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/model-architecture-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness), intake-694.
 
 ## GLM-5.2 / Dynamic Sparse Attention — the sparse-attention family's CPU blocker is the DSA forward pass (2026-06-21)
 
@@ -444,7 +444,7 @@ Recorded from the 2026-08-21 Stage-2b intake wave (dive-verified; no action atta
 ### Source References
 
 - [K28 fused chunked GDN kernel research (COMPLETED)](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the rocprofv1 attribution no-go, the serial-dependency diagnosis, the falsified-lever ledger, the SGLang four-stage finding, and the 2026-08-22 PR #24561/#26001 correction with the fp-numerics caveat.
-- [Log-Linear Gated DeltaNet readiness tracker](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) — the two runnability blockers, the port-from-`recurrent.py` consequence, the fixed-15-level/16K position bound, and the 2026-08-21 GDN branch map.
+- [Log-Linear Gated DeltaNet readiness tracker](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the two runnability blockers, the port-from-`recurrent.py` consequence, the fixed-15-level/16K position bound, and the 2026-08-21 GDN branch map.
 - intake-1030#record in [the research index](../research/intake_index.yaml) — the SGLang `fla/` four-stage enumeration and the kernel-name-drift lesson.
 - llama.cpp PR #24561 and issue #20354 (cited from the K28 handoff) — the closed-unmerged CDNA chunked MFMA kernel with maintainer-confirmed 5-10% E2E, and the AMD register-pressure landmine that motivated the CDNA2 caution.
 - epyc-inference-research commit `48350b24` + receipt `k28-rocprofv1-attribution-20260811-r3/receipt.json` (SHA-256 `9813060…`) — the durable attribution runner and the signed no-go evidence.
@@ -481,7 +481,7 @@ The branch map had one data point on the state-size axis (log-linear's 15×). GD
 ### Source References (2026-08-23 evening)
 
 - [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the SALA reattribution (Simple GLA, constant-decay), the zero-new-operators table, Z9/G18/B8, the #27018 pointer and the standing declines
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) — Gates 4/5 addendum, the GDN-2 1.0×-state axis (with log-linear 15× and PGDN ~0.8% beside it), the B9 decline cross-reference
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — Gates 4/5 addendum, the GDN-2 1.0×-state axis (with log-linear 15× and PGDN ~0.8% beside it), the B9 decline cross-reference
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — the CoT-SFT amnesia hazard (arXiv 2606.11052), the G1 S-NIAH-2 probe protocol and gate, the efficient-attention counter-argument (arXiv 2606.15378)
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert GDN-2 ggml delta and #26001's K==1 constraint (cross-listed with [Hardware Optimization](hardware-optimization.md))
 - [`k28-fused-chunked-gdn-kernel-research.md`](../handoffs/completed/k28-fused-chunked-gdn-kernel-research.md) — the #24561/#26001 correction: the no-go's MEASUREMENT stands, its premise about the state of the art did not
@@ -539,11 +539,11 @@ The 2026-08-22 section records that "our own GDN correctness cases top out at 25
 - The 512 and 1024 shapes exist **only** in `make_test_cases_perf()`. **Perf cases assert nothing.** Anyone grepping the file for "1024" will conclude we have coverage there; we do not.
 - **Every eval case that reaches 64–256 tokens runs at `head_count = 4, head_size = 64`, while our production geometry — H = 32, d = 128 — appears in the eval set only at `n_seq_tokens = 1`. Long-token coverage and production-geometry coverage are disjoint sets, and neither one implies the other.**
 
-Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8–32× above where our assertions stop**. This is why the numerics row (`G16` in [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness)) leads with **new eval cases at 2048 / 4096 / 8192 at H = 32, d = 128** rather than with a benchmark: importing a chunked kernel and running the shipped shapes tests nothing, and would be a vacuous verification of exactly the kind this gap describes. Its gate is NMSE under the **unrelaxed** 1e-7 at every shape *or* byte-identical greedy output at every length — **a relaxed threshold is not a pass**, because relaxing it deletes the only signal the row carries. Any adoption is `llama.cpp-experimental` work under the four-step promotion workflow; **v9 is FROZEN and nothing above proposes touching it**. `intake-1290#record`.
+Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8–32× above where our assertions stop**. This is why the numerics row (`G16` in [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness)) leads with **new eval cases at 2048 / 4096 / 8192 at H = 32, d = 128** rather than with a benchmark: importing a chunked kernel and running the shipped shapes tests nothing, and would be a vacuous verification of exactly the kind this gap describes. Its gate is NMSE under the **unrelaxed** 1e-7 at every shape *or* byte-identical greedy output at every length — **a relaxed threshold is not a pass**, because relaxing it deletes the only signal the row carries. Any adoption is `llama.cpp-experimental` work under the four-step promotion workflow; **v9 is FROZEN and nothing above proposes touching it**. `intake-1290#record`.
 
 ### Source References (2026-08-23 addendum)
 
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) — the ρ = L/L_FA record with the Appendix C.1 warning, the m-a-p `hybrid-4-1` correction, the GDN-2 state-vs-active-parameter rider, the `B9` decline, and the op-test coverage gap that shapes `G16`.
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the ρ = L/L_FA record with the Appendix C.1 warning, the m-a-p `hybrid-4-1` correction, the GDN-2 state-vs-active-parameter rider, the `B9` decline, and the op-test coverage gap that shapes `G16`.
 - [`multiscreen-attention-evaluation.md`](../handoffs/active/long-context-program.md#track-multiscreen-attention-evaluation) — the CoT-SFT amnesia hazard and `G1` probe contract (compiled in the 2026-08-23 evening section above, not restated here), and `Z12`, the zero-compute question of whether GDN-2's `b_proj`/`w_proj` can be low-rank factorized on the Kimi Linear `SSM_F_A`/`F_B` precedent already in our tree. **Z12-COMMIT is filed (2026-09-17):** the document that informs B9 (`epyc-inference-research/docs/gdn2-low-rank-static-analysis-2026-08-25.md`) is untracked on the research shared clone and on no ref, and must be committed; a verbatim copy (sha256 `5c3f5a42…d792`) is held in `/mnt/raid0/llm/backups/preserve-20260916/`.
 - [`mi210-big-model-and-acceleration-roadmap.md`](../handoffs/completed/mi210-serving-program.md#track-mi210-big-model-and-acceleration-roadmap) — the one-assert ggml delta for a channel-wise gate, the `K == 1` selection constraint, `G15` (#24561 on MI210, with its `MIN_BLOCKS_PER_SM` occupancy trap) and `B5` (do not stack chunked on the BF16 state lever, with the attention-output correction).
 - intake-1280#record, intake-1281#record, intake-1285#record, intake-1287#record, intake-1290#record in [the research index](../research/intake_index.yaml) — the dive-verified primary-source readings behind every figure above.
@@ -554,7 +554,7 @@ Chunked-GDN numerical failures are reported in the 2048–8192-token band, **~8�
 - [intake-1287#record](https://arxiv.org/abs/2602.11761) MiniCPM-SALA -- 9B sparse+linear hybrid, Apache-2.0, 8 of 32 layers block-sparse at clustered indices; linear half is constant-decay Simple GLA (NOT Gated DeltaNet) and memory is O(N) at 8 KiB/token (NOT a bounded exact side-cache -- do not file it alongside LTE/HOLA); the paper's "QK-Norm on all attention layers" is overturned by its own checkpoint (24 of 32, all linear); carries the CoT-SFT amnesia hazard (arXiv:2606.11052, HypeNet-9B NIAH-S2@256K 67.2% -> 9.4%, training-free QK-Restore fix)
 - [intake-1290](https://github.com/ggml-org/llama.cpp/pull/26001) llama.cpp chunked Gated DeltaNet prefill kernels -- PR #24561 (CLOSED unmerged on maintenance grounds, CDNA/gfx90a by construction, keep_rs/MTP supported, maintainer-confirmed 5-10% E2E) is the only usable candidate here; PR #26001 gates on GGML_CUDA_CC_IS_NVIDIA and K == 1, which --spec-type draft-mtp never satisfies; the log line "fused Gated Delta Net (chunked) enabled" is a backend-agnostic graph probe present in our own v9 and is never evidence a chunked kernel ran; chunked adoption is a length-dependent fp regression against today's fp32 sequential kernel, and GGML_CUDA_GDN_STATE_BF16 narrows the attention OUTPUT as well as the state
 
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) — the 2026-08-12 gate firing and state-size inversion, the 2026-08-22 Gates 4/5 addendum and runnability blockers
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) — the 2026-08-12 gate firing and state-size inversion, the 2026-08-22 Gates 4/5 addendum and runnability blockers
 - The page's own 2026-08-12 `### RETRACTED` section — the live sections above are reconciled to it, not to the original claim
 - [`lightning-attention-port.md`](../handoffs/active/model-evaluation-queue.md#track-lightning-attention-port) — the GLA-path context (Ring-mini / SALA) that the corrected Summary's "matmul-rich parallel form" claims must be read against
 
@@ -601,7 +601,7 @@ cheaply, before it silently gates every downstream hybrid/GDN decision.
 
 ### Source References (2026-08-27 G1 boundary sweep)
 
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) —
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) —
   the G1 task result, trial design and manifest pointer (2026-08-27).
 - [`frontier-f6-upstream-publication.md`](../handoffs/active/rocm-kernel-authoring.md#track-frontier-f6-upstream-publication) — the
   #27442 part-one artifact analysis this sweep completes; part two was recorded there as blocked on G1.
@@ -661,7 +661,7 @@ The correct output of this paper is this record, not an investigation.
 
 - `research/intake_index.yaml` `intake-1340#04` — the instrument-mismatch finding this record rests on, and
   the source of the four scope facts above.
-- [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) —
+- [`log-linear-gated-deltanet-readiness.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) —
   owner of the ρ = 4 record; carries the same rider.
 - The 2026-08-23 (wave-2 addendum) section above — where ρ = L/L_FA and production ρ = 4 are established;
   not restated here.
@@ -706,11 +706,11 @@ Sources: [KV prefix fork and paged attention](../handoffs/active/kv-cache-progra
 
 **Confidence: verified** for native correctness at the source gate (G16a) and diagnostic traces; G16 greedy A/B and keep-rs are open; no speed or promotion claim.
 
-- **G16a closed: chunked log-linear GDN fires on MI210 for all eight H=32/d=128 cases.** All eight F32 cases passed at the unchanged 1e-7 NMSE gate (rc0, 1/1 tests). The T=2048/4096/8192 `n_seqs=2` variants each emitted `[gdn] chunked dispatch` with 512 blocks vs floor 312 (keep_rs=0, K=1) and five one-sequence controls also passed, with own-PID KFD/VRAM samples on the exact candidate HIP image. Raw logs expose no NMSE magnitudes, so none is recorded; G16b was not triggered, and G16 greedy A/B, keep-rs and champion integration stay open. ([source](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness))
+- **G16a closed: chunked log-linear GDN fires on MI210 for all eight H=32/d=128 cases.** All eight F32 cases passed at the unchanged 1e-7 NMSE gate (rc0, 1/1 tests). The T=2048/4096/8192 `n_seqs=2` variants each emitted `[gdn] chunked dispatch` with 512 blocks vs floor 312 (keep_rs=0, K=1) and five one-sequence controls also passed, with own-PID KFD/VRAM samples on the exact candidate HIP image. Raw logs expose no NMSE magnitudes, so none is recorded; G16b was not triggered, and G16 greedy A/B, keep-rs and champion integration stay open. ([source](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness))
 - **INF-33 private fused_recurrent seam agrees with the CPU recurrence oracle.** Six CPU fixtures on pinned upstream 7f864415 (HGatedDeltaNet projections, short convs, gates, recurrent output) matched at rtol 3e-6, atol 2e-8, plus cache-continuation and refusal controls. Synthetic dimensions only: no Triton chunk-path, trained-checkpoint, ROCm or GGUF parity claim, and the checkpoint was not found locally. ([source](../progress/2026-10/2026-10-28-inf33-cpu-seam.md))
 - **Bolt (Mamba/SSM hybrid) decode profile: 40-scan groups visible, per-op attribution unresolved.** The resegmented trace shows 97 observed groups of 40 SSM scans (94 in the steady sample); Bolt step busy is 20.51 ms against 33.92 ms server wall per step, versus Qwen3.8-27B plain 32.89 ms busy and 56.98 ms wall. In the frozen-v9 G15 table `gated_delta_net_cuda` was rank 3 at 16.69% of GPU time. These are diagnostics; no hardware-counter cause for Bolt's ~53 vs ~100 t/s gap vs Qwen3.6-35B-A3B Q8 is established. ([source](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md))
 
-Sources: [log-linear-gated-deltanet-readiness](../handoffs/active/model-architecture-readiness.md#track-log-linear-gated-deltanet-readiness) · [G16a native](../progress/2026-10/2026-10-31-g16a-native.md) · [INF-33 CPU seam](../progress/2026-10/2026-10-28-inf33-cpu-seam.md) · [NEMO reseg](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md) · [AK-PM-16](../progress/2026-10/2026-10-30-codex-ni-ak-pm16-closeout.md)
+Sources: [log-linear-gated-deltanet-readiness](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-log-linear-gated-deltanet-readiness) · [G16a native](../progress/2026-10/2026-10-31-g16a-native.md) · [INF-33 CPU seam](../progress/2026-10/2026-10-28-inf33-cpu-seam.md) · [NEMO reseg](../progress/2026-10/2026-10-31-codex-ni-nemo-prof-reseg.md) · [AK-PM-16](../progress/2026-10/2026-10-30-codex-ni-ak-pm16-closeout.md)
 
 ## Compiled Update — 2026-11-01 (intake dive digest backfill, batch d, workspace-58)
 
@@ -765,6 +765,6 @@ Sources: [log-linear-gated-deltanet-readiness](../handoffs/active/model-architec
 - **A chunked GDN graph already exists in the frozen tree**; what the GDN/Mamba-2 readiness line lacks is the fused kernel, the quantization boundaries, INT8 stored state and the rho/tau/eta knobs — not the algorithm (intake-2642).
 - **The invariance algebra now has an executable spec.** `linquant/reference.py` is torch-only, float64, and maps exactly onto `chunk_core(family=delta, rho=1, tau=1, eta=0, read_post=False, qz=none)`, so it can serve as a CPU conformance oracle without weights (intake-2642).
 - **State-precision asymmetry**: an INT8 carry costs linear attention ~8% perplexity but only ~0.2-0.8% for decaying mixers, because decay damps accumulated error; state traffic is about 0.17% of per-token bytes today, so this is a prior, not a task (intake-2641#record, intake-2645).
-- **Filed work**: `GDN-ORACLE-1` (fp64 oracle) and `GDN-SHARE-1` (core-share profile that closes the LinQuant line below 5% of wall) in [model-architecture-readiness.md](../handoffs/active/model-architecture-readiness.md).
+- **Filed work**: `GDN-ORACLE-1` (fp64 oracle) and `GDN-SHARE-1` (core-share profile that closes the LinQuant line below 5% of wall) in [model-architecture-readiness.md](../handoffs/completed/model-architecture-readiness-completed-20261107.md).
 
 Sources: [repo dive](../research/deep-dives/quant-compiler-20261106/linquant-repo.md) · [LinQuant dive](../research/deep-dives/quant-compiler-20261106/linquant-paper.md) · [SSDi8 dive](../research/deep-dives/quant-compiler-20261106/ssdi8.md)

@@ -101,7 +101,7 @@ Open: Phase 0b authorization (operator/budget); real-trace re-check of the retri
 
 ### Source References (2026-10-20 sweep 2, memory-augmented)
 
-- [Engram conditional memory](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) — Track A closure, Track B Phase 0b, COUNT arm trigger, 2026-08-03 cluster.
+- [Engram conditional memory](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — Track A closure, Track B Phase 0b, COUNT arm trigger, 2026-08-03 cluster.
 - [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — store-migration follow-ons and the one-model-per-index invariant.
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — session-keyed store and summary frontier source acceptance.
 
@@ -126,7 +126,7 @@ M19 now has an accepted diagnostic record specification carrying per-question co
 
 ## Source References
 
-- [Engram conditional memory](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) — sweep 2 (2026-10-20)
+- [Engram conditional memory](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — sweep 2 (2026-10-20)
 - [REPL embedding retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval) — sweep 2 (2026-10-20)
 - [Conversation stack](../handoffs/active/speech-and-multimodal.md) — sweep 2 (2026-10-20)
 - [Checkpoint transport](../docs/reference/signed-checkpoint-payload-transport.md)
@@ -841,11 +841,11 @@ The connection between memory and the autopilot is especially significant. Befor
 
 ### New Finding (2026-05-24)
 
-- **Parametric n-gram memory (Engram) is an architectural axis orthogonal to MoE/KV/spec-dec that targets exactly our hardware shape.** DeepSeek + Peking University (arxiv:2601.07372, intake-599) propose a deterministic-lookup memory module where 2-3-token suffix n-grams are hashed via multiplicative-XOR (K=8 heads per order, distinct prime moduli) and the retrieved vector is added through a scalar sigmoid gate + zero-init depthwise causal Conv1D at early Transformer layers (best ablation: [2, 6] of 30). The "Sparsity Allocation Law" says 25% of sparse-param budget → Engram, 75% → MoE under iso-FLOPs. Engram-27B reports +5.0 BBH, +3.7 ARC-C, +2.4 MATH, NIAH 84.2 → 97. The CXL follow-up paper (arxiv:2603.10087, intake-600) gives the only published bandwidth figure: **~10 KB/token total at FP8, 0.7 GB/s at 70k tok/s — <0.2% of EPYC 9655's DDR5 aggregate**. The technique is a near-perfect fit for our 1.1 TB single-socket regime but is **architectural, not a runtime knob** — the paper releases code-as-demo only (no weights, no training loop, no offload kernels), and DeepSeek V4 production line does NOT ship Engram per V4 architecture writeups (research-track only). [engram-conditional-memory.md](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) `verified`
+- **Parametric n-gram memory (Engram) is an architectural axis orthogonal to MoE/KV/spec-dec that targets exactly our hardware shape.** DeepSeek + Peking University (arxiv:2601.07372, intake-599) propose a deterministic-lookup memory module where 2-3-token suffix n-grams are hashed via multiplicative-XOR (K=8 heads per order, distinct prime moduli) and the retrieved vector is added through a scalar sigmoid gate + zero-init depthwise causal Conv1D at early Transformer layers (best ablation: [2, 6] of 30). The "Sparsity Allocation Law" says 25% of sparse-param budget → Engram, 75% → MoE under iso-FLOPs. Engram-27B reports +5.0 BBH, +3.7 ARC-C, +2.4 MATH, NIAH 84.2 → 97. The CXL follow-up paper (arxiv:2603.10087, intake-600) gives the only published bandwidth figure: **~10 KB/token total at FP8, 0.7 GB/s at 70k tok/s — <0.2% of EPYC 9655's DDR5 aggregate**. The technique is a near-perfect fit for our 1.1 TB single-socket regime but is **architectural, not a runtime knob** — the paper releases code-as-demo only (no weights, no training loop, no offload kernels), and DeepSeek V4 production line does NOT ship Engram per V4 architecture writeups (research-track only). [engram-conditional-memory.md](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) `verified`
 
-- **LongCat-Flash-Lite (Meituan) is the only deployed Engram-family open-weight checkpoint but it is architecturally simpler than the paper.** 68.5B total / 2.9-4.5B active, ~31.4B in n-gram tables, MIT-licensed. Critical deviation from paper Engram: injection at the input embedding only (NOT per-layer mid-stream), no gate, no conv, just additive + /13 normalization. Polynomial rolling hash (not multiplicative-XOR), 4 hash heads per order (not 8), n ∈ {2,3,4} (paper {2,3}), custom 131k tokenizer with no canonicalization. A working GGUF (`InquiringMinds-AI/LongCat-Flash-Lite-GGUF` Q4_K_M = 37.4 GB) and a non-upstreamable llama.cpp fork (Claude-Code-generated, violates ggml-org AI policy; fine for local research) already exist; ik_llama.cpp has zero LongCat code. Upstream PRs #19167 / #19182 stalled in draft for 4+ months. **No CPU performance number for LongCat exists anywhere — we would be the first benchmarkers.** A successful LongCat CPU POC validates the n-gram-lookup family, not the paper's specific gating-and-conv architecture. [intake-502, intake-504, engram-conditional-memory.md](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) `verified`
+- **LongCat-Flash-Lite (Meituan) is the only deployed Engram-family open-weight checkpoint but it is architecturally simpler than the paper.** 68.5B total / 2.9-4.5B active, ~31.4B in n-gram tables, MIT-licensed. Critical deviation from paper Engram: injection at the input embedding only (NOT per-layer mid-stream), no gate, no conv, just additive + /13 normalization. Polynomial rolling hash (not multiplicative-XOR), 4 hash heads per order (not 8), n ∈ {2,3,4} (paper {2,3}), custom 131k tokenizer with no canonicalization. A working GGUF (`InquiringMinds-AI/LongCat-Flash-Lite-GGUF` Q4_K_M = 37.4 GB) and a non-upstreamable llama.cpp fork (Claude-Code-generated, violates ggml-org AI policy; fine for local research) already exist; ik_llama.cpp has zero LongCat code. Upstream PRs #19167 / #19182 stalled in draft for 4+ months. **No CPU performance number for LongCat exists anywhere — we would be the first benchmarkers.** A successful LongCat CPU POC validates the n-gram-lookup family, not the paper's specific gating-and-conv architecture. [intake-502, intake-504, engram-conditional-memory.md](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) `verified`
 
-- **Frozen-backbone retrofit of paper-faithful Engram is a research bet, not a port.** The paper provides NO direct evidence for retrofit feasibility — its closest result (§6.3 post-hoc Engram suppression) shows the co-trained backbone has learned to *delegate* to Engram, which means the frozen-backbone setting has structurally less headroom. Zero-init conv is gradient-compatible (no backbone shock at step 0), which is the architectural reason to hope. The deepseek-ai/Engram repo is 422 LoC single-file demo: module clean (~250 LoC of substantive logic, Apache-2.0, vendorable), but training loop / dataloader / freeze hooks / KV-cache / offload all absent — maintainer disengaged after day 3 (2026-01-14), 20 issues open with zero answers. The DeepSeek-V3 vocab canonicalization map P (~23% reduction) is also not released and must be rebuilt for any non-DeepSeek tokenizer. Estimated effort: ~400 LoC new glue + ~280 LoC vendored, single-week single-GPU proxy spike. Phase 0 derisk gate: frozen-Engram must recover ≥30% of co-trained-Engram gain on a 1.5B proxy (SmolLM-1.7B or TinyLlama) before committing GPU-weeks to Qwen3.6 or gemma4 surgery. [engram-conditional-memory.md](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) `verified`
+- **Frozen-backbone retrofit of paper-faithful Engram is a research bet, not a port.** The paper provides NO direct evidence for retrofit feasibility — its closest result (§6.3 post-hoc Engram suppression) shows the co-trained backbone has learned to *delegate* to Engram, which means the frozen-backbone setting has structurally less headroom. Zero-init conv is gradient-compatible (no backbone shock at step 0), which is the architectural reason to hope. The deepseek-ai/Engram repo is 422 LoC single-file demo: module clean (~250 LoC of substantive logic, Apache-2.0, vendorable), but training loop / dataloader / freeze hooks / KV-cache / offload all absent — maintainer disengaged after day 3 (2026-01-14), 20 issues open with zero answers. The DeepSeek-V3 vocab canonicalization map P (~23% reduction) is also not released and must be rebuilt for any non-DeepSeek tokenizer. Estimated effort: ~400 LoC new glue + ~280 LoC vendored, single-week single-GPU proxy spike. Phase 0 derisk gate: frozen-Engram must recover ≥30% of co-trained-Engram gain on a 1.5B proxy (SmolLM-1.7B or TinyLlama) before committing GPU-weeks to Qwen3.6 or gemma4 surgery. [engram-conditional-memory.md](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) `verified`
 
 ### New Finding (2026-04-21)
 
@@ -1214,7 +1214,7 @@ benefit by k=4** (49.7 / 46.0 / 45.5 / 44.4), and the one independent 35B
 replication **failed specifically at the retriever** after an embedder swap —
 which is exactly the substitution we would make with local BGE. Any sweep needs
 **k=1** and **episodic-only** control arms.
-[`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) §Research Intake Update 2026-07-29
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §Research Intake Update 2026-07-29
 
 More consequentially, **k must be a fraction of remaining window budget, not a
 fixed integer**. An independent third-party benchmark on a different backbone
@@ -1230,7 +1230,7 @@ cap injection as a fraction of remaining budget; and add a **no-memory control
 arm** to every memory A/B — six published methods lose to no-memory at 128K and
 **would have shipped undetected without one**.
 [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M6–M9;
-[`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) §budget-conditional rider
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §budget-conditional rider
 
 ### Budget the write gate DOWN, not up
 
@@ -1282,7 +1282,7 @@ embedding index.
 ### Source References
 
 - [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — UTM-M1..M10: store shape, additive layering over `src/trace/`, three-verb write API, the missing per-window instrument, 128K context-budget competition, and the ranking correction
-- [`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) — utility-aware retrieval over the adopted schema; k-ablation and the replication that failed at the retriever; budget-conditional k
+- [`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — utility-aware retrieval over the adopted schema; k-ablation and the replication that failed at the retriever; budget-conditional k
 - [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-program.md) — AP-29a write-gate budget and the judge-accuracy plateau; the CORE contrast
 - [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — corrected retriever reading (call counts, not scores)
 - [`progress/2026-07/2026-07-29.md`](../progress/2026-07/2026-07-29.md) — dive-outcome table incl. the duplicated-column defect in the ranking source
@@ -1390,7 +1390,7 @@ The filed consequence is a monitor, not a checkbox. Trigger: Track B Phase 0b is
 
 ### Source References (2026-10-20 memory delta)
 
-- [Engram conditional memory](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) — COUNT intake update and the Track B arm trigger.
+- [Engram conditional memory](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — COUNT intake update and the Track B arm trigger.
 - [Delegation context pre-assembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly) — VibeMemBench note: dive the released harness before adopting a coding-agent memory comparison.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — write-side rules any future memory measurement must follow.
 
@@ -1477,7 +1477,7 @@ Sources: [repl-session-memory-maturity](../handoffs/active/memory-program.md#tra
 
 **Confidence: verified source records; most items are software/model-free controls or failed-run filings, not measurement verdicts. Proposed work is labelled as such.**
 
-- Programmatic feedback extraction is done: a parser pulls concrete failure facts from tool output instead of model self-diagnosis (APP `1b988feb`, CI 41280199807, 214 passed). Reflexion v2 (intake-989#03) is itself parser-plus-LLM, and its object-mention gain is paper-specific, not a local rate. [engram](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory), [progress](../progress/2026-11/2026-11-01-ni-programmatic-feedback.md)
+- Programmatic feedback extraction is done: a parser pulls concrete failure facts from tool output instead of model self-diagnosis (APP `1b988feb`, CI 41280199807, 214 passed). Reflexion v2 (intake-989#03) is itself parser-plus-LLM, and its object-mention gain is paper-specific, not a local rate. [engram](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory), [progress](../progress/2026-11/2026-11-01-ni-programmatic-feedback.md)
 - REPL-EMB-5.1: a SEARCH primitive for OAB-8 scouts delegates to the existing `ContextSearchIndex`, preserves pointer provenance and builds no index (48 tests). INF-78 owns wiring; no retrieval-quality claim. [repl-embedding-retrieval](../handoffs/active/harness-program.md#track-repl-embedding-retrieval)
 - `query_memory` maps ACM-style recall onto existing spill pointers: default off, session-scoped, exact-quote only, refuses artifacts over 12,000 characters (APP `233338749`, 79 passed). No efficacy claim. [progress](../progress/2026-11/2026-11-01-query-memory.md)
 

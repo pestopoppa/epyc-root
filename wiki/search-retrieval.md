@@ -868,7 +868,7 @@ substitution we would make when porting a published design onto local BGE. Paire
 with the k-ablation losing **half its benefit by k=4** (49.7 / 46.0 / 45.5 /
 44.4), the operational rule is that retrieval depth and embedder identity are
 **measured parameters of the port**, not implementation details of it.
-[`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) §Research Intake Update 2026-07-29
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §Research Intake Update 2026-07-29
 
 ### A purpose-built prompt-router encoder, filed as a comparator only
 
@@ -883,7 +883,7 @@ candidate, because opening it as one would fork an already-unfinished program
 
 - [`internal-kb-rag.md`](../handoffs/active/knowledge-pipelines.md) — the struck PyLate/PLAID-only premise; three GGUF repos and the seven-quant/reference-script surface; the v8 conversion + graph-builder support chain; the English-vs-multilingual counterweight; K-eval re-scope; corrected grep-count reading
 - [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — FTS5 is lexical; the embedding column the experience layer needs; BGE servers on `:8090-8095`
-- [`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) — the replication that failed at the retriever after an embedder swap; k-ablation decay
+- [`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — the replication that failed at the retriever after an embedder swap; k-ablation decay
 - [`routing-intelligence.md`](../handoffs/active/routing-program.md#track-routing-intelligence) — the prompt-router encoder filed as a `monitor_only` comparator
 
 ## Compiled Update — 2026-08-22: the encoder swap's stated rationale was false, the lexical signal bought nothing, and the live index has outgrown its record

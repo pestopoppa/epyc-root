@@ -1087,7 +1087,7 @@ untruncated history fits the window — and capped as a fraction of remaining
 budget rather than a fixed k. Detail in
 [Memory-Augmented Systems](memory-augmented.md).
 [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) §UTM-M6–M8;
-[`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) §budget-conditional rider
+[`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) §budget-conditional rider
 
 ### Two hygiene rules this batch forced
 
@@ -1106,7 +1106,7 @@ budget rather than a fixed k. Detail in
 - [`context-folding-progressive.md`](../handoffs/active/context-and-token-economy.md) — mandatory masking anchor; the four pieces of agent-initiated compaction; the unreported archive-query ablation; non-termination counter; ARC-AGI-3 provenance downgrade; the title-collision dedup hazard
 - [`tool-output-compression.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) — verbatim-log vs summarize-and-compact A/B design; total-vs-peak token instrumentation; the truncation audit (episodic store vs REPL journal) and the file-capable vs context-only `peek`/`grep` split
 - [`unified-trace-memory-service.md`](../handoffs/active/memory-program.md#track-unified-trace-memory-service) — 128K context-budget competition and its budget-conditional injection consequences
-- [`engram-conditional-memory.md`](../handoffs/active/model-architecture-readiness.md#track-engram-conditional-memory) — k as a fraction of remaining window budget rather than a fixed integer
+- [`engram-conditional-memory.md`](../handoffs/completed/model-architecture-readiness-completed-20261107.md#track-engram-conditional-memory) — k as a fraction of remaining window budget rather than a fixed integer
 
 ## Compiled Update — 2026-08-18: optical compaction is shipping, and more context is not monotonically better
 
