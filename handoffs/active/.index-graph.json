@@ -698,7 +698,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T00:50:18Z",
+  "generated_at": "2026-11-08T00:54:31Z",
   "nodes": [
     {
       "age_days": 5,
@@ -1456,15 +1456,15 @@
       "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 802,
-      "dispatchable": 151,
+      "closed": 803,
+      "dispatchable": 150,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-07",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 152,
+      "open": 151,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1501,7 +1501,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 54,
+          "dispatchable": 53,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1510,7 +1510,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 55,
+          "open": 54,
           "readiness": "blocked"
         },
         {
