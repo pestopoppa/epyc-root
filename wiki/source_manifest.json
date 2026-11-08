@@ -4,15 +4,30 @@
     "handoff-active": 32,
     "handoff-blocked": 1,
     "handoff-completed": 374,
-    "progress": 1353,
+    "progress": 1354,
     "research": 314
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-07T20:01:04Z",
-  "mode": "touch",
-  "scan_time": "2026-11-07T20:01:04Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 3,
+      "removed": 0
+    },
+    "at": "2026-11-08T07:59:47Z",
+    "scope_paths": [
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/speculative-decoding.md",
+      "progress/2026-11/2026-11-08-autokernel.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-08T07:59:47Z",
   "schema_version": 1,
-  "source_set_hash": "85c2384b5ea2a026c49ba08bb75cd89babe445f771fcde3dc609daa4b83fe0ca",
+  "source_set_hash": "2913ba2db985ef714a6fa6c0a9d493a535f8f9a24d9b837cd81e25ee69772f31",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -23,18 +38,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0ac7ac8f8a8162b3e0447252885023cedbc0e826915a4c1ad0c184d4b424efec",
-      "modified": "2026-11-07T19:53:16Z",
+      "content_hash": "8e933353afc6e96da970602df6cf6a4f449f982b6820995604580da0ce9e5492",
+      "modified": "2026-11-08T07:57:12Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 478829,
+      "size": 479256,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "519ee8464a00f53d5966c155365e2a0852b3c7da5a15258463520770e27ccc25",
-      "modified": "2026-11-07T19:53:17Z",
+      "content_hash": "ae9c2ab9649f77c2779a708a29fb2fbfd3ed69799c85d4120cdedab0750a9846",
+      "modified": "2026-11-08T07:57:12Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1604391,
+      "size": 1620666,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -159,14 +174,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8595e70644c7a520ccfafcaf6630ea33df16d5a8274a7daf4038a4c5b73134eb",
-      "modified": "2026-11-07T19:53:17Z",
-      "path": "handoffs/active/model-architecture-readiness.md",
-      "size": 58076,
-      "title": "Log-Linear Gated DeltaNet \u2014 Readiness Tracker",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "5e5ed2f466aed227e9a8d9285126341b755f44a910c22e7ad6b8ad728f670711",
       "modified": "2026-11-07T19:53:17Z",
       "path": "handoffs/active/model-evaluation-queue.md",
@@ -215,10 +222,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "23c96c44780f464ece4e19411fcf61558527931de4f706c0534c05f628212776",
-      "modified": "2026-11-07T19:55:29Z",
+      "content_hash": "7653647590d16e50ac7aef133b73d7e47c3bcee86f78b3f2e70f4f0c1a60550f",
+      "modified": "2026-11-08T07:57:28Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 351012,
+      "size": 357530,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -16471,6 +16478,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "c7cb59b6afb1c19282240b684e4768dfe916c1ee1b04716080eea7e153d8d96f",
+      "modified": "2026-11-08T07:57:57Z",
+      "path": "progress/2026-11/2026-11-08-autokernel.md",
+      "size": 3946,
+      "title": "2026-11-08 \u2014 autokernel (AutoKernel operator-invoked wrap-up, covers 2026-11-07..08)",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-07T19:53:17Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -20109,9 +20124,17 @@
       "size": 32349,
       "title": "Runbook \u2014 Deterministic `vision_escalation` \u2192 MiniCPM-o Promotion (port 8087, MI210)",
       "type": "docs"
+    },
+    {
+      "content_hash": "8595e70644c7a520ccfafcaf6630ea33df16d5a8274a7daf4038a4c5b73134eb",
+      "modified": "2026-11-07T19:53:17Z",
+      "path": "handoffs/active/model-architecture-readiness.md",
+      "size": 58076,
+      "title": "Log-Linear Gated DeltaNet \u2014 Readiness Tracker",
+      "type": "handoff-active"
     }
   ],
-  "total_new": 2512,
+  "total_new": 2513,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
