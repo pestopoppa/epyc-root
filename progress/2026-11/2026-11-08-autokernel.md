@@ -38,3 +38,12 @@ Harvest #11 program.md (research `bdb578307`, pushed): C8-5-H20 KEEP by operator
 
 - SL-2-M1 floor row: waits on the keeper grant (external event: compute calendar).
 - C8-4-H18 q8_0 PPL re-measure: Inference Research's row.
+
+## Late session (AutoKernel loop management; no loop launched)
+
+- **SL-2-M1:** blocked on C8-NP4-GARBAGE after Inference's `c8-np4-parity-20261108` FAILED (np4 DFlash2 garbage 16/40 on C7r, 19/40 on fold5; np4 no-draft and np1 clean). 339452524 carried index files only; f8c240753 is the real box edit.
+- **LB3.2:** r2 rc=6 (no perf in the container), r3 failed B0 before any arm (LLGUIDANCE differs G vs M), r4 published with an operator-approved gate amendment, grantable, no result yet.
+- **Planner one-shot:** belief read non-empty, planner abstained for lack of inputs; proof not satisfied. Codex usage exhausted until 2026-11-11.
+- **`actors.py` claude path** fixed in research (151 test_actors pass).
+- **Matmul survey:** Q38FN UD-IQ4_XS C8 t24 quarter tg64 is mostly traffic-bound (perfect-kernel ceiling ~14.5%, inferred). One strong candidate, IQ3_S ZMM dot/gather; seed 73 in the Q38FN inbox.
+- **Non-timing loop work on CPU quarters:** none.

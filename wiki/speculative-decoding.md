@@ -3212,3 +3212,7 @@ Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.
 - **INF-50-GRAPH-WRITER-RACE r4** (`inf50-graph-writerrace-r4-20261107`, q0 19-worker private-HOME run of the pidfd writer fix) was running at 19:55Z with its precheck integrity PASS; it is filed only when its `.ended` marker appears.
 
 Sources: [speculative-decoding handoff](../handoffs/active/speculative-decoding.md) · [operator-adhoc-ops progress](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md) · [wiki: inference-serving](inference-serving.md)
+
+## Compiled Update — 2026-11-08 (np4 DFlash2 output degeneration)
+
+Row `c8-np4-parity-20261108` (Qwen3.8-27B q8_0): np4 DFlash2 returned garbage on 16/40 requests on C7r and 19/40 on fold5, while np1 and np4 without a draft were clean. The defect predates C8 and needs speculation at np>1. An HTTP 500 "does not match the expected Content-only format" appears only when the text breaks the parser, so garbled but valid text returns as a normal response: treat np>1 speculative quality as unproven until text hashes are compared. Tracked as C8-NP4-GARBAGE; it also blocks the SL-2-M1 floor. Sources: `handoffs/active/kernel-champion-and-promotion.md`, `handoffs/active/speculative-decoding.md`.
