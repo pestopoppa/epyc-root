@@ -248,4 +248,26 @@ RUN curl -fsSL https://github.com/aristocratos/btop/archive/refs/tags/v1.3.2.tar
   && printf '%s\n' 'show_gpu_info = "On"' 'shown_boxes = "cpu mem gpu0"' > /home/node/.config/btop-small/btop/btop.conf \
   && chown -R node:node /home/node/.config/btop /home/node/.config/btop-small
 
+# Ubuntu 24.04 ships GCC 13; the old 25.10 base had GCC 15. Use the Ubuntu
+# Toolchain PPA and make gcc/g++/cc/c++ point at 15 (13 stays available).
+RUN apt-get update \
+  && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends gcc-15 g++-15 python3-yaml \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 13 \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 15 \
+  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 13 \
+  && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 15 \
+  && update-alternatives --set gcc /usr/bin/gcc-15 \
+  && update-alternatives --set g++ /usr/bin/g++-15 \
+  && update-alternatives --install /usr/bin/cc cc /usr/bin/gcc-15 100 \
+  && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-15 100 \
+  && update-alternatives --set cc /usr/bin/gcc-15 \
+  && update-alternatives --set c++ /usr/bin/g++-15 \
+  && for py in /home/node/.local/bin/python3.11 /home/node/.local/bin/python3.12 /home/node/.local/bin/python3.13 /home/node/.local/bin/python3.14; do \
+       uv pip install --python "$py" --system --break-system-packages --no-cache pyyaml; \
+     done \
+  && chown -R node:node /home/node/.local/share/uv/python \
+  && rm -rf /var/lib/apt/lists/*
+
 USER node
