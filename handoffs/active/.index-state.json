@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 667
+      "open": 668
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1226,7 +1226,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1649,
+          "line": 1650,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1773,
+          "line": 1774,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2098,
+          "line": 2099,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2237,
+          "line": 2238,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2793,
+          "line": 2794,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2933,
+          "line": 2934,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2940,
+          "line": 2941,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2364,7 +2364,7 @@
       "closed": 124,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 28,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2373,7 +2373,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 154,
+      "total": 155,
       "tracks": [
         {
           "blocked": 1,
@@ -2396,7 +2396,7 @@
           "line": 734,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 18
+          "open": 19
         }
       ]
     },

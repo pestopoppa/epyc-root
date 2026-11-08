@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T19:32:58Z",
+  "generated_at": "2026-11-08T20:36:39Z",
   "nodes": [
     {
       "age_days": 5,
@@ -1889,14 +1889,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 124,
-      "dispatchable": 28,
+      "dispatchable": 29,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-08",
       "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
-      "open": 30,
+      "open": 31,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1939,14 +1939,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 18,
+          "dispatchable": 19,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 734,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19,
+          "open": 20,
           "readiness": "blocked"
         }
       ]
@@ -2094,7 +2094,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1649,
+          "line": 1650,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2103,7 +2103,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1773,
+          "line": 1774,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2112,7 +2112,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2098,
+          "line": 2099,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2121,7 +2121,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2237,
+          "line": 2238,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2130,7 +2130,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2793,
+          "line": 2794,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2142,7 +2142,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2933,
+          "line": 2934,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2154,7 +2154,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2940,
+          "line": 2941,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
