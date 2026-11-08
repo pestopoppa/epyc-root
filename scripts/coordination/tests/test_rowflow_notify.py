@@ -85,6 +85,15 @@ class RowEnded(Base):
         notify.row_ended(self.flags, "r1", self.ENDED)   # repeat: no second message
         self.assertEqual(len(open(os.path.join(bus, "outbox", "rowflow-keeper.jsonl")).readlines()), 1)
 
+    def test_autokernel_owner_routes_to_its_roster_identity(self):
+        bus = os.path.join(self.root, "bus")
+        shutil.copytree(os.path.join(_ROOT, "coordination", "session-bus"), bus,
+                        ignore=shutil.ignore_patterns("outbox", "inbox", "archive", "*.jsonl", "claims", "tasks", "tokens"))
+        os.environ["ROWFLOW_BUS_ROOT"] = bus
+        os.environ["ROWFLOW_SESSION_BUS"] = os.path.join(_COORD, "session_bus.py")
+        m = notify.row_ended(self.flags, "r1", self.ENDED.replace("owner=ws58", "owner=autokernel"))
+        self.assertTrue(m["bus"].startswith("sent:codex-ak-main-01a11473:"), m["bus"])
+
     def test_failed_bus_send_is_retried_once_it_works(self):
         os.environ["ROWFLOW_BUS_ROOT"] = os.path.join(self.root, "nobus")
         os.environ["ROWFLOW_SESSION_BUS"] = os.path.join(self.root, "missing.py")
