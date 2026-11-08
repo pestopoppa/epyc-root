@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 667
+      "open": 668
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1192,10 +1192,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 171,
+      "closed": 176,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 46,
+      "open": 47,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1204,11 +1204,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 218,
+      "total": 224,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 130,
+          "closed": 135,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1219,14 +1219,14 @@
           "line": 15,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 41
+          "open": 42
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1628,
+          "line": 1635,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1752,
+          "line": 1759,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2077,
+          "line": 2084,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2216,
+          "line": 2223,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2772,
+          "line": 2779,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2912,
+          "line": 2919,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2919,
+          "line": 2926,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1428,10 +1428,10 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 104,
+      "closed": 106,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 33,
+      "last_advanced": "2026-11-08",
+      "open": 32,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1440,11 +1440,11 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 138,
+      "total": 139,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 58,
+          "closed": 59,
           "gates": [
             "RTG-58"
           ],
@@ -1452,14 +1452,14 @@
           "line": 17,
           "markers": 1,
           "name": "yarn-context-extension-research",
-          "open": 22
+          "open": 21
         },
         {
           "blocked": 0,
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 623,
+          "line": 624,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 1
@@ -1469,7 +1469,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 995,
+          "line": 996,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1479,17 +1479,17 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1611,
+          "line": 1612,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
         },
         {
           "blocked": 1,
-          "closed": 28,
+          "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1758,
+          "line": 1759,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 10
@@ -2364,7 +2364,7 @@
       "closed": 124,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 27,
+      "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2373,7 +2373,7 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 153,
+      "total": 154,
       "tracks": [
         {
           "blocked": 1,
@@ -2396,7 +2396,7 @@
           "line": 734,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 17
+          "open": 18
         }
       ]
     },
