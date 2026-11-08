@@ -1,0 +1,10 @@
+{
+ "protocol": "P-DOCPARSE-1",
+ "ratified_at": "2026-11-08",
+ "operator": "pestopoppa",
+ "channel": "AskUserQuestion in Claude Code (operator on remote app; asked to ratify through the decision tool)",
+ "answer": "Yes, I ratify this text",
+ "draft": "artifacts/operator/p-docparse-1-annex-draft-20261107.md",
+ "draft_sha256": "7be1598473648fb6cfcb2b81b4cf7e5ebfeb8983fe6627b70f254a4bd2b1a6b9",
+ "effect": "ODL-013 r2 is a formal NO DECISION; routing default unchanged"
+}
