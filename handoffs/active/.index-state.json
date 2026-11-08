@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 668
+      "open": 667
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1192,10 +1192,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 176,
+      "closed": 178,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 47,
+      "open": 46,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1204,11 +1204,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 224,
+      "total": 225,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 135,
+          "closed": 137,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1219,14 +1219,14 @@
           "line": 15,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 42
+          "open": 41
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1635,
+          "line": 1649,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1759,
+          "line": 1773,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2084,
+          "line": 2098,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2223,
+          "line": 2237,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2779,
+          "line": 2793,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2919,
+          "line": 2933,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2926,
+          "line": 2940,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2718,7 +2718,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "C8 candidate fold3 ab3fc54dc qualified (FOLD_PASS + CPU_PASS); H18/H20 gates in flight, then promotion package",
+      "next_action": "C8 candidate fold5 a08f7eb0b: promotion blocked; root-cause and fix C8-NP4-GARBAGE, re-run parity",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
