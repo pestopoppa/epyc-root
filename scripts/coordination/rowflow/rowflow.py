@@ -4260,7 +4260,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         log(f"GPU-FENCE sampler failed: {type(e).__name__}: {e}")
     held_back = []
     if gwhy:
-        held_back = [c for c in cands if c["bench"] and any(GPU in o for o in c["options"])]
+        held_back = gpu_held_back(cands)
         cands = [c for c in cands if c not in held_back]
         if held_back:
             log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
@@ -4394,6 +4394,17 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         underused(flags, holders, log, seen, vram=vram_used_bytes() if GPU in holders else None)
         repeat_alert(flags, seen, log)
     return out
+
+
+def gpu_held_back(cands):
+    """Rows kept off the device while the quiet gate is closed: every EXCLUSIVE (bench) GPU row, plus any worse-ranked
+    GPU row (2026-11-08 rank inversion: shared vidya-r234 r24 took the MI210 while exclusive c8-fold2 r14 waited 1/2)."""
+    gpu = lambda c: any(GPU in o for o in c["options"])
+    held = [c for c in cands if c["bench"] and gpu(c)]
+    if held:
+        best = min(c["rank"] for c in held)
+        held += [c for c in cands if c not in held and gpu(c) and c["rank"] > best]
+    return held
 
 
 # ---------------------------------------------------------------- GPU exclusivity: host-view device occupancy

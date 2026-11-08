@@ -14,6 +14,22 @@ import rowflow as rf  # noqa: E402
 DEAD = 2 ** 22 + 12345   # beyond pid_max on this host: never alive
 
 
+class GpuHeldBack(unittest.TestCase):
+    def row(self, rid, rank, bench, gpu=True):
+        return {"id": rid, "rank": rank, "bench": bench, "options": [{rf.GPU, "q0"} if gpu else {"q1"}]}
+
+    def test_worse_ranked_shared_row_waits_behind_exclusive(self):
+        ex, sh, cpu = self.row("c8", 14, True), self.row("vidya", 24, False), self.row("cpu", 30, False, gpu=False)
+        self.assertEqual([c["id"] for c in rf.gpu_held_back([ex, sh, cpu])], ["c8", "vidya"])
+
+    def test_better_ranked_shared_row_still_runs(self):
+        ex, sh = self.row("c8", 14, True), self.row("vidya", 5, False)
+        self.assertEqual([c["id"] for c in rf.gpu_held_back([ex, sh])], ["c8"])
+
+    def test_no_exclusive_waiting_holds_nothing(self):
+        self.assertEqual(rf.gpu_held_back([self.row("vidya", 24, False)]), [])
+
+
 class QuietOwnExit(unittest.TestCase):
     def setUp(self):
         self.d = tempfile.mkdtemp(prefix="qoe-")
