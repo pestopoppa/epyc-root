@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T22:57:55Z",
+  "generated_at": "2026-11-08T23:02:31Z",
   "nodes": [
     {
       "age_days": 5,
@@ -1889,14 +1889,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 124,
-      "dispatchable": 29,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-08",
       "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
-      "open": 31,
+      "open": 32,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1939,14 +1939,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 19,
+          "dispatchable": 20,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 734,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 20,
+          "open": 21,
           "readiness": "blocked"
         }
       ]
@@ -2037,14 +2037,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 180,
-      "dispatchable": 47,
+      "dispatchable": 49,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-08",
       "next_action": "C8 candidate 1bda248e3 passed all gates; build the promotion package for operator signature",
-      "open": 48,
+      "open": 50,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2078,7 +2078,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 42,
+          "dispatchable": 44,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2087,14 +2087,14 @@
           ],
           "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 43,
+          "open": 45,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1656,
+          "line": 1658,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2103,7 +2103,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1780,
+          "line": 1782,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2112,7 +2112,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2105,
+          "line": 2107,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2121,7 +2121,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2244,
+          "line": 2246,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2130,7 +2130,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2800,
+          "line": 2802,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2142,7 +2142,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2940,
+          "line": 2942,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2154,7 +2154,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2947,
+          "line": 2949,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
