@@ -698,7 +698,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T02:53:59Z",
+  "generated_at": "2026-11-08T04:19:32Z",
   "nodes": [
     {
       "age_days": 5,
@@ -2024,15 +2024,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 168,
-      "dispatchable": 47,
+      "closed": 169,
+      "dispatchable": 46,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-08",
-      "next_action": "C8 fold base eeab978ac qualified (GDN + LCATTN-a); gates in flight H18, H20, 3a, X-sweep: re-fold keeps",
-      "open": 48,
+      "next_action": "C8 candidate fold3 ab3fc54dc qualified (FOLD_PASS + CPU_PASS); H18/H20 gates in flight, then promotion package",
+      "open": 47,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2066,7 +2066,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 42,
+          "dispatchable": 41,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2075,14 +2075,14 @@
           ],
           "line": 15,
           "name": "autokernel-champion-aggregate",
-          "open": 43,
+          "open": 42,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1613,
+          "line": 1614,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2091,7 +2091,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1737,
+          "line": 1738,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2100,7 +2100,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2062,
+          "line": 2063,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2109,7 +2109,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2201,
+          "line": 2202,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2118,7 +2118,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2757,
+          "line": 2758,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2130,7 +2130,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2897,
+          "line": 2898,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2142,7 +2142,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2904,
+          "line": 2905,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
