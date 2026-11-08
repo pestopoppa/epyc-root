@@ -382039,3 +382039,572 @@
   handoffs_created: []
   ingested_date: '2026-11-06'
   expanded_from: intake-2652
+- id: intake-2662
+  arxiv_id: '2609.36173'
+  url: https://arxiv.org/abs/2609.36173v2
+  source_type: paper
+  title: 'Draft in Parallel, Condition Through Depth: Adjacent Causal Injection for Speculative Decoding (DSpine)'
+  authors:
+  - Haohui Zhang
+  - Keyu Chen
+  - Haocheng Sun
+  - Weibo Gu
+  - Ruizhi Qiao
+  - Xing Sun
+  - Bo Jiang
+  key_claims:
+  - DSpine is a five-layer DFlash-style parallel drafter that, after every layer, writes each predecessor position's predicted
+    feature (projected into a PCA-whitened LM-head output-embedding space) into its successor through a sigmoid-gated adjacent
+    injection, uses block-causal attention, and then selects tokens left to right through a K=16 transition cache with a "last-write
+    refinement" of the final layer (abstract, Sections 4.1-4.3).
+  - 'Like-for-like acceptance length against DFlash2 (both retrained by the authors, block 16): Qwen3-8B mean 4.39 -> 4.82
+    at T=0 (about +9.8% by the table, text says 10.0%) and 3.90 -> 4.42 at T=1 (about +13.3% by the table; the text''s 12.8%
+    is against DSpark, whose T=1 mean 3.92 is marginally above DFlash2); Qwen3-4B 4.50 -> 4.75 (+5.6% by the table, text 5.4%)
+    and 3.98 -> 4.38 (+10.1%) (Table 1).'
+  - 'SGLang serving throughput at T=0, concurrency 2-32, same static budget of 15 draft tokens for every method: DSpine beats
+    DFlash2 by 11.1% on average on Qwen3-8B (on the eight Table 8 cells read, concurrency 2 and 32 on four tasks, the per-cell
+    gain is +8.5% to +13.4%) and 6.5% on Qwen3-4B, up to 4.0x over autoregressive decoding; versus plain DFlash the mean gain
+    is 23.3% (Section 5.3, Table 8, abstract).'
+  - 'The comparison is controlled: every drafter is retrained from scratch by the authors on the same ShareGPT data (target-regenerated,
+    thinking off), same five-layer, block-16 backbone, six epochs; every method proposes 15 tokens per round with no dynamic
+    verification (Section 5.1, Appendix A, Appendix C). The DFlash2 baseline is therefore the authors'' retrain of the DFlash2
+    design, not the official z-lab weights.'
+  - 'Ablation (Qwen3-8B, T=0, tau): removing last-write refinement costs 6.6-7.1% and also removing injection costs 8.8-10.7%
+    (MATH-500 5.49 -> 5.11 -> 4.93; MBPP 4.98 -> 4.65 -> 4.54; MT-Bench 4.11 -> 3.82 -> 3.67); layer-wise cosine supervision
+    toward output embeddings helps, per-layer full-vocabulary cross-entropy is below the unsupervised baseline (Tables 2-3).'
+  - 'Temperature above 0: DFlash2, DSpark and DSpine SAMPLE their proposals (DFlash2 and DSpine from the softmax of selector
+    / transition-cache scores over the top-16 candidates per position) and use lossless rejection sampling with those proposal
+    probabilities; DFlash and Domino propose greedily and accept on match with the target sample. Evaluation samples from
+    the full target distribution at temperature 1. The paper gives no point-mass versus sampled-proposal ablation, no draft-temperature
+    calibration and no top-p/top-k setting (Appendix C).'
+  - 'Cost: a DSpine round costs about the same as a DFlash2 round (7.14 vs 7.19 ms on Qwen3-8B, SGLang); verification is 72-76%
+    of round time; injection adds at most 0.15 ms per round; the transition cache costs less than half of the post-backbone
+    heads of DSpark and Domino (Section 5.4).'
+  - 'Scope: only Qwen3-4B and Qwen3-8B (dense, thinking off) are evaluated, with no Qwen3.8-27B, no hybrid/SSM target, no
+    dynamic verification and no ReplaySSM anywhere in the paper (NOT-FOUND-IN-SOURCE for those four terms; text search of
+    the full v2 HTML).'
+  techniques:
+  - adjacent causal injection (gated, per layer)
+  - unified output-embedding transfer space (PCA-whitened LM-head rows)
+  - block-causal draft attention
+  - transition-cached predecessor-conditioned decoding (K=16 pair table)
+  - layer-wise output-embedding cosine supervision
+  - correct-predecessor curriculum
+  reported_results:
+  - 'Table 1, Qwen3-8B, mean tau at T=0 / T=1 (SGLang, 15 draft tokens, block 16, all drafters retrained by the authors):
+    DFlash 3.77 / 3.39; Domino 4.18 / 3.69; DSpark 4.32 / 3.92; DFlash2 4.39 / 3.90; DSpine 4.82 / 4.42. Qwen3-4B: DFlash
+    3.71 / 3.44; Domino 4.17 / 3.83; DSpark 4.33 / 3.96; DFlash2 4.50 / 3.98; DSpine 4.75 / 4.38.'
+  - 'Table 8, Qwen3-8B tokens/s, concurrency 2 and 32, DFlash2 vs DSpine: GSM8K 1327 -> 1480 and 6975 -> 7825; MATH-500 1403
+    -> 1522 and 7384 -> 8200; HumanEval 1225 -> 1354 and 6141 -> 6963; MBPP 1275 -> 1399 and 6646 -> 7321. Autoregressive
+    baseline 381 and 4922 (GSM8K). The gain shrinks toward saturation: DSpine speedup over AR falls from 3.88x at concurrency
+    2 to 1.59x at 32 (GSM8K).'
+  - Serving hardware is not named in the sections read (single-GPU instances, BF16, FlashAttention-3, CUDA graphs); treat
+    as an NVIDIA-class stack unverified.
+  referenced_arxiv_ids: []
+  credibility_score: 1
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  categories:
+  - speculative_decoding
+  - inference_serving
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/speculative-decoding.md
+    experiments: []
+    intake_entries:
+    - intake-2663
+    - intake-1571
+    - intake-1724
+    - intake-738
+    - intake-2569
+    - intake-1773
+    - intake-2561
+    intake_entry_notes:
+    - 'intake-2663: the released Qwen3.8-27B checkpoint and its inference stack for this paper (companion artifact, distinct
+      source).'
+    - 'intake-1571 and intake-1724: the DFlash2 blog and the z-lab Qwen3.8-27B DFlash2 card, the baseline the paper retrains.'
+    - 'intake-738: DSpark, source of the loss and of the dynamic-verification idea the 27B card uses.'
+    - 'intake-2569: Domino, a compared baseline. intake-1773: LiLiCorr, cited as an adjacent-candidate scoring method.'
+  contradicting_evidence:
+  - 'Self-reported, same-lab comparison: every baseline is retrained by the authors, and the DFlash2 baseline is not the official
+    checkpoint. No independent replication found in a bounded search (provisional).'
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  handoffs_created: []
+  ingested_date: '2026-11-08'
+  notes: 'Companion of intake-2663 (checkpoint and code). Read FULL from disk: arXiv HTML v2 (LaTeXML, sha256 ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744,
+    retrieved 2026-11-08, abs page lists v1 submitted 2026-09-28 and v2 2026-10-10); v1 HTML fetched and its Section 5.2 /
+    5.3 headline sentences are identical. The paper is Qwen3-4B/8B only; everything about Qwen3.8-27B, block 8 vs 16, dynamic
+    verification and ReplaySSM comes from the checkpoint card and repo (intake-2663), not from the paper. Dive-surfaced, not
+    in the index at 2026-11-08: TreeFlash arXiv 2606.03819, xPress arXiv 2608.02438, JetSpec arXiv 2606.18394 (cited by this
+    paper; identifiers copied from its reference list and not resolved against arxiv.org/abs titles in this run, so treat
+    as id-unverified until ingested). The url is stored version-pinned (v2) because the anchor gate requires a version-pinned
+    arXiv locator.'
+  reader_should_conclude: The paper supports a controlled like-for-like gain of about 10% acceptance length at T=0 and about
+    13% at T=1 over DFlash2 on Qwen3-8B (block 16, 15 draft tokens, no dynamic verification), and about 11% serving throughput,
+    on the authors' own retrained baselines. It says nothing about Qwen3.8-27B, hybrid targets, dynamic verification or ReplaySSM,
+    and nothing about point-mass proposals. Do not quote the 27B card numbers as paper results.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: at every layer, gated adjacent injection writes each predecessor’s predicted feature into its successor
+    quote_sha256: e0293d360bdd9fca62279cb7c0f7cddcb05e209db318dbb9c88121f3489f1fb0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.2 Table 1 text (two spans)
+    quote: On Qwen3-8B, it raises the average
+    quote_sha256: 91345eadea7c450b93d5ef1d909dc1f6932b34751e8575a6437474ed4548e599
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 1
+    kind: page-and-quote
+    locator: §5.2 Table 1 text
+    quote: and leads the strongest baseline by 10.0% with greedy decoding (DFlash2) and by 12.8% under sampling (DSpark)
+    quote_sha256: 948905f5c8dd77ef09cdfa0b433f58b8923813a405c95d6b7052e0c7e48b5499
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 2
+    kind: page-and-quote
+    locator: §5.3
+    quote: on Qwen3-8B it outperforms the strongest baseline, DFlash2, by 11.1% on average and reaches up to 4.0
+    quote_sha256: a249d42774591b096c8c0c6733085c28afc240bede76cc7719c63748e9e07509
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 3
+    kind: page-and-quote
+    locator: §5.1 Implementation
+    quote: all drafters are retrained on the same ShareGPT data
+    quote_sha256: 6a16d82fae0f96e05e6b62b9f243f75da0eb74ec443ee4fbca9758ce919dcaf5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Appendix C Serving
+    quote: All methods use the same static budget of 15 draft tokens per round.
+    quote_sha256: 032fc142a5a469cdc79f31e2111b10b34955429feb85113fd11a3cf1c292433f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 4
+    kind: page-and-quote
+    locator: §5.5
+    quote: Both components improve acceptance length, and their contributions are complementary.
+    quote_sha256: a8df6f393114011c5b479cf933dcd945f7c319a484ea5091bc586307bcc7ee15
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Appendix C Decoding at temperature one
+    quote: the latter two from the softmax of their selector or transition-cache scores over the top-16 candidates of each
+      position, and apply rejection sampling with these proposal probabilities
+    quote_sha256: 7e439e102143d0653e41ba5b6d2c74e0c467dfe111303400351c8fb31bb38466
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 6
+    kind: page-and-quote
+    locator: §5.4
+    quote: a DSpine round costs about as much as a DFlash2 round (7.14 vs. 7.19 ms)
+    quote_sha256: 21aaa6e93e73f0d96e6bf01a66fa0cf513794e2f498d98095971363b6758b6a7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  - claim_index: 7
+    kind: page-and-quote
+    locator: §5.1 Models and evaluations
+    quote: We conduct experiments on Qwen3-4B and Qwen3-8B
+    quote_sha256: 21019a0f139a6b725fb92e67cf30eae80c436ee820f013544f33710928a96334
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744, found: true}
+    source_revision: https://arxiv.org/html/2609.36173v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2609.36173v2
+      requested_url: https://arxiv.org/html/2609.36173v2
+      effective_url: https://arxiv.org/html/2609.36173v2
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      relative_path: sha256/ad/ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744.raw
+      raw_sha256: ad6bc111486db3162aac69040451d5d83571209cd49d596f7b159aa8926a4744
+      byte_length: 365257
+  claim_corrections:
+  - claim_index: 1
+    effect: unaffected
+    note: 'Table 1 cell averages reproduce the text: 4.82/4.39 = +9.8% (text 10.0%, rounding), 4.42/3.92 = +12.8% vs DSpark.
+      Against DFlash2 at T=1 the gain is +13.3%.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Examined: protocol text in Section 5.1 and Appendix C states same data, same backbone, same 15-token budget for
+      all methods.'
+  - claim_index: 7
+    effect: unaffected
+    note: Full-text search of the v2 HTML found no occurrence of 27B, Qwen3.8, dynamic verification or ReplaySSM.
+  dive_corrections: '2026-11-08 Stage-2 dive (read_depth FULL; arXiv v2 HTML from disk). The handoff row DSPINE-B16-PORT states
+    that the Qwen3-8B table (both b16) shows about 4% at T=0; Table 1 does not: DSpine over DFlash2 is +9.8% by the cell averages
+    (4.39 -> 4.82; text 10.0%) on Qwen3-8B and +5.6% (text 5.4%) on Qwen3-4B, and +13.3% / +10.1% at T=1. Serving throughput
+    is +11.1% (8B) and +6.5% (4B). The ~4% figure has no source in the paper. Dynamic verification and ReplaySSM are absent
+    from the paper; they appear only in the checkpoint card and repo (intake-2663).'
+  integration_disposition: integrated
+  disposition_evidence:
+  - The Qwen3.8-27B port is already filed as box DSPINE-B16-PORT in handoffs/active/speculative-decoding.md; this entry is
+    the intake record that box named as an open sub-task, and its numbers give the box the like-for-like prior (+10% tau at
+    T=0, +13% at T=1, +11% throughput, Qwen3-8B).
+- id: intake-2663
+  arxiv_id: null
+  url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+  source_type: repo
+  title: tencent/Qwen3.8-27B-DSpine-b16 (DSpine drafter checkpoint for Qwen3.8-27B) and Tencent/DSpine inference code
+  authors:
+  - Tencent (model card; authors of arXiv 2609.36173)
+  key_claims:
+  - The checkpoint is a five-layer DSpine draft model for Qwen3.8-27B, block size 16, 8,192-token sliding window, Apache-2.0,
+    BF16 4.05 GB, HF revision ea909c0f5fab8865f9e14600334f55f7ce47308f; config.json declares architecture DFlashDraftModel
+    with selected_prefix_code_bridge (code_size 1024, rank 512, kappa 10), serial selected-prefix decode, last-write refine
+    over head_topk 16, target layers [1,16,31,46,61] of 64 (card, config.json at the pinned revision).
+  - The card compares DSpine at block 16 against OFFICIAL z-lab Qwen3.8-27B-DFlash2 at block 8 (SGLang 0.5.22, BF16, FA3,
+    concurrency 8). Block size is therefore confounded with the method in every 27B number on the card; the paper's Qwen3-8B
+    Table 1 is the only place both drafters share block 16.
+  - DSpine inference in the card evaluation uses DSpark-style dynamic verification and ReplaySSM; the card does not say DFlash2
+    runs with a verify-width policy, and publishes no measurement of either feature in isolation.
+  - 'Dynamic verification is optional and tuned: the repo''s SPS tuning picks a uniform verify width for batch 1-7 and a total
+    budget for batch 8 per GPU and workload; without a profile verification uses the full 16-token block (docs/sps_tuning.md
+    and sglang_dspine/verification/policy.py at Tencent/DSpine 0cc92d857).'
+  - 'Card acceptance length, DFlash2 b8 -> DSpine b16, T=0 / T=1 (T=1 means temperature 1.0, top_p 0.95, top_k 20): GSM8K
+    5.69 -> 7.20 / 5.45 -> 6.31; MATH-500 5.49 -> 6.49 / 5.27 -> 5.66; HumanEval 4.87 -> 5.71 / 4.34 -> 4.71; MBPP 5.04 ->
+    6.14 / 4.79 -> 5.41; MT-Bench 4.11 -> 4.48 / 3.89 -> 4.03, which is +9.0% to +26.5% at T=0 and +3.6% to +15.8% at T=1.'
+  - 'Card agent end-to-end throughput (concurrent replay, prefix caching on): DSpine over DFlash2 is +8.2% to +21.2% across
+    ten benchmark x reasoning-level cells (mean about +14.0%), DSpine 2.71x-3.84x over autoregressive; publisher numbers on
+    another stack, not independently replicated.'
+  techniques:
+  - DSpine drafter (see intake-2662)
+  - DSpark-style dynamic verification (SPS profile)
+  - ReplaySSM spec path for the hybrid GDN target
+  - serial refinement selector over vocab-wide tables
+  reported_results:
+  - See key_claims 4 and 5; all numbers are publisher numbers from the card read at the pinned revision, SGLang 0.5.22, concurrency
+    8, not from our stack.
+  referenced_arxiv_ids: []
+  credibility_score: null
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_component
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  cross_references:
+    chapters: []
+    handoffs:
+    - handoffs/active/speculative-decoding.md
+    experiments: []
+    intake_entries:
+    - intake-2662
+    - intake-1724
+    - intake-1571
+    - intake-1768
+    - intake-738
+    intake_entry_notes:
+    - 'intake-2662: the paper; it evaluates Qwen3-4B/8B only.'
+    - 'intake-1724: the official z-lab Qwen3.8-27B DFlash2 card, the comparator here (block 8).'
+    - 'intake-1768: SGLang ReplaySSM routing PR for the same hybrid-target state-commit problem.'
+  contradicting_evidence:
+  - Block 16 versus block 8 confounds the 27B comparison, and the card gives no ablation of dynamic verification or ReplaySSM;
+    no independent replication found in a bounded search (provisional).
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  handoffs_created: []
+  ingested_date: '2026-11-08'
+  notes: 'Card read from disk at the pinned revision (README sha256 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54,
+    byte-identical to the local copy in /mnt/raid0/llm/models/Qwen3.8-27B-DSpine-b16/ and to raw/ea909c0f.../README.md). Repo
+    Tencent/DSpine shallow-cloned at HEAD 0cc92d857a8f7bf252de67995ad4c19251620143 (2026-11-08): sglang_dspine/ (verification,
+    sampling, runtime/replayssm), docs/sps_tuning.md, scripts/tune_sps.py, dspine_mlx. Not read: the SGLang kernels and the
+    model code line by line, and the safetensors tensors; the paper (intake-2662) describes a PCA-whitened LM-head transfer
+    space while config.json declares a 1024-entry code bridge, so the released 27B checkpoint''s bridge is not proven identical
+    to the paper design (our converter port handles selected_prefix_bridge tensors). The 27B card never states hardware. Sampling
+    guidance for the card evaluation: temperature 1.0, top_p 0.95, top_k 20 (the paper evaluates at temperature 1 from the
+    full target distribution).'
+  reader_should_conclude: Treat the 27B card numbers as publisher numbers from a block-16-vs-block-8, dynamic-verification-and-ReplaySSM-enabled
+    configuration on another stack. The paper-grade like-for-like prior is the Qwen3-8B Table 1 in intake-2662 (about +10%
+    tau at T=0). Dynamic verification is optional (full 16-token block without a profile), so a native-maximum run does not
+    need it for correctness; ReplaySSM is a hybrid-target state-commit optimisation, not part of the drafter.
+  verification: dive-verified
+  read_depth: FULL
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: card Evaluation
+    quote: '**Draft blocks:** DSpine 16; official [DFlash2](https://huggingface.co/z-lab/Qwen3.8-27B-DFlash2) 8.'
+    quote_sha256: 5b0b4b150561907b649877487502c12a7a9f7bac17d32a16f6da69021e32d74d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54, found: true}
+    source_revision: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+      requested_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      effective_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      relative_path: sha256/2d/2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54.raw
+      raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      byte_length: 10628
+  - claim_index: 1
+    kind: page-and-quote
+    locator: card Evaluation
+    quote: '**DSpine inference:** dynamic verification referencing [DSpark](https://github.com/deepseek-ai/DeepSpec), with
+      [ReplaySSM](https://github.com/Johnny-Liou/ReplaySSM) enabled.'
+    quote_sha256: 8de2bfb530f27b4b7dd6b1dde68567bf3848508933d15946e97e091b0ec6ed11
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54, found: true}
+    source_revision: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+      requested_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      effective_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      relative_path: sha256/2d/2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54.raw
+      raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      byte_length: 10628
+  - claim_index: 2
+    kind: page-and-quote
+    locator: card Evaluation
+    quote: '**Temperature sampling:** `temperature=1.0`, `top_p=0.95`, `top_k=20`.'
+    quote_sha256: 43769079f016f68fe23f964c5e31e3aeb65ee869184270a9bf9002ac6616901a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54, found: true}
+    source_revision: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+      requested_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      effective_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      relative_path: sha256/2d/2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54.raw
+      raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      byte_length: 10628
+  - claim_index: 3
+    kind: page-and-quote
+    locator: card
+    quote: with block size 16 and an 8,192-token sliding window.
+    quote_sha256: 87d7d32a8d5f54c92b9d6016f2ff77f8518eed97fdf8c63d71f53f0e9d48d913
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54, found: true}
+    source_revision: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+      requested_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      effective_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      relative_path: sha256/2d/2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54.raw
+      raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      byte_length: 10628
+  - claim_index: 4
+    kind: page-and-quote
+    locator: card Results
+    quote: '| GSM8K | 5.69 | **7.20** | 5.45 | **6.31** |'
+    quote_sha256: 9bd8cc046bd8ec07c85d380c79bb2b633a0c9e1e25df8837a733b893e9721be3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54, found: true}
+    source_revision: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+      requested_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      effective_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16/raw/ea909c0f5fab8865f9e14600334f55f7ce47308f/README.md
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      relative_path: sha256/2d/2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54.raw
+      raw_sha256: 2df6198c3150dd9c2b65c708fc5d144c970fd90b8c1393c45a9eafe4b764ee54
+      byte_length: 10628
+  - claim_index: 5
+    kind: page-and-quote
+    locator: docs/sps_tuning.md @0cc92d85
+    quote: Without a profile, verification uses the full 16-token block.
+    quote_sha256: f84f4b4cfe3c54591c9ca6d06ee4f8677c9e66f927e7d8f038eb1ee2224a17ff
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 677b70b2dc707ee7f025c14182367a969cf70c041d57663bb73d400604f120d4, found: true}
+    source_revision: https://raw.githubusercontent.com/Tencent/DSpine/0cc92d857a8f7bf252de67995ad4c19251620143/docs/sps_tuning.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://huggingface.co/tencent/Qwen3.8-27B-DSpine-b16
+      requested_url: https://raw.githubusercontent.com/Tencent/DSpine/0cc92d857a8f7bf252de67995ad4c19251620143/docs/sps_tuning.md
+      effective_url: https://raw.githubusercontent.com/Tencent/DSpine/0cc92d857a8f7bf252de67995ad4c19251620143/docs/sps_tuning.md
+      retrieved_at_utc: '2026-11-08T23:30:00Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:677b70b2dc707ee7f025c14182367a969cf70c041d57663bb73d400604f120d4
+      relative_path: sha256/67/677b70b2dc707ee7f025c14182367a969cf70c041d57663bb73d400604f120d4.raw
+      raw_sha256: 677b70b2dc707ee7f025c14182367a969cf70c041d57663bb73d400604f120d4
+      byte_length: 2614
+  claim_corrections:
+  - claim_index: 2
+    effect: narrowed
+    note: The card states DSpine uses dynamic verification and ReplaySSM; the repo shows dynamic verification is an optional
+      tuned profile (default full block), so "used" does not mean "load-bearing".
+  - claim_index: 1
+    effect: unaffected
+    note: Block 16 versus 8 read directly from the card Evaluation section.
+  dive_corrections: '2026-11-08 Stage-2 dive (read_depth FULL for card, config.json and docs; PARTIAL for code, see notes).
+    Answers to the box questions: (1) like-for-like numbers vs DFlash2 exist only in the paper on Qwen3-8B/4B (see intake-2662),
+    not for 27B; (2) dynamic verification is optional and tuned per GPU, defaulting to the full 16-token block; ReplaySSM
+    is a target-side state-commit path; neither is ablated anywhere; (3) the card evaluates T=1 at top_p 0.95 top_k 20.'
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed into the existing box DSPINE-B16-PORT in handoffs/active/speculative-decoding.md (port built on branch llama.cpp-experimental-c9-dspine-20261108
+    @ ea3d9eef3; GPU smoke pending); this entry closes the box's open intake sub-task.
