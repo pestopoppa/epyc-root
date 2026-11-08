@@ -1,5 +1,5 @@
---- /tmp/Dockerfile.orig	2026-05-28 17:37:35.613077762 +0200
-+++ /tmp/Dockerfile.new	2026-05-31 22:59:20.920534276 +0200
+--- epyc-base	2026-11-08 09:18:39.509362442 +0100
++++ epyc-new	2026-11-08 09:18:42.275280136 +0100
 @@ -5,6 +5,8 @@
  # - Passwordless sudo for the non-root user
  # - NO firewall / network restrictions (internet enabled)
@@ -7,9 +7,9 @@
 +# - C++ build tools (cmake, g++) for llama.cpp compilation
 +# - NUMA support (numactl, privileged mode)
  
- ARG NODE_IMAGE=node:22-bookworm-slim
+ ARG NODE_IMAGE=node:22.23.4-bookworm-slim
  FROM ${NODE_IMAGE} AS node
-@@ -63,11 +65,24 @@
+@@ -63,11 +65,23 @@
      fd-find \
      numactl \
      libomp-dev \
@@ -27,15 +27,13 @@
 +    libdrm2 \
 +    libdrm-amdgpu1 \
 +    libelf1t64 \
-+    libxml2-16 \
++    libxml2 \
 +    pciutils \
 +    perl \
--  && rm -rf /var/lib/apt/lists/*
-+  && rm -rf /var/lib/apt/lists/* \
-+  && ln -sf /usr/lib/x86_64-linux-gnu/libxml2.so.16 /usr/lib/x86_64-linux-gnu/libxml2.so.2
+   && rm -rf /var/lib/apt/lists/*
  RUN if command -v fdfind >/dev/null 2>&1 && [ ! -e /usr/local/bin/fd ]; then \
      ln -s /usr/bin/fdfind /usr/local/bin/fd; \
-@@ -78,11 +87,15 @@
+@@ -91,11 +105,15 @@
  RUN node -v && npm -v
  
  # Ensure git worktrees use relative paths by default.
@@ -54,7 +52,7 @@
    fi
  
  # Ensure default node user has access to the global npm prefix.
-@@ -120,6 +133,20 @@
+@@ -133,6 +151,20 @@
    && touch /etc/zsh/zshrc \
    && echo 'source /etc/profile.d/00-commandhistory.sh' >> /etc/zsh/zshrc
  
@@ -75,7 +73,7 @@
  # Helpful marker for shell prompts / scripts.
  ENV DEVCONTAINER=true
  
-@@ -163,6 +190,16 @@
+@@ -177,6 +209,18 @@
  # Passwordless sudo for the non-root user (for unattended / automation workflows).
  USER root
  RUN echo "node ALL=(root) NOPASSWD: ALL" > /etc/sudoers.d/yolo \
@@ -85,11 +83,13 @@
 +
 +# Global CLI tools baked into the image so they survive container rebuilds.
 +RUN --mount=type=cache,target=/root/.npm \
-+  npm install -g gitnexus@1.6.1
++  npm install -g gitnexus@1.6.1 @opencode/cli@2.2.5 \
++  && chown -R node:node /usr/local/share/npm-global/lib/node_modules/@opencode \
++  && chown -h node:node /usr/local/share/npm-global/bin/opencode /usr/local/share/npm-global/bin/opencode2
 +
 +# ruff (Python linter) baked in — apt has no ruff on questing 25.10, so install
 +# via uv to a system dir the node user can execute (survives container rebuilds).
 +RUN UV_TOOL_BIN_DIR=/usr/local/bin UV_TOOL_DIR=/opt/uv-tools uv tool install ruff \
-+  && chmod -R a+rX /opt/uv-tools
-
++  && chmod -R a+rX /opt/uv-tools && mkdir -p /home/node/.config/opencode /home/node/.local/share/opencode /home/node/.local/state/opencode /home/node/.cache/opencode && chown -R node:node /home/node/.config /home/node/.cache /home/node/.npm /home/node/.local/share/opencode /home/node/.local/state
+ 
  USER node

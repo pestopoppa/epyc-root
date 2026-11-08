@@ -1,6 +1,8 @@
 {
   "privileged": true,
   "runArgs": [
+    "--name", "epyc-root",
+    "--restart", "unless-stopped",
     "--shm-size=16g",
     "--network=host",
     "--pid=host",
@@ -17,15 +19,19 @@
     "source=commandhistory-epyc,target=/commandhistory,type=volume",
     "source=claude-code-config-epyc,target=/home/node/.claude,type=volume",
     "source=codex-config-epyc,target=/home/node/.codex,type=volume",
+    "source=/mnt/raid0/llm/opencode/epyc,target=/home/node/.local/share/opencode,type=bind",
+    "source=/mnt/raid0/llm/opencode/readonly,target=/mnt/raid0/llm/opencode/readonly,type=bind,readonly",
     "source=gh-config-epyc,target=/home/node/.config/gh,type=volume",
     "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly",
-    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=/var/run,target=/var/run/host-run,type=bind",
     "source=/opt/rocm-6.2.0,target=/opt/rocm,type=bind,readonly"
   ],
-  "postStartCommand": "sudo groupmod -g $(stat -c '%g' /var/run/docker.sock) docker 2>/dev/null || true",
+  "postStartCommand": "sudo ln -sfn /var/run/host-run/docker.sock /var/run/docker.sock; sudo groupmod -g $(stat -c '%g' /var/run/host-run/docker.sock) docker 2>/dev/null || true; opencode service set port 49375 >/dev/null 2>&1 || true",
   "containerEnv": {
     "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib",
-    "OMP_NUM_THREADS": null
+    "OMP_NUM_THREADS": null,
+    "BUN_TMPDIR": "/mnt/raid0/llm/tmp/bun",
+    "DOCKER_HOST": "unix:///var/run/host-run/docker.sock"
   },
   "remoteEnv": {
     "PATH": "/opt/rocm/bin:${containerEnv:PATH}",
