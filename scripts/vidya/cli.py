@@ -574,6 +574,7 @@ _FILE_SOURCES = (
     "odl-unlimited-ocr-run",
     "dtap-timeout-report",
     "dtap-crm-pair",
+    "dtap-finance-pair",
     "pii-staged-gate",
     "ci-fixture-conformance",
     "distillation-pool",

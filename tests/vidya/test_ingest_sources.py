@@ -350,6 +350,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # the native reader stubbed, fixture refusal and journal-chain refusals:
         # test_dtap_crm_pair_refusal.py.
         "dtap-crm-pair",
+        "dtap-finance-pair",  # Synthetic native record, tamper refusals and CLI ingest: test_dtap_finance_pair.py.
         # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
         # (HIP) and test_autokernel_width_cells_cpu.py (CPU, plus the real stored record).
         "ak-width-dimension", "ak-width-cells-cpu",
