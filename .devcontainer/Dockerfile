@@ -70,7 +70,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     lsof \
     netcat-openbsd \
     htop \
-    btop \
     time \
     bc \
     docker.io \
@@ -223,5 +222,18 @@ RUN --mount=type=cache,target=/root/.npm \
 # via uv to a system dir the node user can execute (survives container rebuilds).
 RUN UV_TOOL_BIN_DIR=/usr/local/bin UV_TOOL_DIR=/opt/uv-tools uv tool install ruff \
   && chmod -R a+rX /opt/uv-tools && mkdir -p /home/node/.config/opencode /home/node/.local/share/opencode /home/node/.local/state/opencode /home/node/.cache/opencode && chown -R node:node /home/node/.config /home/node/.cache /home/node/.npm /home/node/.local/share/opencode /home/node/.local/state
+
+# btop 1.3.2 with the AMD ROCm power fix (#819). apt btop 1.3.0 crashes in
+# this container's RSMI init and never assigns pwr_usage (PWR shows 0W).
+COPY btop-patch.py /tmp/btop-patch.py
+RUN curl -fsSL https://github.com/aristocratos/btop/archive/refs/tags/v1.3.2.tar.gz -o /tmp/btop.tar.gz \
+  && tar -xzf /tmp/btop.tar.gz -C /tmp \
+  && python3 /tmp/btop-patch.py \
+  && make -C /tmp/btop-1.3.2 GPU_SUPPORT=true -j"$(nproc)" \
+  && install -m 0755 /tmp/btop-1.3.2/bin/btop /usr/local/bin/btop \
+  && rm -rf /tmp/btop-1.3.2 /tmp/btop.tar.gz /tmp/btop-patch.py \
+  && mkdir -p /home/node/.config/btop \
+  && printf '%s\n' 'show_gpu_info = "On"' 'shown_boxes = "cpu mem net proc gpu0"' > /home/node/.config/btop/btop.conf \
+  && chown -R node:node /home/node/.config/btop
 
 USER node
