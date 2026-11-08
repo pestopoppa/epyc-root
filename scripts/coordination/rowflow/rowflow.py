@@ -1508,7 +1508,9 @@ def gpu_q3_claim_cores(regions):
 def tokens_cpus(tokens):
     """The exact cpu list (cores + their SMT siblings) of a sub-quarter option."""
     cs = sorted(int(t[1:]) for t in tokens if re.fullmatch(r"c\d+", t))
-    return ",".join(str(c) for c in cs + [c + 96 for c in cs])
+    # 2026-11-08 (inf75-c7r-w3-halfb): held t<N> SMT tokens belong to the list too; dropping them ran the job on 80 of 96 cpus
+    ts = sorted({int(t[1:]) for t in tokens if re.fullmatch(r"t\d+", t)} - {c + 96 for c in cs})
+    return ",".join(str(c) for c in cs + [c + 96 for c in cs] + ts)
 
 
 def cpu_list(q):
