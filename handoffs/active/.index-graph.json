@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T23:16:39Z",
+  "generated_at": "2026-11-08T23:19:23Z",
   "nodes": [
     {
       "age_days": 5,
@@ -2043,7 +2043,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-08",
-      "next_action": "C8 candidate 1bda248e3 passed all gates; build the promotion package for operator signature",
+      "next_action": "Champion is C8 1bda248e3; assemble C9: DSpine comparison, IQ4_NL kernel, serial fix, headroom profile",
       "open": 51,
       "priority": 0.9075,
       "priority_basis": {
@@ -2094,7 +2094,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1657,
+          "line": 1658,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2103,7 +2103,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1781,
+          "line": 1782,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2112,7 +2112,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2106,
+          "line": 2107,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2121,7 +2121,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2245,
+          "line": 2246,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2130,7 +2130,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2801,
+          "line": 2802,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2142,7 +2142,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2941,
+          "line": 2942,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2154,7 +2154,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2948,
+          "line": 2949,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
