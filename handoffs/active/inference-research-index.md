@@ -13,7 +13,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target | INF-48, EVL-47 |
-| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | C8 candidate 1bda248e3 passed all gates; build the promotion package for operator signature | INF-06, INF-50 |
+| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Champion is C8 1bda248e3; assemble C9: DSpine comparison, IQ4_NL kernel, serial fix, headroom profile | INF-06, INF-50 |
 | INF-82 | autokernel akx program (keep gate + all dims) | [autokernel-akx-program.md](autokernel-akx-program.md) | AUTO-4 landed; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census | INF-06, INF-65 |
 | INF-83 | v11 promotion checklist | [v11-promotion-checklist.md](v11-promotion-checklist.md) | Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion | INF-65 |
 | INF-84 | workspace-58 champion calibration | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) | CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable | INF-65 |
