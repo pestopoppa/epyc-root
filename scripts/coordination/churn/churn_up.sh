@@ -91,6 +91,7 @@ INSTALL=(
   "bin/keeper_qual_memo.py        $CO/keeper_qual_memo.py"
   "bin/churn/wrapup.py            $CH/wrapup.py"
   "bin/churn/file_result.py       $CH/file_result.py"
+  "bin/churn/filing.py            $CH/filing.py"
   "bin/churn/typed_classify.py    $CH/typed_classify.py"
   "bin/churn/tokens_per_task.py   $CH/tokens_per_task.py"
   "bin/rowflow/rowflow.py         $RF/rowflow.py"
