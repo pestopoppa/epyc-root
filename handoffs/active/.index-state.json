@@ -2771,7 +2771,7 @@
       "id": "INF-82",
       "index": "inference-research-index.md",
       "line": 17,
-      "next_action": "Land AKX-AUTO-4 branch (suite, re-pin); build AKX-P1e classifier; wire ALL-31 gates; then AKX-P0a census",
+      "next_action": "AUTO-4 landed; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "track": "autokernel akx program (keep gate + all dims)"
     },
     "INF-83": {

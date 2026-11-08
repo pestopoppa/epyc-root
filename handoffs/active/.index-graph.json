@@ -704,7 +704,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T07:59:55Z",
+  "generated_at": "2026-11-08T08:01:29Z",
   "nodes": [
     {
       "age_days": 5,
@@ -2416,7 +2416,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
-      "next_action": "Land AKX-AUTO-4 branch (suite, re-pin); build AKX-P1e classifier; wire ALL-31 gates; then AKX-P0a census",
+      "next_action": "AUTO-4 landed; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "open": 68,
       "priority": 0.0022,
       "priority_basis": {
