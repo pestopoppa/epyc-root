@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 674
+      "open": 672
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1192,10 +1192,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 180,
+      "closed": 181,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 51,
+      "open": 50,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1208,7 +1208,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 139,
+          "closed": 140,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1219,14 +1219,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 46
+          "open": 45
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1656,
+          "line": 1657,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1780,
+          "line": 1781,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2105,
+          "line": 2106,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2244,
+          "line": 2245,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2800,
+          "line": 2801,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2940,
+          "line": 2941,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2947,
+          "line": 2948,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2361,10 +2361,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 124,
+      "closed": 125,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 30,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2387,7 +2387,7 @@
         },
         {
           "blocked": 1,
-          "closed": 45,
+          "closed": 46,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2396,7 +2396,7 @@
           "line": 734,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 20
+          "open": 19
         }
       ]
     },
