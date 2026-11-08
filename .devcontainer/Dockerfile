@@ -70,6 +70,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     lsof \
     netcat-openbsd \
     htop \
+    btop \
     time \
     bc \
     docker.io \
