@@ -9,7 +9,7 @@
  
  ARG NODE_IMAGE=node:22.23.4-bookworm-slim
  FROM ${NODE_IMAGE} AS node
-@@ -63,11 +65,23 @@
+@@ -63,16 +65,37 @@
      fd-find \
      numactl \
      libomp-dev \
@@ -33,7 +33,21 @@
    && rm -rf /var/lib/apt/lists/*
  RUN if command -v fdfind >/dev/null 2>&1 && [ ! -e /usr/local/bin/fd ]; then \
      ln -s /usr/bin/fdfind /usr/local/bin/fd; \
-@@ -91,11 +105,15 @@
+   fi
+ 
++# Ubuntu 24.04 ships git 2.43, but several workspace repos require >=2.48.
++# Use the same git-core PPA as the host (2.56.x on noble).
++RUN apt-get update \
++  && apt-get install -y --no-install-recommends software-properties-common \
++  && add-apt-repository -y ppa:git-core/ppa \
++  && apt-get update \
++  && apt-get install -y --no-install-recommends git \
++  && rm -rf /var/lib/apt/lists/*
++
+ # eMudhra intermediate CA key compromise (2026-10-17): distrust the two
+ # affected roots defensively. The 24.04 ca-certificates package is expected to
+ # have them removed already, in which case the sed is a no-op. The openssl
+@@ -91,11 +114,15 @@
  RUN node -v && npm -v
  
  # Ensure git worktrees use relative paths by default.
@@ -52,7 +66,7 @@
    fi
  
  # Ensure default node user has access to the global npm prefix.
-@@ -133,6 +151,20 @@
+@@ -133,6 +160,20 @@
    && touch /etc/zsh/zshrc \
    && echo 'source /etc/profile.d/00-commandhistory.sh' >> /etc/zsh/zshrc
  
@@ -73,7 +87,7 @@
  # Helpful marker for shell prompts / scripts.
  ENV DEVCONTAINER=true
  
-@@ -177,6 +209,34 @@
+@@ -177,6 +218,34 @@
  # Passwordless sudo for the non-root user (for unattended / automation workflows).
  USER root
  RUN echo "node ALL=(root) NOPASSWD: ALL" > /etc/sudoers.d/yolo \

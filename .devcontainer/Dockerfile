@@ -87,6 +87,15 @@ RUN if command -v fdfind >/dev/null 2>&1 && [ ! -e /usr/local/bin/fd ]; then \
     ln -s /usr/bin/fdfind /usr/local/bin/fd; \
   fi
 
+# Ubuntu 24.04 ships git 2.43, but several workspace repos require >=2.48.
+# Use the same git-core PPA as the host (2.56.x on noble).
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends software-properties-common \
+  && add-apt-repository -y ppa:git-core/ppa \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends git \
+  && rm -rf /var/lib/apt/lists/*
+
 # eMudhra intermediate CA key compromise (2026-10-17): distrust the two
 # affected roots defensively. The 24.04 ca-certificates package is expected to
 # have them removed already, in which case the sed is a no-op. The openssl
