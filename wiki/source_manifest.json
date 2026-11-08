@@ -9,10 +9,22 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-08T23:11:15Z",
-  "mode": "touch",
-  "scan_time": "2026-11-08T23:11:15Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-11-08T23:20:20Z",
+    "scope_paths": [
+      "handoffs/active/speculative-decoding.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-08T23:20:20Z",
   "schema_version": 1,
-  "source_set_hash": "d1cd707e28ecaadadd6834bab18539c73e58dc703576f5d51a05b4e047384f9d",
+  "source_set_hash": "b967997b2993bf4964eacfb1d290311bcd302942dc2d9381cd3407ffa879f9cb",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -207,10 +219,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4e34b1b8bfccf04cdfaccdf691607baa29455c3181490f92b9968cb36c9091b0",
-      "modified": "2026-11-08T23:06:01Z",
+      "content_hash": "001e798a42e0537335fe9b94ae90cea42ec63f0c44903487a8a61da26cf7f6c1",
+      "modified": "2026-11-08T23:18:13Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 365249,
+      "size": 366012,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
