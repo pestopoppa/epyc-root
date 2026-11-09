@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 502
+      "open": 498
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 270,
+      "closed": 273,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 96,
+      "open": 92,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -856,17 +856,17 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 366,
+      "total": 365,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 164,
+          "closed": 165,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 50
+          "open": 48
         },
         {
           "blocked": 0,
@@ -900,13 +900,13 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 2,
           "gates": [],
           "guarded": 0,
           "line": 1452,
           "markers": 1,
           "name": "loop-state-offraid-backup",
-          "open": 5
+          "open": 3
         },
         {
           "blocked": 0,
