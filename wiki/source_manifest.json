@@ -15,7 +15,7 @@
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-09T21:23:35Z",
+    "at": "2026-11-09T21:24:40Z",
     "scope_paths": [
       "docs/guides/agent-workflows/compute-fillers.md",
       "docs/guides/agent-workflows/ratify-script-authoring.md",
@@ -27,7 +27,7 @@
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T21:23:35Z",
+  "scan_time": "2026-11-09T21:24:40Z",
   "schema_version": 1,
   "source_set_hash": "441334536b5b9f1b3a7c746bf4b1063c617295767602fb1aa33b4df3f781eb95",
   "sources": [
