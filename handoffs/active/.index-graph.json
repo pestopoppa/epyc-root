@@ -256,7 +256,7 @@
       "from": "INF-06",
       "kind": "ref",
       "to": "EVL-47",
-      "weight": 7
+      "weight": 8
     },
     {
       "from": "INF-06",
@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T20:41:52Z",
+  "generated_at": "2026-11-09T21:16:51Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1214,7 +1214,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1372,
+          "line": 1373,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1231,7 +1231,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1833,
+          "line": 1834,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5990,
+          "line": 5993,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1554,7 +1554,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6070,
+          "line": 6073,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1573,7 +1573,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6367,
+          "line": 6370,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1590,7 +1590,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9584,
+          "line": 9587,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1603,7 +1603,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13934,
+          "line": 13937,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1637,7 +1637,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14146,
+          "line": 14149,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 17,
           "readiness": "blocked"
@@ -2475,7 +2475,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 20,
+          "line": 21,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2498,7 +2498,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 931,
+          "line": 933,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 52,
           "readiness": "blocked"

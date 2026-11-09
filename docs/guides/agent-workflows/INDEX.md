@@ -8,6 +8,7 @@ Operational detail for *how a kind of work is done* lives here, not in agent pro
 - `docs/guides/agent-workflows/benchmark-analyst.md`
 - `docs/guides/agent-workflows/safety-reviewer.md`
 - `docs/guides/agent-workflows/verification-failure-catalogue.md` — eight measured ways a check passes for the WRONG reason, each with its own tell and test; mutation-test the guard, and confirm the mutation is visible AND counted
+- `docs/guides/agent-workflows/ratify-script-authoring.md` — landing rules for operator ratify/apply scripts: fetch and rebase immediately before the push, prove the commit is on `origin/main`, no TTY under `!`.
 - `docs/guides/agent-workflows/coordinator-escalation.md` — the canonical ladder for unreachable sessions, guard refusals and nudge rate limits, with its timer constants; four other files defer to it as the full ladder
 - `docs/guides/agent-workflows/handoff-index-authoring.md` — the thin-row contract for authoring and editing handoff domain indices: an index is a dispatch surface, not a status report or an evidence ledger
 - `docs/guides/agent-workflows/handoff-closure-audit.md` — `scripts/handoffs/closure_audit.py`: verifies that the code a TICKED box cites exists on `origin/main` (classes a/b/c/d/e, `--strict-idents`, the triage-override file, and how to reopen a phantom closure)

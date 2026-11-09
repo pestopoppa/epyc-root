@@ -75,7 +75,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 20,
+          "line": 21,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 931,
+          "line": 933,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 50
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5990,
+          "line": 5993,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6070,
+          "line": 6073,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6367,
+          "line": 6370,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9584,
+          "line": 9587,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13934,
+          "line": 13937,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14146,
+          "line": 14149,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 17
@@ -1583,7 +1583,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1372,
+          "line": 1373,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1597,7 +1597,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1833,
+          "line": 1834,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7

@@ -11,25 +11,24 @@
   "last_compile": "2026-11-09T09:05:54Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
+      "added": 0,
       "changed": 5,
       "removed": 0
     },
-    "at": "2026-11-09T16:26:02Z",
+    "at": "2026-11-09T21:15:27Z",
     "scope_paths": [
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/rocm-kernel-authoring.md",
-      "handoffs/active/v11-promotion-checklist.md",
-      "handoffs/active/workspace-58-champion-calibration.md",
-      "progress/2026-11/2026-11-09-autokernel.md",
-      "progress/2026-11/2026-11-09-rock-aiter-file.md"
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-11/2026-11-09-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T16:26:02Z",
+  "scan_time": "2026-11-09T21:15:27Z",
   "schema_version": 1,
-  "source_set_hash": "7199723702db50f96834d474ba6122a70b6fc504fdc0763af0c5dac37f41d8ea",
+  "source_set_hash": "fca8180876fcc19c7b9318ab0a4accee7fde326faafb9edfd6a9ad1833269f0d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -40,18 +39,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9f938330f889513b5fb79dcc5c1b0d63f034568682fd0fe74e96b9cd7d198f85",
-      "modified": "2026-11-09T15:45:18Z",
+      "content_hash": "e6dde36f737f0a5259778a6691597ec36810268a201f82c0cd342b4c6df44cd7",
+      "modified": "2026-11-09T21:14:16Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 490705,
+      "size": 493493,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "eee683e945d1ff40de99fe0d1a83add910a57d7d47015f4abd53df5ca04c638f",
-      "modified": "2026-11-09T15:47:29Z",
+      "content_hash": "8e1f1a1f687ee23eae7ccd891329e30521181640fab5d8960d993c887754fc2b",
+      "modified": "2026-11-09T21:13:43Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1633226,
+      "size": 1641529,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -264,10 +263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c3eeaa12e3f1a9fe95932318a02cc4dfff98d064a345791e57a05811056710ec",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "9806f9080a56a2a8f415ba178ed152d91165867150a417d082ff18629a9e9378",
+      "modified": "2026-11-09T21:14:16Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 1002828,
+      "size": 1019516,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -16656,10 +16655,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "3ded5d5171eb72dfe44231fa26339b6e7ce7d2488b2afb0a4f51f33e038686d2",
-      "modified": "2026-11-09T16:22:17Z",
+      "content_hash": "efa2c07fd51bd2bfbf346d01110d0f9df377f89f234efeee07d03baef3a42570",
+      "modified": "2026-11-09T21:14:59Z",
       "path": "progress/2026-11/2026-11-09-autokernel.md",
-      "size": 4210,
+      "size": 7322,
       "title": "2026-11-09 AutoKernel",
       "type": "progress"
     },
@@ -17960,10 +17959,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "c6668c1125a4a6fc3bebb6d9a981e56190d49fca1dc59f322c5a8a1c525fc4a2",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "ade0459f1ec0b2ba39386b11f6fd855353687bc6bf01d6584c471927f1254e52",
+      "modified": "2026-11-09T21:14:48Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 12087,
+      "size": 14267,
       "title": "Compute Fillers",
       "type": "docs"
     },
