@@ -13,7 +13,7 @@
 | RTG-02 | autopilot continuous optimization | [autopilot-program.md](autopilot-program.md) | Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay | — |
 | RTG-08 | context folding progressive | [context-and-token-economy.md](context-and-token-economy.md) | Amend CF-AB-1 A6 to the 7+7 handoff fields with an events co-metric; render validation evidence in /log (CTX-HO-1/3) | — |
 | RTG-09 | decision aware routing | [routing-program.md](routing-program.md) | Run RTG-EP-1 gfx90a EP probe; then RTG-VAR-1 host manifest and RTG-VAR-2 variant dimension | — |
-| RTG-22 | non inference backlog | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b | — |
+| RTG-22 | non inference backlog | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | Disk LOOP-21/22; merge reviewed refactor twins; land NI branches; prove NIB2-102.b at next stack start; rowflow: Pipeline | — |
 | RTG-34 | session bus thin dispatcher | [coordination-and-churn-pipeline.md](coordination-and-churn-pipeline.md) | Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next | — |
 | RTG-36 | stack change governance pipeline | [stack-lifecycle-program.md](stack-lifecycle-program.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | — |
 | RTG-58 | kv prefix fork and paged attention | [kv-cache-program.md](kv-cache-program.md) | Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort | EVL-14, INF-65 |

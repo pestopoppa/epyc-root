@@ -94,7 +94,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-25 | After C5-3 produces a live gfx90a correctness run, choose whether to leave SOL scoring disabled or port measured gfx90a constants for k215 only. Recommendation: k215-only if scoring is needed; never present the four >100×-headroom seeds as speed-of-light objectives | [agentic-rocm-kernel-authoring.md](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring) C5 | 2026-08-16 |
 | OP-29 | Scope decision: is video generation a product need? Gates the 165 GB MiniMax-H3 Ref2VA + 10Eros-Max download (volume at 92%, 291 GB free) | [model-evaluation-queue.md](model-evaluation-queue.md#track-minimax-h3-video-generation-evaluation) EVL-02 | 2026-08-30 |
 | OP-83 | DHM-4: label the 30-item pilot (the private pilot set), then run dhm4_pilot_check.py; the other 70 only if it prints PROCEED_TO_70. | [dev-harness-trace-mining.md](memory-program.md#track-dev-harness-trace-mining) DHM-4 | 2026-10-22 |
-| OP-AK-HOLD | AutoKernel launch hold (operator, 2026-10-24: "DO NOT LAUNCH AUTOKERNEL"). Tell workspace-58 directly when AK may launch; until then CH-27 Q38FN floors and AK-Q38FN-64K-FLOOR are not armed, booked or dry-run. | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) CH-27 | 2026-10-24 |
+| OP-AK-HOLD | AutoKernel launch hold, kept in force (operator 2026-10-24, reconfirmed 2026-11-09). Blocks new AK search launches, CH-27 Q38FN floors, AK-Q38FN-64K-FLOOR and the C1-05 rollback merge; a named row may run only under an explicit operator exception, as AK-C9-Q38FN-FLOOR did. | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) CH-27 | 2026-10-24 |
 | OP-C4-CAS | Approve the champion C4 CAS (cdb4d8c77 = C3 + GPU-LEAK-1c): all gates PASS, incl. the quiet c4-gate-e re-run at 21:06Z (pp +0.58% floor 2.12%, tg −0.00% floor 2.00%, identity 15/15). Recipe `/mnt/raid0/llm/tmp/ch28-fold-20261023/PLAN.md` §3. C5 (gates complete) follows. | [autokernel-champion-aggregate.md](kernel-champion-and-promotion.md#track-autokernel-champion-aggregate) CH-30 | 2026-10-24 |
 | OP-HOOK-REFACTOR | Review the cloud audit session's `refactor/containment-scanner` and `claude/vigilant-thompson-shpyh0` (epyc-root `scripts/hooks/check_filesystem_containment.sh` + scanner): they change the guard that enforces 'do not touch anything outside /mnt/raid0/llm/'. A safety boundary: land only with operator review. | [non-inference-backlog.md](engineering-hygiene-backlog.md) | 2026-10-24 |
 | OP-RETENTION-RATIFY | Sign the prepared ratify script: MEASUREMENT.md §5 'Evidence retention and reclamation' (amended draft: all reclaimers, citation sources, no size thresholds, purge-time re-check) + §5 repo-vs-08-03 wording, and the 'Destructive operations' doctrine + PreToolUse hook (decisions D2/D7/D4, 10-25). | [non-inference-backlog.md](engineering-hygiene-backlog.md) | 2026-10-25 |
@@ -146,7 +146,7 @@ nobody is moving.
 | pipeline-integration | 1 | 12 | 1 | 2026-11-07 |
 | research-evaluation | 5 | 195 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
-| routing-and-optimization | 8 | 518 | 14 | 2026-11-03 |
+| routing-and-optimization | 8 | 513 | 14 | 2026-11-03 |
 | user-facing-harness | 2 | 87 | 18 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 

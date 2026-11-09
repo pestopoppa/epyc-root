@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 518
+      "open": 513
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -808,10 +808,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 250,
+      "closed": 253,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 115,
+      "last_advanced": "2026-11-09",
+      "open": 110,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -820,24 +820,24 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 365,
+      "total": 363,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 145,
+          "closed": 148,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 68
+          "open": 63
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1178,
+          "line": 1182,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -847,7 +847,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1217,
+          "line": 1222,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -857,7 +857,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1324,
+          "line": 1329,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -867,7 +867,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1424,
+          "line": 1429,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 5
@@ -877,7 +877,7 @@
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1470,
+          "line": 1476,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -887,7 +887,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2043,
+          "line": 2050,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 4
@@ -2859,7 +2859,7 @@
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
       "line": 16,
-      "next_action": "Land LOOP-10..12, disk LOOP-21..25 and LOOP-26/27 (no blocking Qs unattended, filing alarm); review NIB2-98; prove NIB2-102.b",
+      "next_action": "Disk LOOP-21/22; merge reviewed refactor twins; land NI branches; prove NIB2-102.b at next stack start; rowflow: Pipeline",
       "track": "non inference backlog"
     },
     "RTG-34": {
