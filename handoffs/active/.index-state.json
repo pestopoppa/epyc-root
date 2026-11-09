@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 672
+      "open": 674
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1195,7 +1195,7 @@
       "closed": 183,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 48,
+      "open": 50,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1204,7 +1204,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 232,
+      "total": 234,
       "tracks": [
         {
           "blocked": 1,
@@ -1219,14 +1219,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 43
+          "open": 45
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1661,
+          "line": 1663,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1785,
+          "line": 1787,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2110,
+          "line": 2112,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2249,
+          "line": 2251,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2805,
+          "line": 2807,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2945,
+          "line": 2947,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2952,
+          "line": 2954,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2363,7 +2363,7 @@
       "blocked": 2,
       "closed": 126,
       "guarded": 0,
-      "last_advanced": "2026-11-08",
+      "last_advanced": "2026-11-09",
       "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
