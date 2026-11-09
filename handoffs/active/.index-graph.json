@@ -209,7 +209,7 @@
       "from": "EVL-29",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 7
+      "weight": 9
     },
     {
       "from": "EVL-29",
@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T11:41:26Z",
+  "generated_at": "2026-11-09T11:43:53Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1348,14 +1348,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 79,
-      "dispatchable": 2,
+      "dispatchable": 1,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-07",
-      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); W3 ladder needs live shadow verdicts",
-      "open": 2,
+      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); Flash rerun queued, then archive",
+      "open": 1,
       "priority": 0.6474,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
@@ -1393,18 +1393,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
-          "line": 480,
+          "line": 481,
           "name": "frontier-f2-self-running-lab",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 563,
+          "line": 564,
           "name": "frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -1413,7 +1413,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 755,
+          "line": 756,
           "name": "stale-open-audit-2026-07-18",
           "open": 0,
           "readiness": "no_open"
@@ -2731,14 +2731,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 286,
-      "dispatchable": 73,
+      "dispatchable": 74,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-03",
       "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
-      "open": 74,
+      "open": 75,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2936,6 +2936,15 @@
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": null,
+          "line": 4986,
+          "name": "lab-reliability-ladder",
+          "open": 1,
+          "readiness": "ready"
         }
       ]
     },
