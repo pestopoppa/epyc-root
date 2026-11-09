@@ -33,6 +33,9 @@ done
 chmod +x "$SEED/scripts/dashboard/hub_supervisor.sh" "$SEED/scripts/dashboard/refresh_hub_view.sh"
 cp "$REPO_DIR/scripts/coordination/daemon_provenance.sh" "$SEED/scripts/coordination/daemon_provenance.sh"
 cp "$REPO_DIR/scripts/coordination/index_regen.py" "$SEED/scripts/coordination/index_regen.py"
+cp "$REPO_DIR/scripts/coordination/observer_guard.sh" "$SEED/scripts/coordination/observer_guard.sh"
+mkdir -p "$SEED/scripts/lib"
+cp "$REPO_DIR/scripts/lib/env.sh" "$SEED/scripts/lib/env.sh"
 printf '#!/bin/bash\nexit 0\n' > "$SEED/scripts/coordination/fleet_watch.sh"
 chmod +x "$SEED/scripts/coordination/fleet_watch.sh"
 gitc() { git -C "$SEED" -c user.email=t@t -c user.name=t "$@"; }

@@ -145,6 +145,9 @@ HUB_PIDFILE="${LOG_DIR}/hub_supervisor_hub.pid"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/daemon_provenance.sh"
 # Identity and health are separate: an unknown probe must never authorize restart.
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/observer_guard.sh"
+# observer_guard.sh sources env.sh, which exports LOG_DIR from this script's own tree. From the read-only pin that
+# is an unwritable path, so restore the EPYC_ROOT value every log and pidfile above was derived from.
+LOG_DIR="${EPYC_ROOT}/logs"
 og_init hub_supervisor
 
 # The hub is stdlib-only, so any python3 runs it; prefer the interpreter the
