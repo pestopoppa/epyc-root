@@ -11,27 +11,21 @@
   "last_compile": "2026-11-09T09:05:54Z",
   "last_touch": {
     "advanced": {
-      "added": 7,
-      "changed": 5,
+      "added": 0,
+      "changed": 2,
       "removed": 0
     },
-    "at": "2026-11-09T10:42:29Z",
+    "at": "2026-11-09T12:08:02Z",
     "scope_paths": [
-      "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/speculative-decoding.md",
-      "handoffs/active/v11-promotion-checklist.md",
-      "handoffs/active/workspace-58-champion-calibration.md",
-      "progress/2026-11/2026-11-09-main-inf22.md",
-      "research/deep-dives/c10-intake-20261109",
-      "research/deep-dives/intake-digests/2026-11-09-ids-2664-2668.md"
+      "handoffs/active/engineering-hygiene-backlog.md",
+      "handoffs/active/frontier-lab-automation.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T10:42:29Z",
+  "scan_time": "2026-11-09T12:08:02Z",
   "schema_version": 1,
-  "source_set_hash": "72e4ce8dd1e949a1da29321b57f67100e2e38551e475e0f09a866bc9117ab3f9",
+  "source_set_hash": "c92a776ec8ed117435e1d43c01860d850af307c23430fec7018859e72dc5ca94",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -106,10 +100,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a8f97330c316378cca40537c517c083fc8f3637f4264a839dc8c3d74e0466139",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "bdfec5c6dd0159a5789d315d28696f10939dfe94ed8190f739bf751165850d80",
+      "modified": "2026-11-09T12:07:16Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 435781,
+      "size": 445649,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -122,10 +116,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "6526aee08c5d8b33d09625943f5da8224d711e7fd63b9f1e316f57f15dd0a987",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "30d9877141ecb0ce6948b80018d4213e1c2cc82a93ab8a05469f3b07e4d4f6fd",
+      "modified": "2026-11-09T11:43:18Z",
       "path": "handoffs/active/frontier-lab-automation.md",
-      "size": 210092,
+      "size": 209672,
       "title": "Intake-Derived Work \u2014 2026-07-25 sweep",
       "type": "handoff-active"
     },

@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 495
+      "open": 497
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -821,7 +821,7 @@
       "closed": 270,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 91,
+      "open": 93,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -830,7 +830,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 361,
+      "total": 363,
       "tracks": [
         {
           "blocked": 0,
@@ -840,14 +840,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 45
+          "open": 47
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1198,
+          "line": 1200,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -857,7 +857,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1238,
+          "line": 1240,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -867,7 +867,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1345,
+          "line": 1347,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -877,7 +877,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1445,
+          "line": 1447,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 5
@@ -887,7 +887,7 @@
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1493,
+          "line": 1495,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -897,7 +897,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2069,
+          "line": 2071,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 3
