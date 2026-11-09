@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:48:46Z",
+  "generated_at": "2026-11-09T15:51:42Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1485,14 +1485,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 818,
-      "dispatchable": 143,
+      "dispatchable": 146,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-09",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 144,
+      "open": 147,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1621,7 +1621,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 16,
+          "dispatchable": 19,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1639,7 +1639,7 @@
           ],
           "line": 14140,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 16,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
@@ -2432,14 +2432,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 113,
-      "dispatchable": 64,
+      "dispatchable": 65,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-09",
       "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
-      "open": 66,
+      "open": 67,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2456,11 +2456,11 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 2,
+          "dispatchable": 3,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 2,
+          "open": 3,
           "readiness": "blocked"
         },
         {
@@ -2475,7 +2475,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 18,
+          "line": 20,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 12,
           "readiness": "blocked"
@@ -2498,7 +2498,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 929,
+          "line": 931,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 52,
           "readiness": "blocked"
