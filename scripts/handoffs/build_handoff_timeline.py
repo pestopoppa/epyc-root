@@ -180,7 +180,7 @@ def _iso_week(day: str) -> str:
     return f"{y}-W{w:02d}"
 
 
-def _run_git_log(repo: Path, first_parent: bool = False) -> str:
+def _run_git_log(repo: Path, first_parent: bool = False, no_merges: bool = False) -> str:
     # first_parent: follow the main line only, and show merges as a diff against
     # their first parent. Plain ``git log -p`` prints NO diff for merge commits, so a
     # box change that landed via a merge is invisible and a replayed stock drifts
@@ -188,6 +188,7 @@ def _run_git_log(repo: Path, first_parent: bool = False) -> str:
     cmd = [
         "git", "-C", str(repo), "log", "--reverse", "-M", "--no-color",
         *(["--first-parent"] if first_parent else []),
+        *(["--no-merges"] if no_merges else []),
         _LOG_FORMAT, "-p", "--", "handoffs/",
     ]
     proc = subprocess.run(cmd, capture_output=True, text=True,
@@ -388,7 +389,10 @@ _LIVE = ("active", "blocked")
 _ANY_CHECKBOX_RE = re.compile(rf"^([+-])[ \t]*{_BOX_MARKER}[ \t]*(.*)$")
 _FLOW_FIELDS = ("ticked", "new_open", "reworded", "born_ticked", "removed_open",
                 "closed_by_completion", "handoffs_completed", "handoffs_archived",
-                "moved", "handoffs_folded")
+                "moved", "handoffs_folded", "reworded_done", "declined", "reopened",
+                "fold_added", "fold_removed", "fold_moved", "commits")
+# A box ticked with a declined/won't-fix marker left the backlog without being done.
+_DECLINED_RE = re.compile(r"\bdeclined\b|\bwon'?t[- ]?fix\b|\bwontfix\b", re.I)
 
 
 def _norm_text(text: str) -> str:
@@ -408,67 +412,85 @@ def _similar(a: str, b: str) -> bool:
 
 
 def _pair_commit(removed: list, added: list, flow: Counter) -> None:
-    """Classify one commit's removed/added boxes (``[is_open, normalised_text]``),
-    consumed one-to-one: exact-text pairs first, then similarity pairs."""
+    """Classify one commit's removed/added boxes, consumed one-to-one: exact-text pairs
+    first, then similarity pairs. Removed entries are ``[is_open, text]``, added entries
+    ``[is_open, text, declined]``. Open -> ``[x]`` is a tick (a ``declined`` one is not a
+    closure), open -> open and ``[x]`` -> ``[x]`` are edits and count as neither."""
     r_used = [False] * len(removed)
     a_done = [False] * len(added)
     for exact in (True, False):
         if not exact and len(removed) * len(added) > _PAIR_LIMIT:
             break
-        for ai, (a_open, txt) in enumerate(added):
+        for ai, entry in enumerate(added):
+            a_open, txt = entry[0], entry[1]
             if a_done[ai]:
                 continue
             for ri, (r_open, r_txt) in enumerate(removed):
-                if r_used[ri] or not r_open:
+                if r_used[ri] or (not r_open and a_open):
                     continue
                 if (r_txt == txt) if exact else _similar(r_txt, txt):
                     r_used[ri] = a_done[ai] = True
-                    flow["reworded" if a_open else "ticked"] += 1
+                    if not r_open:
+                        flow["reworded_done"] += 1
+                    elif a_open:
+                        flow["reworded"] += 1
+                    else:
+                        flow["declined" if entry[2:3] == [True] else "ticked"] += 1
                     break
-    for ai, (a_open, _t) in enumerate(added):
+    for ai, entry in enumerate(added):
         if not a_done[ai]:
-            flow["new_open" if a_open else "born_ticked"] += 1
+            flow["new_open" if entry[0] else "born_ticked"] += 1
     flow["removed_open"] += sum(1 for ri, (r_open, _t) in enumerate(removed)
                                 if r_open and not r_used[ri])
 
 
-def _pair_moves(removed: list, added: list) -> tuple[list, list, int]:
-    """Fold/refactor commits: a box removed in one file and added in ANOTHER with the same
-    normalised text is MOVED -- neither filed nor closed (``server._count_commit`` rule).
-    Entries are ``[is_open, text, path]``; returns the unpaired rest and the move count."""
+def _pair_moves(removed: list, added: list, flow: Counter | None = None) -> tuple[list, list, int]:
+    """A box removed in one file and added in ANOTHER with the same normalised text is the
+    same box in a new place, in EVERY commit. Same state = MOVED (neither filed nor closed).
+    A state change carried by the move still counts: open -> ``[x]`` is a tick (or a decline)
+    and ``[x]`` -> open a reopen, recorded in ``flow`` when given.
+    Removed entries are ``[is_open, text, path]``, added ``[is_open, text, path[, declined]]``;
+    returns the unpaired rest and the same-state move count."""
     pool: dict[str, list[int]] = {}
     for ri, (_o, txt, _p) in enumerate(removed):
         pool.setdefault(txt, []).append(ri)
     used: set[int] = set()
     rest_added, moved = [], 0
-    for a_open, txt, path in added:
+    for entry in added:
+        a_open, txt, path = entry[0], entry[1], entry[2]
         hit = next((ri for ri in pool.get(txt, ()) if ri not in used and removed[ri][2] != path),
                    None)
         if hit is None:
-            rest_added.append([a_open, txt, path])
+            rest_added.append(entry)
             continue
         used.add(hit)
-        moved += 1
+        r_open = removed[hit][0]
+        if r_open == a_open:
+            moved += 1
+        elif flow is not None:
+            if r_open:
+                flow["declined" if entry[3:4] == [True] else "ticked"] += 1
+            else:
+                flow["reopened"] += 1
     rest_removed = [r for ri, r in enumerate(removed) if ri not in used]
     return rest_removed, rest_added, moved
 
 
-def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
-    """Daily open-box stock + flows from ``git log -M -p`` text (see block above).
+def _replay(log_text: str, *, monotonic: bool = False) -> tuple[dict, dict, dict]:
+    """One pass over ``git log -M -p`` text. Returns ``(flows, stock_eod, meta)`` by day.
 
-    FOLD-AWARE (2026-11-03): in a commit carrying a ``Repoint-Reason:`` trailer (fold) or a
-    ``D9-ack: backlog refactor`` trailer, a box removed from one file and added to another is
-    ``moved`` -- including boxes of a source handoff deleted in that commit. A fold commit is
-    readiness-neutral: beyond moves only an in-place open -> ``[x]`` flip counts (``ticked``);
-    nothing else it adds or drops is filed or removed. A source that leaves active/ as a
-    ``> **Folded into`` stub is ``handoffs_folded``, not completed. Routers are not handoffs.
+    ``monotonic``: a replay of the first-parent line dates a commit no earlier than the one
+    before it, because a rebased commit's author date can precede what already landed and
+    must not rewrite an earlier end-of-day stock.
     """
     counts: dict[str, int] = {}      # state/stem -> open boxes (every state tracked,
     state_of: dict[str, str] = {}    # so a move back into active restores its stock)
     days: dict[str, Counter] = {}
     stock_eod: dict[str, int] = {}
-    st: dict = {"day": None, "blocks": [], "cur": None, "hunk": False, "seen": False,
-                "fold": False, "refactor": False}
+    meta: dict[str, dict] = {}
+    st: dict = {"day": None, "sha": None, "blocks": [], "cur": None, "hunk": False,
+                "seen": False, "fold": False, "refactor": False}
+    last_day: list = [None]
 
     def ss(path: str):
         r = _path_state_stem(path)
@@ -479,30 +501,33 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
         if not st["seen"] or day is None:
             return
         flow = days.setdefault(day, Counter())
-        fold, pairing = st["fold"], st["fold"] or st["refactor"]
+        info = meta.setdefault(day, {"touched": set(), "folds": []})
+        fold = st["fold"]
         removed: list = []
         added: list = []
+        handoff_touched = False
         for b in st["blocks"]:
             new_ss = ss(b["new"])
             old_ss = ss(b["rename_from"] or b["old"])
             if new_ss is None and old_ss is None:
                 continue
+            handoff_touched = True
+            if not fold:
+                info["touched"].add(b["new"])
             okey = f"{old_ss[0]}/{old_ss[1]}" if old_ss else None
             nkey = f"{new_ss[0]}/{new_ss[1]}" if new_ss else None
             if b["deleted"]:
                 if okey is not None:
-                    if old_ss[0] in _LIVE:
-                        if pairing:     # its boxes may have moved into another file
-                            removed.extend([is_open, _norm_text(txt), okey]
-                                           for sign, is_open, txt in b["boxes"] if sign == "-")
-                        else:
-                            flow["removed_open"] += counts.get(okey, 0)
+                    if old_ss[0] in _LIVE:      # its boxes may have moved into another file
+                        removed.extend([is_open, _norm_text(txt), okey]
+                                       for sign, is_open, txt in b["boxes"] if sign == "-")
                     counts.pop(okey, None)
                     state_of.pop(okey, None)
                 continue
             if nkey is None:
                 continue
             live_touch = new_ss[0] in _LIVE or bool(old_ss and old_ss[0] in _LIVE)
+            before = counts.get(okey, 0) if okey else 0
             if okey and okey != nkey:
                 counts[nkey] = counts.pop(okey, 0)
                 state_of.pop(okey, None)
@@ -513,30 +538,48 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
                 if is_open:
                     d_open += 1 if sign == "+" else -1
                 if live_touch:
-                    (added if sign == "+" else removed).append([is_open, _norm_text(txt), nkey])
+                    if sign == "+":
+                        added.append([is_open, _norm_text(txt), nkey,
+                                      bool(_DECLINED_RE.search(txt))])
+                    else:
+                        removed.append([is_open, _norm_text(txt), nkey])
             counts[nkey] = max(0, counts[nkey] + d_open)
             if old_ss and old_ss[0] in _LIVE and new_ss[0] in _TERMINAL:
                 if b["folded"]:
                     flow["handoffs_folded"] += 1
+                    flow["fold_removed"] += counts[nkey]
                 else:
                     flow["closed_by_completion"] += counts[nkey]
                     flow["handoffs_completed" if new_ss[0] == "completed"
                          else "handoffs_archived"] += 1
-        if pairing:
-            removed, added, moved = _pair_moves(removed, added)
-            flow["moved"] += moved
+            elif old_ss and old_ss[0] in _TERMINAL and new_ss[0] in _LIVE:
+                flow["reopened"] += before
+        removed, added, moved = _pair_moves(removed, added, flow)
+        flow["moved"] += moved
+        if handoff_touched and not fold:
+            flow["commits"] += 1
+        if fold or moved:
+            if handoff_touched:
+                info["folds"].append((st["sha"] or "")[:12])
+        if fold or st["refactor"]:
+            flow["fold_moved"] += moved
         if fold:
             # Readiness-neutral migration: only an in-place open -> [x] flip is a closure.
-            for a_open, txt, path in added:
+            # What else it adds or drops is NOT filing or removal, but it does move the
+            # stock, so it is recorded separately for the reconciliation.
+            for entry in added:
+                a_open, txt, path = entry[0], entry[1], entry[2]
                 if a_open:
+                    flow["fold_added"] += 1
                     continue
                 hit = next((r for r in removed if r[0] and r[2] == path
                             and (r[1] == txt or _similar(r[1], txt))), None)
                 if hit is not None:
                     removed.remove(hit)
-                    flow["ticked"] += 1
+                    flow["declined" if entry[3] else "ticked"] += 1
+            flow["fold_removed"] += sum(1 for r in removed if r[0])
         else:
-            _pair_commit([r[:2] for r in removed], [a[:2] for a in added], flow)
+            _pair_commit([r[:2] for r in removed], [[a[0], a[1], a[3]] for a in added], flow)
         stock_eod[day] = sum(n for k, n in counts.items() if state_of.get(k) in _LIVE)
 
     for line in log_text.splitlines():
@@ -544,10 +587,14 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
         if mc:
             flush()
             try:
-                st["day"] = datetime.fromisoformat(mc.group(2).strip()).date().isoformat()
+                day = datetime.fromisoformat(mc.group(2).strip()).date().isoformat()
             except ValueError:
-                st["day"] = None
-            st.update(blocks=[], cur=None, hunk=False, seen=True,
+                day = None
+            if monotonic and day is not None:
+                if last_day[0] is not None and day < last_day[0]:
+                    day = last_day[0]
+                last_day[0] = day
+            st.update(day=day, sha=mc.group(1), blocks=[], cur=None, hunk=False, seen=True,
                       **_commit_flags(mc.group(3), mc.group(4)))
             continue
         md = _DIFF_RE.match(line)
@@ -578,31 +625,62 @@ def build_daily_flow(log_text: str, today: str | None = None) -> list[dict]:
         elif _FOLDED_BANNER_ADD_RE.match(line):
             cur["folded"] = True
     flush()
+    return days, stock_eod, meta
 
-    if not stock_eod:
+
+def build_daily_flow(log_text: str, today: str | None = None,
+                     flow_log: str | None = None) -> list[dict]:
+    """Daily open-box stock + flows; THE counter (the hub's flow panel reads this output).
+
+    ``log_text`` (``--first-parent``) replays end-of-day stock on the main line. ``flow_log``
+    (``--no-merges``) supplies the flows, so each commit counts on its own date with its own
+    trailers rather than lumping a merged lane onto the merge day. Without ``flow_log`` the
+    flows come from ``log_text``.
+
+    Every commit pairs boxes across files (a move is never a filing). A fold commit
+    (``Repoint-Reason:``) is readiness-neutral: beyond moves only an in-place open -> ``[x]``
+    flip counts; what else it adds or drops lands in ``fold_added`` / ``fold_removed``.
+
+    Each row also carries the derived totals the panel shows, defined once here:
+    ``closed`` = ticked + closed_by_completion; ``filed`` = new_open + reopened;
+    ``removed`` = removed_open + declined; ``net`` = filed - closed - removed.
+    """
+    stock_days, stock_eod, stock_meta = _replay(log_text, monotonic=True)
+    if flow_log is None:
+        days, meta = stock_days, stock_meta
+    else:
+        days, _unused, meta = _replay(flow_log)
+    if not stock_eod and not days:
         return []
     today = today or datetime.now(timezone.utc).date().isoformat()
-    d = date.fromisoformat(min(stock_eod))
-    end = date.fromisoformat(max(max(stock_eod), today))
+    seen = set(stock_eod) | set(days)
+    d = date.fromisoformat(min(seen))
+    end = date.fromisoformat(max(max(seen), today))
     out: list[dict] = []
     carry = 0
     while d <= end:
         ds = d.isoformat()
         carry = stock_eod.get(ds, carry)
         c = days.get(ds, Counter())
-        out.append({"date": ds, "open_stock": carry,
-                    **{f: c.get(f, 0) for f in _FLOW_FIELDS}})
+        row: dict = {"date": ds, "open_stock": carry, **{f: c.get(f, 0) for f in _FLOW_FIELDS}}
+        row["closed"] = row["ticked"] + row["closed_by_completion"]
+        row["filed"] = row["new_open"] + row["reopened"]
+        row["removed"] = row["removed_open"] + row["declined"]
+        row["net"] = row["filed"] - row["closed"] - row["removed"]
+        info = meta.get(ds) or {}
+        row["touched"] = sorted(info.get("touched", ()))
+        row["fold_commits"] = list(info.get("folds", ()))
+        out.append(row)
         d += timedelta(days=1)
     return out
 
 
 def refactor_markers(daily: list[dict]) -> list[dict]:
-    """One marker per day on which fold commits MOVED boxes (``moved > 0``), for the stock
-    chart -- the same rule as ``server._refactor_markers`` (a day of plain re-points that
-    moved nothing is not marked)."""
-    return [{"date": r["date"], "moved": r.get("moved", 0),
+    """One marker per day on which fold commits MOVED boxes (``fold_moved > 0``), for the
+    stock and flow charts (a day of plain re-points that moved nothing is not marked)."""
+    return [{"date": r["date"], "moved": r.get("fold_moved", 0),
              "label": "backlog refactor fold: boxes moved, not closed or filed"}
-            for r in daily if r.get("moved", 0) > 0]
+            for r in daily if r.get("fold_moved", 0) > 0]
 
 
 def _fill_weeks(rows: list[dict], zero: dict) -> list[dict]:
@@ -846,7 +924,8 @@ def build_timeline(repo: Path) -> dict:
 
     series = _build_series(records)
     final = series[-1] if series else {s: 0 for s in STATES}
-    daily_flow = build_daily_flow(_run_git_log(repo, first_parent=True))
+    daily_flow = build_daily_flow(_run_git_log(repo, first_parent=True),
+                                  flow_log=_run_git_log(repo, no_merges=True))
 
     def _week_row(w: str) -> dict:
         ev = box_events_weekly.get(w, 0)
