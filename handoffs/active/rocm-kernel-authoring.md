@@ -9,12 +9,19 @@
 **Created**: 2026-06-03 · **Updated**: 2026-11-09 (INF-48 triage; evaluator carriers landed on research branch)
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
 
-> **NEXT ACTION (2026-11-09): port the C6 controller wiring (INF48-LIVE-1) onto research main, then schedule the two GPU rows.**
+> **NEXT ACTION (2026-11-09): PARKED under the recorded gate "GPU AutoKernel lane restart" (operator 2026-11-09, below); nothing in INF-48 is dispatchable until it lifts.**
+> *Pre-park next action, kept for the restart:* port the C6 controller wiring (INF48-LIVE-1) onto research main, then schedule the two GPU rows.
 > The 2026-08-22 "rejected carriers" state is stale: the repairs were made on `codex/autokernel-v27-descendant-20260823`
 > (audit fixes `27602b14d`, falsified-C6 typed disposition `32d48f3da`) and the evaluator-layer subset is now landed on research
 > branch `inf48-triage-20261109` (`f69569bc4`, `1525888cc`, `02b35fda0`), merged to research main through `64a287b83`; the controller half
 > has 18 conflicting files (INF48-LIVE-1). Schedule `RVP-ATT-CANARY-R4` and `ROCK-AITER-GFX90A` step 2 as rowflow rows (blockers recorded
 > under each box). RVP-C4-10 stays closed (PC sampling unimplemented on this ROCm).
+
+> **RECORDED GATE: "GPU AutoKernel lane restart"** (operator 2026-11-09, decision tool: "Park under GPU-lane gate"). Waiting on it, boxes stay UNTICKED:
+> INF48-LIVE-1 RVP-C6-WIRE, INF48-LIVE-2 RVP-C2-PRODUCER, INF48-LIVE-3 RVP-C4-5..9,11, INF48-LIVE-6 GPU-AK-SIGNALS. The gate lifts when the operator restarts the GPU AutoKernel lane.
+> Where the C6 work stands for the restart: the C6 evaluator layer is on research main (`64a287b83`); the controller half still lives only on `codex/autokernel-v27-descendant-20260823` (18 conflicting files, see INF48-LIVE-1).
+> `RVP-ATT-CANARY-R4` also sits under this gate, but its row `codex-att-r4-20261109` was queued on operator instruction on 2026-11-09, so it is NOT withdrawn; the row runs as queued.
+> Re-homed out of this file on 2026-11-09: LSA-PORT-1 -> `long-context-program.md` (D-LSA section). ROCK-AITER-GFX90A found no live MI210-serving destination (see the box) and stays here. INF48-LIVE-7 already sits in its kernel handoff (INF-03/INF-37 were folded into INF-48; there is no other kernel handoff).
 
 | Live item | What | State |
 |---|---|---|
@@ -3901,7 +3908,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 
 ### D-LSA research intake — approved 2026-11-03
 
-- [ ] **LSA-PORT-1 — Implement experimental CPU AVX512 and gfx90a flat-index selection plus indexed exact attention using existing row-gather contracts where suitable; retain full KV and validate request isolation, causal masks, partial clusters, slot reuse and dense fallback. Quantized-KV and MTP/DFlash2 parity require separate integration gates before serving activation.**
+- **[re-homed: operator 2026-11-09 (INF-48 park decision): moved with full text to `long-context-program.md` D-LSA research intake, which owns the LSA work]** **LSA-PORT-1 — original text: `git show 4c8fa6212:handoffs/active/rocm-kernel-authoring.md` line 3911. [no-belief: re-homed, not done]
 
 - [ ] **ROCK-AITER-GFX90A** [non-inference then inference] Probe AMD AITER (github ROCm/aiter) kernels on the MI210 (gfx90a) as a kernel source for the C6 llama.cpp HIP backend AND for vLLM (operator 2026-11-05: unconditional, since it can help our llama.cpp directly). vLLM 0.33 disables AITER on gfx90a ("AITER not built for gfx90a, rmsnorm -> SEGV", `vllm/platforms/rocm.py:1426`). Assembly and FP8 kernels need MI300-class instructions and are out of scope; the Composable Kernel and Triton ops are in scope (int8 and bf16 GEMM / scaled-mm, rmsnorm, fused MoE, paged and flash attention). Step 1 (code): build AITER for gfx90a in a scratch env, list per op builds / passes correctness / fails with the reason. Step 2 (gpu row, quiet GPU only): time each passing op against the C6 HIP equivalent at the Q38P-4b and production shapes (mmq/mmvq for Q8_0, FA at 8k/32k, rmsnorm), same inputs. Done when the op table with per-op speedup vs C6 is filed; any op >= 1.10x faster opens a port task into the llama.cpp experimental tree (champion workflow). Origin: Q38P-4/4b vLLM comparison (`mi210-serving-program.md`). [no-belief: new box]
   - *(2026-11-06, main-inf22)* **Step 1 RESULT** — AITER builds for gfx90a after a module_custom fp8-guard patch; op tests pass: rmsnorm, rope, gemm, PA, mha; CK MoE + sorting unsupported on gfx90a. Step 2 (timing vs C6) pending GPU; asm path superseded the scope note (T1 retargets gfx942 asm). [belief: cc]
