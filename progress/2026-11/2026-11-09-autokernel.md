@@ -45,3 +45,10 @@
 - Evidence copies: `artifacts/analysis/ak-c9-h5-lb49-20261109/`.
 - Lessons filed in project docs: `docs/guides/agent-workflows/compute-fillers.md` (Publishing discipline: queued means in `ready/` or grants; smoke_predicate) and `docs/guides/agent-workflows/ratify-script-authoring.md` (new: ratify scripts fetch and rebase immediately before push; the `!` no-TTY rule is already in OPERATING_CONSTRAINTS).
 - Result ticks this wrap-up: 0 (no box met its own acceptance). Result sub-bullets carry `[belief: cc]` (H5, LB4.9) or `[no-belief: ...]`.
+
+## Wrap-up 4 (remediation of wrap-up 3, operator-invoked, branch ak/wrap-20261109d)
+
+- Tick audit over today's root and research commits: ticked AK-FULLTEST-C9 (own stop-on-futility rule met, r5 abstain), AK-CGROUP-FIXTURE-FIX (research `68ff30491`; smoke PASS 16:22Z, root `63229f082`), AK-Q38FN-REAPER-DIAG (row completed 17:32Z; with reaps held the 24-pair calibration had no degraded block; guard root `9d597d559`), and added a ticked AK-C9-2-LANDINGS box for the RATIFY-AK-C9-2 items (clock band `fd98d5d0e`/`eb9be38dc`, R18-D adapter `f51f203ae`, budget `79c28f61e`, retired mechanisms `390daf496`, planner-only CPU `086b833e3`/`3f6301af8`). AK-FUSE-GRAPH-KLD-1 got a sub-bullet (rule ratified, K/S unset, not wired into the keep path), not ticked.
+- Not ticked by instruction or open: AK-H5-VERIFY (UNDERFILL, inconclusive), AK-C9-Q38FN-FLOOR (floors registered suspect, not decision grade), AKX-ALL-10.1 / LB4.9 (r2 running), VB-REFOCUS-NONEMPTY-READ-PROOF (proof r4 waits for a whole-host window), AKX-P0d-W2 (census smoke passed 21:22Z, held on a keeper residency bug), AK-SEED-IQ3S-PROFILE (being fixed), AK-MMQ-H3 (ready, not run).
+- Prune screen: 0 candidates fleet-wide; AutoKernel handoffs blocked by open-tasks. No moves.
+- Wiki sweep: whole delta (26 sources) compiled, bare `--touch`.
