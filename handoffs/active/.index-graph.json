@@ -710,10 +710,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-08T23:22:32Z",
+  "generated_at": "2026-11-09T00:47:21Z",
   "nodes": [
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 1,
       "blocked_by": [],
       "closed": 130,
@@ -1059,7 +1059,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [],
       "closed": 67,
@@ -1147,7 +1147,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 117,
@@ -1223,7 +1223,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 2,
       "blocked_by": [],
       "closed": 215,
@@ -1345,7 +1345,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 79,
@@ -1422,7 +1422,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 371,
@@ -1465,7 +1465,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 805,
@@ -1629,7 +1629,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 3,
       "blocked_by": [],
       "closed": 248,
@@ -1770,7 +1770,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 334,
@@ -1885,7 +1885,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 125,
@@ -1952,7 +1952,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 106,
@@ -2033,18 +2033,18 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 181,
-      "dispatchable": 50,
+      "closed": 182,
+      "dispatchable": 49,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-08",
       "next_action": "Champion is C8 1bda248e3; assemble C9: DSpine comparison, IQ4_NL kernel, serial fix, headroom profile",
-      "open": 51,
+      "open": 50,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2078,7 +2078,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 45,
+          "dispatchable": 44,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2087,14 +2087,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 46,
+          "open": 45,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1658,
+          "line": 1660,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2103,7 +2103,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1782,
+          "line": 1784,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2112,7 +2112,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2107,
+          "line": 2109,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2121,7 +2121,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2246,
+          "line": 2248,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2130,7 +2130,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2802,
+          "line": 2804,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2142,7 +2142,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2942,
+          "line": 2944,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2154,7 +2154,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2949,
+          "line": 2951,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2162,7 +2162,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 146,
@@ -2253,7 +2253,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2294,7 +2294,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 41,
       "blocked_by": [],
       "closed": 120,
@@ -2344,7 +2344,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2403,7 +2403,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [
         "INF-06#autokernel-rebuild-program",
@@ -2478,7 +2478,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2504,7 +2504,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2530,7 +2530,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 106,
@@ -2616,7 +2616,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2716,7 +2716,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 1,
       "blocked_by": [],
       "closed": 286,
@@ -2929,7 +2929,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 2,
       "blocked_by": [],
       "closed": 150,
@@ -3042,7 +3042,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 1,
       "blocked_by": [],
       "closed": 177,
@@ -3177,7 +3177,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 250,
@@ -3272,7 +3272,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 351,
@@ -3432,7 +3432,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3548,7 +3548,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 9,
       "blocked_by": [],
       "closed": 414,
@@ -3623,7 +3623,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 18,
       "blocked_by": [],
       "closed": 238,
@@ -3778,7 +3778,7 @@
       ]
     },
     {
-      "age_days": 36,
+      "age_days": 37,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
