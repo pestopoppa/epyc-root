@@ -1,0 +1,23 @@
+{
+ "id": "kb-rag-qd-v2-rebuild-20261109",
+ "owner": "main",
+ "launcher": "/mnt/raid0/llm/tmp/kb-rag-qd-v2-rebuild-20261109/launch.sh",
+ "lane": "cpu",
+ "shape": "quarter",
+ "regions": "any-of q0,q1,q2",
+ "ram_gib": 24,
+ "ports": [],
+ "result_path": "/mnt/raid0/llm/tmp/kb-rag-qd-v2-rebuild-20261109/out/results.jsonl",
+ "result_format": "jsonl",
+ "unit_key": "unit_id",
+ "scratch_root": "/mnt/raid0/llm/tmp/kb-rag-qd-v2-rebuild-20261109",
+ "keep": ["SOURCE.sha256", "job.py", "check_complete.py", "launch.sh", "spec.json", "out/*.json", "out/*.jsonl", "out/*.log"],
+ "estimate_s": 2400,
+ "first_progress_s": 300,
+ "priority_rank": 8.5,
+ "kind": "compute",
+ "handoff_task": "knowledge-pipelines.md:<OPEN-BOX-NEEDED>",
+ "decision_rule": "Rebuild the KB-RAG index under the qd-v2 convention (encoder gte-moderncolbert-v1-onnx model_int8.onnx, doc cap 256) into the FRESH dir data/kb_rag/index-qd-v2; index-qd-v1 and index are never touched. PASS = catalog chunk rows == manifest chunks AND index_meta.prefix_convention == qd-v2 AND a query for 'DeepSeek V4.1 Flash evaluation' returns handoffs/active/deepseek-v41-flash-evaluation.md in its top 10. FAIL otherwise. Stop-on-answer: all four units once; stop-on-futility: encode rc != 0 or precond refusal (disk floor 150 GiB). Resumable.",
+ "width_justification": "24 workers x 1 ONNX thread = one quarter; encode scales to ~48 workers (185 chunk/s measured 2026-08-12) but a 40k-chunk rebuild is ~10 min on a quarter, so it does not widen and packs beside other quarters.",
+ "notes": "Orchestrator code: branch apr/kb-qd-v2-20261109 @ e5add69f (worktree pinned by the job). Cutover (repointing consumers) is a separate step after PASS."
+}
