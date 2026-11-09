@@ -1,6 +1,7 @@
 import hashlib
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -114,6 +115,8 @@ def test_relocated_dependency_manifest_host_pins_match_live_host():
  # autokernel modules, ROCm, perl, python). A hosted CI runner has none of them, so an ABSENT file
  # is skipped; a PRESENT file whose digest differs is real drift and must fail, because
  # capture.begin() refuses the same mismatch at run time.
+ # A hosted runner can have its own /usr/bin/perl, so presence alone does not make this host state.
+ if os.environ.get('GITHUB_ACTIONS')=='true': pytest.skip('pins describe the lab host, not a hosted CI runner')
  bundle, deps = _bundle_deps()
  host={k:v for k,v in deps.items() if not k.startswith('@bundle/')}
  present={k:v for k,v in host.items() if Path(k).exists()}
