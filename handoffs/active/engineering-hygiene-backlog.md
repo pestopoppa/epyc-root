@@ -1785,7 +1785,7 @@ The current next action is to finish and review the integration proof, then vali
 
 - [ ] A5-10, A5-16, A5-17, A5-19: restructure `scripts/server/orchestrator_stack.py`. Blocked: a live path on the host (workspace-58, 2026-10-24); run when that file is quiet
 - [x] C5-05: delete the `campaign.py` CLI cluster (~20k LOC). Operator decision 2026-11-02 approved the deletion (a fourth plane outside the three approved); research `753639bd1` deleted the cluster. ✅ 2026-11-02 [no-belief: tooling]
-- [ ] C6-17: Arena retirement is outside the approved three-plane prune; preserve its existing belief-source producer/consumer contracts unless the operator authorizes a separate retirement package. Continue other packages meanwhile.
+- [x] C6-17: Arena retirement is outside the approved three-plane prune; preserve its existing belief-source producer/consumer contracts unless the operator authorizes a separate retirement package. Continue other packages meanwhile. 2026-11-09 operator decision: keep Arena; a later separate package may remove the five unused vendor wrappers only. Live producer/consumer contracts stay. ✅ [no-belief: scope decision]
   - *(workspace-f2 audit 2026-11-09.)* Operator decided 2026-11-09: ownership handed to AutoKernel, which decides and asks the operator through its own decision tool if needed.
 - [ ] Re-enable the AutoKernel guards workflow in GitHub after K4 lands (operator click)
 
