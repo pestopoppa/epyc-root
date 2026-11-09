@@ -12,21 +12,29 @@
 # Config (env; defaults are the production values):
 #   SRC_ROOT            /mnt/raid0/llm
 #   BACKUP_ROOT         /mnt/micron/loop-state-backups      (must be on a different device than SRC_ROOT)
+#   BACKUP_MOUNT        /mnt/micron                          (must be a real mountpoint; checked with findmnt)
 #   LOCAL_STATUS_FILE   /mnt/raid0/llm/claude-backups/loop-state.LAST_STATUS
+#   LOCK_FILE           /mnt/raid0/llm/claude-backups/loop-state-backup.lock
 #   LARGE_DB_POLICY     weekly (default, operator BK-3 decision 2026-11-09) | exclude | include
 #                       exclude: SQLite DBs >= LARGE_DB_MIN_BYTES are skipped and listed in SKIPPED.txt
 #                       weekly : included only on Sundays; include: always
 #   LARGE_DB_MIN_BYTES  1000000000  (1 GB; the 4.3 GB and 1.1 GB historical DS41 DBs, not the ~317 MB live store)
 #   KEEP_DAILY=7  KEEP_WEEKLY=4     (weekly = Sunday-dated snapshots)
 #   ALLOW_SAME_DEVICE   0           (1 only for fixtures: disables the off-md127 refusal)
+#   ALLOW_ROOT          0           (1 only if the operator deliberately runs as root)
 #   SNAPSHOT_DATE       today UTC YYYYMMDD (test hook)
 #   LEDGER_LOCK_WAIT_S  60
-# Requires: sqlite3, flock, sha256sum, find, cp. Reads sources; writes only under $BACKUP_ROOT and the status files.
+# Requires: sqlite3, flock, findmnt, sha256sum, find, cp. Reads sources; writes only under
+# $BACKUP_ROOT and the status files.
 set -euo pipefail
 
 SRC_ROOT="${SRC_ROOT:-/mnt/raid0/llm}"
 BACKUP_ROOT="${BACKUP_ROOT:-/mnt/micron/loop-state-backups}"
+BACKUP_MOUNT="${BACKUP_MOUNT:-/mnt/micron}"
+[[ "$BACKUP_MOUNT" == "/" ]] || BACKUP_MOUNT="${BACKUP_MOUNT%/}"
 LOCAL_STATUS_FILE="${LOCAL_STATUS_FILE-/mnt/raid0/llm/claude-backups/loop-state.LAST_STATUS}"
+LOCK_FILE="${LOCK_FILE:-/mnt/raid0/llm/claude-backups/loop-state-backup.lock}"
+ALLOW_ROOT="${ALLOW_ROOT:-0}"
 LARGE_DB_POLICY="${LARGE_DB_POLICY:-weekly}"
 LARGE_DB_MIN_BYTES="${LARGE_DB_MIN_BYTES:-1000000000}"
 KEEP_DAILY="${KEEP_DAILY:-7}"
@@ -77,6 +85,30 @@ on_exit() {
   fi
 }
 trap on_exit EXIT
+
+# Refuse root by default: the cron job runs as daniele, and root-owned snapshots would
+# poison later retention/status writes by the daniele job.
+if [[ "$(id -u)" -eq 0 && "$ALLOW_ROOT" != 1 ]]; then
+  log "REFUSING to run as root; run as daniele or set ALLOW_ROOT=1"; exit 2
+fi
+
+# Real mount guard: the parent directory exists even when /mnt/micron is unmounted, so the
+# old parent check alone would create the snapshot on the root SSD.
+mount_target="$(findmnt -rn -T "$BACKUP_MOUNT" -o TARGET 2>/dev/null || true)"
+[[ "$mount_target" == "$BACKUP_MOUNT" ]] || {
+  log "REFUSING: $BACKUP_MOUNT is not a mountpoint (found ${mount_target:-none}; BACKUP_ROOT=$BACKUP_ROOT)"
+  exit 2
+}
+if [[ "$BACKUP_MOUNT" != "/" ]]; then
+  [[ "$BACKUP_ROOT" == "$BACKUP_MOUNT" || "$BACKUP_ROOT" == "$BACKUP_MOUNT"/* ]] || {
+    log "REFUSING: BACKUP_ROOT $BACKUP_ROOT is not under BACKUP_MOUNT $BACKUP_MOUNT"; exit 2
+  }
+fi
+
+# One instance at a time. A benign skip must not write a FAILED status.
+mkdir -p "$(dirname "$LOCK_FILE")"
+exec 8>>"$LOCK_FILE"
+flock -n 8 || { log "already running"; DONE=1; exit 0; }
 
 [[ "$SNAP" =~ ^[0-9]{8}$ ]] || { log "bad SNAPSHOT_DATE '$SNAP'"; exit 2; }
 case "$LARGE_DB_POLICY" in exclude|weekly|include) ;; *) log "bad LARGE_DB_POLICY '$LARGE_DB_POLICY'"; exit 2;; esac

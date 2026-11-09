@@ -1,8 +1,10 @@
-# BK-2 -- host crontab text for the loop-state backup. PREPARED ONLY: not installed.
+# BK-2 -- host crontab text for the loop-state backup. INSTALLED 2026-11-09 in
+# daniele's crontab at 04:45 (the original 04:30 collides with extract_cot.sh).
 # Install on the HOST (the container cannot see /mnt/micron), as the user that owns the NIB2-92 job:
 #   1. copy scripts/backup/backup_loop_state.sh next to backup-claude-sessions.sh in
 #      /home/daniele/filesystem-agent/scripts/ and chmod +x it;
-#   2. run it once by hand and check /mnt/micron/loop-state-backups/LAST_STATUS says OK (this is BK-1's first real run);
+#   2. run it once by hand as daniele and check /mnt/micron/loop-state-backups/LAST_STATUS says OK
+#      (this is BK-1's first real run); then run restore_test_loop_state.sh;
 #   3. append the line below to `crontab -e`.
 # 04:45 (installed; avoids extract_cot.sh at 04:30) is offset 45 min from NIB2-92's `0 4 * * *`; the log sits next to claude-backups/backup.log.
 # LARGE_DB_POLICY defaults to weekly (operator BK-3 decision); to change it, prefix the command with LARGE_DB_POLICY=weekly.

@@ -53,6 +53,7 @@ def fx(tmp_path):
 def run(fx, script=BACKUP, **env):
     src, dst, ls = fx
     e = dict(os.environ, SRC_ROOT=str(src), BACKUP_ROOT=str(dst / "bk"), LOCAL_STATUS_FILE=str(ls),
+             BACKUP_MOUNT="/", LOCK_FILE=str(dst.parent / "loop-state.lock"),
              ALLOW_SAME_DEVICE="1", LARGE_DB_MIN_BYTES="100000", SNAPSHOT_DATE="20261109")
     e.update({k: str(v) for k, v in env.items()})
     return subprocess.run(["bash", str(script)], capture_output=True, text=True, env=e)
@@ -111,6 +112,15 @@ def test_refuses_same_device_unless_allowed_and_missing_parent(fx):
     assert r.returncode == 2 and not (dst / "absent-mount").exists()
 
 
+def test_refuses_backup_mount_that_is_not_a_mountpoint(fx):
+    src, dst, ls = fx
+    not_mount = dst.parent / "not-a-mount"
+    not_mount.mkdir()
+    r = run(fx, BACKUP_MOUNT=not_mount, BACKUP_ROOT=not_mount / "bk")
+    assert r.returncode == 2 and "is not a mountpoint" in r.stdout
+    assert not (not_mount / "bk").exists()
+
+
 def test_empty_scope_fails_and_rerun_same_day_is_noop(fx, tmp_path):
     empty = tmp_path / "empty"
     empty.mkdir()
@@ -148,7 +158,12 @@ def _restore(fx, tmp_path, cli_body):
 
 def test_restore_test_passes_then_detects_corruption(fx, tmp_path):
     assert run(fx).returncode == 0
-    ok_cli = 'import sys\nprint(\'{"chain_ok": true}\')\n'
+    # Only emit JSON when --json is passed; this pins the real-CLI invocation.
+    ok_cli = ('import sys\n'
+              'if "--json" not in sys.argv:\n'
+              '    print("frontier=1 chain=OK")\n'
+              '    sys.exit(0)\n'
+              'print(\'{"chain_ok": true}\')\n')
     r = _restore(fx, tmp_path, ok_cli)
     assert r.returncode == 0, r.stdout + r.stderr
     assert "PASS sha256sum -c" in r.stdout and "PASS vidya verify chain_ok" in r.stdout

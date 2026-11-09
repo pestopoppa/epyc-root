@@ -2,17 +2,21 @@
 # restore_test_loop_state.sh -- BK-4 restore test for the loop-state snapshots written by backup_loop_state.sh.
 # Restores a snapshot into a SCRATCH dir, then checks: sha256sum -c; PRAGMA integrity_check on every SQLite DB;
 # vidya `verify` on the restored ledger (chain_ok). Prints one PASS/FAIL line per check; exit 0 only if all pass.
-# PREPARED ONLY -- run on the host (needs /mnt/micron). The restore copies the whole snapshot (~0.5 GiB), so
-# point --scratch at a disk with room; the scratch dir is removed on exit unless --keep.
+# PREPARED ONLY -- run on the host (needs /mnt/micron). The restore copies the whole snapshot
+# (~4.8 GiB Monday, ~10.2 GiB Sunday), so point --scratch at a disk with room; the scratch dir
+# is removed on exit unless --keep.
 #
 # Usage: restore_test_loop_state.sh --scratch DIR [--snapshot DIR | --backup-root DIR] [--keep] [--vidya-cli PATH]
 #   --snapshot     a YYYYMMDD snapshot dir (default: newest dated dir with a SHA256SUMS under --backup-root)
 #   --backup-root  default /mnt/micron/loop-state-backups
-#   --vidya-cli    default /workspace/scripts/vidya/cli.py ; if absent the ledger check FAILS (never silently skipped)
+#   --vidya-cli    default <checkout>/scripts/vidya/cli.py ; if absent the ledger check FAILS (never silently skipped)
 set -euo pipefail
 
 BACKUP_ROOT=/mnt/micron/loop-state-backups; SNAPSHOT=""; SCRATCH=""; KEEP=0
-VIDYA_CLI=/workspace/scripts/vidya/cli.py
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_VIDYA_CLI="$SCRIPT_DIR/../vidya/cli.py"
+[[ -f "$DEFAULT_VIDYA_CLI" ]] || DEFAULT_VIDYA_CLI="/mnt/raid0/llm/epyc-root/scripts/vidya/cli.py"
+VIDYA_CLI="${VIDYA_CLI:-$DEFAULT_VIDYA_CLI}"
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --scratch) SCRATCH="$2"; shift 2;;
@@ -31,6 +35,17 @@ if [[ -z "$SNAPSHOT" ]]; then
 fi
 [[ -f "$SNAPSHOT/SHA256SUMS" ]] || { echo "FAIL $SNAPSHOT has no SHA256SUMS"; exit 1; }
 [[ ! -e "$SCRATCH" || -z "$(ls -A "$SCRATCH" 2>/dev/null)" ]] || { echo "scratch $SCRATCH not empty; refusing" >&2; exit 2; }
+
+# The restore copies the whole snapshot. Refuse early rather than filling a small disk.
+SCRATCH_PARENT="$(dirname "$SCRATCH")"
+mkdir -p "$SCRATCH_PARENT"
+need_kib="$(du -sk "$SNAPSHOT" | awk '{print $1}')"
+avail_kib="$(df -Pk "$SCRATCH_PARENT" | awk 'NR == 2 {print $4}')"
+if [[ -z "$need_kib" || -z "$avail_kib" ]] || (( avail_kib < need_kib + 1048576 )); then
+  echo "FAIL scratch filesystem $SCRATCH_PARENT has ${avail_kib:-unknown} KiB free;" \
+       "need at least $(( ${need_kib:-0} + 1048576 )) KiB (snapshot + 1 GiB)" >&2
+  exit 1
+fi
 mkdir -p "$SCRATCH"
 cleanup() { [[ $KEEP -eq 1 ]] || rm -rf -- "$SCRATCH"; }
 trap cleanup EXIT
@@ -55,8 +70,11 @@ check $rc "found $ndb SQLite DB(s)"
 
 LEDGER="$SCRATCH/state/vidya/ledger.jsonl"
 if [[ -f "$LEDGER" && -f "$VIDYA_CLI" ]]; then
-  vout="$(python3 "$VIDYA_CLI" --ledger "$LEDGER" verify 2>&1 || true)"
-  rc=0; grep -Eq '"chain_ok"[[:space:]]*:[[:space:]]*true|chain_ok[=: ]+(True|true)' <<<"$vout" || rc=1
+  # --json is required: the human output says "chain=OK", which the old chain_ok grep did not match.
+  vout="$(python3 "$VIDYA_CLI" --ledger "$LEDGER" --json verify 2>&1 || true)"
+  rc=0
+  python3 -c 'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get("chain_ok") is True else 1)' \
+    <<<"$vout" || rc=1
   check $rc "vidya verify chain_ok"
   [[ $rc -eq 0 ]] || echo "$vout" | tail -5
 else
