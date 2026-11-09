@@ -308704,6 +308704,26 @@
     quote_sha256: 58e4b10c0b82385c93fc154a4671d1d945f6dd84bf47837e4380c4768210f5a6
     source_revision: optimizing-descriptions.md sha256 49c74ac1
     verified_by: dpfw1-g4/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: item "confirm frontmatter fields once" DONE; this claim is the confirmed spec field
+      list, not changed.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction says "result: B3 deviates (see claim 1)"; it confirms this claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: Correction only records that the intake-117 item "confirm frontmatter fields once" is DONE and
+      B3 deviates (claim 1); it states no change to this claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction only records that the intake-117 item "confirm frontmatter fields once" is DONE and
+      B3 deviates (claim 1); it states no change to this claim.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction only records that the intake-117 item "confirm frontmatter fields once" is DONE and
+      B3 deviates (claim 1); it states no change to this claim.
   notes: 'PARTIAL: read specification.md, evaluating-skills.md, optimizing-descriptions.md (train/validation and trigger-rate
     sections), adding-skills-support.md (disclosure, collisions, trust, compaction sections by grep, not every line), index.
     Not read: best-practices.md, using-scripts, quickstart, clients list contents, the skills-ref validator source (github.com/agentskills/agentskills).
@@ -310878,6 +310898,31 @@
     quote_sha256: b5747c6e298c94b2ba6fd3d37d6baeb166ee7c2f79f0698239dbffd9ba8cea95
     source_revision: plastic-labs/honcho @607438d
     verified_by: dpfw1-g4/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Claim already states the corrected attribution (deriver + dreamer + peer card, dialectic = query
+      endpoint) that the correction asserts.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction fixes an intake-117 item (README names the dialectic query endpoint; user modelling
+      is deriver+dreamer+peer card); claim text already states that corrected split and is not touched.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction fixes an intake-117 item (README names the dialectic query endpoint; user modelling
+      is deriver+dreamer+peer card); claim text already states that corrected split and is not touched.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction fixes an intake-117 item (README names the dialectic query endpoint; user modelling
+      is deriver+dreamer+peer card); claim text already states that corrected split and is not touched.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction fixes an intake-117 item (README names the dialectic query endpoint; user modelling
+      is deriver+dreamer+peer card); claim text already states that corrected split and is not touched.
+  - claim_index: 5
+    effect: unaffected
+    note: Correction fixes an intake-117 item (README names the dialectic query endpoint; user modelling
+      is deriver+dreamer+peer card); claim text already states that corrected split and is not touched.
   notes: 'PARTIAL: read README (sections to Benchmarks), src/deriver/prompts.py (full), src/crud/peer_card.py (full), src/dreamer/orchestrator.py
     head, specialists.py (peer card section, deduction specialist head), surprisal.py head, src/config.py level defaults,
     tests/bench/README. Not read: queue_manager, consumer, dialectic/core, working_memory, trees, vector store, all SDKs,
@@ -311196,6 +311241,30 @@
     quote_sha256: fa70bc6dfd568f157d9f02d762f4d0a0200c575bbab22a4ff96888453f8e011f
     source_revision: arXiv:2606.10388v4 (2026-10-08)
     verified_by: dpfw1-g4/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: Stage-1 note "2606.10388 (unverified)" RESOLVED to this paper; confirms the claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: Correction resolves id/title and overturns the Stage-1 "skill-retrieval method" framing; this
+      claim reports v4 content and is not touched.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction resolves id/title and overturns the Stage-1 "skill-retrieval method" framing; this
+      claim reports v4 content and is not touched.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction resolves id/title and overturns the Stage-1 "skill-retrieval method" framing; this
+      claim reports v4 content and is not touched.
+  - claim_index: 4
+    effect: unaffected
+    note: Claim states the v1-headline overturn that the correction asserts ("Stage-1 framing ... OVERTURNED;
+      method exists only in v1"); claim is the corrective statement, NOT itself overturned.
+  - claim_index: 5
+    effect: unaffected
+    note: Correction resolves id/title and overturns the Stage-1 "skill-retrieval method" framing; this
+      claim reports v4 content and is not touched.
   notes: 'Read FULL: v1 (sha 24af1f31...) and v4 (sha 6e48048f...) HTML from disk. Repository bundle not cloned (not run,
     not needed). Labels are query-requirement conflicts, not execution failures (authors say so).'
   novelty_justification: No index entry covers retrieval-time conflict exposure between same-capability skills or the CleanHit/HSR
@@ -313943,6 +314012,28 @@
     quote_sha256: b694f433d3956480e0776bd04c19bcf503f8d7b9490b684fde1f93d060af6022
     source_revision: NVIDIA/SkillEvaluator @15adf98
     verified_by: dpfw1-g4/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction overturns the intake-117 dive-surfaced premise "could supply lint classes for M-24";
+      this claim does not assert that premise.
+  - claim_index: 1
+    effect: unaffected
+    note: Claim states the NEGATION ("does NOT supply M-24 lint classes ... premise overturned"); correction
+      says "OVERTURNED (see key_claims[1])" and refers to the premise, so this claim is the corrective statement,
+      NOT overturned.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction overturns the intake-117 dive-surfaced premise "could supply lint classes for M-24";
+      this claim does not assert that premise.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction overturns the intake-117 dive-surfaced premise "could supply lint classes for M-24";
+      this claim does not assert that premise.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction overturns the intake-117 dive-surfaced premise "could supply lint classes for M-24";
+      this claim does not assert that premise.
   notes: 'PARTIAL: read README, docs tier1/tier2/tier3 pages (large parts), constants.py, validators/script_lint.py (magic-number
     function), config file names; NOT read: security.py, code_risk.py, hygiene.py, Harbor runner, dashboard, reporting, tests
     (209 files), the ACES paper (arXiv 2608.20614, abs page title verified, not in index).'
@@ -314133,6 +314224,35 @@
     quote_sha256: 36b81e6386dc06c29b94b5be707665e4930d6d05017c6855f928e53d62d2f299
     source_revision: arXiv:2605.12039v2 (2026-10-08; v1 2026-05-12 also read)
     verified_by: dpfw1-g4/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction confirms-but-narrows the Stage-1 relevance note (SkillBank design vocabulary only)
+      and says v1 numbers are superseded by v2; claim carries no relevance judgement.
+  - claim_index: 1
+    effect: unaffected
+    note: Claim already states the v2 headline (93.1) and notes v1 reported 90.6, matching the correction
+      "v1 numbers superseded by v2 (ALFWorld 90.6 -> 93.1)".
+  - claim_index: 2
+    effect: unaffected
+    note: Correction confirms-but-narrows the Stage-1 relevance note (SkillBank design vocabulary only)
+      and says v1 numbers are superseded by v2; claim carries no relevance judgement.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction confirms-but-narrows the Stage-1 relevance note (SkillBank design vocabulary only)
+      and says v1 numbers are superseded by v2; claim carries no relevance judgement.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction confirms-but-narrows the Stage-1 relevance note (SkillBank design vocabulary only)
+      and says v1 numbers are superseded by v2; claim carries no relevance judgement.
+  - claim_index: 5
+    effect: unaffected
+    note: Correction confirms-but-narrows the Stage-1 relevance note (SkillBank design vocabulary only)
+      and says v1 numbers are superseded by v2; claim carries no relevance judgement.
+  - claim_index: 6
+    effect: unaffected
+    note: Correction confirms-but-narrows the Stage-1 relevance note (SkillBank design vocabulary only)
+      and says v1 numbers are superseded by v2; claim carries no relevance judgement.
   notes: 'Read FULL from disk: v1 and v2 arXiv HTML (sha256 in DIVE.md). EPYC-side files read at origin/main 5dde3006 (copies
     in dive-dpfw1-agentskills/orch/). Not portable: the RL co-training loop. Patterns: dependency-ordered injection, success-statistic
     maintenance bands, sensitivity table (loose/strict thresholds both lose 2.4-5.8 points), cost accounting of teacher calls.
@@ -314767,6 +314887,31 @@
       lines) sha256 0ddff48be27d1ad2c38fb0ba5edecff39d543192d77ddab83be24fda680be928; post dated May 25, 2026. URL located
       from the author's own tag listing https://akitaonrails.com/en/tags/reviews/ (captured search result then curl).
     verified_by: research-intake/stage2b dpfw2-w2h
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Claim already scopes "too verbose" as the author's subjective remark, consistent with the correction
+      ("subjective ... remark ... no token measurements").
+  - claim_index: 1
+    effect: unaffected
+    note: Correction narrows a wave-1 characterization held in another entry (dive-dpfw1-composio-pi-vs-omp);
+      this claim is a separate fact from the post.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction narrows a wave-1 characterization held in another entry (dive-dpfw1-composio-pi-vs-omp);
+      this claim is a separate fact from the post.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction narrows a wave-1 characterization held in another entry (dive-dpfw1-composio-pi-vs-omp);
+      this claim is a separate fact from the post.
+  - claim_index: 4
+    effect: unaffected
+    note: Claim already labels the anecdote n=1 / proof of nothing, matching the correction ("one self-declared
+      non-proof anecdote").
+  - claim_index: 5
+    effect: unaffected
+    note: Correction narrows a wave-1 characterization held in another entry (dive-dpfw1-composio-pi-vs-omp);
+      this claim is a separate fact from the post.
   notes: 'Located from the author''s tag listing (akitaonrails.com/en/tags/reviews/) after a captured search result named
     the title; no guessed URL. Dedup: absent from origin/main research/intake_index.yaml (normalized unbounded; zero hits
     for ''akita'') and in-flight entries. Related index: intake-1148 oh-my-pi. Page text contains no agent-directed instructions.
@@ -314939,6 +315084,27 @@
     quote_sha256: 536a5b1595607ef460f27d30544582cd63c5cccdab060ece0f1f94ccbd3fa023
     source_revision: arXiv:2409.15254v6
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-archon): claim confirmed as written.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Redive 2026-11-09: the 96.0% figure is worded differently in the body than in the appendix, and
+      Bayesian optimization pays off only above about 20 calls (claim text already notes it is not better
+      than greedy below 20).'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-archon): claim confirmed as written.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-archon): claim confirmed as written.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-archon): claim confirmed as written.'
+  - claim_index: 5
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-archon): claim confirmed as written.'
   notes: 'read_depth FULL (HTML v6 sha256 91b2042041cbbda361df2fd8c24b4c27038cb4bbeee3f72d023b15403bc73425). Figures and appendix
     tables 5-40 were skimmed for the cited claims only; models are mid-2024 (Llama 3.1, GPT-4o, Claude 3.5), tasks are chat/MATH/CodeContests,
     not agentic or REPL work. Quotes machine-checked in p2.txt. The search method is discrete, small-space, outcome-only:
@@ -316520,6 +316686,35 @@
     quote_sha256: 6fde3fcfa8c524a145aeb98d014daa1cf94e2b067d4dffaa036325ddaca1f53e
     source_revision: arXiv:2607.14169v2
     verified_by: research-intake/stage2b dpfw2-w2d
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
+  - claim_index: 5
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
+  - claim_index: 6
+    effect: unaffected
+    note: Correction is provenance only (arXiv id resolved, dedup against index, listing-only pointer);
+      it speaks to no claim.
   notes: 'Stage-2b dpfw2-w2d read from disk: arXiv HTML v2 (sha256 741259aa...4a41, text pass b906a2c7...bc13) abstract, sections
     1-6.2, 6.6, 8, 9 and Appendix A in full text pass; Tables 9-16, section 6.3-6.5 derivations and the rest of section 7
     related work skimmed or not read. Math is partly stripped in the text pass (exponents and Greek letters appear as plain
@@ -320419,6 +320614,24 @@
     quote_sha256: ef17e1c27a2e5d6443f528a1063b5ddccf7cb009b6fb1f4197dcd4e06c111eee
     source_revision: arXiv:2603.15653v1
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-rlmunc): claim confirmed as written.'
+  - claim_index: 1
+    effect: narrowed
+    note: 'Redive 2026-11-09: the 22.6-point gain is at equal wall-clock, not equal tokens, and no cost
+      is reported.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-rlmunc): claim confirmed as written.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Redive 2026-11-09: recursion helps Qwen3-Coder but hurts GPT-5; the effect is model-dependent,
+      not general.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Redive 2026-11-09 (dive-dpfw2-rlmunc): claim confirmed as written.'
   notes: 'read_depth FULL (HTML v1 sha256 5543884688903af3aa58b1d60806fcdd57dd7e6157d1ef19b8ccae862287529e). Figures 2-5,
     8-13 are images and were not read; claims 4-6 rest on the prose that describes them. Single v1. Cost axis: parallel K=8
     means roughly 8x trajectory tokens at equal wall-clock; no token or dollar numbers exist in the paper. Not tested on any
@@ -320556,6 +320769,31 @@
     quote_sha256: c0616e35e8ffcea2734549ce2cfe5b74303c2f75cfe2895f683950dfc7548358
     source_revision: arXiv:2306.09896v5
     verified_by: research-intake/stage2b dpfw2-w2d
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, cited only inside the wave-1 Tang entry); it
+      speaks to no claim.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, cited only inside the wave-1 Tang entry); it
+      speaks to no claim.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, cited only inside the wave-1 Tang entry); it
+      speaks to no claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, cited only inside the wave-1 Tang entry); it
+      speaks to no claim.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, cited only inside the wave-1 Tang entry); it
+      speaks to no claim.
+  - claim_index: 5
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, cited only inside the wave-1 Tang entry); it
+      speaks to no claim.
   notes: 'Stage-2b dpfw2-w2d read from disk: arXiv HTML v5 (sha256 54aa2d01...d133, text pass f6e35fa8...5298): abstract,
     sections 1, 3, 4.1-4.3, 5, 6 and Appendix A pass@t framing in full; Appendices B-H (extra model/dataset cells, repair
     success breakdown by difficulty, prompts, task lists) not read; figure values are images and were not read. Venue not
@@ -321956,6 +322194,23 @@
     quote_sha256: 6f4202e45f74c1e8d4fa65640ffe1dbfb661e2608ac9a09b718ed21f49a86053
     source_revision: arXiv:2402.12275v3
     verified_by: research-intake/stage2b dpfw2-w2d
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, referenced only inside intake-931); it speaks
+      to no claim.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, referenced only inside intake-931); it speaks
+      to no claim.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, referenced only inside intake-931); it speaks
+      to no claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction is provenance only (id resolved, dedup, referenced only inside intake-931); it speaks
+      to no claim.
   notes: 'Stage-2b dpfw2-w2d, LOW priority per dispatch: read from disk arXiv HTML v3 (sha256 4ae4c109...6dd, text pass 0bae95f1...e36e3):
     abstract, sections 1-3, 5 read; Related Work and all Appendices (A-E walk-throughs, generated code) NOT read; figures
     are images. Dedup: no own row; the only mention is the referenced-ids recovery line in intake-931 (index line 56623) and
@@ -323527,6 +323782,38 @@
     quote_sha256: 33ac90ee4ab3a27586fea630df03f188c067521025823be657f708af2c721347
     source_revision: arXiv:2608.14036v1
     verified_by: research-intake/stage2b dpfw3-w3c
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Claim states skill vs raw +2.84 pp with CI [-2.27,+7.95]; the correction's overturned "skills
+      outperform raw execution (CI includes zero)" is a different, unstated assertion.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "CONFIRMED as to the claim (65.7 vs 4.5 percent)".'
+  - claim_index: 2
+    effect: unaffected
+    note: Correction CONFIRMS/NARROWS wave-2 characterizations in other entries and overturns only citable
+      statements that are not among these key_claims ("skills outperform raw", "skills are cheaper"); this
+      claim reports the figures with their CIs.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction CONFIRMS/NARROWS wave-2 characterizations in other entries and overturns only citable
+      statements that are not among these key_claims ("skills outperform raw", "skills are cheaper"); this
+      claim reports the figures with their CIs.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction CONFIRMS/NARROWS wave-2 characterizations in other entries and overturns only citable
+      statements that are not among these key_claims ("skills outperform raw", "skills are cheaper"); this
+      claim reports the figures with their CIs.
+  - claim_index: 5
+    effect: unaffected
+    note: Claim already says "whole-run token cost" and matched 83-task intersection, which is the qualifier
+      the correction requires when quoting "skills are cheaper".
+  - claim_index: 6
+    effect: unaffected
+    note: Correction CONFIRMS/NARROWS wave-2 characterizations in other entries and overturns only citable
+      statements that are not among these key_claims ("skills outperform raw", "skills are cheaper"); this
+      claim reports the figures with their CIs.
   notes: 'Stage-2b combined ingest+dive 2026-10-21 (dpfw3-w3c). Read arxiv.org/html/2608.14036v1 from disk (raw sha256 cf97c7cc352c0f993c22887cd876d11c4dd19e8ede29b47e0dea6e16d8cebc4c;
     v1 is the only HTML version): abstract, Sections 1-7, Appendix A.3 (statistics), A.4 to A.9, prompts B.1 and B.2. NOT
     read: A.2 labelling details beyond the example, B.3 labeling prompts beyond the schema head, Appendix C tables; the token
@@ -325036,6 +325323,26 @@
     quote_sha256: cc5ce88947241d8195b91251a72505deb1aa758b0ff47f835e9ec1f9d275b5ca
     source_revision: arXiv:2506.02921v2
     verified_by: research-intake/stage2b dpfw3-w3c
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "RESOLVED: the id and the LongBioBench name match"; confirms this claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: Claim already states n=12 Fisher intervals and the rank/two-diff non-correlation that the correction's
+      NARROWED note asks for.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction confirms/narrows statements in other entries and overturns only the abstract wording
+      "continual pretraining only adjusts RoPE", which is not a key_claim.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction confirms/narrows statements in other entries and overturns only the abstract wording
+      "continual pretraining only adjusts RoPE", which is not a key_claim.
+  - claim_index: 4
+    effect: unaffected
+    note: Claim already states "one model family, 32K only", the scope limit the correction uses to overturn
+      the abstract wording.
   notes: 'Stage-2b combined ingest+dive 2026-10-21 (dpfw3-w3c), low priority per the brief but relevant to the YaRN gate.
     ID RESOLUTION: the abs page for 2506.02921 resolves to "A Controllable Examination for Long-Context Language Models" and
     its abstract names LongBioBench six times, so the id the wave-2 HELMET dive left unverified is verified here. Read arxiv.org/html/2506.02921v2
@@ -325484,6 +325791,33 @@
     quote_sha256: 74d5467e4b5f18c9c7762ea37e8a2530ac0f81cca882c03015574d2b8390434b
     source_revision: arXiv:2602.02474v2
     verified_by: research-intake/stage2b dpfw3-w3c
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction confirms the acceptance rule and overturns only the interpretation "beats MemoryOS/A-MEM
+      by 3 to 5 L-J points is a stable ranking", which no key_claim asserts.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Second read: claim is already bundle-level / a verbatim true statement; the correction narrowing
+      targets other wording, not this claim as written. Correction: "NARROWED: the Coalition framing ...
+      is correct only for the rollback step; ... a round accepts or rejects a bundle, not one skill"; this
+      claim''s closing sentence ("outcome gate that the Coalition paper later audits") is that framing.'
+  - claim_index: 2
+    effect: unaffected
+    note: Correction confirms the acceptance rule and overturns only the interpretation "beats MemoryOS/A-MEM
+      by 3 to 5 L-J points is a stable ranking", which no key_claim asserts.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction confirms the acceptance rule and overturns only the interpretation "beats MemoryOS/A-MEM
+      by 3 to 5 L-J points is a stable ranking", which no key_claim asserts.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction confirms the acceptance rule and overturns only the interpretation "beats MemoryOS/A-MEM
+      by 3 to 5 L-J points is a stable ranking", which no key_claim asserts.
+  - claim_index: 5
+    effect: unaffected
+    note: Claim states no seeds / ~2 test conversations / no CIs, which is the basis of the correction's
+      overturn of a stable-ranking reading.
   notes: 'Stage-2b combined ingest+dive 2026-10-21 (dpfw3-w3c). Read arxiv.org/html/2602.02474v2 from disk (raw sha256 0d5ad17eaa1737915d97153179cf9a642717436bae41da615ae92f9cb5a2c433;
     abs lists v1 and v2): Sections 1-5, Appendix A.4, B.1, B.2 (rollback), F. NOT read: App A extra tables, App C case studies,
     App D prompts. Repo ViktorAxelsen/MemSkill pinned f65b797338033f4f9c34822f1810f9c2747e6022 (2026-10-01, Apache-2.0 badge);
@@ -325888,6 +326222,22 @@
     quote_sha256: 3fce7a68b335b444ec85e0204f8b5df25a852e9c96b2be31bae25075e2375b86
     source_revision: arXiv:2603.22577v1
     verified_by: research-intake/stage2b dpfw3-w3c
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "CONFIRMED for the 180 runs (15 x 4 x 3, same counts)".'
+  - claim_index: 1
+    effect: unaffected
+    note: Claim already states "run no arm without it ... small sample", the basis of the correction's overturn
+      of "MCP abstraction reduces hallucination".
+  - claim_index: 2
+    effect: unaffected
+    note: Correction confirms the 180 runs, REATTRIBUTES "false lesson propagation" away from this paper
+      (not among these claims) and overturns abstract wordings that are not key_claims.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction confirms the 180 runs, REATTRIBUTES "false lesson propagation" away from this paper
+      (not among these claims) and overturns abstract wordings that are not key_claims.
   notes: 'Stage-2b combined ingest+dive 2026-10-21 (dpfw3-w3c), low priority. Read arxiv.org/html/2603.22577v1 from disk (raw
     sha256 8b937903ed716a382617885ea058b83cc6b838cad8d2f8891d48246e5dc72d04; only HTML version): abstract, Sections I-II headings,
     Sections III and IV (setup, ablation conditions, results, case studies, live competition). NOT read in full: Section II
@@ -326786,6 +327136,30 @@
     quote_sha256: f16bc714a4efadc214fda165c53c12564a2f38a4395f3006cb84a7718cb76235
     source_revision: arXiv:2604.04323v1
     verified_by: research-intake/stage2b dpfw3-w3c
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: wave-2 reading of this evidence CONFIRMED.'
+  - claim_index: 1
+    effect: unaffected
+    note: Claim already states the per-model sign and absent intervals; correction repeats them (Claude
+      +3.0, Kimi -2.0, Qwen -0.8).
+  - claim_index: 2
+    effect: unaffected
+    note: Claim reports the loading rates as measured; the correction's NARROWED note limits how they map
+      onto the orchestrator (adoption axis), not the source figures.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction CONFIRMS the setting-dependence claim, narrows a wave-2 selection statement and overturns
+      "pass rates approach no-skill baselines" (not a key_claim).
+  - claim_index: 4
+    effect: unaffected
+    note: Correction CONFIRMS the setting-dependence claim, narrows a wave-2 selection statement and overturns
+      "pass rates approach no-skill baselines" (not a key_claim).
+  - claim_index: 5
+    effect: unaffected
+    note: Correction CONFIRMS the setting-dependence claim, narrows a wave-2 selection statement and overturns
+      "pass rates approach no-skill baselines" (not a key_claim).
   notes: 'Stage-2b combined ingest+dive 2026-10-21 (dpfw3-w3c). Read arxiv.org/html/2604.04323v1 from disk (raw sha256 2143b37b23583593b43a4089ea47248d7bfc9d9674aae0f98f1ef0c420db87bb;
     v1 is the only HTML version): abstract, Sections 1-5, Table 1 to 3, Appendix A (index, search tools, finding-skills skill),
     Appendix B model and harness lines. NOT read in detail: Appendix C refinement prompts and Appendix D judge prompt. Code
@@ -375536,7 +375910,20 @@
     quote_sha256: cac9c0a61230574651bb34364fcafbd87e83b520194d9fcec963b7296bcc240e
     source_revision: arXiv:2606.15007v1 HTML sha256-12 e351966ed0be, retrieved 2026-10-31
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "Section 3.4 verified as scoped"; no change to this claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "Section 3.4 verified as scoped"; no change to this claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "Section 3.4 verified as scoped"; no change to this claim.'
+  - claim_index: 3
+    effect: narrowed
+    note: Correction adds that the 3.15-5.82% speedups are acceptance-length-derived relative figures with
+      only +0.2 AL gain at draft length 7; the claim does not carry that qualifier.
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Stage-1 record created in the same pass; abs page title matched the expected
     Nemotron 3 Ultra paper. Section 3.4 verified as scoped. Note the speedup percentages are acceptance-length-derived relative figures
@@ -375663,7 +376050,31 @@
     quote_sha256: b2d5cb01ead70fee181a1ce81e090b4e405ecec377f5d1dfe40b1134ae4a4276
     source_revision: ggml-org/llama.cpp PR 31269 merge commit 8ca4060b7e30e76baaa5670ee1ec1b760b7f8552, GitHub API 2026-10-31
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "Settles protocol (events and modalities), tested backends (Mac/CUDA only), no VAD,
+      no latency number in the PR"; confirms this claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "Settles protocol (events and modalities), tested backends (Mac/CUDA only), no VAD,
+      no latency number in the PR"; confirms this claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "Settles protocol (events and modalities), tested backends (Mac/CUDA only), no VAD,
+      no latency number in the PR"; confirms this claim.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Correction: "Settles protocol (events and modalities), tested backends (Mac/CUDA only), no VAD,
+      no latency number in the PR"; confirms this claim.'
+  - claim_index: 4
+    effect: narrowed
+    note: 'Correction: "One evidence-gap: the ''tool calls'' statement is an absence read from the diff";
+      claim holds with that evidence-type qualifier.'
+  - claim_index: 5
+    effect: unaffected
+    note: 'Correction: "Settles protocol (events and modalities), tested backends (Mac/CUDA only), no VAD,
+      no latency number in the PR"; confirms this claim.'
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Settles protocol (events and modalities), tested backends (Mac/CUDA
     only), no VAD (client-driven turns), no latency number in the PR, tool calls out of scope. One evidence-gap: the "tool calls" statement
@@ -375776,7 +376187,27 @@
     quote_sha256: 3aaac50e1508d29f355ddefa3bb622adb431a935c49a1ed2a99fcd6a2cf25e4d
     source_revision: ggml-org/llama.cpp PR 30629 merge commit 2851b3bcbf8d993a2243ae751c0a7dfa8e944a40, GitHub API 2026-10-31
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "Confirms the API surface and that Voxtral Realtime has a native llama.cpp streaming
+      path ... infrastructure only"; confirms this claim.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "Confirms the API surface and that Voxtral Realtime has a native llama.cpp streaming
+      path ... infrastructure only"; confirms this claim.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "Confirms the API surface and that Voxtral Realtime has a native llama.cpp streaming
+      path ... infrastructure only"; confirms this claim.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Correction: "Confirms the API surface and that Voxtral Realtime has a native llama.cpp streaming
+      path ... infrastructure only"; confirms this claim.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Correction: "Confirms the API surface and that Voxtral Realtime has a native llama.cpp streaming
+      path ... infrastructure only"; confirms this claim.'
   depends_on:
   - entry: intake-2383
     claim_index: 0
@@ -375888,7 +376319,22 @@
     source_revision: HF LiquidAI/d1-Omni-2B-GGUF @c53ae0b1 (lastModified 2026-10-28), README + HF API, retrieved 2026-10-31; sha256-12
       3bd98c1af0d5
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "Adds beyond intake-2553 ... Nothing overturned."'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "Adds beyond intake-2553 ... Nothing overturned."'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "Adds beyond intake-2553 ... Nothing overturned."'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Correction: "Adds beyond intake-2553 ... Nothing overturned."'
+  - claim_index: 4
+    effect: unaffected
+    note: 'Correction: "Adds beyond intake-2553 ... Nothing overturned."'
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): Adds beyond intake-2553: the exact serve command and batch flags, the
     supported type subset, file sizes (no Q4_K_M for Omni), and that /v1/systemone is an older upstream endpoint (PR 29818) independent
@@ -376121,7 +376567,27 @@
     quote_sha256: 8f380fe5a681645d692c0fc5c040b502d72fc4d7703159f05fdccb04bf4ae523
     source_revision: liquid.ai/blog/open-d1 HTML sha256-12 555ce078e6cf, retrieved 2026-10-31
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction dates the post and scopes it to d1-3B/d1-omni-600M; the claim already states that scope,
+      and the licence/audio/calibration notes are recorded as claims 3-4.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction dates the post and scopes it to d1-3B/d1-omni-600M; the claim already states that scope,
+      and the licence/audio/calibration notes are recorded as claims 3-4.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction dates the post and scopes it to d1-3B/d1-omni-600M; the claim already states that scope,
+      and the licence/audio/calibration notes are recorded as claims 3-4.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction dates the post and scopes it to d1-3B/d1-omni-600M; the claim already states that scope,
+      and the licence/audio/calibration notes are recorded as claims 3-4.
+  - claim_index: 4
+    effect: unaffected
+    note: Correction dates the post and scopes it to d1-3B/d1-omni-600M; the claim already states that scope,
+      and the licence/audio/calibration notes are recorded as claims 3-4.
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 2 (Stage 2b)): New entry. Dates the post (2026-10-07) and narrows it to d1-3B / d1-omni-600M;
     the 2B and Omni-2B models in intake-2553/2581/2582 are later and not in it. Records the licence-wording mismatch and the absent
@@ -377137,7 +377603,23 @@
     source_revision: 'GitHub API ggml-org/llama.cpp issues/28286 (+comments, timeline, PR #29454) retrieved 2026-10-31; state closed(stale)
       2026-10-18'
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "thread contains no root cause and no fix. Stale-closed is not resolved ... mechanism
+      UNCONFIRMED"; the claims already state exactly that.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "thread contains no root cause and no fix. Stale-closed is not resolved ... mechanism
+      UNCONFIRMED"; the claims already state exactly that.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "thread contains no root cause and no fix. Stale-closed is not resolved ... mechanism
+      UNCONFIRMED"; the claims already state exactly that.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Correction: "thread contains no root cause and no fix. Stale-closed is not resolved ... mechanism
+      UNCONFIRMED"; the claims already state exactly that.'
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 record created from the API; issue verified. Key finding: the
     thread contains no root cause and no fix. Stale-closed is not resolved. The only candidate mechanism (short-ubatch unwritten rollback
@@ -377230,7 +377712,27 @@
     quote_sha256: 3c558d63cbf3d314b39a999f86161151a2eda854f292e1f4d0256508990ec27e
     source_revision: 'GitHub API ggml-org/llama.cpp issues/28158 (+10 comments, timeline, PR #28206) retrieved 2026-10-31; state open'
     verified_by: research-intake/stage2
-  claim_corrections: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction corrects the issue TITLE framing (not a confirmed MTP/DFlash logic bug; Vulkan NaN-logits
+      + sentinel fill, CPU clean); the claims already describe the Vulkan-only symptom and NaN/sentinel
+      reading.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction corrects the issue TITLE framing (not a confirmed MTP/DFlash logic bug; Vulkan NaN-logits
+      + sentinel fill, CPU clean); the claims already describe the Vulkan-only symptom and NaN/sentinel
+      reading.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction corrects the issue TITLE framing (not a confirmed MTP/DFlash logic bug; Vulkan NaN-logits
+      + sentinel fill, CPU clean); the claims already describe the Vulkan-only symptom and NaN/sentinel
+      reading.
+  - claim_index: 3
+    effect: unaffected
+    note: Correction corrects the issue TITLE framing (not a confirmed MTP/DFlash logic bug; Vulkan NaN-logits
+      + sentinel fill, CPU clean); the claims already describe the Vulkan-only symptom and NaN/sentinel
+      reading.
   depends_on: []
   dive_corrections: '2026-10-31 (Stage 2, wave 3 (Stage 2b)): Stage-1 record created from the API; issue verified. Stage-2 correction
     to the title framing: this is not a confirmed ''MTP/DFlash emits out-of-bounds id'' logic bug; evidence points to a Vulkan-backend
@@ -379055,6 +379557,16 @@
     quote_sha256: ee174a0024dfae53b59b593b23614dec93a7a2560c1734bb27940821deb39c8a
     source_revision: arXiv:1705.08500v2 HTML (arxiv.org/html/1705.08500v2) curled to disk, read from disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings of the on-disk HTML text; no claim overturned."'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings of the on-disk HTML text; no claim overturned."'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings of the on-disk HTML text; no claim overturned."'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
   integration_disposition: integrated
@@ -379128,6 +379640,16 @@
     quote_sha256: d7c38873be937ff93900f7b7992f6dd04edf8c8dfd111d249edcc6cce4f407bc
     source_revision: arXiv:2307.01928v2 HTML (arxiv.org/html/2307.01928v2) curled to disk, read from disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
   integration_disposition: knowledge_only
@@ -379207,6 +379729,16 @@
     quote_sha256: 74747878773cd9b66d1c685d5cae7a0f0d4c5e0df1cdd14f37331cdcd673bc5d
     source_revision: arXiv:2107.11277v3 HTML (arxiv.org/html/2107.11277v3) curled to disk, read from disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
   integration_disposition: knowledge_only
@@ -379284,6 +379816,16 @@
     quote_sha256: f19a7db34fb3647be3a531d2ecd0860c0e0822acf9c28f1f8c792bd7e41e8896
     source_revision: arXiv:2306.10193v2 HTML (arxiv.org/html/2306.10193v2) curled to disk, read from disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "all quotes verified as exact substrings ... no claim overturned."'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1): all quotes verified as exact substrings of the on-disk HTML text; no claim overturned.'
   integration_disposition: integrated
@@ -379348,6 +379890,15 @@
     quote_sha256: 54931a70ac6f9e9d51bebc5dd381367c0bd2d36a661383f329527b7cd22f242c
     source_revision: github.com/apache/burr @ main 0512d8a02178545c8b7e94c46258ca9401d936e0, git clone --depth 1, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction only says UI source tree was listed not read; both claims are anchored to the application.py
+      lines that were read (857, 2021).
+  - claim_index: 1
+    effect: unaffected
+    note: Correction only says UI source tree was listed not read; both claims are anchored to the application.py
+      lines that were read (857, 2021).
   depends_on: []
   dive_corrections: '2026-11-02: only application.py lines 855-860, 2019-2024, 2080-2084 read for anchors; UI source tree listed, not read.'
   integration_disposition: integrated
@@ -379541,6 +380092,23 @@
     source_revision: github.com/thruwire/foreman @ main c3142ef636617f32f772140125aa310d81ceece9 (2026-10-15), git clone --depth 1, retrieved
       2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: README + what-foreman-proves.md read from disk; claim quote anchored at README.md:226/249
+      and what-foreman-proves.md:34/40 @ c3142ef.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: README + what-foreman-proves.md read from disk; claim quote anchored at README.md:226/249
+      and what-foreman-proves.md:34/40 @ c3142ef.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: README + what-foreman-proves.md read from disk; claim quote anchored at README.md:226/249
+      and what-foreman-proves.md:34/40 @ c3142ef.'
+  - claim_index: 3
+    effect: unaffected
+    note: 'Correction: README + what-foreman-proves.md read from disk; claim quote anchored at README.md:226/249
+      and what-foreman-proves.md:34/40 @ c3142ef.'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 2): README and docs/what-foreman-proves.md read from disk.'
   integration_disposition: knowledge_only
@@ -379611,6 +380179,19 @@
     quote_sha256: 9f682cc905804d250768a65cbb854196dca9c1eb81c6a48dec695b7688dca82c
     source_revision: www.langchain.com/blog/building-a-harness-with-jev curled to disk 2026-11-02 (post dated 2026-09-17)
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "read from disk; multipliers are vendor restatements"; claims are quote-anchored
+      (blog.txt:70/119/142) and claim 2 already says restated with no methodology.'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "read from disk; multipliers are vendor restatements"; claims are quote-anchored
+      (blog.txt:70/119/142) and claim 2 already says restated with no methodology.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'Correction: "read from disk; multipliers are vendor restatements"; claims are quote-anchored
+      (blog.txt:70/119/142) and claim 2 already says restated with no methodology.'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 2): read from disk; multipliers are vendor restatements.'
   integration_disposition: knowledge_only
@@ -379808,6 +380389,15 @@
     quote_sha256: 840d91bc6c910ee572464eed2b3967bc2cc3779d89f15cb633da9759d1ded0d8
     source_revision: www.anthropic.com/research/managed-agents (308 from /engineering/managed-agents), curled to disk 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Correction: "read from disk"; both claims are verbatim quotes recorded in the 2615 dive table
+      (bootstrap cost, p50/p95 TTFT).'
+  - claim_index: 1
+    effect: unaffected
+    note: 'Correction: "read from disk"; both claims are verbatim quotes recorded in the 2615 dive table
+      (bootstrap cost, p50/p95 TTFT).'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage-2b wave 1 for intake-2615): read from disk.'
   integration_disposition: knowledge_only
@@ -379916,6 +380506,33 @@
     quote_sha256: e4d3b398cc1ec852cd59c80634e85ee61b0214bcdc613d5233b82edef6bb9702
     source_revision: X Article linked from https://x.com/imryven/status/2115046979659055476 via api.fxtwitter.com, saved to disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 1
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 2
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 3
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 4
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 5
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 6
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (tw.txt locator).
+  - claim_index: 7
+    effect: unaffected
+    note: 'Second read: claim is already bundle-level / a verbatim true statement; the correction narrowing
+      targets other wording, not this claim as written. Dive table marks it PARTIAL(limitation): author
+      states he did not run the walkthrough, so the source''s other claims are untested.'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
   integration_disposition: integrated
@@ -379981,6 +380598,16 @@
     quote_sha256: 662c0a5ebc3cbb5280a5280a1971d771580f84b081684d49f688785d789b4e3d
     source_revision: www.noze.it/en/insights/llm-wiki/ (dated 2026-04-28) curled to disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (noze.txt:12/18).
+  - claim_index: 1
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (noze.txt:12/18).
+  - claim_index: 2
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED (noze.txt:12/18).
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
   integration_disposition: knowledge_only
@@ -380081,6 +380708,29 @@
     source_revision: github.com/AgriciDaniel/claude-obsidian @ main 2e545563172f97f02ecaaaab376ceea1246a0583 (2026-10-22), git clone --depth 1,
       retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Dive table labels the row OVERTURNED(summary: lint finds contradictions): the quote is the source''s
+      own statement that lint makes no semantic-contradiction claim; the Stage-1 summary is what is overturned,
+      not this quote.'
+  - claim_index: 1
+    effect: narrowed
+    note: Dive table marks PARTIAL (quote covers only part of the unsourced/provenance + orphans assertion).
+  - claim_index: 2
+    effect: unaffected
+    note: Dive table marks CONFIRMED(extension).
+  - claim_index: 3
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED.
+  - claim_index: 4
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED.
+  - claim_index: 5
+    effect: unaffected
+    note: 'Second read: claim is already bundle-level / a verbatim true statement; the correction narrowing
+      targets other wording, not this claim as written. Dive table marks PARTIAL (file-answers-back is a
+      separate operation in the skill).'
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
   integration_disposition: integrated
@@ -380153,6 +380803,17 @@
     source_revision: github.com/eugeniughelbur/obsidian-second-brain @ main f79c64f3f03ee25ec1660c8a30ebe7f4f8e044ff (2026-10-28), git clone --depth
       1, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Dive table marks PARTIAL (auto-resolve contradicts the gist's flag-for-human lint; README claim
+      only).
+  - claim_index: 1
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED / CONFIRMED(extension).
+  - claim_index: 2
+    effect: unaffected
+    note: Dive table marks this quote CONFIRMED / CONFIRMED(extension).
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
   integration_disposition: integrated
@@ -380221,6 +380882,19 @@
     quote_sha256: 48c3194387e76cc6e691f852fe3ffbc82ec7fe6c7e26803d38098ea987d89afc
     source_revision: theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres curled to disk, retrieved 2026-11-02
     verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Correction points at wiki3-dive.md; the source dive (wiki3b-dive.md) records this as a verbatim
+      author quote, noted as author assertion not benchmark.
+  - claim_index: 1
+    effect: unaffected
+    note: Correction points at wiki3-dive.md; the source dive (wiki3b-dive.md) records this as a verbatim
+      author quote, noted as author assertion not benchmark.
+  - claim_index: 2
+    effect: unaffected
+    note: Correction points at wiki3-dive.md; the source dive (wiki3b-dive.md) records this as a verbatim
+      author quote, noted as author assertion not benchmark.
   depends_on: []
   dive_corrections: '2026-11-02 (Stage 2, ws58 source 3): read from disk; see research/deep-dives/ws58-jev-20261102/wiki3-dive.md.'
   integration_disposition: integrated
@@ -385996,6 +386670,36 @@
       relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
       raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
       byte_length: 301519
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Claim states the B=16 figures (+3.9% over DDTree) that the correction substitutes for the abstract's
+      B=64 12%/9%; treeflash.md claim row 2 CONFIRMED.
+  - claim_index: 1
+    effect: unaffected
+    note: 'treeflash.md claim row 0: CONFIRMED on tables, narrowly (2.88 vs 2.84); no correction against
+      it.'
+  - claim_index: 2
+    effect: unaffected
+    note: Dive table CONFIRMS this item; claim already carries the budget/regime qualifier the correction
+      demands.
+  - claim_index: 3
+    effect: unaffected
+    note: Dive table CONFIRMS this item; claim already carries the budget/regime qualifier the correction
+      demands.
+  - claim_index: 4
+    effect: narrowed
+    note: 'Correction: AR head adds only +1.4%/+3.0% at B=16 MT-Bench T=1 and chain-to-tree is the main
+      driver; claim says the head "carries the benefit" without that magnitude/budget scope (treeflash.md
+      row 6 CONFIRMS frozen-backbone equivalence).'
+  - claim_index: 5
+    effect: unaffected
+    note: Dive table CONFIRMS this item; claim already carries the budget/regime qualifier the correction
+      demands.
+  - claim_index: 6
+    effect: unaffected
+    note: Dive table CONFIRMS this item; claim already carries the budget/regime qualifier the correction
+      demands.
   notes: "lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Read FULL from version-pinned LaTeXML html, sha256 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18; companion repo github.com/ETH-DISCO/TreeFlash read at f5c20b468cb77a33115103df2ce205c5cee6d912, not executed. Estimate for 27B np1 short prompts, equal rows B=8: 71-90 t/s vs DFlash2 n7 78.04 t/s, central +3%, estimate only; B=16 about 0.77x on short prompts. Training hours not stated in source. Dive file: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/treeflash.md."
   handoffs_updated:
   - handoffs/active/speculative-decoding.md
@@ -386545,6 +387249,34 @@
       relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
       raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
       byte_length: 505758
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Claim uses the table-consistent 4.33x at budget 128 (not v1 prose 6.75x) as the correction requires.
+  - claim_index: 1
+    effect: unaffected
+    note: Claim states per-depth marginals; the correction/dive OVERTURN the abs-page "branch-wise causal
+      conditioning" wording, which this claim reports as stale, not asserts.
+  - claim_index: 2
+    effect: unaffected
+    note: Claim already states the corrected (v4/v5) reading the correction asserts; jetspec.md claim table
+      confirms it.
+  - claim_index: 3
+    effect: unaffected
+    note: Claim already states the corrected (v4/v5) reading the correction asserts; jetspec.md claim table
+      confirms it.
+  - claim_index: 4
+    effect: unaffected
+    note: Claim already states the corrected (v4/v5) reading the correction asserts; jetspec.md claim table
+      confirms it.
+  - claim_index: 5
+    effect: unaffected
+    note: Claim already states the corrected (v4/v5) reading the correction asserts; jetspec.md claim table
+      confirms it.
+  - claim_index: 6
+    effect: unaffected
+    note: Claim already states the corrected (v4/v5) reading the correction asserts; jetspec.md claim table
+      confirms it.
 - id: intake-2667
   arxiv_id: '2604.12989'
   url: https://arxiv.org/html/2604.12989v1
@@ -386775,6 +387507,39 @@
       relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
       raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
       byte_length: 336217
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
+  - claim_index: 1
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
+  - claim_index: 2
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
+  - claim_index: 3
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
+  - claim_index: 4
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
+  - claim_index: 5
+    effect: unaffected
+    note: 'Claim already states "each cell is the best of 7 budgets selected on the evaluation data" (ddtree.md
+      row 5: PARTIAL as gain size, 60/60 confirmed).'
+  - claim_index: 6
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
+  - claim_index: 7
+    effect: unaffected
+    note: ddtree.md claim table marks the matching row CONFIRMED; correction (best-of-7-budget selection,
+      no B<16 data) is already carried by claims 5-6.
   notes: "lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Read FULL from version-pinned LaTeXML html, sha256 f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be; Figures 3-4 read from arXiv SVGs; Fig. 3 digitized from marker coordinates and calibrated against Table 1 (5.56x/7.79, 7.52x/10.73). Companion repo github.com/liranringel/ddtree read at c96427a185677bf4133ed865dd1626a5041aef9b, not executed. Drafter training: none. Wave cap reached for surfaced sources. Estimates only: np1 27B + DFlash2 n7 T=0 0.90-1.01x at B=8; about 0.67-1.07x at B=16. Dive file: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/ddtree.md."
   handoffs_updated:
   - handoffs/active/speculative-decoding.md
@@ -387065,3 +387830,41 @@
       relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
       raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
       byte_length: 729404
+
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 1
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 2
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 3
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 4
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 5
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 6
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 7
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+  - claim_index: 8
+    effect: unaffected
+    note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
+      J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
