@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T14:53:11Z",
+  "generated_at": "2026-11-09T14:55:01Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1788,14 +1788,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 339,
-      "dispatchable": 11,
+      "dispatchable": 12,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-09",
       "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
-      "open": 11,
+      "open": 12,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1889,11 +1889,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": [],
           "line": 3626,
           "name": "llama-cpp-dsa-contribution",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         }
       ]

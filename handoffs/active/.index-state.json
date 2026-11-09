@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 597
+      "open": 598
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2204,7 +2204,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 11,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2213,7 +2213,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 350,
+      "total": 351,
       "tracks": [
         {
           "blocked": 0,
@@ -2281,7 +2281,7 @@
           "line": 3626,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 3
+          "open": 4
         }
       ]
     },
