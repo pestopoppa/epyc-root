@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 438,
+    "docs": 439,
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 375,
@@ -11,20 +11,24 @@
   "last_compile": "2026-11-09T09:05:54Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 1,
+      "changed": 4,
       "removed": 0
     },
-    "at": "2026-11-09T14:33:39Z",
+    "at": "2026-11-09T15:51:32Z",
     "scope_paths": [
-      "handoffs/active/engineering-hygiene-backlog.md"
+      "docs/design/ak-discovery-owned-cgroup-20261109.md",
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/quantization-and-low-bit.md",
+      "handoffs/active/rocm-kernel-authoring.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T14:33:39Z",
+  "scan_time": "2026-11-09T15:51:32Z",
   "schema_version": 1,
-  "source_set_hash": "259cdb37d748bad96f06e03596e50566d9c27e2da7ed5cbecfd19b5ddd2725f4",
+  "source_set_hash": "cbcfc29859754befac67ba2dc01088c02ebc17ed6b233d3ef333da0bbeb1292d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -35,18 +39,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b76def76e14a5fd0cf954aba978fa1e6096f3dbed5f370608bbd19119fc48893",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "9f938330f889513b5fb79dcc5c1b0d63f034568682fd0fe74e96b9cd7d198f85",
+      "modified": "2026-11-09T15:45:18Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 482418,
+      "size": 490705,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "09e685e54598f7e85fc863d1e42dc44a380cd056d7f441d8e3ca1238844cd05d",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "eee683e945d1ff40de99fe0d1a83add910a57d7d47015f4abd53df5ca04c638f",
+      "modified": "2026-11-09T15:47:29Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1623002,
+      "size": 1633226,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -187,10 +191,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8d7bfcd0158bdd6d3ff22b46a29a501014e84794c4fa6408dcbf95f9b644f0fa",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "7b1868f549332d0d108c51fd9912a4df5350ac2aa9762ff4a765a63e1c2cf067",
+      "modified": "2026-11-09T15:43:47Z",
       "path": "handoffs/active/quantization-and-low-bit.md",
-      "size": 195362,
+      "size": 195958,
       "title": "EXL3 CPU and MI210 Implementation",
       "type": "handoff-active"
     },
@@ -203,10 +207,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "606d9d0c74eef01e602ce97e1607731f5d8cda4ff04c6c3eb8c9fe5c400e95a1",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "4c5bd3bb38ab06164d80cf2da88733900656a205be6ec9c6492561e12fc513cc",
+      "modified": "2026-11-09T15:50:27Z",
       "path": "handoffs/active/rocm-kernel-authoring.md",
-      "size": 573296,
+      "size": 538364,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -16731,6 +16735,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "2b8bfe086cad42403c47bab77d8a425153722f92e6278467ff010e8bedb491b6",
+      "modified": "2026-11-09T15:43:47Z",
+      "path": "docs/design/ak-discovery-owned-cgroup-20261109.md",
+      "size": 8635,
+      "title": "AK-DISCOVERY-OWNED-CGROUP: job-owned cgroup for the one native discovery compiler probe",
+      "type": "docs"
+    },
+    {
       "content_hash": "b48a2a324a722194b3f005bf6fcefab97ab7100fdc71be15a373c0e8f77a5b84",
       "modified": "2026-11-09T09:04:41Z",
       "path": "docs/design/autokernel-disk-hygiene-20260915.md",
@@ -20211,7 +20223,7 @@
       "type": "handoff-completed"
     }
   ],
-  "total_new": 2523,
+  "total_new": 2524,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
