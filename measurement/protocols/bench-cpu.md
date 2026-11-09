@@ -249,5 +249,17 @@ for that model. Outside band ⇒ the run is VOID and may not be reported.
 A run missing measured locality is observation-grade at best and can never gate a decision.
 No pre-ratification placement artifact may be retro-certified under this protocol.
 
+<!-- RATIFY-INF45-P23-20261109 BEGIN -->
+**Ratified values (RATIFY-INF45-P23-20261109).** Fixes the TBDs of protocol section 7 / MRG-1 section 5; pre-registered, binding on every conforming run.
+
+- TBD 1 `LOCALITY_THRESHOLD` = **0.95**. single-node instance: measured local_fraction >= 0.95, else the arm is REJECTED. Evidence: epyc-inference-research/data/numa_placement/20260730-P-BENCH-PLACEMENT-1/locverify_results.txt (nommap 1.00 vs shared-mmap 0.242-0.269).
+- TBD 2 `INTERLEAVE_TOLERANCE` = **+/-25% relative**. interleaved arm: every node page share within [0.75/n_nodes, 1.25/n_nodes]; outside = REJECT. Evidence: same locverify_results.txt (interleave shares 0.235-0.269 vs ideal 0.25, max 7.6% relative).
+- TBD 6 `ANCHOR_BAND_POLICY` = **median +/-10%, n>=50**. a role anchor = median of >=50 production-traffic samples, band = median +/-10%. Evidence: frontdoor anchor median 35.7 n=154 (+/-7%), P-BENCH-PLACEMENT-1 protocol 2.1.
+- TBD 12 `REGISTRATION_SIGN_OFF` = **operator only, separate executor**. only the operator signs REGISTRATION.md, and the run must have been executed by a session other than the one requesting sign-off. Evidence: operator decision 2026-11-09 (decision tool).
+
+Not fixed here (still TBD): 3, 4, 5, 7, 8, 9, 10, 13, 14.
+<!-- RATIFY-INF45-P23-20261109 END -->
+
+
 **Claim grammar.**
 `<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`
