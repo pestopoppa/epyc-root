@@ -14,10 +14,11 @@ does not restate them:
   `/clear`, close, pre-reboot, and reading another session's liveness. (Extracted from
   `OPERATING_CONSTRAINTS.md` on 2026-07-30; that file now points here.)
 - `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* (reload ownership).
-- `.claude/skills/inference-backlog-scheduling/SKILL.md` — how the inference backlog is packed onto
-  the host (bins, derived classes, grant-writer invariants, the STATUS/ETA report) and
-  `docs/guides/agent-workflows/compute-fillers.md`, the grant/FILLERS protocol it runs on. The
-  coordinator never writes a grant; it makes sure a calendar owner exists and routes to it.
+- `.claude/skills/inference-backlog-scheduling/SKILL.md` and
+  `docs/guides/agent-workflows/backlog-churn-flow.md` — the compute loop: the keeper
+  (`rowflow.py allocate`, the only grant writer) smokes, arms, grants and files `epyc.row.v3` rows,
+  the owner publishes and files results, workers pull prep. The coordinator never writes a grant
+  or a manifest; it checks the keeper and an owner exist.
 
 Governing principle — **BUS_PROTOCOL rule 9**: a fresh coordinator reconstructs its entire state
 from bus files alone. That is why this skill needs no arguments and no operator input to start.
@@ -463,29 +464,19 @@ occupancy line behind a staleness guard. Your inbox is split MUST-ACT (you are t
 a disposition is owed) from FYI (`cc`; cursor-cleared, no ack). Before this split, 83% of what sat
 in an inbox belonged to someone else.
 
-**5. The compute backlog — route it, never pack it yourself.** Since 2026-10-21 the inference
-backlog is packed by the **compute-calendar owner** (workspace-58 that week; the `inference`
-roster slot when it is staffed) under `.claude/skills/inference-backlog-scheduling`: items are
-FILLERS.md rows, windows are `grants/<id>.grant` files written by versioned writer scripts after
-`grant_ok.sh`, and the append-only calendar REVISION log is the record. What the coordinator owns
-in that loop:
+**5. The compute backlog — check the loop, never run it.** The loop is
+`docs/guides/agent-workflows/backlog-churn-flow.md`: the keeper (`rowflow.py allocate`, every
+120 s) smokes, arms and grants published `ready/*.json` rows by priority; row owners publish and
+file results; workers pull inference-prep items. What the coordinator owns:
 
-- **There is always a calendar owner.** If no session holds the duty, that is the first decision
-  package of the session, not a gap to note.
-- **Queued means armed.** A compute row is QUEUED only when its status is ARMED, `ready=y` and a
-  live launcher polls its id; everything else is BACKLOG with `blocker=<missing launcher | harness
-  fix | build | operator decision>` and an owner (operator ruling 2026-10-22). A code blocker is
-  never recorded as a blocker: dispatch a subagent for it in the same turn, and when it clears the
-  owner arms and requests a slot in that same turn.
-- **Idle bins are a reportable condition.** When `queue_status.py` or an owner receipt shows a free
-  quarter or an idle MI210 with ARMED-UNBOOKED rows, route it to the calendar owner with urgency,
-  citing the receipt. Never grant around the owner and never treat a held lock as a busy device.
-- **Owner duty on failures.** Every job owner watches its own `.ended` / FAILED flags with a
-  zero-token watcher, and on any failure finds WHY, fixes, re-queues and relays. A failure that
-  sits unnoticed overnight is a coordination defect to file, not a status line.
-- **Grant requests are typed.** A request carries `id`, regions shape, `min_window` s, `minutes`,
-  `RAM` GiB (+`ds41`), launcher `pid` and the class evidence; relay it with `SendMessage` and a
-  flag file. The coordinator never writes a grant file.
+- **The keeper is alive and there is an owner.** `scripts/coordination/churn/churn_up.sh --status`
+  is the read-only check; prove a pid with `ps -o pid,lstart,args -p <pid>`. A dead keeper or no
+  owner is the first decision package of the session.
+- **Idle is read from the keeper's `IDLE-WHY` lines and `rowflow.py alerts --unacked`**, never
+  re-derived. Idle with grantable rows is a keeper defect to report to the owner once; idle with
+  none is a priority defect.
+- **No relays, acks or nudges about compute.** Workers need no permission to smoke or publish; holds
+  and withdrawals live in the row. The coordinator never writes a grant or manifest.
 
 ### Nudging — the only safe path
 

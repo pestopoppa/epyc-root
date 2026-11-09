@@ -105,14 +105,12 @@ warning, validation failure, lease action, revocation, or reprovisioning.
   > and expirer of those, and the sole emitter of graded `compute-window` events (RTG-34
   > contract). Nothing about the physical-claim, residency-evidence, or drain-at-boundary
   > requirements changed.
-  > **AS RUN SINCE 2026-09-23 (operator ruling: daemon and `bus_supervisor` stay down).** With no
-  > daemon, compute WINDOWS are granted by the **compute-calendar owner** session (workspace-58
-  > from 2026-10-21) writing `grants/<id>.grant` through versioned writer scripts, after the
-  > deterministic admission `grant_ok.sh` (`validate_fillers.py --for-grant` + `ram_admit.sh`).
-  > The packing rules, invariants and the STATUS/ETA report are
-  > `.claude/skills/inference-backlog-scheduling`; the protocol is
-  > `docs/guides/agent-workflows/compute-fillers.md`. The D4 daemon rule resumes only when the
-  > operator restarts the daemon. Either way this role never writes a grant file.
+  > **AS RUN SINCE 2026-11-01 (bus daemon and `bus_supervisor` still down).** Compute windows are
+  > smoked, armed and granted by the zero-token **keeper** (`rowflow.py allocate`, the only grant
+  > writer) from published `epyc.row.v3` rows, per
+  > `docs/guides/agent-workflows/backlog-churn-flow.md`; packing rules in
+  > `.claude/skills/inference-backlog-scheduling`. Row owners file results; workers pull prep. This
+  > role never writes a grant or a manifest.
 - **You do not own the clock.** No cadence, tick, sweep or timer is yours; the daemon and its
   supervisors own scheduling. A console closed for twelve hours MUST cost the fleet nothing.
 - **Receipts, not dials.** You never produce a hardware or utilisation reading. Any figure in
@@ -164,7 +162,7 @@ warning, validation failure, lease action, revocation, or reprovisioning.
 | Backlog-churn pipeline after a reboot (keeper, writers, generator, dispatcher, watchers, tmux `agent`) | `docs/guides/agent-workflows/backlog-churn-runbook.md` | ONE command: `scripts/coordination/churn/churn_up.sh` (`--dry-run`, `--status`, `--stop`). Run `--status` at every cold start; a DOWN/DIFFERS line is a finding for the operator report. |
 | Wrap-up cadence: one task = one wrap-up | `agents/commands/wrap-up.md` → CADENCE | Dispatch a wrap-up subagent only once the session has moved on. It may **PREPARE** index edits (draft rows, `index_state.py --check`, exact diff); the owning session **APPLIES** and commits. Never auto-trigger the routine. |
 | Reload ownership | `agents/shared/OPERATING_CONSTRAINTS.md` → *Inference and Benchmarks* | Route reload requests to the owner; never run **or approve** one around them. |
-| Compute packing: queued = armed, derived booking class, window ≥ min + 300 s, one DS41-class server, the 184-191 → q3 fold, owner duty on failures | `.claude/skills/inference-backlog-scheduling/SKILL.md`; protocol `docs/guides/agent-workflows/compute-fillers.md` | Make sure a calendar owner exists; route grant requests and idle-bin receipts to it; surface its STATUS/ETA block verbatim; dispatch a subagent for every code-blocked BACKLOG row in the same turn. Never pack or grant yourself. |
+| Compute loop: keeper smokes, arms and grants v3 rows; owners file results; workers pull prep | `docs/guides/agent-workflows/backlog-churn-flow.md`; `.claude/skills/inference-backlog-scheduling/SKILL.md` | Check the keeper is alive (`churn_up.sh --status`) and an owner exists; quote its STATUS block verbatim. Do not relay grant requests, ack prep or nudge workers. Never pack, arm or grant yourself. |
 | Dangerous operations, control characters | `agents/shared/OPERATING_CONSTRAINTS.md` → *Dangerous Operations* | See *Panes are human territory* below. |
 
 ### Routing the special roles
@@ -175,11 +173,9 @@ warning, validation failure, lease action, revocation, or reprovisioning.
   work re-enters normal backlog dispatch with a fresh main context. (Since P3-7 this is a headless
   per-packet invocation, not a session you nudge — the routing rule is unchanged, only the
   destination's form; see `agents/auditor-main.md`.)
-- **The compute-calendar owner owns compute scheduling** (the `inference` roster slot when it is
-  staffed; workspace-58 since 2026-10-21). When persistent CPU/GPU idle evidence arrives, or
-  `queue_status.py` shows ARMED-UNBOOKED rows beside a free bin, route it there with urgency. It may execute the item or
-  take the resource decision; coordinator-agent never treats observation as a physical claim and
-  never reloads around the resource owner. (Grant AUTHORITY for compute windows is the daemon's per
+- **The keeper arms compute; the owner files it** (workspace-58 since 2026-10-21). Persistent idle
+  with grantable rows is a keeper defect: report it to the owner once with the keeper's `IDLE-WHY`
+  line as receipt. Coordinator-agent never treats observation as a physical claim and never reloads around the resource owner. (Grant AUTHORITY for compute windows is the daemon's per
   `compute_policy.yaml` — D4, rule 11 as amended 2026-08-16; `inference` retains the physical-claim
   lease vocabulary and the graded-window compatibility judgment per the *console contract* above.)
 

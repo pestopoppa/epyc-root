@@ -274,14 +274,10 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
   quiet block) will raise a whole-host HOLD inside the new row's window, do not grant that row
   now; place it after the HOLD. Origin: 10-26 23:29Z, HSF-2 and FA4 were granted 1 min before the
   night HOLD, and both were killed.
-- **T1 launch gate: arm a row only after a same-entry-path preflight.** The PF runs the real
-  launcher → filler engine → job up to the first side effect, with a writer-format
-  (minute-precision) synthetic grant, from a non-ancestor process tree, under the normal inherited
-  env (`NODE_OPTIONS`). Every refusal is logged. The effective RLIMIT, affinity and cgroup are
-  printed and checked, `min_window + 300 ≤ window` holds, and `est_output_GiB` and `scratch_root`
-  are declared with the disk floor checked after the output. Enforcing tool: `dryrun_check.py` /
-  `filler_run12.sh` (Codex, in progress). Details and the six failures behind each check:
-  `references/launch-admission-gate.md`. Origin: six early-launch failures on 10-27.
+- **Launch gate: a row is armed only after a smoke of the REAL launcher on the real lane** (the keeper's
+  `dryrun/<id>/PASS.json`), not a fixture preflight that stops before the first model load (60 of 88 failed rows
+  had passed the old T1 PF). The nine checks the smoke must show, and the six 10-27 early-launch failures behind
+  them: `references/launch-admission-gate.md`.
   Owner watcher / quarter-lock lessons: `references/owner-watchers.md` (2026-10-27).
 - **A HOLD written by one writer and removed by another needs a keeper** when quiet blocks chain.
   The keeper is a small script that re-creates the HOLD until the last quiet job's `.ended`, then
@@ -316,6 +312,20 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
   test run; the tripwire must fail on `llama-*`/`.gguf` execs and be proven to fire on a deliberate control (10-26).
 - **A phase that fits the preflight envelope (under ~240 s, single-thread) is iterated in the standing CPU 24,25
   preflight, never booked as a row.** Booking it burns a grant window on an iteration loop (10-26).
+
+### Lessons of 10-27..10-28 (skill review LOOP-9; still valid under the v3 keeper flow)
+
+- **No `HOLD_*` while foreign grants are open.** Worker runners STOP on any HOLD: a PF1 drain killed HIL15 heavy and the
+  ATT canary (10-27 23:54Z).
+- **No `|` in a queue match regex**, not only in queue fields: the pipe corrupted `regions` (4x rc2, 10-27 21:18Z).
+- **rc75 is a partial, not a failure.** Re-arm it and file it as a result; HIL15 v5 and yarn s0-s3 partials were HELD as
+  failures while graceful stops returned rc1.
+- **Never arm a conditional row.** Its named preconditions (e.g. YaRN s0/s1) must exist first.
+- **Prep must not sync the shared venv.** A `scope.sh` `uv run` editable reinstall at 01:54:57Z killed HIL15 s1.
+- **Copy the exact region string from the smoke** (`72-73`, not `72,73`); never type it.
+- **A cgroup is not containment until its delegation is root-owned** (same-UID escape, RUN14/INF-74, 10-28).
+- **HELD-row recovery outranks tooling work**; the audit traced the tooling drift to leaving it unattended.
+- **A real-lane smoke, not a fixture preflight, makes a row ready** (`references/launch-admission-gate.md`).
 
 ## 5. Coordination protocol
 
