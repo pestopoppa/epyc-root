@@ -45,6 +45,27 @@ def _bench():
     raise ProjectionError("research repo bench module unavailable; cannot rederive the floor")
 
 
+def _clock_policy():
+    """The research repo's ratified clock policy module and its loaded policy (band mode only).
+
+    Fails closed: an unavailable module, a strict policy or a malformed file refuses the capture.
+    """
+    for root in _RESEARCH:
+        p = Path(root) / "scripts" / "kernel_rnd" if root else None
+        if p and (p / "autokernel" / "loop" / "clock_policy.py").is_file():
+            if str(p) not in sys.path:
+                sys.path.insert(0, str(p))
+            from autokernel.loop import clock_policy  # noqa: PLC0415
+            try:
+                policy = clock_policy.load()
+            except ValueError as exc:
+                raise ProjectionError(f"R18-D A/A refused: clock policy unreadable: {exc}") from exc
+            if not policy.is_band:
+                raise ProjectionError("R18-D A/A refused: clock policy is not the ratified band")
+            return clock_policy, policy
+    raise ProjectionError("R18-D A/A refused: research clock_policy module unavailable")
+
+
 def _require(ok, reason):
     if not ok:
         raise ProjectionError("R18-D A/A refused: " + reason)
@@ -67,6 +88,7 @@ def _derive(path) -> dict:
 
 def _derive_rows(path, data, rows) -> dict:
     bench = _bench()
+    clock_policy, band = _clock_policy()
     _require(len(rows) > 2, "unfinished stream")
     previous = None
     for i, row in enumerate(rows):
@@ -110,8 +132,11 @@ def _derive_rows(path, data, rows) -> dict:
             _require(event["started_monotonic_s"] < event["ended_monotonic_s"], "bad invocation window")
             proof = event["residency"]
             own = proof["own_process"]
-            _require(own["verified"] and own["pid"] == event["pid"] and proof["clock_stable"] is True,
-                     "missing own-PID HIP residency or unstable clocks")
+            _require(own["verified"] and own["pid"] == event["pid"],
+                     "missing own-PID HIP residency")
+            verdict = clock_policy.band_verdict({**proof, "backend": "gpu"}, band)
+            _require(verdict["stable"], "clock outside the ratified band or no usable clock trace: "
+                     + ",".join(verdict["reasons"]))
             joint = [x for x in own["joint_samples"]
                      if x.get("binary_match") and x.get("mapping", {}).get("status") == "matched"
                      and (x.get("vram_bytes") or 0) >= 1 << 30
