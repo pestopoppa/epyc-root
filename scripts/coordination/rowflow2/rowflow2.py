@@ -476,6 +476,8 @@ def validate(spec, pred=None, launcher_exists=os.path.isfile):
             errs.append(f"{k} has type {type(v).__name__}")
     if errs:
         return errs
+    if spec["decision_rule"].startswith("MIGRATED:") and not spec.get("legacy"):   # LOOP-58: placeholder only a legacy migration may carry
+        errs.append("decision_rule is a MIGRATED: placeholder; write the real rule (allowed only on a legacy-mapped row)")
     try:
         need = parse_cpus(spec["cpus"])
     except ValueError as e:
