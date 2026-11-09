@@ -41,6 +41,7 @@ import os
 import re
 import shutil
 import sys
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rowflow as rf  # noqa: E402
@@ -594,10 +595,42 @@ def resume_complete(flags, rid):
     return 0
 
 
+def pid_argv(pid):
+    """argv of a live pid as one string ('' when unreadable)."""
+    try:
+        with open(f"/proc/{int(pid)}/cmdline", "rb") as f:
+            return f.read().replace(b"\0", b" ").decode(errors="replace")
+    except (OSError, TypeError, ValueError):
+        return ""
+
+
+def smoke_in_flight(flags, rid):
+    """Why a smoke of `rid` is in flight, else None. Stale records never block: a RUNNING.json counts only while its pid is
+    alive and before its deadline+grace (past that the keeper's reconcile_dryruns owns it); a SMOKE-PLACED.json only while
+    its pid is alive AND is still that row's --run-smoke runner (a recycled pid is not a smoke)."""
+    r = rf.load_json(rf.running_path(flags, rid)) or {}
+    if r.get("pid") and rf.proc_alive(r["pid"]):
+        dl = rf.iso_epoch(r["deadline"]) if r.get("deadline") else None
+        if dl is None or time.time() < dl + rf.DRYRUN_DEADLINE_GRACE_S:
+            return f"dryrun/{rid}/RUNNING.json pid {r['pid']} (since {r.get('started')})"
+    pl = rf.load_json(rf.smoke_placed_path(flags, rid)) or {}
+    if pl.get("pid") and rf.proc_alive(pl["pid"]):
+        argv = pid_argv(pl["pid"])
+        if "publish_row.py" in argv and "--run-smoke" in argv and rid in argv:
+            return f"dryrun/{rid}/SMOKE-PLACED.json runner pid {pl['pid']} (since {pl.get('at')})"
+    return None
+
+
 def publish_smoked(spec, flags, source, queue_cpu=False):
     """Publish, then THE dry run (rowflow.dryrun_run writes PASS.json or the FAIL memo). queue_cpu=True (the CLI default,
     operator 2026-11-05): a CPU row's smoke is QUEUED for the keeper (returns None). A GPU row whose GPU is busy is QUEUED
-    for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too."""
+    for the next GPU gap. An immediate CPU smoke with no free cores in the keeper's snapshot is queued too.
+    A republish while this id's smoke is in flight is refused first: its GPU-busy/queue/fail paths would unpublish the live
+    row under the running smoke. Only the CLI publish path reaches here; the keeper's runners call run_smoke directly."""
+    busy = smoke_in_flight(flags, str(spec.get("id") or ""))
+    if busy:
+        raise rf.Refused(f"smoke already in flight for {spec.get('id')}: {busy}; republishing now would unpublish the live row. "
+                         "Wait for its verdict (or stop that smoke), then publish again")
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
     retire_old_verdicts(flags, rid)
