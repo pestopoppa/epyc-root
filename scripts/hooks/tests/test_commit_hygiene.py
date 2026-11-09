@@ -283,6 +283,35 @@ def test_hyg4_end_to_end(cmd: str, expect: int, env: dict, why: str) -> None:
     assert run(cmd, env) == expect, why
 
 
+def _checked_out_branch() -> str | None:
+    r = subprocess.run(["git", "-C", str(REPO_ROOT), "symbolic-ref", "--short", "-q", "HEAD"],
+                       capture_output=True, text=True)
+    return r.stdout.strip() or None
+
+
+@pytest.mark.skipif(_checked_out_branch() is None, reason="needs a checked-out branch")
+def test_loop47_update_ref_of_checked_out_branch_is_blocked() -> None:
+    br = _checked_out_branch()
+    res = run_result(f"git update-ref refs/heads/{br} HEAD", FRESH)
+    assert res.returncode == 2 and "CHECKED OUT" in res.stderr
+    # a bare update-ref with -m is the same hazard
+    assert run(f"git update-ref -m ff refs/heads/{br} HEAD", FRESH) == 2
+
+
+@pytest.mark.skipif(_checked_out_branch() is None, reason="needs a checked-out branch")
+def test_loop47_negative_controls_still_allowed() -> None:
+    br = _checked_out_branch()
+    # another branch, nobody has it checked out
+    assert run("git update-ref refs/heads/scratch/not-checked-out HEAD", FRESH) == 0
+    # a salvage / non-branch ref
+    assert run("git update-ref refs/salvage/x HEAD", FRESH) == 0
+    # the checked-out branch, but the same command syncs index+worktree
+    assert run(f'git update-ref refs/heads/{br} HEAD && git reset -q -- a.txt', FRESH) == 0
+    assert run("git merge --ff-only origin/main", FRESH) == 0
+    # deleting is not a move
+    assert run("git update-ref -d refs/heads/scratch/not-checked-out", FRESH) == 0
+
+
 def main() -> int:
     failures: list[str] = []
     probe = REPO_ROOT / DIRTY_PROBE

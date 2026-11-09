@@ -559,6 +559,30 @@ def dirty_paths(repo: str, paths: list[str]) -> list[str]:
     return seen
 
 
+_SYNC_SUBS = {"reset", "merge", "checkout", "switch", "restore", "read-tree", "stash", "rebase", "pull"}
+
+
+def checked_out_branches(repo: str) -> set[str]:
+    """Branch names checked out in ANY worktree of `repo` (refs/heads/ prefix stripped)."""
+    try:
+        out = subprocess.run(["git", "-C", repo, "worktree", "list", "--porcelain"],
+                             capture_output=True, text=True, timeout=10).stdout
+    except (OSError, subprocess.SubprocessError):
+        return set()
+    return {ln.split("refs/heads/", 1)[1].strip() for ln in out.splitlines()
+            if ln.startswith("branch refs/heads/")}
+
+
+def command_syncs_checkout(cmd: str) -> bool:
+    """True when the same command also runs a git step that brings index/worktree in line with HEAD."""
+    for segment in split_into_segments(cmd):
+        for tokens in git_invocations(segment):
+            sub, _args, _c = subcommand_of(tokens)
+            if sub in _SYNC_SUBS:
+                return True
+    return False
+
+
 def block(message: str) -> int:
     print(message.rstrip(), file=sys.stderr)
     return 2
@@ -588,12 +612,39 @@ def main() -> int:
     for segment in split_into_segments(cmd):
         for tokens in git_invocations(segment):
             sub, args, dash_c = subcommand_of(tokens)
-            if sub not in {"add", "commit", "checkout", "restore", "stash"}:
+            if sub not in {"add", "commit", "checkout", "restore", "stash", "update-ref"}:
                 continue
             repo = resolve_repo(cmd, segment, dash_c)
             if repo is None:
                 continue              # sandbox / unknown -> not our business
             flags, positionals = positional_and_flags(args)
+
+            if sub == "update-ref":
+                # LOOP-47: `git update-ref refs/heads/<B> <sha>` moves a branch WITHOUT touching
+                # the index or worktree of any checkout that has <B> checked out. On 2026-10-31
+                # 00:26 a session did that to `main` in /workspace: HEAD jumped, the index still
+                # held the old tree, and ~1,900 phantom staged changes appeared (a later index
+                # commit would have reverted them). The reflog subject was empty -- a bare
+                # update-ref. The safe shape is `git merge --ff-only` (moves ref + index + tree),
+                # or the private-index recipe that ends in `git reset -q -- <paths>`.
+                refs = [p for p in positionals if p.startswith("refs/heads/")]
+                if refs and "-d" not in flags and not command_syncs_checkout(cmd):
+                    held = checked_out_branches(repo)
+                    hit = [r for r in refs if r[len("refs/heads/"):] in held]
+                    if hit:
+                        return block(f"""BLOCKED: `git update-ref {hit[0]}` on a branch that is CHECKED OUT in {repo}.
+
+update-ref moves the branch but not the index or worktree, so the checkout is left
+holding the OLD tree against a NEW HEAD: every changed file shows as a phantom staged
+change (~1,900 of them in /workspace on 2026-10-31 00:26; the next index commit would
+have silently reverted the lot). Use a form that moves all three:
+    git merge --ff-only <sha-or-ref>
+or, after a private-index commit, sync the paths you committed in the same command:
+    git update-ref {hit[0]} "$NEW" && git reset -q -- <your paths>
+or run `git read-tree -m -u HEAD@{{1}} HEAD` after the move.
+
+{OPERATOR_BYPASS_NOTE}""")
+                continue
 
             if sub == "add":
                 if set(flags) & WHOLESALE_ADD_FLAGS or "." in positionals:

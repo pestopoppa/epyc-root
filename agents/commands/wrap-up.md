@@ -132,6 +132,7 @@ GIT_INDEX_FILE=$TMPIDX git read-tree HEAD          # private index = HEAD exactl
 GIT_INDEX_FILE=$TMPIDX git add -- <your files>
 TREE=$(GIT_INDEX_FILE=$TMPIDX git write-tree); rm -f $TMPIDX
 git update-ref refs/heads/<branch> "$(git commit-tree $TREE -p HEAD -m "...")"
+git reset -q -- <your files>   # sync the shared index for THESE paths (update-ref alone leaves it stale; LOOP-47 hook blocks the bare form)
 ```
 
 The shared index is never touched, so the peer's staging survives intact — verify afterwards with
