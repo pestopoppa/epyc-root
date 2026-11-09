@@ -14,7 +14,7 @@ Choices: 4 · excluded: 0. Context lines are `file:line@7eb7a4a3c911` (origin/ma
 
 **Recommendation: A.** AsyncGRPO needs server and trainer on separate GPUs and has no LoRA path; recorded as blocked, not dismissed.
 
-## 2. ID-25: backfill `arxiv_id: 2607.05391` and the 9-author list onto intake-362/363 (follow-up recorded by intake-804, never actioned)?
+## 2. ID-25: backfill `arxiv_id: 2607.05391` and the 9-author list onto intake-362#record and intake-363#record (follow-up recorded by intake-804, never actioned)?
 
 - Context: `handoffs/active/intake-derived-work-2026-07-25.md:273@7eb7a4a3c911` (manifest `handoffs/active/intake-derived-work-2026-07-25.md:273@3ac825873dfb`, id `c1dce92fdded`)
 - Gated worker box(es): `ID-25` (handoffs/active/intake-derived-work-2026-07-25.md:273)
