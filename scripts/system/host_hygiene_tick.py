@@ -106,6 +106,8 @@ REGION_LOCK = os.environ.get("HYGIENE_REGION_LOCK", f"{LLM}/epyc-orchestrator/sc
 CPU_WINDOW = Path(os.environ.get("HYGIENE_CPU_WINDOW", f"{LLM}/autokernel/cpu-window.json"))
 ALARM = ROOT / "scripts" / "coordination" / "alarm_channel.py"
 REGISTRY = ROOT / "scripts" / "coordination" / "observer_registry.json"
+WORKSPACE_CLONE = os.environ.get("HYGIENE_WORKSPACE_CLONE", "/workspace")
+WORKSPACE_BEHIND_MAX = 50
 LOG_MAX_BYTES = 5 * 2**20
 HISTORY_KEEP = 14
 # Cadence is the inherited 1800-second invariant; timeout is a subsystem tunable.
@@ -760,6 +762,35 @@ def codex_report(t: Tick) -> None:
     t.log("codex: report written -> " + str(t.state_dir / "codex_report.json"))
 
 
+def workspace_sync(t: Tick, repo: str = WORKSPACE_CLONE, check=None) -> None:
+    """NIB2-99: warn-only. Alarm `workspace-clone-drift` if /workspace main is >50 behind or any ahead.
+
+    Read-only (workspace_sync_check.py never fetches or syncs). An unreadable clone stays silent.
+    """
+    key = "workspace-clone-drift"
+    if check is None:
+        spec = importlib.util.spec_from_file_location("_workspace_sync_check", HERE / "workspace_sync_check.py")
+        if spec is None or spec.loader is None:
+            return
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        check = mod.workspace_sync_status
+    s = check(repo)
+    if not s.get("ok"):
+        t.log(f"workspace-sync: {s.get('error')}")
+        return
+    behind, ahead = s["behind"], s["ahead"]
+    t.log(f"workspace-sync: {repo} {behind} behind / {ahead} ahead of origin/main")
+    if behind > WORKSPACE_BEHIND_MAX or ahead > 0:
+        t.raise_alarm(key, "warning",
+                      f"{repo} main is {behind} behind (> {WORKSPACE_BEHIND_MAX}) / {ahead} ahead "
+                      "(> 0) of origin/main. Scripts run from it are stale or a commit landed on its "
+                      "local main. Sync by hand (fast-forward, push any ahead commits first); the tick "
+                      "never syncs.", {"behind": behind, "ahead": ahead})
+    else:
+        t.clear_alarm(key, f"{repo} within {WORKSPACE_BEHIND_MAX} behind, 0 ahead")
+
+
 # --------------------------------------------------------------------------- main
 def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STATE_DIR) -> int:
     state_dir.mkdir(parents=True, exist_ok=True)
@@ -776,6 +807,7 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
         backups(t)
         loop_state_backups(t)
         event_duty(t)
+        workspace_sync(t)
         heavy(t, force=force_heavy)
     finally:
         t.flush()

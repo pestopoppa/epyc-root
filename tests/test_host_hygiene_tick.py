@@ -372,3 +372,48 @@ def test_no_worktree_or_scratch_sweep_in_the_tick():
     src = (ROOT / "scripts/system/host_hygiene_tick.py").read_text()
     body = src.split("def heavy(", 1)[1].split("\ndef ", 1)[0]
     assert "worktree" not in body and "scratch_cleanup" not in src.split('"""', 2)[2]
+
+
+# --------------------------------------------------------------------------- NIB2-99 workspace drift
+def test_workspace_sync_alarm_matrix(tmp_path, calls):
+    key = "workspace-clone-drift"
+    t = tick(tmp_path)
+    st = {"ok": True, "behind": 0, "ahead": 0}
+    chk = lambda repo: st
+    hh.workspace_sync(t, check=chk)                      # negative control: in sync -> silent
+    assert alarm_calls(calls) == []
+    st.update(behind=50)                                 # boundary: 50 is not > 50
+    hh.workspace_sync(t, check=chk)
+    assert alarm_calls(calls) == []
+    st.update(behind=51)
+    hh.workspace_sync(t, check=chk)
+    assert alarm_calls(calls) == [("raise", key)]
+    st.update(behind=0, ahead=1)                         # a commit on local main
+    hh.workspace_sync(t, check=chk)
+    assert alarm_calls(calls)[-1] == ("raise", key)
+    st.update(ahead=0)
+    hh.workspace_sync(t, check=chk)
+    assert alarm_calls(calls)[-1] == ("clear", key)
+    hh.workspace_sync(t, check=lambda r: {"ok": False, "error": "x"})   # unreadable: silent
+    assert alarm_calls(calls)[-1] == ("clear", key)
+
+
+def test_workspace_sync_status_counts_real_repo(tmp_path):
+    spec = importlib.util.spec_from_file_location("wsc", ROOT / "scripts/system/workspace_sync_check.py")
+    wsc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(wsc)
+    g = lambda *a, cwd: subprocess.run(["git", *a], cwd=cwd, check=True, capture_output=True)
+    up, clone = tmp_path / "up", tmp_path / "clone"
+    up.mkdir()
+    g("init", "-q", "-b", "main", cwd=up)
+    for i in range(3):
+        g("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", str(i), cwd=up)
+    g("clone", "-q", str(up), str(clone), cwd=tmp_path)
+    s = wsc.workspace_sync_status(str(clone))
+    assert (s["behind"], s["ahead"]) == (0, 0)           # negative control
+    g("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "x", cwd=clone)
+    assert wsc.workspace_sync_status(str(clone))["ahead"] == 1
+    g("reset", "-q", "--hard", "HEAD~3", cwd=clone)
+    s = wsc.workspace_sync_status(str(clone))
+    assert (s["behind"], s["ahead"]) == (2, 0)
+    assert wsc.workspace_sync_status(str(tmp_path / "nope"))["ok"] is False
