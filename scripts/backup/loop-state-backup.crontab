@@ -4,6 +4,6 @@
 #      /home/daniele/filesystem-agent/scripts/ and chmod +x it;
 #   2. run it once by hand and check /mnt/micron/loop-state-backups/LAST_STATUS says OK (this is BK-1's first real run);
 #   3. append the line below to `crontab -e`.
-# 04:30 is offset 30 min from NIB2-92's `0 4 * * *`; the log sits next to claude-backups/backup.log.
+# 04:45 (installed; avoids extract_cot.sh at 04:30) is offset 45 min from NIB2-92's `0 4 * * *`; the log sits next to claude-backups/backup.log.
 # LARGE_DB_POLICY defaults to weekly (operator BK-3 decision); to change it, prefix the command with LARGE_DB_POLICY=weekly.
-30 4 * * * /home/daniele/filesystem-agent/scripts/backup_loop_state.sh >> /mnt/raid0/llm/claude-backups/loop-state-backup.log 2>&1
+45 4 * * * LARGE_DB_POLICY=weekly /home/daniele/filesystem-agent/scripts/backup_loop_state.sh >> /mnt/raid0/llm/claude-backups/loop-state-backup.log 2>&1

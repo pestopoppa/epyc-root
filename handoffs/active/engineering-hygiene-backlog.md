@@ -1128,9 +1128,9 @@ Operator 2026-10-28: "file IMMEDIATELY". The daemons below run zero-token from `
 - [x] **LOOP-18 — `ws58-rc75-linker.sh` links the launcher log so rc75 partials re-arm.** ✅ 2026-10-28 [no-belief: tooling-repair]
 - [x] **LOOP-19 — `ws58_arm.py` fixes.** ✅ 2026-10-28 — five fixes. It autofills the notes keys. It refuses a row with no output estimate, with no 1 GB default. It restores a malformed row. It fixes a false positive in the pre-arm prerequisite check. It refuses private model copies, per ruling R9. [no-belief: tooling-repair]
 - [x] **LOOP-20 — `scripts/handoffs/verdict_count.py` separates DECIDED rows from rows that merely ran.** ✅ 2026-10-28 — e48659f06. The first count found 8 of 92 inference rows DECIDED. [no-belief: tooling-repair]
-- [ ] **LOOP-21 — backup retention: keep only the newest ai-sessions backup.** The nightly backup added 9 GB overnight 10-28/29. [no-belief: tooling-repair]
+- [x] **LOOP-21 — backup retention: keep only the newest ai-sessions backup.** The nightly backup added 9 GB overnight 10-28/29. [no-belief: tooling-repair] (workspace-f2 2026-11-09: host installed, ai-sessions keep 2 by host owner policy (not 1), mirror-gated; first run deleted only mirror-verified files; 7adf739ae, filesystem-agent 3918872) ✅ 2026-11-09 [no-belief: tooling-repair]
   - *(workspace-f2 2026-11-09.)* Retention tool landed (`scripts/backup/backup_retention.py`, 6 fixture tests; ai-sessions keep 1, opencode keep 3 with dedupe). Not live until the host `backup-claude-sessions.sh` is patched per `scripts/backup/README-retention.txt`; host needs `zstd`.
-- [ ] **LOOP-22 — opencode DB snapshot retention and dedupe.** About 26 GB of snapshots were rewritten overnight. See `project_opencode_db_bloat_root_cause`. [no-belief: tooling-repair]
+- [x] **LOOP-22 — opencode DB snapshot retention and dedupe.** About 26 GB of snapshots were rewritten overnight. See `project_opencode_db_bloat_root_cause`. [no-belief: tooling-repair] (workspace-f2 2026-11-09: host installed, opencode keep 3 per store with dedupe, from hourly read-only copies) ✅ 2026-11-09 [no-belief: tooling-repair]
   - *(workspace-f2 2026-11-09.)* Retention tool landed (`scripts/backup/backup_retention.py`, 6 fixture tests; ai-sessions keep 1, opencode keep 3 with dedupe). Not live until the host `backup-claude-sessions.sh` is patched per `scripts/backup/README-retention.txt`; host needs `zstd`.
 - [x] **LOOP-23 — shorten the filed-run reap to 1 day after `.FILED` exists (today it is 3 days).** ✅ 2026-10-31 — keeper source and decision-test implementation `de9b0d9bf56a6996adc922292d4a7882444a488e`: [candidate.sh](../../artifacts/compute/codex3-loop23-reap-20261031/candidate.sh), [test_decision.py](../../artifacts/compute/codex3-loop23-reap-20261031/test_decision.py); deployed pin `737f8db4067b14ed95a8816cba95ef1f4247b8c8`, [deployment evidence](../../artifacts/compute/codex3-loop23-reap-20261031/deployment-evidence.txt), [native decision-test log](../../artifacts/compute/codex3-loop23-reap-20261031/decision-test.log). [no-belief: tooling-repair]
 - [x] **LOOP-24 — enable keeper v6 (idle reap that vaults code first) once the operator approves its hook pin.** BLOCKED on the operator decision OP-KEEPER-V6-PIN: approve pinning `ws58-calendar-keeper-v6.sh` (sha256 `702a3931561820e52196878c5bf47c507978dcb3984b08aa65705884d6737b99` at 2026-10-29) in `scripts/hooks/destructive_scratch_pins.json`. Then swap it for v5 and set `REAP_IDLE=1`. [no-belief: tooling-repair]
@@ -1485,14 +1485,15 @@ Out of scope: `/mnt/raid0/llm/tmp/**`, models, builds, worktrees, and anything a
   - Retention: keep 7 dailies and 4 weeklies.
   - Exits non-zero on any failure, with `LAST_STATUS` written the way NIB2-92 does it.
   - *(workspace-f2 2026-11-09.)* Script, restore test, alarm and cron line landed; fixture-tested only. Host steps: copy the job, one manual run, install cron, run the restore test. The alarm fires until the first run. BK-3 decided: weekly.
-- [ ] **BK-2** Install it in the host crontab, offset from NIB2-92's 04:00 (for example 04:30), logging to a file next to `claude-backups/backup.log`.
+- [x] **BK-2** Install it in the host crontab, offset from NIB2-92's 04:00 (for example 04:30), logging to a file next to `claude-backups/backup.log`. (workspace-f2 2026-11-09: cron installed in daniele crontab at 04:45; first scheduled run 11-10) ✅ 2026-11-09 [no-belief: tooling-repair]
 - [x] **BK-3** Decide the large historical AK DBs (`ak-ds41-cpu-decode-20260923/store/experiments.db` 4.3 GB, `store-b0ba1d427` 1.1 GB): weekly-only, or one-time cold copy. Record the choice here. (workspace-f2 2026-11-09: operator chose weekly; default in backup_loop_state.sh) ✅ 2026-11-09 [no-belief: tooling-repair]
   - *(workspace-f2 audit 2026-11-09.)* Operator decided 2026-11-09: weekly copy for the large historical AK DBs.
-- [ ] **BK-4** Restore test. Restore the latest snapshot into a scratch dir, run `sha256sum -c`, and check:
+- [x] **BK-4** Restore test. Restore the latest snapshot into a scratch dir, run `sha256sum -c`, and check: (workspace-f2 2026-11-09: restore test on 20261109 snapshot: 24 SQLite DBs PASS, vidya chain_ok PASS, 0 failures) ✅ 2026-11-09 [no-belief: tooling-repair]
   - `sqlite3 <db> "pragma integrity_check"` on every DB;
   - `python3 /workspace/scripts/vidya/cli.py --ledger <restored ledger> verify` reports chain_ok.
   Record the output here.
-- [ ] **BK-5** Alarm on failure. A failed or missing nightly snapshot must be visible: the hub health probe, or the same channel NIB2-92 uses.
+- [x] **BK-5** Alarm on failure. A failed or missing nightly snapshot must be visible: the hub health probe, or the same channel NIB2-92 uses. (workspace-f2 2026-11-09: alarm in host_hygiene_tick; status file now OK) ✅ 2026-11-09 [no-belief: tooling-repair]
+- [ ] **BK-OBSERVE — confirm the next two 04:00 backups (11-10, 11-11) and the first 04:45 loop-state cron run with `/home/daniele/filesystem-agent/scripts/backup-health-check.sh`.** Owner: host owner. [no-belief: tooling-repair]
 
 #### Done when
 BK-1..5 are ticked, two consecutive nightly snapshots exist with valid manifests, and the restore test passed.

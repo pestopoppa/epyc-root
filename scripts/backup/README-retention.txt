@@ -1,16 +1,15 @@
-Host install step (operator/host agent; this repo does not touch host crontabs or the root-owned script):
+Backup retention: installed host policy (2026-11-09, host owner; source of truth: filesystem-agent 3918872, runbook there).
 
-Live job: backup-claude-sessions.sh (root, host crontab 04:00). Its logs show "ROTATE kept newest 3 backups" and
-"OPENCODE kept newest 7 snapshots". Replace those two inline rotation blocks:
+Installed in daniele's crontab, not root's. Do not edit root's crontab, add a duplicate entry, or run the loop-state script as root.
 
-  # ai-sessions rotation (after the tarball is written):
-  python3 /workspace/scripts/backup/backup_retention.py ai-sessions --dir /mnt/raid0/llm/claude-backups --keep 1 \
-      && echo "$(date -u +%FT%TZ) ROTATE kept newest verified backup" >> "$LOG"
+  04:00  backup-claude-sessions.sh  ai-sessions keep 2, mirror-gated; opencode keep 3 per store (epyc, host-daniele, twyne), from the
+         hourly read-only copies in /mnt/raid0/llm/opencode-db/ with a 2-hour freshness check
+  04:45  backup_loop_state.sh  LARGE_DB_POLICY=weekly; findmnt mount guard, single-instance lock, refuses root
 
-  # opencode (per store: epyc, host-daniele, twyne), instead of unconditional compress + keep 7:
-  python3 /workspace/scripts/backup/backup_retention.py opencode --dir /mnt/raid0/llm/claude-backups \
-      --prefix opencode-epyc --source /mnt/raid0/llm/opencode-db/epyc.db --keep 3
-  # exit 10 = unchanged, skipped (not an error); exit 3 = write/verify failed, previous snapshots kept.
+backup_retention.py exit codes: 0 ok, 2, 3, 4, 5 failure classes, 10 unchanged and skipped (see --help). Retention runs only when tar exits
+<=1 and only against the exact --expect archive, and deletes only files verified on the mounted mirror.
 
-Note snapshot names become <prefix>-YYYYMMDD-HHMMSS.db.zst (existing -YYYYMMDD-040001 names match the same glob).
-Needs zstd on the host (not present in the dev container). Existing extra tarballs/snapshots are pruned on the first run.
+Health check on the host: /home/daniele/filesystem-agent/scripts/backup-health-check.sh
+Restore test: restore_test_loop_state.sh --scratch <dir> --vidya-cli /mnt/raid0/llm/epyc-root/scripts/vidya/cli.py (needs ~5 GiB, ~10 GiB on a Sunday snapshot).
+
+Do not remove or modify opencode-epyc-pre-v2-20261106T0920Z.db; it is mirrored to the Micron and verified identical.

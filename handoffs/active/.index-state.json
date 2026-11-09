@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 498
+      "open": 494
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 273,
+      "closed": 278,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 92,
+      "open": 88,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -856,17 +856,17 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 365,
+      "total": 366,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 165,
+          "closed": 167,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 48
+          "open": 46
         },
         {
           "blocked": 0,
@@ -900,20 +900,20 @@
         },
         {
           "blocked": 0,
-          "closed": 2,
+          "closed": 5,
           "gates": [],
           "guarded": 0,
           "line": 1452,
           "markers": 1,
           "name": "loop-state-offraid-backup",
-          "open": 3
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1500,
+          "line": 1501,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -923,7 +923,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2076,
+          "line": 2077,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 3
