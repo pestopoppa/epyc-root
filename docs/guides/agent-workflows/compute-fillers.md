@@ -60,6 +60,15 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
    with `--ack <key>`. On any `.ended rc!=0`: read the log, name the cause, fix, republish (`-rN`, `supersedes`), never
    re-grant a failure blind.
 
+## Publishing discipline (2026-11-09, AutoKernel row failures)
+
+- **Publish a row the moment it is ready.** The keeper ranks and serializes rows; never hold one back to protect another row's window.
+- **One publish per id at a time, in the foreground.** A republish during that id's smoke unpublishes the row.
+- **Before a row's first keeper launch** read the entrypoint's docstring, `--help` and refusal paths, and run one manual `--dry-run`. After merging into code a prepared row uses, redo its gates before publishing.
+- **Smokes hold GPU residency about 45 s**, the keeper's minimum is 40 s; a longer idle load blocks every other row's quiet check.
+- **Non-inference work never waits behind inference.** During a quiet-host grant keep it small: single process, nice 19, targeted tests, no builds. Every CPU is an SMT sibling of a granted core then.
+- **A job must propagate its real exit code**, and a smoke's output must not satisfy the live `--complete-cmd`.
+
 ## Job-side rules (each bought by an incident; dates in the skill's incident ledger)
 
 - **Derive CPUs and thread counts from the granted affinity**, never hardcode a CPU list, and set the CPU-backend
