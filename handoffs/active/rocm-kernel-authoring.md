@@ -1448,6 +1448,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 - [ ] **INF48-LIVE-6 GPU-AK-SIGNALS - counter/ISA/race/equivalence signals for the GPU AK lane (RVP-ATT-1, RVP-CTR-1, RVP-RACE-1/2, RVP-EQV-1, C5-ISA-1/2).** Recent (Oct-Nov) intake-derived rows, kept for their own sequencing; each child is a pointer to the full text at b3bd883d3. [no-belief: new consolidated box]
   - *(folded into INF48-LIVE-6; full text at b3bd883d3:1698)* **(no title)**
 - [ ] **RVP-ATT-CANARY-R4 — validate the repaired trace launcher on the real GPU.** Private
+  Row `codex-att-r4-20261109` carries this forward on filler_run15. model: none, `mfma_peak` microbenchmark (no LLM weights); quant_build: rocprofv2 ATT trace launcher on the MI210, not a kernel build. stop-on-answer when one real run writes a nonempty raw trace with VRAM residency and clean partial/cleanup; stop-on-futility on a launcher or trace-writer failure on the real GPU (one attempt, repair before any new row); gate-class = futility-only.
   `/mnt/raid0/llm/tmp/codex-att-r4-20261028` now checks the correct GPU device path, requires the full
   `mi210_0,72-95,184-191` grant, and uses a private engine retaining live admission while omitting
   the synthetic-proof requirement prohibited by the current diagnostic workflow. Source checks and

@@ -2199,7 +2199,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1482,
+          "line": 1483,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2212,7 +2212,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2638,
+          "line": 2639,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 1
@@ -2222,7 +2222,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3010,
+          "line": 3011,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 4
@@ -2232,7 +2232,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3525,
+          "line": 3526,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 4
@@ -2242,7 +2242,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 3621,
+          "line": 3622,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 2
@@ -2696,7 +2696,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "Port C6 controller wiring from codex/autokernel-v27-descendant-20260823 onto research main (INF48-LIVE-1); publish RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
+      "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
       "track": "rocm verify profile backend"
     },
     "INF-50": {

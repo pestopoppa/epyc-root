@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T11:21:54Z",
+  "generated_at": "2026-11-09T11:23:27Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1777,7 +1777,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-09",
-      "next_action": "Port C6 controller wiring from codex/autokernel-v27-descendant-20260823 onto research main (INF48-LIVE-1); publish RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
+      "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
       "open": 20,
       "priority": 0.8728,
       "priority_basis": {
@@ -1832,7 +1832,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1482,
+          "line": 1483,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1847,7 +1847,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2638,
+          "line": 2639,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 1,
           "readiness": "blocked"
@@ -1856,7 +1856,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3010,
+          "line": 3011,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 4,
           "readiness": "ready"
@@ -1865,7 +1865,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3525,
+          "line": 3526,
           "name": "frontier-f6-upstream-publication",
           "open": 4,
           "readiness": "ready"
@@ -1874,7 +1874,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3621,
+          "line": 3622,
           "name": "llama-cpp-dsa-contribution",
           "open": 2,
           "readiness": "ready"
