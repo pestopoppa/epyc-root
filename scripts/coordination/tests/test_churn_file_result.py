@@ -600,5 +600,46 @@ class TestNoManifestMode(Base):
         self.assertNotIn("legacy_no_manifest", self.verdict("man-1"))
         self.assertEqual(self.verdict("man-1")["row_verdict"], "pass")
 
+    def vj(self, **d):
+        p = os.path.join(self.tmp.name, "vj.json")
+        Path(p).write_text(json.dumps(d))
+        return p
+
+    def test_plain_verdict_only_terminal(self):
+        self.legacy("pv")
+        code, _, err = self.run_main("pv", "--no-manifest", "--owner", "o", "--verdict", "pass")
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("pv"))
+
+    def test_verdict_json_needs_rationale_and_pass_needs_rc0(self):
+        self.legacy("r1")
+        code, out, _ = self.run_main("r1", "--no-manifest", "--owner", "o", "--verdict-json", self.vj(verdict="inconclusive"))
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("r1"))
+        self.legacy("r2", rc=1)
+        code, out, _ = self.run_main("r2", "--no-manifest", "--owner", "o", "--verdict-json", self.vj(verdict="pass", rationale="x"))
+        self.assertEqual(code, 2)
+        self.assertIn("rc=1", out)
+        self.assertFalse(self.filed("r2"))
+        self.legacy("r3")
+        code, _, _ = self.run_main("r3", "--no-manifest", "--owner", "o", "--verdict-json", self.vj(verdict="pass", rationale="x"))
+        self.assertEqual(code, 0)
+
+    def test_failed_run_token_scrubbed_from_filed_text(self):
+        self.legacy("fr", rc=2)
+        self.run_main("fr", "--no-manifest", "--owner", "o", "--verdict-json",
+                      self.vj(verdict="inconclusive", rationale="was FAILED-RUN upstream"))
+        text = Path(self.flags, "filing-done", "fr.FILED").read_text()
+        self.assertNotIn("FAILED-RUN", text)
+        self.assertNotIn("FAILED-RUN", json.dumps(self.verdict("fr")))
+
+    def test_dry_run_says_would_file_and_writes_nothing(self):
+        self.legacy("dr")
+        code, out, _ = self.run_main("dr", "--no-manifest", "--owner", "o", "--verdict", "SUPERSEDED", "--dry-run")
+        self.assertEqual(code, 0)
+        self.assertIn("WOULD-FILE", out)
+        self.assertNotIn("\nFILED", "\n" + out)
+        self.assertFalse(self.filed("dr"))
+
 if __name__ == "__main__":
     unittest.main()

@@ -245,9 +245,11 @@ def file_legacy_no_manifest(flags, rid, verdict, *, owner, by, note="", supersed
 
     Explicit opt-in only (file_result --no-manifest). -> 'FILED' | 'NOOP' (already FILED) | 'REFUSED:<why>'.
     Refuses when a manifest exists for rid (use the normal path), when there is no owner or no .ended/.complete record.
-    verdict: SUPERSEDED|WITHDRAWN|pass|fail|inconclusive. The record carries manifest=null and legacy_no_manifest=true and
-    outcome_class LEGACY-NO-MANIFEST, which science_scoreboard neither credits nor debits (it only counts SCIENCE/PARTIAL/
-    DIAGNOSTIC verdicts and FAILED-RUN). Never reclaims."""
+    verdict: SUPERSEDED|WITHDRAWN (no note needed) or pass|fail|inconclusive (non-empty `note` required; `pass` needs end rc==0).
+    The record carries manifest=null, legacy_no_manifest=true, outcome_class LEGACY-NO-MANIFEST. science_scoreboard reads the
+    FILED *text* (first line) and the .verdict.json it parses: credit needs a SCIENCE/PARTIAL/DIAGNOSTIC class with a native
+    sha (absent here), and the literal token FAILED-RUN in the FILED text can DEBIT the owner via legacy_failed, so that token
+    is scrubbed from the note/summary. Never reclaims."""
     import file_result as fr
     if is_filed(flags, rid):
         return "NOOP"
@@ -263,9 +265,14 @@ def file_legacy_no_manifest(flags, rid, verdict, *, owner, by, note="", supersed
     v = v.upper() if v.upper() in TERMINAL_VERDICTS else v.lower()
     if v not in TERMINAL_VERDICTS + ("pass", "fail", "inconclusive"):
         return f"REFUSED:bad verdict {verdict!r}"
+    note = str(note or "").replace("FAILED-RUN", "failed run")
+    if v in ("pass", "fail", "inconclusive") and not note.strip():
+        return f"REFUSED:verdict {v} needs a non-empty rationale (--verdict-json)"
+    if v == "pass" and rc != 0:
+        return f"REFUSED:pass with end rc={rc} (pass needs rc=0)"
     if dry_run:
         log(f"WOULD-FILE {rid}: {v} legacy-no-manifest owner={owner}")
-        return "FILED"
+        return "WOULD-FILE"
     rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(owner), "filed_at": now_iso(), "at": now_iso(),
            "outcome_class": "LEGACY-NO-MANIFEST", "phase": "filing", "compute_burned": rc == 0, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": v.lower() if v in TERMINAL_VERDICTS else "legacy", "result": v,

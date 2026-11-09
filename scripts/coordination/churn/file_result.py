@@ -340,12 +340,15 @@ def main(argv=None):
         verdict = agent.get("verdict") or a.verdict
         if not verdict:
             print(f"ERROR {rid}: --no-manifest needs --verdict SUPERSEDED|WITHDRAWN or --verdict-json", file=sys.stderr); return 2
+        if not a.verdict_json and str(verdict).upper() not in filing.TERMINAL_VERDICTS:
+            print(f"ERROR {rid}: plain --verdict under --no-manifest allows only SUPERSEDED|WITHDRAWN; "
+                  f"pass|fail|inconclusive need --verdict-json with a rationale", file=sys.stderr); return 2
         r = filing.file_legacy_no_manifest(
             flags, rid, verdict, owner=a.owner, by=str(agent.get("filed_by") or a.filed_by or "file_result --no-manifest"),
             note=str(agent.get("rationale") or ""), superseded_by=agent.get("superseded_by") or a.superseded_by,
             answer=agent.get("answer") or a.answer, dry_run=a.dry_run)
         print(r)
-        return 0 if r in ("FILED", "NOOP") else 2
+        return 0 if r in ("FILED", "NOOP", "WOULD-FILE") else 2
     if a.receipt:
         code, msg = filing.file_receipt(flags, rid, a.receipt, repo=a.repo, verdict=a.verdict or "RECEIPT", answer=a.answer,
                                         by=a.filed_by or "file_result --receipt", reclaim=not a.no_reclaim, fetch=not a.no_fetch)
