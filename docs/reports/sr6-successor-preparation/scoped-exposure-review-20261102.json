@@ -2,22 +2,22 @@
   "schema": "sr6.scoped-exposure-review.v1",
   "inputs": [
     {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/prompts_p1.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/prompts_p1.jsonl",
       "sha256": "1d1318fa21fbc15bacbf7963104fac16741730b086a23ac7802a8bb606d462ab",
       "n": 85
     },
     {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/prompts_p1.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/width/prompts_p1.jsonl",
       "sha256": "5c376290be231c0d581db14c1e4defdf9005a8cff285858fe8462dd27444be7a",
       "n": 65
     },
     {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/sweep/prompts_sweep.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/sweep/prompts_sweep.jsonl",
       "sha256": "8cff7d5dda62cd2afc685340ab33fcf4dc729d1b644b1a1cb63cc8639631a8fd",
       "n": 90
     },
     {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/gpu27b/prompts_sweep.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/gpu27b/prompts_sweep.jsonl",
       "sha256": "8cff7d5dda62cd2afc685340ab33fcf4dc729d1b644b1a1cb63cc8639631a8fd",
       "n": 90
     },

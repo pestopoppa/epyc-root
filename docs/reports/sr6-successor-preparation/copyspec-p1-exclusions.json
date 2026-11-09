@@ -117,23 +117,23 @@
   "candidate_survey_matches": [
     "hotpot_comparison_5a87868c5542996e4f308828"
   ],
-  "source": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/prompts_p1.jsonl",
+  "source": "artifacts/copyspec-20261006/source-archive/prompts_p1.jsonl",
   "source_sha256": "1d1318fa21fbc15bacbf7963104fac16741730b086a23ac7802a8bb606d462ab",
   "results": {
     "P": {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/results/P.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/results/P.jsonl",
       "sha256": "1df4082270a5ddca160985ee440c147b897dd4e25a91c35a41558f39f0d81611"
     },
     "NM": {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/results/NM.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/results/NM.jsonl",
       "sha256": "33419f40530ae82fc825665f58508995bb708d95d2591643cc0afa8abf714442"
     },
     "NO": {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/results/NO.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/results/NO.jsonl",
       "sha256": "b35adceb626252b8fcc2eb678865fad0f1d66e6927e3637fc3c1c1f1668e69ec"
     },
     "P2": {
-      "path": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/results/P2.jsonl",
+      "path": "artifacts/copyspec-20261006/source-archive/results/P2.jsonl",
       "sha256": "973072cbf6dc54d33b941e7ddd867b61e676deb6373da5ac013988b1938e602c"
     }
   },

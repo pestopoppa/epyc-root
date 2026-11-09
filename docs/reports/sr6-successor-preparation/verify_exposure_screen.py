@@ -1,6 +1,7 @@
-import json,hashlib,re,collections
+import json,hashlib,re,collections,sys
 from pathlib import Path
-base=Path('/mnt/raid0/llm/tmp/copy-spec-eval-20261006')
+# DISK-ARCHIVE-FIRST 2026-11-09: byte-identical landed archive (sha256 of every prompt file verified equal to the tmp copy)
+base=Path(__file__).resolve().parents[3]/'artifacts/copyspec-20261006/source-archive'
 files=[base/'prompts_p1.jsonl',base/'width/prompts_p1.jsonl',base/'sweep/prompts_sweep.jsonl',base/'gpu27b/prompts_sweep.jsonl']
 prior=[];checks=[]
 for p in files:
@@ -25,4 +26,4 @@ for x in candidate:
   if len(excerpt)>=100 and (excerpt in p['text'] or (len(p['text'])>=100 and p['text'] in excerpt)):substr.append([x['id'],p['collection'],p['id']])
 shared.sort(key=lambda x:x['shared_unique_12word_grams'],reverse=True)
 out={'schema':'sr6.scoped-exposure-review.v1','inputs':checks,'candidate_path':str(c),'candidate_sha256':hashlib.sha256(c.read_bytes()).hexdigest(),'candidate_count':len(candidate),'prior_records_including_overlap':len(prior),'exact_matches':exact,'source_excerpt_substrings_min100':substr,'shared_12word_fingerprints':shared,'limitations':['candidate sets include possible rather than proven exposures','historical 2026-07 three-prompt SR-6 sweep original requests not located','raw exact and 12-word token fingerprints do not establish semantic disjointness','excluded sources are limited to inspected prior SR6, COPYSPEC P1/WIDTH/SWEEP/GPU27B candidate files']}
-path=Path('/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/scoped-exposure-review.json');path.write_text(json.dumps(out,indent=2));print(json.dumps({'prior_records':len(prior),'exact':len(exact),'substring':len(substr),'shared_fingerprints':len(shared),'top':shared[:10]}))
+path=Path(sys.argv[1] if len(sys.argv)>1 else '/mnt/raid0/llm/tmp/speculative-decoding-mtp/sr6-qwen36-width-w1-20261102/scoped-exposure-review.json');path.write_text(json.dumps(out,indent=2));print(json.dumps({'prior_records':len(prior),'exact':len(exact),'substring':len(substr),'shared_fingerprints':len(shared),'top':shared[:10]}))
