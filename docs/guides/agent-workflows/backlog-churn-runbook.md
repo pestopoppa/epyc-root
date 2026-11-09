@@ -162,6 +162,8 @@ These are tracked as open boxes in [`handoffs/active/churn-pipeline.md`](../../.
 - The dashboard's readied-waiting count is 0 (a row/handoff linking bug). The RTG-18 graph checkbox parse is broken.
 - Sessions over-prepare instead of publishing. Row publication has not been measured since the 10:41Z fixes.
 - SA-1/SA-2/SA-3 and JEV-3 (deferred) are open.
+- `churn_up.sh` `start_bg` wrote a wrapper pid to the janitor pidfile on 2026-11-09 (box PIPE-EVE-CHURN-UP-PIDFILE).
+- `bin/churn/reclaim_row.py` expects to sit in the repo `scripts/` tree, so its imports fail from the installed copy until its dependencies are installed beside it (box PIPE-EVE-BIN-CHURN-MODULES). An installed script's import closure is part of what the install list must cover.
 - Seen while writing this runbook (2026-11-02 12:18Z):
   - `backlog_gen.py` was running as pid 3814559 under `backlog-gen.pid`, not the wrapper's `ws58-backlog-gen.pid`. `--status`
     now reports this as `UP WITHOUT PIDFILE`.

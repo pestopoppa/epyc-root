@@ -68,6 +68,9 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
 - **Smokes hold GPU residency about 45 s**, the keeper's minimum is 40 s; a longer idle load blocks every other row's quiet check.
 - **Non-inference work never waits behind inference, but during a quiet-host measurement builds and tests may use only the partial q3 cores that do not interfere with the GPU management threads (72-87 and siblings 168-183), and only if those are free.** Never 88-95 or 184-191. If the measurement holds them too, as a CPU row on 0-95 does, builds and tests wait for its `.ended`; edits, commits and dispatch continue (operator 2026-11-09).
 - **A job must propagate its real exit code**, and a smoke's output must not satisfy the live `--complete-cmd`.
+- **A build job exits non-zero on `BUILD_FAIL`.** On 2026-11-09 a mutant build wrote `BUILD_FAIL`, exited 0, counted complete and starved the GPU row behind it.
+- **A smoke proves the paths it touched, at that moment.** c2-producer-replay passed its smoke, then crashed on import because its source worktree was removed before the grant. Pin every worktree a row imports from until the row is filed.
+- **Keep rows ready ahead of the current ones.** There is no timer to refill the queue: on 2026-11-09 the day's rows ended about 19:30Z with none behind them and the host sat idle. Publish the next rows while the last are running.
 
 ## Job-side rules (each bought by an incident; dates in the skill's incident ledger)
 

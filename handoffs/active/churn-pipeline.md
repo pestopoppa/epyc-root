@@ -114,6 +114,22 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [ ] **Per-row UNDERUSED is only logged**: act on it.
 - [moved: handoffs/active/coordination-and-churn-pipeline.md] **OBS-CHURN-UP** — kept in the old file because `scripts/coordination/observer_registry.json` (loop plane, D9 operator ack) names that file as owning_handoff for marker OBS-CHURN-UP and the observer-contract commit hook requires an open box there. Move it here when the operator acks repointing the registry row. Full text is the box in the old file.
 - [ ] **CHURN-UP-NO-DISPATCHER** `churn_up.sh` must not start the handoff dispatcher implicitly. 2026-11-04 it started pid 3977332, which resumed 11 Codex handoff sessions the operator had not asked for (stopped at operator order; sessions left running). Done when `churn_up.sh` starts the dispatcher only on an explicit flag and a `--dry-run` test proves the default path leaves it down. [no-belief: tooling]
+- [x] **PIPE-EVE-JANITOR-QUIET** Janitor skips scheduled reaps during a live quiet-host grant unless free disk < 150 GiB. ✅ 2026-11-09 ROOT `9d597d559`, running copy sha equals git; the skip has not yet fired on a real grant. [no-belief: build/landing]
+- [x] **PIPE-EVE-FILING-SUPERSEDE** Filing auto-supersedes only attempts that did not complete. ✅ 2026-11-09 ROOT `54a53fabc`, installed sha equals git. [no-belief: build/landing]
+- [ ] **PIPE-EVE-RESIDENCY-FALSE-FAIL** Since keeper c303970ee went live (20:27Z), six GPU smokes failed with `max None B` while c10-fold-gate's job logged 1369 MiB. Prove or refute the own-tree sampler as cause, then fix or roll back; the affected rows then need republishing by their owners. Needs operator D9-ack. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-KEEPER-LAND** Decide whether `keeper-frozen-20261109` (c303970ee) lands on main, after PIPE-EVE-RESIDENCY-FALSE-FAIL. Live keeper differs from main until then, so a main-based deploy reverts it. Conflicts: `.index-graph.json` (generated), one LOOP-11 line. Operator decides. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-SIGN-FLOOR** Operator signs `run_ak_q38fn_floor_accept_20261109.sh --apply` in a real terminal. [no-belief: operator-action]
+- [ ] **PIPE-EVE-SIGN-RATIFY2** Operator signs `run_ak_c9_ratify2_20261109.sh --apply` in a real terminal. [no-belief: operator-action]
+- [ ] **PIPE-EVE-BIN-CHURN-MODULES** Operator installs `row_worktree`, `worktree_gate`, `worktree_salvage` into `bin/churn` (absent at 21:14Z); until then `reclaim_row.py` cannot import from the installed copy. Then a D9-acked `churn_up.sh` install-list fix so the modules stay installed. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-CHURN-UP-RUN** Run `churn_up.sh` with clearance so the watchdog guard and core.bare watcher start. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-CHURN-UP-PIDFILE** `start_bg` recorded the wrapper pid in the janitor pidfile on 2026-11-09 (corrected by hand); fix `churn_up.sh`, D9-ack needed. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-UNFILED** File the ended-unfiled rows (117 at 21:14Z). [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-INF22-DIGESTS** Regenerate the 8 dirty digests of `worktrees/inf22-intake` against main in a fresh worktree and compare; ids 2662-2663 may be new. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-LONGCTX-WT** Operator runs the cleanup commands given for `worktrees/longctx-c9-20261109` (patches in `tmp/worktree-cleanup-20261109/`). [no-belief: operator-action]
+- [ ] **PIPE-EVE-RAM-MARGIN** Raise RAM margin from 64 to 100 GiB with `ram_gib` injection. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-VALIDATOR-REFS** Resolve the dangling validator cross-references (85 at the last count). [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-VIDYA-GROUP-A** Land the Group A vidya adapters from worktree `vb-belief-park-20261108`. [no-belief: tooling-repair]
+- [ ] **PIPE-EVE-C6-WIRE-WT** Remove `worktrees/c6-wire-20261109` once its untracked `.tmp-c6-tests/` is cleared; bf94b0965 is landed, the gate says DIRTY. [no-belief: tooling-repair]
 
 #### Stop-everything, disk reclaim and runbook (2026-11-02 afternoon, ws58)
 
