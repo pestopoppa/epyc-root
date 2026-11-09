@@ -12,20 +12,19 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 2,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-09T12:08:02Z",
+    "at": "2026-11-09T14:33:39Z",
     "scope_paths": [
-      "handoffs/active/engineering-hygiene-backlog.md",
-      "handoffs/active/frontier-lab-automation.md"
+      "handoffs/active/engineering-hygiene-backlog.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T12:08:02Z",
+  "scan_time": "2026-11-09T14:33:39Z",
   "schema_version": 1,
-  "source_set_hash": "c92a776ec8ed117435e1d43c01860d850af307c23430fec7018859e72dc5ca94",
+  "source_set_hash": "259cdb37d748bad96f06e03596e50566d9c27e2da7ed5cbecfd19b5ddd2725f4",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -100,10 +99,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "bdfec5c6dd0159a5789d315d28696f10939dfe94ed8190f739bf751165850d80",
-      "modified": "2026-11-09T12:07:16Z",
+      "content_hash": "af84b60534e3a63e4360fc296d79756e05a344e7c95ea31d630599dbb06ba1b1",
+      "modified": "2026-11-09T14:32:55Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 445649,
+      "size": 447184,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -689,14 +688,6 @@
       "path": "handoffs/completed/chat-module-decomposition.md",
       "size": 17119,
       "title": "chat.py God Module Decomposition \u2014 Phases 1 + 1b + 2 + 3",
-      "type": "handoff-completed"
-    },
-    {
-      "content_hash": "03ee7f238275c67d326e0e3f3ff2c360e8c8817edf8a31cad3114f848e335de8",
-      "modified": "2026-11-09T09:04:41Z",
-      "path": "handoffs/completed/churn-pipeline.md",
-      "size": 567,
-      "title": "Churn pipeline \u2014 dispatcher, backlogs, rows (ws58, opened 2026-11-01)",
       "type": "handoff-completed"
     },
     {
@@ -20210,6 +20201,14 @@
       "size": 32349,
       "title": "Runbook \u2014 Deterministic `vision_escalation` \u2192 MiniCPM-o Promotion (port 8087, MI210)",
       "type": "docs"
+    },
+    {
+      "content_hash": "03ee7f238275c67d326e0e3f3ff2c360e8c8817edf8a31cad3114f848e335de8",
+      "modified": "2026-11-09T09:04:41Z",
+      "path": "handoffs/completed/churn-pipeline.md",
+      "size": 567,
+      "title": "Churn pipeline \u2014 dispatcher, backlogs, rows (ws58, opened 2026-11-01)",
+      "type": "handoff-completed"
     }
   ],
   "total_new": 2523,

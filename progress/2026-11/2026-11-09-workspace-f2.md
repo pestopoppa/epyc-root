@@ -27,3 +27,12 @@ Refactor track waits for the production kernel promotion and AutoPilot relaunch.
 - HF token rotation: operator.
 - EVL-29 archive: Flash rerun result.
 - NIB2-77 removal: 7-day idle, about 11-16.
+
+## Dashboard Flow and supervision (afternoon)
+**Problem.** The Flow panel read +208 while open boxes fell 2806 to 1516 in 7 days.
+**Root cause.** Edits to existing open boxes counted as filings, declines and removals were ignored, and the timeline dated merged lanes on their merge day.
+**Changes.** `build_handoff_timeline.py` is the only counter; the hub sums its rows; `hub_view` exposes the served commit and refresh failures; `index_regen.py` joined the pin list. Independent review confirmed 22 sampled commits and the 1263 removals on 11-03 as real retirements, and caught three page bugs fixed before landing.
+**Incident.** The re-pin at 13:02 to 2c62d9458 lacked `observer_guard.sh` and `env.sh`, so every supervisor pass failed and the view froze until the third install at 14:28 (e4668444c). The pin list advice was incomplete.
+**Results.** Hub live at e4668444c, 0 behind; today -87, 7d -1290. Root CI green from d69e5165d after R18 host-pin and pin-list test fixes. Exemptions ratified at a69312d5b by the operator.
+**Open.** No gated regen logged yet (needs a commit burst). LOOP-21/22 and BK-1/2/4 need host steps. Flash rerun queued; EVL-29 stays listed until it files.
+
