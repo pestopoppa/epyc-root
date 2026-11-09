@@ -115,7 +115,7 @@ ALT_CLONE = Path("/mnt/raid0/llm/epyc-root")
 #: clone, which is what puts it out of reach of hazard (c).
 LANE_WORKTREE_ROOT = Path("/mnt/raid0/llm/worktrees/mains")
 
-LANE_AGENTS = ("mainA", "mainB", "mainC", "mainD", "auditor")
+LANE_AGENTS = ("mainA", "mainB", "auditor")  # mainC, mainD retired: bus-runtime/retirements/main{C,D}.retirement.json
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SESSION_BUS_PY = REPO_ROOT / "scripts" / "coordination" / "session_bus.py"
