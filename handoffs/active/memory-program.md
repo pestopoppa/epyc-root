@@ -429,6 +429,7 @@ failure caught in amber.
       - B6: the merge list now also covers these two branches — both merged (research `cfbfa448`).
       - B7: add `pandas` to the research `.venv` (`uv sync --extra benchmark`, which also realigns pyarrow to
         24.0.0) — see M-12j. (re-scoped 2026-11-03 from judge gemma-4-26B-A4B-it-ORIG-Q8_0: deleted; judge now Qwen3.8-27B-Q8_0 (GPU), recipe to be re-pinned and held fixed across arms)
+      - **Judge decision 2026-11-09 (operator): Qwen3.8-27B judges, with the same-family caveat accepted.** Rules that travel with it: (1) **same-family bias must be recorded in every claim** that uses this judge (a claim line or tuple field naming reader family, judge family and that they overlap); (2) the **fallback in which the 27B reader judges its own answers is BANNED**, so if the judge cannot be served, the judged leg is NOT RUN rather than self-judged; (3) going forward, **qwen3.8-27b results will likely be judged by qwen3.8-flash-next**, so the judge identity is a pinned field per run and arms are never mixed across judges. This closes the judge-family question; it does not close B4's remaining items (5-question judge smoke, long-context reader server row, `request_llm_judge_text` merge). [no-belief: operator decision note]
   - [x] **M-12a — Tulving 200ch/100K first** (intake-408#record). Variant `Udefault_Sdefault_seed0`,
         chapters=200 (`tulving_episodic_adapter.py:_select_target_qa_files` at :463 already resolves
         this to the 196ch parquet on disk). Three prompt-matched arms: memory-OFF (question +
