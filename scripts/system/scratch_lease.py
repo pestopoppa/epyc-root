@@ -25,8 +25,11 @@ CLI:
     scratch_lease.py backfill --dry-run|--apply [--ttl-days 14] [--root /mnt/raid0/llm/tmp]
     scratch_lease.py report [--root ...] [--json]
     scratch_lease.py show <dir>
+    scratch_lease.py allocate <name> --owner OWNER --ttl-days N [--row ROW] [--budget-gib G] [--reason TXT] [--root ...]
+allocate (Phase 2) is THE way to create scratch: it makes <root>/<name>, writes the KEEP marker and the
+lease (owner + expiry) in one step, so nothing is ever born unowned. Owner and TTL are mandatory.
 backfill is idempotent: a target that already has a lease is never rewritten.
-Tests: tests/test_scratch_lease.py (temp dirs only).
+Tests: tests/test_scratch_lease.py, tests/test_scratch_lease_allocate.py (temp dirs only).
 """
 from __future__ import annotations
 
@@ -226,6 +229,51 @@ def report(root: str, *, now: float | None = None, ldir: str | None = None) -> d
     return owners
 
 
+MAX_TTL_DAYS = 60.0
+_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+
+def allocate(name: str, *, owner: str, ttl_days: float, root: str = TMP_ROOT, row: str | None = None,
+             budget_gib: float | None = None, reason: str = "", now: float | None = None,
+             ldir: str | None = None) -> dict:
+    """Create scratch dir <root>/<name> WITH owner+TTL at creation (SCRATCH-LEASE-P2).
+
+    Writes the dir (exclusive mkdir: never adopts an existing path), a KEEP marker naming the owner, and the
+    lease. Refuses: missing/placeholder owner, ttl not in (0, MAX_TTL_DAYS], name that is not one plain path
+    component (reapers only scan top-level entries of the root), an existing target, a missing root. If the lease
+    cannot be written the new dir is removed, so there is no marker-without-lease half state. Returns the lease.
+    """
+    if not owner or not owner.strip() or owner.strip().lower() in ("unknown", "none", "?"):
+        raise LeaseError("owner is required (a real session id, e.g. workspace-58)")
+    if not isinstance(ttl_days, (int, float)) or isinstance(ttl_days, bool) or not 0 < ttl_days <= MAX_TTL_DAYS:
+        raise LeaseError(f"ttl_days must be in (0, {MAX_TTL_DAYS:g}]; renew by allocating a new lease, not an unbounded one")
+    if not _NAME_RE.fullmatch(name or "") or name.endswith(".epyc-keep") or name in KEEP_MARKERS:
+        raise LeaseError(f"bad scratch name {name!r}: one plain path component, no slashes or leading dot")
+    if not os.path.isdir(root):
+        raise LeaseError(f"scratch root {root!r} does not exist")
+    now = time.time() if now is None else now
+    target = os.path.join(os.path.realpath(root), name)
+    try:
+        os.mkdir(target)
+    except FileExistsError:
+        raise LeaseError(f"{target} already exists; allocate never adopts an existing path") from None
+    lease = {
+        "schema": SCHEMA, "owner": owner.strip(), "target": target, "handoff_or_row": row,
+        "created": _iso(now), "expires": _iso(now + ttl_days * 86400),
+        "budget_gib": budget_gib, "reason": reason or "allocate",
+    }
+    try:
+        with open(os.path.join(target, ".epyc-keep"), "w") as f:
+            f.write("KEEP: owner=%s allocated %s expires %s%s\n" % (
+                lease["owner"], lease["created"], lease["expires"], f" row={row}" if row else ""))
+        write_lease(lease, ldir)
+    except BaseException:
+        import shutil
+        shutil.rmtree(target, ignore_errors=True)
+        raise
+    return lease
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -241,7 +289,24 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--json", action="store_true")
     s = sub.add_parser("show")
     s.add_argument("target")
+    al = sub.add_parser("allocate")
+    al.add_argument("name")
+    al.add_argument("--owner", required=True)
+    al.add_argument("--ttl-days", type=float, required=True)
+    al.add_argument("--row")
+    al.add_argument("--budget-gib", type=float)
+    al.add_argument("--reason", default="")
+    al.add_argument("--root", default=TMP_ROOT)
     a = ap.parse_args(argv)
+    if a.cmd == "allocate":
+        try:
+            le = allocate(a.name, owner=a.owner, ttl_days=a.ttl_days, root=a.root, row=a.row,
+                          budget_gib=a.budget_gib, reason=a.reason)
+        except LeaseError as e:
+            print(f"REFUSED {e}", file=sys.stderr)
+            return 2
+        print(le["target"])
+        return 0
     if a.cmd == "show":
         try:
             d = read_lease(a.target)
