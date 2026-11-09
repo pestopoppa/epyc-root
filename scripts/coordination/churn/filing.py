@@ -240,6 +240,47 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
     return "FILED"
 
 
+def file_legacy_no_manifest(flags, rid, verdict, *, owner, by, note="", superseded_by=None, answer=None, dry_run=False, log=print):
+    """RTG-22 (operator 2026-11-09): close a LEGACY row that never had an epyc.row.v3 manifest, from its .ended record alone.
+
+    Explicit opt-in only (file_result --no-manifest). -> 'FILED' | 'NOOP' (already FILED) | 'REFUSED:<why>'.
+    Refuses when a manifest exists for rid (use the normal path), when there is no owner or no .ended/.complete record.
+    verdict: SUPERSEDED|WITHDRAWN|pass|fail|inconclusive. The record carries manifest=null and legacy_no_manifest=true and
+    outcome_class LEGACY-NO-MANIFEST, which science_scoreboard neither credits nor debits (it only counts SCIENCE/PARTIAL/
+    DIAGNOSTIC verdicts and FAILED-RUN). Never reclaims."""
+    import file_result as fr
+    if is_filed(flags, rid):
+        return "NOOP"
+    if not str(owner or "").strip():
+        return "REFUSED:--owner is required with --no-manifest"
+    mp, m = fr.load_manifest(flags, rid)
+    if m:
+        return f"REFUSED:a manifest exists ({mp}); --no-manifest is only for rows that never had one"
+    ep, rc, endline = fr.load_end(flags, rid)
+    if ep is None:
+        return "REFUSED:no grants/<id>.ended|.complete end record"
+    v = str(verdict)
+    v = v.upper() if v.upper() in TERMINAL_VERDICTS else v.lower()
+    if v not in TERMINAL_VERDICTS + ("pass", "fail", "inconclusive"):
+        return f"REFUSED:bad verdict {verdict!r}"
+    if dry_run:
+        log(f"WOULD-FILE {rid}: {v} legacy-no-manifest owner={owner}")
+        return "FILED"
+    rec = {"$schema": "epyc.filed.verdict.v1", "id": rid, "row": rid, "owner": str(owner), "filed_at": now_iso(), "at": now_iso(),
+           "outcome_class": "LEGACY-NO-MANIFEST", "phase": "filing", "compute_burned": rc == 0, "root_cause_family": None,
+           "verdict": {"status": "filed", "kind": v.lower() if v in TERMINAL_VERDICTS else "legacy", "result": v,
+                       "superseded_by": superseded_by},
+           "row_verdict": v, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
+           "handoff_task": None, "manifest": None, "legacy_no_manifest": True, "filed_by": by, "reason": note,
+           "machine_checkable": False}
+    summary = (f"FILED {rid}: {v}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "")
+               + f" rc={rc} legacy-no-manifest owner={owner} by={by}" + (f" ({note})" if note else ""))
+    if not write_filed(flags, rid, summary, rec):
+        return "NOOP"
+    log(summary)
+    return "FILED"
+
+
 def successor_of(rid, mans, wd, new_id=None, explicit=()):
     """The LATER attempt that supersedes `rid`, or None: a non-withdrawn row that names rid in `supersedes`, or one in rid's
     attempt family with a higher attempt key. `explicit` = ((glob, successor-id), ...) operator/coordinator-named pairs."""

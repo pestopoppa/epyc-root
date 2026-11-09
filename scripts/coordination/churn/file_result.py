@@ -317,11 +317,35 @@ def main(argv=None):
     ap.add_argument("--filed-by", default=None)
     ap.add_argument("--repo", default=os.path.abspath(os.path.join(HERE, "..", "..", "..")))
     ap.add_argument("--no-fetch", action="store_true")
+    ap.add_argument("--no-manifest", action="store_true",
+                    help="LEGACY row that never had a manifest: close from its .ended record (needs --owner; --verdict SUPERSEDED|"
+                         "WITHDRAWN or --verdict-json; refused if a manifest or FILED exists; never reclaims)")
+    ap.add_argument("--owner", help="with --no-manifest: the owner recorded on the filing")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
     import filing
     if filing.is_filed(flags, rid):
         print(f"NOOP {rid}: already FILED ({filing.filed_path(flags, rid)})"); return 0
+    if a.no_manifest:
+        if a.receipt:
+            print("ERROR --no-manifest cannot be combined with --receipt", file=sys.stderr); return 2
+        agent = {}
+        if a.verdict_json:
+            try:
+                with open(a.verdict_json) as fh:
+                    agent = json.load(fh)
+                assert isinstance(agent, dict) and agent.get("verdict")
+            except (OSError, ValueError, AssertionError) as e:
+                print(f"ERROR {rid}: bad --verdict-json ({e})", file=sys.stderr); return 2
+        verdict = agent.get("verdict") or a.verdict
+        if not verdict:
+            print(f"ERROR {rid}: --no-manifest needs --verdict SUPERSEDED|WITHDRAWN or --verdict-json", file=sys.stderr); return 2
+        r = filing.file_legacy_no_manifest(
+            flags, rid, verdict, owner=a.owner, by=str(agent.get("filed_by") or a.filed_by or "file_result --no-manifest"),
+            note=str(agent.get("rationale") or ""), superseded_by=agent.get("superseded_by") or a.superseded_by,
+            answer=agent.get("answer") or a.answer, dry_run=a.dry_run)
+        print(r)
+        return 0 if r in ("FILED", "NOOP") else 2
     if a.receipt:
         code, msg = filing.file_receipt(flags, rid, a.receipt, repo=a.repo, verdict=a.verdict or "RECEIPT", answer=a.answer,
                                         by=a.filed_by or "file_result --receipt", reclaim=not a.no_reclaim, fetch=not a.no_fetch)
