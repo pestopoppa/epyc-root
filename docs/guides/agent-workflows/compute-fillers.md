@@ -73,6 +73,7 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
 - **A build job exits non-zero on `BUILD_FAIL`.** On 2026-11-09 a mutant build wrote `BUILD_FAIL`, exited 0, counted complete and starved the GPU row behind it.
 - **A smoke proves the paths it touched, at that moment.** c2-producer-replay passed its smoke, then crashed on import because its source worktree was removed before the grant. Pin every worktree a row imports from until the row is filed.
 - **Keep rows ready ahead of the current ones.** There is no timer to refill the queue: on 2026-11-09 the day's rows ended about 19:30Z with none behind them and the host sat idle. Publish the next rows while the last are running.
+- A row that builds from the C9 configure argv (`-DLLAMA_LLGUIDANCE=ON`) needs `cargo`: put the pinned toolchain from the build identity's INPUTS.json (`rust-*/bin`) first on PATH with an empty CARGO_HOME, or `llama-bench`/`common` fail with `cargo: not found` (hit twice on 2026-11-09).
 
 ## Job-side rules (each bought by an incident; dates in the skill's incident ledger)
 

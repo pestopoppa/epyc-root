@@ -14,7 +14,7 @@
 | EVL-08 | canonical judge suite revamp | [benchmark-suites.md](benchmark-suites.md) | Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation | — |
 | EVL-14 | eval tower verification | [eval-tower-program.md](eval-tower-program.md) | Retain EV-PROTO and live calibration acceptance | — |
 | EVL-29 | intake derived work 2026 07 25 | [frontier-lab-automation.md](frontier-lab-automation.md) | File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed | — |
-| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | Land correction-fix salvage 7f2df8f61; two-CPU-model smoke; Canary B assertion; file R18-D A/A; republish R23-4 | — |
+| EVL-47 | vidya belief substrate program | [vidya-belief-substrate-program.md](vidya-belief-substrate-program.md) | Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4 | — |
 
 ## Cross-domain
 
