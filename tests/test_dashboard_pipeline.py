@@ -172,3 +172,11 @@ class Wiring(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_stop_path_falls_back_to_manifest_when_rowflow_cannot_load(monkeypatch):
+    from dashboard import pipeline_status as ps
+
+    monkeypatch.setattr(ps, "_ROWFLOW_MOD", [None])
+    assert ps._stop_path({"stop_file": "/x/STOP"}) == "/x/STOP"
+    assert ps._stop_path({}) is None

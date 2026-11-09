@@ -50,9 +50,13 @@ def _stop_path(row: dict) -> str | None:
             _ROWFLOW_MOD.append(None)
     mod = _ROWFLOW_MOD[0]
     try:
-        return mod.resolve_stop_path(row) if mod else None
+        if mod:
+            return mod.resolve_stop_path(row)
     except Exception:  # noqa: BLE001
-        return None
+        pass
+    # rowflow.py needs Python 3.12 syntax and the hub's interpreter may be older; without this every
+    # withdrawn row reads as "ready". The manifest records the same path.
+    return row.get("stop_file") or None
 
 SCHEMA = "epyc.pipeline_status.v1"
 REGIONS = ("q0", "q1", "q2", "q3", "gpu-quiet")
