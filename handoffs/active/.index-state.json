@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 672
+      "open": 616
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -2165,10 +2165,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 334,
+      "closed": 339,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 76,
+      "last_advanced": "2026-11-09",
+      "open": 20,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2177,19 +2177,19 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 410,
+      "total": 359,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 99,
+          "closed": 104,
           "gates": [
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 39,
+          "line": 51,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 40
+          "open": 8
         },
         {
           "blocked": 0,
@@ -2199,10 +2199,10 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1735,
+          "line": 1482,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
-          "open": 21
+          "open": 1
         },
         {
           "blocked": 0,
@@ -2212,17 +2212,17 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 3002,
+          "line": 2638,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 5
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3407,
+          "line": 3010,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 4
@@ -2232,7 +2232,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3922,
+          "line": 3525,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 4
@@ -2242,7 +2242,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 4033,
+          "line": 3621,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 2
@@ -2696,7 +2696,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "Repair audited C6 carriers, wire oracle/Ghost boundary",
+      "next_action": "Port C6 controller wiring from codex/autokernel-v27-descendant-20260823 onto research main (INF48-LIVE-1); publish RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
       "track": "rocm verify profile backend"
     },
     "INF-50": {
