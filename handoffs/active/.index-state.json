@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 609
+      "open": 607
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 2,
-      "closed": 108,
+      "closed": 109,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 69,
+      "last_advanced": "2026-11-09",
+      "open": 68,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -58,13 +58,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 806,
+      "closed": 807,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 155,
+      "open": 154,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 357,
+          "closed": 358,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,7 +128,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 57
+          "open": 56
         },
         {
           "blocked": 0,

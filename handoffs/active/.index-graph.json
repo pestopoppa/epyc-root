@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T13:12:54Z",
+  "generated_at": "2026-11-09T13:31:50Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1484,15 +1484,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 806,
-      "dispatchable": 155,
+      "closed": 807,
+      "dispatchable": 154,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-09",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 156,
+      "open": 155,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1529,7 +1529,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 57,
+          "dispatchable": 56,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1538,7 +1538,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 58,
+          "open": 57,
           "readiness": "blocked"
         },
         {
@@ -2417,7 +2417,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [
         "INF-06",
@@ -2431,15 +2431,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 108,
-      "dispatchable": 69,
+      "closed": 109,
+      "dispatchable": 68,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-09",
       "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
-      "open": 71,
+      "open": 70,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2456,11 +2456,11 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
