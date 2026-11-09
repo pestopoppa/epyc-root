@@ -32,7 +32,7 @@ A worktree is REMOVABLE only when ALL of these hold:
   * no process visible to us has its cwd inside it, or names it in its argv or ENVIRONMENT
     (`/proc/*/environ`: a launcher that exports `EPYC_ROOT_REPO=<tree>` holds no cwd there);
   * no live launch/state file names it: shell scripts under /mnt/raid0/llm/tmp modified in the
-    last 30 days, AutoKernel campaign inputs and top-level state files, the launch manifest, the
+    last 30 days, AutoKernel campaign inputs (no age-out) and top-level state files, the launch manifest, the
     bus roster, the observer registry, the latest crontab backup (REFERENCE_SOURCES below);
   * its ignored files hold no evidence-shaped file (VERDICT*.json, *receipt*.json(l), attestations,
     ratifications, SHA256SUMS) — those are archived first, never deleted with a tree;
@@ -108,20 +108,22 @@ KEEP_MARKERS = (".epyc-keep", ".epyc-load-bearing", "KEEP", "LOAD-BEARING")
 #     fresh one still counts (someone just edited the real file), a stale one is ignored;
 #   * `.env` / `.bash` files under the scratch roots count for BASH_ENV_MAX_AGE_DAYS (tighter than the
 #     root's 30-day cap for .sh: a sourced env file that nobody touched in two weeks is not a launch);
-#   * campaign INPUT files count for CAMPAIGN_INPUT_MAX_AGE_DAYS (was: forever). Campaign top-level
-#     state files and the launch manifest keep no cap: those are the live state itself.
+#   * campaign files NEVER age out (inputs/ included: an input read by a long campaign must keep
+#     protecting its tree; review 2026-11-09). Campaign top-level state files and the launch manifest
+#     are the live state itself. The `.env`/`.bash` suffix cap is therefore applied ONLY to sources
+#     whose 5th tuple field (suffix_cap, default True) is true, i.e. the {LLM}/tmp scratch source.
 BAK_STALE_DAYS = 7
 BASH_ENV_MAX_AGE_DAYS = 14
-CAMPAIGN_INPUT_MAX_AGE_DAYS = 30
+CAMPAIGN_INPUT_MAX_AGE_DAYS = None   # no age-out; kept as a name for the shipped-table test
 SUFFIX_MAX_AGE_DAYS = {".env": BASH_ENV_MAX_AGE_DAYS, ".bash": BASH_ENV_MAX_AGE_DAYS}
 _BAK_RE = re.compile(r"\.bak($|[-._])", re.IGNORECASE)
 
 # Live reference sources: (glob root, filename suffixes or None=any, maxdepth, max age days or None).
 REFERENCE_SOURCES = [
     (f"{LLM}/tmp", (".sh", ".env", ".bash"), 4, 30),
-    (f"{LLM}/autokernel/campaigns/*/inputs", None, 4, CAMPAIGN_INPUT_MAX_AGE_DAYS),
-    (f"{LLM}/autokernel/campaigns/*", (".json", ".yaml", ".yml", ".sh", ".env", ".toml"), 1, None),
-    (f"{LLM}/autokernel", (".json", ".yaml", ".yml", ".sh", ".env"), 1, None),
+    (f"{LLM}/autokernel/campaigns/*/inputs", None, 4, CAMPAIGN_INPUT_MAX_AGE_DAYS, False),
+    (f"{LLM}/autokernel/campaigns/*", (".json", ".yaml", ".yml", ".sh", ".env", ".toml"), 1, None, False),
+    (f"{LLM}/autokernel", (".json", ".yaml", ".yml", ".sh", ".env"), 1, None, False),
 ]
 REFERENCE_FILES = [
     f"{LLM}/epyc-orchestrator/orchestration/launch_manifest.yaml",
@@ -269,7 +271,7 @@ class Probe:
 def _iter_reference_files(sources=None, files=None, glob_files=None):
     import glob as _glob
     now = time.time()
-    for root_glob, suffixes, maxdepth, max_age_days in (sources if sources is not None else REFERENCE_SOURCES):
+    for root_glob, suffixes, maxdepth, max_age_days, *rest in (sources if sources is not None else REFERENCE_SOURCES):
         for root in _glob.glob(root_glob):
             if not os.path.isdir(root):
                 continue
@@ -293,7 +295,8 @@ def _iter_reference_files(sources=None, files=None, glob_files=None):
                         continue
                     if _BAK_RE.search(fn) and age_days > BAK_STALE_DAYS:
                         continue
-                    cap = next((v for k, v in SUFFIX_MAX_AGE_DAYS.items() if fn.endswith(k)), None)
+                    cap = (next((v for k, v in SUFFIX_MAX_AGE_DAYS.items() if fn.endswith(k)), None)
+                           if (rest[0] if rest else True) else None)
                     if cap is not None and age_days > cap:
                         continue
                     yield p

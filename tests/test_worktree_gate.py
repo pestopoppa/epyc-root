@@ -256,20 +256,41 @@ def test_a_file_merely_containing_bak_in_a_word_is_not_a_backup(repo, tmp_path):
     assert v.verdict == "REFERENCED"
 
 
-def test_campaign_input_reference_ages_out_with_default_sources(repo, tmp_path):
+def test_campaign_input_reference_never_ages_out_with_default_sources(repo, tmp_path):
     row = [r for r in _REAL_SOURCES if r[0].endswith("campaigns/*/inputs")][0]
-    assert row[3] == wg.CAMPAIGN_INPUT_MAX_AGE_DAYS   # the shipped table carries the cap
+    assert row[3] is None   # the shipped table carries no cap
     p = add_wt(repo, tmp_path, "campin")
     root = tmp_path / "campaigns" / "c1" / "inputs"
     root.mkdir(parents=True)
     f = root / "cfg.json"
     f.write_text(str(p))
-    _aged(f, 1)
-    live = wg.gather_probe(sources=[(str(root), None, 4, row[3])], files=[], glob_files=[])
-    assert verdict(p, probe=live).verdict == "REFERENCED"
-    _aged(f, row[3] + 5)
-    old = wg.gather_probe(sources=[(str(root), None, 4, row[3])], files=[], glob_files=[])
-    assert verdict(p, probe=old).verdict == wg.REMOVABLE
+    _aged(f, 400)
+    probe = wg.gather_probe(sources=[(str(root),) + tuple(row[1:])], files=[], glob_files=[])
+    assert verdict(p, probe=probe).verdict == "REFERENCED"
+
+
+def test_campaign_env_never_ages_out_but_tmp_env_does(repo, tmp_path):
+    # NEGATIVE CONTROL: a 20-day-old launch.env in a campaign dir (shipped source rows) still protects.
+    camp_row = [r for r in _REAL_SOURCES if r[0].endswith("autokernel/campaigns/*")][0]
+    tmp_row = [r for r in _REAL_SOURCES if r[0].endswith("/tmp")][0]
+    age = wg.BASH_ENV_MAX_AGE_DAYS + 6
+    p = add_wt(repo, tmp_path, "campenv")
+    cdir = tmp_path / "campaigns" / "c1"
+    cdir.mkdir(parents=True)
+    f = cdir / "launch.env"
+    f.write_text(f'export EPYC_ROOT_REPO="{p}"\n')
+    _aged(f, age)
+    probe = wg.gather_probe(sources=[(str(cdir),) + tuple(camp_row[1:])], files=[], glob_files=[])
+    assert verdict(p, probe=probe).verdict == "REFERENCED"
+    # the same file in the {LLM}/tmp-shaped source ages out
+    q = add_wt(repo, tmp_path, "tmpenv")
+    tdir = tmp_path / "llmtmp2"
+    tdir.mkdir()
+    g = tdir / "launch.env"
+    g.write_text(f'export EPYC_ROOT_REPO="{q}"\n')
+    _aged(g, age)
+    probe2 = wg.gather_probe(sources=[(str(tdir),) + tuple(tmp_row[1:])], files=[], glob_files=[])
+    assert verdict(q, probe=probe2).verdict == wg.REMOVABLE
 
 
 def test_reference_from_inside_the_tree_itself_does_not_count(repo, tmp_path):
