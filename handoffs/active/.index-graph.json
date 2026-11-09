@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T10:56:43Z",
+  "generated_at": "2026-11-09T11:07:41Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1000,7 +1000,6 @@
             "INF-45#dynamic-stack-concurrency",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
@@ -1629,18 +1628,18 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 0,
       "blocked": 3,
       "blocked_by": [],
-      "closed": 248,
-      "dispatchable": 41,
+      "closed": 250,
+      "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-09",
       "next_action": "No cutover work remains (P0-3 closed 2026-10-29); next P1-4, P1-8, REGION-SIBLING-1, WP-15.2, then P2-2 anchors",
-      "open": 44,
+      "open": 42,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1660,18 +1659,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 20,
+          "dispatchable": 19,
           "gates": [],
           "line": 37,
           "name": "numa-placement-and-contention",
-          "open": 20,
+          "open": 19,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1660,
+          "line": 1663,
           "name": "batched-decode-measurement",
           "open": 4,
           "readiness": "ready"
@@ -1680,7 +1679,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2736,
+          "line": 2739,
           "name": "dynamic-stack-concurrency",
           "open": 6,
           "readiness": "ready"
@@ -1689,25 +1688,25 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3117,
+          "line": 3120,
           "name": "numa-placement-defect-20260730",
           "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
-          "line": 4662,
+          "line": 4665,
           "name": "shape-keyed-contention-gating",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 5289,
+          "line": 5293,
           "name": "within-role-placement-state-machine",
           "open": 6,
           "readiness": "ready"
@@ -1719,7 +1718,6 @@
             "INF-45#dynamic-stack-concurrency",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine",
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
@@ -1739,7 +1737,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 5761,
+          "line": 5766,
           "name": "reboot-gated-inventory-and-staging",
           "open": 2,
           "readiness": "blocked"
@@ -1750,7 +1748,6 @@
             "INF-45#dynamic-stack-concurrency",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine"
           ],
           "dispatchable": 0,
@@ -1762,7 +1759,7 @@
             "INF-45#shape-keyed-contention-gating",
             "INF-45#within-role-placement-state-machine"
           ],
-          "line": 6293,
+          "line": 6298,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"

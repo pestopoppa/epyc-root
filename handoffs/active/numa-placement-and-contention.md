@@ -366,7 +366,8 @@ the machine.
       operator-seeded, no TTL, insight "quarters remain the granularity". It
       **forbids the topology we just deployed**. It is a *learned prior*:
       **supersede it, never edit it in place.**
-- [ ] **P1-4. `stack_templates/default.yaml` is a 4th hand-maintained copy of the
+- [x] **P1-4. `stack_templates/default.yaml` is a 4th hand-maintained copy of the
+  - *(2026-11-09)* Done in epyc-orchestrator `94af001d`: `default.yaml` topology now derives from `numa_config` at load; loaded template byte-identical before and after; 425 tests pass (one unrelated pre-existing failure). [no-belief: code-landed-verified-by-tests]
       topology.** *(2026-08-12 `mainA`, orchestrator `fa34447c` — PARTIAL, deliberately left
       open. The row's "fails 7 ways" is STALE: `validate_template` returns 0 errors today. The
       real hole was that `numa:` and `threads:` were compared by NOTHING — `stale_role_fact_table`
@@ -393,7 +394,7 @@ the machine.
       routing knob to autopilot.** A lever autopilot can move but cannot score is
       exactly how `dual-half-negative` (P1-3) got mislearned. This ordering is the
       point of the task.
-      - *(2026-11-09, inf45-zerocompute.)* Telemetry built, NOT merged: orchestrator branch `inf45-zerocompute-20261109` @ `0b342a07` adds `region_lock_wait_s_by_holder()` (blocked-wait seconds + count keyed by holder role from the lock payload, observation-only, process-local) in `src/runtime/cpu_region_lock.py`, 3 new tests + 183-test lock/topology suite green. Surfaced additively as `region_lock_wait_s_by_holder` (process-cumulative) on every `dispatch.v1` dispatch record, with tests (77 pass); the dashboard route is untouched. Unticked until the branch is merged and an autopilot-visible reader exists.
+      - *(2026-11-09, inf45-zerocompute.)* Telemetry merged (`0b342a07`, dispatch log `aa86437c`); an autopilot-visible reader is still needed. It adds `region_lock_wait_s_by_holder()` (blocked-wait seconds + count keyed by holder role from the lock payload, observation-only, process-local) in `src/runtime/cpu_region_lock.py`, 3 new tests + 183-test lock/topology suite green. Surfaced additively as `region_lock_wait_s_by_holder` (process-cumulative) on every `dispatch.v1` dispatch record, with tests (77 pass); the dashboard route is untouched. Unticked until the branch is merged and an autopilot-visible reader exists.
 - [x] **P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py` — ADJUDICATED: DO NOT
       DELETE.** ✅ 2026-08-12 (`mainA`) — orchestrator `1fe3b57e`, additive only (+83/-0). Two of
       the row's three claims are FALSE. "Zero runtime importers" is TRUE (every dynamic route

@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 674
+      "open": 672
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1916,10 +1916,10 @@
     },
     "numa-placement-and-contention.md": {
       "blocked": 3,
-      "closed": 248,
+      "closed": 250,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 41,
+      "last_advanced": "2026-11-09",
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1932,20 +1932,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 104,
+          "closed": 105,
           "gates": [],
           "guarded": 0,
           "line": 37,
           "markers": 1,
           "name": "numa-placement-and-contention",
-          "open": 20
+          "open": 19
         },
         {
           "blocked": 1,
           "closed": 43,
           "gates": [],
           "guarded": 0,
-          "line": 1660,
+          "line": 1663,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1955,7 +1955,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2736,
+          "line": 2739,
           "markers": 1,
           "name": "dynamic-stack-concurrency",
           "open": 6
@@ -1965,27 +1965,27 @@
           "closed": 37,
           "gates": [],
           "guarded": 0,
-          "line": 3117,
+          "line": 3120,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 4
         },
         {
           "blocked": 0,
-          "closed": 23,
+          "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4662,
+          "line": 4665,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 1,
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 5289,
+          "line": 5293,
           "markers": 1,
           "name": "within-role-placement-state-machine",
           "open": 5
@@ -2007,7 +2007,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 5761,
+          "line": 5766,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 2
@@ -2024,7 +2024,7 @@
             "INF-45#within-role-placement-state-machine"
           ],
           "guarded": 0,
-          "line": 6293,
+          "line": 6298,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
