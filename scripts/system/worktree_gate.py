@@ -96,10 +96,24 @@ EVIDENCE_SKIP_DIRS = {
 }
 EVIDENCE_WALK_CAP = 200_000
 KEEP_MARKERS = (".epyc-keep", ".epyc-load-bearing", "KEEP", "LOAD-BEARING")
+# LOOP-39: ~67 content-safe trees stayed blocked by references that were no longer live. A reference
+# source only means "something still uses this path" while it is itself recent, so each class ages out:
+#   * backup copies (name carries `.bak`, e.g. launch.sh.bak, x.bak-20261001) are NEVER a launcher; a
+#     fresh one still counts (someone just edited the real file), a stale one is ignored;
+#   * `.env` / `.bash` files under the scratch roots count for BASH_ENV_MAX_AGE_DAYS (tighter than the
+#     root's 30-day cap for .sh: a sourced env file that nobody touched in two weeks is not a launch);
+#   * campaign INPUT files count for CAMPAIGN_INPUT_MAX_AGE_DAYS (was: forever). Campaign top-level
+#     state files and the launch manifest keep no cap: those are the live state itself.
+BAK_STALE_DAYS = 7
+BASH_ENV_MAX_AGE_DAYS = 14
+CAMPAIGN_INPUT_MAX_AGE_DAYS = 30
+SUFFIX_MAX_AGE_DAYS = {".env": BASH_ENV_MAX_AGE_DAYS, ".bash": BASH_ENV_MAX_AGE_DAYS}
+_BAK_RE = re.compile(r"\.bak($|[-._])", re.IGNORECASE)
+
 # Live reference sources: (glob root, filename suffixes or None=any, maxdepth, max age days or None).
 REFERENCE_SOURCES = [
     (f"{LLM}/tmp", (".sh", ".env", ".bash"), 4, 30),
-    (f"{LLM}/autokernel/campaigns/*/inputs", None, 4, None),
+    (f"{LLM}/autokernel/campaigns/*/inputs", None, 4, CAMPAIGN_INPUT_MAX_AGE_DAYS),
     (f"{LLM}/autokernel/campaigns/*", (".json", ".yaml", ".yml", ".sh", ".env", ".toml"), 1, None),
     (f"{LLM}/autokernel", (".json", ".yaml", ".yml", ".sh", ".env"), 1, None),
 ]
@@ -268,7 +282,13 @@ def _iter_reference_files(sources=None, files=None, glob_files=None):
                         continue
                     if st.st_size > REFERENCE_MAX_FILE_BYTES:
                         continue
-                    if max_age_days is not None and now - st.st_mtime > max_age_days * 86400:
+                    age_days = (now - st.st_mtime) / 86400
+                    if max_age_days is not None and age_days > max_age_days:
+                        continue
+                    if _BAK_RE.search(fn) and age_days > BAK_STALE_DAYS:
+                        continue
+                    cap = next((v for k, v in SUFFIX_MAX_AGE_DAYS.items() if fn.endswith(k)), None)
+                    if cap is not None and age_days > cap:
                         continue
                     yield p
     for p in (files if files is not None else REFERENCE_FILES):

@@ -20,6 +20,7 @@ _SPEC = importlib.util.spec_from_file_location("worktree_gate", ROOT / "scripts/
 wg = importlib.util.module_from_spec(_SPEC)
 sys.modules["worktree_gate"] = wg
 _SPEC.loader.exec_module(wg)
+_REAL_SOURCES = list(wg.REFERENCE_SOURCES)   # the autouse fixture blanks the module's copy
 
 
 def git(cwd, *args):
@@ -208,6 +209,66 @@ def test_reference_in_live_launch_script_is_refused(repo, tmp_path):
     # a sibling whose name merely shares the prefix is NOT referenced
     q = add_wt(repo, tmp_path, "root-main")
     assert verdict(q, probe=probe).verdict == wg.REMOVABLE
+
+
+def _aged(path, days):
+    t = os.stat(path).st_mtime - days * 86400
+    os.utime(path, (t, t))
+
+
+def _ref_verdict(repo, tmp_path, name, fname, days_old, *, suffixes=(".sh", ".env", ".bash", ".bak"),
+                 max_age=None):
+    """A worktree named by one file of the given age in a scratch root; return the verdict."""
+    p = add_wt(repo, tmp_path, name)
+    root = tmp_path / f"scratch-{name}"
+    root.mkdir()
+    f = root / fname
+    f.write_text(f'export EPYC_ROOT_REPO="{p}"\n')
+    _aged(f, days_old)
+    probe = wg.gather_probe(sources=[(str(root), suffixes or None, 4, max_age)], files=[], glob_files=[])
+    return verdict(p, probe=probe)
+
+
+def test_fresh_env_reference_still_blocks_and_stale_one_ages_out(repo, tmp_path):
+    # NEGATIVE CONTROL first: a live .env reference must still block removal.
+    assert _ref_verdict(repo, tmp_path, "envlive", "run.env", 1).verdict == "REFERENCED"
+    assert _ref_verdict(repo, tmp_path, "envold", "run.env", wg.BASH_ENV_MAX_AGE_DAYS + 3).verdict == wg.REMOVABLE
+
+
+def test_fresh_bash_reference_still_blocks_and_stale_one_ages_out(repo, tmp_path):
+    assert _ref_verdict(repo, tmp_path, "bashlive", "run.bash", 1).verdict == "REFERENCED"
+    assert _ref_verdict(repo, tmp_path, "bashold", "run.bash", wg.BASH_ENV_MAX_AGE_DAYS + 3).verdict == wg.REMOVABLE
+
+
+def test_stale_bak_is_ignored_but_fresh_bak_still_blocks(repo, tmp_path):
+    for fname in ("launch.sh.bak", "launch.bak-20261001", "x.bak"):
+        n = fname.replace(".", "-")
+        live = _ref_verdict(repo, tmp_path, f"live-{n}", fname, 1, suffixes=None)
+        assert live.verdict == "REFERENCED", fname
+        stale = _ref_verdict(repo, tmp_path, f"stale-{n}", fname, wg.BAK_STALE_DAYS + 2, suffixes=None)
+        assert stale.verdict == wg.REMOVABLE, fname
+
+
+def test_a_file_merely_containing_bak_in_a_word_is_not_a_backup(repo, tmp_path):
+    # a name that only resembles a backup ("kebab.sh") is a live script and must still block
+    v = _ref_verdict(repo, tmp_path, "notbak", "kebab.sh", wg.BAK_STALE_DAYS + 2, suffixes=None)
+    assert v.verdict == "REFERENCED"
+
+
+def test_campaign_input_reference_ages_out_with_default_sources(repo, tmp_path):
+    row = [r for r in _REAL_SOURCES if r[0].endswith("campaigns/*/inputs")][0]
+    assert row[3] == wg.CAMPAIGN_INPUT_MAX_AGE_DAYS   # the shipped table carries the cap
+    p = add_wt(repo, tmp_path, "campin")
+    root = tmp_path / "campaigns" / "c1" / "inputs"
+    root.mkdir(parents=True)
+    f = root / "cfg.json"
+    f.write_text(str(p))
+    _aged(f, 1)
+    live = wg.gather_probe(sources=[(str(root), None, 4, row[3])], files=[], glob_files=[])
+    assert verdict(p, probe=live).verdict == "REFERENCED"
+    _aged(f, row[3] + 5)
+    old = wg.gather_probe(sources=[(str(root), None, 4, row[3])], files=[], glob_files=[])
+    assert verdict(p, probe=old).verdict == wg.REMOVABLE
 
 
 def test_reference_from_inside_the_tree_itself_does_not_count(repo, tmp_path):
