@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T14:11:42Z",
+  "generated_at": "2026-11-09T14:32:05Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2431,15 +2431,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 109,
-      "dispatchable": 68,
+      "closed": 112,
+      "dispatchable": 65,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-09",
       "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
-      "open": 70,
+      "open": 67,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2489,7 +2489,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 53,
+          "dispatchable": 50,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2498,9 +2498,9 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 928,
+          "line": 929,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 55,
+          "open": 52,
           "readiness": "blocked"
         }
       ]
