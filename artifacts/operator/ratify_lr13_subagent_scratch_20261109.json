@@ -1,0 +1,23 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-LR13-SUBAGENT-SCRATCH-20261109",
+  "status": "ratified",
+  "ratified_at": "2026-11-09T15:41:17Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-09 (decision tool): LR-13 -- scratch lifetime is the main's call per brief; subagent clears its own scratch only if no longer needed"
+  },
+  "origin": "2026-10-07 disk crisis (LR-13)",
+  "base_origin_main": "766ef622b23efedcd8c8ce4d3248e8329af06fbc",
+  "consolidated_receipt": "artifacts/operator/ratify_lr13_subagent_scratch_20261109.receipt.json",
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "d8ff2c7195fc1537a5180df51deda6ddf0532b45ab77541241b2e4f55d8de6ca",
+      "sha256_after": "776a484e859bcf3cfe684190a0be488b17e60471984dc340c6631d19b7321a18"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_lr13_subagent_scratch_20261109.sh",
+  "ratify_script_sha256": "5ae3290eb895eb48e3ac9d57a32bd5e51c883999131c2ac1a6d15bd826cc0240",
+  "processes_touched": []
+}

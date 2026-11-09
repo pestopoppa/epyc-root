@@ -538,6 +538,7 @@ including the dispatches whose nudge says nothing about subagents.
   important work logging in between major/thorough /wrap-up which you should trigger/dispatch at
   major work boundaries"*. The boundary dispatch is in `agents/shared/SESSION_LIFECYCLE.md` →
   *Wrap-up cadence*.
+- **Scratch lifetime is the MAIN's call, stated per brief (operator, 2026-10-07; re-approved 2026-11-09).** Each brief says that, once main approves the work, the subagent clears the scratch it created (exact paths only; worktrees through `scripts/system/worktree_gate.py`) **only if no longer needed**, and reports what it kept and why. The main, not the subagent, decides per brief which paths stay needed for review, promotion, evidence or follow-on work; evidence needed later lands in git before its tmp copy is removed. A per-task wrap-up includes the task's own scratch cleanup (`agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*). (origin: 2026-10-07 disk crisis)
 - **Dispose of a finished subagent; never reuse it for a new task (operator, 2026-10-21).** Once a
   subagent's task is approved and closed out, it is done. A new task gets a FRESH subagent so stale
   context does not weigh it down. If the concurrency cap is full, queue the new task until a slot
