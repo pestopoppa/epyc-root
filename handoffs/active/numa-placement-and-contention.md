@@ -377,7 +377,7 @@ the machine.
       docstring.)*
       topology.** Its parity gate already fails 7 ways. Either derive it from the
       single source or delete it — a fourth copy is how the drift started.
-      - *(2026-11-09, inf45-zerocompute.)* Re-checked: still a gated 4th copy (`scripts/validate/default_template_topology_parity.py` OK, 4 roles / 6 instances). Derivation proposal (docstring steps 1-4) needs `src/config/stack_templates.py load_template` + parity-gate + template-test rewrite; not attempted this pass.
+      - *(2026-11-09, inf45-zerocompute.)* Re-checked: still a gated 4th copy (`scripts/validate/default_template_topology_parity.py` OK, 4 roles / 6 instances). Superseded same day: derivation BUILT, not merged: orchestrator branch `inf45-zerocompute-20261109` @ the P1-4 commit (`resolve_template_topology` in `src/config/stack_templates.py`; `default.yaml` no longer spells port/numa/threads for sourced roles; gate forbids authoring them). Loaded-template before/after dump byte-identical; 425 template/topology tests pass. Unticked until merged.
 - [x] **P1-5. `src/registry/registry_validator.py` never cross-checks ✅ 2026-08-12 — `mainD`. orchestrator `7d4f96d2`. Cross-check added and wired into `validate_all`, reached by the one production caller (`stack_commands.py:1289` in `cmd_start`). **Premise corrected**: a PARTIAL guard already existed — `stack_manifest.validate_declaration_parity()` — but it iterates `NUMA_CONFIG.items()` and is structurally blind to a registry declaring a fleet the topology never heard of, which is P1-7's phantom-fleet shape. Both directions now covered, plus duplicate ports, `numa_instances` vs `len(numa_ports)`, and primary port vs full-instance port. 23 tests, counted by the runner (tests/unit 12039 → 12062); an empty/unloadable topology is an ERROR, never silent agreement.
       `numa_ports` against `NUMA_CONFIG`.** This is **the missing guard that
       allowed months of drift**. Add it; it is the cheapest permanent fix in this
@@ -393,7 +393,7 @@ the machine.
       routing knob to autopilot.** A lever autopilot can move but cannot score is
       exactly how `dual-half-negative` (P1-3) got mislearned. This ordering is the
       point of the task.
-      - *(2026-11-09, inf45-zerocompute.)* Telemetry built, NOT merged: orchestrator branch `inf45-zerocompute-20261109` @ `0b342a07` adds `region_lock_wait_s_by_holder()` (blocked-wait seconds + count keyed by holder role from the lock payload, observation-only, process-local) in `src/runtime/cpu_region_lock.py`, 3 new tests + 183-test lock/topology suite green. Still owed: surface it (dashboard / dispatch log) before any autopilot knob. Unticked.
+      - *(2026-11-09, inf45-zerocompute.)* Telemetry built, NOT merged: orchestrator branch `inf45-zerocompute-20261109` @ `0b342a07` adds `region_lock_wait_s_by_holder()` (blocked-wait seconds + count keyed by holder role from the lock payload, observation-only, process-local) in `src/runtime/cpu_region_lock.py`, 3 new tests + 183-test lock/topology suite green. Surfaced additively as `region_lock_wait_s_by_holder` (process-cumulative) on every `dispatch.v1` dispatch record, with tests (77 pass); the dashboard route is untouched. Unticked until the branch is merged and an autopilot-visible reader exists.
 - [x] **P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py` — ADJUDICATED: DO NOT
       DELETE.** ✅ 2026-08-12 (`mainA`) — orchestrator `1fe3b57e`, additive only (+83/-0). Two of
       the row's three claims are FALSE. "Zero runtime importers" is TRUE (every dynamic route
