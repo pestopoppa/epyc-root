@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T21:15:46Z",
+  "generated_at": "2026-11-09T21:18:34Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1788,14 +1788,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 339,
-      "dispatchable": 12,
+      "dispatchable": 17,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-09",
       "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
-      "open": 12,
+      "open": 17,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1830,13 +1830,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 5,
+          "dispatchable": 9,
           "gates": [
             "EVL-47"
           ],
           "line": 58,
           "name": "rocm-verify-profile-backend",
-          "open": 5,
+          "open": 9,
           "readiness": "blocked"
         },
         {
@@ -1849,7 +1849,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1492,
+          "line": 1496,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1864,7 +1864,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2649,
+          "line": 2653,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1873,7 +1873,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3021,
+          "line": 3025,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1882,18 +1882,18 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3534,
+          "line": 3538,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
-          "line": 3629,
+          "line": 3633,
           "name": "llama-cpp-dsa-contribution",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         }
       ]
@@ -3235,15 +3235,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 38,
-      "dispatchable": 16,
+      "closed": 40,
+      "dispatchable": 30,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-09",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
-      "open": 16,
+      "open": 30,
       "priority": 0.0402,
       "priority_basis": {
         "campaign": 1,
