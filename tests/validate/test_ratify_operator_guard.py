@@ -103,6 +103,32 @@ def test_shell_guard_exits_calling_script():
 FALLBACK_RE = re.compile(r"RATIFY_OPERATOR:-[^}]|\bor\s+os\.environ\.get\(\s*[\"']USER[\"']")
 
 
+PREVIEW_PLACEHOLDERS = ("DRY-RUN-PREVIEW", "<operator>")
+
+
+def _has_defaulted_signer(code: str) -> bool:
+    """FALLBACK_RE over `code`, minus guarded dry-run PREVIEW placeholders.
+
+    A placeholder is not a defaulted signer when the script's apply path is guarded:
+    ratify_require_operator refuses an unset name before the first write, so the placeholder can
+    only label a preview. Only these exact sentinels, and only in a script that calls the guard;
+    any other default (`:-$USER`, `:-unknown`, `:-node`, ...) still counts.
+    """
+    if "ratify_require_operator" in code:
+        for sentinel in PREVIEW_PLACEHOLDERS:
+            code = code.replace(f"RATIFY_OPERATOR:-{sentinel}}}", "RATIFY_OPERATOR:-}")
+    return FALLBACK_RE.search(code) is not None
+
+
+def test_preview_placeholder_allowance_is_not_a_blanket_default():
+    preview = 'X="${RATIFY_OPERATOR:-DRY-RUN-PREVIEW}"'
+    assert not _has_defaulted_signer("ratify_require_operator\n" + preview)
+    assert not _has_defaulted_signer('ratify_require_operator\nX="${RATIFY_OPERATOR:-<operator>}"')
+    assert _has_defaulted_signer(preview)  # same placeholder, no guard in the script
+    for default in ("$USER", "unknown", "node", "Daniele"):
+        assert _has_defaulted_signer('ratify_require_operator\nX="${RATIFY_OPERATOR:-%s}"' % default)
+
+
 def test_no_ratifier_falls_back_to_user():
     """Class check: a new ratifier with the $USER fallback fails here, not in an audit.
 
@@ -121,6 +147,6 @@ def test_no_ratifier_falls_back_to_user():
                 continue
             code = "\n".join(l for l in path.read_text(errors="replace").splitlines()
                              if not l.lstrip().startswith("#"))
-            if FALLBACK_RE.search(code):
+            if _has_defaulted_signer(code):
                 offenders.append(rel)
     assert not offenders, f"ratifiers with a defaulted signer: {sorted(set(offenders))}"

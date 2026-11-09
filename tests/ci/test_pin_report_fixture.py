@@ -19,9 +19,27 @@ from scripts.ci.pin_report_fixture import (capture_report_fixture, project_repor
                                           write_report, write_scan_invocation)
 
 
-def _report(tmp_path, world="current", *, track_checker=True):
-    original = Path(os.environ["EPYC_INFERENCE_RESEARCH_REPO"]) / "scripts/benchmark/check_pin_staleness.py"
+_DEFAULT_RESEARCH_CLONE = Path("/workspace/repos/epyc-inference-research")
+
+
+def _research_checker() -> Path:
+    """The actual Research checker the synthetic controls run unchanged.
+
+    EPYC_INFERENCE_RESEARCH_REPO names the checkout when set (an explicit root that is broken
+    FAILS); otherwise the sibling research clone is used, and the controls skip where there is
+    none (a runner without the Research repo) instead of dying with a KeyError.
+    """
+    configured = os.environ.get("EPYC_INFERENCE_RESEARCH_REPO")
+    root = Path(configured) if configured else _DEFAULT_RESEARCH_CLONE
+    original = root / "scripts/benchmark/check_pin_staleness.py"
+    if not configured and not original.exists():
+        pytest.skip("no Research checkout: set EPYC_INFERENCE_RESEARCH_REPO")
     assert original.is_file() and not original.is_symlink()
+    return original
+
+
+def _report(tmp_path, world="current", *, track_checker=True):
+    original = _research_checker()
     root = tmp_path / "synthetic-research"
     source = root / "scripts/benchmark"
     source.mkdir(parents=True)
