@@ -305,8 +305,13 @@ if args[:2] == ["bash", "-c"]:
         pin_base = "/mnt/raid0/llm/ops/hub-supervisor"
         assert args[3:] == [
             "_", os.environ["FIXTURE_ROOT"], "a" * 40, pin_base + "/" + "a" * 40, pin_base,
-            "scripts/dashboard/hub_supervisor.sh", "scripts/dashboard/hub_launch_spec.py",
-            "scripts/dashboard/refresh_hub_view.sh", "scripts/coordination/daemon_provenance.sh",
+            "scripts/dashboard/hub_supervisor.sh",
+            "scripts/dashboard/hub_launch_spec.py",
+            "scripts/dashboard/refresh_hub_view.sh",
+            "scripts/coordination/daemon_provenance.sh",
+            "scripts/coordination/index_regen.py",
+            "scripts/coordination/observer_guard.sh",
+            "scripts/lib/env.sh",
         ]
     sys.exit(0)
 raise AssertionError("unexpected child: " + repr(args))
