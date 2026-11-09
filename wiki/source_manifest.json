@@ -12,10 +12,10 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 5,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-09T21:19:17Z",
+    "at": "2026-11-09T21:20:43Z",
     "scope_paths": [
       "docs/guides/agent-workflows/compute-fillers.md",
       "handoffs/active/autokernel-akx-program.md",
@@ -26,9 +26,9 @@
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T21:19:17Z",
+  "scan_time": "2026-11-09T21:20:43Z",
   "schema_version": 1,
-  "source_set_hash": "7b2a67ca5d81d0ed0056da93e5352ec86193c9430854870958478e91cfd74ff7",
+  "source_set_hash": "7d5a809797239523c4e8f51f67883b948f0c3709a16ee42b66300bfcfc923063",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -17999,10 +17999,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "ade0459f1ec0b2ba39386b11f6fd855353687bc6bf01d6584c471927f1254e52",
-      "modified": "2026-11-09T21:14:48Z",
+      "content_hash": "905293ae6131a5fddcce02b037a161c8515a50c94d180e63aae7cb35ed714779",
+      "modified": "2026-11-09T21:20:36Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 14267,
+      "size": 14939,
       "title": "Compute Fillers",
       "type": "docs"
     },
