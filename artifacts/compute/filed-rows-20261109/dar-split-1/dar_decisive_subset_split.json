@@ -1,0 +1,61 @@
+{
+ "task": "DAR-SPLIT-1 split-half decisive subset + binomial null",
+ "snapshot": {
+  "snapshot_dir": "/mnt/raid0/llm/tmp/dar_snapshot",
+  "snapshot_ts_utc": "unknown",
+  "episodic_db": "/mnt/raid0/llm/tmp/dar_snapshot/episodic.db"
+ },
+ "metric_direction": "success rate, higher is better; lift higher is better",
+ "seed": 20261109,
+ "alpha": 0.05,
+ "bootstrap": 2000,
+ "gap_threshold_pp": 5.0,
+ "matched_objectives": 64,
+ "legacy_all_obs_decisive_objectives": 32,
+ "total_routing_decisions": 62668,
+ "A_select_B_eval": {
+  "decisive_lift_pp": 24.400645,
+  "decisive_ci95_pp": [
+   7.154108,
+   37.585452
+  ],
+  "decisive_n_objectives": 10,
+  "decisive_weight": 4072,
+  "all_matched_lift_pp": 16.190936,
+  "all_matched_ci95_pp": [
+   3.62769,
+   27.34856
+  ],
+  "all_matched_n_objectives": 64,
+  "all_matched_weight": 6187,
+  "selection_null": {
+   "n_tested": 64,
+   "n_selected": 10,
+   "expected_by_chance": 3.2,
+   "p_selected_exceeds_null": 0.001237
+  }
+ },
+ "B_select_A_eval": {
+  "decisive_lift_pp": 21.280855,
+  "decisive_ci95_pp": [
+   6.977992,
+   36.982921
+  ],
+  "decisive_n_objectives": 11,
+  "decisive_weight": 3994,
+  "all_matched_lift_pp": 14.390813,
+  "all_matched_ci95_pp": [
+   3.866737,
+   25.019055
+  ],
+  "all_matched_n_objectives": 64,
+  "all_matched_weight": 6061,
+  "selection_null": {
+   "n_tested": 64,
+   "n_selected": 11,
+   "expected_by_chance": 3.2,
+   "p_selected_exceeds_null": 0.00031
+  }
+ },
+ "note": "decisive subset and best role chosen on one fold, lift scored on the disjoint other fold; selection needs gap>threshold AND exact binomial null (Bonferroni over roles) at alpha."
+}

@@ -1,0 +1,57 @@
+{
+ "docling": {
+  "arm": "docling",
+  "coverage": {
+   "failed_final": 0,
+   "ok": 200,
+   "untouched": 0
+  },
+  "kind": "final",
+  "label": "observation on the 200-PDF upstream corpus; failed docs censored, not zero; no routing/adoption decision",
+  "scores": {
+   "docs_scored": 200,
+   "median_s_per_doc": 1.25,
+   "mhs": 0.829495,
+   "nid": 0.90526,
+   "overall": 0.890984,
+   "teds": 0.924496
+  },
+  "ts": "2026-11-09T13:45:39Z",
+  "verdict": "COMPLETE"
+ },
+ "lighton": {
+  "arm": "lighton",
+  "coverage": {
+   "failed_final": 0,
+   "ok": 200,
+   "untouched": 0
+  },
+  "kind": "final",
+  "label": "observation on the 200-PDF upstream corpus; failed docs censored, not zero; no routing/adoption decision",
+  "scores": {
+   "docs_scored": 200,
+   "median_s_per_doc": 19.89,
+   "mhs": 0.787307,
+   "nid": 0.936398,
+   "overall": 0.896274,
+   "teds": 0.870395
+  },
+  "ts": "2026-11-09T14:50:21Z",
+  "verdict": "COMPLETE"
+ },
+ "odl_hybrid": {
+  "final": null,
+  "docs_ok": 199,
+  "docs_failed_attempt1": 1,
+  "pilot": {
+   "arm": "odl_hybrid",
+   "docs": 10,
+   "kind": "pilot",
+   "mean_s_per_doc": 0.56,
+   "note": "measured from this run's first docs; compare with the declared estimate_s",
+   "projected_total_s": 112,
+   "ts": "2026-11-09T13:40:36Z"
+  },
+  "note": "ended rc=75 partial-native-incomplete; no scoring"
+ }
+}

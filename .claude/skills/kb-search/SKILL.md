@@ -7,8 +7,8 @@ description: Semantic search over the project's compiled markdown knowledge base
 
 Use this skill when an Explore subagent or session would otherwise grep/find blindly across:
 
-- `wiki/` (24 compiled articles synthesizing 246 source documents)
-- `handoffs/active/` (~53 in-progress work items)
+- `wiki/` (compiled articles synthesizing the source documents; ~30 pages, see `wiki/INDEX.md`)
+- `handoffs/active/` (~40 in-progress work items, 2026-11-09)
 - `handoffs/completed/` (historical decisions still load-bearing)
 - `research/` (intake notes + deep-dives)
 - `progress/YYYY-MM/` (daily session summaries)

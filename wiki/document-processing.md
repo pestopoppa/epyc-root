@@ -519,3 +519,13 @@ For the approved 755-page English comparison, a retained-evidence inventory clas
 - **Smoke status:** three smoke attempts failed in sequence on environment layers (paddlex wanting `opencv-contrib`, a read-only bootstrap directory, then `PermissionError: /dev/null` inside the write fence). The last is fixed by root `8b3706f3b` (`job_fence` fence mode allows `/dev/null`); the row still needs a republish.
 
 Sources: [knowledge-pipelines handoff](../handoffs/active/knowledge-pipelines.md) · [P-DOCPARSE-1 draft](../artifacts/operator/p-docparse-1-annex-draft-20261107.md) · [operator-adhoc-ops progress](../progress/2026-11/2026-11-07-operator-adhoc-ops-20261105.md)
+
+## Compiled Update — 2026-11-09 (night: docling, LightOnOCR and ODL-hybrid arms on the 200-PDF corpus)
+
+**Confidence: verified** (arm result files filed this day; observations, no adoption decision follows from one arm).
+
+- **Docling and LightOnOCR-2-1B land within 0.6 points overall.** On the 200 single-page PDFs (upstream evaluator, higher = better): docling 2.91.0 overall 0.8910 (NID 0.9053, TEDS 0.9245, MHS 0.8295, median 1.25 s per document); LightOnOCR-2-1B F16 on the v10 CPU kernel overall 0.8963 (NID 0.9364, TEDS 0.8704, MHS 0.7873, median 19.89 s per document). LightOnOCR reads order better; docling wins tables and headings at roughly 16x lower latency. Both exceed the ODL-013 r2 LiteParse overall of 0.8804; no paired per-document interval has been computed yet.
+- **The ODL-hybrid arm has no result.** It stopped at rc 75 with 199 of 200 documents parsed and one empty prediction never retried, so no scoring ran; it needs a resumable re-run. The marker arm is still ungranted.
+- **Why the OCR arm costs time:** 43 of the 200 documents are flagged `needs_ocr`, which the earlier four arms never exercised.
+
+Sources: [knowledge-pipelines parser-quality box](../handoffs/active/knowledge-pipelines.md) · [parser arm scores](../artifacts/compute/filed-rows-20261109/parser-arms/parser-scores.json) · [ODL-013 r2 report](../artifacts/compute/pip04-odl013-r2-20261107/report.md)

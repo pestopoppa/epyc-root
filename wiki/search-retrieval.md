@@ -1667,3 +1667,13 @@ Sources: [ColBERT reranker web research](../handoffs/active/knowledge-pipelines.
 - **G13 ticked** with the matched baseline 0.367857 recall@10 as comparator (best arm +0.007143, below the +0.02 trigger); the historical 0.5690 baseline used a different corpus and is unassessable. **PREFIX-3 ticked as completed by PREFIX-4**: 44 cosine-computable rows, LateOn 22 PASS (max per-token divergence 0.001205), Reason 19 PASS / 3 NUMERIC_FAIL (max 0.012337 vs the unchanged 1e-2 threshold); the older 8.24e-03 / 2.72e-03 figures stay unusable. This is parity evidence, not an adoption verdict.
 
 Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md)
+
+## Compiled Update — 2026-11-09 (night: KB RAG qd-v2 rebuild and cutover)
+
+**Confidence: verified** (row result file and orchestrator main; the live-consumer sync is not yet done).
+
+- **The KB RAG index is rebuilt under the qd-v2 convention.** A fresh `index-qd-v2` holds 52,436 chunks (catalog rows equal manifest chunks), stamped qd-v2, and the probe query for the DeepSeek V4.1 Flash evaluation handoff returns it at rank 2. The first attempt's encode unit was terminated and the resumed run finished in 104 s. Orchestrator main merges the cutover (`DEFAULT_INDEX_DIR` to `index-qd-v2`), and the post-commit hook now surfaces a convention mismatch instead of swallowing it.
+- **A merged cutover does not repoint live consumers.** The shared orchestrator clone still reads `index-qd-v1` until it is synced, so its update hook and `kb_rag.query` keep failing there. By content the new catalog covers 38 of the 39 current active handoffs.
+- **A convention bump must ship with its rebuild row and a freshness signal**; the 2,156 swallowed hook errors accumulated for nine days because the failure was non-fatal.
+
+Sources: [PIP04-KB-INDEX-BREAK box](../handoffs/active/knowledge-pipelines.md) · [rebuild result](../artifacts/compute/filed-rows-20261109/kb-rag-qd-v2-rebuild/RESULT.json) · [apr2 prep-kbctx progress](../progress/2026-11/2026-11-09-apr2-prep-kbctx.md)

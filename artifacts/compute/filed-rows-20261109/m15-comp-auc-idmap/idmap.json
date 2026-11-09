@@ -1,0 +1,130 @@
+{
+ "measurement_note": "OBSERVATION per MEASUREMENT.md \u2014 no protocol-id/attestation; gates only this research line's keep/close decision, not production deploy.",
+ "snapshot_provenance": "M-15 snapshot 2026-11-09T13:34:16Z of /mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions\n{\n \"episodic.db\": \"e4c82f6be0af52461ed91c314dbf2a5be8c0c02d55df5eaecd454a0b94cf5bbe\",\n \"embeddings.faiss\": \"4e4eabf5fab311e17ee5d913148a42a5f902151720df770c79afdd6c1be43615\",\n \"id_map.npy\": \"39512fd18b7d5b088eb4f50f09e6cd67037b162a22319f7a0dfce0c7dc86c6ed\"\n}\n",
+ "n_objectives_canonical": 7576,
+ "n_counterfactual_objectives": 5431,
+ "n_disagreement_objectives": 1438,
+ "roles_with_bank": [
+  "architect_general",
+  "coder_escalation",
+  "frontdoor",
+  "ingest_long_context",
+  "toolrunner",
+  "worker_general",
+  "worker_math",
+  "worker_vision"
+ ],
+ "headline_auc_success_given_role_counterfactual": 0.591291,
+ "verdict": "WEAK/INCONCLUSIVE \u2014 0.55<AUC<0.65 (0.591): no decisive spread; do not wire.",
+ "auc_counterfactual": {
+  "pooled_auc": 0.591291,
+  "n_instances": 23955,
+  "base_rate": 0.712628,
+  "per_role": {
+   "worker_general": {
+    "n": 4349,
+    "auc": 0.632021,
+    "base_rate": 0.645436
+   },
+   "coder_escalation": {
+    "n": 4884,
+    "auc": 0.575933,
+    "base_rate": 0.717649
+   },
+   "ingest_long_context": {
+    "n": 4826,
+    "auc": 0.616065,
+    "base_rate": 0.728761
+   },
+   "architect_general": {
+    "n": 4798,
+    "auc": 0.567567,
+    "base_rate": 0.744477
+   },
+   "frontdoor": {
+    "n": 5028,
+    "auc": 0.565468,
+    "base_rate": 0.716786
+   },
+   "worker_vision": {
+    "n": 63,
+    "auc": 0.57377,
+    "base_rate": 0.968254
+   },
+   "worker_math": {
+    "n": 6,
+    "auc": 0.6,
+    "base_rate": 0.833333
+   },
+   "toolrunner": {
+    "n": 1,
+    "auc": null,
+    "base_rate": 0.0
+   }
+  },
+  "macro_auc": 0.590118
+ },
+ "auc_all_objectives": {
+  "pooled_auc": 0.596487,
+  "n_instances": 26099,
+  "base_rate": 0.727959,
+  "per_role": {
+   "worker_general": {
+    "n": 4790,
+    "auc": 0.633664,
+    "base_rate": 0.665762
+   },
+   "coder_escalation": {
+    "n": 5151,
+    "auc": 0.581531,
+    "base_rate": 0.728596
+   },
+   "ingest_long_context": {
+    "n": 5000,
+    "auc": 0.623489,
+    "base_rate": 0.7364
+   },
+   "architect_general": {
+    "n": 5028,
+    "auc": 0.574529,
+    "base_rate": 0.753779
+   },
+   "frontdoor": {
+    "n": 5938,
+    "auc": 0.571733,
+    "base_rate": 0.741159
+   },
+   "worker_vision": {
+    "n": 165,
+    "auc": 0.576087,
+    "base_rate": 0.975758
+   },
+   "worker_math": {
+    "n": 26,
+    "auc": 0.507246,
+    "base_rate": 0.884615
+   },
+   "toolrunner": {
+    "n": 1,
+    "auc": null,
+    "base_rate": 0.0
+   }
+  },
+  "macro_auc": 0.581183
+ },
+ "auc_in_sample_sanity": {
+  "pooled_auc": 0.998513,
+  "note": "no leave-one-out; expected ~1.0 (leakage anchor)"
+ },
+ "argmax_accuracy_disagreement_subset": {
+  "n": 1438,
+  "argmax_comp_accuracy": 0.599444,
+  "most_frequent_role_baseline": 0.912378
+ },
+ "argmax_accuracy_counterfactual_set": {
+  "n": 5431,
+  "argmax_comp_accuracy": 0.885656,
+  "most_frequent_role_baseline": 0.975511
+ },
+ "row_level_robustness": null
+}

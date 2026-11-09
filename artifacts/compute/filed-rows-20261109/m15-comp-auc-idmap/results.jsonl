@@ -1,0 +1,4 @@
+{"unit_id": "start-1794231255", "ok": true, "affinity": 24}
+{"unit_id": "snapshot", "ok": true, "sha256": {"episodic.db": "e4c82f6be0af52461ed91c314dbf2a5be8c0c02d55df5eaecd454a0b94cf5bbe", "embeddings.faiss": "4e4eabf5fab311e17ee5d913148a42a5f902151720df770c79afdd6c1be43615", "id_map.npy": "39512fd18b7d5b088eb4f50f09e6cd67037b162a22319f7a0dfce0c7dc86c6ed"}, "elapsed_s": 1}
+{"unit_id": "idmap", "ok": true, "rc": 0, "elapsed_s": 7, "pooled_auc": 0.591291, "insample_auc": 0.998513, "n_counterfactual_objectives": 5431, "verdict": "WEAK/INCONCLUSIVE \u2014 0.55<AUC<0.65 (0.591): no decisive spread; do not wire."}
+{"unit_id": "control", "ok": true, "rc": 0, "elapsed_s": 7, "pooled_auc": 0.591291, "insample_auc": 0.998513, "n_counterfactual_objectives": 5431, "verdict": "WEAK/INCONCLUSIVE \u2014 0.55<AUC<0.65 (0.591): no decisive spread; do not wire."}
