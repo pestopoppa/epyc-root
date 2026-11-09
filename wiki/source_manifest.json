@@ -4,7 +4,7 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1377,
+    "progress": 1382,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
@@ -15,7 +15,7 @@
       "changed": 5,
       "removed": 0
     },
-    "at": "2026-11-09T21:15:27Z",
+    "at": "2026-11-09T21:19:17Z",
     "scope_paths": [
       "docs/guides/agent-workflows/compute-fillers.md",
       "handoffs/active/autokernel-akx-program.md",
@@ -26,9 +26,9 @@
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T21:15:27Z",
+  "scan_time": "2026-11-09T21:19:17Z",
   "schema_version": 1,
-  "source_set_hash": "fca8180876fcc19c7b9318ab0a4accee7fde326faafb9edfd6a9ad1833269f0d",
+  "source_set_hash": "7b2a67ca5d81d0ed0056da93e5352ec86193c9430854870958478e91cfd74ff7",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -103,10 +103,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "af84b60534e3a63e4360fc296d79756e05a344e7c95ea31d630599dbb06ba1b1",
-      "modified": "2026-11-09T14:32:55Z",
+      "content_hash": "d5ec20659ce4a712939b1ca3d0cb5a4e62bd42ba11c07e3bc9b95d2de02c56e9",
+      "modified": "2026-11-09T21:13:24Z",
       "path": "handoffs/active/engineering-hygiene-backlog.md",
-      "size": 447184,
+      "size": 455071,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -143,10 +143,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9acfcb03fe332a6b7f566fd8d93341af798e6cd80c9979e6867001edf5bc7802",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "b07d1f4a6c5db902c1d7820a7be116c4bc367ba3df94e8331a82e9403d509fcc",
+      "modified": "2026-11-09T21:13:10Z",
       "path": "handoffs/active/knowledge-pipelines.md",
-      "size": 425155,
+      "size": 456960,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -167,10 +167,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fcbf71dbe539de4f09572dc03a122a72c522f0219a16337ee1f39ff7af56642a",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "921ad0c217e8fe8ae9e29de40a3051ef2d2292abfbf8cc0852617c75536a4d62",
+      "modified": "2026-11-09T21:13:10Z",
       "path": "handoffs/active/memory-program.md",
-      "size": 274719,
+      "size": 301145,
       "title": "Episodic Memory Integrity \u2014 2026-07-05 corruption, root cause and repair",
       "type": "handoff-active"
     },
@@ -263,10 +263,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "9806f9080a56a2a8f415ba178ed152d91165867150a417d082ff18629a9e9378",
-      "modified": "2026-11-09T21:14:16Z",
+      "content_hash": "983f5e63372ecb4d1a8bbc1df61aa8651ad3e023daf5cc80763c5d8aea9059e8",
+      "modified": "2026-11-09T21:18:39Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 1019516,
+      "size": 1021674,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -16599,6 +16599,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "62a424c6b2d3b2acfab9416097cd73c3a45b8bcd19cf66c070a227cdcfcb7979",
+      "modified": "2026-11-09T21:12:04Z",
+      "path": "progress/2026-11/2026-11-09-apr2-rerun-fixes.md",
+      "size": 1347,
+      "title": "2026-11-09 apr2 rerun-fixes",
+      "type": "progress"
+    },
+    {
       "content_hash": "95f00224f8f6fc953c6f4f8bfa417f55df36d41e709443724ed77a726ddae36b",
       "modified": "2026-11-09T15:50:43Z",
       "path": "progress/2026-11/2026-11-09-apr2-rtg02-code.md",
@@ -16655,10 +16663,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "efa2c07fd51bd2bfbf346d01110d0f9df377f89f234efeee07d03baef3a42570",
-      "modified": "2026-11-09T21:14:59Z",
+      "content_hash": "45c17bb4721fe95d954d8811fae0c63947f1fa06d2151ba9d6e6ed023ac8f31d",
+      "modified": "2026-11-09T21:17:49Z",
       "path": "progress/2026-11/2026-11-09-autokernel.md",
-      "size": 7322,
+      "size": 7361,
       "title": "2026-11-09 AutoKernel",
       "type": "progress"
     },
@@ -16703,6 +16711,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "bbaec16e3f1a5019d306b90c0b09b2e07ac62007f81f7cfb1cb35c9527cafe94",
+      "modified": "2026-11-09T21:12:04Z",
+      "path": "progress/2026-11/2026-11-09-dri-r5.md",
+      "size": 1214,
+      "title": "2026-11-09 dri-r5: D-RI-PREVIEW-1.1-R5 predeclared and published",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e69f64e7ed78877e406e28611dbb5905109d1da0d927c0486d395f2528d65af8",
+      "modified": "2026-11-09T21:12:04Z",
+      "path": "progress/2026-11/2026-11-09-file-five-rows.md",
+      "size": 1661,
+      "title": "2026-11-09 filing five ended keeper rows",
+      "type": "progress"
+    },
+    {
       "content_hash": "5b33d36a7510619377fe4b0e72edf9f505dc01e956a016f5fac403f888bfde08",
       "modified": "2026-11-09T10:41:00Z",
       "path": "progress/2026-11/2026-11-09-main-inf22.md",
@@ -16711,11 +16735,27 @@
       "type": "progress"
     },
     {
+      "content_hash": "305fd496ba431afb3f9ce63e35f901e847a64e5ffac3e1c31a7b7947255b04f1",
+      "modified": "2026-11-09T21:12:04Z",
+      "path": "progress/2026-11/2026-11-09-r18d-r4.md",
+      "size": 1742,
+      "title": "2026-11-09 R18-D r4: clock band verdict and trace",
+      "type": "progress"
+    },
+    {
       "content_hash": "8cc75bcab66965966da0ec8c297453e14a943edd0696f903742670e25bda94e8",
       "modified": "2026-11-09T16:22:17Z",
       "path": "progress/2026-11/2026-11-09-rock-aiter-file.md",
       "size": 1258,
       "title": "2026-11-09 ROCK-AITER-GFX90A step 2: packet A filed, packet B made publishable",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3880d1f267ad1ebedd1831c882bafb02a08248238704dabca9d12fed9d2202ca",
+      "modified": "2026-11-09T21:15:30Z",
+      "path": "progress/2026-11/2026-11-09-wrapup-fin.md",
+      "size": 2480,
+      "title": "2026-11-09 Autopilot-backlog session wrap-up (final)",
       "type": "progress"
     },
     {
@@ -20375,7 +20415,7 @@
       "type": "handoff-completed"
     }
   ],
-  "total_new": 2543,
+  "total_new": 2548,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
