@@ -2916,7 +2916,7 @@
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
       "line": 16,
-      "next_action": "Disk LOOP-21/22; host-run backup BK-1/2/4; prove NIB2-102.b at next stack start; refactor after promotion + AutoPilot",
+      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
       "track": "non inference backlog"
     },
     "RTG-34": {

@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:18:06Z",
+  "generated_at": "2026-11-09T15:20:57Z",
   "nodes": [
     {
       "age_days": 6,
@@ -3266,7 +3266,7 @@
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-09",
-      "next_action": "Disk LOOP-21/22; host-run backup BK-1/2/4; prove NIB2-102.b at next stack start; refactor after promotion + AutoPilot",
+      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
       "open": 83,
       "priority": 0.8844,
       "priority_basis": {

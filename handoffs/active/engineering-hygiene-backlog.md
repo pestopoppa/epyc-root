@@ -1058,7 +1058,7 @@ Queue ownership: INF-26 arm-P2 is complete and its stale rank entry was removed 
 ## 2026-10-28 loop redesign follow-ons (workspace-58)
 
 - [x] **LOOP-1**: keeper v2 READY auto-arming (zero-token daemon arms `ready/*.json`). ✅ 2026-10-28 — keeper v2 live, superseded same day by v3 (queues into the ACTIVE day) and v4 (GPU rows check every named CPU quarter). Contract: `/mnt/raid0/llm/tmp/compute-flags/LOOP-CONTRACT.md`. [no-belief: tooling-repair]
-- [x] **LOOP-2**: `backlog_priority` `kind` field plus inference-prep ranking (in progress). [no-belief: tooling-repair] (workspace-f2 audit 2026-11-09: landed in scripts/handoffs/backlog_priority.py; kind field and prep band confirmed)
+- [x] **LOOP-2**: `backlog_priority` `kind` field plus inference-prep ranking. [no-belief: tooling-repair] (workspace-f2 audit 2026-11-09: landed in scripts/handoffs/backlog_priority.py; kind field and prep band confirmed)
 - **[declined: workspace-f2 audit 2026-11-09: no code sender remains and the last channel files date from 11-01; operator retired it]** **LOOP-3**: retire OWNER-REPLY/owner-reply relays once `ready/` flows. [no-belief: tooling-repair]
 - **[declined: workspace-f2 audit 2026-11-09: HIL15 lane is dormant, one v5 candidate already exits rc75, and the box no longer names a runnable launcher; operator asked to resolve or retire]** **LOOP-4**: HIL15 v5 window-end must exit rc75, not rc1. [no-belief: tooling-repair]
 - [ ] **LOOP-5**: daily loop metrics (decision results/day, idle-h, failed-at-entry rate, operator msgs). [no-belief: tooling-repair]

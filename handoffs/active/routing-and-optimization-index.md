@@ -13,7 +13,7 @@
 | RTG-02 | autopilot continuous optimization | [autopilot-program.md](autopilot-program.md) | Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script | — |
 | RTG-08 | context folding progressive | [context-and-token-economy.md](context-and-token-economy.md) | Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 and CTX-HO-3 are standalone | — |
 | RTG-09 | decision aware routing | [routing-program.md](routing-program.md) | DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1 | — |
-| RTG-22 | non inference backlog | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | Disk LOOP-21/22; host-run backup BK-1/2/4; prove NIB2-102.b at next stack start; refactor after promotion + AutoPilot | — |
+| RTG-22 | non inference backlog | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot | — |
 | RTG-34 | session bus thin dispatcher | [coordination-and-churn-pipeline.md](coordination-and-churn-pipeline.md) | Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1 | — |
 | RTG-100 | churn pipeline | [churn-pipeline.md](churn-pipeline.md) | Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action | RTG-34 |
 | RTG-36 | stack change governance pipeline | [stack-lifecycle-program.md](stack-lifecycle-program.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER | — |
