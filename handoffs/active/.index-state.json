@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 486
+      "open": 485
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 286,
+      "closed": 287,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 80,
+      "open": 79,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -860,13 +860,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 175,
+          "closed": 176,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 38
+          "open": 37
         },
         {
           "blocked": 0,
@@ -1050,9 +1050,9 @@
     },
     "frontier-lab-automation.md": {
       "blocked": 0,
-      "closed": 79,
+      "closed": 80,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-09",
       "open": 2,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -1062,7 +1062,7 @@
       },
       "row_id": "EVL-29",
       "state": "active",
-      "total": 81,
+      "total": 82,
       "tracks": [
         {
           "blocked": 0,
@@ -1076,7 +1076,7 @@
         },
         {
           "blocked": 0,
-          "closed": 1,
+          "closed": 2,
           "gates": [],
           "guarded": 0,
           "line": 384,
@@ -1089,7 +1089,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 483,
+          "line": 485,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 0
@@ -1099,7 +1099,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 566,
+          "line": 568,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 0
@@ -1109,7 +1109,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 758,
+          "line": 760,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 0
@@ -2235,7 +2235,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1490,
+          "line": 1491,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2248,7 +2248,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2646,
+          "line": 2648,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2258,7 +2258,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3018,
+          "line": 3020,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2268,7 +2268,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3531,
+          "line": 3533,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 2
@@ -2278,7 +2278,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 3626,
+          "line": 3628,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 4
@@ -2701,7 +2701,7 @@
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
       "line": 16,
-      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); Flash rerun queued, then archive",
+      "next_action": "File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed",
       "track": "intake derived work 2026 07 25"
     },
     "EVL-47": {
@@ -2827,7 +2827,7 @@
       "id": "INF-82",
       "index": "inference-research-index.md",
       "line": 17,
-      "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
+      "next_action": "Run ak-q38fn-reaper-diag-c9-20261109 (>=19:30Z), then re-run Q38FN floor; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "track": "autokernel akx program (keep gate + all dims)"
     },
     "INF-83": {
@@ -2916,7 +2916,7 @@
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
       "line": 16,
-      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
+      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
       "track": "non inference backlog"
     },
     "RTG-34": {

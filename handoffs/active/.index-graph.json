@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:51:42Z",
+  "generated_at": "2026-11-09T15:57:42Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1361,17 +1361,17 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 79,
+      "closed": 80,
       "dispatchable": 2,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
-      "last_advanced": "2026-11-07",
-      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); Flash rerun queued, then archive",
+      "last_advanced": "2026-11-09",
+      "next_action": "File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed",
       "open": 2,
       "priority": 0.6474,
       "priority_basis": {
@@ -1412,7 +1412,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 483,
+          "line": 485,
           "name": "frontier-f2-self-running-lab",
           "open": 0,
           "readiness": "no_open"
@@ -1421,7 +1421,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 566,
+          "line": 568,
           "name": "frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -1430,7 +1430,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 758,
+          "line": 760,
           "name": "stale-open-audit-2026-07-18",
           "open": 0,
           "readiness": "no_open"
@@ -1849,7 +1849,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1490,
+          "line": 1491,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1864,7 +1864,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2646,
+          "line": 2648,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1873,7 +1873,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3018,
+          "line": 3020,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1882,7 +1882,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3531,
+          "line": 3533,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3626,
+          "line": 3628,
           "name": "llama-cpp-dsa-contribution",
           "open": 4,
           "readiness": "ready"
@@ -2438,7 +2438,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-09",
-      "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
+      "next_action": "Run ak-q38fn-reaper-diag-c9-20261109 (>=19:30Z), then re-run Q38FN floor; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "open": 67,
       "priority": 0.0021,
       "priority_basis": {
@@ -3259,15 +3259,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 286,
-      "dispatchable": 80,
+      "closed": 287,
+      "dispatchable": 79,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-09",
-      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
-      "open": 80,
+      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
+      "open": 79,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3287,11 +3287,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 38,
+          "dispatchable": 37,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 38,
+          "open": 37,
           "readiness": "ready"
         },
         {
