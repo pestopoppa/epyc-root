@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T11:31:41Z",
+  "generated_at": "2026-11-09T11:36:47Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1354,7 +1354,7 @@
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
       "last_advanced": "2026-11-07",
-      "next_action": "Re-open ID-3/AP-21 on corrected trial support; W3 reliability ladder stays open; ID-14 now AK-CONT-* in autokernel-loop.md",
+      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); W3 ladder needs live shadow verdicts",
       "open": 2,
       "priority": 0.6474,
       "priority_basis": {
@@ -3192,14 +3192,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 257,
-      "dispatchable": 106,
+      "dispatchable": 104,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-09",
       "next_action": "Disk LOOP-21/22; merge reviewed refactor twins; land NI branches; prove NIB2-102.b at next stack start; rowflow: Pipeline",
-      "open": 106,
+      "open": 104,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3219,11 +3219,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 59,
+          "dispatchable": 57,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 59,
+          "open": 57,
           "readiness": "ready"
         },
         {

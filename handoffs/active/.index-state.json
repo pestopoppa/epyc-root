@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 509
+      "open": 507
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -811,7 +811,7 @@
       "closed": 257,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 106,
+      "open": 104,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -820,7 +820,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 363,
+      "total": 361,
       "tracks": [
         {
           "blocked": 0,
@@ -830,7 +830,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 59
+          "open": 57
         },
         {
           "blocked": 0,
@@ -2655,7 +2655,7 @@
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
       "line": 16,
-      "next_action": "Re-open ID-3/AP-21 on corrected trial support; W3 reliability ladder stays open; ID-14 now AK-CONT-* in autokernel-loop.md",
+      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); W3 ladder needs live shadow verdicts",
       "track": "intake derived work 2026 07 25"
     },
     "EVL-47": {
