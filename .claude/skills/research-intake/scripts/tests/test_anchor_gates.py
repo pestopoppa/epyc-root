@@ -112,6 +112,22 @@ class AnchorGate(unittest.TestCase):
         f, _ = self.run_anchors([e])
         self.assertTrue(v.check_anchor_marks([e], f))
 
+    def test_source_absent_from_root_writes_no_mark(self):
+        import os
+        e = self.entry("intake-9", self.VERBATIM)
+        old = os.environ.get("EPYC_VIDYA_RAW_ANCHOR_ROOT")
+        with tempfile.TemporaryDirectory() as other:
+            os.environ["EPYC_VIDYA_RAW_ANCHOR_ROOT"] = other
+            try:
+                f, _ = v.check_anchors([e])
+            finally:
+                if old is None:
+                    os.environ.pop("EPYC_VIDYA_RAW_ANCHOR_ROOT")
+                else:
+                    os.environ["EPYC_VIDYA_RAW_ANCHOR_ROOT"] = old
+        self.assertEqual(f[0]["verdict"], "source_unavailable")
+        self.assertIsNone(f[0]["anchor_mark"])
+
     def test_write_marks_textual(self):
         f, _ = self.run_anchors([self.entry("intake-8", self.VERBATIM)])
         f[0]["quote_sha256"] = sha(self.VERBATIM)

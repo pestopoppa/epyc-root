@@ -737,7 +737,10 @@ def check_anchors(entries: list[dict]) -> tuple[list[dict], list[str]]:
                 continue
             ok, why = verify_source_anchor(a, entry_url=e.get("url") if isinstance(e.get("url"), str) else None)
             art = a["source_artifact"]
-            if not ok and why.startswith("unknown: no artifact root"):
+            # Only a quote actually re-read and not found may write found:false. Any other failure means
+            # the original could not be checked here (root holds other sources, extractor changed), and
+            # must not overwrite an existing mark.
+            if not ok and why not in ANCHOR_CHECKED_NOT_FOUND:
                 f.update(verdict="source_unavailable", detail=why)
                 continue
             f["anchor_mark"] = {"verifier": ANCHOR_VERIFIER_ID,
@@ -751,6 +754,10 @@ def check_anchors(entries: list[dict]) -> tuple[list[dict], list[str]]:
             if not f["grandfathered"]:
                 errs.append(f"{f['entry']}: claim_anchors[{f['index']}] {f['verdict']}: {f['detail']}")
     return findings, errs
+
+
+ANCHOR_CHECKED_NOT_FOUND = ("unknown: quoted span is absent from the extracted original",
+                            "unknown: normalized quote digest does not match")
 
 
 def write_anchor_marks(index_path: Path, findings: list[dict]) -> int:
