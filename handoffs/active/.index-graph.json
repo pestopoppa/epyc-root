@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T01:24:31Z",
+  "generated_at": "2026-11-09T01:37:02Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2036,15 +2036,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 183,
-      "dispatchable": 50,
+      "closed": 184,
+      "dispatchable": 49,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-09",
       "next_action": "Champion is C8 1bda248e3; assemble C9: DSpine comparison, IQ4_NL kernel, serial fix, headroom profile",
-      "open": 51,
+      "open": 50,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2078,7 +2078,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 45,
+          "dispatchable": 44,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2087,14 +2087,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 46,
+          "open": 45,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1663,
+          "line": 1664,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2103,7 +2103,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1787,
+          "line": 1788,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2112,7 +2112,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2112,
+          "line": 2113,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2121,7 +2121,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2251,
+          "line": 2252,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2130,7 +2130,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2807,
+          "line": 2808,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2142,7 +2142,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2947,
+          "line": 2948,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2154,7 +2154,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2954,
+          "line": 2955,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
