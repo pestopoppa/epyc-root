@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T09:38:51Z",
+  "generated_at": "2026-11-09T09:52:19Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1888,15 +1888,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 126,
-      "dispatchable": 30,
+      "closed": 128,
+      "dispatchable": 28,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-09",
       "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
-      "open": 32,
+      "open": 30,
       "priority": 0.9769,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-gnx-r2-nativeproof-20261026: harness fix: original native read-onl",
@@ -1939,14 +1939,14 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "dispatchable": 20,
+          "dispatchable": 18,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "line": 734,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 21,
+          "open": 19,
           "readiness": "blocked"
         }
       ]
