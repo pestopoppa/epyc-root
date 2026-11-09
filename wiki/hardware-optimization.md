@@ -7160,3 +7160,15 @@ Sources: [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-
 - **C8 fold base `eeab978ac`** = C7r + GDN chunked + LCATTN target A, conflict-free merges, CPU test-backend-ops all pass; the whole-candidate gate (C8-FOLD-GATE) is published only after LCATTN r3 keeps.
 
 Sources: [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md) · [2026-11-07 main-inf22](../progress/2026-11/2026-11-07-main-inf22.md)
+
+## Compiled Update — 2026-11-09 (operator wiki sweep, autokernel): C9 fold, closed bandwidth levers, profiler limits, LB3.2
+
+Sources: `handoffs/active/kernel-champion-and-promotion.md`, `handoffs/active/autokernel-akx-program.md`, `handoffs/active/autokernel-loop.md`, `handoffs/active/speculative-decoding.md`, `progress/2026-11/2026-11-08-autokernel.md`, `progress/2026-11/2026-11-09-autokernel.md`.
+
+- **Champion is C9 `d210f85c2`** (C8 `1bda248e3` + serial np4 fix + FA prefetch overlap on). Production stays v10 by operator decision. Fold gate on 27B Q8_0, q8_0 KV: tg128@d131072 1.106x and @d32768 1.045x (llama-bench np1, no draft, depth = KV prefill); np4 DFlash2@d32768 1.031x median (LongHealth RAG x4, accept 0.66, gate shape, not serving). The prefetch overlap alone missed its own 1.10x keep bar (27B d131072 1.099x, A3B 1.048x); the operator accepted the fold.
+- **Closed GPU levers:** one-pass q8wv at M=36 was about 26% slower than `mul_mat_q` (0.74x, first three pairs), so q8wv's v9 HBM rate does not extend to wide batches. DFlash2 verify `q8wv_mul_mat` closed at the ISA gate with no A/B: estimated 1.05-1.10x at d8192, and a second live load set reaches 128 VGPRs with scratch. Comparing it with `mul_mat_vec_q`'s 82% HBM is not like-for-like (M=1). More FA splits are slower (27B gv ratio 1x/4x/8x 1.014/0.942/0.899).
+- **Closed CPU lever:** the Q38FN IQ4_NL MoE kernel lost its first pair (0.935, pp512) because those tensors already use AVX2 `iq4_nl_8x8_q8_0` CPU_REPACK. A port must beat repack, not native per-row dot.
+- **Do not cite CPU profiler bandwidth as read:** expert bytes are logical (n_used x n_tokens x nb02, about 27x overcount), so `read_frac` and `compute_bound_fraction` from those RESULT.json files are artefacts. The distinct-byte counter still disagrees with the offline method by 26-38%.
+- **48 SMT threads gave no gain over 24** on Q38FN UD-IQ4_XS (one quarter, llama-bench, pp2048 13487 vs 13386 ms, tg64 75.7 vs 76.6 ms per graph; pp512 unstable).
+- **`LLAMA_SPEC_EXACT=serial` assert was a shared-batch bug:** serial `llama_decode` overwrote the batch logits used by the next slot; fixed and proven at np4, 32 requests.
+- **CPU long-context lane is undecided (LB3.2):** median-overhead pair lb32-c8m-20261109 was PAIR_ORDER_SENSITIVE (GM LANE_LARGE, max F 10.14%; MG SPLIT_UNRESOLVED, max F 9.35%). Both orders had max S about 52% and seed `node:norm`, so the FA share sits at the rule's 10% line and depth-growing cost outside FA is about half. Two-run description, no gain claim; futility stop, no retry.
