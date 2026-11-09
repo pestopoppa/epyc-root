@@ -2685,7 +2685,7 @@
       "id": "INF-45",
       "index": "inference-research-index.md",
       "line": 24,
-      "next_action": "P0-3 \u2014 cold-start the stack, re-bench the contention matrix, commit + push all three repos",
+      "next_action": "No cutover work remains (P0-3 closed 2026-10-29); next P1-4, P1-8, REGION-SIBLING-1, WP-15.2, then P2-2 anchors",
       "track": "numa topology cutover resume"
     },
     "INF-48": {
@@ -2705,7 +2705,7 @@
       "id": "INF-50",
       "index": "inference-research-index.md",
       "line": 26,
-      "next_action": "Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes)",
+      "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
       "track": "speculative decoding mtp refresh"
     },
     "INF-59": {
@@ -2792,7 +2792,7 @@
       "id": "INF-83",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion",
+      "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "track": "v11 promotion checklist"
     },
     "INF-84": {

@@ -15,15 +15,15 @@
 | INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target | INF-48, EVL-47 |
 | INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request | INF-06, INF-50 |
 | INF-82 | autokernel akx program (keep gate + all dims) | [autokernel-akx-program.md](autokernel-akx-program.md) | Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census | INF-06, INF-65 |
-| INF-83 | v11 promotion checklist | [v11-promotion-checklist.md](v11-promotion-checklist.md) | Keep the v11 runbook current: log each champion CAS carry-in (C7r: V11-124); boxes close only at promotion | INF-65 |
+| INF-83 | v11 promotion checklist | [v11-promotion-checklist.md](v11-promotion-checklist.md) | Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion | INF-65 |
 | INF-84 | workspace-58 champion calibration | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) | Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands | INF-65 |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-65 |
 | INF-77 | deepseek v41 flash evaluation | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) | W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit | INF-48, RTG-58 |
 | INF-79 | conversation stack (speech) | [speech-and-multimodal.md](speech-and-multimodal.md) | Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions | — |
 | INF-80 | exl3 cpu mi210 implementation | [quantization-and-low-bit.md](quantization-and-low-bit.md) | EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin | — |
-| INF-45 | numa topology cutover resume | [numa-placement-and-contention.md](numa-placement-and-contention.md) | P0-3 — cold-start the stack, re-bench the contention matrix, commit + push all three repos | — |
+| INF-45 | numa topology cutover resume | [numa-placement-and-contention.md](numa-placement-and-contention.md) | No cutover work remains (P0-3 closed 2026-10-29); next P1-4, P1-8, REGION-SIBLING-1, WP-15.2, then P2-2 anchors | — |
 | INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | Repair audited C6 carriers, wire oracle/Ghost boundary | EVL-47 |
-| INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | Bind DF2-EXL3 target on REVISION; file writer-race r4 at .ended; run CAFE-2 r2 and DF2-13-CLASSIFY (main-inf22 owns MI210 boxes) | — |
+| INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3 | — |
 | INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); ≥256k YaRN parked until C8-1 | RTG-58 |
 ## Cross-domain
 
