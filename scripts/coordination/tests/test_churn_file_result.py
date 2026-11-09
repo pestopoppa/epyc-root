@@ -530,5 +530,116 @@ class TestKeepTailOnRealIds(Base):
         self.assertNotIn("keep_tail", self.verdict("stt5-device-declare-cpu-r1"))
         self.assertFalse(Path(self.flags, "filing-done", "keep_tail_counter.jsonl").exists())
 
+
+class TestNoManifestMode(Base):
+    """RTG-22: --no-manifest closes legacy rows that never had an epyc.row.v3 manifest; off by default."""
+
+    def legacy(self, rid, rc=0, end=".ended"):
+        Path(self.flags, "grants", rid + end).write_text(f"rc={rc} time=2026-10-25T00:00:00Z reason=complete\n")
+
+    def test_supersede_record_shape(self):
+        self.legacy("old-1", rc=6)
+        code, out, err = self.run_main("old-1", "--no-manifest", "--owner", "workspace-f2", "--verdict", "SUPERSEDED",
+                                       "--superseded-by", "old-1-r2", "--filed-by", "workspace-f2", "--no-reclaim")
+        self.assertEqual(code, 0, err)
+        v = self.verdict("old-1")
+        self.assertTrue(self.filed("old-1"))
+        self.assertIsNone(v["manifest"])
+        self.assertIs(v["legacy_no_manifest"], True)
+        self.assertEqual((v["owner"], v["filed_by"], v["rc"], v["superseded_by"], v["row_verdict"]),
+                         ("workspace-f2", "workspace-f2", 6, "old-1-r2", "SUPERSEDED"))
+        self.assertEqual(v["outcome_class"], "LEGACY-NO-MANIFEST")  # not a credited/debited class in science_scoreboard
+        self.assertEqual(v["verdict"]["status"], "filed")
+        self.assertEqual(self.reclaims, [])
+
+    def test_verdict_json_inconclusive(self):
+        self.legacy("old-2")
+        vj = os.path.join(self.tmp.name, "v.json")
+        Path(vj).write_text(json.dumps({"verdict": "inconclusive", "rationale": "reclaimed scratch", "filed_by": "f2"}))
+        code, _, err = self.run_main("old-2", "--no-manifest", "--owner", "o", "--verdict-json", vj)
+        self.assertEqual(code, 0, err)
+        v = self.verdict("old-2")
+        self.assertEqual((v["row_verdict"], v["reason"], v["filed_by"]), ("inconclusive", "reclaimed scratch", "f2"))
+        self.assertEqual(self.reclaims, [])
+
+    def test_refuses_when_manifest_exists(self):
+        self.row("has-man", "x > 1", {"x": 2})
+        code, _, _ = self.run_main("has-man", "--no-manifest", "--owner", "o", "--verdict", "SUPERSEDED")
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("has-man"))
+
+    def test_refuses_when_already_filed(self):
+        self.legacy("done-1")
+        Path(self.flags, "filing-done").mkdir()
+        Path(self.flags, "filing-done", "done-1.FILED").write_text("FILED done-1: pass\n")
+        code, out, _ = self.run_main("done-1", "--no-manifest", "--owner", "o", "--verdict", "SUPERSEDED")
+        self.assertEqual(code, 0)
+        self.assertIn("NOOP", out)
+        self.assertFalse(os.path.exists(os.path.join(self.flags, "filing-done", "done-1.verdict.json")))
+
+    def test_refuses_without_ended(self):
+        code, out, _ = self.run_main("no-end", "--no-manifest", "--owner", "o", "--verdict", "SUPERSEDED")
+        self.assertEqual(code, 2)
+        self.assertIn("REFUSED", out)
+        self.assertFalse(self.filed("no-end"))
+
+    def test_refuses_without_owner(self):
+        self.legacy("no-owner")
+        code, _, _ = self.run_main("no-owner", "--no-manifest", "--verdict", "SUPERSEDED")
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("no-owner"))
+
+    def test_default_path_unchanged_without_flag(self):
+        self.legacy("old-3")
+        code, _, err = self.run_main("old-3", "--verdict", "SUPERSEDED")  # no flag: manifest still required
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("old-3"))
+        self.row("man-1", "x > 1", {"x": 2})
+        code, out, _ = self.run_main("man-1")
+        self.assertEqual(code, 0)
+        self.assertNotIn("legacy_no_manifest", self.verdict("man-1"))
+        self.assertEqual(self.verdict("man-1")["row_verdict"], "pass")
+
+    def vj(self, **d):
+        p = os.path.join(self.tmp.name, "vj.json")
+        Path(p).write_text(json.dumps(d))
+        return p
+
+    def test_plain_verdict_only_terminal(self):
+        self.legacy("pv")
+        code, _, err = self.run_main("pv", "--no-manifest", "--owner", "o", "--verdict", "pass")
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("pv"))
+
+    def test_verdict_json_needs_rationale_and_pass_needs_rc0(self):
+        self.legacy("r1")
+        code, out, _ = self.run_main("r1", "--no-manifest", "--owner", "o", "--verdict-json", self.vj(verdict="inconclusive"))
+        self.assertEqual(code, 2)
+        self.assertFalse(self.filed("r1"))
+        self.legacy("r2", rc=1)
+        code, out, _ = self.run_main("r2", "--no-manifest", "--owner", "o", "--verdict-json", self.vj(verdict="pass", rationale="x"))
+        self.assertEqual(code, 2)
+        self.assertIn("rc=1", out)
+        self.assertFalse(self.filed("r2"))
+        self.legacy("r3")
+        code, _, _ = self.run_main("r3", "--no-manifest", "--owner", "o", "--verdict-json", self.vj(verdict="pass", rationale="x"))
+        self.assertEqual(code, 0)
+
+    def test_failed_run_token_scrubbed_from_filed_text(self):
+        self.legacy("fr", rc=2)
+        self.run_main("fr", "--no-manifest", "--owner", "o", "--verdict-json",
+                      self.vj(verdict="inconclusive", rationale="was FAILED-RUN upstream"))
+        text = Path(self.flags, "filing-done", "fr.FILED").read_text()
+        self.assertNotIn("FAILED-RUN", text)
+        self.assertNotIn("FAILED-RUN", json.dumps(self.verdict("fr")))
+
+    def test_dry_run_says_would_file_and_writes_nothing(self):
+        self.legacy("dr")
+        code, out, _ = self.run_main("dr", "--no-manifest", "--owner", "o", "--verdict", "SUPERSEDED", "--dry-run")
+        self.assertEqual(code, 0)
+        self.assertIn("WOULD-FILE", out)
+        self.assertNotIn("\nFILED", "\n" + out)
+        self.assertFalse(self.filed("dr"))
+
 if __name__ == "__main__":
     unittest.main()

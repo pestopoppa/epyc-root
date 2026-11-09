@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T20:41:52Z",
+  "generated_at": "2026-11-09T21:15:46Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1214,7 +1214,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1372,
+          "line": 1374,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1231,7 +1231,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1833,
+          "line": 1835,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1442,14 +1442,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 372,
-      "dispatchable": 88,
+      "dispatchable": 89,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-09",
       "next_action": "Land correction-fix salvage 7f2df8f61; two-CPU-model smoke; Canary B assertion; file R18-D A/A; republish R23-4",
-      "open": 89,
+      "open": 90,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2600,7 +2600,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1121,
+          "line": 1122,
           "name": "colbert-reranker-web-research",
           "open": 1,
           "readiness": "ready"
@@ -2609,7 +2609,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1871,
+          "line": 1872,
           "name": "document-parser-table-bench",
           "open": 2,
           "readiness": "ready"
@@ -2618,7 +2618,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2495,
+          "line": 2496,
           "name": "opendataloader-pipeline-integration",
           "open": 6,
           "readiness": "ready"
@@ -2627,7 +2627,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2615,
+          "line": 2616,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "ready"
@@ -2636,7 +2636,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2984,
+          "line": 2985,
           "name": "sliders-local-validation",
           "open": 2,
           "readiness": "ready"
@@ -3260,14 +3260,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 292,
-      "dispatchable": 74,
+      "dispatchable": 75,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-09",
       "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
-      "open": 74,
+      "open": 75,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3341,11 +3341,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": [],
           "line": 2086,
           "name": "repo-readiness-scorer",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         }
       ]

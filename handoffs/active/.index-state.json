@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 5,
       "oldest_advance": "2026-11-03",
-      "open": 195
+      "open": 196
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 478
+      "open": 479
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -847,7 +847,7 @@
       "closed": 292,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 74,
+      "open": 75,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -856,7 +856,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 366,
+      "total": 367,
       "tracks": [
         {
           "blocked": 0,
@@ -926,7 +926,7 @@
           "line": 2086,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 3
+          "open": 4
         }
       ]
     },
@@ -1370,7 +1370,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1121,
+          "line": 1122,
           "markers": 1,
           "name": "colbert-reranker-web-research",
           "open": 1
@@ -1380,7 +1380,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1871,
+          "line": 1872,
           "markers": 1,
           "name": "document-parser-table-bench",
           "open": 2
@@ -1390,7 +1390,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2495,
+          "line": 2496,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 6
@@ -1400,7 +1400,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2615,
+          "line": 2616,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 1
@@ -1410,7 +1410,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2984,
+          "line": 2985,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 2
@@ -1583,7 +1583,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1372,
+          "line": 1374,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1597,7 +1597,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1833,
+          "line": 1835,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2629,7 +2629,7 @@
       "closed": 372,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 88,
+      "open": 89,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2638,7 +2638,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 461
+      "total": 462
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
