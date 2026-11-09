@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-AK-C9-20261109",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_ak_c9_20261109.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

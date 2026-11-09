@@ -845,3 +845,26 @@ next launch restores. The strict alternative (`--runtime-arm-evidence strict`) u
   does.
 - Banking, composition of source candidates, readiness, promotion and the release boundary are
   exactly as `P-AK-SEARCH-1`, A1, A2, A3 and A3.1 left them.
+
+## P-AK-SEARCH-1-A5 — graph-level KLD / same-top rule for graph-fusion keeps (AK-FUSE-GRAPH-KLD-1, RATIFIED 2026-11-09)
+
+For any keep candidate whose patch touches graph-fusion, ggml-alloc or graph-matcher files
+(`gates.touches_graph_fusion`), the keep path requires `gates.graph_kld_gate` to pass against the
+champion's saved base logits (wikitext-2, `-c 4096 --chunks 16`, Q38FN UD-IQ4_XS and the 27B lane,
+`--kl-divergence-base` saved once per champion).
+
+Pass means mean KLD <= K and same-top >= S, where K and S are set from the champion's own A/A floor
+measured on the same model/chunks (K = A/A mean KLD plus a margin the operator chooses, S = A/A
+same-top minus a margin). The known-bad replay (C7 c420b9d1a Q38FN: KLD 0.1865, same-top 88.6%) must
+fail under the chosen values, and the H15 on/off pair is the within-run control.
+
+K and S are not set by this amendment. They are human-only values, supplied to
+`gates.KldThresholds.from_config` as `max_mean_kld` and `min_same_top_pct`; both are required, and
+neither has a default. Until both are supplied the verdict is `threshold_unset`, a reported refusal
+(never a pass, never a silent skip). The A/A floor run (about 10-25 GPU-min per model, 16 GB base
+logits each) is the evidence the operator sizes the margins from.
+
+Enforcement state at ratification: `graph_kld_gate` exists in `loop/gates.py` but is not yet called
+from the keep path in `loop/run.py`, and no run-level config input for the thresholds exists yet.
+Until that wiring lands this rule is not mechanically enforced, and a fusion keep is not refused
+automatically by the gate.

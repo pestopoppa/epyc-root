@@ -1,0 +1,26 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-C9-20261109",
+  "status": "ratified",
+  "ratified_at": "2026-11-09T16:13:21Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (typed RATIFY on the terminal)",
+  "items": {
+    "1": "AK-FUSE-GRAPH-KLD-1 keep-path rule, P-AK-SEARCH-1-A5; no numeric thresholds set; not yet wired into the keep path",
+    "2": "countersign of the 35 regrowth-review exceptions (research 77ee71532); ceilings unchanged",
+    "3": "planner-only budget: planner_only.py 167, run.py 6909; ak/planner-only-20261109 (0358db7a3) merged"
+  },
+  "not_included": "the 13 unraised overrun files",
+  "base_origin_main": "7b9115c49e7f37da5c57cce4d51a7904b886b3ac",
+  "research_commit": "79c28f61eb1773a089c1ed00b1d66a4942d806a6",
+  "consolidated_receipt": "artifacts/operator/ratify_ak_c9_20261109.receipt.json",
+  "state": {
+    "measurement/protocols/kernel-research.md": {
+      "sha256_before": "f4223c738e5aa6ba75134fa78e2c558e9cefe40f49967fe4de7f505487173c75",
+      "sha256_after": "c086e4ee9f7bffd3e25f6f88636a780ca0aa1827589bc115a5ddafe749559315"
+    }
+  },
+  "applied_by": "scripts/operator/run_ak_c9_ratify_20261109.sh",
+  "ratify_script_sha256": "a7a86b1c6464d30cf757d6b4724af45a1bf75387f611f2aabb32f106f190c823",
+  "processes_touched": []
+}
