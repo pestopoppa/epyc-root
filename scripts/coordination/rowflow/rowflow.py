@@ -3475,6 +3475,49 @@ def armed_engine_ok(pid, rid, proc="/proc"):
     return bool(o)
 
 
+def stop_row_poller(flags, rid, d, pid, log=print, grace=5, proc="/proc"):
+    """LOOP-11: stop THIS row's waiting poller; returns stopped | not-ours | job | survived. Signals only when: no grant or dry
+    run exists for the row (TERM then writes no .ended: the id stays usable), argv proves the pid is this row's engine or
+    launcher (a recycled pid is not-ours), its group is the private setsid group arm_one created, and no member or
+    descendant is an inner engine or left that session (a launched job always runs under setsid)."""
+    if os.path.exists(os.path.join(flags, "grants", rid + ".grant")) or os.path.exists(running_path(flags, rid)):
+        return "job"
+    gate = _gate()
+    try:
+        pid = int(pid)
+        argv = gate.read_cmdline(proc, pid) or []
+        o = gate.parse_engine(argv)
+        lp = (d.get("launcher") or {}).get("path")
+        if not ((o and not o["inner"] and o["id"] == rid) or (not o and lp and lp in argv)):
+            return "not-ours"
+        f = open(f"{proc}/{pid}/stat").read().rsplit(")", 1)[1].split()
+        pgid, sid = int(f[2]), int(f[3])
+        if pgid != sid or pgid <= 1 or pgid == os.getpgid(0):
+            return "not-ours"
+        for q in tree_pids(pgid):
+            g = open(f"{proc}/{q}/stat").read().rsplit(")", 1)[1].split()
+            io = gate.parse_engine(gate.read_cmdline(proc, q) or [])
+            if int(g[3]) != sid or (io and io["inner"]):
+                return "job"
+    except FileNotFoundError:
+        return "not-ours"
+    except (OSError, ValueError, IndexError, TypeError, gate.Refuse):
+        return "not-ours"
+    kill_group(pgid, grace=grace)
+    if tree_pids(pgid):
+        log(f"ALERT POLLER-STOP {rid}: group {pgid} survived TERM+KILL")
+        return "survived"
+    log(f"POLLER-STOP {rid}: pid {pid} group {pgid} stopped")
+    return "stopped"
+
+
+def stop_poller_if_parked(flags, rid, d, pid, line, n, log=print):
+    """A refusal that parks the row ends its poller; a transient refusal leaves it waiting. Returns the stop result or None."""
+    if (PRECOND_PARK_ONCE and _PRECOND_REFUSED in line) or n >= MAX_FAILS:
+        return stop_row_poller(flags, rid, d, pid, log)
+    return None
+
+
 def admit(flags, rid, d, pid, regions, window_s):
     """The ONE launcher-side admission (grant_ok_launcher.check: the parser of the live poller's argv, window >= min+300,
     regions survive its parse and cover its claim, --precond-cmd). Returns (ok, line)."""
@@ -4332,7 +4375,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     failed.append(rid); continue
                 a = load_json(armed_path(flags, rid))
                 if a and alive(a.get("pid")) and not armed_engine_ok(a.get("pid"), rid):
-                    log(f"RE-ARM {rid}: ARMED pid {a.get('pid')} runs no filler_run*.sh engine for this row (not killed; re-armed)")
+                    st = stop_row_poller(flags, rid, d, a.get("pid"), log)
+                    if st in ("job", "survived"):   # never start a second poller beside it
+                        log(f"RE-ARM-HOLD {rid}: ARMED pid {a.get('pid')} not replaced ({st})")
+                        failed.append(rid); continue
+                    log(f"RE-ARM {rid}: ARMED pid {a.get('pid')} runs no filler_run*.sh engine for this row ({st}; re-armed)")
                     a = None
                 if not (a and alive(a.get("pid"))):
                     pid, msg = arm_one(flags, rid, d, regions, log=log)
@@ -4353,6 +4400,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                             f"retried after a launcher/spec edit or `rowflow.py unpark {rid}`")
                     else:
                         log(f"SKIP {rid}: {line[:200]} ({n} consecutive arming/launch failures since the PASS; parked at {MAX_FAILS})")
+                    stop_poller_if_parked(flags, rid, d, pid, line, n, log)
                     failed.append(rid); continue
                 # the engine's region-lock claim IS the contract: a CONTRACT_LOCK engine locks lock= instead of --claim-cpus
                 gl = write_grant(flags, rid, regions, opt, d["window_s"], (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "")
