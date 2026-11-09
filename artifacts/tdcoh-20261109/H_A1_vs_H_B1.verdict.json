@@ -1,0 +1,2140 @@
+{
+ "aggregate": {
+  "both_bad": 0,
+  "by_tier": {
+   "0": 24
+  },
+  "gate": "PASS",
+  "gate_reasons": [],
+  "identical": 24,
+  "identical_with_shared_defect": 6,
+  "judge_given": false,
+  "n": 24,
+  "needs_review": 0,
+  "pass": 24,
+  "regressions": 0,
+  "token_modes": {
+   "base:text_only": 24,
+   "cand:text_only": 24
+  }
+ },
+ "anchor": {
+  "arm": "H_A1",
+  "binary_version": "unrecorded"
+ },
+ "anchor_named": true,
+ "decoding": "greedy (asserted by the caller; tier 0 identity is only decisive under greedy)",
+ "degeneracy_classifier": "degeneracy.v2.1",
+ "degeneracy_lineage": "inf70-degeneracy.v2 (gpu-block-27b-20261003/degeneracy.py, 2026-10-04); G2-CONC amendment 5 (2026-10-24), shared adoption",
+ "dropped_http_error": [],
+ "gate_with_drops": "PASS",
+ "graders": "answer-graders.v1",
+ "inputs": {
+  "base": "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs/H_A1.rows.jsonl",
+  "cand": "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs/H_B1.rows.jsonl"
+ },
+ "items": [
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.976,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 151,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.146,
+     "uniq": 0.351,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 85
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.976,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 151,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.146,
+     "uniq": 0.351,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 85
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "mbpp_0391",
+   "identity": {
+    "base_sha256": "26623a216e95cfc3df24ab55a8131935442cc87002eb5e70c95caf33c7359734",
+    "basis": "sha256(text)",
+    "cand_sha256": "26623a216e95cfc3df24ab55a8131935442cc87002eb5e70c95caf33c7359734",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 617,
+     "sha256": "26623a216e95cfc3df24ab55a8131935442cc87002eb5e70c95caf33c7359734",
+     "text": "```python\ndef convert_list_dictionary(list1, list2, list3):\n    \"\"\"\n    Convert three lists into a list of nested dictionaries.\n    \n    Each element in the resulting list is a dictionary where:\n    - The outer key is from list1\n    - The inner key is from list2\n    - The inner value is from list3\n    \n    Args:\n        list1: List of outer keys\n        list2: List of inner keys\n        list3: List of inner values\n    \n    Returns:\n        List of nested dictionaries\n    \"\"\"\n    result = []\n    for key1, key2, value in zip(list1, list2, list3):\n        result.append({key1: {key2: value}})\n    return result\n```"
+    },
+    "cand": {
+     "n_chars": 617,
+     "sha256": "26623a216e95cfc3df24ab55a8131935442cc87002eb5e70c95caf33c7359734",
+     "text": "```python\ndef convert_list_dictionary(list1, list2, list3):\n    \"\"\"\n    Convert three lists into a list of nested dictionaries.\n    \n    Each element in the resulting list is a dictionary where:\n    - The outer key is from list1\n    - The inner key is from list2\n    - The inner value is from list3\n    \n    Args:\n        list1: List of outer keys\n        list2: List of inner keys\n        list3: List of inner values\n    \n    Returns:\n        List of nested dictionaries\n    \"\"\"\n    result = []\n    for key1, key2, value in zip(list1, list2, list3):\n        result.append({key1: {key2: value}})\n    return result\n```"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.96,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 183,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.082,
+     "uniq": 0.372,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 93
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.96,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 183,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.082,
+     "uniq": 0.372,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 93
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "mbpp_0303",
+   "identity": {
+    "base_sha256": "7139afa36c9c29cc966162054769ff992fa90c12334003069c8d7af2dbba3c19",
+    "basis": "sha256(text)",
+    "cand_sha256": "7139afa36c9c29cc966162054769ff992fa90c12334003069c8d7af2dbba3c19",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 620,
+     "sha256": "7139afa36c9c29cc966162054769ff992fa90c12334003069c8d7af2dbba3c19",
+     "text": "```python\ndef solve(arr, n):\n    \"\"\"\n    Check whether the count of inversions of two types are the same or not.\n    \n    Inversion types:\n    - Type 1: Inversions where i < j and arr[i] > arr[j] (standard inversions)\n    - Type 2: Inversions where i < j and arr[i] < arr[j] (non-inversions, or \"anti-inversions\")\n    \n    Actually, let me reconsider. The problem says \"count of inversion of two types\".\n    \n    Looking at the test cases:\n    - [1,0,2], n=3: \n      Pairs (i,j) with i<j: (0,1): 1>0 -> inversion; (0,2): 1<2 -> not inversion; (1,2): 0<2 -> not inversion\n      Standard inversions: 1\n      Non-inversions"
+    },
+    "cand": {
+     "n_chars": 620,
+     "sha256": "7139afa36c9c29cc966162054769ff992fa90c12334003069c8d7af2dbba3c19",
+     "text": "```python\ndef solve(arr, n):\n    \"\"\"\n    Check whether the count of inversions of two types are the same or not.\n    \n    Inversion types:\n    - Type 1: Inversions where i < j and arr[i] > arr[j] (standard inversions)\n    - Type 2: Inversions where i < j and arr[i] < arr[j] (non-inversions, or \"anti-inversions\")\n    \n    Actually, let me reconsider. The problem says \"count of inversion of two types\".\n    \n    Looking at the test cases:\n    - [1,0,2], n=3: \n      Pairs (i,j) with i<j: (0,1): 1>0 -> inversion; (0,2): 1<2 -> not inversion; (1,2): 0<2 -> not inversion\n      Standard inversions: 1\n      Non-inversions"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.957,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 151,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.139,
+     "uniq": 0.358,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 96
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.957,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 151,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.139,
+     "uniq": 0.358,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 96
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "mbpp_0508",
+   "identity": {
+    "base_sha256": "5fdd96d81b7465baa04a34fe6f19c2cfa42f4ec8cd33e48132d8ebddfd3d1aa8",
+    "basis": "sha256(text)",
+    "cand_sha256": "5fdd96d81b7465baa04a34fe6f19c2cfa42f4ec8cd33e48132d8ebddfd3d1aa8",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 646,
+     "sha256": "5fdd96d81b7465baa04a34fe6f19c2cfa42f4ec8cd33e48132d8ebddfd3d1aa8",
+     "text": "```python\ndef same_order(list1, list2):\n    \"\"\"\n    Check if the common elements between two lists are in the same order.\n    \n    Args:\n        list1: First list\n        list2: Second list\n    \n    Returns:\n        True if common elements appear in the same order in both lists, False otherwise.\n    \"\"\"\n    # Find common elements\n    common = set(list1) & set(list2)\n    \n    # Extract common elements from each list in their original order\n    common_in_list1 = [x for x in list1 if x in common]\n    common_in_list2 = [x for x in list2 if x in common]\n    \n    # Check if the order is the same\n    return common_in_list1 == common_in_list2\n```"
+    },
+    "cand": {
+     "n_chars": 646,
+     "sha256": "5fdd96d81b7465baa04a34fe6f19c2cfa42f4ec8cd33e48132d8ebddfd3d1aa8",
+     "text": "```python\ndef same_order(list1, list2):\n    \"\"\"\n    Check if the common elements between two lists are in the same order.\n    \n    Args:\n        list1: First list\n        list2: Second list\n    \n    Returns:\n        True if common elements appear in the same order in both lists, False otherwise.\n    \"\"\"\n    # Find common elements\n    common = set(list1) & set(list2)\n    \n    # Extract common elements from each list in their original order\n    common_in_list1 = [x for x in list1 if x in common]\n    common_in_list2 = [x for x in list2 if x in common]\n    \n    # Check if the order is the same\n    return common_in_list1 == common_in_list2\n```"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.966,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 166,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.175,
+     "uniq": 0.398,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 92
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.966,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 166,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.175,
+     "uniq": 0.398,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 92
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "bcb_BigCodeBench/547",
+   "identity": {
+    "base_sha256": "6b4e96b5bde80f146dbcb3237469dbe8aaf55ac8e2013b138eac42a00a50a2f6",
+    "basis": "sha256(text)",
+    "cand_sha256": "6b4e96b5bde80f146dbcb3237469dbe8aaf55ac8e2013b138eac42a00a50a2f6",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 760,
+     "sha256": "6b4e96b5bde80f146dbcb3237469dbe8aaf55ac8e2013b138eac42a00a50a2f6",
+     "text": "```python\nimport hashlib\nimport os\nimport base64\n\ndef task_func(password: str, salt_length: int = 8) -> str:\n    \"\"\"\n    Encrypt a password using Salt and SHA-256, then encode the result in base64.\n    \n    Args:\n        password: The password to encrypt.\n        salt_length: The length of the salt in bytes.\n    \n    Returns:\n        The encrypted password in base64 format.\n    \"\"\"\n    # Generate a random salt\n    salt = os.urandom(salt_length)\n    \n    # Encode the password to bytes\n    password_bytes = password.encode('utf-8')\n    \n    # Combine salt and password\n    salted_password = salt + password_bytes\n    \n    # Hash the salted password using SHA-256\n    hash_object = hashlib.sha256(salted_password)\n    hash_digest = hash_object.digest()\n    \n"
+    },
+    "cand": {
+     "n_chars": 760,
+     "sha256": "6b4e96b5bde80f146dbcb3237469dbe8aaf55ac8e2013b138eac42a00a50a2f6",
+     "text": "```python\nimport hashlib\nimport os\nimport base64\n\ndef task_func(password: str, salt_length: int = 8) -> str:\n    \"\"\"\n    Encrypt a password using Salt and SHA-256, then encode the result in base64.\n    \n    Args:\n        password: The password to encrypt.\n        salt_length: The length of the salt in bytes.\n    \n    Returns:\n        The encrypted password in base64 format.\n    \"\"\"\n    # Generate a random salt\n    salt = os.urandom(salt_length)\n    \n    # Encode the password to bytes\n    password_bytes = password.encode('utf-8')\n    \n    # Combine salt and password\n    salted_password = salt + password_bytes\n    \n    # Hash the salted password using SHA-256\n    hash_object = hashlib.sha256(salted_password)\n    hash_digest = hash_object.digest()\n    \n"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.987,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 188,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.138,
+     "uniq": 0.452,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 112
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.987,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 188,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.138,
+     "uniq": 0.452,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 112
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "bcb_BigCodeBench/512",
+   "identity": {
+    "base_sha256": "7788bb2664b84d42f4ac5c77618f314693a469bfbf6e75a70a60a27eceb155ea",
+    "basis": "sha256(text)",
+    "cand_sha256": "7788bb2664b84d42f4ac5c77618f314693a469bfbf6e75a70a60a27eceb155ea",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 819,
+     "sha256": "7788bb2664b84d42f4ac5c77618f314693a469bfbf6e75a70a60a27eceb155ea",
+     "text": "```python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndef task_func(column, data):\n    \"\"\"\n    Analyze sales data, calculate statistics, and create a bar chart.\n    \n    Parameters:\n    column (str): The column name to analyze.\n    data (pd.DataFrame): The sales data DataFrame.\n    \n    Returns:\n    tuple: A tuple containing:\n        dict: A dictionary with the sum, mean, min, max of the column.\n        matplotlib.axes.Axes: The Axes object of the plotted bar chart.\n    \n    Raises:\n    ValueError: If the quantity sold or total sales is negative.\n    \"\"\"\n    # Check if the column exists in the data\n    if column not in data.columns:\n        raise ValueError(f\"Column '{column}' not found in data.\")\n    \n    # Check for negative values in the specified column\n    if (data[column] < "
+    },
+    "cand": {
+     "n_chars": 819,
+     "sha256": "7788bb2664b84d42f4ac5c77618f314693a469bfbf6e75a70a60a27eceb155ea",
+     "text": "```python\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\ndef task_func(column, data):\n    \"\"\"\n    Analyze sales data, calculate statistics, and create a bar chart.\n    \n    Parameters:\n    column (str): The column name to analyze.\n    data (pd.DataFrame): The sales data DataFrame.\n    \n    Returns:\n    tuple: A tuple containing:\n        dict: A dictionary with the sum, mean, min, max of the column.\n        matplotlib.axes.Axes: The Axes object of the plotted bar chart.\n    \n    Raises:\n    ValueError: If the quantity sold or total sales is negative.\n    \"\"\"\n    # Check if the column exists in the data\n    if column not in data.columns:\n        raise ValueError(f\"Column '{column}' not found in data.\")\n    \n    # Check for negative values in the specified column\n    if (data[column] < "
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.902,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 206,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.117,
+     "uniq": 0.335,
+     "uniq_floor": 0.296,
+     "v1_cls": "SALAD",
+     "words": 59
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.902,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 206,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.117,
+     "uniq": 0.335,
+     "uniq_floor": 0.296,
+     "v1_cls": "SALAD",
+     "words": 59
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "debugbench_flood-fill_cpp",
+   "identity": {
+    "base_sha256": "e04a9fe4ab2b9603fa7bfd403a1f3ab9aa6eea9c059f9958f194af6bcb213624",
+    "basis": "sha256(text)",
+    "cand_sha256": "e04a9fe4ab2b9603fa7bfd403a1f3ab9aa6eea9c059f9958f194af6bcb213624",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 744,
+     "sha256": "e04a9fe4ab2b9603fa7bfd403a1f3ab9aa6eea9c059f9958f194af6bcb213624",
+     "text": "```cpp\nclass Solution {\npublic:\n    void bfs(int prevcolor, int row, int col, int color, vector<vector<int>>& visited, vector<vector<int>>& image)\n    {\n        // it'll ease the work\n        queue<pair<int,int>> q;\n        q.push({row,col});\n        visited[row][col]=1;\n\n        while(!q.empty())\n        {\n            row = q.front().first;\n            col = q.front().second;\n            q.pop();\n\n            /* if img is of the starting color. */\n            if(image[row][col]==prevcolor) \n              image[row][col]=color;\n            \n            // up\n            if(row-1>=0 && !visited[row-1][col] && image[row-1][col]==prevcolor) {\n              q.push({row-1,col});\n              visited[row-1][col]=1;\n              image[row-"
+    },
+    "cand": {
+     "n_chars": 744,
+     "sha256": "e04a9fe4ab2b9603fa7bfd403a1f3ab9aa6eea9c059f9958f194af6bcb213624",
+     "text": "```cpp\nclass Solution {\npublic:\n    void bfs(int prevcolor, int row, int col, int color, vector<vector<int>>& visited, vector<vector<int>>& image)\n    {\n        // it'll ease the work\n        queue<pair<int,int>> q;\n        q.push({row,col});\n        visited[row][col]=1;\n\n        while(!q.empty())\n        {\n            row = q.front().first;\n            col = q.front().second;\n            q.pop();\n\n            /* if img is of the starting color. */\n            if(image[row][col]==prevcolor) \n              image[row][col]=color;\n            \n            // up\n            if(row-1>=0 && !visited[row-1][col] && image[row-1][col]==prevcolor) {\n              q.push({row-1,col});\n              visited[row-1][col]=1;\n              image[row-"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.978,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 185,
+     "reasons": [],
+     "review": false,
+     "run": 3,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.135,
+     "uniq": 0.443,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 122
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.978,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 185,
+     "reasons": [],
+     "review": false,
+     "run": 3,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.135,
+     "uniq": 0.443,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 122
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "leetcode_the-number-of-the-smallest-unoccupied-chair",
+   "identity": {
+    "base_sha256": "2cc437840101290bcc5550efe50a2be1dc39ca91893aef52f9c11b254fc63743",
+    "basis": "sha256(text)",
+    "cand_sha256": "2cc437840101290bcc5550efe50a2be1dc39ca91893aef52f9c11b254fc63743",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 815,
+     "sha256": "2cc437840101290bcc5550efe50a2be1dc39ca91893aef52f9c11b254fc63743",
+     "text": "```python\nimport heapq\nfrom typing import List\n\n\ndef smallestChair(times: List[List[int]], targetFriend: int) -> int:\n    \"\"\"\n    Find the chair number that the targetFriend will sit on.\n    \n    Args:\n        times: A list of [arrival, leaving] times for each friend.\n        targetFriend: The index of the friend we want to find the chair for.\n    \n    Returns:\n        The chair number that the targetFriend will sit on.\n    \"\"\"\n    n = len(times)\n    \n    # We need to process events in chronological order.\n    # Events: arrival and leaving.\n    # When a friend arrives, they take the smallest available chair.\n    # When a friend leaves, their chair becomes available.\n    \n    # Key insight: We need to track which chairs are available.\n    # We can use a min-heap for available chairs.\n    # We also need to"
+    },
+    "cand": {
+     "n_chars": 815,
+     "sha256": "2cc437840101290bcc5550efe50a2be1dc39ca91893aef52f9c11b254fc63743",
+     "text": "```python\nimport heapq\nfrom typing import List\n\n\ndef smallestChair(times: List[List[int]], targetFriend: int) -> int:\n    \"\"\"\n    Find the chair number that the targetFriend will sit on.\n    \n    Args:\n        times: A list of [arrival, leaving] times for each friend.\n        targetFriend: The index of the friend we want to find the chair for.\n    \n    Returns:\n        The chair number that the targetFriend will sit on.\n    \"\"\"\n    n = len(times)\n    \n    # We need to process events in chronological order.\n    # Events: arrival and leaving.\n    # When a friend arrives, they take the smallest available chair.\n    # When a friend leaves, their chair becomes available.\n    \n    # Key insight: We need to track which chairs are available.\n    # We can use a min-heap for available chairs.\n    # We also need to"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.974,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 191,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.084,
+     "uniq": 0.492,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 131
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.974,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 191,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.084,
+     "uniq": 0.492,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 131
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "ma_multi_015",
+   "identity": {
+    "base_sha256": "495f8ece729ff6298fe7f9ba4d67b6a9a7c114b3d5d58d5a38c9fd96e02ceca9",
+    "basis": "sha256(text)",
+    "cand_sha256": "495f8ece729ff6298fe7f9ba4d67b6a9a7c114b3d5d58d5a38c9fd96e02ceca9",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 799,
+     "sha256": "495f8ece729ff6298fe7f9ba4d67b6a9a7c114b3d5d58d5a38c9fd96e02ceca9",
+     "text": "```python\ndef topological_sort(graph):\n    \"\"\"Return topological ordering of DAG. Raise ValueError on cycle.\"\"\"\n    # Graph is represented as {node: [list of nodes it depends on]}\n    # This means if node A depends on node B, then graph[A] contains B.\n    # In topological sort, dependencies must come before the dependent node.\n    # So if A depends on B, B must come before A in the ordering.\n    \n    # We need to build the adjacency list for the dependency graph.\n    # If A depends on B, there's an edge from B to A (B must come before A).\n    # Alternatively, we can think of it as: for each node, its dependencies must be processed first.\n    \n    # Let's use Kahn's algorithm or DFS-based approach.\n    \n    # First, collect all nodes\n    all_nodes = set(graph.keys())\n    for node in graph:"
+    },
+    "cand": {
+     "n_chars": 799,
+     "sha256": "495f8ece729ff6298fe7f9ba4d67b6a9a7c114b3d5d58d5a38c9fd96e02ceca9",
+     "text": "```python\ndef topological_sort(graph):\n    \"\"\"Return topological ordering of DAG. Raise ValueError on cycle.\"\"\"\n    # Graph is represented as {node: [list of nodes it depends on]}\n    # This means if node A depends on node B, then graph[A] contains B.\n    # In topological sort, dependencies must come before the dependent node.\n    # So if A depends on B, B must come before A in the ordering.\n    \n    # We need to build the adjacency list for the dependency graph.\n    # If A depends on B, there's an edge from B to A (B must come before A).\n    # Alternatively, we can think of it as: for each node, its dependencies must be processed first.\n    \n    # Let's use Kahn's algorithm or DFS-based approach.\n    \n    # First, collect all nodes\n    all_nodes = set(graph.keys())\n    for node in graph:"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "98",
+     "extracted": null,
+     "grader": "gsm8k",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "98",
+     "extracted": null,
+     "grader": "gsm8k",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.878,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 179,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.089,
+     "uniq": 0.363,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 112
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.878,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 179,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.089,
+     "uniq": 0.363,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 112
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "gsm8k_00739",
+   "identity": {
+    "base_sha256": "7ddc80308024d4507aa5800ebc0869c4d9a6e0302ba0d8183bb8b5e0be3db087",
+    "basis": "sha256(text)",
+    "cand_sha256": "7ddc80308024d4507aa5800ebc0869c4d9a6e0302ba0d8183bb8b5e0be3db087",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))",
+    "shared answer: unanswered in both arms"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 592,
+     "sha256": "7ddc80308024d4507aa5800ebc0869c4d9a6e0302ba0d8183bb8b5e0be3db087",
+     "text": "Here is the step-by-step calculation to determine the total amount Cecelia spent.\n\n**Step 1: Determine the cost of a half-gallon jar.**\nWe are given that a gallon jar costs $\\$5$.\nWe are also told that a gallon jar costs $\\$2$ more than a half-gallon jar.\nLet $C_g$ be the cost of a gallon jar and $C_h$ be the cost of a half-gallon jar.\n$$C_g = \\$5$$\n$$C_g = C_h + \\$2$$\nSubstituting the value of $C_g$:\n$$5 = C_h + 2$$\n$$C_h = 5 - 2$$\n$$C_h = \\$3$$\nSo, a half-gallon jar costs $\\$3$.\n\n**Step 2: Calculate the total cost for the gallon jars.**\nCecelia bought 10 gallon jars.\n$$\\text{Cost for"
+    },
+    "cand": {
+     "n_chars": 592,
+     "sha256": "7ddc80308024d4507aa5800ebc0869c4d9a6e0302ba0d8183bb8b5e0be3db087",
+     "text": "Here is the step-by-step calculation to determine the total amount Cecelia spent.\n\n**Step 1: Determine the cost of a half-gallon jar.**\nWe are given that a gallon jar costs $\\$5$.\nWe are also told that a gallon jar costs $\\$2$ more than a half-gallon jar.\nLet $C_g$ be the cost of a gallon jar and $C_h$ be the cost of a half-gallon jar.\n$$C_g = \\$5$$\n$$C_g = C_h + \\$2$$\nSubstituting the value of $C_g$:\n$$5 = C_h + 2$$\n$$C_h = 5 - 2$$\n$$C_h = \\$3$$\nSo, a half-gallon jar costs $\\$3$.\n\n**Step 2: Calculate the total cost for the gallon jars.**\nCecelia bought 10 gallon jars.\n$$\\text{Cost for"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "90",
+     "extracted": null,
+     "grader": "gsm8k",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "90",
+     "extracted": null,
+     "grader": "gsm8k",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.906,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 163,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.117,
+     "uniq": 0.38,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 108
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.906,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 163,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.117,
+     "uniq": 0.38,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 108
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "gsm8k_00115",
+   "identity": {
+    "base_sha256": "857cd646079e4326d29991b5e0545cbb6cacb727a63bdbadfe287e765b2208c2",
+    "basis": "sha256(text)",
+    "cand_sha256": "857cd646079e4326d29991b5e0545cbb6cacb727a63bdbadfe287e765b2208c2",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))",
+    "shared answer: unanswered in both arms"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 593,
+     "sha256": "857cd646079e4326d29991b5e0545cbb6cacb727a63bdbadfe287e765b2208c2",
+     "text": "To calculate Sasha's profit, we need to determine her total cost for the lumber, her total revenue from selling it, and then find the difference between the two.\n\n**Step 1: Calculate the total cost of the lumber.**\n\n*   **2 x 4 x 10 boards:**\n    *   Quantity: 10\n    *   Cost per board: $10\n    *   Total cost for these boards = $10 \\times 10 = \\$100$\n\n*   **4 x 4 x 10 boards:**\n    *   Quantity: 5\n    *   Cost per board: $16\n    *   Total cost for these boards = $5 \\times 16 = \\$80$\n\n*   **Total Cost:**\n    *   $\\$100 + \\$80 = \\$180$\n\n**Step 2: Calculate the selling price per board.**\n\n"
+    },
+    "cand": {
+     "n_chars": 593,
+     "sha256": "857cd646079e4326d29991b5e0545cbb6cacb727a63bdbadfe287e765b2208c2",
+     "text": "To calculate Sasha's profit, we need to determine her total cost for the lumber, her total revenue from selling it, and then find the difference between the two.\n\n**Step 1: Calculate the total cost of the lumber.**\n\n*   **2 x 4 x 10 boards:**\n    *   Quantity: 10\n    *   Cost per board: $10\n    *   Total cost for these boards = $10 \\times 10 = \\$100$\n\n*   **4 x 4 x 10 boards:**\n    *   Quantity: 5\n    *   Cost per board: $16\n    *   Total cost for these boards = $5 \\times 16 = \\$80$\n\n*   **Total Cost:**\n    *   $\\$100 + \\$80 = \\$180$\n\n**Step 2: Calculate the selling price per board.**\n\n"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "200",
+     "extracted": null,
+     "grader": "gsm8k",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "200",
+     "extracted": null,
+     "grader": "gsm8k",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.957,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 182,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.06,
+     "uniq": 0.429,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 129
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.957,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 182,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.06,
+     "uniq": 0.429,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 129
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "gsm8k_00041",
+   "identity": {
+    "base_sha256": "2a9f06a20a95c2896ec5e64d11ccecdd1acd3b502dd1468fcaec3f03e6de5b03",
+    "basis": "sha256(text)",
+    "cand_sha256": "2a9f06a20a95c2896ec5e64d11ccecdd1acd3b502dd1468fcaec3f03e6de5b03",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))",
+    "shared answer: unanswered in both arms"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 791,
+     "sha256": "2a9f06a20a95c2896ec5e64d11ccecdd1acd3b502dd1468fcaec3f03e6de5b03",
+     "text": "To solve this problem, we need to determine how far Polly can throw the javelin while holding the sapphire gemstone and then calculate how much farther that is than the dragon's fire range.\n\n**Step 1: Determine the dragon's fire range.**\nThe problem states that the dragon, Perg, breathes fire upon anything within a distance of 1000 feet.\n$$ \\text{Dragon's Range} = 1000 \\text{ feet} $$\n\n**Step 2: Determine Polly's throwing distance without the gemstone.**\nThe problem states that Polly can throw the gold javelin for a distance of 400 feet when not holding the gemstone.\n$$ \\text{Base Throw Distance} = 400 \\text{ feet} $$\n\n**Step 3: Determine Polly's throwing distance with the gemstone.**\nThe problem states that when holding the sapphire gemstone, she can throw the javelin three times"
+    },
+    "cand": {
+     "n_chars": 791,
+     "sha256": "2a9f06a20a95c2896ec5e64d11ccecdd1acd3b502dd1468fcaec3f03e6de5b03",
+     "text": "To solve this problem, we need to determine how far Polly can throw the javelin while holding the sapphire gemstone and then calculate how much farther that is than the dragon's fire range.\n\n**Step 1: Determine the dragon's fire range.**\nThe problem states that the dragon, Perg, breathes fire upon anything within a distance of 1000 feet.\n$$ \\text{Dragon's Range} = 1000 \\text{ feet} $$\n\n**Step 2: Determine Polly's throwing distance without the gemstone.**\nThe problem states that Polly can throw the gold javelin for a distance of 400 feet when not holding the gemstone.\n$$ \\text{Base Throw Distance} = 400 \\text{ feet} $$\n\n**Step 3: Determine Polly's throwing distance with the gemstone.**\nThe problem states that when holding the sapphire gemstone, she can throw the javelin three times"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "C",
+     "extracted": null,
+     "grader": "letter",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "C",
+     "extracted": null,
+     "grader": "letter",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.937,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 187,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.059,
+     "uniq": 0.439,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 121
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.937,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 187,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.059,
+     "uniq": 0.439,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 121
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "gpqa_diamond_cot_5fd3fe9084c9",
+   "identity": {
+    "base_sha256": "b294c901afeb16eb752d1d049d43d4c5c2d65f8ec656c4b7a7a6c01fbcbe22e4",
+    "basis": "sha256(text)",
+    "cand_sha256": "b294c901afeb16eb752d1d049d43d4c5c2d65f8ec656c4b7a7a6c01fbcbe22e4",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))",
+    "shared answer: unanswered in both arms"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 684,
+     "sha256": "b294c901afeb16eb752d1d049d43d4c5c2d65f8ec656c4b7a7a6c01fbcbe22e4",
+     "text": "To determine the energies of the ground state, first excited state, and second excited state for four identical spin-1/2 particles in a one-dimensional infinite potential well, we must apply the Pauli Exclusion Principle and the quantization of energy levels.\n\n### Step 1: Energy Levels of a Single Particle\nFor a particle in a 1D infinite potential well of length $L$, the energy levels are given by:\n$$E_n = n^2 E$$\nwhere $n = 1, 2, 3, \\dots$ is the principal quantum number, and $E = \\frac{\\pi^2 \\hbar^2}{2mL^2}$ is the ground state energy of a single particle.\n\nThe first few energy levels for a single particle are:\n- $n=1 \\rightarrow E_1 = 1^2 E = 1E$\n- $n=2 \\rightarrow E_2 = 2"
+    },
+    "cand": {
+     "n_chars": 684,
+     "sha256": "b294c901afeb16eb752d1d049d43d4c5c2d65f8ec656c4b7a7a6c01fbcbe22e4",
+     "text": "To determine the energies of the ground state, first excited state, and second excited state for four identical spin-1/2 particles in a one-dimensional infinite potential well, we must apply the Pauli Exclusion Principle and the quantization of energy levels.\n\n### Step 1: Energy Levels of a Single Particle\nFor a particle in a 1D infinite potential well of length $L$, the energy levels are given by:\n$$E_n = n^2 E$$\nwhere $n = 1, 2, 3, \\dots$ is the principal quantum number, and $E = \\frac{\\pi^2 \\hbar^2}{2mL^2}$ is the ground state energy of a single particle.\n\nThe first few energy levels for a single particle are:\n- $n=1 \\rightarrow E_1 = 1^2 E = 1E$\n- $n=2 \\rightarrow E_2 = 2"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "A",
+     "extracted": null,
+     "grader": "letter",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "A",
+     "extracted": null,
+     "grader": "letter",
+     "status": "unanswered",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.936,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 178,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.045,
+     "uniq": 0.551,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 113
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.936,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 178,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.045,
+     "uniq": 0.551,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 113
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "gpqa_diamond_cot_8116937b0ca6",
+   "identity": {
+    "base_sha256": "27c4a46a96f19ab805e7c2048a04f8d40175eb44cd48b01fb78c53a6e9cb0e0f",
+    "basis": "sha256(text)",
+    "cand_sha256": "27c4a46a96f19ab805e7c2048a04f8d40175eb44cd48b01fb78c53a6e9cb0e0f",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))",
+    "shared answer: unanswered in both arms"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 770,
+     "sha256": "27c4a46a96f19ab805e7c2048a04f8d40175eb44cd48b01fb78c53a6e9cb0e0f",
+     "text": "To determine which of Maxwell's equations would change in a universe with magnetic monopoles (isolated North or South poles), let's analyze the standard Maxwell's equations and how they relate to the existence of magnetic charges.\n\n**1. Standard Maxwell's Equations (in SI units):**\n\n1.  **Gauss's Law for Electricity:** $\\nabla \\cdot \\mathbf{E} = \\frac{\\rho_e}{\\epsilon_0}$\n    *   This relates the divergence of the electric field to the electric charge density ($\\rho_e$).\n2.  **Gauss's Law for Magnetism:** $\\nabla \\cdot \\mathbf{B} = 0$\n    *   This states that the divergence of the magnetic field is zero. This implies there are no magnetic monopoles; magnetic field lines always form closed loops (no sources or sinks).\n3.  **Faraday's Law of Induction:** $\\nabla"
+    },
+    "cand": {
+     "n_chars": 770,
+     "sha256": "27c4a46a96f19ab805e7c2048a04f8d40175eb44cd48b01fb78c53a6e9cb0e0f",
+     "text": "To determine which of Maxwell's equations would change in a universe with magnetic monopoles (isolated North or South poles), let's analyze the standard Maxwell's equations and how they relate to the existence of magnetic charges.\n\n**1. Standard Maxwell's Equations (in SI units):**\n\n1.  **Gauss's Law for Electricity:** $\\nabla \\cdot \\mathbf{E} = \\frac{\\rho_e}{\\epsilon_0}$\n    *   This relates the divergence of the electric field to the electric charge density ($\\rho_e$).\n2.  **Gauss's Law for Magnetism:** $\\nabla \\cdot \\mathbf{B} = 0$\n    *   This states that the divergence of the magnetic field is zero. This implies there are no magnetic monopoles; magnetic field lines always form closed loops (no sources or sinks).\n3.  **Faraday's Law of Induction:** $\\nabla"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.907,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 183,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.055,
+     "uniq": 0.536,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 104
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.907,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 183,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.055,
+     "uniq": 0.536,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 104
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "phybench_electricity_25",
+   "identity": {
+    "base_sha256": "ca6f8711a00e4b136daf2e5a840eb84cfb8e319c85f2cfe71a482118af06e51f",
+    "basis": "sha256(text)",
+    "cand_sha256": "ca6f8711a00e4b136daf2e5a840eb84cfb8e319c85f2cfe71a482118af06e51f",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 713,
+     "sha256": "ca6f8711a00e4b136daf2e5a840eb84cfb8e319c85f2cfe71a482118af06e51f",
+     "text": "To find the polar coordinate trajectory equation $r(\\theta)$ for the particle, we will analyze the forces acting on the particle and apply Newton's laws of motion in polar coordinates.\n\n### Step 1: Analyze the Forces and Equations of Motion\n\nThe particle moves on a horizontal plane under the influence of a magnetic field $\\mathbf{B}$.\n*   **Magnetic Field:** $\\mathbf{B} = B(r) \\hat{k}$, where $B(r) = \\frac{mv}{q\\sqrt{ar}}$. The field is vertical (perpendicular to the plane).\n*   **Lorentz Force:** The magnetic force is given by $\\mathbf{F} = q(\\mathbf{v} \\times \\mathbf{B})$.\n    Since the particle moves in the horizontal plane ($xy$-plane) and $\\mathbf{B}$ is vertical ($z$-direction), the force $\\mathbf{"
+    },
+    "cand": {
+     "n_chars": 713,
+     "sha256": "ca6f8711a00e4b136daf2e5a840eb84cfb8e319c85f2cfe71a482118af06e51f",
+     "text": "To find the polar coordinate trajectory equation $r(\\theta)$ for the particle, we will analyze the forces acting on the particle and apply Newton's laws of motion in polar coordinates.\n\n### Step 1: Analyze the Forces and Equations of Motion\n\nThe particle moves on a horizontal plane under the influence of a magnetic field $\\mathbf{B}$.\n*   **Magnetic Field:** $\\mathbf{B} = B(r) \\hat{k}$, where $B(r) = \\frac{mv}{q\\sqrt{ar}}$. The field is vertical (perpendicular to the plane).\n*   **Lorentz Force:** The magnetic force is given by $\\mathbf{F} = q(\\mathbf{v} \\times \\mathbf{B})$.\n    Since the particle moves in the horizontal plane ($xy$-plane) and $\\mathbf{B}$ is vertical ($z$-direction), the force $\\mathbf{"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "E",
+     "extracted": "E",
+     "grader": "mmlu_pro",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "E",
+     "extracted": "E",
+     "grader": "mmlu_pro",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": true,
+     "finish": "stop",
+     "n": 1,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": true,
+     "finish": "stop",
+     "n": 1,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "mmlu_pro_law_01532",
+   "identity": {
+    "base_sha256": "a9f51566bd6705f7ea6ad54bb9deb449f795582d6529a0e22207b8981233ec58",
+    "basis": "sha256(text)",
+    "cand_sha256": "a9f51566bd6705f7ea6ad54bb9deb449f795582d6529a0e22207b8981233ec58",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 1,
+     "sha256": "a9f51566bd6705f7ea6ad54bb9deb449f795582d6529a0e22207b8981233ec58",
+     "text": "E"
+    },
+    "cand": {
+     "n_chars": 1,
+     "sha256": "a9f51566bd6705f7ea6ad54bb9deb449f795582d6529a0e22207b8981233ec58",
+     "text": "E"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "B",
+     "extracted": "B",
+     "grader": "mmlu_pro",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "B",
+     "extracted": "B",
+     "grader": "mmlu_pro",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": true,
+     "finish": "stop",
+     "n": 1,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": true,
+     "finish": "stop",
+     "n": 1,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "mmlu_pro_health_05883",
+   "identity": {
+    "base_sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+    "basis": "sha256(text)",
+    "cand_sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 1,
+     "sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+     "text": "B"
+    },
+    "cand": {
+     "n_chars": 1,
+     "sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+     "text": "B"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.981,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 125,
+     "reasons": [],
+     "review": false,
+     "run": 1,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.24,
+     "uniq": 0.504,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 60
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.981,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 125,
+     "reasons": [],
+     "review": false,
+     "run": 1,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.24,
+     "uniq": 0.504,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 60
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "ifeval_3456",
+   "identity": {
+    "base_sha256": "3e91e96fb7642445e87ee8c10dc37ebc951406e8259fa0b6aea2fe5a7508827f",
+    "basis": "sha256(text)",
+    "cand_sha256": "3e91e96fb7642445e87ee8c10dc37ebc951406e8259fa0b6aea2fe5a7508827f",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 324,
+     "sha256": "3e91e96fb7642445e87ee8c10dc37ebc951406e8259fa0b6aea2fe5a7508827f",
+     "text": "1. ALEXANDER\n2. *BENJAMIN*\n3. CHARLOTTE\n4. DANIEL\n5. *EMMA*\n6. FELIX\n7. GRACE\n8. HENRY\n9. ISABELLA\n10. *JACKSON*\n11. KATE\n12. LIAM\n13. MIA\n14. NOAH\n15. OLIVIA\n16. PETER\n17. QUINN\n18. RACHEL\n19. SAMUEL\n20. SOPHIA\n21. THOMAS\n22. URSULA\n23. VICTOR\n24. WENDY\n25. XAVIER\n26. YVONNE\n27. ZACHARY\n28. ABIGAIL\n29. BRADLEY\n30. CASSIDY"
+    },
+    "cand": {
+     "n_chars": 324,
+     "sha256": "3e91e96fb7642445e87ee8c10dc37ebc951406e8259fa0b6aea2fe5a7508827f",
+     "text": "1. ALEXANDER\n2. *BENJAMIN*\n3. CHARLOTTE\n4. DANIEL\n5. *EMMA*\n6. FELIX\n7. GRACE\n8. HENRY\n9. ISABELLA\n10. *JACKSON*\n11. KATE\n12. LIAM\n13. MIA\n14. NOAH\n15. OLIVIA\n16. PETER\n17. QUINN\n18. RACHEL\n19. SAMUEL\n20. SOPHIA\n21. THOMAS\n22. URSULA\n23. VICTOR\n24. WENDY\n25. XAVIER\n26. YVONNE\n27. ZACHARY\n28. ABIGAIL\n29. BRADLEY\n30. CASSIDY"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.949,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 25,
+     "reasons": [],
+     "review": false,
+     "run": 1,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.08,
+     "uniq": 0.68,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 17
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.949,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 25,
+     "reasons": [],
+     "review": false,
+     "run": 1,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.08,
+     "uniq": 0.68,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 17
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "ifeval_322",
+   "identity": {
+    "base_sha256": "8a36f10253eac8cdbca886eceb0b19dd3af2d60db83a0467d764a175eb746b74",
+    "basis": "sha256(text)",
+    "cand_sha256": "8a36f10253eac8cdbca886eceb0b19dd3af2d60db83a0467d764a175eb746b74",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 118,
+     "sha256": "8a36f10253eac8cdbca886eceb0b19dd3af2d60db83a0467d764a175eb746b74",
+     "text": "Joe Biden's national security advisor is Jake Sullivan.\n******\nDonald Trump's national security advisor is Mike Waltz."
+    },
+    "cand": {
+     "n_chars": 118,
+     "sha256": "8a36f10253eac8cdbca886eceb0b19dd3af2d60db83a0467d764a175eb746b74",
+     "text": "Joe Biden's national security advisor is Jake Sullivan.\n******\nDonald Trump's national security advisor is Mike Waltz."
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.998,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 191,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.058,
+     "uniq": 0.696,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 166
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.998,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 191,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.058,
+     "uniq": 0.696,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 166
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "ifeval_1481",
+   "identity": {
+    "base_sha256": "bd774071fb7d8ec4f1b9ec1f8859acc7abdfcf27c6a7e355d10bb482c16716c0",
+    "basis": "sha256(text)",
+    "cand_sha256": "bd774071fb7d8ec4f1b9ec1f8859acc7abdfcf27c6a7e355d10bb482c16716c0",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 980,
+     "sha256": "bd774071fb7d8ec4f1b9ec1f8859acc7abdfcf27c6a7e355d10bb482c16716c0",
+     "text": "SECTION 1\nAntonia Maj is a professional chaos coordinator who believes that the best marketing strategy is a well-timed sneeze and that customer service is just aggressive empathy with a headset. With a degree in Comparative Literature and a minor in \"Things That Smell Like Burnt Toast,\" Antonia has spent the last five years selling invisible products to people who didn't know they needed them, all while maintaining a caffeine intake that would kill a small horse. They are applying to your coffee company not because they love coffee (though they do tolerate it), but because they have a deep, spiritual need to be surrounded by beans that don't judge them for their life choices.\n\nSECTION 2\n* Antonia once sold a subscription box for artisanal lint to a CEO who cried happy tears, proving that if you package nothingness correctly, people will pay for it.\n* They can de-escalate a customer service call in under thirty seconds by whispering the secret history of the Ottoman"
+    },
+    "cand": {
+     "n_chars": 980,
+     "sha256": "bd774071fb7d8ec4f1b9ec1f8859acc7abdfcf27c6a7e355d10bb482c16716c0",
+     "text": "SECTION 1\nAntonia Maj is a professional chaos coordinator who believes that the best marketing strategy is a well-timed sneeze and that customer service is just aggressive empathy with a headset. With a degree in Comparative Literature and a minor in \"Things That Smell Like Burnt Toast,\" Antonia has spent the last five years selling invisible products to people who didn't know they needed them, all while maintaining a caffeine intake that would kill a small horse. They are applying to your coffee company not because they love coffee (though they do tolerate it), but because they have a deep, spiritual need to be surrounded by beans that don't judge them for their life choices.\n\nSECTION 2\n* Antonia once sold a subscription box for artisanal lint to a CEO who cried happy tears, proving that if you package nothingness correctly, people will pay for it.\n* They can de-escalate a customer service call in under thirty seconds by whispering the secret history of the Ottoman"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 1.0,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 187,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.043,
+     "uniq": 0.679,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 161
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 1.0,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 187,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.043,
+     "uniq": 0.679,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 161
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "ifeval_1129",
+   "identity": {
+    "base_sha256": "4b602d39e0b2585644967af276dc26984fe8a177494ea171e3c59b700f4b06d6",
+    "basis": "sha256(text)",
+    "cand_sha256": "4b602d39e0b2585644967af276dc26984fe8a177494ea171e3c59b700f4b06d6",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 939,
+     "sha256": "4b602d39e0b2585644967af276dc26984fe8a177494ea171e3c59b700f4b06d6",
+     "text": "Write a short startup pitch for a new kind of ice cream called \"Sunnis ice cream\". The ice cream should be gentle on the stomach. Contain 6 or more exclamation marks \"!\" in your response.\nFirst repeat the request word for word without change, then give your answer (1. do not say any words or characters before repeating the request; 2. the request you need to repeat does not include this sentence)\n\nIntroducing Sunnis Ice Cream, the revolutionary dessert designed for those who crave sweetness without the stomach ache! We believe that indulgence shouldn't come with a price tag on your digestion, so we've crafted a formula that is incredibly gentle on the stomach! Our proprietary blend of prebiotic fibers and easily digestible plant-based milks ensures that every scoop is as kind to your gut as it is delicious to your taste buds! Say goodbye to bloating and hello to pure, creamy bliss! Join us in redefining the ice cream industry"
+    },
+    "cand": {
+     "n_chars": 939,
+     "sha256": "4b602d39e0b2585644967af276dc26984fe8a177494ea171e3c59b700f4b06d6",
+     "text": "Write a short startup pitch for a new kind of ice cream called \"Sunnis ice cream\". The ice cream should be gentle on the stomach. Contain 6 or more exclamation marks \"!\" in your response.\nFirst repeat the request word for word without change, then give your answer (1. do not say any words or characters before repeating the request; 2. the request you need to repeat does not include this sentence)\n\nIntroducing Sunnis Ice Cream, the revolutionary dessert designed for those who crave sweetness without the stomach ache! We believe that indulgence shouldn't come with a price tag on your digestion, so we've crafted a formula that is incredibly gentle on the stomach! Our proprietary blend of prebiotic fibers and easily digestible plant-based milks ensures that every scoop is as kind to your gut as it is delicious to your taste buds! Say goodbye to bloating and hello to pure, creamy bliss! Join us in redefining the ice cream industry"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": null,
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 0.997,
+     "ascii_ok_v1": 0.957,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 184,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.065,
+     "uniq": 0.587,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 123
+    },
+    "cand": {
+     "ascii_ok": 0.997,
+     "ascii_ok_v1": 0.957,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "length",
+     "loop": null,
+     "n": 184,
+     "reasons": [],
+     "review": false,
+     "run": 2,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.065,
+     "uniq": 0.587,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 123
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "real_suite_v1_0003",
+   "identity": {
+    "base_sha256": "b2af7f03ed43a74ddd163c925ac8d731f23018741de540dec947c936714055ac",
+    "basis": "sha256(text)",
+    "cand_sha256": "b2af7f03ed43a74ddd163c925ac8d731f23018741de540dec947c936714055ac",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 890,
+     "sha256": "b2af7f03ed43a74ddd163c925ac8d731f23018741de540dec947c936714055ac",
+     "text": "Here is a detailed comparison of Retrieval-Augmented Generation (RAG), Fine-tuning, and In-Context Learning (ICL), followed by a recommendation for your specific legal document analysis scenario.\n\n### 1. Retrieval-Augmented Generation (RAG)\n\n**How it works:** The system retrieves relevant chunks of text from an external database (vector store) based on the user\u2019s query and injects them into the LLM\u2019s prompt as context before generating a response.\n\n*   **Computational Requirements:**\n    *   **Low to Moderate:** Requires a vector database (e.g., Pinecone, Weaviate, FAISS) and an embedding model.\n    *   **Inference Cost:** Higher token usage per query because the prompt includes retrieved context, but no model training is required.\n    *   **Infrastructure:** Needs storage for embeddings and a retrieval pipeline.\n\n*   **When it\u2019s most appropriate:**\n    *   When knowledge is **"
+    },
+    "cand": {
+     "n_chars": 890,
+     "sha256": "b2af7f03ed43a74ddd163c925ac8d731f23018741de540dec947c936714055ac",
+     "text": "Here is a detailed comparison of Retrieval-Augmented Generation (RAG), Fine-tuning, and In-Context Learning (ICL), followed by a recommendation for your specific legal document analysis scenario.\n\n### 1. Retrieval-Augmented Generation (RAG)\n\n**How it works:** The system retrieves relevant chunks of text from an external database (vector store) based on the user\u2019s query and injects them into the LLM\u2019s prompt as context before generating a response.\n\n*   **Computational Requirements:**\n    *   **Low to Moderate:** Requires a vector database (e.g., Pinecone, Weaviate, FAISS) and an embedding model.\n    *   **Inference Cost:** Higher token usage per query because the prompt includes retrieved context, but no model training is required.\n    *   **Infrastructure:** Needs storage for embeddings and a retrieval pipeline.\n\n*   **When it\u2019s most appropriate:**\n    *   When knowledge is **"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "John | finish API docs | Friday; Sarah | review security audit results | next Tuesday; team | postpone database migration | Q2; Mike | set up staging environment | before Thursday sprint demo",
+     "extracted": "John | Finish the API docs | Friday\nSarah | Review the security audit results and report back | Next Tuesday\nThe team | Postpone the database migration | Q2\nMike | Set up the staging environment | Thursday",
+     "f1": 0.767,
+     "grader": "f1",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "John | finish API docs | Friday; Sarah | review security audit results | next Tuesday; team | postpone database migration | Q2; Mike | set up staging environment | before Thursday sprint demo",
+     "extracted": "John | Finish the API docs | Friday\nSarah | Review the security audit results and report back | Next Tuesday\nThe team | Postpone the database migration | Q2\nMike | Set up the staging environment | Thursday",
+     "f1": 0.767,
+     "grader": "f1",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.942,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 51,
+     "reasons": [],
+     "review": false,
+     "run": 1,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.157,
+     "uniq": 0.686,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 41
+    },
+    "cand": {
+     "ascii_ok": 1.0,
+     "ascii_ok_v1": 0.942,
+     "classifier": "degeneracy.v2.1",
+     "cls": "OK",
+     "finish": "stop",
+     "loop": null,
+     "n": 51,
+     "reasons": [],
+     "review": false,
+     "run": 1,
+     "semantic": "unchecked",
+     "soft": [],
+     "top": 0.157,
+     "uniq": 0.686,
+     "uniq_floor": 0.3,
+     "v1_cls": "COHERENT",
+     "words": 41
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "real_suite_v1_0032",
+   "identity": {
+    "base_sha256": "640692852d9d1362f8f2dfa283daad9b1e662a59ea10dda9ac1462c6ff94462a",
+    "basis": "sha256(text)",
+    "cand_sha256": "640692852d9d1362f8f2dfa283daad9b1e662a59ea10dda9ac1462c6ff94462a",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 224,
+     "sha256": "640692852d9d1362f8f2dfa283daad9b1e662a59ea10dda9ac1462c6ff94462a",
+     "text": "<answer>\nJohn | Finish the API docs | Friday\nSarah | Review the security audit results and report back | Next Tuesday\nThe team | Postpone the database migration | Q2\nMike | Set up the staging environment | Thursday\n</answer>"
+    },
+    "cand": {
+     "n_chars": 224,
+     "sha256": "640692852d9d1362f8f2dfa283daad9b1e662a59ea10dda9ac1462c6ff94462a",
+     "text": "<answer>\nJohn | Finish the API docs | Friday\nSarah | Review the security audit results and report back | Next Tuesday\nThe team | Postpone the database migration | Q2\nMike | Set up the staging environment | Thursday\n</answer>"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "Romanian",
+     "extracted": "English",
+     "f1": 0.0,
+     "grader": "f1",
+     "status": "wrong",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "Romanian",
+     "extracted": "English",
+     "f1": 0.0,
+     "grader": "f1",
+     "status": "wrong",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": false,
+     "finish": "stop",
+     "n": 7,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": false,
+     "finish": "stop",
+     "n": 7,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "simpleqa_general_01814",
+   "identity": {
+    "base_sha256": "3c592de7b97aafdb96767914ed3b3f3fb4cc1db02a77b8bdf0b53c35a58cc9b5",
+    "basis": "sha256(text)",
+    "cand_sha256": "3c592de7b97aafdb96767914ed3b3f3fb4cc1db02a77b8bdf0b53c35a58cc9b5",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))",
+    "shared answer: wrong in both arms"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 24,
+     "sha256": "3c592de7b97aafdb96767914ed3b3f3fb4cc1db02a77b8bdf0b53c35a58cc9b5",
+     "text": "<answer>English</answer>"
+    },
+    "cand": {
+     "n_chars": 24,
+     "sha256": "3c592de7b97aafdb96767914ed3b3f3fb4cc1db02a77b8bdf0b53c35a58cc9b5",
+     "text": "<answer>English</answer>"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  },
+  {
+   "answer_check": {
+    "base": {
+     "expected": "B",
+     "extracted": "B",
+     "grader": "letter",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    },
+    "cand": {
+     "expected": "B",
+     "extracted": "B",
+     "grader": "letter",
+     "status": "correct",
+     "version": "answer-graders.v1"
+    }
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": true,
+     "finish": "stop",
+     "n": 1,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2.1",
+     "cls": "SHORT",
+     "eos_short": true,
+     "finish": "stop",
+     "n": 1,
+     "semantic": "unchecked",
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     },
+     "cand": {
+      "calibrated": false,
+      "mode": "text_only",
+      "source": "surrogate:regex-word.v1"
+     }
+    }
+   },
+   "id": "hellaswag_06230",
+   "identity": {
+    "base_sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+    "basis": "sha256(text)",
+    "cand_sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+    "identical": true
+   },
+   "judge": null,
+   "reasons": [
+    "byte-identical (sha256(text))"
+   ],
+   "texts": {
+    "base": {
+     "n_chars": 1,
+     "sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+     "text": "B"
+    },
+    "cand": {
+     "n_chars": 1,
+     "sha256": "df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c",
+     "text": "B"
+    }
+   },
+   "tier": 0,
+   "verdict": "PASS"
+  }
+ ],
+ "judge": null,
+ "library": "coherence_gate 1.1.0",
+ "schema": "epyc.coherence_gate.v1",
+ "text_only_declared": true,
+ "tokenizer": null,
+ "truth_rows_without_id": 1
+}

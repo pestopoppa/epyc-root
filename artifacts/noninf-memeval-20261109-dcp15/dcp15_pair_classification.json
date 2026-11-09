@@ -1,0 +1,314 @@
+{
+ "source": "artifacts/noninf-memeval-20261021/dcp14_result.json (detector aae5fcb2...)",
+ "tap": "/mnt/raid0/llm/tmp/inference_tap_events.jsonl (158683899 bytes, Oct 5)",
+ "pairs": [
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-89716d6c7978",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1149
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-cf25d67d8615",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1149
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-720ece30f82a",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 641
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-21137a119ceb",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 287
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-b899fce787ff",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 453
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-e58cd1d1cbb3",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 218
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-be9afba1e9f2",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 779,
+   "child_len": 330
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-7829e0e057c7",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 496
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-45ac4040ddac",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 376
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-87fbdf7889ca",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1602
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-85dfa83ec5ee",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 768,
+   "child_len": 1809
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-c3a2360c15bc",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 422
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-0d605efd1ab4",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1319
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-4673031d0be5",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 1508
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-79aacd54184a",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 1732
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-284cd33a29ce",
+   "parent_prompt_kind": "python_only_preamble",
+   "parent_len": 441,
+   "child_len": 309
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-4d64a99de786",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1045
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-cfe0c77ddcb1",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 383
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-699d947696a5",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 2015
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-ac7cc9377905",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1177
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-2bee760c6fae",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 392
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-2420ed0888d7",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1900
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-10c871ce2898",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 1562
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-2b4fd3825f37",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 742
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-81e4f7e212d3",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 637
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-ad674f7d0141",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 689
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-3a1bdf7dc983",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 292
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-e273c20891bf",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 298
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-a27c607d8955",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 2261
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-3bda5797dfb8",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 234
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-57dc04a48c5f",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 632
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-d8b292fb3974",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 395
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-44f9979db978",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 2015
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-18f2cc4b1616",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 781,
+   "child_len": 1817
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-840a28ede299",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 761,
+   "child_len": 338
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-0162373e4e66",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 529
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-39270139be0f",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1149
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-da3eb6a64623",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 287
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-b302df4e1961",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 453
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-0af8d17ef795",
+   "parent_prompt_kind": "python_only_preamble",
+   "parent_len": 462,
+   "child_len": 330
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-ec7145780a6f",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 782,
+   "child_len": 496
+  },
+  {
+   "parent_role": "architect_general",
+   "parent_request_id": "api-bb0b2b094609",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 376
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-21309350ca70",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 768,
+   "child_len": 1809
+  },
+  {
+   "parent_role": "architect_critic",
+   "parent_request_id": "api-0ee580f57046",
+   "parent_prompt_kind": "plan_review_template",
+   "parent_len": 780,
+   "child_len": 1602
+  }
+ ]
+}
