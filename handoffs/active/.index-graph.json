@@ -721,7 +721,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T13:06:43Z",
+  "generated_at": "2026-11-09T13:09:45Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1475,18 +1475,18 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 805,
-      "dispatchable": 156,
+      "closed": 806,
+      "dispatchable": 155,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-08",
+      "last_advanced": "2026-11-09",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 157,
+      "open": 156,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1615,7 +1615,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 17,
+          "dispatchable": 16,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1633,7 +1633,7 @@
           ],
           "line": 14132,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 17,
+          "open": 16,
           "readiness": "blocked"
         }
       ]

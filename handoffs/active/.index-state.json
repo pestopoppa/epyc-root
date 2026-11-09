@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 610
+      "open": 609
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 805,
+      "closed": 806,
       "guarded": 0,
-      "last_advanced": "2026-11-08",
-      "open": 156,
+      "last_advanced": "2026-11-09",
+      "open": 155,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -193,7 +193,7 @@
         },
         {
           "blocked": 0,
-          "closed": 32,
+          "closed": 33,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -213,7 +213,7 @@
           "line": 14132,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 17
+          "open": 16
         }
       ]
     },
