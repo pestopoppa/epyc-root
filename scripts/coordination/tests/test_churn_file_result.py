@@ -261,9 +261,22 @@ class TestFileResult(Base):
         self.assertEqual(v["filed_by"], "file_result.py")
         self.assertEqual(v["outcome_class"], "SCIENCE-VERDICT")
         self.assertTrue(self.filed("ROW-1"))
-        self.assertIn("TICK ROW-1", out)
+        self.assertIn("SUGGESTED-TICK ROW-1", out)
         self.assertIn("[no-belief: row verdict filed by file_result.py]", out)
         self.assertEqual(Path(self.lane, "handoffs/active/h.md").read_text(), HANDOFF)  # no tick without tick_text
+
+    def test_no_tick_written_prints_suggested_tick_never_bare_tick(self):
+        self.row("ROW-1", "rc == 0", {"ok": 1})
+        code, out, _ = self.run_main("ROW-1")
+        self.assertEqual(code, 0)
+        self.assertIn("SUGGESTED-TICK ROW-1", out)
+        self.assertFalse([l for l in out.splitlines() if l.startswith("TICK ")])
+        self.assertEqual(Path(self.lane, "handoffs/active/h.md").read_text(), HANDOFF)
+        code, out, _ = self.run_main("ROW-1", "--dry-run")  # already filed -> use a fresh row for the dry-run path
+        self.row("ROW-2", "rc == 0", {"ok": 1})
+        _, out, _ = self.run_main("ROW-2", "--dry-run")
+        self.assertIn("SUGGESTED-TICK ROW-2", out)
+        self.assertFalse([l for l in out.splitlines() if l.startswith("TICK ")])
 
     def test_numeric_fail_with_rc_and_armed_manifest(self):
         self.row("ROW-1", "rc == 0 and tps >= 10", {"tps": 12}, rc=1, armed=True)

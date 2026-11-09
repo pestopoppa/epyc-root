@@ -365,7 +365,7 @@ def main(argv=None):
     summary = f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}" + (" (dry-run)" if a.dry_run else "")
     print(summary)
     if a.dry_run:
-        print("TICK " + tick_line(rid, rc, verdict, values, filed_by))
+        print("SUGGESTED-TICK " + tick_line(rid, rc, verdict, values, filed_by))
         if not a.no_reclaim:
             run_reclaim([rid, "--flags", flags, "--pre-filed"])
         return 0
@@ -389,7 +389,7 @@ def main(argv=None):
         except (flip_checkbox.CheckboxFlipError, ValueError) as e:
             print(f"ERROR tick failed: {e}", file=sys.stderr); return 5
     else:
-        print("TICK " + tick_line(rid, rc, verdict, values, filed_by))
+        print("SUGGESTED-TICK " + tick_line(rid, rc, verdict, values, filed_by))
     if rec.get("answer"):
         summary += f" answer={rec['answer']}"
     if not filing.write_filed(flags, rid, summary, rec):
