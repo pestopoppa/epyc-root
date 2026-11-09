@@ -2428,7 +2428,7 @@ Poly-EPO (arXiv 2604.17654) and Polychromic Objectives for RL (arXiv 2509.25424)
 
 #### 2026-07-25 — intake Stage-2a dive: Tier-0 rung + BCI (with a corrected cost story)
 
-_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](frontier-lab-automation.md)._
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](../completed/frontier-lab-automation.md)._
 
 - [x] Add a **Tier-0 (zero-training, zero-inference-infra): adopt a pre-compressed checkpoint** rung to the taxonomy, seeded with ThinkingCap-Qwen3.6-27B. Record as an **observation** (vendor self-reported, no independent corroboration); note its own table is 8-of-12 negative out-of-domain and the repo declares no license. ✅ 2026-07-29 — taxonomy entry added above with the admission constraints, grounded in committed `research/intake_index.yaml` intake-892 (vendor results, directional counter-evidence, and license finding).
 - [x] Add **Behavior-Conditioned Inference** (arXiv 2509.13237) as a Tier-1 candidate: extract named procedural "behaviors" from our own successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Best-instrumented paper in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95). ✅ 2026-07-29 — added to the Tier-1 taxonomy from committed intake-897, including the required local A/B instead of importing its handbook.

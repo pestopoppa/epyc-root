@@ -85,7 +85,7 @@ Sources: [model-exec-containment](../handoffs/active/stack-lifecycle-program.md#
 - [docs/design/guard-denial-ledger-proposal.md](../docs/design/guard-denial-ledger-proposal.md) — ledger schema, hooks, rollout
 - [docs/design/dev-harness-its-pilot-spec.md](../docs/design/dev-harness-its-pilot-spec.md) — registry, segments, controls, threats
 - [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining) — M1/M2 sample results
-- [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel) — F3-LB1 privacy gate and PII scan
+- [handoffs/completed/frontier-lab-automation.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel) — F3-LB1 privacy gate and PII scan
 - [docs/guides/agent-workflows/cleanup-reference-check.md](../docs/guides/agent-workflows/cleanup-reference-check.md) — reaper precondition rule
 - [handoffs/active/stack-lifecycle-program.md](../handoffs/active/stack-lifecycle-program.md#track-model-exec-containment) — token revoke declined
 - [progress/2026-10/2026-10-22-3c4ca599.md](../progress/2026-10/2026-10-22-3c4ca599.md) — containment lapses
@@ -141,7 +141,7 @@ HG-9's detection/repair split is an accepted source-backed topology option with 
 - [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-qwen-chat-template-evaluation)
 - [handoffs/active/harness-program.md](../handoffs/active/harness-program.md#track-agentic-serving-harness-fixes)
 - [progress/2026-10/2026-10-22-ct18-final.md](../progress/2026-10/2026-10-22-ct18-final.md)
-- [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
+- [handoffs/completed/frontier-lab-automation.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
 
 ## Compiled Update — 2026-09-17 (evening): the v10 re-pin is ratified, so the leak cleanup has no debt left
 
@@ -562,7 +562,7 @@ Sources: [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-t
 - **Compaction provenance is an open hazard, not a measured one here.** UFH-21 queues a hostile-tool-output test of whether `/compact` carries a forged `[User]:` approval as user authority in the shipped OpenCode shell; no outcome is recorded.
 - **Evidence trails need re-find, not self-written marks.** A second-reader audit of 40 intake anchors found 40 of 40 hashes matching while 4 anchors failed to support their claim and 1 was not in the source; the landed anchor gate flags fabricated, whitespace-altered and cross-pasted fixtures, but its 2657-entry replay is vacuous for re-find (raw root unset).
 
-Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/active/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)
+Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)
 
 ## Compiled Update — 2026-11-09 (PII hook: nm-row exemption bypass found in review)
 

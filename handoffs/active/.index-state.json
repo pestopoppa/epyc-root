@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 590
+      "open": 591
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -14,9 +14,9 @@
     },
     "research-evaluation-index.md": {
       "blocked": 4,
-      "handoffs": 5,
+      "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 196
+      "open": 194
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -1048,74 +1048,6 @@
         }
       ]
     },
-    "frontier-lab-automation.md": {
-      "blocked": 0,
-      "closed": 80,
-      "guarded": 0,
-      "last_advanced": "2026-11-09",
-      "open": 2,
-      "owner_index": "research-evaluation-index.md",
-      "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
-        "evidence": null
-      },
-      "row_id": "EVL-29",
-      "state": "active",
-      "total": 82,
-      "tracks": [
-        {
-          "blocked": 0,
-          "closed": 41,
-          "gates": null,
-          "guarded": 0,
-          "line": 0,
-          "markers": 0,
-          "name": "(untracked)",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 2,
-          "gates": [],
-          "guarded": 0,
-          "line": 384,
-          "markers": 1,
-          "name": "agent-file-prose-compression",
-          "open": 2
-        },
-        {
-          "blocked": 0,
-          "closed": 12,
-          "gates": [],
-          "guarded": 0,
-          "line": 487,
-          "markers": 1,
-          "name": "frontier-f2-self-running-lab",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 12,
-          "gates": [],
-          "guarded": 0,
-          "line": 570,
-          "markers": 1,
-          "name": "frontier-f3-data-flywheel",
-          "open": 0
-        },
-        {
-          "blocked": 0,
-          "closed": 13,
-          "gates": [],
-          "guarded": 0,
-          "line": 762,
-          "markers": 1,
-          "name": "stale-open-audit-2026-07-18",
-          "open": 0
-        }
-      ]
-    },
     "harness-program.md": {
       "blocked": 18,
       "closed": 238,
@@ -1241,7 +1173,7 @@
       "closed": 191,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 45,
+      "open": 46,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1250,7 +1182,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 237,
+      "total": 238,
       "tracks": [
         {
           "blocked": 1,
@@ -1285,14 +1217,14 @@
           "line": 1804,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
-          "open": 1
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2129,
+          "line": 2134,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1302,7 +1234,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2268,
+          "line": 2273,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1312,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2824,
+          "line": 2829,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1322,7 +1254,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2964,
+          "line": 2969,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1332,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2971,
+          "line": 2976,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2695,21 +2627,12 @@
       "next_action": "Retain EV-PROTO and live calibration acceptance",
       "track": "eval tower verification"
     },
-    "EVL-29": {
-      "deps": [],
-      "handoff": "frontier-lab-automation.md",
-      "id": "EVL-29",
-      "index": "research-evaluation-index.md",
-      "line": 16,
-      "next_action": "File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed",
-      "track": "intake derived work 2026 07 25"
-    },
     "EVL-47": {
       "deps": [],
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
-      "line": 17,
+      "line": 16,
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
       "track": "vidya belief substrate program"
     },

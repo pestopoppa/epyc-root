@@ -12,7 +12,7 @@
 - **Independent review before landing caught four real defects** in the RTG-22 batch: a campaign `.env` ageing out of worktree protection, `update-ref HEAD`/`--stdin` passing the new guard, `close-lane` substring matching, and a `NameError` in a restored gate. Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
 - **INC-20261109-autopilot-refresh-process-faults.** Four process faults: subagents changed the pathspec-commit form after the hook blocked it instead of re-using the prescribed form; one `pgrep` on a name pattern (nothing killed); two subagents left unreported background work (no PID); a future-stamp error on an edit. Remedy: re-read the hook's prescribed form and use exactly it; capture and report PIDs or do not background; a brief must say "no background work" or require its PID. Source: [INCIDENT_LOG](../docs/reference/agent-config/INCIDENT_LOG.md).
 - **Self-reported errors (pipeline-mgmt):** pushed a red pin-list test, removed a worktree after a failed push (recovered), and overclaimed the dispatcher as root cause. Keeper fixes (republish guard, one-sample quiet path, LOOP-11, residency with Docker; branch keeper-frozen-20261109) were approved and reviewed but not deployed; deploy is `deploy_rowflow.sh --emergency` at a grant-quiet gap. Source: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
-- **Frontier-lab automation:** W3 (reliability ladder) moved to `autopilot-program.md` so the handoff can archive. Source: [frontier-lab-automation](../handoffs/active/frontier-lab-automation.md).
+- **Frontier-lab automation:** W3 (reliability ladder) moved to `autopilot-program.md` so the handoff can archive. Source: [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md).
 
 ## Compiled Update — 2026-11-03 (evening): churn-pipeline defects and the coordinator-daemon retirement
 
@@ -2721,7 +2721,7 @@ before filing, and every fix was validated by the (newly hardened) validators.
   edit that fixed one); the reference validator gained `#anchor` slug checking
   (GitHub-style, including the double-hyphen-for-`&` subtlety) and caught four
   latent bad references on its first run.
-  [agent-file-prose-compression](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)
+  [agent-file-prose-compression](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
 - **The compliance suite is a deployment-gate instrument and drifts like one.**
   Restructuring the source file silently invalidated 29% of the suite's tasks
   (they probed content that moved out) — caught in zero-inference prep, fixed as
@@ -2729,7 +2729,7 @@ before filing, and every fix was validated by the (newly hardened) validators.
   pools) with a mechanical anchor invariant: the perfect-fake must score 1.0 at
   every compression level, so a live failure measures the model, never anchor
   availability.
-  [agent-file-prose-compression](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)
+  [agent-file-prose-compression](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
 
 ## Compiled Update — 2026-07-29 the coordination plane: two tiers, and one defect class
 
@@ -2889,7 +2889,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **The routing plane now runs through a fresh local-first authority wrapper instead of the older cloud-default restart target.** AutoPilot restarted as PID `3681234` with `AUTOPILOT_PLANNER_PRIMARY=local_ingest`, `AUTOPILOT_PLANNER_CRITIC=local_frontdoor`, `stack_mode=both`, and `code_stale=false`. That is an architecture-level shift: the planner path now prefers the local stack by default while still preserving a distinct critic role and explicit restart boundary. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
-- **Planner evidence is now process-relative rather than text-relative.** `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, so dashboard consumers can tell whether a planner tap is actually from the current process or just a stale file still on disk. That is an observability contract change, not just a UI tweak: it prevents old tap history from masquerading as current routing evidence. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+- **Planner evidence is now process-relative rather than text-relative.** `b5cadba6` added `planner_tap_mtime_s` and `planner_tap_precedes_autopilot_start`, so dashboard consumers can tell whether a planner tap is actually from the current process or just a stale file still on disk. That is an observability contract change, not just a UI tweak: it prevents old tap history from masquerading as current routing evidence. Sources: [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [frontier-f2-self-running-lab.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 - **Planner prompt hygiene is now enforced as a separate containment rule.** `b7518da0` keeps `StrategyStore` hints in planner-context only, ignores legacy `strategy_hints` on Seeder, and quarantines the contaminated `1257-1263` trials append-only with `bug_corrupted_by=b7518da0`. Architecturally, that separates durable evidence from mutable prompt assembly, which is the right boundary if the routing plane is going to keep learning from its own history without replaying corrupted history into new actions. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05).
 
@@ -2986,11 +2986,11 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **The targeted consult gate is implemented and default-off.** `src/orchestration/review_consult_gate.py` triggers on parser/data-contract terms, compatibility/fallback terms, hidden-verifier or transaction-risk terms, deletes, multi-file edits, and public API/registry/config paths; skips unparsed drafts and plain single-file edits. Flag `review_before_commit_targeted_gate` (`ORCHESTRATOR_FEATURE_REVIEW_BEFORE_COMMIT_TARGETED_GATE=1`) is inert unless `review_before_commit_consult` is also enabled. Skipped consults are `targeted_gate_skip` events with `gate_reasons`. Focused pytest `86 passed`. Sources: [internal-interaction-lifecycle.md](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **F2 quiet-window lab produced real gold tuples.** `scripts/lab/run_job.py` resolves lab roles to live orchestrator roles and rejects mock responses. `handoff_freshness_lint` passed as real `worker_general`; `attestation_watch` required reduced context budget then passed. One positive `lab_gold_tuple.v1` accepted, one negative rejected after review caught a false attestation-empty claim. `review_queue_report.py` reports `pending_reviews=0`, `verdicts=12`. Sources: [frontier-f2-self-running-lab.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **F2 quiet-window lab produced real gold tuples.** `scripts/lab/run_job.py` resolves lab roles to live orchestrator roles and rejects mock responses. `handoff_freshness_lint` passed as real `worker_general`; `attestation_watch` required reduced context budget then passed. One positive `lab_gold_tuple.v1` accepted, one negative rejected after review caught a false attestation-empty claim. `review_queue_report.py` reports `pending_reviews=0`, `verdicts=12`. Sources: [frontier-f2-self-running-lab.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-- **F3 trusted-label gate cleared and baseline acceptance passed.** Four prompt-free review packets applied to reach `100` trusted labels. Baseline report: `80` train rows, `20` held-out, `18` correct, `0.90` accuracy, threshold `0.85`. F3 W2 satisfied; remaining blockers: F2 tuple evidence and gfx90a training-viability. Sources: [frontier-f3-data-flywheel.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
+- **F3 trusted-label gate cleared and baseline acceptance passed.** Four prompt-free review packets applied to reach `100` trusted labels. Baseline report: `80` train rows, `20` held-out, `18` correct, `0.90` accuracy, threshold `0.85`. F3 W2 satisfied; remaining blockers: F2 tuple evidence and gfx90a training-viability. Sources: [frontier-f3-data-flywheel.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel), [progress 2026-07-07](../progress/2026-07/2026-07-07.md).
 
-**Sources**: handoffs [internal-interaction-lifecycle](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [batched-edit-parallel-apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply), [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [minddr-deep-research-mode](../handoffs/active/model-evaluation-queue.md#track-minddr-deep-research-mode), [frontier-f2-self-running-lab](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [frontier-f3-data-flywheel](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel) · progress [2026-07-04](../progress/2026-07/2026-07-04.md), [2026-07-05](../progress/2026-07/2026-07-05.md), [2026-07-06](../progress/2026-07/2026-07-06.md), [2026-07-07](../progress/2026-07/2026-07-07.md) · orchestrator commits `18956892`, `0e555822`, `4183522f`, `8fb8f69a`, `b7ba6265`, `7036630c`, `0f7252bb`, `56a72f6`, `c3b2514e`
+**Sources**: handoffs [internal-interaction-lifecycle](../handoffs/active/routing-program.md#track-internal-interaction-lifecycle), [batched-edit-parallel-apply](../handoffs/active/autopilot-program.md#track-batched-edit-parallel-apply), [delegation-context-preassembly](../handoffs/active/context-and-token-economy.md#track-delegation-context-preassembly), [minddr-deep-research-mode](../handoffs/active/model-evaluation-queue.md#track-minddr-deep-research-mode), [frontier-f2-self-running-lab](../handoffs/completed/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [frontier-f3-data-flywheel](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel) · progress [2026-07-04](../progress/2026-07/2026-07-04.md), [2026-07-05](../progress/2026-07/2026-07-05.md), [2026-07-06](../progress/2026-07/2026-07-06.md), [2026-07-07](../progress/2026-07/2026-07-07.md) · orchestrator commits `18956892`, `0e555822`, `4183522f`, `8fb8f69a`, `b7ba6265`, `7036630c`, `0f7252bb`, `56a72f6`, `c3b2514e`
 
 ### New Findings (2026-07-02 — fixed-model harness evolution + Fable 5 window-2 architecture co-leads)
 
@@ -3437,7 +3437,7 @@ Three new agent-file-specific risks: (a) directive polarity (`must`/`must not`/`
 - [`handoffs/active/context-and-token-economy.md`](../handoffs/active/context-and-token-economy.md#track-tool-output-compression) Research Intake Update 2026-04-30 — TOON-orthogonality reframe + 3-risk register
 - [`handoffs/active/harness-program.md`](../handoffs/active/harness-program.md#track-repl-turn-efficiency) Research Intake Update 2026-04-30 — persistence-clause caveat
 - [`handoffs/completed/hermes-outer-shell.md`](../handoffs/completed/hermes-outer-shell.md) Research Intake Update 2026-04-30 — Pocock skills installer pattern as per-repo bootstrap
-- [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression) NEW — `/agent-file-compress` skill + per-model deployment gate
+- [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression) NEW — `/agent-file-compress` skill + per-model deployment gate
 
 ## DeepSeek-TUI vocabulary + snapshot-store port recipe (2026-04-30)
 
@@ -3496,7 +3496,7 @@ Per-model compression-tolerance curve becomes a **deployment gate** via `agent_f
 
 Pilot finding (2026-05-06, `agents/shared/ENGINEERING_STANDARDS.md`): file is unusually compression-resistant (12 RFC-2119 directives in 696 words — 1.7% density — plus 27% non-prose content). Achieved reductions: mild 12.4%, medium 21.8%, aggressive 28.4% (vs band targets 20%/40%/60%). All 12 directives preserved exactly. Useful empirical signal that the band targets are calibrated for narrative-prose files, not directive-dense policy files; the per-model curve must be measured per-file-class.
 
-Sources: [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression), `.claude/skills/agent-file-compress/SKILL.md`, `tests/compliance/agent_file/` (15+12+15 task pool + runner harness), `.claude/commands/new-model.md` (Step 6.5).
+Sources: [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression), `.claude/skills/agent-file-compress/SKILL.md`, `tests/compliance/agent_file/` (15+12+15 task pool + runner harness), `.claude/commands/new-model.md` (Step 6.5).
 
 ## RAO + RLM substrate cluster (2026-05-19)
 
@@ -3632,7 +3632,7 @@ litellm's resolution order falls through to `https://api.openai.com/v1`. Pass a 
 carrying `api_base` instead.
 
 _Sources: `handoffs/active/autopilot-program.md` § 2026-07-25;
-`handoffs/active/frontier-lab-automation.md` ID-1; `progress/2026-07/2026-07-25.md`._
+`handoffs/completed/frontier-lab-automation.md` ID-1; `progress/2026-07/2026-07-25.md`._
 
 ## Driving another agent's TUI is a transport with no delivery receipt (2026-07-28)
 
@@ -4380,7 +4380,7 @@ theorised.
 ### The compression metric was measuring the wrong unit — and the "we exceed the corpus maximum" claim is withdrawn
 
 Two 2026-08-20 measurements correct the agent-file compression program's own record (AFC-P5.E5/E6 in
-[`agent-file-prose-compression.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)):
+[`agent-file-prose-compression.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)):
 
 - **Denominate in WORDS, not lines.** External corpus evidence (intake-1199#record, re-derived from the
   authors' Zenodo replication package, record 18368326): `CLAUDE.md` sits at the **96.5th percentile
@@ -4455,7 +4455,7 @@ every invocation for every session, and it cannot express "self-runner ON PURPOS
 
 ### Source References (2026-08-23 compression + test conventions)
 
-- [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression)
+- [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression)
   — AFC-P5.E5/E6: the words-not-lines correction and the exceeds-corpus-maximum withdrawal (measured
   2026-08-20).
 - [`docs/guides/agent-workflows/test-suite-conventions.md`](../docs/guides/agent-workflows/test-suite-conventions.md)
@@ -5818,4 +5818,4 @@ Sources: [progress, wrap-up 10](../progress/2026-11/2026-11-07-operator-adhoc-op
 - **Intake anchor gates landed (ID-RI-ANCHOR-GATE, ID-RI-LANE-HEAD).** `validate_intake.py --check-anchors/--write-marks` and `--check-lane-anchors` plus `dive_preflight.py` are in; four frozen fixtures give their predeclared verdicts (verbatim ok; fabricated, whitespace-altered, cross-pasted flagged). The replay over 2657 entries is vacuous for re-find because `EPYC_VIDYA_RAW_ANCHOR_ROOT` is unset and only intake-1963 retains a source; 514 legacy anchors warn only (328 cross-pasted). The lane-head replay found 2 in-house anchors, flagged intake-1360 `stale_epoch` (the 2026-09-14 incident, a true positive) and raised 0 false positives.
 - **A matching hash is not provenance.** The independent second-reader audit of the quant/compiler dive (entries 2641-2649, 40 anchors) found all 40 hashes MATCH (they hash the stored quote), yet 7 locators were wrong, 4 anchors did not support their claim (two assert the opposite or something unrelated), 1 quote was a paraphrase not in the source (2646), and 1 claim had no anchor. Every quantitative claim spot-checked reconciled; the evidence trail, not the numbers, was the defect. 2648 and 2646 need repair before being called dive-verified. Inferred: the new re-find gate addresses exactly this class, but only where the raw source is retained.
 
-Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/active/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)
+Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/completed/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)

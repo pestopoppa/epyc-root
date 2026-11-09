@@ -109,12 +109,6 @@
       "weight": 5
     },
     {
-      "from": "EVL-02",
-      "kind": "ref",
-      "to": "EVL-29",
-      "weight": 3
-    },
-    {
       "from": "EVL-08",
       "kind": "ref",
       "to": "EVL-02",
@@ -155,12 +149,6 @@
       "kind": "ref",
       "to": "EVL-02",
       "weight": 4
-    },
-    {
-      "from": "EVL-14",
-      "kind": "ref",
-      "to": "EVL-29",
-      "weight": 3
     },
     {
       "from": "EVL-14",
@@ -185,48 +173,6 @@
       "kind": "ref",
       "to": "RTG-09",
       "weight": 14
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "EVL-02",
-      "weight": 5
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "EVL-14",
-      "weight": 3
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "INF-06",
-      "weight": 3
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "PIP-04",
-      "weight": 9
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "RTG-02",
-      "weight": 9
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "RTG-08",
-      "weight": 4
-    },
-    {
-      "from": "EVL-29",
-      "kind": "ref",
-      "to": "RTG-09",
-      "weight": 4
     },
     {
       "from": "EVL-47",
@@ -346,12 +292,6 @@
       "from": "INF-50",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 1
-    },
-    {
-      "from": "INF-50",
-      "kind": "ref",
-      "to": "EVL-29",
       "weight": 1
     },
     {
@@ -531,12 +471,6 @@
     {
       "from": "PIP-04",
       "kind": "ref",
-      "to": "EVL-29",
-      "weight": 3
-    },
-    {
-      "from": "PIP-04",
-      "kind": "ref",
       "to": "RTG-08",
       "weight": 2
     },
@@ -581,12 +515,6 @@
       "kind": "ref",
       "to": "EVL-02",
       "weight": 3
-    },
-    {
-      "from": "RTG-08",
-      "kind": "ref",
-      "to": "EVL-29",
-      "weight": 1
     },
     {
       "from": "RTG-08",
@@ -693,12 +621,6 @@
     {
       "from": "UFH-01",
       "kind": "ref",
-      "to": "EVL-29",
-      "weight": 1
-    },
-    {
-      "from": "UFH-01",
-      "kind": "ref",
       "to": "INF-77",
       "weight": 2
     },
@@ -727,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T21:41:26Z",
+  "generated_at": "2026-11-09T21:49:33Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1263,7 +1185,7 @@
         "unblocks": 4,
         "unblocks_rows": []
       },
-      "priority_rank": 21,
+      "priority_rank": 20,
       "readiness": "ready",
       "state": "active",
       "track": "eval tower verification",
@@ -1357,83 +1279,6 @@
           "name": "scoring-infra-standardization",
           "open": 7,
           "readiness": "ready"
-        }
-      ]
-    },
-    {
-      "age_days": 0,
-      "blocked": 0,
-      "blocked_by": [],
-      "closed": 80,
-      "dispatchable": 2,
-      "domain": "research-evaluation",
-      "guarded": 0,
-      "handoff": "frontier-lab-automation.md",
-      "id": "EVL-29",
-      "last_advanced": "2026-11-09",
-      "next_action": "File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed",
-      "open": 2,
-      "priority": 0.6474,
-      "priority_basis": {
-        "basis": "T6 inference-ready best open item (I): ID-20 \u2014 TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half. The blocker is not",
-        "blocker": "",
-        "campaign": 0,
-        "file_rank": 62,
-        "source": "file",
-        "tier": 6,
-        "tier_name": "T6 inference routine",
-        "unblocks": 0,
-        "unblocks_rows": []
-      },
-      "priority_rank": 18,
-      "readiness": "ready",
-      "state": "active",
-      "track": "intake derived work 2026 07 25",
-      "tracks": [
-        {
-          "blocked_by": [],
-          "dispatchable": 0,
-          "gates": null,
-          "line": 0,
-          "name": "(untracked)",
-          "open": 0,
-          "readiness": "no_open"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 2,
-          "gates": [],
-          "line": 384,
-          "name": "agent-file-prose-compression",
-          "open": 2,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 0,
-          "gates": [],
-          "line": 487,
-          "name": "frontier-f2-self-running-lab",
-          "open": 0,
-          "readiness": "no_open"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 0,
-          "gates": [],
-          "line": 570,
-          "name": "frontier-f3-data-flywheel",
-          "open": 0,
-          "readiness": "no_open"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 0,
-          "gates": [],
-          "line": 762,
-          "name": "stale-open-audit-2026-07-18",
-          "open": 0,
-          "readiness": "no_open"
         }
       ]
     },
@@ -1669,7 +1514,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 26,
+      "priority_rank": 25,
       "readiness": "ready",
       "state": "active",
       "track": "numa topology cutover resume",
@@ -2051,14 +1896,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 191,
-      "dispatchable": 45,
+      "dispatchable": 46,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-09",
       "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
-      "open": 46,
+      "open": 47,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2115,18 +1960,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
           "line": 1804,
           "name": "cpu-fused-decoder-blocks",
-          "open": 1,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2129,
+          "line": 2134,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2135,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2268,
+          "line": 2273,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2144,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2824,
+          "line": 2829,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2156,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2964,
+          "line": 2969,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2168,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2971,
+          "line": 2976,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2302,7 +2147,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 20,
+      "priority_rank": 19,
       "readiness": "blocked",
       "state": "active",
       "track": "deepseek v41 flash evaluation"
@@ -2440,13 +2285,13 @@
       "last_advanced": "2026-11-09",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
       "open": 66,
-      "priority": 0.0021,
+      "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel akx program (keep gate + all dims)",
@@ -2520,13 +2365,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "open": 10,
-      "priority": 0.0021,
+      "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "v11 promotion checklist"
@@ -2546,13 +2391,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.0021,
+      "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 29,
+      "priority_rank": 28,
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
@@ -2582,7 +2427,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 19,
+      "priority_rank": 18,
       "readiness": "ready",
       "state": "active",
       "track": "internal kb rag",
@@ -2670,7 +2515,7 @@
           "REV-07"
         ]
       },
-      "priority_rank": 27,
+      "priority_rank": 26,
       "readiness": "ready",
       "state": "active",
       "track": "glm52 reviewer capability gates",
@@ -2997,7 +2842,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 22,
+      "priority_rank": 21,
       "readiness": "ready",
       "state": "active",
       "track": "context folding progressive",
@@ -3119,7 +2964,7 @@
           "UFH-15"
         ]
       },
-      "priority_rank": 23,
+      "priority_rank": 22,
       "readiness": "ready",
       "state": "active",
       "track": "decision aware routing",
@@ -3244,13 +3089,13 @@
       "last_advanced": "2026-11-09",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
       "open": 30,
-      "priority": 0.0402,
+      "priority": 0.0394,
       "priority_basis": {
         "campaign": 1,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 27,
       "readiness": "blocked",
       "state": "active",
       "track": "churn pipeline"
@@ -3547,7 +3392,7 @@
           "UFH-14"
         ]
       },
-      "priority_rank": 24,
+      "priority_rank": 23,
       "readiness": "ready",
       "state": "active",
       "track": "stack change governance pipeline",
@@ -3881,7 +3726,7 @@
         "unblocks": 0,
         "unblocks_rows": []
       },
-      "priority_rank": 25,
+      "priority_rank": 24,
       "readiness": "ready",
       "state": "active",
       "track": "thesis experiment (ACTIVE 2026-10-29)"
@@ -3908,6 +3753,7 @@
       "EVL-25",
       "EVL-26",
       "EVL-27",
+      "EVL-29",
       "EVL-30",
       "EVL-31",
       "EVL-32",
@@ -4050,7 +3896,7 @@
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
-      "file": 27,
+      "file": 26,
       "heuristic": 4,
       "override": 0
     },
@@ -4068,7 +3914,7 @@
   "readiness_counts": {
     "blocked": 5,
     "no_open": 0,
-    "ready": 26
+    "ready": 25
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",

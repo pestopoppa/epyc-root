@@ -128,7 +128,7 @@ Recorded in [kv-prefix-fork-and-paged-attention.md](kv-cache-program.md#track-kv
 `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator `orchestration/`) ·
 current architecture review: [fable5-findings-00-executive-summary.md](../completed/fable5-findings-00-executive-summary.md)
 (COMPLETE 2026-06-12 — standing reference, not an open row) ·
-cross-domain governance: [stale-open-audit-2026-07-18.md](frontier-lab-automation.md#track-stale-open-audit-2026-07-18).
+cross-domain governance: [stale-open-audit-2026-07-18.md](../completed/frontier-lab-automation.md#track-stale-open-audit-2026-07-18).
 
 ## Backlog state (generated)
 
@@ -142,9 +142,9 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 590 | 52 | 2026-11-03 |
+| inference-research | 13 | 591 | 52 | 2026-11-03 |
 | pipeline-integration | 1 | 16 | 0 | 2026-11-09 |
-| research-evaluation | 5 | 196 | 4 | 2026-11-03 |
+| research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
 | routing-and-optimization | 9 | 492 | 14 | 2026-11-05 |
 | user-facing-harness | 2 | 87 | 18 | 2026-10-03 |

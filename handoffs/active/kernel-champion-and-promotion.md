@@ -2126,6 +2126,11 @@ Checklist (the dashboard gate — flipped as the phases land):
   luck; repack guards on tensor->extra + type; the debug I/O must be stripped before any
   perf measurement.
 
+  - [ ] **FUSED-DECODE-ZERO-ROW-LOGITS — fix the 0-row t_logits reuse in the fused decode path in the next kernel, owner AutoKernel.** Done when the fused path never reads a 0-row t_logits and a negative-control decode passes under GGML_FUSED_DECODE_ON=1. [no-belief: tooling-repair]
+    - *(workspace-f2 2026-11-09.)* AutoKernel fix `452a93c4b` on experimental/ak-kernel-fused-zero-row-20261109 off C9: the fused dispatch checks the previous logits tensor and falls back to the graph; compiled, predicate test passes, not run through llama_decode. Box stays open until it reaches the champion and is validated. Any afc-p5e3-n30 rerun on v10 must set GGML_FUSED_DECODE_OFF=1. [no-belief: tooling-repair]
+    - *(pipeline-mgmt 2026-11-09.)* Cherry-picked into the C10 fold candidate `7f1bd044b` (`cc1f33d9a`); box stays open until a negative-control decode passes under GGML_FUSED_DECODE_ON=1. [no-belief: integration note]
+    - *(workspace-f2 2026-11-09.)* Moved here from frontier-lab-automation.md (EVL-29 closing); text unchanged. [no-belief: re-home]
+
 ## Track: laguna-s21-cpu-port
 <!-- gate: none -->
 

@@ -552,7 +552,7 @@ _Via /research-intake Stage-2 (intake-881 graph-engineering wiring assessment)._
 
 ## 2026-07-25 — intake Stage-2a dive corrections (intake-580, intake-890)
 
-_Via `/research-intake` Stage-2; coordination point [`intake-derived-work-2026-07-25.md`](frontier-lab-automation.md) ID-18/ID-35._
+_Via `/research-intake` Stage-2; coordination point [`intake-derived-work-2026-07-25.md`](../completed/frontier-lab-automation.md) ID-18/ID-35._
 
 - [x] **Adaptive-chunking lift re-costed ✅ 2026-07-29**: epyc-root `c942728e` Stage-2a source audit established that the shipped API is `RecursiveSplitter`; selection remains paper-only reproduction code.
 - [x] **DCC-only signal scoped ✅ 2026-07-29**: epyc-root `c942728e` recorded the no-dependency scope and the SC/BI saturation evidence.
@@ -2975,7 +2975,7 @@ Reproducible this date: `/healthz` returns 200 (instance up), but the usable eng
 
 #### 2026-07-25 — intake Stage-2a dive: Firecrawl verdict label correction
 
-_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](frontier-lab-automation.md)._
+_Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25.md`](../completed/frontier-lab-automation.md)._
 
 - **[declined: ws58 2026-11-03 content-review: intake bookkeeping]** **Change the intake-364 / intake-365 verdict from `not_applicable` to `superseded`** (by intake-372, Crawl4AI). Firecrawl is **AGPL-3.0 open-source and fully self-hostable** (`SELF_HOST.md` + `docker-compose.yaml` stand up `/v1/scrape`, `/v1/crawl`, `/v1/map` locally) — it is in scope and was **out-competed**, not out-of-scope. EPYC policy treats `not_applicable` as the verdict requiring the most justification; here the justification exists (a 322-line deep dive) but the label misstates it, which is how a well-reasoned rejection gets re-litigated.
 - [x] **Correct two now-outdated objections in the notes** ✅ 2026-07-29 — verified against upstream Firecrawl `7bd7f66de8a5b9dc391eae2fe382d3392631c3c3`, `SELF_HOST.md:57-79` and `docker-compose.yaml:39-42,55-57`: self-hosted `/search` can use a JSON-capable SearXNG endpoint through `SEARXNG_ENDPOINT` / `SEARXNG_ENGINES` / `SEARXNG_CATEGORIES`, while `/extract` accepts `OPENAI_BASE_URL` / `OLLAMA_BASE_URL` / `MODEL_NAME`. This corrects the facts only; it does not change the Crawl4AI decision.
@@ -3000,7 +3000,7 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 
 > **Does NOT block `internal-kb-rag.md`. KB-RAG K1–K7 ships independently. SLIDERS is an ALTERNATIVE architecture (DB+SQL replacing retrieval), not an upgrade lane on the ColBERT path. Sequential evaluation only after KB-RAG K7 ships, and only if Phase 0 below passes.**
 
-> **🔔 Reopen-PRECONDITION fired — 2026-07-18 stale-open audit.** The first reopen precondition (KB-RAG K1–K7 ships) FIRED: KB-RAG **K7 CERTIFIED 2026-06-13**. This does NOT auto-reactivate — SLIDERS stays parked (LOW/speculative) pending an **explicit operator decision** to evaluate the DB+SQL alternative. Surfaced so the fired precondition isn't silently missed. See [`stale-open-audit-2026-07-18.md`](frontier-lab-automation.md#track-stale-open-audit-2026-07-18).
+> **🔔 Reopen-PRECONDITION fired — 2026-07-18 stale-open audit.** The first reopen precondition (KB-RAG K1–K7 ships) FIRED: KB-RAG **K7 CERTIFIED 2026-06-13**. This does NOT auto-reactivate — SLIDERS stays parked (LOW/speculative) pending an **explicit operator decision** to evaluate the DB+SQL alternative. Surfaced so the fired precondition isn't silently missed. See [`stale-open-audit-2026-07-18.md`](../completed/frontier-lab-automation.md#track-stale-open-audit-2026-07-18).
 
 - [x] Operator decision: KB-RAG K7 precondition fired — evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked? ✅ 2026-11-07 — ANSWERED by the operator: "evaluate now, low-priority filler" (E4 'R36 rebuild + SLIDERS as filler'). Box 0.4 below is the open work item. [no-belief: operator decision]
 

@@ -1369,7 +1369,7 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-lifecycle-program.md), [model-capability-descriptors.md](routing-program.md#track-model-capability-descriptors), [routing-truth-restoration.md](../completed/routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
 
-> **📎 2026-07-18 stale-open audit note.** This doc self-demotes to "historical-detail support" for the SSoT, but it still holds **2 orphan-live boxes tracked in _neither_ authoritative doc** — the `ctx_model_max` contract extension and the tap / policy-hint projection. Kept **LIVE** (deliberately *not* superseded) until those migrate to [`model-stack-single-source-update-pipeline.md`](stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline); its other 2 boxes are covered/deferred. See [`stale-open-audit-2026-07-18.md`](frontier-lab-automation.md#track-stale-open-audit-2026-07-18) finding #5.
+> **📎 2026-07-18 stale-open audit note.** This doc self-demotes to "historical-detail support" for the SSoT, but it still holds **2 orphan-live boxes tracked in _neither_ authoritative doc** — the `ctx_model_max` contract extension and the tap / policy-hint projection. Kept **LIVE** (deliberately *not* superseded) until those migrate to [`model-stack-single-source-update-pipeline.md`](stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline); its other 2 boxes are covered/deferred. See [`stale-open-audit-2026-07-18.md`](../completed/frontier-lab-automation.md#track-stale-open-audit-2026-07-18) finding #5.
 
 #### Objective
 
@@ -2032,7 +2032,7 @@ clean-window measurements that bind stack ports; the latest frontdoor G11
 measurement window caused such a stop while active, then exited without a
 claim-grade aggregate. A rerun after that exit returned `summary: ok`.
 Remaining work is high-risk consumer migrations and opportunistic W4 swap-CI.
-**Lifecycle**: superseded — consolidated into the authoritative pair [`model-stack-single-source-update-pipeline.md`](stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) (consumer-SSoT) + [`stack-change-governance-pipeline.md`](stack-lifecycle-program.md) (command/gates). Remaining work (W4 swap-CI, high-risk consumer migrations) is co-tracked there — no unique one-time work here. Per [`stale-open-audit-2026-07-18.md`](frontier-lab-automation.md#track-stale-open-audit-2026-07-18) finding #5. Hard-archive to `completed/` pending operator OK.
+**Lifecycle**: superseded — consolidated into the authoritative pair [`model-stack-single-source-update-pipeline.md`](stack-lifecycle-program.md#track-model-stack-single-source-update-pipeline) (consumer-SSoT) + [`stack-change-governance-pipeline.md`](stack-lifecycle-program.md) (command/gates). Remaining work (W4 swap-CI, high-risk consumer migrations) is co-tracked there — no unique one-time work here. Per [`stale-open-audit-2026-07-18.md`](../completed/frontier-lab-automation.md#track-stale-open-audit-2026-07-18) finding #5. Hard-archive to `completed/` pending operator OK.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
 routing, launch, planner context, and benchmark interpretation after stack

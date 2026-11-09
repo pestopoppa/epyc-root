@@ -4529,7 +4529,7 @@ environment claim here is backed by an on-device compute step for that reason.
 
 - [Progress 2026-08-12](../progress/2026-08/2026-08-12.md) — the venv split, verification steps, the
   three-way skew diagnosis, and the GRPO smoke's measured scope.
-- [Frontier F3 data flywheel](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel) — the don't-consolidate
+- [Frontier F3 data flywheel](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel) — the don't-consolidate
   note, per-venv ownership, and the `BNB_ROCM_VERSION` trap.
 - [A9 gfx90a training viability](../artifacts/gpu-aux-baselines/a9_gfx90a_training_viability_20260812.md) —
   the bitsandbytes wheel failure and the source build that fixed it.

@@ -1679,7 +1679,7 @@ roughly half the headline.
 
 _Sources: `docs/chapters/10-advanced-speculative-decoding.md` (corrected `aa026750`);
 `handoffs/completed/dflash-block-diffusion-speculation.md`;
-`handoffs/active/frontier-lab-automation.md` ID-28..ID-34._
+`handoffs/completed/frontier-lab-automation.md` ID-28..ID-34._
 
 ## Compiled Update — 2026-07-29: verifying a draft/MTP head is a weight-map question, never a config question
 

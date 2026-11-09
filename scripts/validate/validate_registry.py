@@ -2,7 +2,7 @@
 """Validate the per-model agent_file_compression_operating_point field in
 both model registries.
 
-Per handoffs/active/frontier-lab-automation.md Phase 4 + the
+Per handoffs/completed/frontier-lab-automation.md Phase 4 + the
 /new-model Step 6.5 deployment gate:
 
 - runtime_defaults.agent_file_compression_operating_point must be present

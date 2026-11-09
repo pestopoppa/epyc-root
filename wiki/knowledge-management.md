@@ -10,7 +10,7 @@
 - **Dashboard Flow panel defect.** The panel read +208 while open boxes fell 2806 to 1516 in 7 days. Root cause: edits to existing open boxes counted as filings, declines and removals were ignored, and the timeline dated merged lanes on their merge day. Fix: `build_handoff_timeline.py` is the only counter, the hub sums its rows, `hub_view` exposes the served commit and refresh failures. Independent review confirmed 22 sampled commits and the 1263 removals on 11-03 as real retirements; after the fix, hub live at e4668444c with today -87, 7d -1290. Source: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md).
 - **Incident: incomplete pin list.** The 13:02 re-pin to 2c62d9458 lacked `observer_guard.sh` and `env.sh`, so every supervisor pass failed and the view froze until the third install at 14:28 (e4668444c); `index_regen.py` joined the pin list. Same source.
 - **RTG-22 audit.** 115 open boxes, with the shared clone 78 commits behind origin/main, so the audit ran against origin/main. A planned LOOP-11 closure was refuted (a refusal still orphans pollers); AFC-P5.E3 had finished 11-07 but was never filed because its owner session ended; `76d21aa9f` (research, 08-25) silently reverted the NIB2-58a linkage gates. Sources: [workspace-f2 progress](../progress/2026-11/2026-11-09-workspace-f2.md), [engineering-hygiene-backlog](../handoffs/active/engineering-hygiene-backlog.md).
-- **Citation form.** The ID-25 decision package now cites intake-362/363 as `#record` forms (they discuss the record and assert nothing), per the cite-check grammar. Source: [frontier-lab-automation decision package](../docs/design/backlog-refactor-2026-11/decision-packages/frontier-lab-automation.md).
+- **Citation form.** The ID-25 decision package now cites intake-362#record and intake-363#record (they discuss the record and assert nothing), per the cite-check grammar. Source: [frontier-lab-automation decision package](../docs/design/backlog-refactor-2026-11/decision-packages/frontier-lab-automation.md).
 - **Stale status corrected:** the DeepSeek-V4.1-Flash-DSpark GGUF is gone (only `-1017-DSpark.gguf` remains), so "PENDING OPERATOR" was stale; no graveyard row was found, so that box stays open for the row only. Source: [deepseek-v41-flash-evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md).
 - **GitHub workflows:** 66 stale workflows with no file on main were disabled by operator decision; LOOP-54 stays open. Source: [pipeline-mgmt progress](../progress/2026-11/2026-11-09-pipeline-mgmt.md).
 
@@ -209,7 +209,7 @@ Sources: [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substr
 ### Source References (2026-10-22 sweep 7)
 
 - [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-unified-trace-memory-service)
-- [handoffs/active/frontier-lab-automation.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
+- [handoffs/completed/frontier-lab-automation.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f3-data-flywheel)
 - [handoffs/active/vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md)
 - [handoffs/active/memory-program.md](../handoffs/active/memory-program.md#track-dev-harness-trace-mining)
 - [progress/2026-10/2026-10-22-rte-toc-writers.md](../progress/2026-10/2026-10-22-rte-toc-writers.md)
@@ -1748,7 +1748,7 @@ The `research-intake` skill is the upstream complement — it ingests new papers
 
 ### Append-Only Evidence Freshness (2026-07-08)
 
-The current wrap-up cycle tightened a pattern the wiki already depends on: durable records should be **append-only plus supersession-aware**, while the dashboard should only treat a panel as current when the process behind it is still the same process that wrote the tap data. AutoPilot's contaminated seed-batch trials were quarantined in-place with append-only supersession rather than deleted, preserving provenance for later audit while keeping the bad rows out of planner evidence. The dashboard side now carries freshness metadata (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`) so a stale tap file can be labeled historical instead of being mistaken for live planner output. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [frontier-f2-self-running-lab.md](../handoffs/active/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
+The current wrap-up cycle tightened a pattern the wiki already depends on: durable records should be **append-only plus supersession-aware**, while the dashboard should only treat a panel as current when the process behind it is still the same process that wrote the tap data. AutoPilot's contaminated seed-batch trials were quarantined in-place with append-only supersession rather than deleted, preserving provenance for later audit while keeping the bad rows out of planner evidence. The dashboard side now carries freshness metadata (`planner_tap_mtime_s`, `planner_tap_precedes_autopilot_start`) so a stale tap file can be labeled historical instead of being mistaken for live planner output. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-program.md), [loops-and-dashboards-audit-2026-07-05.md](../handoffs/active/autopilot-program.md#track-loops-and-dashboards-audit-2026-07-05), [frontier-f2-self-running-lab.md](../handoffs/completed/frontier-lab-automation.md#track-frontier-f2-self-running-lab), [master-handoff-index.md](../handoffs/active/master-handoff-index.md), [progress 2026-07-08](../progress/2026-07/2026-07-08.md).
 
 This is the same producer/consumer discipline the wiki already uses: operational logs and handoffs stay primary, compiled pages remain derived, and stale-but-useful history is kept readable without letting it re-enter the active decision path.
 
@@ -1981,7 +1981,7 @@ dive-verified against primary source. **Corollary**: "absent from an index page"
 nonexistence — two sources reported unlocatable both return HTTP 200 (one unlinked from its own
 blog index; one where the sweep queried the benchmark's site rather than the publisher's).
 
-_Sources: `handoffs/active/frontier-lab-automation.md` ID-10/10b/10c;
+_Sources: `handoffs/completed/frontier-lab-automation.md` ID-10/10b/10c;
 `research/intake_index.yaml` (dive_corrections fields); `progress/2026-07/2026-07-25.md`._
 ## Research-intake protocol: four stages, and why (2026-07-25)
 
@@ -3610,7 +3610,7 @@ or omission prevalence; missing original transcripts and selected-source coverag
 - [Published Stage-4 progress](../progress/2026-10/2026-10-04-intake-decision-tools-stage4.md) — filing and validation boundaries.
 - [Main-reviewed retrospective](../docs/reviews/research-intake-practical-applications-20261004.md) — exact source/code scope, proposals and limitations.
 - [Wrap-up progress](../progress/2026-10/2026-10-04-codex-intake-wrap.md) — separate review and derived-actionables accounting.
-- [Intake-derived owner](../handoffs/active/frontier-lab-automation.md) — completed review and proposed refinement.
+- [Intake-derived owner](../handoffs/completed/frontier-lab-automation.md) — completed review and proposed refinement.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — prospective capture versus already-live EXL3 source.
 
 ## Compiled Update — 2026-10-04: practical-outcome checks are implemented, not semantic proof
@@ -4349,7 +4349,7 @@ Sources: [NI wrap progress](../progress/2026-11/2026-11-01-codex-ni.md) · [tick
 
 **Confidence: scoped to cited source records; proposed work and partial runs are not acceptance.**
 
-- ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene. [Source](../handoffs/active/frontier-lab-automation.md)
+- ID-19 Python session/messages envelope projection matched 14 normalized records from three eligible sessions; two others retained upstream missing-user refusal. It omits token/cost/outcome warrant and is not the full normalizer. Four new research-intake guard tasks are proposals; ID-11 evidence is prior-work hygiene. [Source](../handoffs/completed/frontier-lab-automation.md)
 
 ## Compiled Update — 2026-11-01 (operator wiki sweep 2, workspace-58)
 

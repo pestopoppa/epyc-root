@@ -2655,7 +2655,7 @@ That assertion catches all four rows at ingest and generalises to every substrin
 - [`artifacts/audit/debugbench-oracle-vacuity-20260812.md`](../artifacts/audit/debugbench-oracle-vacuity-20260812.md) — the vacuity proof, corpus figures, and the pool-generation guard
 - [`docs/reviews/t11-wrong-artefact-audit-20260811.md`](../docs/reviews/t11-wrong-artefact-audit-20260811.md) — per-role resolution and the false-positive families
 - [`handoffs/active/architect-model-selection-bench.md`](../handoffs/active/model-evaluation-queue.md) — the rubric calibration strip and its comparability boundary
-- [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md) §ID-7 — the ordered-subsequence verifier and its confound
+- [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md) §ID-7 — the ordered-subsequence verifier and its confound
 - `epyc-orchestrator/orchestration/instrument_eras.yaml`, `epyc-inference-research/scripts/lib/instrument_era.py`, `scripts/benchmark/answer_scoring.py` — read directly
 
 ## Compiled Update — 2026-08-11: the instrument-era registry didn't track the v9 kernel cutover, and a scope collision explains why "just add a row" wasn't enough
@@ -3685,7 +3685,7 @@ Per-model curve becomes part of the model registry and enters routing decisions:
 - [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers — `/caveman` source
 - intake-450 — veniceai/skills (sibling SKILL.md authoring rubric)
 - intake-301 — AXI/TOON encoding (orthogonal layer)
-- [`handoffs/active/frontier-lab-automation.md`](../handoffs/active/frontier-lab-automation.md#track-agent-file-prose-compression) NEW — `/agent-file-compress` skill + per-model deployment gate
+- [`handoffs/completed/frontier-lab-automation.md`](../handoffs/completed/frontier-lab-automation.md#track-agent-file-prose-compression) NEW — `/agent-file-compress` skill + per-model deployment gate
 ## 2026-05-04 Update — Probe B 4-config protocol formalized
 
 The 4-config Probe B methodology used throughout 2026-04-29/30 multi-arch coverage was applied formally on 2026-05-04 to close two `todo_or_undecided` slots in the v5 deployment draft (Qwen3.5-122B-A10B and Qwen3-Coder-REAP-246B-A35B). The protocol details are now explicit in [`handoffs/completed/qwen35-122b-a10b-arch-class-probe.md`](../handoffs/completed/qwen35-122b-a10b-arch-class-probe.md) — referenced here as the canonical methodology for any new model arch-class assignment.
