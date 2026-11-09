@@ -1,0 +1,72 @@
+{
+  "schema": "epyc.operator_ratification.v1",
+  "gate_id": "RATIFY-AK-Q38FN-FLOOR-ACCEPT-20261109",
+  "status": "ratified",
+  "ratified_at": "2026-11-09T20:36:30Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (typed RATIFY on the terminal)",
+  "decision": "Accept two floors marked suspect: true, for registration at decision/quiet grade.",
+  "operator_decision": {
+    "date": "2026-11-09",
+    "channel": "decision tool",
+    "option": "Accept ~4.1%, add reaper skip",
+    "session": "7b25c5ae-26b3-499f-bce1-07c4ba197b8c",
+    "scope_note": "the option text said the 64k floor (r4 1.448%, also suspect) 'would need the same acceptance'",
+    "formal_record": "the operator's signature on this script"
+  },
+  "suspect_flag_cleared": false,
+  "outliers_remain_unexplained": true,
+  "janitor_reap_skip_commit": "9d597d559",
+  "role": "qwen38_flash_next_ud_iq4xs_local",
+  "numerics_epoch": "default",
+  "floors": {
+    "serving": {
+      "entry_id": "cbe4f8884cd99e53",
+      "floor_pct": 4.146,
+      "n": 24,
+      "k": 5,
+      "record": "/mnt/raid0/llm/autokernel/reaper-diag-q38fn-20261109/runtime-source-floors/cff9ad900700c8057a2783946e5e5dc5ed718818728dd1bdbdfb9e0199b16fb8/20a75532c2272217a1de67602fc0f37447ebc0b530c9295d598e1bfea4eaa6da/serving-floor.q38fn-802bf9ac6-cpu-t48-mtp-d4.requests-57c9006dfde7443a1bf9b58c08f1ac6834dddcdf3cafcfb770717f141b1d8640.matched_process_v2.pairs-5.json",
+      "record_sha256": "97224e99fbe63cc2d8b60a1a684059acdc95209320d2fa19b00268705d1ff817",
+      "suspect": true,
+      "unexplained_outliers": [
+        {
+          "anchor_tok_s": 43.169388586553275,
+          "candidate_tok_s": 49.717619458233315,
+          "effect_pct": 15.169,
+          "pair_index": 1
+        },
+        {
+          "anchor_tok_s": 50.10922244579983,
+          "candidate_tok_s": 43.10130743438626,
+          "effect_pct": 13.985,
+          "pair_index": 7
+        }
+      ],
+      "rationale": "Two independent 24-pair runs on C9 agree on the level (this run 4.146%, r4 4.07%). The outlier guard found no independent degraded-host evidence for these pairs and they remain in the floor."
+    },
+    "longctx": {
+      "entry_id": "e2b694e5c3f68b73",
+      "floor_pct": 1.448,
+      "n": 24,
+      "k": 5,
+      "record": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/store-b0ba1d427/longctx/q38fn-802bf9ac6-cpu-t48-mtp-d4/floors/anchors/2cb4b7d12a3a1ff3/serving-floor.q38fn-802bf9ac6-cpu-t48-mtp-d4-lc64k-23eea2fa.requests-0445fd119ede8328365a9ecf94daee939b320025886ae5a50131ef9382c97324.matched_process_v2.pairs-5.json",
+      "record_sha256": "08f6c28dae5700a9b43d3a0667dd14a579c5d19666d382637e86b121d7e9838d",
+      "suspect": true,
+      "unexplained_outliers": [
+        {
+          "anchor_tok_s": 15.828126333179586,
+          "candidate_tok_s": 15.010492392817314,
+          "effect_pct": 5.166,
+          "pair_index": 8
+        }
+      ],
+      "rationale": "Single run; one pair flagged, which the guard could not tie to independent degraded-host evidence; it remains in the floor. No second 64k run corroborates this level."
+    }
+  },
+  "loop_behaviour": "suspect is not read by floor_registry lookup, _validate_matched_floor or gate_floor, so require-grade decision returns these entries; carry-forward still refuses a suspect store floor. On store-b0ba1d427 the anchor floor takes precedence over the registry: serving gates on the r4 file (4.07%), 64k on the same record as its entry.",
+  "records_modified": false,
+  "research_commit": "b63ce0107b391f02ac713ac678cd3e26adfe56d2",
+  "applied_by": "scripts/operator/run_ak_q38fn_floor_accept_20261109.sh",
+  "ratify_script_sha256": "6f17b2275f364f667b53c2984bf90ea8790a10bd424fd9ef37e1a278279a54cb",
+  "processes_touched": []
+}
