@@ -70,3 +70,16 @@ degrade). With the URL set, B asserts the known conclusions above (until 2026-11
 recorded; an empty frontier is the intended post-rebase state and is not a failure. PASS exits 0,
 a missing conclusion exits 1, a dead embedder, assembly error or changed protected state is UNKNOWN
 (exit 2). Without the URL, B is unchanged (UNKNOWN, hash-only).
+
+## Frontier assertion and synthetic controls (VB-CANARY-B-FRONTIER, 2026-11-09)
+
+`canary_b_frontier.py` (pure logic, unit-tested in `tests/vidya/test_canary_b_frontier.py`) adds a
+`frontier_assertion` block to B's `CANARY_RESULT`. A real trigger row is a journal row after the
+epoch fence with `pareto_status=frontier` and `keep_revert_decision=keep`. With no such row the
+assertion reports `NOT_EXERCISED` and does not change the exit code (the journal has 0 such rows
+while AutoPilot is on hold). A real row absent from `pareto_summary`/`pareto_geometry`/
+`insights_structured` is `FAIL` (exit 1). Two `SYNTHETIC-CONTROL` rows (a post-fence keep that must
+appear, a pre-fence excluded row that must not) are rendered through the real orchestrator
+journal -> era-fenced archive path from a journal written under `CANARY_SCRATCH/B-frontier-control`
+only; if either control misbehaves the verdict is `CONTROL_FAILED` and B exits UNKNOWN (2).
+`journal_summary` is not a frontier channel (its header says unfenced, all epochs).

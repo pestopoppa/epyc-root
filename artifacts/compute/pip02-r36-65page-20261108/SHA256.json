@@ -1,0 +1,1714 @@
+{
+"raw_dir": "/mnt/raid0/llm/tmp/pip02-r36-20261107/out",
+"note": "Per-page predictions (pred-odl, pred-paddle), per-page state, score-26/52 intermediates, score-final/{gt-subset.json,*-Lfinal/,bench/} are not copied; bound here by sha256. gt-subset.json (853 KB) is the ground truth scoring input.",
+"files": {
+"COMPLETE": {
+"sha256": "f46f630bd910df0d2fa486507b896f213924186cd72a87c24a2a04f986f97907",
+"bytes": 21
+},
+"_y.yaml": {
+"sha256": "e6e87e2c4ec15a7972a2dd818bbf331424729219642d68078385f7e7940bda63",
+"bytes": 243
+},
+"linkage.txt": {
+"sha256": "92776fad7dedc0faf5022f619318594fd71ffb1dc027c2eb5fa824b011b61608",
+"bytes": 1382
+},
+"pred-odl/PPT_11.2013EvaluatingTraineeteacherproficiency_page_029.md": {
+"sha256": "f63ca7b6c5a9c6307b5428a02bd26ce4cfff4dcd5e02b25618e40a258b41bc18",
+"bytes": 324
+},
+"pred-odl/PPT_13 fallacies LALT2012_page_001.md": {
+"sha256": "53bb9e5cb0c4ee07fd40c30edf3471028cb75bc33a2a7656acc3702e0f1ea41e",
+"bytes": 253
+},
+"pred-odl/PPT_1637904769_page_008.md": {
+"sha256": "44c50379e4f010629e55479cca618a4a749abc70a63fa0b0472d6253cb587fe3",
+"bytes": 189
+},
+"pred-odl/PPT_8076_MEYER_Chapter_2_-_Language_Change_page_012.md": {
+"sha256": "b2dd57fc872b7d88655c58ae6e425ac3cb0c9b6093352b357db7bf8ea1a138f9",
+"bytes": 356
+},
+"pred-odl/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.md": {
+"sha256": "68ec545f1f540fe72a92262a58153f80c3863c1183e38d955e096a325daa2069",
+"bytes": 240
+},
+"pred-odl/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.md": {
+"sha256": "f25af1f59c911d52097121a28204f76f0d1bc3f5af400a1f3bc364a2ab412788",
+"bytes": 381
+},
+"pred-odl/PPT_BaharMartonosi_page_006.md": {
+"sha256": "aae653163592076e8f3bbf8715ce8e2447d7f3537ab5d83c47f3605f9b97c0ff",
+"bytes": 414
+},
+"pred-odl/PPT_BaharMartonosi_page_010.md": {
+"sha256": "a0b671ae1088af0fd6d514aa8d4df8b131a5a5641e704dc5cb04acc6dfa504c6",
+"bytes": 292
+},
+"pred-odl/PPT_CalculusReview_page_009.md": {
+"sha256": "ddafa5fa680500d3fb316921a1395e170c774512a04a12bdc730356dc65f7362",
+"bytes": 222
+},
+"pred-odl/PPT_CalculusReview_page_033.md": {
+"sha256": "b38511d9761d1083dee8d502af48ea6ac76bd39637e49ebbb99bdbd5dccaf81b",
+"bytes": 99
+},
+"pred-odl/PPT_EnglishtoAmericanTransition_page_005.md": {
+"sha256": "fc2fb638100d923b63afdf7e615b8eee47cdbd274319391a3ed08bad6d4d7c2d",
+"bytes": 285
+},
+"pred-odl/PPT_Keuk Chan Narith_page_019.md": {
+"sha256": "8f506fba522b343f5563b5ea57f40124303fc3ac9063129f26d4b22cfe966552",
+"bytes": 237
+},
+"pred-odl/PPT_LEP power point presentation-English-FINAL-10-31-07_page_004.md": {
+"sha256": "efe0c9b90cc706fa67f4e8c547ac47aaa40350d5930d4ad3a30bc1dc7a9ae53b",
+"bytes": 657
+},
+"pred-odl/PPT_LEP power point presentation-English-FINAL-10-31-07_page_008.md": {
+"sha256": "bbfbad87507c31e41dddf3b86c3ae9478f924bc66ecc0a552254be18e2901aaa",
+"bytes": 566
+},
+"pred-odl/PPT_LEP power point presentation-English-FINAL-10-31-07_page_010.md": {
+"sha256": "1551e476312278c0bc7f93885764d46a9ee34a90142515f21de85f76ed8b17f7",
+"bytes": 2032
+},
+"pred-odl/PPT_PresentationSpecification_page_010.md": {
+"sha256": "2c14cff6ce38e63ec417f61e5728b6f5a6b1b4407e640e5c8b196bd923e23892",
+"bytes": 447
+},
+"pred-odl/PPT_PresentationSpecification_page_025.md": {
+"sha256": "b3524e3e02ff5bb5a4b134cd8f23e3fa53db6056dd7f325edae44777742e3605",
+"bytes": 320
+},
+"pred-odl/PPT_StewartCalcET7e_03_02_page_014.md": {
+"sha256": "5cd636a994067cfdf5fb7b50de340ff049a57f11f7aa65d40cd2ec265cccca17",
+"bytes": 348
+},
+"pred-odl/PPT_The Right Moves_page_010.md": {
+"sha256": "3cb880e95f1ab3698ccd3e0da4b4acfa63205ef26b54e42a1854b93a00d122ce",
+"bytes": 320
+},
+"pred-odl/PPT_all655920_page_008.md": {
+"sha256": "8837ce9eab386cbc3f88f66fc4e10883adfff5c4eb772580e81abc096f5f1394",
+"bytes": 243
+},
+"pred-odl/PPT_lay_linalg5_01_05_page_009.md": {
+"sha256": "7c86c1ec71477767f654ce6477d430a9a2431f63afe30f592318de7fec96611a",
+"bytes": 184
+},
+"pred-odl/PPT_lecture1_page_007.md": {
+"sha256": "78fa292891807c82d2beb7f7b1dd0c4e6a6b7987e195e0916b401bdb76d4ebd7",
+"bytes": 174
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.md": {
+"sha256": "c118ae388159736a79fb92990fb1da73936ab6e9728eb04043913deb13d1ffd5",
+"bytes": 401
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.md": {
+"sha256": "fda06b37e1c8bb9177b2cc9c85b8c769fca202c641e070af71ac4c85ef146d35",
+"bytes": 473
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.md": {
+"sha256": "8ac39155a339af5afc17606fc4f85a0ca710445190266dc4575d4f03f56c8d9f",
+"bytes": 790
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.md": {
+"sha256": "e6de31bfb2e525a0c6e36b02b9af3953f06639df66a92c22d090893532001b79",
+"bytes": 1094
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.md": {
+"sha256": "438e7ba7ebb17eda58ca62f2a8e0eac7f8813c2db4476c9409c64fe05d3c00f7",
+"bytes": 747
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.md": {
+"sha256": "7d6f480590caa0fefb80bf0f691004f83fe0eb933f8074eb4e4069f08f6b8edb",
+"bytes": 104
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.md": {
+"sha256": "09e0ae237070dd4a50375db963ac85e570f6f7b3c075bf7d8fe88d01007dc2f6",
+"bytes": 538
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "9fc602ab382a864dea9e2388757a5daabf1a8e1a5765c73adc0cbd9fb5c83ddd",
+"bytes": 87
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.md": {
+"sha256": "ece12aff4d2494c0e51bb48622ff8883339ba3432afbabd91515a3ffb05cb347",
+"bytes": 516
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.md": {
+"sha256": "c3efacb7962d8971de578e7c57d46dd5a6b6de4eb5df061f4263d2d7eff9f1a3",
+"bytes": 99
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "e31a468fe2e745cac1dcf813948a45c3bd72fb40833c3f1c6e33ff3e29523883",
+"bytes": 21
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.md": {
+"sha256": "56b954ac7b12aecd88fdfb18b7d946060d514367f3f13849652c6e13e70afbfb",
+"bytes": 688
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.md": {
+"sha256": "55196f6b23d1d011b26e54c5f67a60b718ea0634c31761b302f9e7902a2ec5a4",
+"bytes": 1278
+},
+"pred-odl/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.md": {
+"sha256": "7538a1c5539be1c500d20fdc3ae68bece3e5f384a93712bbdddfa50af58b8760",
+"bytes": 374
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.md": {
+"sha256": "2a2ceb59a8121c6149a6bfb6b743419ef5013e720066723b19ff74b199f56b6f",
+"bytes": 3436
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.md": {
+"sha256": "4d84e41082feda9082ceae477246c8efc47d3e97209b5f5e11a79e90b5f3195b",
+"bytes": 4375
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.md": {
+"sha256": "04c4698c20d0bcf1bb37e93f765b38be0237ef06bd44278581abd2906a930af7",
+"bytes": 3399
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.md": {
+"sha256": "95c67a7ff0753648aaf3e86c054fee5bb484edd6f5504fc332d3262edf63b1c7",
+"bytes": 3135
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.md": {
+"sha256": "5663788934202616c577480133f0c1c5c68ae959184633901e8cdc4bf82406a4",
+"bytes": 3099
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.md": {
+"sha256": "fe4daacac69b1e5fad09a0ce071ce8416c9901cf561b654d5f15c60dd8eb611a",
+"bytes": 3407
+},
+"pred-odl/exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.md": {
+"sha256": "3be79aaac7ed20429f83a61321691888c8ebbc1c2c079bbc6a3103e8df633dab",
+"bytes": 3478
+},
+"pred-odl/magazine_TheEconomist.2023.11.18_page_071.md": {
+"sha256": "661bb3c2a9865c4ff501e1e29a983ef9b2608bef8becc631e7b9bb502e52a091",
+"bytes": 6164
+},
+"pred-odl/magazine_TheEconomist.2023.11.25_page_006.md": {
+"sha256": "fd32df274b2e85f61cc043ff472eb4e80b5303b9828c940344058f65ae510115",
+"bytes": 667
+},
+"pred-odl/magazine_TheEconomist.2023.12.02_page_028.md": {
+"sha256": "969cef015f6bd8e565ab3ee5ce962139d4632fae03a70511418eeee5f6b605f5",
+"bytes": 3239
+},
+"pred-odl/magazine_TheEconomist.2023.12.02_page_031.md": {
+"sha256": "43a36907638547c1eba69a9da62cf41fc15685b0cb0f79972dbf7cba594a6195",
+"bytes": 5751
+},
+"pred-odl/magazine_TheEconomist.2023.12.02_page_056.md": {
+"sha256": "48b7b0d3410e1ab8232e097224cade7908c03aa23d7940bf0fc3c75b0fb79695",
+"bytes": 6130
+},
+"pred-odl/magazine_TheEconomist.2023.12.16_page_026.md": {
+"sha256": "f95f205c4a064fa232181f3277e73e76c1660e6f02aba0d3598673f706bd8f4f",
+"bytes": 6303
+},
+"pred-odl/magazine_TheEconomist.2023.12.23_page_024.md": {
+"sha256": "1d4c8f0ca0b9584da59b3dff55009085662947c0a540183306ae71f238c93ff2",
+"bytes": 3204
+},
+"pred-odl/magazine_TheEconomist.2024.02.24_page_007.md": {
+"sha256": "4cf3649c205b098a56216f1ad9c2f871af78736f98cf01484dde0da8f24bebbd",
+"bytes": 6428
+},
+"pred-odl/magazine_TheEconomist.2024.02.24_page_008.md": {
+"sha256": "c7e194286ec497fedd2dcbb73e82835f4529b61e5624694966f456e4bf6805fa",
+"bytes": 4683
+},
+"pred-odl/magazine_TheEconomist.2024.02.24_page_076.md": {
+"sha256": "1d91e0b41f94650f204f4e13a50ddff38ed8ba313873806df914541a1e25e539",
+"bytes": 5070
+},
+"pred-odl/magazine_TheEconomist.2024.03.02_page_025.md": {
+"sha256": "77f6541f2d78c3b3fdb3bf440e0f2ea02641be80b5c7a2490a073b8c4b5ffbaf",
+"bytes": 5901
+},
+"pred-odl/magazine_TheEconomist.2024.03.09_page_064.md": {
+"sha256": "c0f635e74f2ccaa974108ddf7ce295eb6a425f5bb25a65b5df35c584fd2e2834",
+"bytes": 6033
+},
+"pred-odl/newspaper_Chicago Tribune_0801@magazinesclubnew_page_015.md": {
+"sha256": "72e0cd3726b7b3aecfed43ae9fe8801875171cf68bc44df104a4dd1a933be95d",
+"bytes": 23956
+},
+"pred-odl/newspaper_Chicago Tribune_0801@magazinesclubnew_page_019.md": {
+"sha256": "fae50fd2246663d4d8f2376b77f2e2f7d1d01b2ec8800839e6ae5da7384c417a",
+"bytes": 16369
+},
+"pred-odl/newspaper_Chicago Tribune_0801@magazinesclubnew_page_032.md": {
+"sha256": "0b448a6dc51e821c7afa98d7ceae216ae085ac930c2aaca8541b98356834ace1",
+"bytes": 9576
+},
+"pred-odl/newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_058.md": {
+"sha256": "69d119e6ddb4a3fdf4f4b3f2fec8157016e540daaa218c50c332915b2954c2af",
+"bytes": 3945
+},
+"pred-odl/newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_027.md": {
+"sha256": "4e2397cf0b729c58db7b19b4436a9a338cfb04c0ff6b4bb3e99028f2afad3c66",
+"bytes": 5924
+},
+"pred-odl/newspaper_The Times UK_0801@magazinesclubnew_page_083.md": {
+"sha256": "5a29b5c17909c569b993042e8a1a5fc1bf008cc89924a95b849cead2c20757f3",
+"bytes": 3663
+},
+"pred-odl/newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_004.md": {
+"sha256": "0cec907ea6d5cd2fa98cacb593d2feb365305d691777366f28536d186af515f0",
+"bytes": 15551
+},
+"pred-odl/newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_025.md": {
+"sha256": "afb4960adb9012305dde284316f1868d0683cc0fc05c4b8b404dc7c4b873f770",
+"bytes": 19817
+},
+"pred-odl/newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_033.md": {
+"sha256": "650645f25e7334316132cbbe8625bb49d9fbd1b512c6c190a6eb8b7b8284b645",
+"bytes": 12237
+},
+"pred-odl/newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_009.md": {
+"sha256": "0fd611c0a5bed179a8ad7523215022d50b8c9a301da0643e78816b9239e9369f",
+"bytes": 8438
+},
+"pred-paddle/PPT_11.2013EvaluatingTraineeteacherproficiency_page_029.md": {
+"sha256": "f69af53c0a175cbc14bb1901770d9e3fa90eeb90d2bf2a01076cb49b4fe0b6a9",
+"bytes": 319
+},
+"pred-paddle/PPT_13 fallacies LALT2012_page_001.md": {
+"sha256": "e0ffb131c4d35d141bd676b7a61a0779f3c6b5164cb88c5a32443ca233a090d7",
+"bytes": 246
+},
+"pred-paddle/PPT_1637904769_page_008.md": {
+"sha256": "1d678c071ed0d1a782879fb4214848fb69ad084bbe28df41dd15277b6782b9a2",
+"bytes": 190
+},
+"pred-paddle/PPT_8076_MEYER_Chapter_2_-_Language_Change_page_012.md": {
+"sha256": "d9b8d791a29e645bcc3002ccea77387b92f360dbc6ec01ef2826bc169ab43324",
+"bytes": 522
+},
+"pred-paddle/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.md": {
+"sha256": "f03c48ced5b89ace4423a437f541b3e38ef546bb12231f45d4e624a0a5cdccb6",
+"bytes": 256
+},
+"pred-paddle/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.md": {
+"sha256": "3487d6413182e7340b6d1edd031852392add3316584e672df026bb823c5db6ee",
+"bytes": 391
+},
+"pred-paddle/PPT_BaharMartonosi_page_006.md": {
+"sha256": "ad31fd6d6d5cff2c28ae356140a6345edaee49750e5a6928c7ca23f9af97df4a",
+"bytes": 434
+},
+"pred-paddle/PPT_BaharMartonosi_page_010.md": {
+"sha256": "104046b4c3b0bf6e5c19be6ac6f1d72ac8ab7887a2f7e1fa5572a4e5d661da4b",
+"bytes": 540
+},
+"pred-paddle/PPT_CalculusReview_page_009.md": {
+"sha256": "b329893864d240bad1c1c045525886a5f5cce09ce63cda22884cbd5796faaab8",
+"bytes": 352
+},
+"pred-paddle/PPT_CalculusReview_page_033.md": {
+"sha256": "14c69df5429606c26a7da70be96d7d30f394309edfb7bea8e5b4f3e2787c3ffc",
+"bytes": 186
+},
+"pred-paddle/PPT_EnglishtoAmericanTransition_page_005.md": {
+"sha256": "439335157b1238206ab557a50d50f4b397675d4696cf57f8b2d5ad7977b7cdeb",
+"bytes": 292
+},
+"pred-paddle/PPT_Keuk Chan Narith_page_019.md": {
+"sha256": "7b4253b8408071923b6e601466b24f23a819c1daf27a77e3c41e4c8eed19fd59",
+"bytes": 236
+},
+"pred-paddle/PPT_LEP power point presentation-English-FINAL-10-31-07_page_004.md": {
+"sha256": "2f58317a159de9ed7ddcb06eeae568bf0a8c63343fd2d7c06427b791151df6f7",
+"bytes": 658
+},
+"pred-paddle/PPT_LEP power point presentation-English-FINAL-10-31-07_page_008.md": {
+"sha256": "b1a251fe9c81a30156a1539a51c2e468bf34c96ad721fc2a425b24d417cc7e55",
+"bytes": 584
+},
+"pred-paddle/PPT_LEP power point presentation-English-FINAL-10-31-07_page_010.md": {
+"sha256": "f6b1bf34be22a2899ad2637033b0e3754661c25d19db467e164192f4d93b1e70",
+"bytes": 3482
+},
+"pred-paddle/PPT_PresentationSpecification_page_010.md": {
+"sha256": "16ec7b75ac95e453e8c4229cb81fd8ae140b6796ffef0f8ae2826ed67fe6317e",
+"bytes": 1031
+},
+"pred-paddle/PPT_PresentationSpecification_page_025.md": {
+"sha256": "bb822afd8c14a6990cd033e704d9838ff3cdc39bb43b082517d740844bfbf971",
+"bytes": 348
+},
+"pred-paddle/PPT_StewartCalcET7e_03_02_page_014.md": {
+"sha256": "b4fd00abe31ae8fffd5ec3f1d09dd926fe94aa57abb552359d8104dbe73ad490",
+"bytes": 520
+},
+"pred-paddle/PPT_The Right Moves_page_010.md": {
+"sha256": "2de84e211b0b8bb021c96f45e6588668abb0d760169a9bf068d0706f3658d57c",
+"bytes": 327
+},
+"pred-paddle/PPT_all655920_page_008.md": {
+"sha256": "96b5132697444245c5620cefd02506dde5356c7a915a3247a2b38d709fc64a6b",
+"bytes": 246
+},
+"pred-paddle/PPT_lay_linalg5_01_05_page_009.md": {
+"sha256": "ee2ec8477ef26be962ce0ec9e8435df14aa0095eca64526e826f5ef829724680",
+"bytes": 420
+},
+"pred-paddle/PPT_lecture1_page_007.md": {
+"sha256": "ab6c79253fa6b03628300858353e449192de017191ea4ad3beaf5ddb590da0d8",
+"bytes": 416
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.md": {
+"sha256": "f9e450fa3b3cf94a14849f6e0c8ddf691596db0ccb1e99daed3d0d1082ded2da",
+"bytes": 4119
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.md": {
+"sha256": "3fff243ad1a621903e2739b2279596fa77a2bd7ae41f36704e80554acdd2cd92",
+"bytes": 787
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.md": {
+"sha256": "ff6ae359f4ff0cb0f59c0efd0f9ce3aa1df9b7acf3d23709637a490e5ed3d2f3",
+"bytes": 1604
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.md": {
+"sha256": "58f6bd492eb3d92f62bb23aedcdfb916ba7abf42e00122f76d2328e0f29557b3",
+"bytes": 1579
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.md": {
+"sha256": "61f189affd9065553973e6f843681006c267a2f8c17fec09fc66783bdee6e52a",
+"bytes": 1441
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.md": {
+"sha256": "6ee591926fb89c55a3e104be789041e00bf233a1b798d048bf1ecf8c344d16a4",
+"bytes": 1328
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.md": {
+"sha256": "0cd979cc1ffd3d47087e6e32eb12381fe299740e07cbdc5705996f78524b9d06",
+"bytes": 1735
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "16faf0a22f9a2b3a460f2be1e6db7290a5013f6e03171c9c36140074050a6c22",
+"bytes": 194
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.md": {
+"sha256": "8c9502637f4d394882b5b76acd5fdde627b37233905d55efc559ef97dc34561d",
+"bytes": 2106
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.md": {
+"sha256": "26189d97d29d71020e2e88dde73f46c8c057974fb32be2f36d88093b77046b9f",
+"bytes": 1439
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "1e6bbb427bda407b77bba801ade446f5535e149a7e141c8f15bf5607ad8dbf6c",
+"bytes": 17
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.md": {
+"sha256": "f01d8c2951c5f7da0f918ff9b1f8fb59daad3cf0b7c4c1d2d37a5caa461fa0d6",
+"bytes": 1429
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.md": {
+"sha256": "3eb31b9c087ddad34e391f2e5e847352e96ba624efe60118f3969523a7746136",
+"bytes": 2279
+},
+"pred-paddle/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.md": {
+"sha256": "c0b871fec6349331ad25d486021f62adcde341742af141aac4d3d20bf481e219",
+"bytes": 719
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.md": {
+"sha256": "615d2e2ab44554fd0c46a2e0b25084236df3afad442338577e670e704b0e45f8",
+"bytes": 4825
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.md": {
+"sha256": "552d944d80662bf75c1919fb4a5b50027c832ba4678c770c1753fef739c0558d",
+"bytes": 5772
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.md": {
+"sha256": "554c0f77e4f8ee2cf45928ce9423a6cca810ac2aad1c0802ca81ecf95cb03289",
+"bytes": 4309
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.md": {
+"sha256": "761c2834c8fbc976e7cff436f3467f6e7ac84747e1228533e4db1059231d27a0",
+"bytes": 5929
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.md": {
+"sha256": "7f132d9941ec3f5bf6272471582d91cd9217b3c350a014420b1e7b9b84625149",
+"bytes": 4354
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.md": {
+"sha256": "5ccdb02393c6eb54f8e8232b4adc5bad53b4e095a710563227919fe43de20ee7",
+"bytes": 4620
+},
+"pred-paddle/exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.md": {
+"sha256": "67bd397ee5f695aef5a9f23b7aec80c4028daa44fc5d5348e5e441797f9d11d4",
+"bytes": 5218
+},
+"pred-paddle/magazine_TheEconomist.2023.11.18_page_071.md": {
+"sha256": "416634a8228c48aee40d576d11b54080a0d0d0715be870a4567fd1fa1a97b17a",
+"bytes": 6479
+},
+"pred-paddle/magazine_TheEconomist.2023.11.25_page_006.md": {
+"sha256": "135dd48e9db71a710a8fd83ffe854f840d13834179eebfa6379cea50549c22a5",
+"bytes": 733
+},
+"pred-paddle/magazine_TheEconomist.2023.12.02_page_028.md": {
+"sha256": "14cd68c4e4f3d5981b8b37e310510b84266e766b4d366eaf88f588e9911984da",
+"bytes": 3422
+},
+"pred-paddle/magazine_TheEconomist.2023.12.02_page_031.md": {
+"sha256": "687ae783826371d3ac5f8fe513042eb5a11ceeab405dfb1820fa925cbd3c7630",
+"bytes": 6075
+},
+"pred-paddle/magazine_TheEconomist.2023.12.02_page_056.md": {
+"sha256": "191ea399aeada82317b676316068e227c9a26b52212ba028dafe8d2c9eafe3ac",
+"bytes": 6624
+},
+"pred-paddle/magazine_TheEconomist.2023.12.16_page_026.md": {
+"sha256": "b7db26d4bc4530f9e0fe2205f08cef7c2441081ceb25b9d0faab0e1dbcfc6d26",
+"bytes": 6601
+},
+"pred-paddle/magazine_TheEconomist.2023.12.23_page_024.md": {
+"sha256": "d617622081d391ff5c368ebb1d397a3fdd817bd1f850a1ae23e8d98914ca02c5",
+"bytes": 3377
+},
+"pred-paddle/magazine_TheEconomist.2024.02.24_page_007.md": {
+"sha256": "6b56160082118ce766b522e8f9353ea28ab7789b85f680cc40af07a14103c8fa",
+"bytes": 6702
+},
+"pred-paddle/magazine_TheEconomist.2024.02.24_page_008.md": {
+"sha256": "97e5ae2096141582c86047c923d6cd0f466f370fbd0e08e7d182eed36789b1ea",
+"bytes": 4993
+},
+"pred-paddle/magazine_TheEconomist.2024.02.24_page_076.md": {
+"sha256": "2da8f33f17029e2319b9560c99ffcc3fd6efe5778d30a2615a44937ef7684f29",
+"bytes": 62181
+},
+"pred-paddle/magazine_TheEconomist.2024.03.02_page_025.md": {
+"sha256": "b39e7a0693a2e4ea22d4416a68689e5cd41e86c90c108e2eec56c118ca5d5a5d",
+"bytes": 6136
+},
+"pred-paddle/magazine_TheEconomist.2024.03.09_page_064.md": {
+"sha256": "ccbb6a4d3ee11db5deab8aaccd03c4751a6780572fdfe5ea038c0f6c5ad8956a",
+"bytes": 6397
+},
+"pred-paddle/newspaper_Chicago Tribune_0801@magazinesclubnew_page_015.md": {
+"sha256": "44db7c0532406b3094d923a269198f4a882f6f6f61a81b2c57283a5bc7b96ba7",
+"bytes": 30077
+},
+"pred-paddle/newspaper_Chicago Tribune_0801@magazinesclubnew_page_019.md": {
+"sha256": "e20339a3fcdc14049ff811bd4ca7d0079d0c396da303195a156a458ae9b60196",
+"bytes": 79559
+},
+"pred-paddle/newspaper_Chicago Tribune_0801@magazinesclubnew_page_032.md": {
+"sha256": "1997faea33f853eda050d325e47bf0b55d5dff7858198eb49e85376ed062225d",
+"bytes": 11811
+},
+"pred-paddle/newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_058.md": {
+"sha256": "81d7cc6f39d60020f5c85748282e552328d1c2e045757cd33b97549814688e05",
+"bytes": 4820
+},
+"pred-paddle/newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_027.md": {
+"sha256": "2770cd8cb964f0da5e12d9f9f0a965883cf7d47fed66de1ae18e52fc95303c88",
+"bytes": 6703
+},
+"pred-paddle/newspaper_The Times UK_0801@magazinesclubnew_page_083.md": {
+"sha256": "aee3d88c85d8b3a807495bc91e1ccd755d2c2bd5e8cdca4be4dbb74eb926069d",
+"bytes": 4471
+},
+"pred-paddle/newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_004.md": {
+"sha256": "df82c85f6e4c10c51e06cc011760f9cea7f806ba96a902f8d033196de3a72a65",
+"bytes": 16684
+},
+"pred-paddle/newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_025.md": {
+"sha256": "d93cfefaae0ab439d6a5e7996f542def052f596c18c7a288851bd0a8c3d176a7",
+"bytes": 124092
+},
+"pred-paddle/newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_033.md": {
+"sha256": "752b2d08031099b0017a994195a449c425a174d427b7bd00f708589721693e64",
+"bytes": 13646
+},
+"pred-paddle/newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_009.md": {
+"sha256": "5ba9a6cf51d60d07920a8d6fdc71370031fb33b15e8991aace299388cd4cc2ec",
+"bytes": 9055
+},
+"results.jsonl": {
+"sha256": "d267c85fda2b9f5f784eb50fb8582dc1497791ba3fba1a156276c348f82071b9",
+"bytes": 42878
+},
+"score-26/gt-subset.json": {
+"sha256": "366ac4acd592d7a52722c93f5684468aa920ec4061158005a6067819aac07687",
+"bytes": 578854
+},
+"score-52/gt-subset.json": {
+"sha256": "1a69eb3215ec3434a4c3f19640348462feb7e471c0f983e7848bc122a4350cd5",
+"bytes": 821543
+},
+"score-final/bench/result/odl-Lfinal_quick_match_metric_result.json": {
+"sha256": "c2fb901c395e3ed9eef5cb58c6161ade7fb6c3e68009b794a3152f64d670cfac",
+"bytes": 5805
+},
+"score-final/bench/result/odl-Lfinal_quick_match_reading_order_per_page_edit.json": {
+"sha256": "fd109e401724ba5a601062f334feb77577f2d0c34bddb2df25c2948394e0140a",
+"bytes": 6329
+},
+"score-final/bench/result/odl-Lfinal_quick_match_reading_order_result.json": {
+"sha256": "8d236f0ef967106d9d7caa5641e8a49276a428bb4c26be722ea3ba737f419e00",
+"bytes": 63765
+},
+"score-final/bench/result/odl-Lfinal_quick_match_run_summary.json": {
+"sha256": "8a3b4866b1434134b82d47f28d52179145f5ecdff9aa9c5016963be466f7c28e",
+"bytes": 8772
+},
+"score-final/bench/result/odl-Lfinal_quick_match_runtime_environment.json": {
+"sha256": "70c0c1ff7d89d154602159ea4451d93971cc869976cda70a469c4c45991c79d7",
+"bytes": 5646
+},
+"score-final/bench/result/odl-Lfinal_quick_match_runtime_environment.log": {
+"sha256": "472d02fd63ff6efc74a1cde2945c7900a3a4d962e2c09068417da598a482293a",
+"bytes": 3918
+},
+"score-final/bench/result/odl-Lfinal_quick_match_stage_execution.json": {
+"sha256": "70e051fb9ea352f1e9162d5524be3d31ca5cbc28b62d6c120ded090d50eb6625",
+"bytes": 828
+},
+"score-final/bench/result/odl-Lfinal_quick_match_stage_execution.log": {
+"sha256": "61824f5ff5f7528caa94caa1bab4cf6aa25cac1079c7a9f7a78a7c5251c44b16",
+"bytes": 331
+},
+"score-final/bench/result/odl-Lfinal_quick_match_table_per_page_edit.json": {
+"sha256": "c482e53cc5c97a6126eddc526143f82b7e740b58585648d5265d67d11d593aff",
+"bytes": 1246
+},
+"score-final/bench/result/odl-Lfinal_quick_match_table_per_table_TEDS.json": {
+"sha256": "286ca016cae594ac8a341ec9f5296b18f86fac0ae146b1ce74199cf80b04c1cb",
+"bytes": 8541
+},
+"score-final/bench/result/odl-Lfinal_quick_match_table_result.json": {
+"sha256": "f67e6da2203f64f96c8de15f5e65871f7a804568233693c3b8cd84161aadbcf0",
+"bytes": 381871
+},
+"score-final/bench/result/odl-Lfinal_quick_match_text_block_per_page_edit.json": {
+"sha256": "476e2c6a2147a8c5b8f2067c70614888f935e7a62d86a18691fd9aaa7e3c1761",
+"bytes": 6708
+},
+"score-final/bench/result/odl-Lfinal_quick_match_text_block_result.json": {
+"sha256": "77e16b64f46e64d2294f858e948c1bb8bcc9059a554da6bd329b60a87414d312",
+"bytes": 1455421
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_metric_result.json": {
+"sha256": "64f8fffdf2eea7a8c0ab2bd4e42e527bae5dcb105719f3bfd241d7f141a9443b",
+"bytes": 5813
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_reading_order_per_page_edit.json": {
+"sha256": "e48c032b5bd9c6deb021d2e25456339b577b17a5ec8c90973fb19b440ebb855c",
+"bytes": 6266
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_reading_order_result.json": {
+"sha256": "3dd541656b108a999f7f14e15cbb0eff019010a61b2a6e17c8f0a1eca6405404",
+"bytes": 62987
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_run_summary.json": {
+"sha256": "81edfc02a45c287c1a602d4cc59303aa9b9bb1b500109621522a35ae5cf3237e",
+"bytes": 8779
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_runtime_environment.json": {
+"sha256": "70c0c1ff7d89d154602159ea4451d93971cc869976cda70a469c4c45991c79d7",
+"bytes": 5646
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_runtime_environment.log": {
+"sha256": "7b5e5584be793411264aad304c5624da7a3c553b3439f19798576620f0dc165f",
+"bytes": 3921
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_stage_execution.json": {
+"sha256": "70e051fb9ea352f1e9162d5524be3d31ca5cbc28b62d6c120ded090d50eb6625",
+"bytes": 828
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_stage_execution.log": {
+"sha256": "a76da2920b88978c7b080116217d49ea9594a74c27b8eecd71f9226202b1af31",
+"bytes": 334
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_table_per_page_edit.json": {
+"sha256": "c9ae0949edfe6bdb0cafc98c121f2ba15bf1028864cf73c22cd1fd9fb32d545d",
+"bytes": 1274
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_table_per_table_TEDS.json": {
+"sha256": "44c3b9fd598bf87c778dde38dd88b68c462807ef4dcbf6b512620039564cce3f",
+"bytes": 8209
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_table_result.json": {
+"sha256": "7ed05ea6e95e4e51290242494a8ebff6f37e815208f5063f9f5f57db1e4eb3e5",
+"bytes": 410289
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_text_block_per_page_edit.json": {
+"sha256": "e61c2aab3e7838be6784113d21bda385096d833d3df3581bbbca92849db96cb9",
+"bytes": 6576
+},
+"score-final/bench/result/paddle-Lfinal_quick_match_text_block_result.json": {
+"sha256": "8bb36f1a08193a3e078c707bd196141699ea521bcb36a76b4f83ed37587f44cb",
+"bytes": 1498895
+},
+"score-final/gt-subset.json": {
+"sha256": "ccf95c6df2f5b2c2b363e2d9692edebfe7a326c189798175b5491ea5befe6862",
+"bytes": 853216
+},
+"score-final/odl-Lfinal/PPT_11.2013EvaluatingTraineeteacherproficiency_page_029.md": {
+"sha256": "f63ca7b6c5a9c6307b5428a02bd26ce4cfff4dcd5e02b25618e40a258b41bc18",
+"bytes": 324
+},
+"score-final/odl-Lfinal/PPT_13 fallacies LALT2012_page_001.md": {
+"sha256": "53bb9e5cb0c4ee07fd40c30edf3471028cb75bc33a2a7656acc3702e0f1ea41e",
+"bytes": 253
+},
+"score-final/odl-Lfinal/PPT_1637904769_page_008.md": {
+"sha256": "44c50379e4f010629e55479cca618a4a749abc70a63fa0b0472d6253cb587fe3",
+"bytes": 189
+},
+"score-final/odl-Lfinal/PPT_8076_MEYER_Chapter_2_-_Language_Change_page_012.md": {
+"sha256": "b2dd57fc872b7d88655c58ae6e425ac3cb0c9b6093352b357db7bf8ea1a138f9",
+"bytes": 356
+},
+"score-final/odl-Lfinal/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.md": {
+"sha256": "68ec545f1f540fe72a92262a58153f80c3863c1183e38d955e096a325daa2069",
+"bytes": 240
+},
+"score-final/odl-Lfinal/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.md": {
+"sha256": "f25af1f59c911d52097121a28204f76f0d1bc3f5af400a1f3bc364a2ab412788",
+"bytes": 381
+},
+"score-final/odl-Lfinal/PPT_BaharMartonosi_page_006.md": {
+"sha256": "aae653163592076e8f3bbf8715ce8e2447d7f3537ab5d83c47f3605f9b97c0ff",
+"bytes": 414
+},
+"score-final/odl-Lfinal/PPT_BaharMartonosi_page_010.md": {
+"sha256": "a0b671ae1088af0fd6d514aa8d4df8b131a5a5641e704dc5cb04acc6dfa504c6",
+"bytes": 292
+},
+"score-final/odl-Lfinal/PPT_CalculusReview_page_009.md": {
+"sha256": "ddafa5fa680500d3fb316921a1395e170c774512a04a12bdc730356dc65f7362",
+"bytes": 222
+},
+"score-final/odl-Lfinal/PPT_CalculusReview_page_033.md": {
+"sha256": "b38511d9761d1083dee8d502af48ea6ac76bd39637e49ebbb99bdbd5dccaf81b",
+"bytes": 99
+},
+"score-final/odl-Lfinal/PPT_EnglishtoAmericanTransition_page_005.md": {
+"sha256": "fc2fb638100d923b63afdf7e615b8eee47cdbd274319391a3ed08bad6d4d7c2d",
+"bytes": 285
+},
+"score-final/odl-Lfinal/PPT_Keuk Chan Narith_page_019.md": {
+"sha256": "8f506fba522b343f5563b5ea57f40124303fc3ac9063129f26d4b22cfe966552",
+"bytes": 237
+},
+"score-final/odl-Lfinal/PPT_LEP power point presentation-English-FINAL-10-31-07_page_004.md": {
+"sha256": "efe0c9b90cc706fa67f4e8c547ac47aaa40350d5930d4ad3a30bc1dc7a9ae53b",
+"bytes": 657
+},
+"score-final/odl-Lfinal/PPT_LEP power point presentation-English-FINAL-10-31-07_page_008.md": {
+"sha256": "bbfbad87507c31e41dddf3b86c3ae9478f924bc66ecc0a552254be18e2901aaa",
+"bytes": 566
+},
+"score-final/odl-Lfinal/PPT_LEP power point presentation-English-FINAL-10-31-07_page_010.md": {
+"sha256": "1551e476312278c0bc7f93885764d46a9ee34a90142515f21de85f76ed8b17f7",
+"bytes": 2032
+},
+"score-final/odl-Lfinal/PPT_PresentationSpecification_page_010.md": {
+"sha256": "2c14cff6ce38e63ec417f61e5728b6f5a6b1b4407e640e5c8b196bd923e23892",
+"bytes": 447
+},
+"score-final/odl-Lfinal/PPT_PresentationSpecification_page_025.md": {
+"sha256": "b3524e3e02ff5bb5a4b134cd8f23e3fa53db6056dd7f325edae44777742e3605",
+"bytes": 320
+},
+"score-final/odl-Lfinal/PPT_StewartCalcET7e_03_02_page_014.md": {
+"sha256": "5cd636a994067cfdf5fb7b50de340ff049a57f11f7aa65d40cd2ec265cccca17",
+"bytes": 348
+},
+"score-final/odl-Lfinal/PPT_The Right Moves_page_010.md": {
+"sha256": "3cb880e95f1ab3698ccd3e0da4b4acfa63205ef26b54e42a1854b93a00d122ce",
+"bytes": 320
+},
+"score-final/odl-Lfinal/PPT_all655920_page_008.md": {
+"sha256": "8837ce9eab386cbc3f88f66fc4e10883adfff5c4eb772580e81abc096f5f1394",
+"bytes": 243
+},
+"score-final/odl-Lfinal/PPT_lay_linalg5_01_05_page_009.md": {
+"sha256": "7c86c1ec71477767f654ce6477d430a9a2431f63afe30f592318de7fec96611a",
+"bytes": 184
+},
+"score-final/odl-Lfinal/PPT_lecture1_page_007.md": {
+"sha256": "78fa292891807c82d2beb7f7b1dd0c4e6a6b7987e195e0916b401bdb76d4ebd7",
+"bytes": 174
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.md": {
+"sha256": "c118ae388159736a79fb92990fb1da73936ab6e9728eb04043913deb13d1ffd5",
+"bytes": 401
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.md": {
+"sha256": "fda06b37e1c8bb9177b2cc9c85b8c769fca202c641e070af71ac4c85ef146d35",
+"bytes": 473
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.md": {
+"sha256": "8ac39155a339af5afc17606fc4f85a0ca710445190266dc4575d4f03f56c8d9f",
+"bytes": 790
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.md": {
+"sha256": "e6de31bfb2e525a0c6e36b02b9af3953f06639df66a92c22d090893532001b79",
+"bytes": 1094
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.md": {
+"sha256": "438e7ba7ebb17eda58ca62f2a8e0eac7f8813c2db4476c9409c64fe05d3c00f7",
+"bytes": 747
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.md": {
+"sha256": "7d6f480590caa0fefb80bf0f691004f83fe0eb933f8074eb4e4069f08f6b8edb",
+"bytes": 104
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.md": {
+"sha256": "09e0ae237070dd4a50375db963ac85e570f6f7b3c075bf7d8fe88d01007dc2f6",
+"bytes": 538
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "9fc602ab382a864dea9e2388757a5daabf1a8e1a5765c73adc0cbd9fb5c83ddd",
+"bytes": 87
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.md": {
+"sha256": "ece12aff4d2494c0e51bb48622ff8883339ba3432afbabd91515a3ffb05cb347",
+"bytes": 516
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.md": {
+"sha256": "c3efacb7962d8971de578e7c57d46dd5a6b6de4eb5df061f4263d2d7eff9f1a3",
+"bytes": 99
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "e31a468fe2e745cac1dcf813948a45c3bd72fb40833c3f1c6e33ff3e29523883",
+"bytes": 21
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.md": {
+"sha256": "56b954ac7b12aecd88fdfb18b7d946060d514367f3f13849652c6e13e70afbfb",
+"bytes": 688
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.md": {
+"sha256": "55196f6b23d1d011b26e54c5f67a60b718ea0634c31761b302f9e7902a2ec5a4",
+"bytes": 1278
+},
+"score-final/odl-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.md": {
+"sha256": "7538a1c5539be1c500d20fdc3ae68bece3e5f384a93712bbdddfa50af58b8760",
+"bytes": 374
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.md": {
+"sha256": "2a2ceb59a8121c6149a6bfb6b743419ef5013e720066723b19ff74b199f56b6f",
+"bytes": 3436
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.md": {
+"sha256": "4d84e41082feda9082ceae477246c8efc47d3e97209b5f5e11a79e90b5f3195b",
+"bytes": 4375
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.md": {
+"sha256": "04c4698c20d0bcf1bb37e93f765b38be0237ef06bd44278581abd2906a930af7",
+"bytes": 3399
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.md": {
+"sha256": "95c67a7ff0753648aaf3e86c054fee5bb484edd6f5504fc332d3262edf63b1c7",
+"bytes": 3135
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.md": {
+"sha256": "5663788934202616c577480133f0c1c5c68ae959184633901e8cdc4bf82406a4",
+"bytes": 3099
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.md": {
+"sha256": "fe4daacac69b1e5fad09a0ce071ce8416c9901cf561b654d5f15c60dd8eb611a",
+"bytes": 3407
+},
+"score-final/odl-Lfinal/exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.md": {
+"sha256": "3be79aaac7ed20429f83a61321691888c8ebbc1c2c079bbc6a3103e8df633dab",
+"bytes": 3478
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.11.18_page_071.md": {
+"sha256": "661bb3c2a9865c4ff501e1e29a983ef9b2608bef8becc631e7b9bb502e52a091",
+"bytes": 6164
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.11.25_page_006.md": {
+"sha256": "fd32df274b2e85f61cc043ff472eb4e80b5303b9828c940344058f65ae510115",
+"bytes": 667
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.12.02_page_028.md": {
+"sha256": "969cef015f6bd8e565ab3ee5ce962139d4632fae03a70511418eeee5f6b605f5",
+"bytes": 3239
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.12.02_page_031.md": {
+"sha256": "43a36907638547c1eba69a9da62cf41fc15685b0cb0f79972dbf7cba594a6195",
+"bytes": 5751
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.12.02_page_056.md": {
+"sha256": "48b7b0d3410e1ab8232e097224cade7908c03aa23d7940bf0fc3c75b0fb79695",
+"bytes": 6130
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.12.16_page_026.md": {
+"sha256": "f95f205c4a064fa232181f3277e73e76c1660e6f02aba0d3598673f706bd8f4f",
+"bytes": 6303
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2023.12.23_page_024.md": {
+"sha256": "1d4c8f0ca0b9584da59b3dff55009085662947c0a540183306ae71f238c93ff2",
+"bytes": 3204
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2024.02.24_page_007.md": {
+"sha256": "4cf3649c205b098a56216f1ad9c2f871af78736f98cf01484dde0da8f24bebbd",
+"bytes": 6428
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2024.02.24_page_008.md": {
+"sha256": "c7e194286ec497fedd2dcbb73e82835f4529b61e5624694966f456e4bf6805fa",
+"bytes": 4683
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2024.02.24_page_076.md": {
+"sha256": "1d91e0b41f94650f204f4e13a50ddff38ed8ba313873806df914541a1e25e539",
+"bytes": 5070
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2024.03.02_page_025.md": {
+"sha256": "77f6541f2d78c3b3fdb3bf440e0f2ea02641be80b5c7a2490a073b8c4b5ffbaf",
+"bytes": 5901
+},
+"score-final/odl-Lfinal/magazine_TheEconomist.2024.03.09_page_064.md": {
+"sha256": "c0f635e74f2ccaa974108ddf7ce295eb6a425f5bb25a65b5df35c584fd2e2834",
+"bytes": 6033
+},
+"score-final/odl-Lfinal/newspaper_Chicago Tribune_0801@magazinesclubnew_page_015.md": {
+"sha256": "72e0cd3726b7b3aecfed43ae9fe8801875171cf68bc44df104a4dd1a933be95d",
+"bytes": 23956
+},
+"score-final/odl-Lfinal/newspaper_Chicago Tribune_0801@magazinesclubnew_page_019.md": {
+"sha256": "fae50fd2246663d4d8f2376b77f2e2f7d1d01b2ec8800839e6ae5da7384c417a",
+"bytes": 16369
+},
+"score-final/odl-Lfinal/newspaper_Chicago Tribune_0801@magazinesclubnew_page_032.md": {
+"sha256": "0b448a6dc51e821c7afa98d7ceae216ae085ac930c2aaca8541b98356834ace1",
+"bytes": 9576
+},
+"score-final/odl-Lfinal/newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_058.md": {
+"sha256": "69d119e6ddb4a3fdf4f4b3f2fec8157016e540daaa218c50c332915b2954c2af",
+"bytes": 3945
+},
+"score-final/odl-Lfinal/newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_027.md": {
+"sha256": "4e2397cf0b729c58db7b19b4436a9a338cfb04c0ff6b4bb3e99028f2afad3c66",
+"bytes": 5924
+},
+"score-final/odl-Lfinal/newspaper_The Times UK_0801@magazinesclubnew_page_083.md": {
+"sha256": "5a29b5c17909c569b993042e8a1a5fc1bf008cc89924a95b849cead2c20757f3",
+"bytes": 3663
+},
+"score-final/odl-Lfinal/newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_004.md": {
+"sha256": "0cec907ea6d5cd2fa98cacb593d2feb365305d691777366f28536d186af515f0",
+"bytes": 15551
+},
+"score-final/odl-Lfinal/newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_025.md": {
+"sha256": "afb4960adb9012305dde284316f1868d0683cc0fc05c4b8b404dc7c4b873f770",
+"bytes": 19817
+},
+"score-final/odl-Lfinal/newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_033.md": {
+"sha256": "650645f25e7334316132cbbe8625bb49d9fbd1b512c6c190a6eb8b7b8284b645",
+"bytes": 12237
+},
+"score-final/odl-Lfinal/newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_009.md": {
+"sha256": "0fd611c0a5bed179a8ad7523215022d50b8c9a301da0643e78816b9239e9369f",
+"bytes": 8438
+},
+"score-final/odl-Lfinal_quick_match_metric_result.json": {
+"sha256": "c2fb901c395e3ed9eef5cb58c6161ade7fb6c3e68009b794a3152f64d670cfac",
+"bytes": 5805
+},
+"score-final/odl.yaml": {
+"sha256": "7b8816b6f02e49f2d9cff7fbe114130b101cc22a78ae93885741852f489164a2",
+"bytes": 593
+},
+"score-final/paddle-Lfinal/PPT_11.2013EvaluatingTraineeteacherproficiency_page_029.md": {
+"sha256": "f69af53c0a175cbc14bb1901770d9e3fa90eeb90d2bf2a01076cb49b4fe0b6a9",
+"bytes": 319
+},
+"score-final/paddle-Lfinal/PPT_13 fallacies LALT2012_page_001.md": {
+"sha256": "e0ffb131c4d35d141bd676b7a61a0779f3c6b5164cb88c5a32443ca233a090d7",
+"bytes": 246
+},
+"score-final/paddle-Lfinal/PPT_1637904769_page_008.md": {
+"sha256": "1d678c071ed0d1a782879fb4214848fb69ad084bbe28df41dd15277b6782b9a2",
+"bytes": 190
+},
+"score-final/paddle-Lfinal/PPT_8076_MEYER_Chapter_2_-_Language_Change_page_012.md": {
+"sha256": "d9b8d791a29e645bcc3002ccea77387b92f360dbc6ec01ef2826bc169ab43324",
+"bytes": 522
+},
+"score-final/paddle-Lfinal/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_013.md": {
+"sha256": "f03c48ced5b89ace4423a437f541b3e38ef546bb12231f45d4e624a0a5cdccb6",
+"bytes": 256
+},
+"score-final/paddle-Lfinal/PPT_B14_Claeys_Consistent Presentation of Images_v2_page_024.md": {
+"sha256": "3487d6413182e7340b6d1edd031852392add3316584e672df026bb823c5db6ee",
+"bytes": 391
+},
+"score-final/paddle-Lfinal/PPT_BaharMartonosi_page_006.md": {
+"sha256": "ad31fd6d6d5cff2c28ae356140a6345edaee49750e5a6928c7ca23f9af97df4a",
+"bytes": 434
+},
+"score-final/paddle-Lfinal/PPT_BaharMartonosi_page_010.md": {
+"sha256": "104046b4c3b0bf6e5c19be6ac6f1d72ac8ab7887a2f7e1fa5572a4e5d661da4b",
+"bytes": 540
+},
+"score-final/paddle-Lfinal/PPT_CalculusReview_page_009.md": {
+"sha256": "b329893864d240bad1c1c045525886a5f5cce09ce63cda22884cbd5796faaab8",
+"bytes": 352
+},
+"score-final/paddle-Lfinal/PPT_CalculusReview_page_033.md": {
+"sha256": "14c69df5429606c26a7da70be96d7d30f394309edfb7bea8e5b4f3e2787c3ffc",
+"bytes": 186
+},
+"score-final/paddle-Lfinal/PPT_EnglishtoAmericanTransition_page_005.md": {
+"sha256": "439335157b1238206ab557a50d50f4b397675d4696cf57f8b2d5ad7977b7cdeb",
+"bytes": 292
+},
+"score-final/paddle-Lfinal/PPT_Keuk Chan Narith_page_019.md": {
+"sha256": "7b4253b8408071923b6e601466b24f23a819c1daf27a77e3c41e4c8eed19fd59",
+"bytes": 236
+},
+"score-final/paddle-Lfinal/PPT_LEP power point presentation-English-FINAL-10-31-07_page_004.md": {
+"sha256": "2f58317a159de9ed7ddcb06eeae568bf0a8c63343fd2d7c06427b791151df6f7",
+"bytes": 658
+},
+"score-final/paddle-Lfinal/PPT_LEP power point presentation-English-FINAL-10-31-07_page_008.md": {
+"sha256": "b1a251fe9c81a30156a1539a51c2e468bf34c96ad721fc2a425b24d417cc7e55",
+"bytes": 584
+},
+"score-final/paddle-Lfinal/PPT_LEP power point presentation-English-FINAL-10-31-07_page_010.md": {
+"sha256": "f6b1bf34be22a2899ad2637033b0e3754661c25d19db467e164192f4d93b1e70",
+"bytes": 3482
+},
+"score-final/paddle-Lfinal/PPT_PresentationSpecification_page_010.md": {
+"sha256": "16ec7b75ac95e453e8c4229cb81fd8ae140b6796ffef0f8ae2826ed67fe6317e",
+"bytes": 1031
+},
+"score-final/paddle-Lfinal/PPT_PresentationSpecification_page_025.md": {
+"sha256": "bb822afd8c14a6990cd033e704d9838ff3cdc39bb43b082517d740844bfbf971",
+"bytes": 348
+},
+"score-final/paddle-Lfinal/PPT_StewartCalcET7e_03_02_page_014.md": {
+"sha256": "b4fd00abe31ae8fffd5ec3f1d09dd926fe94aa57abb552359d8104dbe73ad490",
+"bytes": 520
+},
+"score-final/paddle-Lfinal/PPT_The Right Moves_page_010.md": {
+"sha256": "2de84e211b0b8bb021c96f45e6588668abb0d760169a9bf068d0706f3658d57c",
+"bytes": 327
+},
+"score-final/paddle-Lfinal/PPT_all655920_page_008.md": {
+"sha256": "96b5132697444245c5620cefd02506dde5356c7a915a3247a2b38d709fc64a6b",
+"bytes": 246
+},
+"score-final/paddle-Lfinal/PPT_lay_linalg5_01_05_page_009.md": {
+"sha256": "ee2ec8477ef26be962ce0ec9e8435df14aa0095eca64526e826f5ef829724680",
+"bytes": 420
+},
+"score-final/paddle-Lfinal/PPT_lecture1_page_007.md": {
+"sha256": "ab6c79253fa6b03628300858353e449192de017191ea4ad3beaf5ddb590da0d8",
+"bytes": 416
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_006.md": {
+"sha256": "f9e450fa3b3cf94a14849f6e0c8ddf691596db0ccb1e99daed3d0d1082ded2da",
+"bytes": 4119
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_010.md": {
+"sha256": "3fff243ad1a621903e2739b2279596fa77a2bd7ae41f36704e80554acdd2cd92",
+"bytes": 787
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5A\u7535\u5b50\u8bfe\u672c_page_056.md": {
+"sha256": "ff6ae359f4ff0cb0f59c0efd0f9ce3aa1df9b7acf3d23709637a490e5ed3d2f3",
+"bytes": 1604
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_011.md": {
+"sha256": "58f6bd492eb3d92f62bb23aedcdfb916ba7abf42e00122f76d2328e0f29557b3",
+"bytes": 1579
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_027.md": {
+"sha256": "61f189affd9065553973e6f843681006c267a2f8c17fec09fc66783bdee6e52a",
+"bytes": 1441
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_034.md": {
+"sha256": "6ee591926fb89c55a3e104be789041e00bf233a1b798d048bf1ecf8c344d16a4",
+"bytes": 1328
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_036.md": {
+"sha256": "0cd979cc1ffd3d47087e6e32eb12381fe299740e07cbdc5705996f78524b9d06",
+"bytes": 1735
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u4e94\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed5B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "16faf0a22f9a2b3a460f2be1e6db7290a5013f6e03171c9c36140074050a6c22",
+"bytes": 194
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_072.md": {
+"sha256": "8c9502637f4d394882b5b76acd5fdde627b37233905d55efc559ef97dc34561d",
+"bytes": 2106
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0a\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4A\u7535\u5b50\u8bfe\u672c_page_091.md": {
+"sha256": "26189d97d29d71020e2e88dde73f46c8c057974fb32be2f36d88093b77046b9f",
+"bytes": 1439
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_13.\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed\uff084-5\u5e74\u7ea7\uff09_\u4eba\u6559\u65b0\u8d77\u70b9\u56db\u5e74\u7ea7\u82f1\u8bed\u4e0b\u518c_\u8bfe\u672c_\u4eba\u6559\u65b0\u8d77\u70b9\u82f1\u8bed4B\u7535\u5b50\u8bfe\u672c_page_043.md": {
+"sha256": "1e6bbb427bda407b77bba801ade446f5535e149a7e141c8f15bf5607ad8dbf6c",
+"bytes": 17
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c04\u8bb2\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_\u7b2c\u56db\u8bfeKET\u5206\u7c7b\u8bcd\u6c47\u8bad\u7ec3\u4e8c_page_003.md": {
+"sha256": "f01d8c2951c5f7da0f918ff9b1f8fb59daad3cf0b7c4c1d2d37a5caa461fa0d6",
+"bytes": 1429
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u5199\u4f5c25\u5206 \u301010\u8bb2 \u891a\u8fde\u4e00\u3011_\u7b2c10\u8bb2\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_\u7b2c\u5341\u8bfe\u5199\u4f5cPart9\u5c0f\u4f5c\u6587\u7ec3\u4e60_page_010.md": {
+"sha256": "3eb31b9c087ddad34e391f2e5e847352e96ba624efe60118f3969523a7746136",
+"bytes": 2279
+},
+"score-final/paddle-Lfinal/color_textbook_zhonggaokao_\u5c0f\u5b66_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834_KET\u542c\u8bf4\u8bfb\u5199\u9010\u9879\u7a81\u7834\u4e4b\u8f7b\u677e\u641e\u5b9aKET\u53e3\u8bed25\u5206\u301010 \u891a\u8fde\u4e00\u3011_\u7b2c02\u8bb2\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_\u7b2c\u4e8c\u8bfe\u53e3\u8bed\u90e8\u5206Part1\u8be6\u89e3_page_002.md": {
+"sha256": "c0b871fec6349331ad25d486021f62adcde341742af141aac4d3d20bf481e219",
+"bytes": 719
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2000_Solutions_2000s_page_002.md": {
+"sha256": "615d2e2ab44554fd0c46a2e0b25084236df3afad442338577e670e704b0e45f8",
+"bytes": 4825
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2008_Solutions_2008s_page_005.md": {
+"sha256": "552d944d80662bf75c1919fb4a5b50027c832ba4678c770c1753fef739c0558d",
+"bytes": 5772
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2009_Solutions_2009s_page_001.md": {
+"sha256": "554c0f77e4f8ee2cf45928ce9423a6cca810ac2aad1c0802ca81ecf95cb03289",
+"bytes": 4309
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2010_Solutions_2010s_page_001.md": {
+"sha256": "761c2834c8fbc976e7cff436f3467f6e7ac84747e1228533e4db1059231d27a0",
+"bytes": 5929
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2011_Problems_2011_page_001.md": {
+"sha256": "7f132d9941ec3f5bf6272471582d91cd9217b3c350a014420b1e7b9b84625149",
+"bytes": 4354
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2011_Solutions_2011s_page_003.md": {
+"sha256": "5ccdb02393c6eb54f8e8232b4adc5bad53b4e095a710563227919fe43de20ee7",
+"bytes": 4620
+},
+"score-final/paddle-Lfinal/exam_paper_en-file-putnam-archive_2012_Solutions_2012s_page_001.md": {
+"sha256": "67bd397ee5f695aef5a9f23b7aec80c4028daa44fc5d5348e5e441797f9d11d4",
+"bytes": 5218
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.11.18_page_071.md": {
+"sha256": "416634a8228c48aee40d576d11b54080a0d0d0715be870a4567fd1fa1a97b17a",
+"bytes": 6479
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.11.25_page_006.md": {
+"sha256": "135dd48e9db71a710a8fd83ffe854f840d13834179eebfa6379cea50549c22a5",
+"bytes": 733
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.12.02_page_028.md": {
+"sha256": "14cd68c4e4f3d5981b8b37e310510b84266e766b4d366eaf88f588e9911984da",
+"bytes": 3422
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.12.02_page_031.md": {
+"sha256": "687ae783826371d3ac5f8fe513042eb5a11ceeab405dfb1820fa925cbd3c7630",
+"bytes": 6075
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.12.02_page_056.md": {
+"sha256": "191ea399aeada82317b676316068e227c9a26b52212ba028dafe8d2c9eafe3ac",
+"bytes": 6624
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.12.16_page_026.md": {
+"sha256": "b7db26d4bc4530f9e0fe2205f08cef7c2441081ceb25b9d0faab0e1dbcfc6d26",
+"bytes": 6601
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2023.12.23_page_024.md": {
+"sha256": "d617622081d391ff5c368ebb1d397a3fdd817bd1f850a1ae23e8d98914ca02c5",
+"bytes": 3377
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2024.02.24_page_007.md": {
+"sha256": "6b56160082118ce766b522e8f9353ea28ab7789b85f680cc40af07a14103c8fa",
+"bytes": 6702
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2024.02.24_page_008.md": {
+"sha256": "97e5ae2096141582c86047c923d6cd0f466f370fbd0e08e7d182eed36789b1ea",
+"bytes": 4993
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2024.02.24_page_076.md": {
+"sha256": "2da8f33f17029e2319b9560c99ffcc3fd6efe5778d30a2615a44937ef7684f29",
+"bytes": 62181
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2024.03.02_page_025.md": {
+"sha256": "b39e7a0693a2e4ea22d4416a68689e5cd41e86c90c108e2eec56c118ca5d5a5d",
+"bytes": 6136
+},
+"score-final/paddle-Lfinal/magazine_TheEconomist.2024.03.09_page_064.md": {
+"sha256": "ccbb6a4d3ee11db5deab8aaccd03c4751a6780572fdfe5ea038c0f6c5ad8956a",
+"bytes": 6397
+},
+"score-final/paddle-Lfinal/newspaper_Chicago Tribune_0801@magazinesclubnew_page_015.md": {
+"sha256": "44db7c0532406b3094d923a269198f4a882f6f6f61a81b2c57283a5bc7b96ba7",
+"bytes": 30077
+},
+"score-final/paddle-Lfinal/newspaper_Chicago Tribune_0801@magazinesclubnew_page_019.md": {
+"sha256": "e20339a3fcdc14049ff811bd4ca7d0079d0c396da303195a156a458ae9b60196",
+"bytes": 79559
+},
+"score-final/paddle-Lfinal/newspaper_Chicago Tribune_0801@magazinesclubnew_page_032.md": {
+"sha256": "1997faea33f853eda050d325e47bf0b55d5dff7858198eb49e85376ed062225d",
+"bytes": 11811
+},
+"score-final/paddle-Lfinal/newspaper_Daily Mirror 2025-1-8@magazinesclubnew_page_058.md": {
+"sha256": "81d7cc6f39d60020f5c85748282e552328d1c2e045757cd33b97549814688e05",
+"bytes": 4820
+},
+"score-final/paddle-Lfinal/newspaper_The Globe and Mail - 2025-1-8@magazinesclubnew_page_027.md": {
+"sha256": "2770cd8cb964f0da5e12d9f9f0a965883cf7d47fed66de1ae18e52fc95303c88",
+"bytes": 6703
+},
+"score-final/paddle-Lfinal/newspaper_The Times UK_0801@magazinesclubnew_page_083.md": {
+"sha256": "aee3d88c85d8b3a807495bc91e1ccd755d2c2bd5e8cdca4be4dbb74eb926069d",
+"bytes": 4471
+},
+"score-final/paddle-Lfinal/newspaper_The Wall Street Journal - 2025-01-08@magazinesclubnew_page_004.md": {
+"sha256": "df82c85f6e4c10c51e06cc011760f9cea7f806ba96a902f8d033196de3a72a65",
+"bytes": 16684
+},
+"score-final/paddle-Lfinal/newspaper_TheBostonGlobe-2025-1-8@magazinesclubnew_page_025.md": {
+"sha256": "d93cfefaae0ab439d6a5e7996f542def052f596c18c7a288851bd0a8c3d176a7",
+"bytes": 124092
+},
+"score-final/paddle-Lfinal/newspaper_TheGuardianUS-2025-1-8@magazinesclubnew_page_033.md": {
+"sha256": "752b2d08031099b0017a994195a449c425a174d427b7bd00f708589721693e64",
+"bytes": 13646
+},
+"score-final/paddle-Lfinal/newspaper_TheWashingtonPost-2025-01-08@magazinesclubnew_page_009.md": {
+"sha256": "5ba9a6cf51d60d07920a8d6fdc71370031fb33b15e8991aace299388cd4cc2ec",
+"bytes": 9055
+},
+"score-final/paddle-Lfinal_quick_match_metric_result.json": {
+"sha256": "64f8fffdf2eea7a8c0ab2bd4e42e527bae5dcb105719f3bfd241d7f141a9443b",
+"bytes": 5813
+},
+"score-final/paddle.yaml": {
+"sha256": "1f21cb91ae04c05186902f128007a8b2d882852af4fb7691b7a4bc664ae191aa",
+"bytes": 596
+},
+"state/odl-1365.json": {
+"sha256": "334af4ff6c74a36e985db58d3b8849bfa4174ab59699426e1fa6db7a28bec78d",
+"bytes": 71
+},
+"state/odl-1366.json": {
+"sha256": "643d1549a1aca91461050348490ad3ad8137f505a49f656d56179d739fd0e0e6",
+"bytes": 71
+},
+"state/odl-1367.json": {
+"sha256": "458dd76102db850bd3e024f1418bd99e0a33e50e2240c1fdda8ea7ba88a6744f",
+"bytes": 72
+},
+"state/odl-1368.json": {
+"sha256": "359a4343bf01a9a3c4f55dc110ec62a084d3d62896fa6dfef8c051e4940caa06",
+"bytes": 73
+},
+"state/odl-1369.json": {
+"sha256": "79338814d415ece8cf7b69a54492ebbeab24bf70eaeaec99f2917aed288ea05e",
+"bytes": 72
+},
+"state/odl-1370.json": {
+"sha256": "bf998c0e10ef2cb31a8be8854d326bd8d8d12664a1f815da5cad13461a6f844e",
+"bytes": 72
+},
+"state/odl-1371.json": {
+"sha256": "9d5adcf41fa2239f70880ea816742ef0a5bab4f8d1a61582e861ce1375749ff7",
+"bytes": 71
+},
+"state/odl-1372.json": {
+"sha256": "436f60b92b42c680ce66be82e7950ca22d53b6348fbf19c15ca51e53b9186751",
+"bytes": 71
+},
+"state/odl-1373.json": {
+"sha256": "2b0a0a34a5d563093cbc33eaa0868c143625b0487142c026a52a15db7a7b6a9a",
+"bytes": 72
+},
+"state/odl-1374.json": {
+"sha256": "8c42f3c56725dee32f314b23b39dffa0521f731235c65b1988fb2f638f6e0ac3",
+"bytes": 71
+},
+"state/odl-1494.json": {
+"sha256": "ad6491171f6d5c93cb40ec2b4da71e7701ece972caca177568a98c52031e635b",
+"bytes": 68
+},
+"state/odl-1498.json": {
+"sha256": "628032a69ce6efa2d3d4d81a342c52c966083defec97124b6fe9d06d2ab65f33",
+"bytes": 70
+},
+"state/odl-1500.json": {
+"sha256": "5fd83947e697c1f15921b3c0a83c68717224bae3ec041cfab138ba604d060d70",
+"bytes": 69
+},
+"state/odl-1501.json": {
+"sha256": "0893809f2d5b854609f59e55600013ddf42f2c1cfbcbb718679d8d624dc6ee6e",
+"bytes": 69
+},
+"state/odl-1502.json": {
+"sha256": "2ff565fcf9919ef0989e1a0b76005b043c9b5025364e51674d7c76922c6a5c6d",
+"bytes": 69
+},
+"state/odl-1503.json": {
+"sha256": "c33ef4f3e0f8280793831adcbe7d585b7c95f935e3f533217ce0c317aaea1749",
+"bytes": 69
+},
+"state/odl-1504.json": {
+"sha256": "cbfb253efefe664465567e6e707e0282436f0722a9c30551bc4e41325ac0019f",
+"bytes": 68
+},
+"state/odl-1506.json": {
+"sha256": "4badef101a9347fcd603a609608f02ee65dc4ba7dafd9984a42dfd2682e38589",
+"bytes": 68
+},
+"state/odl-1507.json": {
+"sha256": "06bb50a49c916be545e85c2335cc39e787ee72b0de7f0ccf9dd260882eb88324",
+"bytes": 70
+},
+"state/odl-1508.json": {
+"sha256": "80a79b07dd96c201fe8fdba925687c6a84fb23bd0da992922e08da93b05856c3",
+"bytes": 68
+},
+"state/odl-1510.json": {
+"sha256": "70a0d45c1a9775aa9311691b1470a7936e0b35eb1182ff60c844db166f92d093",
+"bytes": 69
+},
+"state/odl-1513.json": {
+"sha256": "f90f068359aaa63a8a3782172f128ebb8298d0e09f786264465f5774d2295975",
+"bytes": 68
+},
+"state/odl-1514.json": {
+"sha256": "0e63409fb4005e04e8e158c4a05ac20f31b1bb3ed9ab72d3198ad51581be6194",
+"bytes": 69
+},
+"state/odl-1515.json": {
+"sha256": "6d2b64a696801216ee1bc836c1c769a919bd67c33651b42fbe2b4cb7ac2f4f20",
+"bytes": 69
+},
+"state/odl-1517.json": {
+"sha256": "d84fffa59a3cc43c4ce89ac4d80b5d13978d7aa5f5f92e5aacef96573397f555",
+"bytes": 71
+},
+"state/odl-1581.json": {
+"sha256": "7445103e8600be9908465afb86dbfd8e424304cfefb8fc5a452c35ec4b24aac8",
+"bytes": 71
+},
+"state/odl-1582.json": {
+"sha256": "195248b3feabbee2fea7b9d3ae799cd5b0d57380a763ce8156d37fe11688b8e3",
+"bytes": 71
+},
+"state/odl-1583.json": {
+"sha256": "b3ff8ccaf356d6abe73acbd72f900abfa6fbe1f63b2ffba2ee4a17e0c47afe8a",
+"bytes": 71
+},
+"state/odl-1584.json": {
+"sha256": "3ae7942d4ca34507a5e488d8ee63e9e90327ef0a9c27ee9d3e125c6da568b1f0",
+"bytes": 71
+},
+"state/odl-1585.json": {
+"sha256": "bbe00c1779e2bea35488592545b2256a3cb722b273bf6b944ef4b0e813ae75c7",
+"bytes": 71
+},
+"state/odl-1586.json": {
+"sha256": "328bcb7361848b928acabd8d86496fb0085537466d23e5ec778156a69ebde7a8",
+"bytes": 71
+},
+"state/odl-1587.json": {
+"sha256": "ffe7e2ded5d702b6022f5afc3b1de9fdc9d8d74af96c2a279020ad25988ab24c",
+"bytes": 71
+},
+"state/odl-1588.json": {
+"sha256": "a6378c5ceec5f2332bfd8929cbedfce78f97a41f0a57380a8901cbb067353322",
+"bytes": 71
+},
+"state/odl-1589.json": {
+"sha256": "6c4fd8111958fb3798d1d88d93a535486d4e6b3c0dc851cd83fd9dfb887798dd",
+"bytes": 70
+},
+"state/odl-1590.json": {
+"sha256": "d3300bb907e6ac73c13e00d44526aaea16170bdbc894aeba9c82051c03e31dbd",
+"bytes": 71
+},
+"state/odl-1591.json": {
+"sha256": "33a824c7ca993ac380e017b6130f4644b8f022d8fd7dbe14c7617e2b2990c126",
+"bytes": 71
+},
+"state/odl-1592.json": {
+"sha256": "65b4e9c56dcec2c83346c39125580561faa0433067b6a72352b249daf141506d",
+"bytes": 71
+},
+"state/odl-1593.json": {
+"sha256": "a9e5ad8d4c9893edf053dbeb94819b4a0cd6682ed41c40fc5b87081abe1371c5",
+"bytes": 71
+},
+"state/odl-1594.json": {
+"sha256": "abb836711c7fd58959cb8c928b6891cb1cac17e037825b42bec5bcbf91239bc2",
+"bytes": 71
+},
+"state/odl-1595.json": {
+"sha256": "e3d4ed456788a759c16ee06e9de43ba559db2766bec3a1cf9b197f6d8ee207ab",
+"bytes": 71
+},
+"state/odl-1626.json": {
+"sha256": "9c7c020b50ff792c4b3f454623989e9e91ab6850f25b970e0e7c0c5449bb7b92",
+"bytes": 71
+},
+"state/odl-1627.json": {
+"sha256": "78a5ec9fedc3e097e99a5cf395d74034e28efdb80b1cf57094c76e8e34811a0c",
+"bytes": 71
+},
+"state/odl-1628.json": {
+"sha256": "15d8b4b464c7a12cceb09b080011a119929bdc3dd00a9071bb6a04a9839c7387",
+"bytes": 71
+},
+"state/odl-1629.json": {
+"sha256": "5d3727c4eaa5083ed71023618465b9c5e87da99e9398be9d39345b5728d13437",
+"bytes": 69
+},
+"state/odl-1630.json": {
+"sha256": "6ea20b06fcb84dae12210ee0dfe66d8dafee4595fa4817e04e300a103516f8fa",
+"bytes": 69
+},
+"state/odl-1631.json": {
+"sha256": "bebe247be61ef7c1bf6c06da07dddaaed22f257b26ad16a0f86e82e62eb7f49c",
+"bytes": 69
+},
+"state/odl-1632.json": {
+"sha256": "efc5b221791c846216678befa9417bec98172d18a6c56761c9e0955dd90849f2",
+"bytes": 69
+},
+"state/odl-1633.json": {
+"sha256": "153cde0ca2d184fe8a572e85c83905bfaca2d00e0849a161ca03e282b4f76601",
+"bytes": 69
+},
+"state/odl-1634.json": {
+"sha256": "6947e4869e5b3b58aecf0a0d3f0d57a645b277c0481d819a68ee729326125c01",
+"bytes": 69
+},
+"state/odl-1635.json": {
+"sha256": "1dfe80f01497fcdf72a4ea03205d33d08829b6eda1607281ed9e2ed1996cb564",
+"bytes": 69
+},
+"state/odl-1636.json": {
+"sha256": "dcf7683246241e8f4c47da5853f734736e8fcd12f37614d4b17c594a8e788724",
+"bytes": 70
+},
+"state/odl-1637.json": {
+"sha256": "80e512f3cbb752cf74b8e3ec4f396038ab03933314bd0c9e8c0473aeabefbe7c",
+"bytes": 69
+},
+"state/odl-1638.json": {
+"sha256": "5b930b4766790af8c526b1238d377abd938dda41ad08246212f6d61ab7c035ca",
+"bytes": 69
+},
+"state/odl-1639.json": {
+"sha256": "bdc7cd373232926555f3cb975777b56fc7d1313a6cca5e3cf1d1befa3738f1bf",
+"bytes": 69
+},
+"state/odl-1640.json": {
+"sha256": "49c3a38770d77fb4750fdf4a05dc3620007a165b1493a74807d1d8f952667215",
+"bytes": 69
+},
+"state/odl-1641.json": {
+"sha256": "e743c0fcb7ad045eae1952aa80c4f15ae5dd08f49b8af79bbc16ae9b8f16f187",
+"bytes": 69
+},
+"state/odl-1642.json": {
+"sha256": "efecae07be4820d1ca94de47617028c6b8c6ddc7fe1eb148d71f5d6ee0e5967d",
+"bytes": 68
+},
+"state/odl-1643.json": {
+"sha256": "0e652bc521a252864ca712cfea886faf603c68ee2530b72ec0af77f9c3f2799c",
+"bytes": 69
+},
+"state/odl-1644.json": {
+"sha256": "b23fa07de3c2726870a0275cc844cdc42adb6d7ab4f65c9156abcffc24cb18ee",
+"bytes": 69
+},
+"state/odl-1645.json": {
+"sha256": "37ea161f71c0dcceb0ba337864bab9acb55d1614b70827311c2e33cf48f7ba60",
+"bytes": 69
+},
+"state/odl-1646.json": {
+"sha256": "881b67f68e7fc66a8e738619dc012218a91b66b3a3f89deb2bdf9a454b166c84",
+"bytes": 69
+},
+"state/odl-1647.json": {
+"sha256": "275a244341ce8f083600035598202d2d000ade7a237567b84d489ca11a176716",
+"bytes": 69
+},
+"state/odl-1648.json": {
+"sha256": "c8bc133f6f35579fbf287ea239409281e4937a3820794412bba1ac1f34616e9d",
+"bytes": 69
+},
+"state/odl-1649.json": {
+"sha256": "70a02214dc242a96e2aca409a24f5e3ea6cd120349184508cbe6f82ee1e74cd0",
+"bytes": 69
+},
+"state/odl-1650.json": {
+"sha256": "639f22592b0dfd1be9a8e72d1a7e2170d807129c6b66279495c88eb09f5bb568",
+"bytes": 69
+},
+"state/paddle-1365.json": {
+"sha256": "54b37f02cde72932ac38464e8461d6f398802046241e74998ec45c7b86959dd2",
+"bytes": 72
+},
+"state/paddle-1366.json": {
+"sha256": "757882f987e2af0733b493be27d60abbe603076ee6df0fc0f23ee46766a4b338",
+"bytes": 71
+},
+"state/paddle-1367.json": {
+"sha256": "9fec80ced801f92df05e9a516f2442679b5b42837d9aee840fb4fb65e2ad4cdf",
+"bytes": 73
+},
+"state/paddle-1368.json": {
+"sha256": "e45cb7c583104632cd2576a2b75095acd566e0898b91423d8e84c090d984a2da",
+"bytes": 74
+},
+"state/paddle-1369.json": {
+"sha256": "b8466dda2f40b66397b8e5088d444f83d10af8abaa2472dd6c41f3002c017c59",
+"bytes": 73
+},
+"state/paddle-1370.json": {
+"sha256": "30c0693621537e8d061cf1724c7e646bdf65a76a55ab70b92716aa5b86b33745",
+"bytes": 73
+},
+"state/paddle-1371.json": {
+"sha256": "328e0e06f712104fed4ebe15db330aa4d0658e071acb7a9e2e480755dfc80b2f",
+"bytes": 72
+},
+"state/paddle-1372.json": {
+"sha256": "432ebfc0aa641595c0b75312693a9c4d4e8110e685151490bd931982d8ab598d",
+"bytes": 71
+},
+"state/paddle-1373.json": {
+"sha256": "33560c908b2856dcdc7d07c27e52caaf3dde7483985588863cdb5f7c219f0c12",
+"bytes": 73
+},
+"state/paddle-1374.json": {
+"sha256": "65084950e8c6cdd4a584d30faf922cbf8d0647708ca0641df9cd6a3b7421f179",
+"bytes": 71
+},
+"state/paddle-1494.json": {
+"sha256": "cb0aec15e90a6d578c61d17b77feae26755f68497f2e7399aff808e82574a6ee",
+"bytes": 71
+},
+"state/paddle-1498.json": {
+"sha256": "b19b40d1d715240a6e5f0a5d5c8a519e4b6802fcf8c3d135f41734989051c280",
+"bytes": 71
+},
+"state/paddle-1500.json": {
+"sha256": "0151791a83410900f4d22fcca2cd77f30149e29840f60fdb678fb7ae2069d799",
+"bytes": 71
+},
+"state/paddle-1501.json": {
+"sha256": "dfc79a168e782f6edb05b21dab286428a51407bfc0addacf7390677dcc53c954",
+"bytes": 70
+},
+"state/paddle-1502.json": {
+"sha256": "b20bac940d3a8b17490c732cde684a9ce35a667268d5a80dd672296bd8758b1b",
+"bytes": 70
+},
+"state/paddle-1503.json": {
+"sha256": "81c12cd7bd29f1573c616fe4ec54fe7ae76af4171e3ce13e4e7c369a6ef68698",
+"bytes": 71
+},
+"state/paddle-1504.json": {
+"sha256": "4fefb4ebf6655796c7b8ddf51bff63e54e41f81947829960a7c28bd30173b86b",
+"bytes": 69
+},
+"state/paddle-1506.json": {
+"sha256": "dbd48d0def104ef164290ae906e7e619ff2871bd457be2c2bf31ebd356bab9bc",
+"bytes": 71
+},
+"state/paddle-1507.json": {
+"sha256": "236bc6b5732e46eb289d0d4157abe229f5e97883a9472384a9cbb96cd1e55170",
+"bytes": 71
+},
+"state/paddle-1508.json": {
+"sha256": "f4812d33d80ee1fcb34b62f1158342035ead35f1c15a816a8a5daf659dc46f4d",
+"bytes": 69
+},
+"state/paddle-1510.json": {
+"sha256": "e727d91a4ceeb45390a1df52c1607d621a52d57083912f1a43ae6c56b2639860",
+"bytes": 70
+},
+"state/paddle-1513.json": {
+"sha256": "ef40ef6b7d5a34bcddcc906392189a05f1b0469acd3d2e4fb3412ab0b00bbc6d",
+"bytes": 68
+},
+"state/paddle-1514.json": {
+"sha256": "a94009eb92ad266b53c2aac809d0df56aa752146c6ade3bb8badb1f85e3fecc6",
+"bytes": 70
+},
+"state/paddle-1515.json": {
+"sha256": "5c3733d9631ee2857bd92afee6a84770da1d2aa564a065d29116fcd030ed13d8",
+"bytes": 71
+},
+"state/paddle-1517.json": {
+"sha256": "889227cf04858d38fbae5c7d902b5ea2e5a06998f84224c2b9410e67340ca40d",
+"bytes": 70
+},
+"state/paddle-1581.json": {
+"sha256": "2bdfa6940d22d4d9124226fec5d4abd22586aad870caf9cb9fec4576dd53e099",
+"bytes": 71
+},
+"state/paddle-1582.json": {
+"sha256": "6e2106071299c9f9af8b657c37794e0ac33b7c62fa9471b36663006e5caec694",
+"bytes": 71
+},
+"state/paddle-1583.json": {
+"sha256": "b1ed1c79b4e435a83ea7f136940f70968bba73edf894592c8c691a475788425e",
+"bytes": 71
+},
+"state/paddle-1584.json": {
+"sha256": "314ab7cd7509b1ebbda063cf92822ba1a518ada61bb4fea6ab281f405faf9114",
+"bytes": 71
+},
+"state/paddle-1585.json": {
+"sha256": "b7557ed163342e2738b4aa7828349e33275431f0c8d1140f818b584dc897369a",
+"bytes": 71
+},
+"state/paddle-1586.json": {
+"sha256": "ab9a3251283f107a074f6fee7887138c0c55c1707c41d256c826ecdd11e441df",
+"bytes": 71
+},
+"state/paddle-1587.json": {
+"sha256": "313569e2276a6c77b37c202c4f55306a7152b47e0c43bbd7b1277277aa0c00ba",
+"bytes": 72
+},
+"state/paddle-1588.json": {
+"sha256": "71ef717a7249f61bc506818f5bb0083820320fd07b936db31e0228f4e24fb4da",
+"bytes": 71
+},
+"state/paddle-1589.json": {
+"sha256": "27b41431c24526f5dc62037c07da67951dc82feede9231f3f8c04bf22260405c",
+"bytes": 69
+},
+"state/paddle-1590.json": {
+"sha256": "36ad43028eeb05b139d714c53bc6ad36795719f7c97f02826797d4a72bd78c1d",
+"bytes": 72
+},
+"state/paddle-1591.json": {
+"sha256": "8c1a7e00a897c1cd38932fe1c4b8a843d42c4f782071495cf807a802318bfa5c",
+"bytes": 72
+},
+"state/paddle-1592.json": {
+"sha256": "0691a42aa49de4831d7b36af8b304b3ee72a35b063b417461e05eed4f0b0716c",
+"bytes": 72
+},
+"state/paddle-1593.json": {
+"sha256": "41eadb3651098f2cbcd0de4b05e4489947d71ab84b0603e5975984a7ef1e39f2",
+"bytes": 72
+},
+"state/paddle-1594.json": {
+"sha256": "53190719ff9debb8a6be42d28f45468cb6cba213bcd7ab595b29fafba5c5073a",
+"bytes": 72
+},
+"state/paddle-1595.json": {
+"sha256": "044eb372d585fdf26ad5af744eddd217f3fdaa3885b9c81330c640d07dc603c0",
+"bytes": 72
+},
+"state/paddle-1626.json": {
+"sha256": "12c310e712c32bf36e1eef57c56e0e226d557727db84a645a2d9a261706fcfd7",
+"bytes": 72
+},
+"state/paddle-1627.json": {
+"sha256": "526641c722ec28fea7884f955fc41edb26035661a4785a00b9aebbea721dfb49",
+"bytes": 72
+},
+"state/paddle-1628.json": {
+"sha256": "516477ea46393edf789c1e1848d3f1caf1b245334e09093019ce2686fb3ea45a",
+"bytes": 72
+},
+"state/paddle-1629.json": {
+"sha256": "bdd633b7407f3c379dfd0b176302384140da8a664c1d21d78f04144513ba6fe1",
+"bytes": 70
+},
+"state/paddle-1630.json": {
+"sha256": "85b60c5433bda8e6cd4cebed7e8275fb496d49fad6bf544a28756539b1196753",
+"bytes": 69
+},
+"state/paddle-1631.json": {
+"sha256": "73ee3e3dbed1f7063b10d50cfed0cd8009615a1706b616b07a35d86e5d34cac4",
+"bytes": 70
+},
+"state/paddle-1632.json": {
+"sha256": "043e2849a563bfc8ebaa5240c3324cc73ff81a767ad901b0131f2ec67759a7d5",
+"bytes": 70
+},
+"state/paddle-1633.json": {
+"sha256": "b8c19846ce8160bc562f20dfb33d7b20b47dd0ad10599c32766a1276cd3f90f7",
+"bytes": 70
+},
+"state/paddle-1634.json": {
+"sha256": "c0d9abef39c3badd6cc8938b20956e81f2c24b6ea3a414d008619769f39144c2",
+"bytes": 70
+},
+"state/paddle-1635.json": {
+"sha256": "db4707857643553c421453b4677dcaee89bcb670c2a0dc96e46d67b514127f50",
+"bytes": 70
+},
+"state/paddle-1636.json": {
+"sha256": "932f84a72aae625a3c60272d23ced2c985d2f616e8558c31002e2877519ed5c9",
+"bytes": 71
+},
+"state/paddle-1637.json": {
+"sha256": "862aa8b7fe3999be035a1d796bd304e08117e56dbf9634cf93a91221f8845b4a",
+"bytes": 70
+},
+"state/paddle-1638.json": {
+"sha256": "9b6986d464682aa710c13c7372ea419510d9a03132d0689a9c7ade4cef4f54ea",
+"bytes": 70
+},
+"state/paddle-1639.json": {
+"sha256": "004671b734e2a84c99300b52a5bba81619aa05bd9e87835446e419a49c792a87",
+"bytes": 70
+},
+"state/paddle-1640.json": {
+"sha256": "f09ffa95a3f1ca9107bea4f49413267402f841a94cd44db8c3af42180c976d0a",
+"bytes": 70
+},
+"state/paddle-1641.json": {
+"sha256": "09017252a41d9790f68befe2bb33856c43742bff3ce5bb419bf3ba840224b80b",
+"bytes": 69
+},
+"state/paddle-1642.json": {
+"sha256": "dc97e511a3d7ef6801dee371bacba5136d1a6974c6597718898b2da832b2d031",
+"bytes": 70
+},
+"state/paddle-1643.json": {
+"sha256": "5f6013a4dcd0946e97da0570601a45fe3abf825d03207714dac3a22ae4e40e11",
+"bytes": 70
+},
+"state/paddle-1644.json": {
+"sha256": "aacc6615814b13dda42043f8f344b1df700f56be968944d84aae7d73c4de9752",
+"bytes": 70
+},
+"state/paddle-1645.json": {
+"sha256": "aaf9b6be18ffb7497f4aaf76f0187d034d0c0fceac558fdc7e2160ce5d9b745f",
+"bytes": 70
+},
+"state/paddle-1646.json": {
+"sha256": "0c1c282be9d31d7b21a2319507d5a19bb175f438ad25e1559b9f215dbdde0706",
+"bytes": 68
+},
+"state/paddle-1647.json": {
+"sha256": "da3481269fc01ef5176fd40894f1f05bd1e97d3011b2fad85b3f7b8f9f4363da",
+"bytes": 70
+},
+"state/paddle-1648.json": {
+"sha256": "18cb9d60bb685756a4cf0663f17c64e5b77cc9c02658ba4f6e7c9dbfeb23d69e",
+"bytes": 70
+},
+"state/paddle-1649.json": {
+"sha256": "a0882408e0e36997e3582f97c662a857b8fca603cd71bde7a7cfca55171f52fd",
+"bytes": 70
+},
+"state/paddle-1650.json": {
+"sha256": "7b4817f4c039cffdc3d42416efa8083b0f200d84954091b0d0f43e67f59d1632",
+"bytes": 70
+}
+}
+}

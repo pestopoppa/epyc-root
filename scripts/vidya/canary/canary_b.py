@@ -75,6 +75,7 @@ for stale in ("alarm_state.B.json",):
 # ---------------------------------------------------------------- guard + launcher env
 sys.path.insert(0, str(HARNESS))
 import canary_guard  # noqa: E402
+import canary_b_frontier as cbf  # noqa: E402
 
 canary_guard.install()
 os.chdir(COPIES)
@@ -600,13 +601,40 @@ frontier_section = bool(str(sec.get("pareto_summary") or "").strip()) and sec.ge
 unchanged = {"baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
              "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
              "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
+
+
+def _render_frontier_channels(rows, scratch):
+    """Real orchestrator path, synthetic journal: journal -> era-fenced archive -> the planner's
+    frontier channels. Writes only under CANARY_SCRATCH (allowed by canary_guard)."""
+    scratch.mkdir(parents=True, exist_ok=True)
+    (scratch / "autopilot_journal.jsonl").write_text(
+        "".join(json.dumps(r) + "\n" for r in rows))
+    j = ap.ExperimentJournal(journal_dir=scratch)
+    st = {"pareto_exclude_before_ts": _exclude_ts or cbf.FENCE_TS_DEFAULT}
+    dts, df, ex = ap._archive_epoch_params_from_state(st)
+    pl = ap._journal_archive_payload_for_authority(
+        j, deinflate_before_ts=dts, deinflate_factor=df, exclude_before_ts=ex,
+        objective_policy=ap._live_objective_policy_from_state(st))
+    arch, _ = ap._startup_archive_from_current_era_payload(st, pl)
+    tier = ap.DEFAULT_FRONTIER_TIER
+    pg = arch.geometry_text(tier=tier) + "\n" + arch.stepping_stones_text(tier=tier, limit=8)
+    return {"pareto_summary": arch.summary_text(tier=tier), "pareto_geometry": pg,
+            "insights_structured": j.insights_structured_text(
+                n=ap.PLANNER_STRUCTURED_INSIGHTS_LIMIT, exclude_bug_corrupted=True)}
+
+
+_fence = _exclude_ts or cbf.FENCE_TS_DEFAULT
+frontier_controls = cbf.run_controls(_render_frontier_channels, BASE / "B-frontier-control", _fence)
+frontier_result = cbf.frontier_verdict(
+    (asdict(e) for e in entries), sec, frontier_controls, _fence)
+
 result = {"loop": "B", "live_embedder": bool(EMBED_URL),
           "observed_1472_keep_with_numbers": keep,
           "observed_numeric_trial_insight": numeric_insight, "observed_toolrunner_convention": convention_row,
           "observed_frontier_count": frontier, "frontier_section_assembled": frontier_section,
           "assembly_errors": sorted((summary.get("errors") or {})),
           "embed_calls": getattr(_embedder, "calls", 0), "embed_errors": EMBED_ERRORS[:3],
-          "belief_ready": belief_ready is not None,
+          "belief_ready": belief_ready is not None, "frontier_assertion": frontier_result,
           "baseline_sha256": summary["pre"]["baseline_sha256"], **unchanged}
 if not EMBED_URL:
     result.update(status="UNKNOWN", reason="hash-only embedder cannot reproduce semantic ranking")
@@ -615,11 +643,14 @@ elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) o
         or not result["belief_ready"]:
     result.update(status="UNKNOWN", reason="live embedder failed/unused, belief reader not ready, assembly error, or protected state changed")
     code = 2
-elif known and frontier_section:
+elif frontier_result["status"] in (cbf.CONTROL_FAILED,):
+    result.update(status="UNKNOWN", reason="frontier assertion untrusted: " + frontier_result["reason"])
+    code = 2
+elif known and frontier_section and frontier_result["status"] != cbf.FAIL:
     result.update(status="PASS", reason="numeric_trial 0+/N- insight (incl. 1500) and the live toolrunner convention row present; frontier section assembled (T1 count recorded; empty is the intended post-rebase state)")
     code = 0
 else:
-    result.update(status="FAIL", reason="known conclusion missing: numeric_insight=%s convention_row=%s frontier_section=%s" % (numeric_insight, convention_row, frontier_section))
+    result.update(status="FAIL", reason="known conclusion missing or real frontier keep absent: numeric_insight=%s convention_row=%s frontier_section=%s frontier_assertion=%s" % (numeric_insight, convention_row, frontier_section, frontier_result["status"]))
     code = 1
 print("CANARY_RESULT:", json.dumps(result))
 sys.exit(code)

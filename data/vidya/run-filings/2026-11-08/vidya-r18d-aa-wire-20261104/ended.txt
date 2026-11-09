@@ -1,0 +1,7 @@
+rc=0 time=2026-11-08T01:13:05Z reason=complete
+job_id=vidya-r18d-aa-wire-20261104
+owner=operator-adhoc-ops-20261105
+step=job-run
+estimated_wall_s=14400
+started=2026-11-08T00:04:25Z
+regions=mi210_0,184-191

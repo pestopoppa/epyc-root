@@ -1,0 +1,51 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "QUESTION: does the original post-hook pp512 A/A capture rederive and project its settled bootstrap floor (Qwen3.8-27B-Q8_0, v10 production-store closure, MI210)? STOP RULE (measurement-sufficiency): A/A expected effect is zero; 20 scored process pairs per condition (SETTLED, PREHEATED, successful POST_BUILD) and all warmups are retained with no efficacy peeking. Stop-on-answer when all three conditions finish the declared 20 pairs and the sealed capture rederives; stop-on-futility on STOP/deadline, launch failure, missing own-PID GPU residency, or mismatched source/image/input identity, preserving partial/UNKNOWN and implying no floor. Interim looks are futility-only (formal-gate class). RESULT FORMAT: capture.py sealed sidecar + project.py (ak measurement ClaimTuple via claim_tuple.grade()); filing ingests via the AutoKernel measurement adapter. A calibration candidate requires a complete full-run record with 20 fresh A/A pairs in each of SETTLED, PREHEATED and successful POST_BUILD, all invocations GPU-resident, and pp512 bootstrap floors with provenance; review calibration and re-adjudication before updating the table. Partial measured units and dry-run PASS are not a floor verdict. Scope: Qwen3.8-27B Q8_0 exact prepared GGUF. SMOKE_UNSETTLED smoke invocations are excluded from every calibration condition; only full-run SETTLED originals establish a target-specific floor.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/filler_run15.sh",
+  "sha256": "316830c77eefeda21a4ebf70aab3fe05977e53e58696fd9f582020614d0921c4"
+ },
+ "estimate_s": 14400,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18D-AA-WIRE",
+ "id": "vidya-r18d-aa-wire-20261104",
+ "keep": [
+  "out/**",
+  "*.py",
+  "*.sh",
+  "*.json",
+  "out/results.jsonl"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/launch.sh",
+  "sha256": "bbd987b4a2fecd97c4fb5998514a577c5894da4ab726aa066c6282c1fd40670f"
+ },
+ "min_window_s": 3600,
+ "notes": "2026-11-07 vb-runs: re-owned to operator-adhoc-ops-20261105; source/ clone re-created at ffc1bac82 (archive sha 630bd842 verified); binaries = byte-identical copy of kernels/production/gpu (libggml-hip f26a166b, libllama 808a4de5, llama-server sha match); 11-04 smoke failed only because results went to FILLER_DRYRUN_DIR/native while the spec watched out/results.jsonl: fixed with smoke_predicate. Estimate 14400 s on MI210 + 184-191.",
+ "owner": "operator-adhoc-ops-20261105",
+ "ports": [],
+ "priority_rank": 20.0,
+ "published_at": "2026-11-07T19:06:57Z",
+ "published_from": "/mnt/raid0/llm/tmp/vb-runs-20261107/vidya-r18d-aa-wire-20261104/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-07T19:06:57Z",
+  "session": "688f713e-da1e-42f4-b692-65ea0fa41996",
+  "session_env": "CLAUDE_CODE_SESSION_ID",
+  "user": "node"
+ },
+ "regions": "mi210_0,184-191",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104",
+ "shape": "gpu-q3",
+ "smoke_predicate": "f=\"$FILLER_DRYRUN_DIR/native/results.jsonl\"; [ -s \"$f\" ] && [ \"$(stat -c %Y \"$f\")\" -ge \"$FILLER_SMOKE_T0\" ] && grep -q readiness_invocation \"$f\"",
+ "stop_file": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/STOP",
+ "supersedes": "autokernel-r18d-pp512-v10-private-20261102",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104"
+}

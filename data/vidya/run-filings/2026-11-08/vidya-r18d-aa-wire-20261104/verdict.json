@@ -1,0 +1,43 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "pipeline-mgmt",
+  "rationale": "Full-run record complete (COMPLETE marker, results.jsonl type=complete): SETTLED/PREHEATED/POST_BUILD each 20 scored pairs, 40/40 invocations GPU-resident (own-PID HIP mapping matched, peak 54.9 GB, 1 KFD proc), bootstrap_floor_pct pp512 {1:1.002,3:0.941,5:0.885,9:0.851,20:0.816} with Qwen3.8-27B-Q8_0 sha a680f44a and anchor ffc1bac82; A/A effects -0.49%/-0.82%/+0.58% (all within floor). Cautions: clock_stable=false in all conditions; SETTLED candidate arm drifts -0.81% (perm p 0.0003 > null p95 0.64%) though drifting=false; calibrated=false. Wiring box NOT ticked: project.py rederive, ClaimTuple ingest refused=0 and planner canary are still outstanding.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-08T10:37:51+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-08T01:13:05Z reason=complete",
+ "filed_at": "2026-11-08T10:37:51+00:00",
+ "filed_by": "pipeline-mgmt",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R18D-AA-WIRE",
+ "id": "vidya-r18d-aa-wire-20261104",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-r18d-aa-wire-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "operator-adhoc-ops-20261105",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Full-run record complete (COMPLETE marker, results.jsonl type=complete): SETTLED/PREHEATED/POST_BUILD each 20 scored pairs, 40/40 invocations GPU-resident (own-PID HIP mapping matched, peak 54.9 GB, 1 KFD proc), bootstrap_floor_pct pp512 {1:1.002,3:0.941,5:0.885,9:0.851,20:0.816} with Qwen3.8-27B-Q8_0 sha a680f44a and anchor ffc1bac82; A/A effects -0.49%/-0.82%/+0.58% (all within floor). Cautions: clock_stable=false in all conditions; SETTLED candidate arm drifts -0.81% (perm p 0.0003 > null p95 0.64%) though drifting=false; calibrated=false. Wiring box NOT ticked: project.py rederive, ClaimTuple ingest refused=0 and planner canary are still outstanding.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "vidya-r18d-aa-wire-20261104",
+ "row_verdict": "pass",
+ "rule": "QUESTION: does the original post-hook pp512 A/A capture rederive and project its settled bootstrap floor (Qwen3.8-27B-Q8_0, v10 production-store closure, MI210)? STOP RULE (measurement-sufficiency): A/A expected effect is zero; 20 scored process pairs per condition (SETTLED, PREHEATED, successful POST_BUILD) and all warmups are retained with no efficacy peeking. Stop-on-answer when all three conditions finish the declared 20 pairs and the sealed capture rederives; stop-on-futility on STOP/deadline, launch failure, missing own-PID GPU residency, or mismatched source/image/input identity, preserving partial/UNKNOWN and implying no floor. Interim looks are futility-only (formal-gate class). RESULT FORMAT: capture.py sealed sidecar + project.py (ak measurement ClaimTuple via claim_tuple.grade()); filing ingests via the AutoKernel measurement adapter. A calibration candidate requires a complete full-run record with 20 fresh A/A pairs in each of SETTLED, PREHEATED and successful POST_BUILD, all invocations GPU-resident, and pp512 bootstrap floors with provenance; review calibration and re-adjudication before updating the table. Partial measured units and dry-run PASS are not a floor verdict. Scope: Qwen3.8-27B Q8_0 exact prepared GGUF. SMOKE_UNSETTLED smoke invocations are excluded from every calibration condition; only full-run SETTLED originals establish a target-specific floor.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "91cd8f75c0dae4bb7d88616929c5d3ba1b4de2c968173cefcb11ab58b06f781a",
+  "result": "pass",
+  "status": "filed"
+ }
+}

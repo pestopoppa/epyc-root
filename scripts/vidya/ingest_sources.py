@@ -536,6 +536,14 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("ak-r18-symbols", "autokernel_r18_symbols", _files("terminal.json", "*/terminal.json"),
            note="Prospective guarded independent CPU/HIP symbol comparison capture; partial and historical runs decline",
            task="VB-AK-R18-INDEPENDENT-SYMBOL-FINDINGS"),
+    Source("ak-r18d-aa", "autokernel_r18d_aa",
+           _files("r18d-capture-*.jsonl", "*/r18d-capture-*.jsonl"),
+           default=Path("/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out"),
+           note="R18-D pp512 A/A prospective native capture (`r18d-capture-<run_id>.jsonl`, hash-chained); the "
+                "SETTLED bootstrap floor is re-derived from the original eligible samples and refused on any "
+                "pre-hook, partial, retried, unbound, unwitnessed or clock-unstable unit; BASELINE observation, "
+                "shared grade() only",
+           task="VB-AK-R18D-AA-WIRE"),
     Source("ak-width-dimension", "autokernel_width_dimension",
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "
