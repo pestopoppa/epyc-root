@@ -12,6 +12,7 @@ checks that make removal safe:
     python3 scripts/system/worktree_gate.py remove <path>...   # remove iff the verdict is REMOVABLE
     python3 scripts/system/worktree_gate.py report [--json] [--out FILE] [--sizes] [--min-idle-days 7]
     python3 scripts/system/worktree_gate.py remove --from-report FILE --confirm TOKEN
+    python3 scripts/system/worktree_gate.py close-lane --ticket TOKEN [--apply]   # LR-11, ticket close
 
 A worktree is REMOVABLE only when ALL of these hold:
   * it is a registered LINKED worktree of a known repo (never a main clone, never a view);
@@ -89,6 +90,10 @@ DEFAULT_BASE = "origin/main"
 AUTO_BASE = "auto"   # the CLI default: each repo resolves its own accepted base(s), see resolve_bases()
 PROD_BRANCH_RE = re.compile(r"^refs/heads/production-consolidated-v(\d+)$")
 CHAMPION_REF_PREFIX = "refs/heads/ak/champion/"
+# LR-11: the `codex-ni*` / `ni0X` lane class. A prefix is a DISCOVERY aid only; close-lane also
+# requires the closing ticket's token, so a prefix alone never selects anything.
+LANE_CLASS_RE = re.compile(r"^(codex-ni|ni0\d)")
+MIN_TICKET_TOKEN = 4
 PROTECTED_PARENT_DIRS = ("worktrees/mains", "worktrees/pool")
 VIEW_MARKER = ".epyc-view-readonly"
 # Same narrow pattern as autokernel_disk_sweep.EVIDENCE_RE (kept in sync by a test).
@@ -663,6 +668,46 @@ def remove_one(path: str, *, base: str, min_idle_days: float, fetch: bool,
     return True, f"REMOVED {path} (branch {wt.branch or '(detached)'} kept; {wt.reasons[0]})"
 
 
+def close_lane(ticket: str, repos: list[str], *, base: str, apply: bool, fetch: bool
+               ) -> tuple[int, list[str]]:
+    """Ticket-close cleanup (LR-11): inventory the `codex-ni*`/`ni0X` worktrees of one ticket and
+    (with apply) remove each through remove_one, i.e. through the full gate. Retained trees are
+    listed with their verdict so the closing main can record owner and reason. Returns (rc, lines):
+    rc 0 every selected tree was removed (or, in dry-run, is REMOVABLE), 1 otherwise, 2 usage."""
+    ticket = ticket.strip()
+    if len(ticket) < MIN_TICKET_TOKEN or re.fullmatch(r"(codex(-ni?)?|ni0?\d?)", ticket):
+        return 2, [f"REFUSED: --ticket must be at least {MIN_TICKET_TOKEN} characters and "
+                   "not just a lane prefix (a prefix alone never selects worktrees)"]
+    lines: list[str] = []
+    probe = gather_probe()
+    selected = 0
+    rc = 0
+    for repo in repos:
+        try:
+            wts = list_worktrees(repo)
+        except (RuntimeError, OSError, subprocess.TimeoutExpired) as exc:
+            lines.append(f"UNVERIFIABLE {repo}: {exc}")
+            rc = 1
+            continue
+        for wt in wts:
+            name = os.path.basename(wt.path.rstrip("/"))
+            if not LANE_CLASS_RE.match(name) or (ticket not in name and ticket not in wt.branch):
+                continue
+            selected += 1
+            if apply:
+                ok, msg = remove_one(wt.path, base=base, min_idle_days=0.0, fetch=fetch, probe=probe)
+                lines.append(msg if ok else f"RETAINED {msg}")
+                rc |= 0 if ok else 1
+            else:
+                classify(wt, base=base, min_idle_days=0.0, probe=probe,
+                         canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
+                lines.append(f"{'WOULD-REMOVE' if wt.verdict == REMOVABLE else 'RETAINED'} "
+                             f"{wt.path}\t{wt.verdict}\t{'; '.join(wt.reasons)}")
+                rc |= 0 if wt.verdict == REMOVABLE else 1
+    lines.append(f"close-lane ticket={ticket} selected={selected} apply={apply}")
+    return rc, lines
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -678,6 +723,11 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--no-fetch", action="store_true")
     r.add_argument("--from-report", help="act on the REMOVABLE rows of this report")
     r.add_argument("--confirm", help="the removable_token printed by that report")
+    cl = sub.add_parser("close-lane", help="ticket-close cleanup of codex-ni*/ni0X lane worktrees")
+    cl.add_argument("--ticket", required=True, help="token in the lane dir or branch name (>=4 chars)")
+    cl.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
+    cl.add_argument("--apply", action="store_true", help="remove REMOVABLE trees (default: dry-run)")
+    cl.add_argument("--no-fetch", action="store_true")
     p = sub.add_parser("report", help="read-only inventory of every linked worktree")
     p.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
     p.add_argument("--min-idle-days", type=float, default=7.0)
@@ -699,6 +749,12 @@ def main(argv: list[str] | None = None) -> int:
                      canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
             print(f"{path}\t{wt.verdict}\t{'; '.join(wt.reasons)}")
             rc |= 0 if wt.verdict == REMOVABLE else 1
+        return rc
+
+    if a.cmd == "close-lane":
+        rc, lines = close_lane(a.ticket, a.repos or DEFAULT_REPOS, base=a.base, apply=a.apply,
+                               fetch=a.apply and not a.no_fetch)
+        print("\n".join(lines), file=sys.stderr if rc == 2 else sys.stdout)
         return rc
 
     if a.cmd == "remove":

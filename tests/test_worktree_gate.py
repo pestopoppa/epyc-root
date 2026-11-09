@@ -481,3 +481,26 @@ def test_report_records_resolved_bases(kernel_repo, tmp_path):
                           probe=wg.Probe(), canonical_roots=[])
     assert rep["bases"]["kernel"][0] == "refs/heads/production-consolidated-v1"
     assert [w["verdict"] for w in rep["worktrees"] if "e4" in w["path"]] == ["UNLANDED"]
+
+def test_close_lane_selects_only_ticket_lane_class_and_goes_through_gate(repo, tmp_path):
+    ok = add_wt(repo, tmp_path, "codex-ni-TKT777-a")
+    dirty = add_wt(repo, tmp_path, "ni08-TKT777-b")
+    (dirty / "untracked").write_text("x")
+    other_ticket = add_wt(repo, tmp_path, "codex-ni-TKT888-c")
+    other_class = add_wt(repo, tmp_path, "scratch-TKT777-d")
+    # dry-run touches nothing and names the retained tree
+    rc, lines = wg.close_lane("TKT777", [str(repo)], base="origin/main", apply=False, fetch=False)
+    assert rc == 1 and ok.exists()
+    assert any(l.startswith("WOULD-REMOVE") and str(ok) in l for l in lines)
+    assert any(l.startswith("RETAINED") and str(dirty) in l and "DIRTY" in l for l in lines)
+    rc, lines = wg.close_lane("TKT777", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 1
+    assert not ok.exists() and dirty.exists()          # dirty refused by the gate, never forced
+    assert other_ticket.exists() and other_class.exists()
+
+
+def test_close_lane_refuses_prefix_only_selection(repo, tmp_path):
+    p = add_wt(repo, tmp_path, "codex-ni-TKT999-a")
+    rc, lines = wg.close_lane("ni", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 2 and p.exists()
+    assert wg.main(["close-lane", "--ticket", "codex"]) == 2
