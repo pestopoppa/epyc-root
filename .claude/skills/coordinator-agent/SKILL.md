@@ -111,6 +111,23 @@ disk watchers, tmux session `agent`) — cold start is ONE command**: `scripts/c
 DOWN. Runbook and expected output: `docs/guides/agent-workflows/backlog-churn-flow.md` → *Reboot / cold start*. It never
 starts an agent and never sends keys; it prints the two manual steps (Claude ws58, codex-gen).
 
+**opencode event reaper (NIB2-88) — verify, then relaunch only if the keeper did not.** The container has no cron or
+systemd, so `scripts/system/opencode_event_reaper.sh` does not survive a reboot by itself. Today the host cron re-runs
+`hub_supervisor.sh`, whose `host_hygiene_tick.py` keeper relaunches the observer-registry row marked `relaunch_if_down`
+(this reaper) — so the normal answer is "already back". Prove it by pid identity, never by a name pattern:
+
+```bash
+python3 scripts/system/host_hygiene_tick.py status | head -20          # tick heartbeat_at recent? keeper ran
+ps -o pid,lstart,args -p "$(cat /mnt/raid0/llm/tmp/opencode-reaper.pid)"   # alive AND argv is the canonical reaper `run`
+```
+
+Only if the pid is dead **and** the tick heartbeat is stale (the host cron is not re-running the hub supervisor), relaunch
+by hand, detached, from the tracked path, then re-read the pid file and `ps -p` it:
+`nohup /bin/bash /workspace/scripts/system/opencode_event_reaper.sh run >> /mnt/raid0/llm/tmp/opencode-reaper.log 2>&1 &`.
+Report a stale tick heartbeat as a live gap in Phase 4. When LR-8's event duty is handed over (registry row becomes
+`scheduler: host_hygiene_tick`, `start_argv` removed, `docs/guides/agent-workflows/opencode-event-duty-handover.md`) the
+daemon no longer exists: replace this step with a check of `logs/hygiene/opencode_event_reaper.log` freshness.
+
 **Compute-owner takeover — do this before triage, every cold start or resume.** Prove the calendar keeper, both grant
 writers and the **results-filing watcher** are alive (pid from their log, `ps -p`), clear crash residue, and file every
 `filing-due.jsonl` id that has no `filing-done/<id>.FILED` **immediately** — then arm the wake-up for new run ends.
