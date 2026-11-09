@@ -1,0 +1,188 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-09T12:18:46Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "c8d97b56ca2802f1c7390e2f880de6852209531e",
+  "git_head_before": "c8d97b56ca2802f1c7390e2f880de6852209531e",
+  "operator": "Daniele",
+  "protocol_id": "RATIFICATION-RECEIPT-EXEMPTIONS-CI-20261109",
+  "ratification_id": "RATIFY-RATIFICATION-EXEMPTIONS-CI-20261109",
+  "ratify_script": {
+    "exists": true,
+    "path": "/workspace/scripts/operator/ratify_ratification_exemptions_ci_20261109.sh",
+    "sha256": "077a47053a52cd7bd686434082e13f91b620f939f058e8c7b4a705ee0b22ec1f"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/tmp/ratify-exemptions-ci.CueMUV/root",
+  "sections": {
+    "coherence": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: governance amendment to the human-only exemption list, not a measured claim; each entry cites its own 2026-11-09 CI-red review evidence and is sha-pinned, which scripts/validate/check_ratification_receipts.py re-verifies at every run"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id RATIFICATION-RECEIPT-EXEMPTIONS-CI-20261109 is a clause reference, not a registered protocol name; verified via 2 anchor(s) instead",
+        "anchor present in scripts/validate/ratification_receipt_exemptions.json: artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya",
+        "anchor present in scripts/validate/ratification_receipt_exemptions.json: artifacts/compute/vidya-r18-gfx-source-20261101/run.py"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 56,
+      "lines_after": 337,
+      "lines_before": 281,
+      "lines_removed": 0,
+      "path": "scripts/validate/ratification_receipt_exemptions.json",
+      "sha256_after": "1ca24d8c409af038cd4805033dd446e51fa3bed8d0b674606f679080cd76b55e",
+      "sha256_before": "a2306bbb077dc2768af7a18760ae5e6836c271b3ab362a72145b3a972fb8897c",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/scripts/validate/ratification_receipt_exemptions.json",
+        "+++ b/scripts/validate/ratification_receipt_exemptions.json",
+        "@@ -275,6 +275,62 @@",
+        "       \"script_sha256\": \"6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7\",",
+        "       \"evidence\": \"operator review package ratification-six-operator-review-20261031/REVIEW.md and ANALYSIS.json; text-only classification, AST and output-target review\",",
+        "       \"reason\": \"Archived pure ClaimTuple validation/grading/serialization module: boundary names occur in explanatory text; the text heuristic mistakes Python greater-than comparisons and prose angle-bracket placeholders for shell redirects. AST contains no filesystem writer or process-execution call.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/confidence_source_capture.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"779c5d3f20ed51846674ef3de398130b6da3efe3fe6fb14b0f09724343cc0cdf\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/fanout_outcome.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"769d3ed25370efd1f0d0df8cc105622133433439660914986728fa391e3c339b\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/review_f1_capture.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"f2eab90767b04ba93c5ef339cc6381eb20b7b6fbb6c8915b9fe9f363668bb5b9\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/adapters/tale_budget_capture.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"cc8f570198c9b83cb8afe4f2fc5d14fdd86549e6b249d89dd7f81d596f463cdb\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived vidya adapter source copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/claim_tuple.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived pure ClaimTuple module copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/inf22-m4-q38-recipe-r4-20261104/source/scripts/vidya/measurement_record.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived vidya measurement-record module copy: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/vidya-host-attest-20261101/source/server_np_sweep.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived host-attestation source copy of the M4 sweep: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "+    },",
+        "+    {",
+        "+      \"script\": \"artifacts/compute/vidya-r18-gfx-source-20261101/run.py\",",
+        "+      \"kind\": \"not-a-boundary-write\",",
+        "+      \"script_sha256\": \"08248535958d83edfcbb53153b8646739d4039edeac6b1d580912af39fd06095\",",
+        "+      \"evidence\": \"2026-11-09 CI-red review (ni/ci-red-20261109): AST scan -- no string constant in code position (outside docstrings) is a boundary write target; the only boundary names are in comments/docstrings and in validation/error-message prose\",",
+        "+      \"reason\": \"Archived R18 gfx capture driver: boundary names (MEASUREMENT.md, MEASUREMENT_POLICY.md, measurement/protocols/, CLAUDE.md) occur in explanatory text and error messages; the text heuristic mistakes them for writes. Same classification as the codex3 checkpoint copies of claim_tuple.py / tale_budget_capture.py already exempted.\"",
+        "     }",
+        "   ]",
+        " }"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "python3 scripts/validate/check_ratification_receipts.py --repo-root .",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "  receipt RATIFIED   RATIFY-AK-LANES-20261004 (OPERATING-CONSTRAINTS-AK-LANES)",
+        "  receipt RATIFIED   RATIFY-AK-SEARCH-1-A4-RUNTIME-RECIPE-20260927 (P-AK-SEARCH-1)",
+        "  receipt RATIFIED   RATIFY-CKPT-PROMPT-LEAK-20260916 (P-QUAL-T1)",
+        "  receipt None       RATIFY-CTXCKPT-HYBRID-20261024 (None)",
+        "  receipt RATIFIED   RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004 (OPERATING-CONSTRAINTS-HARNESS-STATE-NEVER-TOUCH)",
+        "  receipt RATIFIED   RATIFY-INF45-P23-20261109 (P-BENCH-PLACEMENT-1)",
+        "  receipt RATIFIED   RATIFY-OP60-MEASUREMENT-EPOCH-20260926 (P-AK-SEARCH-1)",
+        "  receipt RATIFIED   RATIFY-OP63-REGION-LOCK-SCOPE-20260926 (OPERATING-CONSTRAINTS-REGION-LOCK-SCOPE)",
+        "  receipt RATIFIED   RATIFY-P-SERVE-SEL-1-20260926 (P-SERVE-SEL-1)",
+        "  receipt RATIFIED   RATIFY-P-CAL-SPECDEC-20260916 (P-CAL)",
+        "  receipt RATIFIED   RATIFY-SCRATCH-LIFECYCLE-20261004 (OPERATING-CONSTRAINTS-SCRATCH-LIFECYCLE)",
+        "  receipt RATIFIED   RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 (TRUST-BOUNDARY-RECEIPT-EXEMPTIONS)",
+        "  receipt RATIFIED   RATIFY-V10-EPISODIC-REPIN-20260917 (P-QUAL-T1)",
+        "  receipt RATIFIED   RATIFY-WS58-LESSONS-20261027 (OPERATING-CONSTRAINTS-UNANSWERED-AND-POST-MEASUREMENT)",
+        "  receipt RATIFIED   RATIFY-WS58-RETENTION-LESSONS-20261025 (MEASUREMENT-S5-EVIDENCE-RETENTION-AND-DESTRUCTIVE-OPS)",
+        "  receipt RATIFIED   autokernel-discovery-first-20260813 (P-AK-SEARCH-1)",
+        "  receipt REFUSED    autokernel-discovery-first-20260813 (P-AK-SEARCH-1)  [preserved refusal: superseded by a later RATIFIED receipt]",
+        "",
+        "68 boundary-amending script(s): 25 receipted, 43 exempt, 0 failing.",
+        "OK"
+      ]
+    },
+    {
+      "command": "python3 -m pytest -q tests/validate/test_check_ratification_receipts.py",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "...................................................................      [100%]",
+        "67 passed in 13.73s"
+      ]
+    },
+    {
+      "command": "test \"$(sha256sum scripts/validate/ratification_receipt_exemptions.json | cut -d' ' -f1)\" = 1ca24d8c409af038cd4805033dd446e51fa3bed8d0b674606f679080cd76b55e",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}
