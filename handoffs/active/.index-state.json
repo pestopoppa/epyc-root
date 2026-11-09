@@ -1226,7 +1226,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1669,
+          "line": 1670,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1793,
+          "line": 1794,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2118,
+          "line": 2119,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2257,
+          "line": 2258,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2813,
+          "line": 2814,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2953,
+          "line": 2954,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2960,
+          "line": 2961,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
