@@ -85,6 +85,7 @@ INSTALL=(
   "bin/backlog_gen.py             $CO/backlog_gen.py"
   "bin/handoff_sessions.py        $CO/handoff_sessions.py"
   "bin/flow_scoreboard.py         $CO/flow_scoreboard.py"
+  "bin/worktree_footprint.py      $CO/worktree_footprint.py"
   "bin/index_regen.py             $CO/index_regen.py"
   "bin/serialized_push.py         $CO/serialized_push.py"
   "bin/flip_checkbox.py           $CO/flip_checkbox.py"

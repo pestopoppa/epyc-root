@@ -39,6 +39,10 @@ try:
 except ImportError:
     tpt = None
 try:
+    import worktree_footprint as _wtfp  # noqa: E402  (LOOP-37: GiB + tree count per owner)
+except ImportError:
+    _wtfp = None
+try:
     import rowflow as _rf  # noqa: E402
 except ImportError:
     _rf = None
@@ -166,6 +170,11 @@ def render(rows: dict, now: _dt.datetime, inventory: dict | None = None) -> str:
               + (f" Unattributed (shared-/workspace-era sub-agent) spend: {tpt.fmt_m(un['tokens'])}." if un else "")]
     elif metric and metric.get("error"):
         L += ["", f"tokens-per-task metric unavailable: {metric['error']}"]
+    if _wtfp is not None:
+        try:
+            L += ["", *_wtfp.render_lines(_wtfp.collect())]
+        except Exception as ex:  # the scoreboard must never die on the footprint
+            L += ["", f"worktree footprint unavailable: {ex!r}"]
     waiting = [(w, r["awaiting_ids"]) for w, r in rows.items() if not w.startswith("_") and r.get("awaiting_ids")]
     if waiting:
         L += ["", "Rows whose dry run is running now (ws58 keeper, not the owner's task): "
