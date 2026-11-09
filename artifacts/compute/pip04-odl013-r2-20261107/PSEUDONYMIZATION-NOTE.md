@@ -17,3 +17,11 @@ PII hook's 12-19-digit rule does not fire on them and the IDs are not committed.
   originals in `raw_dir`, or re-derive the committed bytes by applying the mapping above to the originals.
 - Everything else (scores, CIs, verdict `NO_DECISION_DEFAULT_UNCHANGED`, arm summaries) is byte-for-byte
   the original apart from the ID substitution.
+
+## Raw outputs (added 2026-11-09, operator decision)
+
+The raw files (all 855 files bound in `SHA256.json`, including the 800+ per-document predictions) are kept OUTSIDE git on
+durable storage at `/mnt/raid0/llm/archives/pip04-odl013-r2-20261107/` (a copy of the run's `out/`, made read-only).
+The digests committed here are the integrity record: with the original IDs restored in the paths through the id
+mapping, all 855 sha256 values were verified against that archive (855 match, 0 mismatch, 0 missing). The original run
+directory `/mnt/raid0/llm/tmp/pip04-odl013-rerun-r2-20261107/` is scratch and may be reclaimed.
