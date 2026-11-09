@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 673
+      "open": 672
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -2361,10 +2361,10 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 125,
+      "closed": 126,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 29,
+      "open": 28,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2387,7 +2387,7 @@
         },
         {
           "blocked": 1,
-          "closed": 46,
+          "closed": 47,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
@@ -2396,7 +2396,7 @@
           "line": 734,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
-          "open": 19
+          "open": 18
         }
       ]
     },
