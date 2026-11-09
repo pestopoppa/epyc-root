@@ -563,3 +563,13 @@ Sources: [tool-use-eval-contract](../handoffs/active/benchmark-suites.md#track-t
 - **Evidence trails need re-find, not self-written marks.** A second-reader audit of 40 intake anchors found 40 of 40 hashes matching while 4 anchors failed to support their claim and 1 was not in the source; the landed anchor gate flags fabricated, whitespace-altered and cross-pasted fixtures, but its 2657-entry replay is vacuous for re-find (raw root unset).
 
 Sources: [harness-program](../handoffs/active/harness-program.md) · [frontier-lab-automation](../handoffs/active/frontier-lab-automation.md) · [second-reader anchor audit](../research/deep-dives/quant-compiler-20261106/second-reader-anchor-audit.md)
+
+## Compiled Update — 2026-11-09 (PII hook: nm-row exemption bypass found in review)
+
+**Confidence: partial** — the rule and tests are verified; the exact bypass payload is not recorded in the sources cited here.
+
+- The PII hook flagged 16-digit zero-padded `nm` offsets as account numbers. The fix (PII-NM-OFFSET, `264cf91e9`) exempts only genuine nm rows (`offset [size] type symbol`, offset starting `0000`, no other 12+ digit run, never exempt next to an account/card/customer word), with 15 file-scoped cases including 9 negative account-number controls.
+- Independent review caught a bypass through the optional `[size]` field of that exemption: a free-form size slot in an exempt row can carry a number the hook would otherwise flag. Lesson: an allow-list row pattern must constrain every field, including optional ones, and each field needs a negative control.
+- Hook changes under `scripts/hooks` stay operator-signed (D9); this one carried the D9-ack of 2026-11-09.
+
+Sources: [workspace-f2 progress 2026-11-09](../progress/2026-11/2026-11-09-workspace-f2.md) · [engineering-hygiene-backlog PII-NM-OFFSET](../handoffs/active/engineering-hygiene-backlog.md) · commit `264cf91e9`

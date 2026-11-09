@@ -3318,3 +3318,12 @@ Sources: [TKCC dive](../research/deep-dives/quant-compiler-20261106/tkcc.md) · 
 - **Filed work**: RTG-EP-1, RTG-VAR-1/2 in [routing-program.md](../handoffs/active/routing-program.md); UFH-TE-3 in [harness-program.md](../handoffs/active/harness-program.md).
 
 Sources: [Foundry Local dive](../research/deep-dives/harness-inference-20261106/intake-2651.md) · [vCache dive](../research/deep-dives/harness-inference-20261106/intake-2661.md)
+
+## Compiled Update — 2026-11-09 (evening: backup retention policy, supervisor re-pin closure)
+
+**Confidence: verified** (progress note, incident record, installed runbook text); the pin-closure rule is inferred from one incident.
+
+- **Host backup policy, and why retention is mirror-gated.** Installed in daniele's crontab (never root's): 04:00 `backup-claude-sessions.sh` keeps 2 ai-sessions archives (mirror-gated) and 3 opencode copies per store (epyc, host-daniele, twyne); 04:45 `backup_loop_state.sh` runs with `LARGE_DB_POLICY=weekly`, a `findmnt` mount guard, a single-instance lock, and refuses root. `backup_retention.py` runs only when tar exits <=1, only against the exact `--expect` archive, and deletes only files verified present on the mounted mirror, so a failed or unmounted mirror can never cause the last good copy to be pruned. The first host handoff had unsafe retention, wrong crontab owner and restore-test parsing errors that the host owner corrected; the restore test then passed (24 DBs, chain_ok).
+- **A re-pin must carry the pinned scripts' full dependency closure.** The 13:02 re-pin of the hub supervisor to `2c62d9458` omitted `observer_guard.sh` and `env.sh`, which pinned scripts source; every supervisor pass failed and the served view froze until the third install at 14:28 (`e4668444c`). A pin list names files, not what they source: compute the closure (sourced files and invoked helpers) before installing, and verify the first pass after the install.
+
+Sources: [workspace-f2 progress 2026-11-09](../progress/2026-11/2026-11-09-workspace-f2.md) · [kernel-store incident 2026-11-03](../docs/reference/kernel-store-incident-20261103.md) · [backup retention runbook](../scripts/backup/README-retention.txt)
