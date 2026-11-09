@@ -13,3 +13,8 @@
 {"id": "size-field-long-decimal", "text": "0000000000401136 123456789012 T main", "must_block": true}
 {"id": "sentence", "text": "0000000000401136 is my card", "must_block": true}
 {"id": "acct-token", "text": "0000000000401136 T acct-123456789012", "must_block": true}
+{"id": "nm-8zero-hexletter-offset", "text": "00000000a1b2c3d4 T main", "must_block": false}
+{"id": "bypass-card-in-size-slot", "text": "0000000000401136 4111111111111111 T jdoe", "must_block": true}
+{"id": "bypass-zero-padded-account-name", "text": "0000000012345678 T Smith", "must_block": true}
+{"id": "all-digit-8zero-offset-name-symbol", "text": "0000000087654321 D Johnson", "must_block": true}
+{"id": "all-digit-8zero-size-slot-name-symbol", "text": "0000000000401136 0000000012345678 T Smith", "must_block": true}

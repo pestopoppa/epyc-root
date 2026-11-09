@@ -216,13 +216,29 @@ is_nm_symbol_row_line() {
   # as an account number, forcing a `0x` carrier on committed symbol tables. Raw bytes stay
   # as they are; this recognises the row, it does not rewrite it.
   # Deliberately narrow: the line must be nothing but offset, optional size, ONE type letter
-  # and a symbol token (optional trailing text), the offset must start `0000` (user-space and
-  # kernel-module offsets sit below 2^48; a bare 16-digit identifier rarely does), no OTHER
-  # 12+ digit run may remain once the offset/size fields are stripped, and a line that names
-  # account/card/customer/iban/routing/ssn is never exempt.
-  local line="$1" rest
+  # and a symbol token (optional trailing text), no OTHER 12+ digit run may remain once the
+  # offset/size fields are stripped, and a line that names account/card/customer/iban/routing/ssn
+  # is never exempt.
+  # Audit fix 2026-11-09 (PII-NM-OFFSET): the first cut accepted ANY 16 hex as the `-S` size and
+  # only a `0000` offset prefix, and stripped both before the digit-run check, so
+  # `0000000000401136 4111111111111111 T jdoe` (a card number in the size slot) and
+  # `0000000012345678 T Smith` (a zero-padded account) both passed. Now: the size is
+  # `0{8}[0-9a-fA-F]{8}` (a symbol size is never 2^32+), and an ALL-DECIMAL offset must carry at
+  # least 10 leading zeros (<= 6 significant digits, i.e. an address below 16 MiB, which is
+  # what a real nm row looks like); an offset with 8 leading zeros is accepted only when it
+  # contains a hex letter a-f, which no decimal account number can. Residual: at most 6
+  # decimal digits (or an a-f-bearing 8-hex field) can ride in the offset slot.
+  local line="$1" rest off sz
   echo "$line" | grep -iE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' >/dev/null && return 1
-  echo "$line" | grep -E '^[[:space:]]*0000[0-9a-fA-F]{12}([[:space:]]+[0-9a-fA-F]{16})?[[:space:]]+[A-Za-z?-][[:space:]]+[A-Za-z_.$@][^[:space:]]*([[:space:]].*)?$' >/dev/null || return 1
+  echo "$line" | grep -E '^[[:space:]]*0{8}[0-9a-fA-F]{8}([[:space:]]+0{8}[0-9a-fA-F]{8})?[[:space:]]+[A-Za-z?-][[:space:]]+[A-Za-z_.$@][^[:space:]]*([[:space:]].*)?$' >/dev/null || return 1
+  off="$(echo "$line" | sed -E 's/^[[:space:]]*([0-9a-fA-F]{16}).*$/\1/')"
+  echo "$off" | grep -E '^0{10}[0-9a-fA-F]{6}$|^0{8}[0-9a-fA-F]{8}$' >/dev/null || return 1
+  echo "$off" | grep -E '^0{10}' >/dev/null || echo "$off" | grep -E '[a-fA-F]' >/dev/null || return 1
+  # the optional size field gets the same all-decimal rule (a symbol size is < 16 MiB in practice)
+  sz="$(echo "$line" | sed -E -n 's/^[[:space:]]*[0-9a-fA-F]{16}[[:space:]]+(0{8}[0-9a-fA-F]{8})[[:space:]].*$/\1/p')"
+  if [ -n "$sz" ]; then
+    echo "$sz" | grep -E '^0{10}' >/dev/null || echo "$sz" | grep -E '[a-fA-F]' >/dev/null || return 1
+  fi
   rest="$(echo "$line" | sed -E 's/^[[:space:]]*[0-9a-fA-F]{16}([[:space:]]+[0-9a-fA-F]{16})?//')"
   echo "$rest" | grep -E '[0-9]{12,19}' >/dev/null && return 1
   return 0
