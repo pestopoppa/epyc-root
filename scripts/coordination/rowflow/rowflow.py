@@ -2631,6 +2631,18 @@ def pid_container_id(pid):
         return None
 
 
+def pid_filler_id(pid):
+    """FILLER_ID in a process's environment, or None. The engine exports it to the job, so it survives reparenting."""
+    try:
+        with open(f"/proc/{int(pid)}/environ", "rb") as f:
+            for item in f.read().split(b"\0"):
+                if item.startswith(b"FILLER_ID="):
+                    return item[10:].decode("utf-8", "replace")
+    except (OSError, ValueError):
+        pass
+    return None
+
+
 def docker_row_label(cid):
     """The row label of a container, or None when unreadable. Asked once per container while it still exists."""
     try:
@@ -2649,7 +2661,7 @@ def sample_gpu_residency(root, tracked, own, rid=None, containers=None):
     for q, b in (gpu_occupancy().get("pids") or {}).items():
         if b <= 0:
             continue
-        mine = q in tracked
+        mine = q in tracked or (bool(rid) and pid_filler_id(q) == rid)   # launchers detach the job from the harness tree
         if not mine and rid and containers is not None:
             cid = pid_container_id(q)
             if cid:

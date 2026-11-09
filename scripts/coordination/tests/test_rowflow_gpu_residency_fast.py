@@ -115,5 +115,36 @@ class T(unittest.TestCase):
         self.assertIsNone(rf.cgroup_container_id("0::/user.slice/session-1.scope\n"))
 
 
+class DetachedJobIdentity(unittest.TestCase):
+    """A launcher detaches the job from the harness tree; FILLER_ID still identifies it."""
+
+    def run_sample(self, filler_id):
+        own = {}
+        with mock.patch.object(rf, "harness_tree", side_effect=lambda r, t: t), \
+             mock.patch.object(rf, "gpu_occupancy", return_value={"pids": {4242: 1 << 30}, "vram_used": 1 << 30}), \
+             mock.patch.object(rf, "pid_filler_id", return_value=filler_id), \
+             mock.patch.object(rf, "pid_container_id", return_value=None):
+            rf.sample_gpu_residency(1, {}, own, "row-a", {})
+        return own
+
+    def test_detached_job_counts(self):
+        self.assertEqual(self.run_sample("row-a"), {4242: 1 << 30})
+
+    def test_other_rows_job_does_not_count(self):
+        self.assertEqual(self.run_sample("row-b"), {})
+
+    def test_no_filler_id_does_not_count(self):
+        self.assertEqual(self.run_sample(None), {})
+
+    def test_reads_real_environ(self):
+        import subprocess, sys, time
+        p = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"], env=dict(os.environ, FILLER_ID="row-env"))
+        try:
+            time.sleep(0.2)
+            self.assertEqual(rf.pid_filler_id(p.pid), "row-env")
+        finally:
+            p.kill(); p.wait()
+
+
 if __name__ == "__main__":
     unittest.main()
