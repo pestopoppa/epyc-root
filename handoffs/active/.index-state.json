@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 487
+      "open": 486
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 285,
+      "closed": 286,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 81,
+      "open": 80,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -860,20 +860,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 174,
+          "closed": 175,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 39
+          "open": 38
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1209,
+          "line": 1210,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -883,7 +883,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1249,
+          "line": 1250,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -893,7 +893,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1356,
+          "line": 1357,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -903,7 +903,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1456,
+          "line": 1457,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 1
@@ -913,7 +913,7 @@
           "closed": 86,
           "gates": [],
           "guarded": 0,
-          "line": 1505,
+          "line": 1506,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 35
@@ -923,7 +923,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2081,
+          "line": 2082,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 3
@@ -2326,7 +2326,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 574,
+          "line": 575,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 4
@@ -2336,7 +2336,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1049,
+          "line": 1050,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 7
@@ -2346,7 +2346,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2317,
+          "line": 2318,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2356,7 +2356,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2393,
+          "line": 2394,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2366,7 +2366,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2526,
+          "line": 2527,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2376,7 +2376,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 2829,
+          "line": 2830,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 26
@@ -2386,7 +2386,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3578,
+          "line": 3579,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2398,7 +2398,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3659,
+          "line": 3660,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2408,7 +2408,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 4148,
+          "line": 4149,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3

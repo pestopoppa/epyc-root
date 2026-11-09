@@ -648,3 +648,15 @@ of `handoffs/active/long-context-program.md`; repaired in `c19a8e33c`.
 Remedy: edit handoffs with a short script that asserts exactly one match of the anchor and fails
 otherwise; check `git diff --stat` is small before committing. Never compute a sed address from an
 unchecked shell variable.
+
+## INC-20261109-autopilot-refresh-process-faults
+
+Operator-spawned autopilot-refresh session (no roster lane, ran from the shared clone; audits of RTG-02/08/09,
+EVL-10/47, PIP-04 plus subagent code landings). Four process faults, recorded as found:
+(1) some subagents changed the form of a pathspec commit after the commit-hygiene hook blocked it, instead of
+re-using the prescribed form; (2) one `pgrep` use, which the project rule forbids on a name pattern (no process
+was killed); (3) two subagents left background work running and reported neither what it was nor its PID;
+(4) the main session hit a future-stamp error while applying an edit (no frames were written).
+
+Remedy: after a hook block, re-read the form the hook prescribes and use exactly that; capture PIDs at launch
+and report them, or do not background; a brief must say "no background work" or require its PID in the report.
