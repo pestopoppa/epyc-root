@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -349,3 +350,113 @@ def test_should_continue_aborts_scan(repo, tmp_path):
     with pytest.raises(Stop):
         wg.build_report([str(repo)], base="origin/main", min_idle_days=0, sizes=False,
                         should_continue=stop)
+
+
+# ---- per-repo base resolution (kernel tree has no origin/main) ------------------------------
+
+@pytest.fixture
+def kernel_repo(tmp_path):
+    """A kernel-shaped repo: origin is 'upstream' with master, NO origin/main; frozen
+    production-consolidated-v1 (branch AND a same-named tag, as in llama.cpp) + ak/champion/x."""
+    up = tmp_path / "up.git"
+    git(tmp_path, "init", "--bare", "-b", "master", str(up))
+    k = tmp_path / "kernel"
+    git(tmp_path, "clone", str(up), str(k))
+    (k / "a.txt").write_text("a\n")
+    git(k, "add", ".")
+    git(k, "commit", "-m", "init")
+    git(k, "push", "origin", "HEAD:master")
+    git(k, "fetch", "origin")
+    git(k, "branch", "production-consolidated-v1")
+    git(k, "tag", "production-consolidated-v1")
+    git(k, "branch", "ak/champion/x")
+    return k
+
+
+def kwt(kernel, tmp_path, name, *, to_champion=False):
+    path = tmp_path / "wts" / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    git(kernel, "worktree", "add", "-b", f"experimental/{name}", str(path), "ak/champion/x")
+    (path / f"{name}.txt").write_text(name)
+    git(path, "add", f"{name}.txt")
+    git(path, "commit", "-m", f"work {name}")
+    if to_champion:   # champion advances by a patch-equivalent commit (cherry-pick)
+        git(kernel, "worktree", "add", "--detach", str(tmp_path / "wts" / f"champ-{name}"), "ak/champion/x")
+        cw = tmp_path / "wts" / f"champ-{name}"
+        git(cw, "cherry-pick", f"experimental/{name}")
+        git(cw, "branch", "-f", "ak/champion/x", "HEAD")
+        git(kernel, "worktree", "remove", str(cw))
+    return path
+
+
+def kverdict(kernel, path):
+    wt = wg._find(str(path))
+    bases, _ = wg.resolve_bases(str(kernel))
+    wg.classify(wt, base=bases, min_idle_days=0.0, probe=wg.Probe(),
+                canonical_roots=[], now=time.time() + 86400 * 30)
+    return wt
+
+
+def test_kernel_tree_bases_are_frozen_tip_plus_champions(kernel_repo):
+    bases, _ = wg.resolve_bases(str(kernel_repo))
+    assert bases == ["refs/heads/production-consolidated-v1", "refs/heads/ak/champion/x"]
+    # origin/main does not exist here: the old default would have been UNVERIFIABLE
+    assert wg.resolve_bases(str(kernel_repo), "origin/main")[0] == ["origin/main"]
+
+
+def test_experimental_head_on_champion_tip_is_removable(kernel_repo, tmp_path):
+    p = tmp_path / "wts" / "e0"
+    git(kernel_repo, "worktree", "add", "-b", "experimental/e0", str(p), "ak/champion/x")
+    assert kverdict(kernel_repo, p).verdict == wg.REMOVABLE
+
+
+def test_experimental_patch_folded_into_champion_is_removable(kernel_repo, tmp_path):
+    p = kwt(kernel_repo, tmp_path, "e1", to_champion=True)
+    assert kverdict(kernel_repo, p).verdict == wg.REMOVABLE
+
+
+def test_NEG_unfolded_kernel_commit_is_unlanded(kernel_repo, tmp_path):
+    p = kwt(kernel_repo, tmp_path, "e2")
+    v = kverdict(kernel_repo, p)
+    assert v.verdict == "UNLANDED" and v.unlanded == 1
+
+
+def test_NEG_frozen_only_match_does_not_make_unfolded_work_landed(kernel_repo, tmp_path):
+    # commit on top of the champion that exists on NO accepted base, even though the tree's
+    # fork point is an ancestor of the frozen tip: must stay UNLANDED
+    p = kwt(kernel_repo, tmp_path, "e3")
+    git(p, "commit", "--allow-empty", "-m", "more")
+    assert kverdict(kernel_repo, p).verdict == "UNLANDED"
+
+
+def test_NEG_unknown_base_fails_closed(tmp_path):
+    r = tmp_path / "bare"
+    git(tmp_path, "init", "-b", "main", str(r))
+    (r / "a").write_text("a")
+    git(r, "add", ".")
+    git(r, "commit", "-m", "i")
+    p = tmp_path / "wts" / "w"
+    p.parent.mkdir()
+    git(r, "worktree", "add", "-b", "w", str(p), "HEAD")
+    bases, _ = wg.resolve_bases(str(r))
+    assert bases == []
+    wt = wg._find(str(p))
+    wg.classify(wt, base=bases, min_idle_days=0.0, probe=wg.Probe(),
+                canonical_roots=[], now=time.time() + 86400 * 30)
+    assert wt.verdict == "UNVERIFIABLE"
+    ok, _ = wg.remove_one(str(p), base="auto", min_idle_days=0, fetch=False)
+    assert not ok and p.exists()
+
+
+def test_NEG_unresolvable_champion_ref_is_dropped_not_trusted(kernel_repo):
+    git(kernel_repo, "branch", "-D", "ak/champion/x")
+    bases, _ = wg.resolve_bases(str(kernel_repo))
+    assert bases == ["refs/heads/production-consolidated-v1"]
+
+
+def test_report_records_resolved_bases(kernel_repo, tmp_path):
+    kwt(kernel_repo, tmp_path, "e4")
+    rep = wg.build_report([str(kernel_repo)], base="auto", min_idle_days=0, sizes=False,
+                          probe=wg.Probe(), canonical_roots=[])
+    assert rep["bases"]["kernel"][0] == "refs/heads/production-consolidated-v1"
+    assert [w["verdict"] for w in rep["worktrees"] if "e4" in w["path"]] == ["UNLANDED"]

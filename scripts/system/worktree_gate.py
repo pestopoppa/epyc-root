@@ -19,7 +19,10 @@ A worktree is REMOVABLE only when ALL of these hold:
     (worktrees/pool/*), not a read-only view, not a canonical root;
   * it is CLEAN: `git status --porcelain` (untracked included) prints nothing;
   * it is LANDED: `git cherry <base> HEAD` has no `+` line (patch-id equivalence, so a squash or a
-    rebase that kept the patch counts as landed, and a merge commit is not mistaken for content);
+    rebase that kept the patch counts as landed, and a merge commit is not mistaken for content).
+    <base> is derived per repo (resolve_bases): origin/main, or for the llama.cpp kernel tree the
+    frozen production tip plus the ak/champion/* tips (landed in ANY of them); an unknown base is
+    UNVERIFIABLE, never removable;
   * it is not declared load-bearing. The PREFERRED declaration is git's own lock, which dirties
     nothing and which `git worktree remove` itself honours:
         git -C <repo> worktree lock --reason "load-bearing: <who uses it>" <path>
@@ -83,6 +86,9 @@ DEFAULT_REPOS = [
     f"{LLM}/llama.cpp",
 ]
 DEFAULT_BASE = "origin/main"
+AUTO_BASE = "auto"   # the CLI default: each repo resolves its own accepted base(s), see resolve_bases()
+PROD_BRANCH_RE = re.compile(r"^refs/heads/production-consolidated-v(\d+)$")
+CHAMPION_REF_PREFIX = "refs/heads/ak/champion/"
 PROTECTED_PARENT_DIRS = ("worktrees/mains", "worktrees/pool")
 VIEW_MARKER = ".epyc-view-readonly"
 # Same narrow pattern as autokernel_disk_sweep.EVIDENCE_RE (kept in sync by a test).
@@ -434,7 +440,40 @@ def _du_bytes(path: str) -> int | None:
         return None
 
 
-def classify(wt: Worktree, *, base: str, min_idle_days: float, probe: Probe,
+def _ref_commit(repo: str, ref: str) -> str | None:
+    cp = _git(["rev-parse", "-q", "--verify", f"{ref}^{{commit}}"], cwd=repo)
+    return cp.stdout.strip() if cp.returncode == 0 and cp.stdout.strip() else None
+
+
+def resolve_bases(repo: str, override: str | None = None) -> tuple[list[str], str]:
+    """The accepted 'landed' base ref(s) for ONE repo, derived from the repo itself.
+
+    A tree is LANDED when `git cherry` against ANY accepted base shows no `+` line. An empty list
+    means the base is unknown, and the caller must treat every tree as UNVERIFIABLE (fail closed).
+      * explicit --base (anything but "auto"): used verbatim for every repo;
+      * kernel tree (has refs/heads/production-consolidated-v<N>): origin/main does not exist there
+        (origin is upstream ggml-org, default branch master, whose HEAD is NOT our line), so the
+        bases are the FROZEN production tip (highest local production-consolidated-v<N>, qualified
+        as refs/heads/ because a same-named tag exists) plus every local refs/heads/ak/champion/*
+        tip. Experimental work lands in a champion, never in frozen production, so "head is
+        reachable from / patch-equivalent to a champion tip" is the landed test. Champion tips come
+        from the branch namespace that docs/reference/kernel-manifests/ names as the champion;
+      * otherwise refs/remotes/origin/main when it exists; else unknown."""
+    if override and override != AUTO_BASE:
+        return [override], "explicit --base"
+    refs = _git(["for-each-ref", "--format=%(refname)", "refs/heads/"], cwd=repo)
+    heads = refs.stdout.split() if refs.returncode == 0 else []
+    prod = sorted((int(m.group(1)), h) for h in heads if (m := PROD_BRANCH_RE.match(h)))
+    if prod:
+        bases = [prod[-1][1]] + sorted(h for h in heads if h.startswith(CHAMPION_REF_PREFIX))
+        bases = [b for b in bases if _ref_commit(repo, b)]
+        return bases, "kernel tree: frozen production tip + ak/champion/* tips"
+    if _ref_commit(repo, "refs/remotes/origin/main"):
+        return ["origin/main"], "origin/main"
+    return [], "no origin/main and no recognised kernel branches: base unknown"
+
+
+def classify(wt: Worktree, *, base: str | list[str], min_idle_days: float, probe: Probe,
              canonical_roots: list[str], now: float, sizes: bool = False) -> Worktree:
     wt.reasons = []
     if not os.path.isdir(wt.path):
@@ -464,15 +503,30 @@ def classify(wt: Worktree, *, base: str, min_idle_days: float, probe: Probe,
             n = len(st.stdout.splitlines())
             wt.verdict, wt.reasons = "DIRTY", [f"{n} modified/untracked path(s)"]
             return wt
-        ch = _git(["cherry", base, "HEAD"], cwd=wt.path, timeout=300)
-        if ch.returncode != 0:
-            wt.verdict, wt.reasons = "UNVERIFIABLE", [f"git cherry {base} failed: {ch.stderr.strip()[:200]}"]
+        bases = [base] if isinstance(base, str) else list(base)
+        if not bases:
+            wt.verdict, wt.reasons = "UNVERIFIABLE", ["base unknown for this repo (fail closed)"]
             return wt
-        plus = [ln for ln in ch.stdout.splitlines() if ln.startswith("+")]
-        wt.unlanded = len(plus)
-        if plus:
-            wt.verdict, wt.reasons = "UNLANDED", [f"{len(plus)} patch(es) not in {base}"]
+        landed_in, plus_counts, errs = None, [], []
+        for b in bases:
+            ch = _git(["cherry", b, "HEAD"], cwd=wt.path, timeout=300)
+            if ch.returncode != 0:
+                errs.append(f"git cherry {b} failed: {ch.stderr.strip()[:200]}")
+                continue
+            n = len([ln for ln in ch.stdout.splitlines() if ln.startswith("+")])
+            plus_counts.append(n)
+            if n == 0 and landed_in is None:
+                landed_in = b
+        if landed_in is None and errs:
+            wt.verdict, wt.reasons = "UNVERIFIABLE", errs[:3]
             return wt
+        if landed_in is None:
+            wt.unlanded = min(plus_counts)
+            wt.verdict, wt.reasons = "UNLANDED", [
+                f"{wt.unlanded} patch(es) not in {', '.join(bases)}"]
+            return wt
+        wt.unlanded = 0
+        base = landed_in
         ev, complete = _evidence_in_ignored(wt.path)
         if ev:
             wt.verdict, wt.reasons = "EVIDENCE", [f"ignored evidence file(s): {', '.join(ev[:5])}"]
@@ -537,6 +591,7 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
     rows: list[dict] = []
     errors: list[str] = []
     seen: set[str] = set()
+    resolved: dict[str, list[str]] = {}
     for repo in repos:
         if not os.path.isdir(repo):
             errors.append(f"repo not found: {repo}")
@@ -546,6 +601,8 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
         except (RuntimeError, subprocess.TimeoutExpired) as exc:
             errors.append(str(exc))
             continue
+        repo_bases, _why = resolve_bases(repo, base)
+        resolved[os.path.basename(repo.rstrip("/"))] = repo_bases
         for wt in wts:
             key = os.path.realpath(wt.path)
             if key in seen:
@@ -553,7 +610,7 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
             seen.add(key)
             if should_continue is not None:
                 should_continue()
-            classify(wt, base=base, min_idle_days=min_idle_days, probe=probe,
+            classify(wt, base=repo_bases, min_idle_days=min_idle_days, probe=probe,
                      canonical_roots=canon, now=now, sizes=sizes)
             d = asdict(wt)
             d["repo"] = os.path.basename(repo.rstrip("/"))
@@ -568,6 +625,7 @@ def build_report(repos: list[str], *, base: str, min_idle_days: float, sizes: bo
         "schema": SCHEMA,
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "base": base,
+        "bases": resolved,
         "min_idle_days": min_idle_days,
         "sizes_measured": sizes,
         "proc_probe": "complete" if complete else "partial",
@@ -586,10 +644,13 @@ def remove_one(path: str, *, base: str, min_idle_days: float, fetch: bool,
     wt = _find(path)
     if wt is None:
         return False, f"REFUSED {path}: not a registered linked worktree of a git repo"
+    bases, _why = resolve_bases(wt.repo, base)
     if fetch:
-        remote = base.split("/", 1)[0] if "/" in base else "origin"
-        _git(["fetch", "--quiet", remote], cwd=wt.repo, timeout=300)
-    classify(wt, base=base, min_idle_days=min_idle_days, probe=probe or gather_probe(),
+        # only remote-tracking bases need a fetch; local champion/frozen branches do not
+        for remote in sorted({b.split("/", 1)[0] for b in bases
+                              if "/" in b and not b.startswith("refs/")}):
+            _git(["fetch", "--quiet", remote], cwd=wt.repo, timeout=300)
+    classify(wt, base=bases, min_idle_days=min_idle_days, probe=probe or gather_probe(),
              canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
     if wt.verdict != REMOVABLE:
         return False, f"REFUSED {path}: {wt.verdict} — {'; '.join(wt.reasons)}"
@@ -602,7 +663,8 @@ def remove_one(path: str, *, base: str, min_idle_days: float, fetch: bool,
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0],
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--base", default=DEFAULT_BASE, help="ref a branch must have landed in")
+    ap.add_argument("--base", default=AUTO_BASE,
+                    help="ref a branch must have landed in; default 'auto' derives the accepted base(s) per repo")
     sub = ap.add_subparsers(dest="cmd", required=True)
     c = sub.add_parser("check", help="read-only verdict for each path")
     c.add_argument("paths", nargs="+")
@@ -630,7 +692,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"{path}\tUNVERIFIABLE\tnot a registered linked worktree")
                 rc = 1
                 continue
-            classify(wt, base=a.base, min_idle_days=a.min_idle_days, probe=probe,
+            classify(wt, base=resolve_bases(wt.repo, a.base)[0], min_idle_days=a.min_idle_days, probe=probe,
                      canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
             print(f"{path}\t{wt.verdict}\t{'; '.join(wt.reasons)}")
             rc |= 0 if wt.verdict == REMOVABLE else 1
