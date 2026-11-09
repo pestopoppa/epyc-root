@@ -381,12 +381,23 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
                 frame_type=FT_CORRECTION,
                 assertion={
                     "entry_id": entry_id,
-                    # Only the claims a dive actually implicated. Falls back to every claim
-                    # when no per-claim record exists, because blanket doubt is the honest default
-                    # for an unindexed prose correction -- but it is now a fallback, not the rule.
+                    # Only the claims still AWAITING adjudication. A `claim_corrections` record
+                    # with a legal effect IS the adjudication -- it is the index half that
+                    # `correction_queue.index_blocks` writes back after a reviewer rules, and the
+                    # effect is already projected into the claim's grade by `apply_claim_verdict`.
+                    # Listing such a claim here used to re-open it: `fold` blocks a claim while
+                    # ANY unreviewed correction names it, and the ledger half of a review
+                    # (`correction_reviewed`) is not reproducible from the index, so every fresh
+                    # ledger (the 2026-08-26 gen-2 rebuild, each worktree rebuild, the 2026-10-21
+                    # canonical re-sync) re-blocked every index-adjudicated claim: 905 pending /
+                    # 2,661 blocked on 2026-10-21, 773 of them with a verdict already on file.
+                    # Falls back to every claim when no per-claim record exists, because blanket
+                    # doubt is the honest default for an unindexed prose correction -- but it is a
+                    # fallback, not the rule. A record whose effect is not in CORRECTION_EFFECTS
+                    # stays implicated: an illegal verdict is not a verdict.
                     "claim_ids": (
                         [_claim_id(entry_id, i) for i in sorted(claim_verdicts)
-                         if claim_verdicts[i].get("effect") != "unaffected"]
+                         if claim_verdicts[i].get("effect") not in CORRECTION_EFFECTS]
                         if claim_verdicts else
                         [_claim_id(entry_id, i) for i, c in enumerate(claims)
                          if isinstance(c, str)]
