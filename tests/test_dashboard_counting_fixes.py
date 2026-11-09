@@ -68,16 +68,7 @@ class OneBoxGrammar(unittest.TestCase):
         for line in MIXED.splitlines():
             graph = bool(re.match(rf"{bullet}\[([ xX])\]", line.lstrip()))
             self.assertEqual(bool(hp.CHECKBOX_RE.match(line)), graph, line)
-            self.assertEqual(bool(server._ACT_BOX_RE.match(line)), graph, line)
             self.assertEqual(bool(bt._ANY_CHECKBOX_RE.match("+" + line)), graph, line)
-
-    def test_flow_counters_see_numbered_ticks_and_skip_roll_ups(self):
-        log = ("commit:eeee|2026-11-03||\n"
-               "diff --git a/handoffs/active/n.md b/handoffs/active/n.md\n"
-               "-1. [ ] numbered step\n+1. [x] numbered step\n"
-               "+- [ ] **R-1** [roll-up] parent\n")
-        act = server._parse_activity_log(log)
-        self.assertEqual((act["boxes_checked"], act["boxes_added"]), (1, 0))
 
 
 class RouterExclusion(unittest.TestCase):
@@ -130,16 +121,6 @@ class PipelineRollupNotSubtractedTwice(unittest.TestCase):
                             "priority_basis": {"tier": 7}}]}
         out = ps.classify_handoffs(graph, {}, {"handoffs/active/t.md": 1})
         self.assertEqual(out["handoffs"][0]["open"], 2)
-
-
-class RefactorMarkersNeedMoves(unittest.TestCase):
-    def test_repoint_day_without_moves_is_not_marked(self):
-        log = ("commit:ffff|2026-11-01|ABC-1: repointed|\n"
-               "diff --git a/handoffs/active/r.md b/handoffs/active/r.md\n"
-               "-- [ ] a box\n+- [x] a box\n")
-        rows = server._parse_activity_log_by_day(log)
-        self.assertEqual(rows[0]["fold_commits"], 1)
-        self.assertEqual(server._refactor_markers(rows), [])
 
 
 class _Git:

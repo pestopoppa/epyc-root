@@ -281,6 +281,25 @@ _PANEL_SOURCE_CATALOG = _index((
               "producer, so it never becomes the freshness source.",
     ),
     PanelSource(
+        panel="hub_view",
+        kind=KIND_ARTIFACT,
+        payload_func="hub_view_payload",
+        route="/api/hub_view",
+        producer="scripts/dashboard/refresh_hub_view.sh (hub_supervisor)",
+        producer_repo="epyc-root",
+        evidence=".git/epyc-view-refresh.json",
+        timestamp_field="attempted_at",
+        absence_means=(
+            "this checkout has no refresh report: it is not the read-only view, or the "
+            "supervisor still runs a pinned refresh script older than the report. The board "
+            "still renders, but nothing here can say whether the fetch that advances it works."),
+        warn_s=_HOUR,
+        stale_s=6 * _HOUR,
+        gates_health=True,
+        absence_is_anomalous=False,
+        notes="A failed fetch or checkout is data health (degraded), independent of age.",
+    ),
+    PanelSource(
         panel="handoff_graph",
         kind=KIND_ARTIFACT,
         payload_func="graph_payload",

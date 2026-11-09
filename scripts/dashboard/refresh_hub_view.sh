@@ -90,10 +90,36 @@ if ! flock -n 8; then
   exit 0
 fi
 
+# Report every outcome where the hub can read it (dashboard/server.py, /api/hub_view).
+# In the git dir, so it never dirties the view. Best-effort: reporting cannot fail a refresh.
+STATUS_F="$(git -C "${VIEW}" rev-parse --path-format=absolute --git-dir)/epyc-view-refresh.json"
+report_status() {  # ok(true|false) stage detail regenerated(0|1)
+  [[ -n "${PY}" ]] || return 0
+  "${PY}" - "${STATUS_F}" "$1" "$2" "$3" "$4" "$(git -C "${VIEW}" rev-parse HEAD 2>/dev/null || true)" \
+    <<'PYEOF' 2>/dev/null || true
+import json, os, sys, time
+path, ok, stage, detail, regen, head = sys.argv[1:7]
+now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+try:
+    prev = json.load(open(path, encoding="utf-8"))
+except (OSError, ValueError):
+    prev = {}
+success = ok == "true"
+doc = {"attempted_at": now, "ok": success, "stage": stage, "detail": detail or None, "head": head,
+       "last_ok_at": now if success else prev.get("last_ok_at"),
+       "last_regen_at": now if regen == "1" else prev.get("last_regen_at")}
+tmp = f"{path}.tmp.{os.getpid()}"
+with open(tmp, "w", encoding="utf-8") as fh:
+    json.dump(doc, fh)
+os.replace(tmp, path)
+PYEOF
+}
+
 # --- 2. advance -------------------------------------------------------------- #
 old="$(git -C "${VIEW}" rev-parse -q --verify HEAD 2>/dev/null || echo none)"
 if ! git -C "${VIEW}" fetch --quiet "${REMOTE}" >/dev/null 2>&1; then
   log "fetch ${REMOTE} FAILED in ${VIEW} (offline?) — view left at ${old:0:12}"
+  report_status false fetch "git fetch ${REMOTE} failed; view left at ${old:0:12}" 0
   exit 1
 fi
 # Refresh index stat info first: `checkout --force` rewrites any file whose stat
@@ -102,6 +128,7 @@ fi
 git -C "${VIEW}" update-index -q --refresh >/dev/null 2>&1 || true
 if ! git -C "${VIEW}" checkout --quiet --detach --force "${REMOTE}/${BRANCH}" >/dev/null 2>&1; then
   log "checkout --detach --force ${REMOTE}/${BRANCH} FAILED in ${VIEW} — view left at ${old:0:12}"
+  report_status false checkout "git checkout ${REMOTE}/${BRANCH} failed; view left at ${old:0:12}" 0
   exit 1
 fi
 new="$(git -C "${VIEW}" rev-parse HEAD)"
@@ -183,4 +210,10 @@ fi
 
 [[ "${gated}" == "yes" ]] && regen="no(gated)"
 log "refresh view=${VIEW} head=${moved} regen=${regen} rc=${rc}"
+if [[ "${rc}" == "0" ]]; then
+  regenerated=0; [[ -n "${regen_reason}" ]] && regenerated=1
+  report_status true done "" "${regenerated}"
+else
+  report_status false regen "artifact regeneration failed; see ${LOG_FILE:-stderr}" 0
+fi
 exit "${rc}"
