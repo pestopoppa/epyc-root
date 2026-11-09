@@ -1,6 +1,6 @@
 {
   "by_type": {
-    "docs": 439,
+    "docs": 440,
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 375,
@@ -11,13 +11,14 @@
   "last_compile": "2026-11-09T09:05:54Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 1,
+      "added": 1,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-11-09T21:20:43Z",
+    "at": "2026-11-09T21:22:28Z",
     "scope_paths": [
       "docs/guides/agent-workflows/compute-fillers.md",
+      "docs/guides/agent-workflows/ratify-script-authoring.md",
       "handoffs/active/autokernel-akx-program.md",
       "handoffs/active/autokernel-loop.md",
       "handoffs/active/vidya-belief-substrate-program.md",
@@ -26,9 +27,9 @@
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T21:20:43Z",
+  "scan_time": "2026-11-09T21:22:28Z",
   "schema_version": 1,
-  "source_set_hash": "7d5a809797239523c4e8f51f67883b948f0c3709a16ee42b66300bfcfc923063",
+  "source_set_hash": "441334536b5b9f1b3a7c746bf4b1063c617295767602fb1aa33b4df3f781eb95",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -39,10 +40,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e6dde36f737f0a5259778a6691597ec36810268a201f82c0cd342b4c6df44cd7",
-      "modified": "2026-11-09T21:14:16Z",
+      "content_hash": "d41f758ec1a0ab93f7e7157e88254020aa65c6f31c7cc0595bfae1611751721d",
+      "modified": "2026-11-09T21:22:27Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 493493,
+      "size": 494192,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
@@ -16663,10 +16664,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "45c17bb4721fe95d954d8811fae0c63947f1fa06d2151ba9d6e6ed023ac8f31d",
-      "modified": "2026-11-09T21:17:49Z",
+      "content_hash": "5b12d3c69ef733b6fc100c3928aff0367ee3165e9eec1f40acdfcbeebbc585d9",
+      "modified": "2026-11-09T21:22:16Z",
       "path": "progress/2026-11/2026-11-09-autokernel.md",
-      "size": 7361,
+      "size": 7448,
       "title": "2026-11-09 AutoKernel",
       "type": "progress"
     },
@@ -17999,10 +18000,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "905293ae6131a5fddcce02b037a161c8515a50c94d180e63aae7cb35ed714779",
-      "modified": "2026-11-09T21:20:36Z",
+      "content_hash": "993ddee4c40a9788dc1d424f3c70db81147592b6ac39627ac24e4f9b7bf3245c",
+      "modified": "2026-11-09T21:21:39Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 14939,
+      "size": 14909,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -18092,6 +18093,14 @@
       "path": "docs/guides/agent-workflows/orchestrator-lifecycle.md",
       "size": 1128,
       "title": "Orchestrator Lifecycle & Stabilization Closure",
+      "type": "docs"
+    },
+    {
+      "content_hash": "6d5d066d60d91f7007966e9ac5c8a1f0d273f97a2eec476010ca750de044bcc6",
+      "modified": "2026-11-09T21:17:49Z",
+      "path": "docs/guides/agent-workflows/ratify-script-authoring.md",
+      "size": 1392,
+      "title": "Ratify and apply scripts - authoring rules",
       "type": "docs"
     },
     {
@@ -20415,7 +20424,7 @@
       "type": "handoff-completed"
     }
   ],
-  "total_new": 2548,
+  "total_new": 2549,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
