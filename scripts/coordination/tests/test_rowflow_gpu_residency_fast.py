@@ -72,6 +72,48 @@ class T(unittest.TestCase):
         rf.sample_gpu_residency(1, tracked, own)
         self.assertEqual(rf.own_vram_peak(own), 2 << 30)
 
+    def containers(self, label="row-a", pid=6001, b=4 << 30, cid="a" * 64):
+        self.client(pid, b)
+        calls = []
+        def lab(c):
+            calls.append(c)
+            return label
+        tracked, own, seen = {}, {}, {}
+        with mock.patch.object(rf, "pid_container_id", lambda q: cid if q == pid else None), mock.patch.object(rf, "docker_row_label", lab):
+            rf.sample_gpu_residency(1, tracked, own, "row-a", seen)
+            rf.sample_gpu_residency(1, tracked, own, "row-a", seen)
+        self.assertEqual(len(calls), 1)   # one docker inspect per container
+        return rf.own_vram_peak(own)
+
+    def test_own_container_counts(self):
+        self.assertEqual(self.containers(), 4 << 30)
+
+    def test_other_rows_container_does_not_count(self):
+        self.assertEqual(self.containers(label="row-b"), 0)
+
+    def test_unlabelled_or_unreadable_container_does_not_count(self):
+        self.assertEqual(self.containers(label=None), 0)
+        self.gone(6001)
+        self.assertEqual(self.containers(label="", cid="b" * 64), 0)
+
+    def test_own_container_at_13mb_stays_below_floor(self):
+        self.assertLess(self.containers(b=13 * MB), rf.RESIDENCY_FLOOR_B)
+
+    def test_host_process_outside_any_container_does_not_count(self):
+        self.client(FOREIGN, 8 << 30)
+        own = {}
+        with mock.patch.object(rf, "pid_container_id", return_value=None), mock.patch.object(rf, "docker_row_label") as lab:
+            rf.sample_gpu_residency(1, {}, own, "row-a", {})
+        lab.assert_not_called()
+        self.assertEqual(own, {})
+
+    def test_real_cgroup_shapes(self):
+        cid = "a810a03e2d605b561f3cb5cf46f949f03b9ea82cfa75bf84fe0dee46c6d338cc"
+        self.assertEqual(rf.cgroup_container_id(f"0::/../docker-{cid}.scope\n"), cid)   # as read on this host
+        self.assertEqual(rf.cgroup_container_id(f"0::/docker/{cid}\n"), cid)
+        self.assertIsNone(rf.cgroup_container_id("0::/\n"))
+        self.assertIsNone(rf.cgroup_container_id("0::/user.slice/session-1.scope\n"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2613,20 +2613,58 @@ RESIDENCY_FLOOR_B = 64 << 20
 GPU_SAMPLE_S = 0.15          # short GPU jobs (ATT ~0.5 s) fall between 1 s samples; ~10% of a core, harness only, smokes only
 
 
-def sample_gpu_residency(root, tracked, own):
-    """One sample: refresh the smoke's process tree, and keep each tree member's peak KFD VRAM in `own`. Foreign clients and
-    device-wide VRAM never count: the idle device reads about 13 MB and another row's model is not this row's proof."""
+_CGROUP_CID = re.compile(r"(?:docker-|/docker/)([0-9a-f]{64})(?:\.scope)?\s*$", re.M)
+DOCKER_ROW_LABEL = "epyc.filler.row"   # stamped by filler_run15's docker shim on every `docker run|create` of the row
+
+
+def cgroup_container_id(text):
+    m = _CGROUP_CID.search(text or "")
+    return m.group(1) if m else None
+
+
+def pid_container_id(pid):
+    """Container id of a host pid from its cgroup (the harness shares the host pid namespace), or None."""
+    try:
+        with open(f"/proc/{int(pid)}/cgroup") as f:
+            return cgroup_container_id(f.read())
+    except (OSError, ValueError):
+        return None
+
+
+def docker_row_label(cid):
+    """The row label of a container, or None when unreadable. Asked once per container while it still exists."""
+    try:
+        r = subprocess.run([os.environ.get("FILLER_DOCKER_BIN") or "docker", "inspect", "--format",
+                            '{{index .Config.Labels "' + DOCKER_ROW_LABEL + '"}}', cid], capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout.strip() if r.returncode == 0 else None
+
+
+def sample_gpu_residency(root, tracked, own, rid=None, containers=None):
+    """One sample: refresh the smoke's process tree, and keep the peak KFD VRAM of each client that is this row's: a tree
+    member, or a process in a container carrying this row's label (a docker client's job is not its descendant). Foreign
+    clients and device-wide VRAM never count: the idle device reads about 13 MB and another row's model is not this row's proof."""
     harness_tree(root, tracked)
     for q, b in (gpu_occupancy().get("pids") or {}).items():
-        if q in tracked and b > 0:
+        if b <= 0:
+            continue
+        mine = q in tracked
+        if not mine and rid and containers is not None:
+            cid = pid_container_id(q)
+            if cid:
+                if cid not in containers:
+                    containers[cid] = docker_row_label(cid) == rid
+                mine = containers[cid]
+        if mine:
             own[q] = max(own.get(q, 0), b)
 
 
-def gpu_sample_window(root, tracked, own, n=6, interval=GPU_SAMPLE_S):
+def gpu_sample_window(root, tracked, own, n=6, interval=GPU_SAMPLE_S, rid=None, containers=None):
     """About one second of fast residency samples (replaces the harness loop's 1 s sleep on a GPU smoke)."""
     for _ in range(n):
         time.sleep(interval)
-        sample_gpu_residency(root, tracked, own)
+        sample_gpu_residency(root, tracked, own, rid, containers)
 
 
 def own_vram_peak(own):
@@ -3103,6 +3141,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     cpu_acc, cpu_samples = {}, []
     vram_max = None
     kfd_seen = {}
+    gpu_containers = {}
     residency_note = None
     gpu = gpu_residency_required(d, regions)
 
@@ -3126,7 +3165,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
         while True:
             for _ in range(5):
                 if gpu:   # sampled at GPU_SAMPLE_S (was 1 s: codex-att-r4d held 4.5 GB for ~2 s, unseen behind a slow rocm-smi call)
-                    gpu_sample_window(p.pid, tracked, kfd_seen)
+                    gpu_sample_window(p.pid, tracked, kfd_seen, rid=rid, containers=gpu_containers)
                 else:
                     time.sleep(1)
                     harness_tree(p.pid, tracked)
