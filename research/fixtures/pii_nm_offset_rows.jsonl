@@ -1,0 +1,15 @@
+{"id": "nm-text", "text": "0000000000401136 T main", "must_block": false}
+{"id": "nm-data", "text": "0000000000601040 D environ", "must_block": false}
+{"id": "nm-bss-lower", "text": "00000000006010a8 b completed.7698", "must_block": false}
+{"id": "nm-weak-versioned", "text": "0000000000012345 W memcpy@@GLIBC_2.14", "must_block": false}
+{"id": "nm-S-size", "text": "0000000000401136 0000000000000042 T main", "must_block": false}
+{"id": "nm-indented", "text": "  0000000000401136 t frame_dummy", "must_block": false}
+{"id": "bare-16-digit", "text": "1234567890123456", "must_block": true}
+{"id": "bare-16-digit-spaced-letter", "text": "1234567890123456 T", "must_block": true}
+{"id": "non-zero-padded-prefix", "text": "1234567890123456 T main", "must_block": true}
+{"id": "account-word", "text": "account 0000000000401136 T main", "must_block": true}
+{"id": "account-number-key", "text": "account_number 0000000000401136 T main", "must_block": true}
+{"id": "second-long-run", "text": "0000000000401136 T main 123456789012345", "must_block": true}
+{"id": "size-field-long-decimal", "text": "0000000000401136 123456789012 T main", "must_block": true}
+{"id": "sentence", "text": "0000000000401136 is my card", "must_block": true}
+{"id": "acct-token", "text": "0000000000401136 T acct-123456789012", "must_block": true}

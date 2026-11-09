@@ -209,6 +209,25 @@ is_timestamp_or_log_line() {
   return 1
 }
 
+is_nm_symbol_row_line() {
+  # Genuine `nm` rows: `<offset> [<size>] <type> <symbol>`, where offset (and the `-S` size)
+  # is a 16-digit zero-padded hex field, e.g. `0000000000401136 T main`. ADDED 2026-11-09
+  # (PII-NM-OFFSET): an all-decimal offset such as `0000000000401136` is a 16-digit run and read
+  # as an account number, forcing a `0x` carrier on committed symbol tables. Raw bytes stay
+  # as they are; this recognises the row, it does not rewrite it.
+  # Deliberately narrow: the line must be nothing but offset, optional size, ONE type letter
+  # and a symbol token (optional trailing text), the offset must start `0000` (user-space and
+  # kernel-module offsets sit below 2^48; a bare 16-digit identifier rarely does), no OTHER
+  # 12+ digit run may remain once the offset/size fields are stripped, and a line that names
+  # account/card/customer/iban/routing/ssn is never exempt.
+  local line="$1" rest
+  echo "$line" | grep -iE '(^|[^a-z])(account|card|customer|iban|routing|ssn)([^a-z]|$)' >/dev/null && return 1
+  echo "$line" | grep -E '^[[:space:]]*0000[0-9a-fA-F]{12}([[:space:]]+[0-9a-fA-F]{16})?[[:space:]]+[A-Za-z?-][[:space:]]+[A-Za-z_.$@][^[:space:]]*([[:space:]].*)?$' >/dev/null || return 1
+  rest="$(echo "$line" | sed -E 's/^[[:space:]]*[0-9a-fA-F]{16}([[:space:]]+[0-9a-fA-F]{16})?//')"
+  echo "$rest" | grep -E '[0-9]{12,19}' >/dev/null && return 1
+  return 0
+}
+
 is_decimal_float_line() {
   # Skip lines where the digit run is part of a decimal float (preceded by `.`).
   # Common cases: temperature: 0.0736042256959058, threshold: 4.09045566671701.
@@ -563,6 +582,9 @@ scan_blob() {
         continue
       fi
       if is_decimal_float_line "$fullline"; then
+        continue
+      fi
+      if is_nm_symbol_row_line "$fullline"; then
         continue
       fi
       if is_version_or_hash_line "$fullline"; then
