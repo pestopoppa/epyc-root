@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 497
+      "open": 498
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -818,10 +818,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 270,
+      "closed": 269,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 93,
+      "open": 94,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -834,13 +834,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 164,
+          "closed": 163,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 47
+          "open": 48
         },
         {
           "blocked": 0,
