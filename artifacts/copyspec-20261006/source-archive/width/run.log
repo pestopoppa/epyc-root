@@ -1,0 +1,423 @@
+  arm P: ~25 min
+  arm NM: ~27 min
+  arm NO: ~32 min
+  arm P2: ~25 min
+EXPECTED WALL TIME (full host, 4 arms): ~1.83 h (range ~1.5-2.6 h); lock timeout 14400 s
+/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/prompts_p1.jsonl exists (fixed sample kept)
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=14400.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /usr/bin/env FULLHOST=1 NO_GPU_QUIET=1 /bin/bash /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/phase1.sh inner
+binary=/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server (from /proc/26641/exe)
+binary : /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/production/cpu
+         (resolves to /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin)
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/production/cpu/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/production/cpu/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/production/cpu/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/production/cpu/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/production/cpu/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/production/cpu/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/production/cpu/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/production/cpu
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/production/cpu
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+=== arm P 2026-10-06T05:46:37+00:00 ===
+argv: numactl --interleave=all -- taskset -c 0-95 /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 262144 -t 96 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-draft-n-max 4 --reasoning off --device none --device-draft none --port 18170 --cache-ram 0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/copy-spec-p1 --verbosity 4 --spec-type draft-mtp
+server pid 2407857
+[P] 1/65 debugbench ok=True n=91 tps=65.71213175932317 draft=72/72 wall=3s
+[P] 2/65 hotpotqa   ok=True n=36 tps=70.67637288854337 draft=28/28 wall=3s
+[P] 3/65 hotpotqa   ok=True n=62 tps=63.68177191448976 draft=52/52 wall=3s
+[P] 4/65 hotpotqa   ok=True n=105 tps=63.0989517761754 draft=84/88 wall=7s
+[P] 5/65 debugbench ok=True n=512 tps=51.861624676814465 draft=376/536 wall=11s
+[P] 6/65 hotpotqa   ok=True n=135 tps=61.504957983001844 draft=107/116 wall=5s
+[P] 7/65 hotpotqa   ok=True n=34 tps=52.908076884772434 draft=25/36 wall=1s
+[P] 8/65 hotpotqa   ok=True n=56 tps=54.9605314683393 draft=46/52 wall=4s
+[P] 9/65 hotpotqa   ok=True n=147 tps=51.25215642576526 draft=112/152 wall=5s
+[P] 10/65 hotpotqa   ok=True n=66 tps=59.473926090130036 draft=52/60 wall=4s
+[P] 11/65 debugbench ok=True n=387 tps=56.89221219119253 draft=297/368 wall=8s
+[P] 12/65 debugbench ok=True n=239 tps=47.12896832322033 draft=187/204 wall=6s
+[P] 13/65 debugbench ok=True n=300 tps=40.11229839057425 draft=236/252 wall=10s
+[P] 14/65 hotpotqa   ok=True n=148 tps=64.14348724736459 draft=117/124 wall=5s
+[P] 15/65 debugbench ok=True n=512 tps=47.53513166535156 draft=364/585 wall=12s
+[P] 16/65 debugbench ok=True n=284 tps=65.28687605056697 draft=225/232 wall=6s
+[P] 17/65 debugbench ok=True n=128 tps=51.3714367587513 draft=93/136 wall=3s
+[P] 18/65 hotpotqa   ok=True n=104 tps=56.432612406709836 draft=83/96 wall=5s
+[P] 19/65 debugbench ok=True n=176 tps=62.42797283957537 draft=139/156 wall=4s
+[P] 20/65 debugbench ok=True n=213 tps=64.95981945439851 draft=170/180 wall=5s
+[P] 21/65 debugbench ok=True n=170 tps=51.73872552301765 draft=127/184 wall=4s
+[P] 22/65 hotpotqa   ok=True n=85 tps=56.912033413389594 draft=65/80 wall=5s
+[P] 23/65 hotpotqa   ok=True n=80 tps=46.48787044295386 draft=60/88 wall=7s
+[P] 24/65 hotpotqa   ok=True n=16 tps=53.39776663841035 draft=11/16 wall=3s
+[P] 25/65 debugbench ok=True n=178 tps=63.17957979190492 draft=143/148 wall=4s
+[P] 26/65 hotpotqa   ok=True n=169 tps=57.81161486654754 draft=130/156 wall=6s
+[P] 27/65 debugbench ok=True n=512 tps=53.75078657767273 draft=383/511 wall=11s
+[P] 28/65 hotpotqa   ok=True n=90 tps=55.090078399302676 draft=67/88 wall=4s
+[P] 29/65 debugbench ok=True n=190 tps=56.45483820934761 draft=144/184 wall=5s
+[P] 30/65 debugbench ok=True n=436 tps=64.1364069578587 draft=347/368 wall=8s
+[P] 31/65 hotpotqa   ok=True n=43 tps=59.545322991833984 draft=33/36 wall=3s
+[P] 32/65 hotpotqa   ok=True n=51 tps=38.85276174572315 draft=33/72 wall=4s
+[P] 33/65 hotpotqa   ok=True n=105 tps=46.41864667982894 draft=76/124 wall=5s
+[P] 34/65 debugbench ok=True n=512 tps=43.43707753306244 draft=349/646 wall=13s
+[P] 35/65 debugbench ok=True n=184 tps=66.28655171954159 draft=146/148 wall=4s
+[P] 36/65 debugbench ok=True n=139 tps=63.9721652046649 draft=112/116 wall=3s
+[P] 37/65 debugbench ok=True n=266 tps=63.65160652108316 draft=213/224 wall=6s
+[P] 38/65 hotpotqa   ok=True n=41 tps=56.87524622820014 draft=30/40 wall=2s
+[P] 39/65 debugbench ok=True n=512 tps=46.505759765596444 draft=362/595 wall=12s
+[P] 40/65 debugbench ok=True n=402 tps=63.933168527832244 draft=319/340 wall=8s
+[P] 41/65 debugbench ok=True n=263 tps=65.68646476695416 draft=209/220 wall=5s
+[P] 42/65 debugbench ok=True n=308 tps=59.123323959343125 draft=236/284 wall=7s
+[P] 43/65 debugbench ok=True n=512 tps=46.917187956027966 draft=361/600 wall=12s
+[P] 44/65 debugbench ok=True n=358 tps=62.92460928739111 draft=281/304 wall=7s
+[P] 45/65 debugbench ok=True n=118 tps=65.09687573613257 draft=93/100 wall=3s
+[P] 46/65 hotpotqa   ok=True n=70 tps=58.55790289092002 draft=57/64 wall=5s
+[P] 47/65 debugbench ok=True n=149 tps=62.75311828246821 draft=118/128 wall=4s
+[P] 48/65 debugbench ok=True n=512 tps=40.60032335937226 draft=339/686 wall=14s
+[P] 49/65 hotpotqa   ok=True n=74 tps=62.26461451472306 draft=60/64 wall=6s
+[P] 50/65 debugbench ok=True n=512 tps=43.76002175009831 draft=350/642 wall=13s
+[P] 51/65 debugbench ok=True n=397 tps=48.92311233806388 draft=289/444 wall=10s
+[P] 52/65 debugbench ok=True n=512 tps=46.400537231220135 draft=360/599 wall=13s
+[P] 53/65 debugbench ok=True n=82 tps=66.30977988387703 draft=68/68 wall=2s
+[P] 54/65 hotpotqa   ok=True n=44 tps=59.53871031034553 draft=35/40 wall=4s
+[P] 55/65 debugbench ok=True n=512 tps=40.79880555121935 draft=358/608 wall=14s
+[P] 56/65 debugbench ok=True n=223 tps=53.73680436140435 draft=169/228 wall=5s
+[P] 57/65 debugbench ok=True n=512 tps=42.56919739436603 draft=346/658 wall=13s
+[P] 58/65 debugbench ok=True n=256 tps=66.5324755148795 draft=206/208 wall=5s
+[P] 59/65 hotpotqa   ok=True n=128 tps=56.20229665416312 draft=101/120 wall=5s
+[P] 60/65 debugbench ok=True n=512 tps=40.27577895677079 draft=337/696 wall=14s
+[P] 61/65 hotpotqa   ok=True n=161 tps=62.789817909528054 draft=126/136 wall=5s
+[P] 62/65 debugbench ok=True n=512 tps=55.17742613903397 draft=384/503 wall=11s
+[P] 63/65 debugbench ok=True n=512 tps=46.40528527195944 draft=359/605 wall=12s
+[P] 64/65 hotpotqa   ok=True n=151 tps=59.165592739323834 draft=119/132 wall=6s
+[P] 65/65 debugbench ok=True n=512 tps=47.00135486913381 draft=362/592 wall=13s
+[P] done ok=65
+P {'draft-mtp': {'gen_drafts': 4110, 'acc_drafts': 3643, 'gen_tokens': 16418, 'acc_tokens': 11738}}
+-rw-r--r-- 1 node node 249874 Oct  6 05:54 /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_P.log
+server 2407857 confirmed dead
+binary : /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/llama-server
+expect : libraries under /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+=== arm W8 2026-10-06T05:54:08+00:00 ===
+argv: numactl --interleave=all -- taskset -c 0-95 /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 262144 -t 96 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-draft-n-max 4 --reasoning off --device none --device-draft none --port 18170 --cache-ram 0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/copy-spec-p1 --verbosity 4 --spec-type ngram-mod,draft-mtp --spec-ngram-mod-n-match 12 --spec-ngram-mod-n-min 4 --spec-ngram-mod-n-max 8
+server pid 2448983
+[W8] 1/65 debugbench ok=True n=91 tps=82.73396665730228 draft=78/84 wall=2s
+[W8] 2/65 hotpotqa   ok=True n=36 tps=57.87986070246858 draft=29/40 wall=3s
+[W8] 3/65 hotpotqa   ok=True n=62 tps=66.70145183240722 draft=51/60 wall=3s
+[W8] 4/65 hotpotqa   ok=True n=105 tps=56.863537258614286 draft=82/104 wall=7s
+[W8] 5/65 debugbench ok=True n=512 tps=54.350699160175544 draft=382/552 wall=11s
+[W8] 6/65 hotpotqa   ok=True n=135 tps=64.9783838576367 draft=113/136 wall=5s
+[W8] 7/65 hotpotqa   ok=True n=34 tps=54.14004117827838 draft=25/36 wall=1s
+[W8] 8/65 hotpotqa   ok=True n=56 tps=55.960435971767964 draft=43/56 wall=4s
+[W8] 9/65 hotpotqa   ok=True n=147 tps=58.53218015647603 draft=119/160 wall=5s
+[W8] 10/65 hotpotqa   ok=True n=66 tps=55.72164169464709 draft=52/76 wall=4s
+[W8] 11/65 debugbench ok=True n=387 tps=62.38804006763057 draft=304/384 wall=7s
+[W8] 12/65 debugbench ok=True n=239 tps=68.30347318874335 draft=198/232 wall=5s
+[W8] 13/65 debugbench ok=True n=300 tps=88.39198190439346 draft=255/276 wall=5s
+[W8] 14/65 hotpotqa   ok=True n=148 tps=73.62356272379324 draft=124/148 wall=5s
+[W8] 15/65 debugbench ok=True n=512 tps=48.61944054027594 draft=367/597 wall=12s
+[W8] 16/65 debugbench ok=True n=284 tps=82.54609356425313 draft=242/272 wall=5s
+[W8] 17/65 debugbench ok=True n=128 tps=47.92607403080748 draft=97/164 wall=4s
+[W8] 18/65 hotpotqa   ok=True n=104 tps=64.08850129039733 draft=87/104 wall=5s
+[W8] 19/65 debugbench ok=True n=176 tps=77.19247461091265 draft=147/176 wall=3s
+[W8] 20/65 debugbench ok=True n=213 tps=78.1115631150598 draft=178/216 wall=4s
+[W8] 21/65 debugbench ok=True n=170 tps=50.52782255104275 draft=129/204 wall=4s
+[W8] 22/65 hotpotqa   ok=True n=85 tps=60.628712617049075 draft=66/84 wall=5s
+[W8] 23/65 hotpotqa   ok=True n=80 tps=48.623794661715145 draft=60/88 wall=7s
+[W8] 24/65 hotpotqa   ok=True n=16 tps=55.946794598336986 draft=11/16 wall=3s
+[W8] 25/65 debugbench ok=True n=178 tps=79.80065974522967 draft=152/168 wall=3s
+[W8] 26/65 hotpotqa   ok=True n=169 tps=64.80622937417122 draft=138/168 wall=5s
+[W8] 27/65 debugbench ok=True n=512 tps=54.0626326157962 draft=383/523 wall=11s
+[W8] 28/65 hotpotqa   ok=True n=90 tps=61.2710057431356 draft=69/92 wall=4s
+[W8] 29/65 debugbench ok=True n=190 tps=65.75165737434253 draft=155/204 wall=4s
+[W8] 30/65 debugbench ok=True n=436 tps=76.65242677891207 draft=365/412 wall=7s
+[W8] 31/65 hotpotqa   ok=True n=43 tps=66.79570146360255 draft=37/44 wall=3s
+[W8] 32/65 hotpotqa   ok=True n=51 tps=35.55483671266951 draft=33/76 wall=5s
+[W8] 33/65 hotpotqa   ok=True n=105 tps=43.37665352836027 draft=78/136 wall=5s
+[W8] 34/65 debugbench ok=True n=512 tps=43.174037157836274 draft=350/654 wall=13s
+[W8] 35/65 debugbench ok=True n=184 tps=80.3834289561207 draft=157/180 wall=4s
+[W8] 36/65 debugbench ok=True n=139 tps=69.8829937472317 draft=116/148 wall=3s
+[W8] 37/65 debugbench ok=True n=266 tps=79.44882823432147 draft=227/284 wall=5s
+[W8] 38/65 hotpotqa   ok=True n=41 tps=53.00211749923082 draft=30/44 wall=2s
+[W8] 39/65 debugbench ok=True n=512 tps=47.54631308058506 draft=365/591 wall=12s
+[W8] 40/65 debugbench ok=True n=402 tps=84.58099061172044 draft=342/376 wall=6s
+[W8] 41/65 debugbench ok=True n=263 tps=92.33435287310803 draft=228/240 wall=4s
+[W8] 42/65 debugbench ok=True n=308 tps=72.5708042470885 draft=255/324 wall=6s
+[W8] 43/65 debugbench ok=True n=512 tps=46.495797034222 draft=363/618 wall=12s
+[W8] 44/65 debugbench ok=True n=358 tps=77.93560342185192 draft=302/352 wall=6s
+[W8] 45/65 debugbench ok=True n=118 tps=78.06829917624712 draft=101/116 wall=3s
+[W8] 46/65 hotpotqa   ok=True n=70 tps=59.70943682059191 draft=58/76 wall=5s
+[W8] 47/65 debugbench ok=True n=149 tps=56.191703464689915 draft=116/148 wall=4s
+[W8] 48/65 debugbench ok=True n=512 tps=40.719283881406675 draft=340/690 wall=14s
+[W8] 49/65 hotpotqa   ok=True n=74 tps=53.52327828632929 draft=59/80 wall=6s
+[W8] 50/65 debugbench ok=True n=512 tps=42.540958135376634 draft=348/666 wall=13s
+[W8] 51/65 debugbench ok=True n=397 tps=51.25321204008957 draft=298/484 wall=9s
+[W8] 52/65 debugbench ok=True n=512 tps=46.50324650789683 draft=361/603 wall=13s
+[W8] 53/65 debugbench ok=True n=82 tps=62.717311660677936 draft=66/88 wall=3s
+[W8] 54/65 hotpotqa   ok=True n=44 tps=60.11265658322393 draft=35/40 wall=4s
+[W8] 55/65 debugbench ok=True n=512 tps=45.63318495120948 draft=359/616 wall=12s
+[W8] 56/65 debugbench ok=True n=223 tps=65.55428203215922 draft=180/240 wall=5s
+[W8] 57/65 debugbench ok=True n=512 tps=44.16102801353087 draft=354/674 wall=13s
+[W8] 58/65 debugbench ok=True n=256 tps=98.96772028629505 draft=224/240 wall=4s
+[W8] 59/65 hotpotqa   ok=True n=128 tps=62.59805398299681 draft=105/140 wall=5s
+[W8] 60/65 debugbench ok=True n=512 tps=39.08939722240821 draft=334/724 wall=15s
+[W8] 61/65 hotpotqa   ok=True n=161 tps=70.72707432405124 draft=130/152 wall=5s
+[W8] 62/65 debugbench ok=True n=512 tps=64.90524974449896 draft=405/512 wall=9s
+[W8] 63/65 debugbench ok=True n=512 tps=45.44971964979571 draft=357/625 wall=13s
+[W8] 64/65 hotpotqa   ok=True n=151 tps=63.454576398679635 draft=124/160 wall=6s
+[W8] 65/65 debugbench ok=True n=512 tps=47.35338070767778 draft=365/600 wall=12s
+[W8] done ok=65
+W8 {'ngram-mod': {'gen_drafts': 643, 'acc_drafts': 643, 'gen_tokens': 5144, 'acc_tokens': 4067}, 'draft-mtp': {'gen_drafts': 3113, 'acc_drafts': 2673, 'gen_tokens': 12429, 'acc_tokens': 8036}}
+-rw-r--r-- 1 node node 707564 Oct  6 06:01 /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_W8.log
+server 2448983 confirmed dead
+binary : /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/llama-server
+expect : libraries under /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+=== arm W16 2026-10-06T06:01:13+00:00 ===
+argv: numactl --interleave=all -- taskset -c 0-95 /mnt/raid0/llm/worktrees/llama-specwidth-20261006/build-cpu/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 262144 -t 96 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-draft-n-max 4 --reasoning off --device none --device-draft none --port 18170 --cache-ram 0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/copy-spec-p1 --verbosity 4 --spec-type ngram-mod,draft-mtp --spec-ngram-mod-n-match 12 --spec-ngram-mod-n-min 4 --spec-ngram-mod-n-max 16
+server pid 2467320
+[W16] 1/65 debugbench ok=True n=91 tps=77.37667560891617 draft=81/100 wall=2s
+[W16] 2/65 hotpotqa   ok=True n=36 tps=58.179749568500185 draft=30/40 wall=3s
+[W16] 3/65 hotpotqa   ok=True n=62 tps=60.71645415907711 draft=53/68 wall=4s
+[W16] 4/65 hotpotqa   ok=True n=105 tps=48.74914340790869 draft=81/140 wall=7s
+[W16] 5/65 debugbench ok=True n=512 tps=51.82458995817594 draft=384/600 wall=11s
+[W16] 6/65 hotpotqa   ok=True n=135 tps=71.25819271276772 draft=116/144 wall=4s
+[W16] 7/65 hotpotqa   ok=True n=34 tps=52.846646802544726 draft=25/36 wall=1s
+[W16] 8/65 hotpotqa   ok=True n=56 tps=52.49737513124344 draft=44/72 wall=4s
+[W16] 9/65 hotpotqa   ok=True n=147 tps=64.80718539748628 draft=122/172 wall=5s
+[W16] 10/65 hotpotqa   ok=True n=66 tps=53.559647187996795 draft=54/76 wall=4s
+[W16] 11/65 debugbench ok=True n=387 tps=62.44252907409669 draft=310/404 wall=7s
+[W16] 12/65 debugbench ok=True n=239 tps=72.23749754800545 draft=203/264 wall=4s
+[W16] 13/65 debugbench ok=True n=300 tps=104.18019562262599 draft=266/300 wall=4s
+[W16] 14/65 hotpotqa   ok=True n=148 tps=80.83301701043456 draft=128/172 wall=4s
+[W16] 15/65 debugbench ok=True n=512 tps=48.93834380409981 draft=369/601 wall=12s
+[W16] 16/65 debugbench ok=True n=284 tps=94.63174755182004 draft=252/312 wall=5s
+[W16] 17/65 debugbench ok=True n=128 tps=52.152343514448646 draft=96/172 wall=3s
+[W16] 18/65 hotpotqa   ok=True n=104 tps=78.86853979448678 draft=90/104 wall=4s
+[W16] 19/65 debugbench ok=True n=176 tps=82.67863753121587 draft=153/200 wall=3s
+[W16] 20/65 debugbench ok=True n=213 tps=83.14076942293279 draft=187/260 wall=4s
+[W16] 21/65 debugbench ok=True n=170 tps=50.92931011755683 draft=131/228 wall=4s
+[W16] 22/65 hotpotqa   ok=True n=85 tps=50.880441139410614 draft=66/100 wall=5s
+[W16] 23/65 hotpotqa   ok=True n=80 tps=48.338134921402194 draft=60/88 wall=7s
+[W16] 24/65 hotpotqa   ok=True n=16 tps=55.18097635840044 draft=11/16 wall=3s
+[W16] 25/65 debugbench ok=True n=178 tps=92.61995845630626 draft=156/172 wall=3s
+[W16] 26/65 hotpotqa   ok=True n=169 tps=70.62503996165354 draft=139/188 wall=5s
+[W16] 27/65 debugbench ok=True n=512 tps=53.31785449370063 draft=384/543 wall=11s
+[W16] 28/65 hotpotqa   ok=True n=90 tps=49.315311691948075 draft=69/116 wall=5s
+[W16] 29/65 debugbench ok=True n=190 tps=71.03616338915779 draft=159/228 wall=4s
+[W16] 30/65 debugbench ok=True n=436 tps=81.59832401534122 draft=376/468 wall=7s
+[W16] 31/65 hotpotqa   ok=True n=43 tps=57.335397407640016 draft=38/68 wall=3s
+[W16] 32/65 hotpotqa   ok=True n=51 tps=36.52716869320831 draft=33/84 wall=4s
+[W16] 33/65 hotpotqa   ok=True n=105 tps=41.44456000678901 draft=78/168 wall=5s
+[W16] 34/65 debugbench ok=True n=512 tps=43.084880833699174 draft=352/670 wall=13s
+[W16] 35/65 debugbench ok=True n=184 tps=78.97388882880006 draft=164/212 wall=4s
+[W16] 36/65 debugbench ok=True n=139 tps=62.85431861170636 draft=121/204 wall=3s
+[W16] 37/65 debugbench ok=True n=266 tps=107.14003766818166 draft=244/316 wall=4s
+[W16] 38/65 hotpotqa   ok=True n=41 tps=51.8116381576287 draft=30/52 wall=2s
+[W16] 39/65 debugbench ok=True n=512 tps=46.81896241132287 draft=364/611 wall=12s
+[W16] 40/65 debugbench ok=True n=402 tps=94.75194435939554 draft=355/424 wall=6s
+[W16] 41/65 debugbench ok=True n=263 tps=95.07462816059876 draft=237/304 wall=4s
+[W16] 42/65 debugbench ok=True n=308 tps=87.22368428877724 draft=267/348 wall=5s
+[W16] 43/65 debugbench ok=True n=512 tps=46.33375561604484 draft=365/650 wall=12s
+[W16] 44/65 debugbench ok=True n=358 tps=93.48110310835114 draft=315/388 wall=5s
+[W16] 45/65 debugbench ok=True n=118 tps=78.60378363975487 draft=106/144 wall=3s
+[W16] 46/65 hotpotqa   ok=True n=70 tps=60.68424082280896 draft=56/88 wall=5s
+[W16] 47/65 debugbench ok=True n=149 tps=54.66080585435573 draft=116/172 wall=4s
+[W16] 48/65 debugbench ok=True n=512 tps=40.06820986664017 draft=339/706 wall=14s
+[W16] 49/65 hotpotqa   ok=True n=74 tps=47.85521340515064 draft=60/104 wall=6s
+[W16] 50/65 debugbench ok=True n=512 tps=41.80588011135062 draft=348/698 wall=13s
+[W16] 51/65 debugbench ok=True n=397 tps=50.243007837529554 draft=305/545 wall=9s
+[W16] 52/65 debugbench ok=True n=512 tps=46.06558930169875 draft=361/619 wall=13s
+[W16] 53/65 debugbench ok=True n=82 tps=62.61759890526109 draft=68/112 wall=3s
+[W16] 54/65 hotpotqa   ok=True n=44 tps=54.71037694206295 draft=35/40 wall=4s
+[W16] 55/65 debugbench ok=True n=512 tps=45.7008284524789 draft=361/625 wall=12s
+[W16] 56/65 debugbench ok=True n=223 tps=64.17508113255492 draft=185/284 wall=5s
+[W16] 57/65 debugbench ok=True n=512 tps=43.99146599927947 draft=359/702 wall=13s
+[W16] 58/65 debugbench ok=True n=256 tps=124.81393703624431 draft=236/264 wall=3s
+[W16] 59/65 hotpotqa   ok=True n=128 tps=67.98392605048444 draft=109/148 wall=5s
+[W16] 60/65 debugbench ok=True n=512 tps=38.64337889855653 draft=335/752 wall=15s
+[W16] 61/65 hotpotqa   ok=True n=161 tps=73.50631515124952 draft=134/164 wall=5s
+[W16] 62/65 debugbench ok=True n=512 tps=67.5009805440289 draft=415/548 wall=9s
+[W16] 63/65 debugbench ok=True n=512 tps=45.20199775173032 draft=359/629 wall=13s
+[W16] 64/65 hotpotqa   ok=True n=151 tps=61.476728004970255 draft=128/204 wall=6s
+[W16] 65/65 debugbench ok=True n=512 tps=45.50435624222893 draft=363/648 wall=13s
+[W16] done ok=65
+W16 {'ngram-mod': {'gen_drafts': 419, 'acc_drafts': 419, 'gen_tokens': 6687, 'acc_tokens': 4349}, 'draft-mtp': {'gen_drafts': 3104, 'acc_drafts': 2660, 'gen_tokens': 12392, 'acc_tokens': 7987}}
+-rw-r--r-- 1 node node 700215 Oct  6 06:08 /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_W16.log
+server 2467320 confirmed dead
+binary : /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/production/cpu
+         (resolves to /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin)
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/production/cpu/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/production/cpu/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/production/cpu/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/production/cpu/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/production/cpu/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/production/cpu/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/production/cpu/libggml-cpu.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/production/cpu
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/production/cpu
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+=== arm P2 2026-10-06T06:08:14+00:00 ===
+argv: numactl --interleave=all -- taskset -c 0-95 /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf --host 127.0.0.1 -np 4 -c 262144 -t 96 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --mlock --no-mmap --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-draft-n-max 4 --reasoning off --device none --device-draft none --port 18170 --cache-ram 0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/copy-spec-p1 --verbosity 4 --spec-type draft-mtp
+server pid 2476967
+[P2] 1/65 debugbench ok=True n=91 tps=69.36065482555796 draft=72/72 wall=2s
+[P2] 2/65 hotpotqa   ok=True n=36 tps=62.4198078857024 draft=28/28 wall=3s
+[P2] 3/65 hotpotqa   ok=True n=62 tps=64.52740957836541 draft=52/52 wall=3s
+[P2] 4/65 hotpotqa   ok=True n=105 tps=60.69567650244921 draft=84/88 wall=7s
+[P2] 5/65 debugbench ok=True n=512 tps=52.31713831793043 draft=376/536 wall=11s
+[P2] 6/65 hotpotqa   ok=True n=135 tps=61.50958182596888 draft=107/116 wall=5s
+[P2] 7/65 hotpotqa   ok=True n=34 tps=52.87878316588385 draft=25/36 wall=1s
+[P2] 8/65 hotpotqa   ok=True n=56 tps=58.99431547631589 draft=46/52 wall=4s
+[P2] 9/65 hotpotqa   ok=True n=147 tps=51.89180946033577 draft=112/152 wall=5s
+[P2] 10/65 hotpotqa   ok=True n=66 tps=57.09525304875675 draft=52/60 wall=4s
+[P2] 11/65 debugbench ok=True n=387 tps=58.34098147922579 draft=297/368 wall=8s
+[P2] 12/65 debugbench ok=True n=239 tps=63.98123930857429 draft=187/204 wall=5s
+[P2] 13/65 debugbench ok=True n=300 tps=66.01164049268448 draft=236/252 wall=6s
+[P2] 14/65 hotpotqa   ok=True n=148 tps=65.18887595878302 draft=117/124 wall=5s
+[P2] 15/65 debugbench ok=True n=512 tps=48.22582193236913 draft=364/585 wall=12s
+[P2] 16/65 debugbench ok=True n=284 tps=66.80048717313039 draft=225/232 wall=6s
+[P2] 17/65 debugbench ok=True n=128 tps=51.560448785368756 draft=93/136 wall=3s
+[P2] 18/65 hotpotqa   ok=True n=104 tps=56.21250922912111 draft=83/96 wall=5s
+[P2] 19/65 debugbench ok=True n=176 tps=61.62432620276854 draft=139/156 wall=4s
+[P2] 20/65 debugbench ok=True n=213 tps=65.89706321848682 draft=170/180 wall=5s
+[P2] 21/65 debugbench ok=True n=170 tps=51.59252466805521 draft=127/184 wall=4s
+[P2] 22/65 hotpotqa   ok=True n=85 tps=57.51084925256195 draft=65/80 wall=5s
+[P2] 23/65 hotpotqa   ok=True n=80 tps=46.88760104278025 draft=60/88 wall=7s
+[P2] 24/65 hotpotqa   ok=True n=16 tps=53.952528518969366 draft=11/16 wall=3s
+[P2] 25/65 debugbench ok=True n=178 tps=67.00028795067574 draft=143/148 wall=4s
+[P2] 26/65 hotpotqa   ok=True n=169 tps=58.85927930469429 draft=130/156 wall=6s
+[P2] 27/65 debugbench ok=True n=512 tps=55.2897675162465 draft=383/511 wall=11s
+[P2] 28/65 hotpotqa   ok=True n=90 tps=56.2136368036926 draft=67/88 wall=4s
+[P2] 29/65 debugbench ok=True n=190 tps=57.66340595280584 draft=144/184 wall=5s
+[P2] 30/65 debugbench ok=True n=436 tps=64.47077625476248 draft=347/368 wall=8s
+[P2] 31/65 hotpotqa   ok=True n=43 tps=59.603677131039376 draft=33/36 wall=3s
+[P2] 32/65 hotpotqa   ok=True n=51 tps=39.15901786111909 draft=33/72 wall=4s
+[P2] 33/65 hotpotqa   ok=True n=105 tps=46.628327819348534 draft=76/124 wall=5s
+[P2] 34/65 debugbench ok=True n=512 tps=43.76422604462088 draft=349/646 wall=13s
+[P2] 35/65 debugbench ok=True n=184 tps=67.10432790092193 draft=146/148 wall=4s
+[P2] 36/65 debugbench ok=True n=139 tps=64.74086653088162 draft=112/116 wall=3s
+[P2] 37/65 debugbench ok=True n=266 tps=64.60423711503707 draft=213/224 wall=6s
+[P2] 38/65 hotpotqa   ok=True n=41 tps=57.26193003430129 draft=30/40 wall=2s
+[P2] 39/65 debugbench ok=True n=512 tps=47.23498222783793 draft=362/595 wall=12s
+[P2] 40/65 debugbench ok=True n=402 tps=64.15623223534676 draft=319/340 wall=8s
+[P2] 41/65 debugbench ok=True n=263 tps=64.81582570802664 draft=209/220 wall=5s
+[P2] 42/65 debugbench ok=True n=308 tps=59.34992561989841 draft=236/284 wall=7s
+[P2] 43/65 debugbench ok=True n=512 tps=47.228795101193235 draft=361/600 wall=12s
+[P2] 44/65 debugbench ok=True n=358 tps=64.49725292147333 draft=281/304 wall=7s
+[P2] 45/65 debugbench ok=True n=118 tps=65.47127946970483 draft=93/100 wall=3s
+[P2] 46/65 hotpotqa   ok=True n=70 tps=59.58613175344961 draft=57/64 wall=5s
+[P2] 47/65 debugbench ok=True n=149 tps=63.032871007671396 draft=118/128 wall=4s
+[P2] 48/65 debugbench ok=True n=512 tps=40.87615483121022 draft=339/686 wall=14s
+[P2] 49/65 hotpotqa   ok=True n=74 tps=58.49580411178074 draft=60/64 wall=6s
+[P2] 50/65 debugbench ok=True n=512 tps=43.862422086374366 draft=350/642 wall=13s
+[P2] 51/65 debugbench ok=True n=397 tps=49.027840897864024 draft=289/444 wall=10s
+[P2] 52/65 debugbench ok=True n=512 tps=46.62877592906015 draft=360/599 wall=13s
+[P2] 53/65 debugbench ok=True n=82 tps=66.40875234961455 draft=68/68 wall=2s
+[P2] 54/65 hotpotqa   ok=True n=44 tps=60.08729044557457 draft=35/40 wall=4s
+[P2] 55/65 debugbench ok=True n=512 tps=45.9227751133001 draft=358/608 wall=12s
+[P2] 56/65 debugbench ok=True n=223 tps=53.98391618210252 draft=169/228 wall=5s
+[P2] 57/65 debugbench ok=True n=512 tps=43.073010266687554 draft=346/658 wall=13s
+[P2] 58/65 debugbench ok=True n=256 tps=68.17202571576632 draft=206/208 wall=5s
+[P2] 59/65 hotpotqa   ok=True n=128 tps=57.38291755374829 draft=101/120 wall=5s
+[P2] 60/65 debugbench ok=True n=512 tps=40.62675659145321 draft=337/696 wall=14s
+[P2] 61/65 hotpotqa   ok=True n=161 tps=64.3530480161674 draft=126/136 wall=5s
+[P2] 62/65 debugbench ok=True n=512 tps=55.71005787426305 draft=384/503 wall=11s
+[P2] 63/65 debugbench ok=True n=512 tps=46.56794262829468 draft=359/605 wall=12s
+[P2] 64/65 hotpotqa   ok=True n=151 tps=60.890435927131485 draft=119/132 wall=6s
+[P2] 65/65 debugbench ok=True n=512 tps=47.014220516161046 draft=362/592 wall=13s
+[P2] done ok=65
+P2 {'draft-mtp': {'gen_drafts': 4110, 'acc_drafts': 3643, 'gen_tokens': 16418, 'acc_tokens': 11738}}
+-rw-r--r-- 1 node node 249654 Oct  6 06:15 /mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_P2.log
+server 2476967 confirmed dead
+# Width A/B summary (per-impl ngram draft width)
+
+NOTE: this run overlapped a GPU VRAM-attribution job (no --gpu-quiet taken), so its speeds are paired-only (P vs P2 floor, same window); no absolute claims.
+
+Generated 2026-10-06 06:15:37. Greedy (temp 0, top_k 1), max_tokens 512, distinct prompts, one request each per arm, server restarted between arms, cache_prompt=false, cache-ram 0.
+Arm order P (production binary), W8 (experimental, ngram n-max 8), W16 (n-max 16), P2 (repeat of P, noise floor).
+acceptance = sum(draft_n_accepted)/sum(draft_n) over requests (alarm if exactly 1.000).
+identity = byte-equal text vs P for the same prompt id; P2 vs P is the identity noise floor.
+
+## Acceptance and identity
+
+| class | arm | n | draft_n | accepted | acceptance | identical vs P | first-diverge (median char) | ngram-supplied reqs | mean accepted len / ngram draft | mean gen len / ngram draft |
+|---|---|---|---|---|---|---|---|---|---|---|
+| debugbench | P | 40 | 14358 | 10029 | 0.698 | (ref) | - | - | - | - |
+| debugbench | W8 | 40 | 15257 | 10345 | 0.678 | 40/40 | - | 40 | 6.47 | 8.00 |
+| debugbench | W16 | 40 | 16427 | 10547 | 0.642 | 40/40 | - | 40 | 10.72 | 15.95 |
+| debugbench | P2 | 40 | 14358 | 10029 | 0.698 | 40/40 | - | - | - | - |
+| hotpotqa | P | 25 | 2060 | 1709 | 0.830 | (ref) | - | - | - | - |
+| hotpotqa | W8 | 25 | 2316 | 1758 | 0.759 | 25/25 | - | 21 | 5.65 | 8.00 |
+| hotpotqa | W16 | 25 | 2652 | 1789 | 0.675 | 25/25 | - | 21 | 8.88 | 16.00 |
+| hotpotqa | P2 | 25 | 2060 | 1709 | 0.830 | 25/25 | - | - | - | - |
+| ALL | P | 65 | 16418 | 11738 | 0.715 | (ref) | - | - | - | - |
+| ALL | W8 | 65 | 17573 | 12103 | 0.689 | 65/65 | - | 61 | 6.33 | 8.00 |
+| ALL | W16 | 65 | 19079 | 12336 | 0.647 | 65/65 | - | 61 | 10.38 | 15.96 |
+| ALL | P2 | 65 | 16418 | 11738 | 0.715 | 65/65 | - | - | - | - |
+
+## Speed (paired-only; GPU job overlapped): W8/W16 vs P, against the |P - P2| floor
+
+Mean timings.predicted_per_second per class. delta = arm vs mean(P,P2). floor = |P-P2|/mean(P,P2). A delta is only a signal if |delta| > floor.
+
+| class | P tok/s | P2 tok/s | W8 tok/s | W8 delta % | W16 tok/s | W16 delta % | floor % | verdict W8 / W16 |
+|---|---|---|---|---|---|---|---|---|
+| debugbench | 54.78 | 56.60 | 63.52 | +14.06 | 67.11 | +20.50 | 3.26 | faster / faster |
+| hotpotqa | 57.12 | 57.13 | 58.74 | +2.83 | 58.00 | +1.53 | 0.02 | faster / faster |
+| ALL | 55.68 | 56.80 | 61.68 | +9.67 | 63.61 | +13.09 | 1.99 | faster / faster |
+
+## Arm-level ngram impl stats (last 'statistics' lines seen in each server log)
+
+- P: {"draft-mtp": {"gen_drafts": 4110, "acc_drafts": 3643, "gen_tokens": 16418, "acc_tokens": 11738}}
+- W8: {"ngram-mod": {"gen_drafts": 643, "acc_drafts": 643, "gen_tokens": 5144, "acc_tokens": 4067}, "draft-mtp": {"gen_drafts": 3113, "acc_drafts": 2673, "gen_tokens": 12429, "acc_tokens": 8036}}
+- W16: {"ngram-mod": {"gen_drafts": 419, "acc_drafts": 419, "gen_tokens": 6687, "acc_tokens": 4349}, "draft-mtp": {"gen_drafts": 3104, "acc_drafts": 2660, "gen_tokens": 12392, "acc_tokens": 7987}}
+- P2: {"draft-mtp": {"gen_drafts": 4110, "acc_drafts": 3643, "gen_tokens": 16418, "acc_tokens": 11738}}
+
+Note: draft_n/draft_n_accepted are totals over ALL impls that won a round (ngram or MTP); ngram-supplied counts come from the per-impl '#gen drafts' counter in the verbosity-4 log.

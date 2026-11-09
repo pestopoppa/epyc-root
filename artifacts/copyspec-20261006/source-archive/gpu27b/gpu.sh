@@ -1,0 +1,206 @@
+#!/bin/bash
+# GPU 27B copy-spec leg (:8083 Qwen3.8-27B Q8_0 + DFlash2 drafter) on scratch port 18083.  WRITTEN, NOT RUN.
+#   gpu.sh --estimate | gpu.sh | gpu.sh inner (internal)
+# Arms (order): P NM8 W16 W32 P2.  RUN AS TWO WINDOWS (<=55 min each): ARMS="P NM8 P2" then ARMS="P W16 W32".
+#   WIDTH_BIN_GPU defaults to the champion candidate HIP build (copy-spec-eval-20261006/width/champ-build/gpu/bin/llama-server).
+#   P    production :8083 argv, DFlash2 n-max 8, unchanged spec flags
+#   NM8  --spec-type ngram-mod,<live dflash2 spec type> + ngram n-match 12 n-min 4 n-max 8 (the existing cap)
+#   W16/W32  same with n-max 16/32, binary = $WIDTH_BIN_GPU (width-patched HIP build; set by main after the candidate build)
+#   P2   repeat of P (noise floor)
+# REQUIRED ENV: SCHEDULE_REF (entry id in /mnt/raid0/llm/tmp/gpu-window/schedule.json), COMPUTE_GRANT (coordinator-daemon id),
+#   CAMPAIGN_ID.  Optional: GPU_ROLES (default architect_critic), STACK_OWNER_SESSION (default workspace-ec), WIDTH_LIB_GPU
+#   (default dirname of WIDTH_BIN_GPU), WINDOW_LEN (default +60m, executor max), ARMS.
+# SCHEDULE ENTRY NEEDED (epyc.gpu_window_schedule.v1, entries[]): {"id":"<SCHEDULE_REF>","device_id":"mi210_0",
+#   "holder":"autokernel","campaign_id":"<CAMPAIGN_ID>","purpose":"copy-spec 27B ngram-cap leg","start":"<ISO, <= now+1min>",
+#   "end":"<ISO, >= now+60m>"}; end-start > 3600 s additionally needs "operator_approved": true.  This script never writes the
+#   schedule; it pre-checks it with `gpu_window_executor validate-schedule` and exits 2 if the ref is absent.
+# Order: snapshot live :8083 -> executor open (drain + orchestrator_stack stop + ports-free proof) -> wait :8083 free AND KFD
+#   empty (<=15 min; else close and exit) -> region-lock --gpu-quiet exclusive -> inner -> lock released -> `gpu_window restore`
+#   (executor close + serving proof).  Only PIDs captured here are signalled (ps -p verified); no pkill/pgrep.
+set -euo pipefail
+
+D=/mnt/raid0/llm/tmp/copy-spec-eval-20261006/gpu27b
+RES=$D/results
+PORT=18083
+ORCH=/mnt/raid0/llm/epyc-orchestrator
+RL=/workspace/repos/epyc-orchestrator/scripts/region-lock
+LINK=/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
+KFD=/sys/class/kfd/kfd/proc
+ARMS_ORDER="${ARMS:-P NM8 W16 W32 P2}"
+export EVAL_ARMS="P NM8 W16 W32 P2"
+export EVAL_CAPS='{"NM8":8,"W16":16,"W32":32}'
+export EVAL_TITLE="Ngram draft-cap, GPU 27B (Qwen3.8-27B Q8_0 + DFlash2, MI210)"
+export EVAL_NOTE="Scratch :18083 inside a G1 executor window; production :8083 stopped for the window. P/NM8 use the production binary, W16/W32 the width-patched HIP binary."
+export EVAL_BASE="http://127.0.0.1:$PORT"
+
+estimate() {
+  # Assumptions: decode ~40 tok/s (DFlash2 27B Q8 on MI210), prefill ~1500 tok/s; gen tokens deb 400 / hot 400 / prose 450;
+  # prompt tokens deb 700 / hot 1300 / prose 80; ~3 min model load per arm.
+  python3 - <<'E'
+import os
+n={"deb":40,"hot":25,"pro":25}; pt={"deb":700,"hot":1300,"pro":80}; gt={"deb":400,"hot":400,"pro":450}
+arms=os.environ.get("ARMS","P NM8 W16 W32 P2").split(); tot=0
+for a in arms:
+    s=sum(n[k]*(pt[k]/1500.0+gt[k]/40.0) for k in n)+180; tot+=s; print(f"  arm {a}: ~{s/60:.0f} min")
+print(f"EXPECTED WALL TIME ({len(arms)} arms x 90 prompts): ~{tot/60:.0f} min (range ~{tot*0.8/60:.0f}-{tot*1.4/60:.0f} min) + drain/stop/restore ~10-25 min")
+print("NOTE: executor window max is 60 min; full 5 arms exceeds it -> split with ARMS=... across windows (P in each) or get operator_approved on the schedule entry.")
+E
+}
+if [ "${1:-}" = "--estimate" ]; then estimate; exit 0; fi
+
+arm_flags() {
+  case "$1" in
+    P|P2) echo "--spec-type $LIVE_SPEC" ;;
+    NM8)  echo "--spec-type ngram-mod,$LIVE_SPEC --spec-ngram-mod-n-match 12 --spec-ngram-mod-n-min 4 --spec-ngram-mod-n-max 8" ;;
+    W16)  echo "--spec-type ngram-mod,$LIVE_SPEC --spec-ngram-mod-n-match 12 --spec-ngram-mod-n-min 4 --spec-ngram-mod-n-max 16" ;;
+    W32)  echo "--spec-type ngram-mod,$LIVE_SPEC --spec-ngram-mod-n-match 12 --spec-ngram-mod-n-min 4 --spec-ngram-mod-n-max 32" ;;
+    *) echo "bad arm $1" >&2; return 1 ;;
+  esac
+}
+
+kfd_count() { ls "$KFD" 2>/dev/null | wc -l; }
+vram_max() { local m=0 v f; for f in /sys/class/drm/card*/device/mem_info_vram_used; do [ -r "$f" ] || continue; v=$(cat "$f" 2>/dev/null || echo 0); [ "$v" -gt "$m" ] && m=$v; done; echo "$m"; }
+
+# ===================== OUTER =====================
+if [ "${1:-}" != "inner" ]; then
+  CAMPAIGN_ID=${CAMPAIGN_ID:-copy-spec-27b}
+  MISSING=""
+  [ -n "${SCHEDULE_REF:-}" ] || MISSING="$MISSING\n  SCHEDULE_REF   = id of an entry in /mnt/raid0/llm/tmp/gpu-window/schedule.json (holder=autokernel, device_id=mi210_0, start<=now+1min, end>=open+WINDOW_LEN, <=3600s, no overlap with other entries); create it per RUNBOOK_NEXT_SLOT.md"
+  [ -n "${COMPUTE_GRANT:-}" ] || MISSING="$MISSING\n  COMPUTE_GRANT  = coordinator-daemon compute-grant message id (stack-owner open refuses without one); obtain per RUNBOOK_NEXT_SLOT.md"
+  if [ -n "$MISSING" ]; then printf 'MISSING REQUIRED ENV:%b\nNothing was stopped or written.\n' "$MISSING" >&2; exit 2; fi
+  ROLES=${GPU_ROLES:-architect_critic}; OWNER=${STACK_OWNER_SESSION:-workspace-ec}; WLEN=${WINDOW_LEN:-+55m}
+  WIDTH_BIN_GPU=${WIDTH_BIN_GPU:-/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/champ-build/gpu/bin/llama-server}
+  NARMS=$(echo $ARMS_ORDER | wc -w); [ "$NARMS" -le 3 ] || echo "WARNING: $NARMS arms will not fit a 55 min window; use ARMS=\"P NM8 P2\" then ARMS=\"P W16 W32\"" >&2
+  mkdir -p "$RES"; estimate
+  case " $ARMS_ORDER " in *" W16 "*|*" W32 "*)
+    : "${WIDTH_BIN_GPU:?set WIDTH_BIN_GPU (width-patched HIP llama-server) for W arms}"
+    [ -x "$WIDTH_BIN_GPU" ] || { echo "WIDTH_BIN_GPU not executable: $WIDTH_BIN_GPU" >&2; exit 2; } ;;
+  esac
+  python3 "$D/phase1.py" sample
+  # --- snapshot LIVE :8083 BEFORE anything is stopped (inner cannot read it afterwards) ---
+  LPID=$(ss -ltnp 'sport = :8083' | grep -o 'pid=[0-9]*' | head -1 | cut -d= -f2)
+  [ -n "$LPID" ] || { echo "no listener on :8083 (nothing to snapshot)" >&2; exit 2; }
+  readlink "/proc/$LPID/exe" > "$RES/live_exe.txt"
+  cp "/proc/$LPID/cmdline" "$RES/live_cmdline.bin"
+  tr '\0' '\n' < "/proc/$LPID/environ" > "$RES/live_environ.txt"
+  tr '\0' ' ' < "/proc/$LPID/cmdline" > "$RES/live_argv.txt"
+  echo "live :8083 pid=$LPID exe=$(cat "$RES/live_exe.txt")"; cat "$RES/live_argv.txt"; echo
+  # --- schedule pre-check (read-only) ---
+  ( cd "$ORCH" && .venv/bin/python -m src.runtime.gpu_window_executor validate-schedule ) || { echo "schedule invalid" >&2; exit 2; }
+  python3 - "$SCHEDULE_REF" <<'E' || { echo "schedule entry $SCHEDULE_REF missing from /mnt/raid0/llm/tmp/gpu-window/schedule.json (see header)" >&2; exit 2; }
+import json,sys
+d=json.load(open("/mnt/raid0/llm/tmp/gpu-window/schedule.json"))
+sys.exit(0 if any(e.get("id")==sys.argv[1] for e in d.get("entries",[])) else 1)
+E
+  OPENED=0; RESTORED=0
+  restore_window() {
+    [ "$OPENED" = 1 ] && [ "$RESTORED" = 0 ] || return 0
+    RESTORED=1
+    echo "=== gpu_window restore (executor close + serving proof) $(date -Is) ==="
+    ( cd "$ORCH" && .venv/bin/python -m src.runtime.gpu_window restore ) 2>&1 | tee -a "$RES/driver.log" || echo "RESTORE FAILED: operator attention (:8083 may be down)" >&2
+  }
+  trap restore_window EXIT
+  echo "=== executor open $(date -Is) ==="
+  ( cd "$ORCH" && .venv/bin/python -m src.runtime.gpu_window_executor open --roles "$ROLES" --ports 8083 \
+      --expected-end "$WLEN" --schedule-ref "$SCHEDULE_REF" --campaign-id "$CAMPAIGN_ID" \
+      --compute-grant "$COMPUTE_GRANT" --stack-owner-session "$OWNER" ) 2>&1 | tee -a "$RES/driver.log"
+  [ "${PIPESTATUS[0]}" = 0 ] || { echo "executor open REFUSED (nothing stopped; executor already returned holder=production)" >&2; exit 2; }
+  OPENED=1
+  T_OPEN=$(date +%s)
+  # --- wait: :8083 free AND KFD empty, <= 15 min ---
+  ok=0
+  for _ in $(seq 1 180); do
+    if [ -z "$(ss -ltnH 'sport = :8083')" ] && [ "$(kfd_count)" = 0 ]; then ok=1; break; fi
+    sleep 5
+  done
+  [ $ok = 1 ] || { echo "GPU not free after 15 min (port 8083 or KFD procs); restoring and exiting" >&2; exit 2; }
+  echo "GPU free: :8083 closed, KFD empty"
+  # inner budget: window is 55 min from open (T_OPEN), minus 3 min for the restore proof; region-lock --timeout-s only bounds ACQUIRE
+  INNER_MAX=$(( T_OPEN + 55*60 - $(date +%s) - 180 )); [ "$INNER_MAX" -gt 300 ] || { echo "no time left ($INNER_MAX s); restoring" >&2; exit 2; }
+  echo "inner budget ${INNER_MAX}s"
+  set +e
+  "$RL" run --gpu-quiet exclusive --role bench-gpu --tag copy-spec-gpu27b --timeout-s 600 -- \
+      /usr/bin/timeout -k 90 "$INNER_MAX" /usr/bin/env ARMS="$ARMS_ORDER" WIDTH_BIN_GPU="${WIDTH_BIN_GPU:-}" WIDTH_LIB_GPU="${WIDTH_LIB_GPU:-}" /bin/bash "$D/gpu.sh" inner 2>&1 | tee -a "$RES/driver.log"
+  RC=${PIPESTATUS[0]}
+  set -e
+  echo "inner/lock rc=$RC"
+  restore_window; trap - EXIT
+  python3 "$D/phase1.py" summary
+  exit "$RC"
+fi
+
+# ===================== INNER (inside gpu-quiet exclusive lock) =====================
+mkdir -p "$RES" /mnt/raid0/llm/cache/kv_slots/copy-spec-gpu27b
+PROD_BIN=$(cat "$RES/live_exe.txt")
+mapfile -d '' ARGV < "$RES/live_cmdline.bin"
+LIVE_SPEC=""; BASE=(); skip=0
+for ((i=1; i<${#ARGV[@]}; i++)); do
+  t=${ARGV[$i]}
+  if [ $skip -gt 0 ]; then skip=$((skip-1)); continue; fi
+  case "$t" in
+    --spec-type) LIVE_SPEC=${ARGV[$((i+1))]}; skip=1 ;;
+    --port|--slot-save-path|--verbosity|--spec-ngram-mod-n-match|--spec-ngram-mod-n-min|--spec-ngram-mod-n-max) skip=1 ;;
+    *) BASE+=("$t") ;;
+  esac
+done
+[ -n "$LIVE_SPEC" ] || { echo "live argv has no --spec-type" >&2; exit 2; }
+case "$LIVE_SPEC" in *ngram*) echo "live spec-type already has ngram: $LIVE_SPEC (arm logic assumes not)" >&2; exit 2;; esac
+echo "prod bin=$PROD_BIN live spec-type=$LIVE_SPEC"
+# live env: keep the GPU/OMP/ggml/ROCm knobs
+for v in HIP_VISIBLE_DEVICES ROCR_VISIBLE_DEVICES HSA_OVERRIDE_GFX_VERSION HSA_ENABLE_SDMA GGML_CUDA_ENABLE_UNIFIED_MEMORY OMP_PROC_BIND OMP_PLACES OMP_WAIT_POLICY OMP_DYNAMIC GGML_IQK; do
+  val=$(sed -n "s/^$v=//p" "$RES/live_environ.txt" | head -1); [ -n "$val" ] && export "$v=$val"
+done
+ROCM_LD=$(sed -n 's/^LD_LIBRARY_PATH=//p' "$RES/live_environ.txt" | head -1 | tr ':' '\n' | grep '^/opt/rocm' | paste -sd: - || true)
+
+SERVER_PID=""; SAMP_PID=""
+stop_pid() {  # stop_pid <pid> : TERM, wait, KILL, verify with ps -p
+  local p=$1
+  [ -n "$p" ] && ps -p "$p" >/dev/null 2>&1 || return 0
+  kill -TERM "$p" 2>/dev/null || true
+  for _ in $(seq 1 120); do ps -p "$p" >/dev/null 2>&1 || break; sleep 1; done
+  ps -p "$p" >/dev/null 2>&1 && { kill -KILL "$p" 2>/dev/null || true; sleep 2; }
+  if ps -p "$p" >/dev/null 2>&1; then echo "FATAL: pid $p still alive" >&2; else echo "pid $p confirmed dead"; fi
+}
+cleanup() { stop_pid "$SAMP_PID"; SAMP_PID=""; stop_pid "$SERVER_PID"; SERVER_PID=""; }
+trap cleanup EXIT
+
+run_arm() {
+  local ARM=$1 LOG=$RES/server_$1.log FLAGS SPECF ABIN=$PROD_BIN ALIB
+  case "$ARM" in W*) ABIN=$WIDTH_BIN_GPU ;; esac
+  ALIB=${WIDTH_LIB_GPU:-}; case "$ARM" in W*) [ -n "$ALIB" ] || ALIB=$(dirname "$WIDTH_BIN_GPU") ;; *) ALIB=$(dirname "$PROD_BIN") ;; esac
+  export LD_LIBRARY_PATH="$ALIB${ROCM_LD:+:$ROCM_LD}"
+  FLAGS=$(arm_flags "$ARM"); read -r -a SPECF <<< "$FLAGS"
+  local ARGS=("${BASE[@]}" --port "$PORT" --slot-save-path /mnt/raid0/llm/cache/kv_slots/copy-spec-gpu27b --verbosity 4 "${SPECF[@]}")
+  unset LLAMA_TRACE; case "$ARM" in W*) export LLAMA_TRACE=1 ;; esac
+  "$LINK" "$ABIN" "$ALIB" || { echo "linkage check FAILED for arm $ARM ($ABIN)" >&2; exit 2; }
+  echo "=== arm $ARM $(date -Is) ==="
+  echo "argv: $ABIN ${ARGS[*]}" | tee "$RES/argv_$ARM.txt"
+  "$ABIN" "${ARGS[@]}" > "$LOG" 2>&1 &
+  SERVER_PID=$!; echo "server pid $SERVER_PID"
+  local ok=0
+  for _ in $(seq 1 900); do
+    ps -p "$SERVER_PID" >/dev/null 2>&1 || { echo "server died during startup; see $LOG" >&2; exit 2; }
+    [ "$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:$PORT/health" || true)" = "200" ] && { ok=1; break; }
+    sleep 2
+  done
+  [ $ok = 1 ] || { echo "health timeout" >&2; exit 2; }
+  # residency sampler DURING the run (captured PID): ts, kfd proc count, max vram_used bytes over cards
+  local RCSV=$RES/residency_$ARM.csv
+  echo "ts,kfd_procs,vram_used_max_bytes" > "$RCSV"
+  ( while true; do echo "$(date +%s),$(kfd_count),$(vram_max)" >> "$RCSV"; sleep 5; done ) &
+  SAMP_PID=$!
+  python3 "$D/phase1.py" run --arm "$ARM" --base "http://127.0.0.1:$PORT" --log "$LOG"
+  python3 "$D/phase1.py" finalstats --arm "$ARM" --log "$LOG" || true
+  stop_pid "$SAMP_PID"; SAMP_PID=""
+  python3 - "$RCSV" "$ARM" <<'E' | tee -a "$RES/residency_summary.txt"
+import sys,csv
+rows=list(csv.DictReader(open(sys.argv[1]))); a=sys.argv[2]
+k=max((int(r["kfd_procs"]) for r in rows),default=0); v=max((int(r["vram_used_max_bytes"]) for r in rows),default=0)
+ok=k>=1 and v>=4*2**30
+print(f"arm {a}: samples={len(rows)} max_kfd_procs={k} max_vram_used={v/2**30:.1f} GiB -> {'GPU RESIDENT' if ok else 'NOT PROVEN RESIDENT (arm invalid)'}")
+E
+  ls -l "$LOG"
+  stop_pid "$SERVER_PID"; SERVER_PID=""
+  for _ in $(seq 1 60); do [ "$(kfd_count)" = 0 ] && break; sleep 2; done   # KFD drained before next arm
+}
+for A in $ARMS_ORDER; do run_arm "$A"; done

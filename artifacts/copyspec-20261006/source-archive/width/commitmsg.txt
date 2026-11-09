@@ -1,0 +1,7 @@
+speculative: per-impl draft width (ngram-mod n-max may exceed draft n_max when --spec-ngram-mod-n-max is explicit)
+
+Adds ngram_mod.n_max_set, draft_params.n_max_ngram_mod, per-impl truncation in
+common_speculative_draft, server wide cap. Default behaviour unchanged.
+
+Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ

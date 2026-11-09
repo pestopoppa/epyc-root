@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+W=/mnt/raid0/llm/worktrees/llama-specwidth-20261006
+cd $W
+taskset -c 0-23 cmake -S $W -B $W/build-cpu -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DGGML_NATIVE=ON -DGGML_OPENMP=ON -DGGML_LLAMAFILE=ON -DGGML_CPU_REPACK=ON -DGGML_SCHED_MAX_COPIES=4 -DGGML_HIP=OFF -DGGML_CUDA=OFF -DLLAMA_CURL=OFF -DLLAMA_OPENSSL=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_MTMD=OFF -DGGML_HIP_GRAPHS=ON -DGGML_HIP_NO_VMM=ON -DGGML_HIP_MMQ_MFMA=ON
+taskset -c 0-23 cmake --build $W/build-cpu -j 24 --target llama-server

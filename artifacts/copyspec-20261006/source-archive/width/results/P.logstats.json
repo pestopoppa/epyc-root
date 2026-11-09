@@ -1,0 +1,13 @@
+{
+ "arm": "P",
+ "log": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/width/results/server_P.log",
+ "log_bytes": 249874,
+ "impl_stats_last_seen": {
+  "draft-mtp": {
+   "gen_drafts": 4110,
+   "acc_drafts": 3643,
+   "gen_tokens": 16418,
+   "acc_tokens": 11738
+  }
+ }
+}

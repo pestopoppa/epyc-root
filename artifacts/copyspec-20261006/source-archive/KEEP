@@ -1,0 +1,1 @@
+KEEP: cited by an active handoff on origin/main (experimental history that informs the AK/autopilot loops). Marked by workspace-58 2026-10-25 after the 10-2x reclaim lost 267 of 497 cited tmp dirs. Do not purge; durable snapshot under /mnt/raid0/llm/state/evidence/.

@@ -1,0 +1,13 @@
+{
+ "arm": "NO",
+ "log": "/mnt/raid0/llm/tmp/copy-spec-eval-20261006/results/server_NO.log",
+ "log_bytes": 538879,
+ "impl_stats_last_seen": {
+  "ngram-mod": {
+   "gen_drafts": 1135,
+   "acc_drafts": 1135,
+   "gen_tokens": 4535,
+   "acc_tokens": 4134
+  }
+ }
+}
