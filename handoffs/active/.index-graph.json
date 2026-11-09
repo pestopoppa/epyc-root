@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:32:40Z",
+  "generated_at": "2026-11-09T15:42:14Z",
   "nodes": [
     {
       "age_days": 6,
@@ -3259,15 +3259,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 284,
-      "dispatchable": 82,
+      "closed": 285,
+      "dispatchable": 81,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-09",
       "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
-      "open": 82,
+      "open": 81,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3287,11 +3287,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 40,
+          "dispatchable": 39,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 40,
+          "open": 39,
           "readiness": "ready"
         },
         {

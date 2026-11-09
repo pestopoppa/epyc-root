@@ -425,7 +425,7 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       repo root (`git -C <file_dir> rev-parse --show-toplevel`), not the harness's launch directory. Both
       blocked edits are text-ready and unapplied — see `progress/2026-10/2026-10-07-ak-lane-coordinator-wrapup.md`
       §8 and §9.4 for the exact patch text. ✅ 2026-10-07 — [MAIN source and original5/5 acceptance](../../artifacts/ni08/lr12-reference-hook-source-20261007/README.md); actual edited-file Git-root resolution and all five subprocess controls published. Protected policy amendments still require operator ratification.
-- [ ] **LR-13** — land three subagent-brief/wrap-up memory rules adopted 2026-10-07 into
+- [x] **LR-13** — land three subagent-brief/wrap-up memory rules adopted 2026-10-07 into (workspace-f2 2026-11-09: third rule ratified by the operator at 214ca99c7; two already existed in agents/shared) ✅ 2026-11-09 [no-belief: tooling-repair]
       `agents/shared/SESSION_LIFECYCLE.md` (wrap-up cadence section) or
       `agents/shared/OPERATING_CONSTRAINTS.md` (subagent brief section), whichever already hosts the
       nearest-matching text — not yet checked for duplication: (1) per-task wrap-up includes the
