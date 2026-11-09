@@ -1141,8 +1141,9 @@ def ended_fields(text):
             "cpus": int(kv["measured_cpus"]) if "measured_cpus" in kv else None}
 
 
-def file_decisions(ended, specs, claims, now):
-    """ended: {id: (fields, mtime)}; claims: {id: claim_at}.
+def file_decisions(ended, specs, claims, now, owner_live=None):
+    """ended: {id: (fields, mtime)}; claims: {id: claim_at}; owner_live: optional owner -> bool (AUTOFILE-OWNER-LIVENESS: a prose
+    row whose owner session is LIVE is routed to it however old it is, exactly as churn/auto_file.py does; None = age only).
     Actions: ('file', id, verdict, how) | ('route-owner', id, owner) | ('owner-less', id) | ('reopen', id) |
     ('wait-claim', id)."""
     acts = []
@@ -1158,7 +1159,8 @@ def file_decisions(ended, specs, claims, now):
             acts.append(("file", rid, "pass" if ok else "fail", "machine-rule"))
         elif rid in claims:
             acts.append(("reopen", rid) if now - claims[rid] > CLAIM_TTL_S else ("wait-claim", rid))
-        elif now - t0 > FILE_OWNERLESS_S or not str(s.get("owner") or "").strip():
+        elif not str(s.get("owner") or "").strip() or (
+                now - t0 > FILE_OWNERLESS_S and not (owner_live and owner_live(str(s.get("owner"))))):
             acts.append(("owner-less", rid))
         else:
             acts.append(("route-owner", rid, s.get("owner")))
@@ -1661,6 +1663,28 @@ def tick(flags, now, meas, state, log, runner=None):
     return plan, state
 
 
+def _owner_liveness(flags, now):
+    """owner -> (live, why), the ONE liveness rule shared with the keeper-side filer (churn/auto_file.owner_live: handoff-sessions
+    status running + live pid, fresh bus heartbeat, fresh bus outbox). None when auto_file cannot be imported (age-only fallback)."""
+    try:
+        churn = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "churn")
+        if churn not in sys.path:
+            sys.path.insert(0, churn)
+        import auto_file
+    except Exception:  # noqa: BLE001 - liveness is advisory; never blocks the filing step
+        return None
+    return lambda owner: auto_file.owner_live(owner, flags, auto_file.DEFAULT_BUS, 1800, now)
+
+
+def owner_less_record(rid, spec, why, now):
+    """The filing-owner-less.jsonl line. Same keys as churn/auto_file.py's record (it is one queue with two writers), plus `at`
+    (rowflow2's original key) and `writer`; a consumer written for either reads both."""
+    return {"id": rid, "at": iso(now), "queued_at": iso(now), "owner": spec.get("owner") or None, "owner_state": why,
+            "decision_rule": spec.get("decision_rule"), "handoff_task": spec.get("handoff_task"),
+            "file_with": f"python3 scripts/coordination/churn/file_result.py {rid} --verdict-json <verdict.json>",
+            "writer": "rowflow2"}
+
+
 def file_step(flags, w, now, log):
     G, F = os.path.join(flags, "grants"), os.path.join(flags, "filing-done")
     for cp in glob.glob(os.path.join(G, "*.complete")):   # a COMPLETE must come from a grant, never from a smoke
@@ -1673,7 +1697,8 @@ def file_step(flags, w, now, log):
         c = load_json(cp) or {}
         claims[os.path.basename(cp)[:-5]] = parse_iso(c.get("at")) or os.path.getmtime(cp)
     routed = set(re.findall(r'"id": "([^"]+)"', _text(os.path.join(flags, "filing-owner-less.jsonl"))))
-    for a in file_decisions(w.ended, w.specs, claims, now):
+    live = _owner_liveness(flags, now)
+    for a in file_decisions(w.ended, w.specs, claims, now, (lambda o: live(o)[0]) if live else None):
         rid = a[1]
         if a[0] == "file":
             write_text(os.path.join(F, rid + ".verdict.json"), json.dumps({"schema": "epyc.filed.verdict.v1", "id": rid,
@@ -1681,7 +1706,10 @@ def file_step(flags, w, now, log):
             write_text(os.path.join(F, rid + ".FILED"), f"{iso(now)} {a[2].upper()} filed_by=rowflow2:{a[3]}\n")
             log(f"FILED {rid} {a[2]} ({a[3]})")
         elif a[0] == "owner-less" and rid not in routed:
-            write_text(os.path.join(flags, "filing-owner-less.jsonl"), json.dumps({"id": rid, "at": iso(now)}) + "\n", append=True)
+            owner = str((w.specs.get(rid) or {}).get("owner") or "")
+            why = live(owner)[1] if live and owner else "no owner"
+            write_text(os.path.join(flags, "filing-owner-less.jsonl"),
+                       json.dumps(owner_less_record(rid, w.specs.get(rid) or {}, why, now), sort_keys=True) + "\n", append=True)
         elif a[0] == "reopen":
             os.replace(os.path.join(flags, "filing-claims", rid + ".json"),
                        os.path.join(flags, "filing-claims", rid + ".json.expired"))
