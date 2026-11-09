@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 672
+      "open": 674
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -45,7 +45,7 @@
       "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 67,
+      "open": 69,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 177,
+      "total": 179,
       "tracks": [
         {
           "blocked": 0,
@@ -64,7 +64,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 1
+          "open": 3
         },
         {
           "blocked": 0,
@@ -75,7 +75,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 13,
+          "line": 16,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 922,
+          "line": 925,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53
@@ -2728,7 +2728,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "Champion is C8 1bda248e3; assemble C9: DSpine comparison, IQ4_NL kernel, serial fix, headroom profile",
+      "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
@@ -2781,7 +2781,7 @@
       "id": "INF-82",
       "index": "inference-research-index.md",
       "line": 17,
-      "next_action": "AUTO-4 landed; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
+      "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "track": "autokernel akx program (keep gate + all dims)"
     },
     "INF-83": {
@@ -2803,7 +2803,7 @@
       "id": "INF-84",
       "index": "inference-research-index.md",
       "line": 19,
-      "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
+      "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "track": "workspace-58 champion calibration"
     },
     "PIP-04": {

@@ -407,7 +407,7 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-82",
-      "weight": 5
+      "weight": 6
     },
     {
       "from": "INF-65",
@@ -503,7 +503,7 @@
       "from": "INF-83",
       "kind": "ref",
       "to": "INF-65",
-      "weight": 8
+      "weight": 9
     },
     {
       "from": "INF-84",
@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T10:29:29Z",
+  "generated_at": "2026-11-09T10:42:37Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2043,7 +2043,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-09",
-      "next_action": "Champion is C8 1bda248e3; assemble C9: DSpine comparison, IQ4_NL kernel, serial fix, headroom profile",
+      "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
       "open": 47,
       "priority": 0.9075,
       "priority_basis": {
@@ -2418,14 +2418,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 108,
-      "dispatchable": 67,
+      "dispatchable": 69,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
-      "next_action": "AUTO-4 landed; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
-      "open": 69,
+      "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
+      "open": 71,
       "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
@@ -2442,11 +2442,11 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 1,
+          "dispatchable": 3,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 1,
+          "open": 3,
           "readiness": "blocked"
         },
         {
@@ -2461,7 +2461,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 13,
+          "line": 16,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2484,7 +2484,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 922,
+          "line": 925,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
@@ -2530,7 +2530,7 @@
       "handoff": "workspace-58-champion-calibration.md",
       "id": "INF-84",
       "last_advanced": "2026-11-07",
-      "next_action": "CH-27a: repair the store-image recipe-digest mismatch on C7r, re-run the ch27 dry plan to actionable",
+      "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
       "priority": 0.0022,
       "priority_basis": {

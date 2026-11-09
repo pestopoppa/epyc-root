@@ -4,15 +4,34 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1357,
-    "research": 314
+    "progress": 1358,
+    "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T09:05:54Z",
-  "mode": "touch",
-  "scan_time": "2026-11-09T09:05:54Z",
+  "last_touch": {
+    "advanced": {
+      "added": 7,
+      "changed": 5,
+      "removed": 0
+    },
+    "at": "2026-11-09T10:42:29Z",
+    "scope_paths": [
+      "docs/reference/kernel-manifests/llama-v11-manifest.md",
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/speculative-decoding.md",
+      "handoffs/active/v11-promotion-checklist.md",
+      "handoffs/active/workspace-58-champion-calibration.md",
+      "progress/2026-11/2026-11-09-main-inf22.md",
+      "research/deep-dives/c10-intake-20261109",
+      "research/deep-dives/intake-digests/2026-11-09-ids-2664-2668.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-09T10:42:29Z",
   "schema_version": 1,
-  "source_set_hash": "4ee5c19b63650a68b2a0c49c5c533babf14980658e44173bd996b912354a5b93",
+  "source_set_hash": "72e4ce8dd1e949a1da29321b57f67100e2e38551e475e0f09a866bc9117ab3f9",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -119,10 +138,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f587a0a1c7be5f7c755c8cdc75ca63dc75aa9e89871424864c52d2aceaf2717c",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "299194307c8d5dedcd897512fa48981982dc8a703d88954c167bc5c10d2c7d65",
+      "modified": "2026-11-09T10:41:00Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 635188,
+      "size": 637267,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -207,10 +226,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "112f6bcc0cccbb5e349cf33f9d3bc531232dab30a9ce123b693355ba3d80d59c",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "4a95b74de80da78167ba2b2b02cafda1eb9e93ed19e1426a9f334fdfeb0cb8e7",
+      "modified": "2026-11-09T10:41:00Z",
       "path": "handoffs/active/speculative-decoding.md",
-      "size": 366793,
+      "size": 371909,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -239,10 +258,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "37f1ce89743e6ac9de3c7563a4fef66ff7e7e582c41a14a954a828dca06bbb31",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "ac9d7b27101aee1ac60cfff51726b81a0928a84f3dc3146d77c8c2b906ce61cc",
+      "modified": "2026-11-09T10:41:00Z",
       "path": "handoffs/active/v11-promotion-checklist.md",
-      "size": 23181,
+      "size": 23552,
       "title": "v11 promotion checklist \u2014 the requirements that close only at the v11 production promotion",
       "type": "handoff-active"
     },
@@ -255,10 +274,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "81331d312064c8a46a4677ecf8493fee0796bafd743c84f31d2d74fb7a1e6901",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "081213700ae5f3f1e8fe1841494dfebf25a03aa6a8e14c28d1a36c820087b502",
+      "modified": "2026-11-09T10:41:00Z",
       "path": "handoffs/active/workspace-58-champion-calibration.md",
-      "size": 40083,
+      "size": 40340,
       "title": "workspace-58 champion calibration \u2014 Q38FN floors, the batch-invariance defect, GPU host-thread pinning, keep-tail floors",
       "type": "handoff-active"
     },
@@ -3623,6 +3642,46 @@
       "type": "research"
     },
     {
+      "content_hash": "9686e699ffaac8181d9617947eb61232f39f6b888d6594674fb06f059c088ba6",
+      "modified": "2026-11-09T10:39:35Z",
+      "path": "research/deep-dives/c10-intake-20261109/ddtree.md",
+      "size": 19473,
+      "title": "DDTree (arXiv 2604.12989v1), intake-2667 Stage-2b dive (wave 2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "65d7eb3378e2aa2734fab70914f8a0c5e0114479434ee970758945ee50e89843",
+      "modified": "2026-11-09T10:39:35Z",
+      "path": "research/deep-dives/c10-intake-20261109/jetspec.md",
+      "size": 19778,
+      "title": "JetSpec (arXiv 2606.18394v5) \u2014 Stage-2 dive, intake-2666",
+      "type": "research"
+    },
+    {
+      "content_hash": "18fde0369b00e0fe35d36eb149ee82161f288a1d35356c04d450ea3af889c35f",
+      "modified": "2026-11-09T10:39:35Z",
+      "path": "research/deep-dives/c10-intake-20261109/jetspecpp.md",
+      "size": 23585,
+      "title": "JetSpec++ (arXiv 2610.19792v2) Stage-2b dive, intake-2668 (wave 2)",
+      "type": "research"
+    },
+    {
+      "content_hash": "3df7a9cfab1555ab37abb1ef2530765ebc13293d48746a3671c79c3830040b44",
+      "modified": "2026-11-09T10:39:35Z",
+      "path": "research/deep-dives/c10-intake-20261109/treeflash.md",
+      "size": 13188,
+      "title": "TreeFlash (arXiv 2606.03819v1), intake-2664 Stage-2 dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "f70fa1b0eed250526389ad3fbd02245e12c69c5c4cf7a1e16915d30cb26449e3",
+      "modified": "2026-11-09T10:39:35Z",
+      "path": "research/deep-dives/c10-intake-20261109/xpress.md",
+      "size": 17859,
+      "title": "XPress (arXiv 2608.02438v2) Stage-2 dive, intake-2665",
+      "type": "research"
+    },
+    {
       "content_hash": "dfbf5cd6bc73edcdb0ea9dd3b8d65907ca52cff3158463519254e0e180745de3",
       "modified": "2026-11-09T09:04:41Z",
       "path": "research/deep-dives/chiefautism-privacy-parser-span-extraction.md",
@@ -4772,6 +4831,14 @@
       "path": "research/deep-dives/intake-digests/2026-11-06-ids-2650-2661.md",
       "size": 75068,
       "title": "Intake dive digest \u2014 2026-11-06, intake-2650#record .. intake-2661#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "4d55d55d076473de7466cc46eae9a16b3699e9c04559c13ee049053906d91470",
+      "modified": "2026-11-09T10:39:35Z",
+      "path": "research/deep-dives/intake-digests/2026-11-09-ids-2664-2668.md",
+      "size": 21488,
+      "title": "Intake dive digest \u2014 2026-11-09, intake-2664#record .. intake-2668#record",
       "type": "research"
     },
     {
@@ -16503,6 +16570,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "5b33d36a7510619377fe4b0e72edf9f505dc01e956a016f5fac403f888bfde08",
+      "modified": "2026-11-09T10:41:00Z",
+      "path": "progress/2026-11/2026-11-09-main-inf22.md",
+      "size": 3238,
+      "title": "2026-11-09 \u2014 main-inf22 (Inference Research)",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-09T09:04:41Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -18479,10 +18554,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "1569d3d071d805732f9f6753ec3bb7af4128960cb5cfc5fe62e0f0156adb1050",
-      "modified": "2026-11-09T09:04:41Z",
+      "content_hash": "7a6447a1bb4a21e0fe1192cb19c6d74186426e5621ce3675fbbb70d5fed59f34",
+      "modified": "2026-11-09T10:39:35Z",
       "path": "docs/reference/kernel-manifests/llama-v11-manifest.md",
-      "size": 113125,
+      "size": 126499,
       "title": "llama.cpp v11 release manifest",
       "type": "docs"
     },
@@ -20143,7 +20218,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 2516,
+  "total_new": 2523,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
