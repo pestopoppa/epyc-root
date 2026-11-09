@@ -75,12 +75,21 @@ fi
 # Run the incremental updater. Errors are logged but do not block the commit
 # (this is a post-commit hook; the commit has already landed). Keep the saved
 # KB-RAG cursor unchanged on failure so the next hook run can retry.
-"$PYTHON" "$ORCHESTRATOR/scripts/kb_rag/cli.py" update \
+UPDATE_OUT="${TMP_DIR}/kb_rag_update.out"
+if ! "$PYTHON" "$ORCHESTRATOR/scripts/kb_rag/cli.py" update \
   --manifest "$DELTA_MANIFEST" \
-  --manifest-root "$REPO_ROOT" 2>&1 | tail -10 || {
-  echo "kb_rag update failed (non-fatal)" >&2
+  --manifest-root "$REPO_ROOT" >"$UPDATE_OUT" 2>&1; then
+  tail -10 "$UPDATE_OUT" >&2
+  # A convention mismatch is not a transient failure: every later update will fail the
+  # same way and the index silently goes stale. Say so loudly instead of "non-fatal".
+  if grep -q "unknown prefix convention" "$UPDATE_OUT"; then
+    echo "KB-RAG INDEX CONVENTION MISMATCH: the live index was built under a convention this code refuses. Updates are NOT being applied. Build a fresh index dir and point KB_RAG_INDEX_DIR / DEFAULT_INDEX_DIR at it (see src/retrieval/kb_rag.py module docstring)." >&2
+  else
+    echo "kb_rag update failed (non-fatal)" >&2
+  fi
   exit 0
-}
+fi
+tail -10 "$UPDATE_OUT"
 
 "$PYTHON" "$COMPILE_SOURCES" --full --write-manifest "$KB_RAG_CURSOR" >/dev/null 2>&1 || {
   echo "KB-RAG source cursor refresh failed (non-fatal)" >&2
