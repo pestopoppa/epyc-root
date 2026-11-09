@@ -415,9 +415,12 @@ def _pair_commit(removed: list, added: list, flow: Counter) -> None:
     """Classify one commit's removed/added boxes, consumed one-to-one: exact-text pairs
     first, then similarity pairs. Removed entries are ``[is_open, text]``, added entries
     ``[is_open, text, declined]``. Open -> ``[x]`` is a tick (a ``declined`` one is not a
-    closure), open -> open and ``[x]`` -> ``[x]`` are edits and count as neither."""
+    closure), ``[x]`` -> open a reopen, open -> open and ``[x]`` -> ``[x]`` are edits and
+    count as neither."""
     r_used = [False] * len(removed)
     a_done = [False] * len(added)
+    # An open box is the likelier origin of any added line, so it pairs before a done one.
+    order = sorted(range(len(removed)), key=lambda ri: not removed[ri][0])
     for exact in (True, False):
         if not exact and len(removed) * len(added) > _PAIR_LIMIT:
             break
@@ -425,13 +428,14 @@ def _pair_commit(removed: list, added: list, flow: Counter) -> None:
             a_open, txt = entry[0], entry[1]
             if a_done[ai]:
                 continue
-            for ri, (r_open, r_txt) in enumerate(removed):
-                if r_used[ri] or (not r_open and a_open):
+            for ri in order:
+                r_open, r_txt = removed[ri]
+                if r_used[ri]:
                     continue
                 if (r_txt == txt) if exact else _similar(r_txt, txt):
                     r_used[ri] = a_done[ai] = True
                     if not r_open:
-                        flow["reworded_done"] += 1
+                        flow["reopened" if a_open else "reworded_done"] += 1
                     elif a_open:
                         flow["reworded"] += 1
                     else:

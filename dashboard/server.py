@@ -619,10 +619,20 @@ def _activity_from_timeline(days: int = _ACT_WINDOW_DAYS) -> dict:
         start = (today - timedelta(days=n - 1)).isoformat()
         return [r for r in rows if r["date"] >= start], start
 
+    # An artifact built before today has no row for today: that is "not known yet", and
+    # a 1d of zeros would say nothing happened. Longer windows stay, labelled by data_through.
+    data_through = rows[-1]["date"]
+    today_known = data_through == today.isoformat()
     rollups = {}
     for n in _ACT_ROLLUPS:
         sel, start = window(n)
-        rollups[f"{n}d"] = _flow_rollup(rows, sel, n, start)
+        if n == 1 and not today_known:
+            rollups["1d"] = {"days": 1, "since": start, "available": False,
+                             "data_through": data_through,
+                             "unavailable_reason": f"timeline data ends {data_through}"}
+            continue
+        rollups[f"{n}d"] = {**_flow_rollup(rows, sel, n, start), "available": True,
+                            "data_through": data_through}
     sel, start = window(days)
     per_day = [{"date": r["date"], "commits": r.get("commits", 0),
                 "boxes_checked": r["closed"], "boxes_added": r["filed"],
@@ -634,6 +644,7 @@ def _activity_from_timeline(days: int = _ACT_WINDOW_DAYS) -> dict:
                if isinstance(m, dict) and m.get("date", "") >= start]
     return {"available": True, "window_days": days, "today": today.isoformat(),
             "per_day": per_day, "rollups": rollups, "refactor_markers": markers,
+            "data_through": data_through, "today_known": today_known,
             "as_of": data.get("generated_at"), "commit": data.get("last_sha")}
 
 
@@ -643,6 +654,10 @@ def _activity_today_from(window: dict) -> dict:
                as_of=window.get("as_of"))
     if not window.get("available"):
         out["unavailable_reason"] = window.get("unavailable_reason")
+        return out
+    if not window.get("today_known", True):
+        out["available"] = False
+        out["unavailable_reason"] = f"timeline data ends {window.get('data_through')}"
         return out
     for row in window.get("per_day") or []:
         if row["date"] == window["today"]:

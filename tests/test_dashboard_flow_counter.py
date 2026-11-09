@@ -173,6 +173,81 @@ class HubRollup(unittest.TestCase):
             self.assertFalse(server._activity_from_timeline()["available"])
 
 
+def _commit_text(sha, iso, path, *lines):
+    return "\n".join([f"\x00{sha * 40} {iso}\x1f\x1f", f"diff --git a/{path} b/{path}",
+                      "@@ -1 +1 @@", *lines])
+
+
+class LogTextClassification(unittest.TestCase):
+    def _day(self, *lines):
+        log = _commit_text("a", "2026-03-01T12:00:00+00:00", "handoffs/active/n.md", *lines)
+        return bt.build_daily_flow(log, today="2026-03-01")[0]
+
+    def test_numbered_tick_is_a_closure(self):
+        r = self._day("-1. [ ] numbered step here", "+1. [x] numbered step here")
+        self.assertEqual((r["closed"], r["filed"]), (1, 0))
+
+    def test_roll_up_boxes_are_skipped(self):
+        r = self._day("+- [ ] **R-1** [roll-up] parent", "-- [ ] **R-2** [roll-up] other")
+        self.assertEqual((r["closed"], r["filed"], r["removed"], r["open_stock"]), (0, 0, 0, 0))
+
+    def test_same_file_reopen_is_reopened_not_new(self):
+        r = self._day("-- [x] a finished task here", "+- [ ] a finished task here")
+        self.assertEqual((r["reopened"], r["new_open"], r["filed"], r["closed"]), (1, 0, 1, 0))
+
+    def test_edit_of_done_box_is_neither(self):
+        r = self._day("-- [x] a finished task here", "+- [x] a finished task here, reworded")
+        self.assertEqual((r["reworded_done"], r["born_ticked"], r["closed"]), (1, 0, 0))
+
+
+class HubWindows(HubRollup):
+    def _at(self, *offsets, **kw):
+        today = datetime.now().date()
+        return [self._row((today - timedelta(days=o)).isoformat(), 10, **kw) for o in offsets]
+
+    def _window(self, rows):
+        with mock.patch.object(server, "TIMELINE_PATH", self._artifact(rows)):
+            return server._activity_from_timeline()
+
+    def test_window_excludes_older_days(self):
+        w = self._window(self._at(9, 3, 0, closed=2, net=-2))
+        self.assertEqual(w["rollups"]["7d"]["boxes_checked"], 4)
+        self.assertEqual(w["rollups"]["14d"]["boxes_checked"], 6)
+        self.assertEqual(w["rollups"]["1d"]["boxes_checked"], 2)
+
+    def test_handoffs_touched_is_unioned(self):
+        w = self._window(self._at(1, 0, touched=["handoffs/active/a.md"]))
+        self.assertEqual(w["rollups"]["7d"]["handoffs_touched"], 1)
+
+    def test_artifact_behind_today_marks_today_unavailable(self):
+        w = self._window(self._at(5, 2, closed=1, net=-1))
+        self.assertFalse(w["today_known"])
+        self.assertFalse(w["rollups"]["1d"]["available"])
+        self.assertNotIn("boxes_checked", w["rollups"]["1d"])
+        self.assertEqual(w["rollups"]["7d"]["data_through"], w["data_through"])
+        today = server._activity_today_from(w)
+        self.assertFalse(today["available"])
+        self.assertIn(w["data_through"], today["unavailable_reason"])
+
+    def test_current_artifact_keeps_today(self):
+        w = self._window(self._at(1, 0))
+        self.assertTrue(server._activity_today_from(w)["available"])
+
+
+class PageContract(unittest.TestCase):
+    html = (Path(server.__file__).parent / "static" / "handoffs.html").read_text(encoding="utf-8")
+
+    def test_backlog_branches_on_available_before_zero_commits(self):
+        self.assertLess(self.html.index("act.available === false"),
+                        self.html.index('"today: no handoff commits yet"'))
+
+    def test_view_line_and_timeline_foot_have_own_elements(self):
+        self.assertIn('id="flow-view"', self.html)
+        render = self.html[self.html.index("function renderFlow"):self.html.index("function renderBacklog")]
+        self.assertIn('$("#flow-view")', render)
+        self.assertNotIn('$("#flow-foot")', render)
+
+
 class HubViewReport(unittest.TestCase):
     def _state(self, refresh):
         return {"head": "a" * 40, "origin_main": "a" * 40, "behind": 0,

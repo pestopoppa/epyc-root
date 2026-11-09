@@ -355,6 +355,7 @@
     <div class="flow-spark" id="flow-spark"></div>
     <div class="flow-rows" id="flow-rows"></div>
     <div class="flow-foot" id="flow-foot"></div>
+    <div class="flow-foot" id="flow-view"></div>
   </section>
 
   <section class="backlog">
@@ -692,9 +693,9 @@ function viewLine(view, win){
   return bits.join(" · ");
 }
 function renderFlow(win, act, view){
-  const head=$("#flow-head"), rows=$("#flow-rows"), spark=$("#flow-spark"), foot=$("#flow-foot");
+  const head=$("#flow-head"), rows=$("#flow-rows"), spark=$("#flow-spark"), viewEl=$("#flow-view");
   if(!head) return;
-  if(foot) foot.textContent = viewLine(view, win);
+  if(viewEl) viewEl.textContent = viewLine(view, win);
   head.innerHTML = "";
   if(!win || win.available===false || !win.rollups || !win.rollups["7d"]){
     head.innerHTML = '<span class="nt bad">flow unavailable</span> <span class="muted">'+
@@ -709,7 +710,7 @@ function renderFlow(win, act, view){
   const cls = netCls(delta==null ? primary.net : delta);
   const nd = el("div","flow-net");
   nd.innerHTML = '<span class="n '+cls+'">'+esc(netStr(delta==null?primary.net:delta))+'</span>'+
-    '<span class="l">open-stock change over '+esc(primary.days)+' days ('+esc(primary.opening_stock)+' → '+esc(primary.closing_stock)+')</span>'+
+    '<span class="l">open-stock change over '+esc(primary.days)+' days ('+esc(primary.opening_stock)+' → '+esc(primary.closing_stock)+(win.today_known===false?', data through '+esc(win.data_through):'')+')</span>'+
     '<span class="verdict '+cls+'">'+esc(delta==null?"open stock unknown":flowVerdict(delta))+'</span>';
   head.appendChild(nd);
   const sp = el("div","flow-split");
@@ -729,20 +730,28 @@ function renderFlow(win, act, view){
     for(const k of ["1d","7d","14d"]){
       const r = roll[k]; if(!r) continue;
       const d = el("div","flow-row");
+      if(r.available===false){
+        d.innerHTML = '<span class="w">'+esc(labels[k])+'</span><span class="nt bad">unavailable</span> <span class="muted">'+esc(r.unavailable_reason||"")+' — not zero</span>';
+        rows.appendChild(d);
+        continue;
+      }
       const parts = '<span class="w">'+esc(labels[k])+'</span>'+
         '<span class="c">'+esc(r.boxes_checked)+' closed</span> · '+
         '<span class="f">'+esc(r.boxes_added)+' filed</span> · '+
         esc(r.removed)+' removed · net <span class="nt '+netCls(r.net)+'">'+esc(netStr(r.net))+'</span>'+
         ' · stock '+(r.stock_delta==null?"?":'<span class="nt '+netCls(r.stock_delta)+'">'+esc(netStr(r.stock_delta))+'</span>')+
         (r.fold_adjustment?' · fold '+esc(netStr(r.fold_adjustment)):'')+
-        (r.unexplained?' · <span class="muted">unexplained '+esc(netStr(r.unexplained))+'</span>':'');
+        (r.unexplained?' · <span class="muted">unexplained '+esc(netStr(r.unexplained))+'</span>':'')+
+        (win.today_known===false?' · <span class="nt bad">data through '+esc(r.data_through)+'</span>':'');
       d.innerHTML = parts;
       rows.appendChild(d);
     }
     const d = el("div","flow-row");
     d.innerHTML = '<span class="muted">Net counts only box changes; edits and moves between files are neither. "unexplained" is stock change no box change accounts for (a lane dated before its merge landed, or a merge resolution).</span>';
     rows.appendChild(d);
-    if(act && act.commits===0){
+    if(act && act.available===false){
+      // today's row is unknown: claim nothing about it (the 1d row says why)
+    }else if(act && act.commits===0){
       const d = el("div","flow-row");
       d.innerHTML = '<span class="muted">no handoff commits yet today</span>';
       rows.appendChild(d);
@@ -899,6 +908,8 @@ function renderBacklog(bk, act){
   if(actEl){
     if(!act){
       actEl.textContent = "";
+    }else if(act.available === false){
+      actEl.textContent = "today: activity unavailable — "+(act.unavailable_reason||"no flow data");
     }else if(act.commits === 0){
       actEl.textContent = "today: no handoff commits yet";
     }else{
