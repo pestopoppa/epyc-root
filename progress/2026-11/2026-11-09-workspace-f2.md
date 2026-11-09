@@ -36,3 +36,19 @@ Refactor track waits for the production kernel promotion and AutoPilot relaunch.
 **Results.** Hub live at e4668444c, 0 behind; today -87, 7d -1290. Root CI green from d69e5165d after R18 host-pin and pin-list test fixes. Exemptions ratified at a69312d5b by the operator.
 **Open.** No gated regen logged yet (needs a commit burst). LOOP-21/22 and BK-1/2/4 need host steps. Flash rerun queued; EVL-29 stays listed until it files.
 
+## Evening: dropped approvals and churn
+The operator caught that approved LOOP-9, PII-NM-OFFSET and LR-13 had not been executed or reported, and that dispatching had stopped after two waves.
+| Item | Result |
+|---|---|
+| LOOP-9 | Rebased onto the v3 keeper flow, ed3d95b81 |
+| PII-NM-OFFSET | Narrow nm-row rule, 15 tests, 264cf91e9 |
+| LR-13 | One new rule; ratify script needed the Operator-Ratified trailer, re-run pending |
+| LR-10 | Orchestrator 3c01431a; 130 pass, one failure also on clean main |
+| LOOP-27 | Proven by existing test file, 40 pass |
+| LOOP-59 | Incident record docs/reference/kernel-store-incident-20261103.md |
+| Backups | Host owner installed a corrected runbook (filesystem-agent 3918872): ai-sessions keep 2, opencode keep 3 per store, loop-state 04:45; restore test 24 DBs PASS, chain_ok PASS |
+| NIB2-98 | Gate landed ac89176ab, opt-in until Pipeline wires launch |
+| AFC-P5.E3 | Two models KEEP, Flash inconclusive, rerun queued |
+
+The first host handoff had real errors (crontab owner, restore-test parsing, unsafe retention) that the host owner corrected. /workspace re-synced with reset --keep; duplicate commit saved at refs/backup/workspace-local-7adf739ae.
+
