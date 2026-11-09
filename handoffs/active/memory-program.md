@@ -240,7 +240,7 @@ failure caught in amber.
       ✅ 2026-07-27. `orchestrator_stack.py` start/stop/reload now refuse while a CPU bench driver is
       running, overridable with `--allow-during-bench`. Verified live — it caught the E8 quality
       baseline reseed and the v7 quality gate on first run.
-- [x] M-15 — **Reopen intake-866 / COMP_r.** ✅ 2026-11-09 pooled AUC under the id_map on the reseeded store = 0.5913 (> 0.55), so COMP_r reopens as a routing-signal candidate (recommend only, nothing wired; the probe's own verdict reads WEAK/INCONCLUSIVE, do not wire). [belief: cc] Its 2026-07-22 null (pooled AUC 0.4933) was computed
+- [x] M-15 — **Reopen intake-866 / COMP_r.** ✅ 2026-11-09 pooled AUC under the id_map on the reseeded store = 0.5913 (> 0.55), so COMP_r reopens as a routing-signal candidate (recommend only, nothing wired; the probe's own reading is the weak band, do not wire). [belief: cc] Its 2026-07-22 null (pooled AUC 0.4933) was computed
       through `memories.embedding_idx`, i.e. the broken mapping. Adversarial re-analysis with the
       correct id_map resolution moves it to **0.5570**, which no longer clears the probe's own
       close-out gate of <=0.55; its in-sample leakage anchor read 0.6427 where the report documented
