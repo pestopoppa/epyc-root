@@ -2609,6 +2609,30 @@ def vram_used_bytes():
         return None
 
 
+RESIDENCY_FLOOR_B = 64 << 20
+GPU_SAMPLE_S = 0.15          # short GPU jobs (ATT ~0.5 s) fall between 1 s samples; ~10% of a core, harness only, smokes only
+
+
+def sample_gpu_residency(root, tracked, own):
+    """One sample: refresh the smoke's process tree, and keep each tree member's peak KFD VRAM in `own`. Foreign clients and
+    device-wide VRAM never count: the idle device reads about 13 MB and another row's model is not this row's proof."""
+    harness_tree(root, tracked)
+    for q, b in (gpu_occupancy().get("pids") or {}).items():
+        if q in tracked and b > 0:
+            own[q] = max(own.get(q, 0), b)
+
+
+def gpu_sample_window(root, tracked, own, n=6, interval=GPU_SAMPLE_S):
+    """About one second of fast residency samples (replaces the harness loop's 1 s sleep on a GPU smoke)."""
+    for _ in range(n):
+        time.sleep(interval)
+        sample_gpu_residency(root, tracked, own)
+
+
+def own_vram_peak(own):
+    return max(own.values(), default=0)
+
+
 def verify_job_residency(dd, tracked, kfd_seen, t0):
     """Job-written residency record contract (operator 2026-11-06). The job writes $FILLER_RESIDENCY_FILE
     (= dryrun/<id>/residency.json) as JSON {"schema": "epyc.rowflow.residency.v1", "pid": <host pid of the process holding
@@ -3084,10 +3108,11 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
 
     def residency_ok():
         nonlocal vram_max, residency_note
-        if vram_max is not None and vram_max >= 64 << 20:
+        vram_max = own_vram_peak(kfd_seen) or vram_max
+        if vram_max is not None and vram_max >= RESIDENCY_FLOOR_B:
             return True
         jb, why = verify_job_residency(dd, tracked, kfd_seen, t0)
-        if jb >= 64 << 20:
+        if jb >= RESIDENCY_FLOOR_B:
             vram_max, residency_note = max(vram_max or 0, jb), why
             return True
         return False
@@ -3100,16 +3125,11 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     try:
         while True:
             for _ in range(5):
-                time.sleep(1)
-                harness_tree(p.pid, tracked)
-                if gpu:   # operator 2026-11-06: residency sampled at 1 s (was 5 s: a short job fell between samples)
-                    v = vram_used_bytes()
-                    occ = gpu_occupancy()
-                    mine = {q: b for q, b in (occ.get("pids") or {}).items() if q in tracked and b > 0}
-                    kfd_seen.update(mine)
-                    cand_v = [x for x in (v, occ.get("vram_used"), sum(mine.values()) or None) if x is not None]
-                    if cand_v:
-                        vram_max = max(vram_max or 0, *cand_v)
+                if gpu:   # sampled at GPU_SAMPLE_S (was 1 s: codex-att-r4d held 4.5 GB for ~2 s, unseen behind a slow rocm-smi call)
+                    gpu_sample_window(p.pid, tracked, kfd_seen)
+                else:
+                    time.sleep(1)
+                    harness_tree(p.pid, tracked)
             cpu_samples.append((time.time(), tree_cpu_s(tracked, cpu_acc)))
             # a dry run must never wait on a lock: a region-lock acquire for regions outside what this dry run holds, or one
             # not satisfied within 60 s, is the row's defect (the job's own claim ignores WS58_REGIONS)
