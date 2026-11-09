@@ -1089,7 +1089,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 484,
+          "line": 485,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 0
@@ -1099,7 +1099,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 567,
+          "line": 568,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 0
@@ -1109,7 +1109,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 759,
+          "line": 760,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 0
