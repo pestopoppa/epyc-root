@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:11:15Z",
+  "generated_at": "2026-11-09T15:18:06Z",
   "nodes": [
     {
       "age_days": 6,
@@ -3015,7 +3015,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 288,
+          "line": 289,
           "name": "delegation-context-preassembly",
           "open": 7,
           "readiness": "ready"
@@ -3024,7 +3024,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 486,
+          "line": 487,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -3033,7 +3033,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 752,
+          "line": 753,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -3042,7 +3042,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1247,
+          "line": 1248,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -3051,7 +3051,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1784,
+          "line": 1785,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3060,7 +3060,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2546,
+          "line": 2547,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3069,7 +3069,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2973,
+          "line": 2974,
           "name": "tool-output-compression",
           "open": 4,
           "readiness": "ready"
@@ -3078,7 +3078,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 3624,
+          "line": 3625,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"

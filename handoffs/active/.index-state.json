@@ -546,7 +546,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 288,
+          "line": 289,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 7
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 486,
+          "line": 487,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 752,
+          "line": 753,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1247,
+          "line": 1248,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1784,
+          "line": 1785,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2546,
+          "line": 2547,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 56,
           "gates": [],
           "guarded": 0,
-          "line": 2973,
+          "line": 2974,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 4
@@ -616,7 +616,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3624,
+          "line": 3625,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
