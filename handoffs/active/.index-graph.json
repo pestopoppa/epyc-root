@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:48:47Z",
+  "generated_at": "2026-11-09T15:48:46Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1361,17 +1361,17 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 80,
+      "closed": 79,
       "dispatchable": 2,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "frontier-lab-automation.md",
       "id": "EVL-29",
-      "last_advanced": "2026-11-09",
-      "next_action": "File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed",
+      "last_advanced": "2026-11-07",
+      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); Flash rerun queued, then archive",
       "open": 2,
       "priority": 0.6474,
       "priority_basis": {
@@ -1412,7 +1412,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 484,
+          "line": 483,
           "name": "frontier-f2-self-running-lab",
           "open": 0,
           "readiness": "no_open"
@@ -1421,7 +1421,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 567,
+          "line": 566,
           "name": "frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -1430,7 +1430,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 759,
+          "line": 758,
           "name": "stale-open-audit-2026-07-18",
           "open": 0,
           "readiness": "no_open"
@@ -3146,7 +3146,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 574,
+          "line": 575,
           "name": "internal-interaction-lifecycle",
           "open": 4,
           "readiness": "ready"
@@ -3155,7 +3155,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1049,
+          "line": 1050,
           "name": "learned-routing-controller",
           "open": 8,
           "readiness": "ready"
@@ -3164,7 +3164,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2317,
+          "line": 2318,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3173,7 +3173,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2393,
+          "line": 2394,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3182,7 +3182,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2526,
+          "line": 2527,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
@@ -3191,7 +3191,7 @@
           "blocked_by": [],
           "dispatchable": 26,
           "gates": [],
-          "line": 2829,
+          "line": 2830,
           "name": "typed-decision-plane",
           "open": 26,
           "readiness": "ready"
@@ -3200,7 +3200,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3578,
+          "line": 3579,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3213,7 +3213,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3659,
+          "line": 3660,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3222,7 +3222,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": null,
-          "line": 4148,
+          "line": 4149,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3,
           "readiness": "ready"
@@ -3266,7 +3266,7 @@
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-09",
-      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
+      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
       "open": 80,
       "priority": 0.8844,
       "priority_basis": {
