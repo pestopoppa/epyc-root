@@ -27,7 +27,7 @@
 | INF48-LIVE-7 INF03/INF37 | MMQ audit, AGPR, MoE Q8 fusion | partly operator-parked |
 | LSA-PORT-1 | experimental sparse-attention port | open |
 
-Triage counts (76 boxes): LIVE 41 (folded into the 8 items) · DONE 5 (RVP-C6-14/16/17/18/22) · SUPERSEDED 18 · DROP-CANDIDATE 1 (B2, no live destination; see below) · resolved by operator 2026-11-09: 6 DROPPED (GEAK-eval, RVP-C5-4, RVP-C5-5, Item A, K10, K30), 5 RE-HOMED (K27 to quantization-and-low-bit.md iqk track; K31, W1 to the DSA track here; W2, W3 restored in the publication track here). Original box text: `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md`.
+Triage counts (76 boxes): LIVE 41 (folded into the 8 items) · DONE 5 (RVP-C6-14/16/17/18/22) · SUPERSEDED 18 · DROP-CANDIDATE 0 · resolved by operator 2026-11-09: 7 DROPPED (GEAK-eval, RVP-C5-4, RVP-C5-5, Item A, K10, K30, B2), 5 RE-HOMED (K27 to quantization-and-low-bit.md iqk track; K31, W1 to the DSA track here; W2, W3 restored in the publication track here). Original box text: `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md`.
 
 > **Historical next action (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
 > their governed real EPYC C3/C5 captures and matched whole-model exits.** OP-11 was
@@ -3615,7 +3615,7 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
 > which an M4 does not report. Thread was OPEN with **zero** comments at post time, so this is the
 > first reply. **Part two — our own greedy sweep — remains blocked on G1.**
 
-- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): blocked on G1 in log-linear-gated-deltanet-readiness.md; owned there. Full text at b3bd883d3:4017.
+- **[declined: operator 2026-11-09 (INF-48 triage, dropped, not done): blocked on G1 in log-linear-gated-deltanet-readiness.md; no live destination]** **B2 (B) — post our analysis upstream (part two only; part one done).** — closed as dropped, not completed; original text: `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 4017. [no-belief: dropped by operator 2026-11-09]
 ## Track: llama-cpp-dsa-contribution
 <!-- gate: none -->
 

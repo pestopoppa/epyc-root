@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 611
+      "open": 610
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 8,
       "oldest_advance": "2026-11-03",
-      "open": 498
+      "open": 497
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -818,10 +818,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 267,
+      "closed": 268,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 94,
+      "open": 93,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -834,13 +834,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 161,
+          "closed": 162,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 48
+          "open": 47
         },
         {
           "blocked": 0,
@@ -2178,7 +2178,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 13,
+      "open": 12,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2187,7 +2187,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 352,
+      "total": 351,
       "tracks": [
         {
           "blocked": 0,
@@ -2245,7 +2245,7 @@
           "line": 3524,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
