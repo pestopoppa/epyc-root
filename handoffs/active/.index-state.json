@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 493
+      "open": 492
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 292,
+      "closed": 297,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 75,
+      "open": 74,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -856,24 +856,24 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 367,
+      "total": 371,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 180,
+          "closed": 184,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 33
+          "open": 32
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1214,
+          "line": 1230,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -883,7 +883,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1254,
+          "line": 1270,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -893,7 +893,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1361,
+          "line": 1377,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -903,7 +903,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1461,
+          "line": 1477,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 1
@@ -913,17 +913,17 @@
           "closed": 87,
           "gates": [],
           "guarded": 0,
-          "line": 1510,
+          "line": 1526,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 34
         },
         {
           "blocked": 0,
-          "closed": 11,
+          "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 2086,
+          "line": 2102,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 4
@@ -1089,7 +1089,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 486,
+          "line": 487,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 0
@@ -1099,7 +1099,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 569,
+          "line": 570,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 0
@@ -1109,7 +1109,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 761,
+          "line": 762,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 0
