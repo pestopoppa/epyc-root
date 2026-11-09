@@ -19,6 +19,9 @@ CLI:
   job_fence.py smoke [--gpu] <smoke-root> -- /abs/exe args...           # smoke: only <smoke-root> + /dev/null (+gpu)
   Env MAX_FILE_MIB (default 128, max 8192) sets the per-file size limit; output dirs allow mkdir/rm recursively.
   job_fence.py admit --cpus 20,21 [--granted 20-23,116-119]             # smoke admission check, prints JSON
+  job_fence.py ram --need-gib N [--margin-gib 100]                       # RAM admission (NIB2-98), prints JSON, rc 75 = refuse
+  fence/smoke also take --need-ram-gib N [--ram-margin-gib M] (or env JOB_FENCE_NEED_RAM_GIB): refuse, BEFORE the exec,
+  when MemAvailable - N < margin (default 100 GiB, RATIFY-HOST-MEMORY-RULES-20261021); rc 75, nothing is exec'd.
 """
 import ctypes
 import json
@@ -149,6 +152,74 @@ def summary_line(mib, dirs):
             f"EACCES or SIGXFSZ means the fence denied it (set max_file_mib for size)")
 
 
+RAM_MARGIN_GIB = 100            # ratified 2026-10-21: MemAvailable - expected footprint must stay >= 100 GiB
+EX_TEMPFAIL = 75
+GIB = 1024 ** 3
+
+
+class RamRefused(Exception):
+    """RAM admission refused; the job must not be exec'd."""
+
+
+def mem_available_gib(meminfo="/proc/meminfo"):
+    """MemAvailable in GiB (float), or None when unreadable/unparsable (callers fail CLOSED)."""
+    try:
+        for line in Path(meminfo).read_text().splitlines():
+            if line.startswith("MemAvailable:"):
+                return int(line.split()[1]) / (1024 ** 2)
+    except (OSError, ValueError, IndexError):
+        return None
+    return None
+
+
+def ram_admission(need_gib, margin_gib=RAM_MARGIN_GIB, meminfo="/proc/meminfo"):
+    """(ok, reason, avail_gib). Refuses when MemAvailable - need < margin, on a missing/unreadable MemAvailable, and on a
+    non-finite, negative or boolean need/margin. Read-only; never signals anything. NOT atomic: two loaders that both
+    read before either allocates can both pass (the research lease proposal NIB98-ATOMIC-ADOPTION closes that)."""
+    try:
+        if isinstance(need_gib, bool) or isinstance(margin_gib, bool):
+            raise ValueError("bool")
+        need, margin = float(need_gib), float(margin_gib)
+        if not (0 <= need < 1e6 and 0 <= margin < 1e6):
+            raise ValueError("range")
+    except (TypeError, ValueError):
+        return False, f"refuse: bad need/margin {need_gib!r}/{margin_gib!r}", None
+    avail = mem_available_gib(meminfo)
+    if avail is None:
+        return False, f"refuse: MemAvailable unreadable from {meminfo} (fail closed)", None
+    if avail - need < margin:
+        return False, f"refuse: MemAvailable {avail:.0f} GiB - need {need:g} GiB < margin {margin:g} GiB", avail
+    return True, f"admit: MemAvailable {avail:.0f} GiB - need {need:g} GiB >= margin {margin:g} GiB", avail
+
+
+def _take_ram(head, env=None):
+    """Remove --need-ram-gib/--ram-margin-gib from head; return (head, need|None, margin). Env JOB_FENCE_NEED_RAM_GIB /
+    JOB_FENCE_RAM_MARGIN_GIB are the fallback so a launcher can inject admission without editing the command line."""
+    env = os.environ if env is None else env
+    out, vals, i = [], {}, 0
+    while i < len(head):
+        a = head[i]
+        if a in ("--need-ram-gib", "--ram-margin-gib"):
+            if i + 1 >= len(head):
+                raise ValueError(f"{a} needs a value")
+            vals[a] = head[i + 1]
+            i += 2
+            continue
+        out.append(a)
+        i += 1
+    need = vals.get("--need-ram-gib", env.get("JOB_FENCE_NEED_RAM_GIB"))
+    margin = vals.get("--ram-margin-gib", env.get("JOB_FENCE_RAM_MARGIN_GIB", RAM_MARGIN_GIB))
+    return out, (None if need in (None, "") else need), margin
+
+
+def _require_ram(need, margin, meminfo="/proc/meminfo"):
+    if need is None:
+        return
+    ok, why, _ = ram_admission(need, margin, meminfo)
+    if not ok:
+        raise RamRefused(why)
+
+
 def _exec(argv, env, dirs=(), spec=None):
     """Print the fence summary once, set RLIMIT_FSIZE, then EXEC argv: the job KEEPS this pid (and process group).
     PID identity is load-bearing: rows prove ownership of the server by Popen pid (socket inodes in /proc/<pid>/fd,
@@ -175,6 +246,8 @@ def _split(args):
 
 def fence_main(args):
     paths, argv, gpu = _split(args)
+    paths, need, margin = _take_ram(paths)
+    _require_ram(need, margin)
     env = set_thread_defaults(dict(os.environ))
     if gpu and not paths:
         raise ValueError("--gpu needs at least one writable dir for the HIP TMPDIR")
@@ -187,6 +260,8 @@ def fence_main(args):
 
 def smoke_main(args):
     head, argv, gpu = _split(args)
+    head, need, margin = _take_ram(head)
+    _require_ram(need, margin)
     if len(head) != 1:
         raise ValueError("smoke takes exactly one smoke root")
     root = Path(head[0])
@@ -288,10 +363,21 @@ def main(argv=None):
         print(__doc__, file=sys.stderr)
         return 64
     cmd, rest = argv[0], argv[1:]
-    if cmd == "fence":
-        return fence_main(rest)
-    elif cmd == "smoke":
-        return smoke_main(rest)
+    if cmd in ("fence", "smoke"):
+        try:
+            return (fence_main if cmd == "fence" else smoke_main)(rest)
+        except RamRefused as e:
+            print(f"job_fence: {e}", file=sys.stderr, flush=True)
+            return EX_TEMPFAIL
+    elif cmd == "ram":
+        import argparse
+        ap = argparse.ArgumentParser(prog="job_fence.py ram")
+        ap.add_argument("--need-gib", required=True)
+        ap.add_argument("--margin-gib", default=RAM_MARGIN_GIB)
+        a = ap.parse_args(rest)
+        ok, why, avail = ram_admission(a.need_gib, a.margin_gib)
+        print(json.dumps({"admit": ok, "reason": why, "mem_available_gib": avail}))
+        return 0 if ok else EX_TEMPFAIL
     elif cmd == "admit":
         import argparse
         ap = argparse.ArgumentParser(prog="job_fence.py admit")
