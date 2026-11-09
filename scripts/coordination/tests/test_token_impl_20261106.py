@@ -142,6 +142,47 @@ class RegenDebounce(unittest.TestCase):
         self.assertTrue(ir.batch_verdict(None, 9_999, 0, 10_000)[0])
 
 
+class RegenGateConsumers(unittest.TestCase):
+    """TOKEN-REGEN-TRIPLE-DEBOUNCE: other regenerating consumers (the hub view) ask the same gate."""
+
+    def setUp(self):
+        import subprocess
+        self.sub = subprocess
+        self.t = tempfile.mkdtemp()
+        self.origin = os.path.join(self.t, "o.git")
+        self.work = os.path.join(self.t, "w")
+        self.flags = os.path.join(self.t, "flags")
+        self.env = dict(os.environ, GIT_AUTHOR_NAME="t", GIT_AUTHOR_EMAIL="t@t", GIT_COMMITTER_NAME="t",
+                        GIT_COMMITTER_EMAIL="t@t", GIT_CONFIG_GLOBAL="/dev/null")
+        self.g(self.t, "init", "-q", "--bare", "-b", "main", self.origin)
+        self.g(self.t, "clone", "-q", self.origin, self.work)
+        self.commit("a.md", "0")
+
+    def g(self, cwd, *a):
+        return self.sub.run(["git", "-C", cwd, *a], check=True, capture_output=True, text=True, env=self.env).stdout
+
+    def commit(self, rel, body):
+        open(os.path.join(self.work, rel), "w").write(body)
+        self.g(self.work, "add", rel)
+        self.g(self.work, "commit", "-qm", "c " + body)
+        self.g(self.work, "push", "-q", "origin", "HEAD:main")
+
+    def gate(self, name="hub-view", *extra):
+        return ir.main(["--gate", name, "--worktree", self.work, "--flags", self.flags, *extra])
+
+    def test_one_regen_per_batch_and_consumers_are_independent(self):
+        self.assertEqual(self.gate(), 0)                       # first regen
+        self.assertEqual(self.gate("hub-view", "--record"), 0)
+        self.assertEqual(self.gate(), 10)                      # nothing changed since
+        for i in range(3):                                     # a batch of three commits
+            self.commit("a.md", str(i + 1))
+            self.assertEqual(self.gate(), 10, "inside the quiet window: held, not once per commit")
+        self.assertEqual(self.gate("hub-view", "--quiet-s", "0"), 0)   # negative control: batch ended -> ONE regen
+        self.assertEqual(self.gate("hub-view", "--record"), 0)
+        self.assertEqual(self.gate("hub-view", "--quiet-s", "0"), 10)  # and not a second
+        self.assertEqual(self.gate("other", "--quiet-s", "0"), 0)      # another consumer keeps its own state
+
+
 class RestartGate(unittest.TestCase):
     def setUp(self):
         self.root = tempfile.mkdtemp()

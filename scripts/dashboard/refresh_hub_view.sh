@@ -49,6 +49,9 @@ REGEN_MAX_AGE_S="${HUB_VIEW_REGEN_MAX_AGE_S:-3600}"
 SKIP_REGEN="${HUB_VIEW_SKIP_REGEN:-0}"
 LOG_FILE="${HUB_VIEW_LOG:-}"
 PY="${HUB_VIEW_PYTHON:-$(command -v python3 || true)}"
+GATE="${HUB_VIEW_REGEN_GATE:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../coordination/index_regen.py}"
+GATE_FLAGS="${HUB_VIEW_GATE_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}"
+GATE_QUIET_S="${HUB_VIEW_GATE_QUIET_S:-180}"
 
 log() {
   local line
@@ -114,18 +117,39 @@ STATE_F="${VIEW}/handoffs/active/.index-state.json"
 GRAPH_F="${VIEW}/handoffs/active/.index-graph.json"
 TIMELINE_F="${VIEW}/data/handoff_timeline.json"
 regen_reason=""
+gated="no"
 if [[ "${SKIP_REGEN}" == "1" ]]; then
   regen_reason=""
-elif [[ "${old}" != "${new}" ]]; then
-  regen_reason="head-moved"
 else
-  now="$(date +%s)"
-  for f in "${STATE_F}" "${GRAPH_F}" "${TIMELINE_F}"; do
-    if [[ ! -f "${f}" ]]; then regen_reason="missing:${f#"${VIEW}"/}"; break; fi
-    if (( now - $(stat -c %Y "${f}") > REGEN_MAX_AGE_S )); then
-      regen_reason="aged:${f#"${VIEW}"/}"; break
-    fi
-  done
+  # TOKEN-REGEN-TRIPLE-DEBOUNCE: a head move alone is not a reason -- every batch
+  # commit and the central index-regen commit each moved it, so the view regenerated
+  # once per commit. Ask index_regen.py's once-per-batch quiet-window gate on EVERY
+  # pass (exit 0 = run, 10 = skip): it holds regeneration inside a batch AND releases
+  # it when the batch ends even though the head has stopped moving. A missing gate or
+  # any other result falls back to the old head-moved rule (fail open), and the
+  # missing/aged artifact checks below always apply.
+  grc=99
+  if [[ -f "${GATE}" ]]; then
+    grc=0
+    "${PY:-python3}" "${GATE}" --gate hub-view --worktree "${VIEW}" --flags "${GATE_FLAGS}" \
+      --quiet-s "${GATE_QUIET_S}" >/dev/null 2>>"${LOG_FILE:-/dev/stderr}" || grc=$?
+  fi
+  if [[ "${grc}" == "0" ]]; then
+    if [[ "${old}" != "${new}" ]]; then regen_reason="head-moved"; else regen_reason="batch-ended"; fi
+  elif [[ "${grc}" == "10" ]]; then
+    if [[ "${old}" != "${new}" ]]; then gated="yes"; fi
+  elif [[ "${old}" != "${new}" ]]; then
+    regen_reason="head-moved"
+  fi
+  if [[ -z "${regen_reason}" ]]; then
+    now="$(date +%s)"
+    for f in "${STATE_F}" "${GRAPH_F}" "${TIMELINE_F}"; do
+      if [[ ! -f "${f}" ]]; then regen_reason="missing:${f#"${VIEW}"/}"; break; fi
+      if (( now - $(stat -c %Y "${f}") > REGEN_MAX_AGE_S )); then
+        regen_reason="aged:${f#"${VIEW}"/}"; break
+      fi
+    done
+  fi
 fi
 
 rc=0
@@ -145,6 +169,11 @@ if [[ -n "${regen_reason}" ]]; then
   # --- 4. keep the view byte-identical to origin/main ----------------------- #
   # index_state.py splices its rollup into the tracked master index. Revert any
   # tracked edit. Only the touched files are rewritten, so dashboard/ mtimes stay.
+  # Record the regen against the gate so the next head move is judged since THIS one.
+  if [[ "${rc}" == "0" && -f "${GATE}" ]]; then
+    "${PY:-python3}" "${GATE}" --gate hub-view --record --worktree "${VIEW}" --flags "${GATE_FLAGS}" \
+      >/dev/null 2>>"${LOG_FILE:-/dev/stderr}" || log "WARN: could not record hub-view regen state"
+  fi
   git -C "${VIEW}" update-index -q --refresh >/dev/null 2>&1 || true
   if ! git -C "${VIEW}" diff --quiet 2>/dev/null; then
     git -C "${VIEW}" checkout --quiet --detach --force "${new}" >/dev/null 2>&1 \
@@ -152,5 +181,6 @@ if [[ -n "${regen_reason}" ]]; then
   fi
 fi
 
+[[ "${gated}" == "yes" ]] && regen="no(gated)"
 log "refresh view=${VIEW} head=${moved} regen=${regen} rc=${rc}"
 exit "${rc}"

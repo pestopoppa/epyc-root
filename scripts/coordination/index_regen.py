@@ -89,8 +89,9 @@ QUIET_S = 180        # batch end = origin/main has had no non-generated commit f
 MAX_AGE_S = 3600     # ...or the last regen is older than this (bounds how stale the generated files can get)
 
 
-def state_path(flags: str) -> str:
-    return os.path.join(flags, "handoff-sessions", "index-regen.state.json")
+def state_path(flags: str, name: str = "") -> str:
+    """`name` keys an independent consumer of the same quiet-window gate (e.g. the hub view)."""
+    return os.path.join(flags, "handoff-sessions", f"index-regen{'.' + name if name else ''}.state.json")
 
 
 def batch_verdict(changed_files, head_ts: float, last_ts: float, now: float, quiet_s: float = QUIET_S,
@@ -109,25 +110,26 @@ def batch_verdict(changed_files, head_ts: float, last_ts: float, now: float, qui
     return True, f"batch ended: {len(inputs)} input file(s) changed, quiet {now - head_ts:.0f} s"
 
 
-def _load_state(flags: str) -> dict:
+def _load_state(flags: str, name: str = "") -> dict:
     try:
         import json
-        return json.load(open(state_path(flags)))
+        return json.load(open(state_path(flags, name)))
     except (OSError, ValueError):
         return {}
 
 
-def _save_state(flags: str, sha: str) -> None:
+def _save_state(flags: str, sha: str, name: str = "") -> None:
     import json
-    os.makedirs(os.path.dirname(state_path(flags)), exist_ok=True)
-    with open(state_path(flags), "w") as fh:
+    os.makedirs(os.path.dirname(state_path(flags, name)), exist_ok=True)
+    with open(state_path(flags, name), "w") as fh:
         json.dump({"sha": sha, "ts": time.time()}, fh)
 
 
-def should_run(wt: str, flags: str, now: float | None = None, force: bool = False) -> tuple[bool, str]:
+def should_run(wt: str, flags: str, now: float | None = None, force: bool = False, name: str = "",
+               quiet_s: float = QUIET_S) -> tuple[bool, str]:
     if force:
         return True, "forced"
-    st = _load_state(flags)
+    st = _load_state(flags, name)
     git(wt, "fetch", "-q", "origin")
     head = git(wt, "rev-parse", "origin/main").stdout.strip()
     changed = None
@@ -135,7 +137,7 @@ def should_run(wt: str, flags: str, now: float | None = None, force: bool = Fals
         d = git(wt, "diff", "--name-only", f"{st['sha']}..{head}", check=False)
         changed = d.stdout.split() if d.returncode == 0 else None
     ts = float(git(wt, "log", "-1", "--format=%ct", "origin/main").stdout.strip() or 0)
-    return batch_verdict(changed, ts, float(st.get("ts") or 0), now or time.time())
+    return batch_verdict(changed, ts, float(st.get("ts") or 0), now or time.time(), quiet_s=quiet_s)
 
 
 def run(wt: str, flags: str, dry_run: bool, force: bool = False) -> int:
@@ -185,7 +187,22 @@ def main(argv=None) -> int:
     ap.add_argument("--min-interval", type=float, default=600)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--force", action="store_true", help="skip the once-per-batch debounce and the interval stamp (operator wrap-up)")
+    ap.add_argument("--gate", metavar="NAME", help="gate-only mode for another regenerating consumer (TOKEN-REGEN-TRIPLE-DEBOUNCE): "
+                    "print the once-per-batch verdict for NAME and exit 0 = regenerate, 10 = skip; regenerates nothing")
+    ap.add_argument("--record", action="store_true", help="with --gate: record that NAME just regenerated at origin/main")
+    ap.add_argument("--quiet-s", type=float, default=QUIET_S, help="with --gate: quiet-window seconds")
     a = ap.parse_args(argv)
+    if a.gate:
+        try:
+            if a.record:
+                _save_state(a.flags, git(a.worktree, "rev-parse", "origin/main").stdout.strip(), a.gate)
+                return 0
+            ok, why = should_run(a.worktree, a.flags, name=a.gate, quiet_s=a.quiet_s)
+            log(f"gate {a.gate}: {'run' if ok else 'skip'}: {why}")
+            return 0 if ok else 10
+        except Exception as exc:  # noqa: BLE001
+            log(f"gate FAIL {exc}")
+            return 1
     if not a.force and not due(a.flags, a.min_interval):
         return 0
     touch_stamp(a.flags)

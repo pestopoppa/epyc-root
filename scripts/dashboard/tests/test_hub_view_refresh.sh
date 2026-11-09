@@ -71,6 +71,7 @@ push_change() {   # $1 = path, $2 = content
   git -C "$WORK" commit -qm "change $1"; git -C "$WORK" push -q origin main
 }
 export HUB_VIEW_PYTHON="$PY"
+export HUB_VIEW_GATE_FLAGS="$TMP/gate-flags"
 
 # ---------------------------------------------------------------- A. refresher #
 rc=0; "$REFRESH" "$VIEW" 2>/dev/null || rc=$?
@@ -118,6 +119,27 @@ git -C "$VIEW" remote set-url origin "$ORIGIN"
 LOGF="$TMP/refresh.log"
 HUB_VIEW_LOG="$LOGF" "$REFRESH" "$VIEW" 2>/dev/null
 chk "A8 HUB_VIEW_LOG receives the result line" "$(grep -c '\[hub-view\] refresh view=' "$LOGF")" 1
+
+# ------------------------------------------- A9. one regen per BATCH (debounce) #
+# TOKEN-REGEN-TRIPLE-DEBOUNCE: three commits landing in one batch must cost ONE regen,
+# not three. The gate (index_regen.py --gate) holds regeneration inside the quiet window.
+"$REFRESH" "$VIEW" 2>/dev/null   # settle: regenerate + record at current head
+n0="$(wc -c < "$VIEW/regen.count")"
+push_change handoffs/active/h1.md "- [x] batch 1"
+out1="$("$REFRESH" "$VIEW" 2>&1)"
+push_change handoffs/active/h1.md "- [x] batch 2"
+out2="$("$REFRESH" "$VIEW" 2>&1)"
+push_change handoffs/active/h1.md "- [x] batch 3"
+out3="$("$REFRESH" "$VIEW" 2>&1)"
+chk "A9 three head moves inside the quiet window -> zero regens" "$(( $(wc -c < "$VIEW/regen.count") - n0 ))" 0
+chk "A9 gated refreshes say so" "$(grep -c 'regen=no(gated)' <<<"$out1"$'\n'"$out2"$'\n'"$out3")" 3
+chk "A9 view still advanced to origin/main" "$(git -C "$VIEW" rev-parse HEAD)" "$(git -C "$WORK" rev-parse HEAD)"
+# NEGATIVE CONTROL: once the batch has ended (quiet window elapsed) the ONE regen fires.
+out4="$(HUB_VIEW_GATE_QUIET_S=0 "$REFRESH" "$VIEW" 2>&1)"
+chk "A9 batch ended -> exactly one regen for the three commits" "$(( $(wc -c < "$VIEW/regen.count") - n0 ))" 1
+n1="$(wc -c < "$VIEW/regen.count")"
+HUB_VIEW_GATE_QUIET_S=0 "$REFRESH" "$VIEW" 2>/dev/null
+chk "A9 no further input change -> no second regen" "$(wc -c < "$VIEW/regen.count")" "$n1"
 
 # ----------------------------------------------------------------- B. mtimes #
 SRV="$VIEW/dashboard/server.py"
