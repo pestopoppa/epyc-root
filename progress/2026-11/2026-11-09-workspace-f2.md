@@ -66,3 +66,10 @@ The Fable audit found and fixed two defects: a PII hook bypass through the nm si
 | New box | FUSED-DECODE-ZERO-ROW-LOGITS (AutoKernel) |
 
 Box review: engineering-hygiene-backlog (outside the refactoring track), frontier-lab-automation and the lab-reliability-ladder track. Only the crash box was newly tickable; the rest stay open on named blockers (LOOP-11/12/58 need cutover or a real crash test, NIB2-98 is opt-in until Pipeline wires launch, W3 is ongoing, AFC-P5.E3 waits for r3).
+
+## Wrap-up (operator-invoked /wrap-up, RTG-22 / EVL-29 review)
+
+- Ticked GPU-EXCL-SMOKE-RECHECK (verified against `/mnt/raid0/llm/tmp/rtg22-grant-unfiled-20261109.md` lines 314-316): pf1-expand-r2 overlapped, akx-lb3-2-cv5-pair-r2 ~17 s setup-only, xgrammar-a2-profile-r3 fully inside smoke inf34-v15.
+- Refused LOOP-5 (`operator_messages` still unknown, patches not live), FILING-OWNER-LESS-REWRITE (appends only, but two unlocked appenders), and left open with dated status sub-bullets: TOKEN-AUDIT-6/7, ROWFLOW-IDLE-GRACE-FIELD, LOOP-54, AUTOFILE-OWNER-LIVENESS, GAP-POOL-1, NI-IDLE-REFILL-WATCHER, SCRATCH-LEASE-P3/P4, NIB2-83.
+- Sub-bullets only: LOOP-7 (table rtg22-loop7-20261109.md), LOOP-25 (branch rtg22-loop5-25, unlanded), GRANT-UNFILED-241 (branch rtg22-filing, unlanded), NIB2-77 (11-16 covers 16 trees only), AFC-P5.E3 (r4 none-level artifact; r5 RUNNING at 21:11Z, none done 1.0/0.7667/1.0, mild in progress; not filed).
+- No inference, no process management, rtg22-* worktrees untouched. [no-belief: not-a-result]
