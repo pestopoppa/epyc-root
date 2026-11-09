@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:51:42Z",
+  "generated_at": "2026-11-09T15:53:22Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2438,7 +2438,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-09",
-      "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
+      "next_action": "Run ak-q38fn-reaper-diag-c9-20261109 (>=19:30Z), then re-run Q38FN floor; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "open": 67,
       "priority": 0.0021,
       "priority_basis": {
