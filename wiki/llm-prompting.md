@@ -273,3 +273,13 @@ for the prescriptions, which have not been A/B'd (INF-78 OAB-9).
 ### Run 2026-10-20, IDs 2116–2190 — [digest](../research/deep-dives/intake-digests/2026-10-20-ids-2116-2190.md)
 
 - intake-2155#record (Arbiter): Citable for the structural-rule inventory and the v2 corrections; the 152 findings, the different-models-find-different-things claim and the architecture-failure correlation are not established. Verdict worth_investigating, integrated; linked to promptforge-mutation-safety-contract.
+
+## Compiled Update — 2026-11-09 (D-RI-PREVIEW-1.1 FINAL contract)
+
+**Confidence: verified** (r4 void, r5 predeclared; r5 result pending)
+
+- **A prompt that says "set FINAL to ..." invites an assignment.** The worker model wrote `FINAL = <expr>`; the harness honours only `FINAL(<expr>)`, so r4 voided itself (7/7 `bad_final`). R5 changes one thing, the wrapper's last sentence (FINAL is an already-defined function, call it, never assign; example `FINAL(42)`), with scorer, fixture, seeds, temperature and void rule unchanged. A no-model replay of r4's replies still scores 7 `bad_final`, so nothing is repaired by the scorer.
+- **Open check for R5:** r4 showed byte-identical replies across seeds at temperature 0.7; if they recur, treat as a harness defect and void, not as a stable model.
+- **TD-16 (same day):** the yes/no label-word conditions never reached the prompt in r1 (arm N invalid); r2 result: C does not beat N on AUROC (+0.008, CI95 [-0.009, +0.028]).
+
+Sources: [memory-program](../handoffs/active/memory-program.md) · [dri-r5 progress](../progress/2026-11/2026-11-09-dri-r5.md) · [file-five-rows progress](../progress/2026-11/2026-11-09-file-five-rows.md)

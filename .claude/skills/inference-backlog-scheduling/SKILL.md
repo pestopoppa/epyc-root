@@ -326,6 +326,7 @@ records the operator's interim 50 GiB floor until 2026-10-28 08:10Z, then
 - **A cgroup is not containment until its delegation is root-owned** (same-UID escape, RUN14/INF-74, 10-28).
 - **HELD-row recovery outranks tooling work**; the audit traced the tooling drift to leaving it unattended.
 - **A real-lane smoke, not a fixture preflight, makes a row ready** (`references/launch-admission-gate.md`).
+- **A re-arm reassesses; it never copies the spec.** Before republishing a row after a failed or stopped run, re-derive its shape (cores/quarters, slots), its estimate and the way the prior run failed from the prior run's own evidence. SLIDERS r3 was a verbatim copy of r2 and booked about 13 h on one quarter; its first question took 5,516 s and ended `[Error] Request timed out.` (hard-coded 200 s client timeout, up to 16 concurrent calls into 2 slots). The operator objected (2026-11-09); r4 fixed the cause, used 4 slots and two quarters, and cut the estimate from 12 h to 8 h from r3's measured first question.
 
 ## 5. Coordination protocol
 

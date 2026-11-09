@@ -4638,3 +4638,13 @@ Sources: [AutoKernel progress 2026-11-07](../progress/2026-11/2026-11-07-autoker
 - **C8 fold status (harvests #10, #11).** C8-FOLD3 passed every clause (fold3 `ab3fc54dc`); C8-5-H20 was kept by operator decision against its own H20_NO_KEEP row verdict (27B pp2048 1.0485) and folds as fold4 = fold3 + H20. The PPL ln-ratio of about 0.0011 is a harness artifact: quality is judged by KLD < 1e-3 and top-1, which is what AutoKernel's `graph_kld_verdict` already gates on.
 
 Sources: [AutoKernel progress 2026-11-08](../progress/2026-11/2026-11-08-autokernel.md) · [autokernel-loop handoff](../handoffs/active/autokernel-loop.md) · [AKX program handoff](../handoffs/active/autokernel-akx-program.md) · [speculative-decoding handoff](../handoffs/active/speculative-decoding.md)
+
+## Compiled Update — 2026-11-09 (R18-D clock eligibility: band, not equality)
+
+**Confidence: verified for the diagnosis; the prospective r4 test is in flight**
+
+- **`min_sclk == max_sclk` is the wrong stability test for a pinned MI210.** r3's 136 invocations all had sclk_max 1700 and sclk_min 1580-1635 (auto in r1: 800); pp512 throughput showed no detectable clock dependence (CV 0.516%, r = 0.126, 0.31% per 30 MHz, narrow range). The pin worked; the predicate demanded zero tolerance over the whole process window including load.
+- **The ratified 120 MHz request-phase band replaces equality** (RATIFY-AK-C9-2-20261109, band unchanged), graded from a per-invocation 0.25 s clock trace; the adapter fails closed without a trace (`f51f203ae`). r3 cannot be re-graded (no trace) and the band was set from r3's own maximum, so r4 is the prospective test. Predeclared rule: every invocation in-band over its request phase (min >= 1580, none above 1700, >= 8 samples, gaps <= 1 s) with DPM level high throughout.
+- **Ingest dependency:** the adapter imports `clock_policy.py` from the research repo; a stale shared research clone makes it refuse r4.
+
+Sources: [r18d diagnosis](../artifacts/analysis/r18d-clock-diagnosis-20261109.md) · [vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md) · [2026-11-09 r18d-r4 progress](../progress/2026-11/2026-11-09-r18d-r4.md)

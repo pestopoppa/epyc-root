@@ -132,3 +132,13 @@ Sources: [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [repl-sessi
 - **Unlimited-OCR default is quant-compliant**: `Unlimited-OCR-Q5_K_M-outq8.gguf` re-hashed to the recorded SHA-256 `b4c9ba49...c926e2`; 155 tensors, only `output.weight` changed Q6_K to Q8_0, 154 byte-identical to the Q5_K_M source.
 
 Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md)
+
+## Compiled Update — 2026-11-09 (SLIDERS client timeout, KB index cutover)
+
+**Confidence: verified** (handoff notes and job logs; no SLIDERS gate recorded, n = 0)
+
+- **SLIDERS on a local model measures its own timeouts first.** The released client hard-codes a 200 s request timeout and issues up to 16 concurrent calls; against a 2-slot server the requests expire in the queue (76 abandoned in r3's first question, 5,516 s, 100 LLM calls, 0 SQL executions, answer `[Error] Request timed out.` recorded as `ok`). The r4 row patches the timeout to 3,600 s on both import paths, uses 4 slots and counts `[Error]` answers as `fail`. Any FB5 gate read from r3 would have been a timeout rate, not a schema-hallucination rate.
+- **A re-arm must reassess, not copy.** r3 was r2's spec verbatim (one quarter, about 13 h); the operator objected. See the `inference-backlog-scheduling` skill, section 4.
+- **KB RAG default moved to `index-qd-v2`** (orchestrator `b4e25aa1`, rebuild row PASS). The shared orchestrator clone's local `main` still read `index-qd-v1` (62 commits behind), so `PIP04-KB-INDEX-BREAK` stays open until that clone is fast-forwarded and the update hook fails loudly.
+
+Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md) · [inference-backlog-scheduling skill](../.claude/skills/inference-backlog-scheduling/SKILL.md)
