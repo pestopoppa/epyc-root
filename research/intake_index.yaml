@@ -382608,3 +382608,1262 @@
   disposition_evidence:
   - Routed into the existing box DSPINE-B16-PORT in handoffs/active/speculative-decoding.md (port built on branch llama.cpp-experimental-c9-dspine-20261108
     @ ea3d9eef3; GPU smoke pending); this entry closes the box's open intake sub-task.
+- id: intake-2664
+  arxiv_id: '2606.03819'
+  url: https://arxiv.org/html/2606.03819v1
+  source_type: paper
+  title: 'TreeFlash: Parallel AR-Approximation for Faster Speculative Decoding'
+  authors:
+  - Peer Rheinboldt
+  - Frederic Berdoz
+  - Roger Wattenhofer
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-09'
+  verification: dive-verified
+  read_depth: FULL
+  credibility_score: 2
+  key_claims:
+  - "Chain-to-tree transition is the main driver of the gain over DFlash; the AR head adds on top (B=16: +3.9% speedup over DDTree, +17.1% for the whole TreeFlash over DFlash)."
+  - "TreeFlash beat DFlash and DDTree in every table cell, on dense Qwen3 4B/8B and Coder-30B-A3B."
+  - "Verification overhead limits budgets in multi-batch settings per the authors; single-batch GH200 shows no meaningful row-cost slope from B=16 to 64."
+  - "All experiments are single-batch SDPA on NVIDIA GH200 with 64 samples per dataset; no hybrid or recurrent target is tested."
+  - "A frozen-backbone variant retains the gain, so the SwiGLU AR head carries the benefit."
+  - "Each dataset is limited to 64 samples."
+  - "The method is evaluated exclusively on Qwen-family models."
+  techniques:
+  - One-shot block drafter with SwiGLU AR-approximation head conditioned on previous token
+  - Two-stage top-M (M=16) conditional tree construction with OPT-Tree selection
+  - Single-pass tree verification with ancestor-only attention mask and accepted-node KV compaction
+  reported_results:
+  - "B=16 budget-matched vs DFlash: +24.8% tau and +17.1% speedup (paper mean across tables)."
+  - "B=16 vs DDTree: +7.5% tau, +3.9% speedup."
+  - "B=64 vs DDTree: +12.4% tau, +9.1% speedup; vs DFlash +51.6% tau, +46.2% speedup."
+  - "TVD to verifier at depth 15: DFlash 0.81, TreeFlash 0.62 on Qwen3 4B (Figure 3)."
+  - "Dive recomputed round cost tau/speedup 1.33-1.44 across rows with near-zero B=16 to 64 slope (GH200 single-batch)."
+  contradicting_evidence:
+  - "In-house 27B DFlash2 np1 short-prompt rows suggest about 3.1 ms per extra verified row (upper bound, DSpine sweep), so the paper's flat B scaling does not transfer to MI210 hybrid; no external replication found."
+  reader_should_conclude: "Cite the tree-vs-chain decomposition and the single-batch, dense-target scope. Do not carry the abstract's 12%/9% without its B=64 condition, do not treat the AR head as new relative to DFlash2 (our selector is already predecessor-conditioned over top-16), and do not cite any hybrid-SSM or MI210 claim from this paper; there are none. Next step is DF2-LAT arm D (offline OPT-Tree on the DFlash2 lattice), not a TreeFlash port."
+  dive_corrections: "2026-11-09 Stage-2: abstract 12%/9% holds only at B=64 (B=16: 7.5%/3.9% tau/speedup over DDTree). At B=16 MT-Bench T=1 the AR head adds +1.4% (4B) / +3.0% (8B) speedup. Paper has no DFlash2 baseline and no hybrid target. Tree verification needs an ancestor-only mask, and on hybrid targets per-branch recurrent state (champion d210f85c2 refuses partial rollback on shared cells and sequential split with coupled sequences), a priced port."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Section 4.1"
+    quote: "The major driver of this improvement is the transition from chain to tree drafting"
+    quote_sha256: c06c8435600bfc608c171a05e127c0ccd49ccab8a4c5405053cfaaf5fd904c6c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Section 4.1"
+    quote: "TreeFlash consistently outperforms all baselines in every evaluated configuration"
+    quote_sha256: 412a6e9ec5456ee384eec231b8e6dd02f37530658b9c24f89d57247cb7789e64
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Figure 5 caption"
+    quote: "this is not the case in multi-batch settings, where the compute overhead of tree verification typically favors smaller draft budgets"
+    quote_sha256: 9cc16bf2dea063bc79d4c0780c2bff183904f68b9f3d99a7db5641a42e110066
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Limitations"
+    quote: "All experiments are conducted in a single-batch setting using SDPA attention"
+    quote_sha256: 3f838b68face0425a9fb7663c058b439a2a133124e5829a86b6cc42aea3d6fef
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "Table 3 caption"
+    quote: "keeping the backbone frozen has similar performance"
+    quote_sha256: 55c32ee64d9459f47921a9b88dc1ad11ea9c17a99b5a1176180664cd68e4da81
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  - claim_index: 5
+    kind: page-and-quote
+    locator: "Section 4"
+    quote: "Each dataset is limited to 64 samples"
+    quote_sha256: 071a255308b2d18543678745c40dca8460ba7e297cda72485252cbd08ec657e7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  - claim_index: 6
+    kind: page-and-quote
+    locator: "Limitations"
+    quote: "TreeFlash is evaluated exclusively on Qwen-family models"
+    quote_sha256: ab8cbf8cab5114895106f795524e17641b5f79b570e69d72931488d702a4c8b5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18, found: true}
+    source_revision: https://arxiv.org/html/2606.03819v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2606.03819v1
+      requested_url: https://arxiv.org/html/2606.03819v1
+      effective_url: https://arxiv.org/html/2606.03819v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      relative_path: sha256/46/465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18.raw
+      raw_sha256: 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18
+      byte_length: 301519
+  notes: "lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Read FULL from version-pinned LaTeXML html, sha256 465b38668a97b8d735de4d21aa4dcd02e05c8634572ab18337f86888ebdb6b18; companion repo github.com/ETH-DISCO/TreeFlash read at f5c20b468cb77a33115103df2ce205c5cee6d912, not executed. Estimate for 27B np1 short prompts, equal rows B=8: 71-90 t/s vs DFlash2 n7 78.04 t/s, central +3%, estimate only; B=16 about 0.77x on short prompts. Training hours not stated in source. Dive file: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/treeflash.md."
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed to boxes DF2-LAT-TREE and DF2-VERIFY-SLOPE in handoffs/active/speculative-decoding.md.
+  handoffs_created: []
+- id: intake-2665
+  arxiv_id: '2608.02438'
+  url: https://arxiv.org/abs/2608.02438v2
+  source_type: paper
+  title: 'XPress: Parallel Refinement for Diffusion Drafters in Speculative Decoding'
+  authors:
+  - Zheng Wang
+  - Davis Wertheimer
+  - Yu Chin Fabian Lim
+  - Mudhakar Srivatsa
+  - Raghu K. Ganti
+  - Minjia Zhang
+  - Naigang Wang
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2662
+  verdict: worth_investigating
+  ingested_date: '2026-11-09'
+  key_claims:
+  - A lightweight causal refiner re-ranks a block-diffusion drafter output with a per-position logit bias, resolved by K parallel
+    Jacobi passes.
+  - The drafter backbone runs once per block; its features are held fixed, so K passes are refiner-head only and add no drafter
+    passes.
+  - The refiner requires training and is co-trained with the drafter against a frozen target; no frozen-drafter result is
+    reported.
+  - Training used 32 H100 GPUs per setting; steps and wall-hours are not stated.
+  - The headline ~30% acceptance and ~1.3x throughput are against plain dFlash; Table 1 versus the identically trained Markov
+    head gives tau +5.0% at T=0 and +5.3% at T=1.
+  - Sampling remains lossless for any K>=1 by proposing the final-iteration refined distribution with noise shared across
+    passes.
+  - 'Each Jacobi pass adds about 75 us on H200 at block 16 (Table 3: 150 us at K=1 to 681 us at K=8, Markov 601 us).'
+  - XPress changes neither the drafter size nor verification, so it needs a single linear draft and no multi-branch target
+    support.
+  - The throughput edge over plain dFlash is batch-invariant over batch sizes 4-32 on vLLM; the serving table has no Markov
+    baseline.
+  techniques:
+  - causal logit-bias refiner with strictly lower-triangular per-channel mixer
+  - Jacobi fixed-point refinement of the refiner over a fixed drafter block
+  - frozen Gumbel noise shared across passes for lossless sampling
+  - top-C candidate-restricted readout (companion code, not in paper)
+  reported_results:
+  - 'Qwen3-8B, dFlash b16, H200, single sequence, T=0 averages: tau dFlash 6.25, Markov 7.64, XPress 8.02; speedup over AR
+    4.9x, 5.9x, 6.2x.'
+  - 'Same setup, T=1 averages: tau 4.94, 6.62, 6.97; speedup 3.6x, 4.7x, 5.3x.'
+  - 'Table 3 refinement latency per block: XPress K=1 150 us, K=4 379 us, K=6 530 us, K=8 681 us; Markov head 601 us (H200,
+    b16).'
+  - 'vLLM, greedy, Qwen3-8B: XPress over plain dFlash 1.16-1.47x across bs 4-32; GSM8K 13686 vs 9380 tok/s at bs=32.'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Internal: XPress over the identically trained Markov head is tau +5.0% (T=0) and +5.3% (T=1), against the +28%/+41% headline
+    against plain dFlash.'
+  - 'Internal: GSM8K T=0 throughput gain 1.70x exceeds its tau gain 1.56x, and T=1 XPress/Markov throughput 1.11x exceeds
+    tau 1.05x with no latency saving at the K used; cell noise or unstated cost differences remain.'
+  - 'Companion README: Table entries use the throughput-optimal K per cell (best of 4 at T=0, best of 3 at T=1). Companion
+    script sets the T=1 dFlash draft to sampled, while labelling argmax as the dFlash convention.'
+  - No independent replication found in one bounded web search; the vLLM and speculators merges are stated by the authors.
+  reader_should_conclude: 'Cite XPress over the Markov head (tau about +5%) as the effect relevant to DFlash2, not the 1.3x/1.46x
+    headline against plain dFlash. Conclude that K passes are head-only and add no drafter backbone passes, and that the head
+    needs training. Do NOT conclude any zero-training gain on DFlash2: Jacobi over the existing lattice reproduces the serial
+    walk at best. Do NOT carry K<<B to block 8, where K=6-7 is about B-1. Do NOT cite the 1.70x GSM8K cell as an effect size.
+    Estimate for 27B DFlash2 n7 np1 temp 0 on MI210 is 0.99-1.05x, central +3%, and is an estimate only.'
+  dive_corrections: '2026-11-09 Stage-2 dive. Headline numbers recompute, but the comparison is to plain dFlash measured as
+    released while XPress and Markov are co-trained with their heads. Against the Markov head the tau gain is about 5%. K
+    per cell is throughput-selected (companion README, not stated in paper). Near-zero-cost framing narrowed: K=7 is 603 us
+    versus Markov 601 us. Training steps and hours are not stated. No zero-training route exists on DFlash2 because the fixed
+    point equals the existing serial walk.'
+  claim_corrections:
+  - claim_index: 4
+    effect: narrowed
+    note: Headline holds versus plain dFlash; relevant first-order-selector baseline gives about +5% tau.
+  - claim_index: 1
+    effect: unaffected
+    note: Confirmed in Alg 1, Sec 4.2 and companion refiners/xpress.py.
+  - claim_index: 5
+    effect: unaffected
+    note: Asserted in paper without proof; dive derivation supports it given the K-1 prefix proposal and shared noise.
+  read_depth: FULL
+  verification: dive-verified
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: lightweight causal refiner that reconciles the whole diffusion block at once through parallel refinement
+    quote_sha256: 8536bddbee405185e8c3dc2a944a4c191d543e55b7c9600c3c2f4adfd559804d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 4.2
+    quote: are computed once and held fixed across iterations
+    quote_sha256: 6f4e31016e959a6aebf6ec94c0bcd51116b9d4769abe307ee13a434666dfb297
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 4.3
+    quote: The causal refiner is co-trained with the (co-adapted) drafter
+    quote_sha256: 8139baf27b8433b9613cf12ae10535a7245c076fc8dc501ae458b0c8a5e1dda4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 5.1
+    quote: For the training process, we use 32 H100 GPUs to train each setting.
+    quote_sha256: 234e9405a67414226cfe55b181698d582067ba91946f3cccaaa0973036997c38
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 5.1, Table 1
+    quote: We compare against the plain dFlash drafter
+    quote_sha256: 08721c8fa2fddfee5020d114d39fa057ff09dc4569d805068b7158430e44013e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 4.2
+    quote: distribution of the final iteration as the proposal
+    quote_sha256: dd3ffb47ec94d574260fc3fcb488fccea6b9370d0add1f0cc5496aedd17f2b02
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Sec 5.2
+    quote: each Jacobi iteration adds about
+    quote_sha256: 0dd27f5cb351513e1667c5cbf40a5f2c8d3ed4d397f30ac11bdf4071037ea6f5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Sec 2.1
+    quote: neither enlarges the drafter nor changes verification
+    quote_sha256: 5ceacfd00286d334130711a5976fb5428f9a22608315f551cbf4914b8ef5b1cb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  - claim_index: 8
+    kind: page-and-quote
+    locator: Sec 5.2
+    quote: essentially batch-invariant
+    quote_sha256: 027dbe5a99ccc5e069a437e08b8a305c86eaff57e309ae6aeece7bdfd1659f86
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca, found: true}
+    source_revision: https://arxiv.org/html/2608.02438v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2608.02438v2
+      requested_url: https://arxiv.org/html/2608.02438v2
+      effective_url: https://arxiv.org/html/2608.02438v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      relative_path: sha256/cf/cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.raw
+      raw_sha256: cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca
+      byte_length: 338761
+  recommended_actions:
+  - Amend DF2-LAT to record the verifier-token rank in full base logits and add top-16 and top-512 oracle arms, zero training,
+    same window.
+  - 'Hold an XPress-style head as a trigger-gated DF2-FT-1 arm: frozen backbone first, top-C readout, block 8, Jacobi versus
+    static serial sweep.'
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed to boxes DF2-LAT-TREE and DF2-VERIFY-SLOPE in handoffs/active/speculative-decoding.md.
+  handoffs_created: []
+  cross_references:
+    handoffs:
+    - speculative-decoding.md
+    - kernel-champion-and-promotion.md
+    intake_entries:
+    - intake-158
+    - intake-738
+    - intake-1571
+    - intake-1724
+    - intake-1773
+    - intake-2561
+    - intake-2569
+    - intake-2662
+    - intake-2663
+    intake_entry_notes:
+    - intake-738 (DSpark, the Markov head baseline)
+    - intake-2662 (DSpine paper, the expansion source and closest closed bet)
+  notes: 'lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Raw html sha256 cf5d8f06cccf2d6560768c0a2f0b2b3ac123a0207fdf5dece10fd5610823dbca.
+    Companion repo read, not executed, at 4718c90b5885dbdf83048c045431f47a834b4251. Figures 3 and 4 are images, read only
+    through captions and prose. Full dive: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/xpress.md.'
+- id: intake-2666
+  arxiv_id: '2606.18394'
+  url: https://arxiv.org/abs/2606.18394v5
+  source_type: paper
+  title: 'JetSpec: Breaking the Scaling Ceiling of Speculative Decoding with Parallel Tree Drafting'
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2662
+  verdict: worth_investigating
+  ingested_date: '2026-11-09'
+  authors:
+  - Lanxiang Hu
+  - Zhaoxiang Feng
+  - Yulun Wu
+  - Haoran Yuan
+  - Yujie Zhao
+  - Yu-Yang Qian
+  - Bojun Wang
+  - Peng Zhao
+  - Daxin Jiang
+  - Yibo Zhu
+  - Tajana Rosing
+  - Hao Zhang
+  key_claims:
+  - Reports up to 9.64x on MATH-500 and 4.58x on MT-Bench at budget 256 on Qwen3-8B, offline on 8 H100s with Triton kernels;
+    serving on one H100 reaches 4.33x at batch 1, budget 128.
+  - 'The head is per-depth marginals from a causal mask, not branch-conditioned: off-argmax branches get the argmax-anchored
+    distribution. The abs-page abstract still says branch-wise causal conditioning.'
+  - 'Advantage over a matched, tuned bidirectional head is small: 8.50x vs 8.36x on MATH-500 (Table 7, +1.7%); the +9.8% of
+    Table 2 is against DDTree without loss weighting. The causal head is robust across gamma.'
+  - Optimal tree budget falls with serving load; at batch 16 budget 32 is best (3.81x) and budget 128 drops to 2.80x, with
+    saturation near 803 TPS at batch 8 and 16.
+  - Per-token draft cost c falls under 1%, but multiplying c by N shows T_draft/T_verify flat at 13-18% for N=2..512; the
+    amortization is against an N-token verify pass, and the appendix measures DFlash with linear verify, not JetSpec trees.
+  - Evaluated only on Qwen3-8B (dense) and Qwen3-30B-A3B (MoE); no hybrid or recurrent target.
+  - Training needs target-regenerated sequences (corpus training 2.06x vs 4.80x on GSM8K at budget 16); training ran on 8
+    H100s at micro batch 2, hours not stated.
+  techniques:
+  - Causal attention mask over draft positions in a DFlash-style one-pass head
+  - Best-first tree over per-depth top-W lists by accumulated draft log-probability (node budget B, width 7, depth 16)
+  - Single-forward tree verification with ancestor mask (Triton and SM90 CuTe paged tree-attention kernels)
+  - Forward-KL distillation on target-regenerated sequences
+  reported_results:
+  - 'Qwen3-8B, temp 0, budget 256, offline 8xH100: MATH-500 9.64x tau 10.76; MT-Bench 4.58x tau 5.94; DDTree 8.78x tau 9.81
+    and 4.26x tau 5.41'
+  - 'Qwen3-8B temp 1, budget 256, offline: MATH-500 7.83x tau 9.01; MT-Bench 4.06x tau 5.22'
+  - 'Qwen3-30B-A3B, temp 0, budget 256: MATH-500 9.45x tau 10.65'
+  - 'vLLM on one H100, Qwen3-8B, MATH-500, batch 1: AR 127.8 TPS, budget 128 553.3 TPS (4.33x); batch 16: AR 287.3, budget
+    32 1094.6 (3.81x), budget 128 803.1 (2.80x)'
+  - 'Table 7 MATH-500: causal best 8.50x tau 10.00, diffusion best 8.36x tau 9.72'
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Own Appendix A.4 contradicts the abs-page wording: heads are not branch-conditioned on sibling paths.'
+  - Companion repo refuses tree verification on hybrid targets (hybrid target supports only causal width-one trees, jetspec/core/model_runner.py:136
+    at 673267e4).
+  - No DFlash2 or DSpark baseline, so the claimed incoherence defect is untested against the DFlash2 selector.
+  - Table 2 DDTree (8.78x) vs Table 7 unweighted diffusion (5.46x) for a nominally same training setup is unexplained.
+  - No independent replication found in a bounded web search on 2026-11-09; citations found were restatements.
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed to boxes DF2-LAT-TREE and DF2-VERIFY-SLOPE in handoffs/active/speculative-decoding.md.
+  handoffs_created: []
+  recommended_actions:
+  - Extend DF2-LAT with a tree-headroom arm on the DFlash2 top-16 lattice (zero training).
+  - Measure MI210 verify ms/node at 8/16/32/64 for 27B, GPU analog of CAFE-2.
+  - 'Only if both clear: level-synchronous tree verification for GDN targets on HIP.'
+  - Add a causal-mask arm when a DFlash2 block-16 training pipeline exists.
+  - Decline CPU tree verification for A3B on measured width cost.
+  read_depth: FULL
+  verification: dive-verified
+  reader_should_conclude: Do not treat 9.64x as attainable on our stack. It is offline, 8xH100, Qwen3-8B, depth 16, custom
+    kernels. Serving on one H100 is 4.33x at batch 1 and collapses with concurrency. The causal head is depth-marginal, not
+    branch-conditioned, and its matched gain over a tuned bidirectional head is about 2% (Table 7). There is no hybrid or
+    DFlash2 evidence, and the authors code refuses tree verification on hybrid targets. Hybrid is a priced build (level-synchronous,
+    per-node recurrent state), not a mathematical kill. Estimated np1 27B effect against DFlash2 n7 is 0.83-1.09x before GDN
+    penalty, an arithmetic estimate with the node cost unmeasured. Measure MI210 verify width and DFlash2 lattice tree headroom
+    before any port. CPU tree verification for A3B is net-negative on measured width cost.
+  dive_corrections: '2026-11-09 Stage-2: (1) abs-page "branch-wise causal conditioning" superseded by v4/v5 body, which is
+    per-depth marginals; v1-v3 described a per-node ancestor mask (eq 5-6). (2) v1 prose "16 to 256, 443.3 to 968.2 TPS, 6.75x"
+    never matched its own Table 11 (224.0 to 553.3, 4.33x at budget 128); fixed in v4. (3) App G c is N-amortized; draft/verify
+    ratio is flat 13-18%. (4) Paper named JetFlow in v1.'
+  notes: 'lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Raw HTML v5 sha256 ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.
+    Companion repo hao-ai-lab/JetSpec at 673267e4faba71a63099c258f0802c2f3aa44f8e read selectively, not executed. v1, v3,
+    v4 HTML compared by string search on load-bearing passages, not read in full. Full dive: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/jetspec.md.
+    DSpine relation: different cost side (verify width, not draft time), same depth/block-16 dependency.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract; Table 2; Table 11
+    quote: further latency gains demonstrated through vLLM integration under realistic serving loads
+    quote_sha256: bdc489bea18c63dd0bf88da22f8bb04cbe5d60bc6a2b3e5b4a3b03209e545893
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Appendix A.2 / A.4
+    quote: off-argmax branches inherit a conditioning context that does not match their own ancestor token
+    quote_sha256: 7c378ff464500fb9ff3ea25e5ad17f14244775899127bf8d39758c34c243dbf5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 4.4.2, Table 7
+    quote: while the diffusion head is sensitive to
+    quote_sha256: d688b0f5adf2598cc225507a8466e06d7d8f5f65e37c06f7c57de5559269733c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Appendix E, Table 11
+    quote: relative gain decreases at larger batch sizes as verification and memory pressure become more prominent
+    quote_sha256: 91b287b4f11067e7b1b85ae0235fe93904d10df1a64989f9f8154236b7a4cca6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Appendix G, Table 12
+    quote: amortizes the parallel draft-head forward cost across the
+    quote_sha256: f0b86325f3afaee8a450d8b643fdb62cb122560b3e5f2085a620a7592503e311
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 4.1
+    quote: covering both dense and MoE target models
+    quote_sha256: 70d091c56459c961c5373d66bfefffde68e8f49703fcb4badb0b3729bc56bcba
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Sec 4.4.1 Table 6; Appendix D
+    quote: All draft-head training runs are conducted on 8 H100 GPUs with a micro batch of 2.
+    quote_sha256: 2027514e87221b7deeb20c3ca9cc9e5a487f3ad2eabfae0992f961d8d362c62f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652, found: true}
+    source_revision: https://arxiv.org/html/2606.18394v5
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2606.18394v5
+      requested_url: https://arxiv.org/html/2606.18394v5
+      effective_url: https://arxiv.org/html/2606.18394v5
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      relative_path: sha256/ba/ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652.raw
+      raw_sha256: ba26192e0636b453ef75a375d7c31541d075c9b191c937442fa570d0580d3652
+      byte_length: 505758
+- id: intake-2667
+  arxiv_id: '2604.12989'
+  url: https://arxiv.org/html/2604.12989v1
+  source_type: paper
+  title: 'Accelerating Speculative Decoding with Block Diffusion Draft Trees'
+  authors:
+  - Liran Ringel
+  - Yaniv Romano
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  verdict: worth_investigating
+  ingested_date: '2026-11-09'
+  verification: dive-verified
+  read_depth: FULL
+  credibility_score: 2
+  key_claims:
+  - "A draft tree is built directly from the per-position marginals of one existing DFlash pass, with no drafter training."
+  - "Algorithm 1 is a best-first heap (O(B log B)) that provably maximizes expected accepted length under the drafter's factorized distribution (Eqs 2, 6-8, Props 1-3), exact only for that surrogate and not for the target."
+  - "The root is excluded from the budget, so B nodes mean B+1 verified rows."
+  - "Verification is one target forward over root and nodes with position ids by depth and an ancestor-only attention mask."
+  - "After the walk the KV cache is compacted to the accepted path (reference code also selects target features by accepted index)."
+  - "DDTree improves all 60 Table 1 cells, but each cell is the best of 7 budgets selected on the evaluation data."
+  - "Speedup peaks at B=256-512 on the Fig. 3 case; the headline gains are large-budget gains and round cost is flat from B=16 to 512 on H200 at batch 1."
+  - "Tree attention requires standard SDPA rather than FlashAttention-2; baselines take the better of both."
+  techniques:
+  - Top-B prefix selection by best-first heap over per-depth rank tuples (OPT-Tree objective on one-pass marginals)
+  - Tree attention verification with depth position ids and accepted-path KV compaction
+  - Node-budget sweep {16,32,64,128,256,512,1024}
+  reported_results:
+  - "Table 1, all 60 cells improved. Dive-recomputed best-budget vs DFlash: T=0 mean speedup +46.0%, tau +47.6%; T=1 mean speedup +52.0%, tau +54.2%."
+  - "Digitized Fig. 3 (Qwen3-8B, MATH-500, T=0, block 16): B=16 6.09x / tau 8.61 vs DFlash 5.56x / 7.79 (+9.6% speedup, +10.5% tau); B=512 7.52x / 10.73 (peak); B=1024 6.82x / 10.98."
+  - "No results below B=16; 30-164 examples per dataset; no error bars in Table 1."
+  contradicting_evidence:
+  - "In-house 27B DFlash2 on MI210 shows up to about 3.1 ms per extra verified row on short prompts (upper bound, wave-1 dives), so the paper's flat round cost from B=16 to 512 does not transfer. No independent criticism or stand-alone replication found; DDTree appears as a baseline in TreeFlash and JetSpec."
+  reader_should_conclude: "Cite the objective and proof, and the B=16 result (+9.6% speedup / +10.5% tau, Qwen3-8B MATH-500 T=0, digitized) instead of best-budget gains. Do not carry 46-52% mean speedup gains, which are oracle-budget up to B=512 on dense or MoE GPUs, to DFlash2 or to MI210, and do not assert any result for B<16 or for hybrid targets; there are none. On a DFlash2 lattice the zero-training replay is valid for B<=16 only if the dump includes per-position log_z, and unbiased policy replay needs a lattice at every token position. Next step is the DF2-LAT D1/D2 arms, not a port."
+  dive_corrections: "2026-11-09 Stage-2b: headline gains are best-of-7-budget selections, peaking at B=256-512; B=16 digitized gain is +9.6% speedup and +10.5% tau on the MATH-500 case. No B<16 data. Paper has no DFlash2 baseline and no recurrent target. Estimate only (no measurement): at our depth 7, B=7-8 is nearly the chain (+2 to +8% tau), and np1 27B T=0 lands around 0.90-1.01x at B=8."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "a method that constructs a draft tree directly from the per-position distributions of a block diffusion drafter"
+    quote_sha256: 7f175b8efd469c8b13389ad40ce9f2c55c7b52c32756624d65bf5cb575917d08
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Abstract"
+    quote: "uses a simple best-first heap algorithm to select the continuations"
+    quote_sha256: 117ff7298ebceb02b213ecb9e09f7c3e9fb8e9e5cf559e298dca7e2a88e27804
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Remark 1, Section 4.2"
+    quote: "not for the true target-model distribution"
+    quote_sha256: 5f14d3f8a34527c7426c12730111e1365699d559036c7de7cfb2e386f59fcc99
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Section 4.2"
+    quote: "itself does not count toward the node budget"
+    quote_sha256: 39e2ef45516de60bb4d67175ad10142ed15f3bdffb396115d81384ca16f49fd0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "Section 4.4"
+    quote: "under which each drafted node attends to the past context through the KV cache"
+    quote_sha256: 0096dfdd12a683ae53a6b7915dcb307eb9bbd858c899ff1804f0464113830b91
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "Section 4.4"
+    quote: "the KV cache is compacted to retain only the accepted path"
+    quote_sha256: 4c079dc3ebbb7c7bdec4ca17bcecf3a8298d577b9753e9cb8241117900e41de1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 5
+    kind: page-and-quote
+    locator: "Table 1 caption"
+    quote: "the DDTree entry uses the best node budget from"
+    quote_sha256: 8f2e9f427b549d27c974997fee406560853e904cadaeab973ae5a3aa99676387
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 6
+    kind: page-and-quote
+    locator: "Section 5.3"
+    quote: "the end-to-end speedup improves until it peaks around budgets of 256 to 512"
+    quote_sha256: 959cbebae477e9e2c1065787deaf0efcb46be4785f842dc98c1703e5f2f234b0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  - claim_index: 7
+    kind: page-and-quote
+    locator: "Appendix B"
+    quote: "does not support the required tree attention pattern"
+    quote_sha256: 88f9e21dcd071e4d08376518e0b05264001f68896f1a50c4da9b1cd1b1048fba
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be, found: true}
+    source_revision: https://arxiv.org/html/2604.12989v1
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/html/2604.12989v1
+      requested_url: https://arxiv.org/html/2604.12989v1
+      effective_url: https://arxiv.org/html/2604.12989v1
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      relative_path: sha256/f6/f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be.raw
+      raw_sha256: f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be
+      byte_length: 336217
+  notes: "lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Read FULL from version-pinned LaTeXML html, sha256 f6b462bcead6c4d047a38627693d100e0fa36c718680d3bf63a3814f06ff13be; Figures 3-4 read from arXiv SVGs; Fig. 3 digitized from marker coordinates and calibrated against Table 1 (5.56x/7.79, 7.52x/10.73). Companion repo github.com/liranringel/ddtree read at c96427a185677bf4133ed865dd1626a5041aef9b, not executed. Drafter training: none. Wave cap reached for surfaced sources. Estimates only: np1 27B + DFlash2 n7 T=0 0.90-1.01x at B=8; about 0.67-1.07x at B=16. Dive file: /mnt/raid0/llm/tmp/c10-intake-20261109/dives/ddtree.md."
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed to boxes DF2-LAT-TREE and DF2-VERIFY-SLOPE in handoffs/active/speculative-decoding.md.
+  handoffs_created: []
+- id: intake-2668
+  arxiv_id: '2610.19792'
+  url: https://arxiv.org/abs/2610.19792v2
+  source_type: paper
+  title: 'JetSpec++: Foresight Parallel Drafting with Self Refinements'
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2666
+  verdict: worth_investigating
+  ingested_date: '2026-11-09'
+  authors:
+  - Zhaoxiang Feng
+  - Lanxiang Hu
+  - Haoran Yuan
+  - Yu-Yang Qian
+  - Jihui Yang
+  - Peng Zhao
+  - Yibo Zhu
+  - Tajana Rosing
+  - Hao Zhang
+  key_claims:
+  - Pipelines drafting behind verification by predicting the unverified target hidden states with a learned 12-layer adapter
+    and a training-free decoder made of the target's last two layers, caching pre-drafted blocks for likely outcomes.
+  - 'Self-refinement runs the whole drafter J+1 times per round, unlike the head-only passes of XPress, and is hidden only
+    because a second GPU does it during verification.'
+  - 'Includes a hybrid-target result: Qwen3.8-27B (48 GDN + 16 attention layers), chain verification, block 16; no DFlash2 baseline
+    and no tree verification.'
+  - 'Headline 1.54x over DSpark is Qwen3-8B with 2 GPUs against 1 and with DSpark confidence scheduling disabled; on 27B it
+    is 1.37x and 1.31x, and tau contributes more than round time.'
+  - Jacobi passes alone trail DSpark on all seven benchmarks (Table 5 vs Table 1, 8B); the gain over DSpark comes from anchor
+    replacement using the adapter and decoder.
+  - Table 3 implies a hybrid per-token verify slope of 0.72-0.75 ms on GB200 for 27B, versus 0.05 ms for dense 8B (derived,
+    budget 16 versus AR, assumes linearity).
+  - 27B training takes 710 GPU-hours for the drafter and 172 for the adapter on GB200.
+  - Mask-input drafters trained on fully noised blocks collapse when refined (JetSpec head 5.86 to 2.39 at J1 on GSM8K).
+  - Argmax drafts need a point-mass proposal for losslessness; using the softmax as q for an argmax token breaks the guarantee.
+  techniques:
+  - Draft-verification pipelining with a speculation cache keyed by (k, a) outcomes
+  - Hidden-to-hidden adapter (12 layers initialized from target layers) with Smooth L1 plus cosine loss
+  - Training-free decoder reusing the target's last layers, with calibrated logistic outcome scores
+  - Jacobi self-refinement over a causal drafter with token inputs
+  - Clean-prefix noisy-suffix training (Pr[m=0]=0.25, forward KL)
+  - Context refresh and anchor replacement between refinement passes
+  - Point-mass exact-match verification of argmax drafts
+  reported_results:
+  - 'Qwen3-8B, GB200, CUDA graphs, batch 1, temp 0, budget 16, cache 4, J1-R1, 2 GPUs: GSM8K 1148.8 tok/s (6.30x), MATH-500 1361.1
+    tok/s (7.45x); DSpark 1 GPU 744.3 and 902.1'
+  - 'Qwen3.8-27B, same setup, J3-R3, 2 GPUs: GSM8K 342.4 tok/s (5.68x), MATH-500 367.2 tok/s (6.20x); DSpark 1 GPU 249.6 and
+    279.8; AR 60.3 and 59.3'
+  - '27B verify 27.4-27.8 ms; exposed time 0.71-0.77 ms vs DSpark 4.46-4.52 ms; hit 89.0-90.0% at cache 4'
+  - 'Offline tau, budget 16, temp 0, mean of 7 benchmarks: 8B J3-R3 8.94 vs DSpark 6.89; 27B J3-R3 9.06 vs DSpark 7.18 (means
+    computed in dive)'
+  credibility_score: 2
+  contradicting_evidence:
+  - Comparison is 2 GPUs against 1 with no DSpark-on-second-GPU arm, and DSpark runs without its confidence scheduling.
+  - Abstract joins 8.94 average tau (J3-R3, offline, cache 16) with 7.45x (J1-R1, serving, cache 4), which are different configurations.
+  - Serving results are batch 1 at temp 0 only; no concurrency data, and hit rate at temp 1 is not reported.
+  - Table 6 state recovery (95-98%) is 8B only; 27B adapter accuracy is inferred from tau.
+  - No independent replication found in a bounded web search on 2026-11-09; results were JetSpec restatements and did not mention
+    JetSpec++.
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Routed to boxes DF2-LAT-TREE and DF2-VERIFY-SLOPE in handoffs/active/speculative-decoding.md.
+  handoffs_created: []
+  recommended_actions:
+  - Amend proposed MI210 verify-cost gate A2 with a chain-depth arm 1..8 plus breadth arm, at short and long context.
+  - Decline a single-MI210 port on critical path (estimate 0.44-0.78x) and Jacobi on existing DFlash2 weights.
+  - Record a trigger, no checkbox, for full JetSpec++ on 27B when a second peer-access accelerator and a working DF2-FT-1 pipeline
+    exist.
+  - Add token-input and clean-prefix arms to DF2-FT-1 and DF2-BLOCK16 training when the pipeline exists.
+  read_depth: FULL
+  verification: dive-verified
+  reader_should_conclude: Do not cite 1.54x, 7.45x or 8.94 for planning; they are 8B, 2 GPUs against 1, and two different configurations.
+    Use 1.31-1.37x for 27B and only with the two-GPU label. Self-refinement does add full drafter passes. Do not read JetSpec++
+    as a result about DFlash2, tree verification on hybrid targets or concurrency, since it has none of these. On one MI210
+    with drafting on the critical path the estimated effect is 0.44-0.78x against DFlash2 n7 (arithmetic estimate, not measured);
+    0.75-1.15x with a second accelerator. Do not apply Jacobi passes to existing DFlash2 weights. The tree gates keep their
+    thresholds, and the MI210 verify gate must also measure chain depth, at short and long context.
+  dive_corrections: '2026-11-09 Stage-2b: (1) headline 1.54x is 8B and 2 GPUs against 1; on 27B the gain is 1.31-1.37x with tau the larger
+    factor. (2) Abstract pairs J3-R3 offline tau with J1-R1 serving speedup. (3) "Self refinement" gains over DSpark come from
+    anchor replacement; Jacobi alone trails DSpark on all seven benchmarks. (4) Table 1 JetSpec row is a chain, not its tree
+    mode.'
+  notes: 'lane_head: ad1e73525f6b86077936d9a1065f4da35c27c9d5. Raw HTML v2 sha256 dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.
+    Companion repo hao-ai-lab/JetSpec at 673267e4faba71a63099c258f0802c2f3aa44f8e read selectively, not executed. Full dive:
+    /mnt/raid0/llm/tmp/c10-intake-20261109/dives/jetspecpp.md. DSpine relation: same bet on one device (draft-side cost for acceptance),
+    different bet with a second device. Tree gates: thresholds unchanged; chain-depth arm added to the verify-cost gate. Wave
+    cap reached: noticed 2609.27396, 2607.22634, 2608.13524, 2606.04446, 2605.30852, 2604.12989, not listed for dive.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: which begins the next block before the current one is verified
+    quote_sha256: 264605381d308a4c115c270f6b83dce91b6b323a9736ac69d1839bd9fed79f4e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Sec 4.3
+    quote: We instead let the draft model refine its own draft in parallel
+    quote_sha256: c04fcf730e589aae385d6738b30998e55e53f6f72fe1b8a85e404ac7ce5b1133
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Sec 5.3, Table 2
+    quote: a hybrid model in which 48 of the 64 layers are Gated DeltaNet
+    quote_sha256: f0d60e1a7f18ff2be3887fd6aa03e84dc438a3b597588d67b6e349529e428322
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Sec 5.1, Table 3
+    quote: DSpark runs without its confidence-based scheduling, so every method verifies a block of fixed size.
+    quote_sha256: 20bf2cd6fcb1c0a587ea48c167438f05783948322ae949d9164c76e0f86fe31c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Sec 5.5, Table 5
+    quote: so most of that gain comes from anchor replacement
+    quote_sha256: e72cf8342cf1402af61f460d8dad148a2204277b7de90356d5365b75f0b0627f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Sec 5.4, Table 3
+    quote: On Qwen3.8-27B, graphed verification takes 27.4 to 27.8 ms
+    quote_sha256: a99759fe189a570d541b808192080bc2b99abeb25a73e15697f51dd0af3b0b47
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Appendix E
+    quote: Training takes 347 GPU-hours on GB200 GPUs for Qwen3-8B and 710 for Qwen3.8-27B.
+    quote_sha256: 5d1a50da1141bbcf5b6ef9d263aac7db8db094a71f7ed662a09a961d74b33071
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Sec 4.3, Tables 4 and 12
+    quote: A draft model trained only on masked blocks is never trained to condition on tokens at its inputs.
+    quote_sha256: 328e46ea869dbd9291d7715a4f70cbe1ec56ed81fbff6e94aa043a86ffdbbd0e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
+  - claim_index: 8
+    kind: page-and-quote
+    locator: Appendix F.3
+    quote: because the token is not drawn from that softmax
+    quote_sha256: 91e1d42f99c54de542d885abcae814bf408202e3da7d9bd99afc15961b922269
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498, found: true}
+    source_revision: https://arxiv.org/html/2610.19792v2
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2610.19792v2
+      requested_url: https://arxiv.org/html/2610.19792v2
+      effective_url: https://arxiv.org/html/2610.19792v2
+      retrieved_at_utc: '2026-11-09T09:30:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      relative_path: sha256/df/dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498.raw
+      raw_sha256: dffecf19a787e0b5f64c5d3da90b5404bdcbce3902ca0f7845ce99133ff13498
+      byte_length: 729404
