@@ -235,6 +235,28 @@ def test_backups_failed_status_raises(tmp_path, calls):
     assert alarm_calls(calls) == [("raise", "claude-backups-stale")]
 
 
+def test_loop_state_backups_alarm_matrix(tmp_path, calls):
+    """BK-5: stale, FAILED and missing-with-parent raise; fresh clears; absent parent dir stays silent."""
+    key = "loop-state-backup-stale"
+    st = tmp_path / "loop-state.LAST_STATUS"
+    t = tick(tmp_path)
+    hh.loop_state_backups(t, status=tmp_path / "nodir" / "x")
+    assert alarm_calls(calls) == []
+    hh.loop_state_backups(t, status=st)                       # parent exists, file missing
+    assert alarm_calls(calls) == [("raise", key)]
+    st.write_text("2026-11-09T04:31:00Z STATUS FAILED rc=4\n")
+    hh.loop_state_backups(t, status=st)
+    assert alarm_calls(calls)[-1] == ("raise", key)
+    st.write_text("2026-11-09T04:31:00Z STATUS OK snapshot=20261109\n")
+    old = time.time() - 40 * 3600
+    os.utime(st, (old, old))
+    hh.loop_state_backups(t, status=st)
+    assert alarm_calls(calls)[-1] == ("raise", key)
+    os.utime(st, None)
+    hh.loop_state_backups(t, status=st)
+    assert alarm_calls(calls)[-1] == ("clear", key)
+
+
 # --------------------------------------------------------------------------- heavy gate
 def _fake_region_lock(tmp_path, rows, rc=0):
     p = tmp_path / "region-lock"
@@ -327,6 +349,7 @@ def test_tick_writes_heartbeat_and_log(tmp_path, calls, monkeypatch):
     monkeypatch.setattr(hh.shutil, "disk_usage", lambda p: Usage(0, 0, 500e9))
     monkeypatch.setattr(hh, "keeper", lambda t: None)
     monkeypatch.setattr(hh, "backups", lambda t: None)
+    monkeypatch.setattr(hh, "loop_state_backups", lambda t: None)
     monkeypatch.setattr(hh, "heavy", lambda t, force=False: None)
     sd = tmp_path / "state"
     assert hh.tick(state_dir=sd) == 0

@@ -100,6 +100,8 @@ HEAVY_STARVED_S = 3 * 86400
 RELAUNCH_MIN_S = 1800
 BACKUP_STATUS = Path(os.environ.get("HYGIENE_BACKUP_STATUS", f"{LLM}/claude-backups/LAST_STATUS"))
 BACKUP_MAX_AGE_S = 36 * 3600
+LOOP_STATE_STATUS = Path(os.environ.get("HYGIENE_LOOP_STATE_STATUS",
+                                        f"{LLM}/claude-backups/loop-state.LAST_STATUS"))
 REGION_LOCK = os.environ.get("HYGIENE_REGION_LOCK", f"{LLM}/epyc-orchestrator/scripts/region-lock")
 CPU_WINDOW = Path(os.environ.get("HYGIENE_CPU_WINDOW", f"{LLM}/autokernel/cpu-window.json"))
 ALARM = ROOT / "scripts" / "coordination" / "alarm_channel.py"
@@ -443,6 +445,30 @@ def backups(t: Tick, status: Path = BACKUP_STATUS) -> None:
         t.clear_alarm(key, "claude-backups fresh")
 
 
+def loop_state_backups(t: Tick, status: Path = LOOP_STATE_STATUS) -> None:
+    """BK-5: the nightly loop-state snapshot (scripts/backup/backup_loop_state.sh, host cron 04:30) must be
+    visible when it fails or does not run. Same contract as `backups`: a missing/old/non-OK status file
+    raises `loop-state-backup-stale`. Silent only when the status directory itself does not exist."""
+    key = "loop-state-backup-stale"
+    try:
+        st = status.stat()
+        text = status.read_text(errors="replace").strip()
+    except OSError:
+        if status.parent.exists():
+            t.raise_alarm(key, "warning", f"{status} is missing — the nightly loop-state backup has no status")
+        return
+    age = time.time() - st.st_mtime
+    ok = "OK" in text.split()
+    t.log(f"loop-state backups: {status} age {age / 3600:.1f} h, '{text[:60]}'")
+    if age > BACKUP_MAX_AGE_S or not ok:
+        t.raise_alarm(key, "warning",
+                      f"loop-state backup last status '{text[:80]}' is {age / 3600:.0f} h old "
+                      f"(> {BACKUP_MAX_AGE_S // 3600} h or not OK). The host job "
+                      "(backup_loop_state.sh, host crontab 04:30) did not run or failed.")
+    else:
+        t.clear_alarm(key, "loop-state backup fresh")
+
+
 def _event_daemon_copies(proc_root: Path = Path("/proc")) -> list[int]:
     """Strict read-only identity scan. Unreadable live entries are uncertainty.
 
@@ -748,6 +774,7 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
         disk_free(t)
         keeper(t)
         backups(t)
+        loop_state_backups(t)
         event_duty(t)
         heavy(t, force=force_heavy)
     finally:
