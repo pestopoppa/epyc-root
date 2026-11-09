@@ -10,7 +10,7 @@ verified live 2026-07-29).** Write path FIXED and proven self-healing in product
 standing integrity gate (M-17) blocks AutoPilot on a broken store and runs in `health_check.sh`.
 The degenerate-vector guarantee extends to **every** store via `FAISSEmbeddingStore.add()`
 (episodic, SkillBank, StrategyStore — commit `82fbf276`). Live state 2026-07-29: episodic
-`ntotal=58749 desync=0`, round-trip 500/500, degenerate 0/500, **semantic self-match mean
+`ntotal=58749 desync=0` (HISTORICAL, superseded 2026-11-09: 08-09 reseed, see the audit refresh below), round-trip 500/500, degenerate 0/500, **semantic self-match mean
 cosine 0.9824 over 8 samples** (0.5505 during the incident); strategy store 1424/1424/1424
 coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are follow-on analysis
 (M-15), the re-distil (M-11a, inference-gated), and the never-run A/B (M-12).
@@ -21,6 +21,17 @@ coherent, 0 degenerate; skills a clean post-purge slate. Remaining items are fol
 **Related**: [learned-routing-controller.md](routing-program.md#track-learned-routing-controller) (EPD-1/2/3 label defects),
 [standardized-stack-update-pipeline-finalization.md](stack-lifecycle-program.md#track-standardized-stack-update-pipeline-finalization)
 (SS-BENCH-GATE)
+
+## 2026-11-09 audit refresh
+
+*Premise reset.* The stack has been off for a long time and no traffic is flowing; Autopilot is on operator HOLD (last true run 2026-08-09T19:29Z, trial 1503). The goal is to have the stack running by end of November 2026; a new era will be set up for the relaunch. Every box below that said "let real traffic accumulate" now reads "after the stack is back and traffic is flowing, or via a non-traffic path".
+
+- **Store state (verified read-only 2026-11-09).** First full re-embed: M-10, receipt `20260727T220715Z`, 58,281 rows. **Second full re-embed (was unrecorded): `reseed_episodic_store_20260809T160329Z`, state `published`, 63,786 rows embedded, ntotal = id_map = 63,786** (`orchestration/repl_memory/sessions/reseed_episodic_store_20260809T160329Z.receipt.json` in the orchestrator repo; six earlier same-day attempts are stuck in `backups_complete` and left ~5-6 GB of backups; deleting them needs operator confirmation). Live store now: **64,514 rows** (732 written after the reseed), read-only, **last write 2026-10-03T03:48**, zero writes since. Alignment was checked structurally only (sizes/row counts); the integrity check needs the embedder and was not run.
+- **The next full re-embed is NOT owned here:** it is the EG2 swap (REPL-EMB-2.x in `harness-program.md`), with EPD-3 (`routing-program.md`, drop `priority` from `MemoryRecord.embedding_text()`) folded into it by operator decision so the store is re-embedded once. See the pointer box after M-15. No box in this handoff re-embeds.
+- **Index row `Next action` was stale.** M-12i was declined and merged into M-12f on 2026-11-03. The real next action is the M-12f scoring-validity write-up; it is a model-free offline re-score and needs NO bench release and NO exclusive claim.
+- **Doable now (no compute):** M-12f write-up, M-12c checklist, M-15, M-19, CFI-2, M-20 code, M-27d.1, D-f2, D-g..D-RI design and code, UTM-V1/V2, DHM-8/9/11 proposals (hook edits need D9 ack; check in-flight edits first).
+- **Needs an inference window (not Autopilot):** M-11a, M-12 and children, M-12k, CFI-1, D-RI-PREVIEW-1.1 re-run, UTM-V3 semantic/V4/V6, DHM-5.2. **Needs the stack/API up:** D-f1, D-c1. **Needs a profile store:** UTM-V7.
+- Anchor fixes this pass: `compute_chronological_awareness_score` is `scripts/benchmark/tulving_episodic_adapter.py:543`; `_recall` is `routing.py:93`, `_route_advice` `:339`.
 
 ## Track: memory-program
 <!-- gate: none -->
@@ -143,6 +154,17 @@ failure caught in amber.
         **seed / run live traffic first → let real trajectories accumulate → then let autopilot
         propose `distill_skillbank`** (or trigger it via `seed_skills.py --teacher claude`).
 
+        > **2026-11-09 premise update:** no traffic is accumulating (stack off; last episodic write
+        > 2026-10-03; Autopilot on HOLD). The accumulate-then-propose path cannot fire before the stack is
+        > back (target: end of November 2026). The readiness threshold is already met on the existing pool
+        > (M-25 measured 6,237 post-reseed rows, 5,452 at q>=0.7, 99.9% success) but that pool is
+        > eval/external-dominated. The non-Autopilot path `seed_skills.py --teacher claude` needs no traffic
+        > and no Autopilot; it is an inference-class run (teacher calls), not HOLD-blocked.
+        > **Decision needed (operator):** (a) distil now from the existing 99.9%-success eval/external pool
+        > via `--teacher claude`; (b) wait for real traffic after relaunch. Recommendation: (b) for the
+        > headline bank (the pool has no failure signal and holds 200-char stubs), but (a) is acceptable as
+        > a labelled pilot (M-25 arm labels) if a bank is needed earlier for M-23/VB-SKILLBANK-AB-WRITE.
+
         Teacher policy is RESOLVED — operator ruling 2026-07-28: Claude CLI is the autonomous
         default, wired for a one-env-line shift when the operator decides
         (`AUTOPILOT_DISTILL_TEACHER=local` on the supervisor; `AUTOPILOT_DISTILL_LOCAL_URL`
@@ -200,7 +222,7 @@ failure caught in amber.
 
         Historical context — the reseeded store holds 200-char
         objective stubs; rich trajectories arrive only from new live-traffic/autopilot writes, so
-        the first re-distil is best run after real traffic accumulates. The 57 previous skills reference
+        the first re-distil is best run after real traffic accumulates (once the stack is running again; none is accumulating as of 2026-11-09). The 57 previous skills reference
         `source_trajectory_ids` matching 0 current rows, and were distilled from 200-char stubs — all
         57 are thin routing heuristics because that is the ceiling of the input. Re-distilling over
         real trajectories is what makes SkillBank worth its retrieval slot.
@@ -223,7 +245,8 @@ failure caught in amber.
       correct id_map resolution moves it to **0.5570**, which no longer clears the probe's own
       close-out gate of <=0.55; its in-sample leakage anchor read 0.6427 where the report documented
       "expected ~1.0", recovering to 0.9101 under the correct mapping. The line was closed on bad
-      evidence. Re-run after the reseed. Done when pooled AUC under the correct id_map is recomputed on the reseeded store: <= 0.55 closes the line for good, > 0.55 reopens COMP_r as a routing signal candidate.
+      evidence. Re-run after the reseed. Done when pooled AUC under the correct id_map is recomputed on the reseeded store: <= 0.55 closes the line for good, > 0.55 reopens COMP_r as a routing signal candidate. *2026-11-09:* both reseeds have happened (07-27 and 08-09, 63,786 rows published); run it on the live 64,514-row store, pure offline analysis, record the embed-text convention (still includes `priority`) with the result; not blocked by the HOLD.
+- [ ] **EVL10-REEMBED-POINTER — the next full re-embed is the EG2 swap, with EPD-3 folded in (pointer box; nothing re-embeds from this handoff).** Owners: REPL-EMB-2.x in `harness-program.md` (`scripts/migration/reembed_stores_eg2.py run --apply --assume-stopped`, BGE-1024 to EmbeddingGemma2@256; bound to the v11 stack change since `gemma-embedding2` is absent from production v10) and EPD-3 in `routing-program.md` (drop `priority` from `MemoryRecord.embedding_text()`, 34,938 rows carry `priority:interactive`). Operator decision: EPD-3 is folded into the EG2 swap so the store is re-embedded ONCE; do not run EPD-3 as a separate re-embed, and never change the recipe code before the re-embed. Done when both owners record that the single re-embed landed and the integrity gate (M-17) passes on the result. (added 2026-11-09)
 - [x] M-16 — **Record contract IS exercised in production.** ✅ 2026-07-28. Verified once traffic
       flowed: the last 40 rows are **40/40 on contract**, newest `2026-07-28T06:25:53`, keys
       `['objective', 'priority', 'record_version', 'source', 'task_type']`. The chokepoint guard in
@@ -577,8 +600,8 @@ failure caught in amber.
         CAS is ever a headline**, since 30 of the 45 `chronological` questions in the 20ch set have fewer than
         two ground-truth items (15 have zero) so ordering is undefined and two thirds of the tau leg is
         structurally 0.0 — a CAS construction question, not a scorer bug
-        (`scripts/benchmark/tulving_episodic_adapter.py:325` `compute_chronological_awareness_score`) (found
-        2026-09-14, noninf sweep). Absorbs M-12i: the same write-up codifies the offline re-scoring protocol, so a corrected SRS/CAS can be cited as a protocol result and never as a back-filled tuple.
+        (`scripts/benchmark/tulving_episodic_adapter.py:543` `compute_chronological_awareness_score`, research repo; anchor was :325 until 2026-11-09) (found
+        2026-09-14, noninf sweep). **Next action (2026-11-09):** write the scoring-validity note; it is a model-free offline re-score over existing results (rescored artifact `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json`, research repo, not under `/workspace/benchmarks`) and needs **no bench release and no exclusive claim**. Absorbs M-12i: the same write-up codifies the offline re-scoring protocol, so a corrected SRS/CAS can be cited as a protocol result and never as a back-filled tuple.
   - [x] **M-12g — stop comparing SRS across book sizes until the bin sets match**: ✅ 2026-10-08; bin `6+` is empty in the
         20ch set, so the 20ch SRS averages over four bins while the 200ch figure averages over five
         (`scripts/benchmark/tulving_episodic_adapter.py` `compute_simple_recall_score`) (found 2026-09-14,
@@ -601,6 +624,7 @@ failure caught in amber.
         memory-on vs memory-off on the live frontdoor path over a frozen answer-quality suite (same prompts,
         same seeds; memory-off = routing without episodic lookups), reporting accuracy, latency and cost per
         arm. The 2026-09-26 audit found memory is used for routing only and has never been A/B-tested.
+        *2026-11-09:* needs the stack (frontdoor) running and an inference window; the suite, seeds and the memory-off switch are still unnamed (underspecified; resolve before filing a row). Not Autopilot-dependent; the episodic store it reads is frozen at 64,514 rows.
 - [x] **M-23 — SkillBank A/B readout spec (supersedes the pooled-mean go/no-go of `handoffs/completed/skillbank-distillation.md` section 19; AK-PM-4 step (c) is re-pointed by its owner; M-12 itself stays the episodic A/B).** Zero inference; the run is gated on M-11a populating a bank and on the DAR-1 regret gate (`retrain-routing-models.md:126`). The cell is role plus model pin as served (frontdoor, worker, coder, architect). Report skill-on minus skill-off per cell with a task-level bootstrap 95% CI and the share of negative role-domain cells, never one pooled delta (`intake-2190#00`, `intake-2190#03`, `intake-2190#10`); declare the minimum detectable difference at the run n before the run (run-local declaration, not a standing rule) and do not rank arms whose CIs overlap (`intake-2181#01`); promotion is per-role non-regression, not mean > 0. Report adoption beside accuracy, defined as the share of injected skills whose title is echoed or visibly applied in the routed role's trace (titles, not ids, are in the prompt, `skill_retriever.py:230-236 @5d4ad2c0`), detector derived from the skill's own rule or title and fixed before the run; adoption is a separate failure axis from correctness (`intake-2169#04`); the SkillLearnBench tool-call metric is not comparable (`intake-2180#03`). Log per-request skill_ids joined to the served role and model pin. Teacher-side solve rate or skill-quality scores are never the gate; the student-side matched A/B is (`intake-2170#03`); any LLM-judged skill-text score is advisory (`intake-2181#03`, `intake-2190#07`). Report every headline delta under both intention-to-treat and per-protocol parse handling and re-score stored outputs with a second independent scorer before a scorer-dependent delta is acted on (`intake-2171#04`, `intake-2171#06`). Prior: the sign of skill benefit is a distribution (`intake-2169#08`, `intake-2190#00`), so borrow none from either paper. When the A/B reports, compare the entry format with Harness^2's (cue, adopted tree, EXPERIENCE.md, domain-scoped index; `intake-1995#02`). ✅ 2026-10-20
   M-29 clauses apply (see "M-29 readout clauses (filed 2026-10-21)" below the M-23 sub-items).
   - [ ] **VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21):** [too-big: missing native request logs, adoption and role/model cell contract require owner integration] the M-23 A/B runner calls `scripts/vidya/adapters/skillbank_ab.write_belief_measurements(out_dir, run_id=..., producer=..., request_log_path=..., cells=[...])` once per run, one cell per role x model pin, before its first arm runs; carrier and reader landed in root `7335da327`.
@@ -628,7 +652,7 @@ failure caught in amber.
   (11) Report write-side cost as LLM calls plus input and output tokens summed over every memory-construction call, judge calls excluded, beside the read-side line (intake-2311#record).
 
 - [ ] **M-20 — telemetry and evaluation for the model-initiated `recall()` / `route_advice()` REPL tools**
-      (`src/repl_environment/routing.py:81` `_recall`, `:319` `_route_advice`). Zero observed calls in
+      (`src/repl_environment/routing.py:93` `_recall`, `:339` `_route_advice`; anchors re-resolved 2026-11-09). Zero observed calls in
       1.7 GB of progress JSONL, and only 6 rows carry `repl_steps`. Log each call (query, hits, whether the
       answer used them), then decide from data: keep, re-prompt, or remove. (filed 2026-09-26)
 - [x] **M-21 — filter smoke/probe traffic out of episodic write-back.** Live write-back is dominated by smoke prompts (`"What is 17 * 3?"` alone: 8,641 Q updates). Tag probe/smoke/health traffic at the API and skip its write-back; add a test and a one-off count of affected rows. (filed 2026-09-26) ✅ 2026-10-31 — APP `6de0e31dce409d3b974be3b78979f02dadcdc473`; [tests](../../artifacts/compute/codex3-m21-20261031/FINAL-v2.log); [read-only literal count](../../artifacts/compute/codex3-m21-20261031/COUNT.log). [belief: cc]
@@ -1033,7 +1057,7 @@ non-executable format.
         *would* have cost, and (c) re-derivation work observed after a resume (repeat greps/reads for
         state that was dropped). T3's hard-workflow/tool-use/REPL probe slice is the natural carrier —
         it is already the exploration target for the current era. Zero added inference: this rides
-        traffic that is already running. Decision rule (absorbs D-c, D-c2 and D-e1): if the measured re-derivation work after a resume exceeds the cost of a code-log preamble on real traffic, design D-c (code-log resume) and revisit the 12/8 defaults in the same change; if it is negligible, close D-c and D-e1 here with the numbers.
+        traffic that is already running. *2026-11-09 premise update:* no traffic is running (stack off, no writes since 2026-10-03); this box starts when the stack is back (target end of November 2026), and the carrier must be the relaunch era's T3 slice. Decision rule (absorbs D-c, D-c2 and D-e1): if the measured re-derivation work after a resume exceeds the cost of a code-log preamble on real traffic, design D-c (code-log resume) and revisit the 12/8 defaults in the same change; if it is negligible, close D-c and D-e1 here with the numbers.
     - 2026-11-02 readiness audit: the code-log instrumentation in `REPLState` is not the full
       measurement. `Checkpoint` and both production checkpoint constructors omit `code_log` and
       `code_log_metrics`, so they do not survive that persistence path; the audit also found no
@@ -1233,7 +1257,7 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
   fencing token. A stale lease may be reclaimed only after liveness/expiry reconciliation; PID reuse,
   simultaneous acquire, owner crash, delayed stale writer, and idempotent release are mandatory
   regression fixtures. Preserve read-only concurrent inspection.
-  - [ ] **D-f1 — Verify the lease under the live 6-worker API** once the API is back up: two concurrent
+  - [ ] **D-f1 — Verify the lease under the live 6-worker API** once the API is back up (relaunch target: end of November 2026; the operator owns reload timing): two concurrent
     `/chat` requests on one `session_id` must serialize (second reports a later `lease_token`, both
     checkpoints land, none lost), and `session_leases` must show no live row after both return. In the same live-API check confirm `graph_snapshots` volume under the landed retention defaults (newest 100 runs / 100 rows per run, orch 0151a3dbe) — absorbs D-f3a.
   - [ ] **D-f2 — Decide whether findings, documents and tags are fenced too.** D-f fences the session row,
@@ -1745,6 +1769,7 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
       "zero consumers" — re-grepped 2026-09-07, it has exactly **one non-test consumer,
       `src/trace/cli.py:22`**, and **no MCP registration and no orchestrator wiring**. That is the
       gap. Absorbs the 2026-07-16 "read-only 5-tool navigation surface + RRF hybrid" candidate: registration as an MCP/orchestrator tool is the whole gap; no new construction.
+      **2026-11-09 audit:** the MCP registration now EXISTS (`ms.search` / `ms.expand` in `src/trace/mcp_tools.py:21,27`, orchestrator commit `715b49ae` 2026-10-07, ancestor of main; wired in `src/mcp_server.py`; test `test_trace_mcp_tools.py`); the "no MCP registration" text above is stale. Left unticked: **Decision needed (owner/operator):** does "model-facing" require a REPL/orchestrator tool too, or is the MCP server enough? Options: (a) MCP only, tick now; (b) also register in the REPL tool surface. Recommendation: (a), since the box's own text names "MCP/orchestrator tool" and the REPL already has `recall()`; open (b) as a separate box only if M-20 shows REPL tools are used.
 - **[declined: ws58 2026-11-03 content-review: merged into M-12b — duplicate; M-12b's trace arm (BEAM_CONTEXT_MODE=trace, merged cfbfa448) is this run]** **UTM-B2 — Expose the FTS5 store + `navigation.py` (RRF k=60) as the memory backend for a
       BEAM 128K run** (`intake-1330#record`) — the cheapest first-party test of the append-only-log
       thesis. BEAM's driver reuses one retriever/prefix across all 20 questions of a conversation
