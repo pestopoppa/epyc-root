@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 673
+      "open": 672
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -1192,10 +1192,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 185,
+      "closed": 186,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 49,
+      "open": 48,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1208,7 +1208,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 144,
+          "closed": 145,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1219,14 +1219,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 44
+          "open": 43
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1668,
+          "line": 1669,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1792,
+          "line": 1793,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 1
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2117,
+          "line": 2118,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1256,7 +1256,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2256,
+          "line": 2257,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1266,7 +1266,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2812,
+          "line": 2813,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2952,
+          "line": 2953,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2959,
+          "line": 2960,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
