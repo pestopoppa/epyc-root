@@ -66,6 +66,10 @@ class KernelStoreReceiptTests(unittest.TestCase):
                     companion = target / name
                     companion.write_text("fixture\n", encoding="utf-8")
                     companion.chmod(0o755)
+        for target in self.targets.values():
+            rows = [f"{hashlib.sha256(f.read_bytes()).hexdigest()}  ./{f.name}"
+                    for f in sorted(target.iterdir()) if f.is_file() and not f.is_symlink()]
+            (target / "SHA256SUMS").write_text("\n".join(rows) + "\n", encoding="utf-8")
         self.ambient = str(self.targets["cpu"])
 
     @staticmethod
