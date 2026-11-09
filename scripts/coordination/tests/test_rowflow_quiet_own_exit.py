@@ -5,7 +5,9 @@ import os
 import shutil
 import sys
 import tempfile
+import time
 import unittest
+from unittest import mock
 
 _TESTS = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(_TESTS), "rowflow"))
@@ -80,6 +82,78 @@ class QuietOwnExit(unittest.TestCase):
         os.remove(os.path.join(self.kfd, "4242", "vram_0"))
         os.rmdir(os.path.join(self.kfd, "4242"))
         self.assertIn("1/2", self.gate())      # the foreign sighting dropped the own-exit record
+        self.assertIsNone(self.gate())
+
+
+class QuietSmokeExit(QuietOwnExit):
+    """One sample for the row whose own smoke exited and whose tree ps proves dead; anything else keeps two."""
+    def setUp(self):
+        super().setUp()
+        self.record("row-a")
+
+    def record(self, rid, pgid=DEAD, pids=(DEAD,)):
+        os.makedirs(rf.dry_dir(self.flags, rid), exist_ok=True)
+        rf.record_smoke_exit(self.flags, rid, pgid, dict.fromkeys(pids, "1"), [])
+
+    def cand(self, rid="row-a", rank=10):
+        return {"id": rid, "rank": rank, "bench": True, "options": [{rf.GPU}]}
+
+    def one(self, *cands):
+        got = set()
+        why = rf.gpu_quiet_gate(self.flags, [], {}, lambda *_: None, set(), cands=list(cands or [self.cand()]), one_sample=got)
+        self.assertIn("1/2", why)   # the device-wide verdict never opens early
+        return got
+
+    def test_proven_exit_names_only_that_row(self):
+        self.assertEqual(self.one(), {"row-a"})
+
+    def test_tree_alive_session_member(self):
+        self.record("row-a", pgid=os.getpgid(0))
+        self.assertEqual(self.one(), set())
+
+    def test_recycled_pid_is_not_proof(self):
+        self.record("row-a", pids=(os.getpid(),))
+        self.assertEqual(self.one(), set())
+
+    def test_child_of_recorded_pid_alive(self):
+        self.record("row-a", pids=(os.getppid(),))
+        self.assertEqual(self.one(), set())
+
+    def test_missing_record(self):
+        os.remove(rf.smoke_exited_path(self.flags, "row-a"))
+        self.assertEqual(self.one(), set())
+
+    def test_stale_record(self):
+        self.assertFalse(rf.smoke_tree_proven_dead(self.flags, "row-a", now=time.time() + rf.SMOKE_EXIT_FRESH_S + 60))
+
+    def test_survivors_write_no_record(self):
+        rf.record_smoke_exit(self.flags, "row-a", DEAD, {DEAD: "1"}, [DEAD])
+        self.assertFalse(os.path.exists(rf.smoke_exited_path(self.flags, "row-a")))
+
+    def test_running_record_present(self):
+        open(rf.running_path(self.flags, "row-a"), "w").write("{}")
+        self.assertEqual(self.one(), set())
+
+    def test_ps_failure_is_not_proof(self):
+        with mock.patch.object(rf.subprocess, "run", side_effect=OSError("no ps")):
+            self.assertEqual(self.one(), set())
+
+    def test_another_rows_process_small_kfd_owner(self):
+        self.foreign(gib=0)   # under the VRAM threshold, still an owner
+        self.assertEqual(self.one(), set())
+
+    def test_unreadable_kfd_is_not_empty(self):
+        shutil.rmtree(self.kfd)
+        self.assertEqual(self.one(), set())
+
+    def test_other_rows_record_does_not_help(self):
+        self.assertEqual(self.one(self.cand("row-b")), set())
+
+    def test_better_ranked_waiter_keeps_two(self):
+        self.assertEqual(self.one(self.cand("row-a", 20), self.cand("row-b", 5)), set())
+
+    def test_second_sample_is_ordinary(self):
+        self.one()
         self.assertIsNone(self.gate())
 
 

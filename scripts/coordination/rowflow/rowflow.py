@@ -3034,7 +3034,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
-    for stale in ("stop", "ended", "complete", SMOKE_RESIDENCY_FILE):
+    for stale in ("stop", "ended", "complete", SMOKE_RESIDENCY_FILE, "SMOKE-EXITED.json"):
         try:
             os.remove(os.path.join(dd, stale))
         except OSError:
@@ -3221,6 +3221,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
             os.remove(running_path(flags, rid))
         except OSError:
             pass
+        record_smoke_exit(flags, rid, p.pid, tracked, surv)
         if verdict == "FAIL" and one_quarter and (not reason.startswith("no first progress") or "never reached START" in reason):
             reason += (f" [dry run held ONE quarter, WS58_REGIONS={ws58_cpus(regions)}; a launcher whose own taskset/claim "
                        "hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN]")
@@ -4252,7 +4253,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     # genuinely free cores, packed onto partly used quarters; and
     # never breaking a whole free quarter a queued whole-quarter row would take (placement packing, operator "fix it")
     try:   # GPU exclusivity (2026-11-05 kvu16g2-ab): host-view occupancy gates and audits EXCLUSIVE gpu-quiet grants
-        gwhy = None if dry else gpu_quiet_gate(flags, grants, allrows, log, seen)
+        one_sample = set()
+        gwhy = None if dry else gpu_quiet_gate(flags, grants, allrows, log, seen, cands=cands, one_sample=one_sample)
     except Exception as e:  # noqa: BLE001 - an unreadable sysfs never stops allocation; it never admits either
         gwhy = f"device occupancy unreadable ({type(e).__name__}: {e})"
     try:   # GPU fence safety net: a KFD client inside a grant without the GPU token
@@ -4262,7 +4264,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         log(f"GPU-FENCE sampler failed: {type(e).__name__}: {e}")
     held_back = []
     if gwhy:
-        held_back = gpu_held_back(cands)
+        held_back = [c for c in gpu_held_back(cands) if c["id"] not in one_sample]
         cands = [c for c in cands if c not in held_back]
         if held_back:
             log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
@@ -4446,10 +4448,63 @@ def gpu_foreign(occ, own=frozenset()):
     return sorted(f), sum(f.values())
 
 
-def gpu_quiet_gate(flags, grants, allrows, log, seen):
+SMOKE_EXIT_FRESH_S = 1800   # the one-sample path is for a smoke that JUST exited; every PASSed row keeps a record, so age must bound it
+
+
+def smoke_exited_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-EXITED.json")
+
+
+def record_smoke_exit(flags, rid, pgid, tracked, survivors):
+    """The harness's receipt that this smoke's tree was reaped. No receipt when anything survived. Never raises."""
+    try:
+        if survivors:
+            _rm(smoke_exited_path(flags, rid))
+        else:
+            atomic_json(smoke_exited_path(flags, rid), {"id": rid, "pgid": int(pgid), "pids": sorted(int(x) for x in tracked), "exited_at": now_iso()})
+    except (OSError, TypeError, ValueError):
+        pass
+
+
+def smoke_tree_proven_dead(flags, rid, now=None):
+    """True only when rid's fresh exit receipt exists and ps proves nothing of its tree remains: no RUNNING.json, no live
+    process in its session/pgid, no recorded pid or child of one. A recycled pid counts as NOT proven. Any doubt is False."""
+    r = load_json(smoke_exited_path(flags, rid)) or {}
+    if os.path.exists(running_path(flags, rid)) or not r.get("pids"):
+        return False
+    t = iso_epoch(r.get("exited_at"))
+    if t is None or (time.time() if now is None else now) - t > SMOKE_EXIT_FRESH_S:
+        return False
+    try:
+        pg, tracked = int(r["pgid"]), {int(x) for x in r["pids"]}
+        ps = subprocess.run(["ps", "-eo", "pid=,ppid=,pgid=,sid=,stat="], capture_output=True, text=True, timeout=10)
+        lines = [x.split() for x in ps.stdout.splitlines()]
+        if ps.returncode != 0 or not lines:
+            return False
+        for f in lines:
+            if not f[4].startswith("Z") and (int(f[2]) == pg or int(f[3]) == pg or int(f[0]) in tracked or int(f[1]) in tracked):
+                return False
+    except (KeyError, IndexError, TypeError, ValueError, OSError, subprocess.SubprocessError):
+        return False
+    return True
+
+
+def gpu_one_sample_row(flags, occ, cands):
+    """The one row allowed to go on a single quiet sample: the best-ranked waiting exclusive GPU row, its smoke proven dead, and
+    no KFD owner of any size on a readable device. Best-ranked only: never a rank inversion."""
+    if occ.get("pids") or not os.path.isdir(KFD_PROC):
+        return None
+    ex = [c for c in gpu_held_back(cands) if c.get("bench")]
+    if not ex:
+        return None
+    c = min(ex, key=lambda x: (x["rank"], x["id"]))
+    return c["id"] if smoke_tree_proven_dead(flags, c["id"]) else None
+
+
+def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None):
     """Before an EXCLUSIVE gpu-quiet grant: True only after GPU_QUIET_SAMPLES consecutive samples with no foreign KFD
     client holding >= GPU_FOREIGN_VRAM_MAX (no GPU grant open: every client is foreign). While an exclusive grant is held:
-    a foreign client above the threshold alarms once and marks the grant contaminated (dryrun/<id>/CONTAMINATED.json)."""
+    a foreign client above the threshold alarms once and marks the grant contaminated (dryrun/<id>/CONTAMINATED.json).
+    A sample that still waits may name, in `one_sample`, the single row whose own smoke exit justifies going now."""
     occ = gpu_occupancy()
     sp = os.path.join(state_dir(flags), "gpu_quiet.json")
     st = load_json(sp) or {}
@@ -4468,6 +4523,11 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen):
         why = None if n >= need else (
             f"device not quiet (host view): foreign KFD pids {','.join(map(str, pids[:8])) or '-'} hold {v / (1 << 30):.1f} GiB"
             if v >= GPU_FOREIGN_VRAM_MAX else f"device quiet {n}/{GPU_QUIET_SAMPLES} samples")
+        if why and n == 1 and one_sample is not None:
+            rid = gpu_one_sample_row(flags, occ, cands)
+            if rid:
+                one_sample.add(rid)
+                log(f"GPU-QUIET one sample for {rid}: its smoke exited, tree proven dead, no KFD owners")
         return why
     atomic_json(sp, {"quiet_n": 0, "at": now_iso(), "last_owner": {"ids": [g["id"] for g in held], "pids": sorted(
         {p for g in held for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid"))
