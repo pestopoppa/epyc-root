@@ -377,6 +377,7 @@ the machine.
       docstring.)*
       topology.** Its parity gate already fails 7 ways. Either derive it from the
       single source or delete it — a fourth copy is how the drift started.
+      - *(2026-11-09, inf45-zerocompute.)* Re-checked: still a gated 4th copy (`scripts/validate/default_template_topology_parity.py` OK, 4 roles / 6 instances). Derivation proposal (docstring steps 1-4) needs `src/config/stack_templates.py load_template` + parity-gate + template-test rewrite; not attempted this pass.
 - [x] **P1-5. `src/registry/registry_validator.py` never cross-checks ✅ 2026-08-12 — `mainD`. orchestrator `7d4f96d2`. Cross-check added and wired into `validate_all`, reached by the one production caller (`stack_commands.py:1289` in `cmd_start`). **Premise corrected**: a PARTIAL guard already existed — `stack_manifest.validate_declaration_parity()` — but it iterates `NUMA_CONFIG.items()` and is structurally blind to a registry declaring a fleet the topology never heard of, which is P1-7's phantom-fleet shape. Both directions now covered, plus duplicate ports, `numa_instances` vs `len(numa_ports)`, and primary port vs full-instance port. 23 tests, counted by the runner (tests/unit 12039 → 12062); an empty/unloadable topology is an ERROR, never silent agreement.
       `numa_ports` against `NUMA_CONFIG`.** This is **the missing guard that
       allowed months of drift**. Add it; it is the cheapest permanent fix in this
@@ -392,6 +393,7 @@ the machine.
       routing knob to autopilot.** A lever autopilot can move but cannot score is
       exactly how `dual-half-negative` (P1-3) got mislearned. This ordering is the
       point of the task.
+      - *(2026-11-09, inf45-zerocompute.)* Telemetry built, NOT merged: orchestrator branch `inf45-zerocompute-20261109` @ `0b342a07` adds `region_lock_wait_s_by_holder()` (blocked-wait seconds + count keyed by holder role from the lock payload, observation-only, process-local) in `src/runtime/cpu_region_lock.py`, 3 new tests + 183-test lock/topology suite green. Still owed: surface it (dashboard / dispatch log) before any autopilot knob. Unticked.
 - [x] **P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py` — ADJUDICATED: DO NOT
       DELETE.** ✅ 2026-08-12 (`mainA`) — orchestrator `1fe3b57e`, additive only (+83/-0). Two of
       the row's three claims are FALSE. "Zero runtime importers" is TRUE (every dynamic route
@@ -5262,7 +5264,7 @@ verdict is the current production shape.
       counts non-ALLOW checks, not changes to the final pairwise verdict. See the adjacent source
       acceptance evidence and the completed counter item in `autopilot-continuous-optimization.md`.
       [no-belief: source and evidence reconciliation]
-- [ ] **REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region, not drop
+- [x] **REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region, not drop
       them.** (filed 2026-10-04, workspace-ec, from INC-20261004-subagent-unlocked-cpu-in-held-window)
       `src/runtime/instance_topology.py` `parse_cpu_list` keeps only CPUs 0-95 and silently discards
       96-191. So `region-lock run --cpu-list 160-183` maps to no region and cannot conflict with a held
@@ -5285,6 +5287,7 @@ verdict is the current production shape.
         gets rc 75 for `--cpu-list 160-183`, with the child never run. **Merge and deploy AWAIT OPERATOR APPROVAL**: the
         auto-mode classifier blocked the merge to main. After approval, merge, then decide in a follow-up whether the
         placement layer should fold too.
+      - *(2026-11-09, inf45-zerocompute.)* Verified ON main: `4ae008a8` is an ancestor of origin/main `98221350`; `tests/unit/test_instance_topology_smt_siblings.py` + region-lock/lock suites 183 passed. Ticked. [no-belief: code-landed-verified-by-tests]
 
 ## Track: within-role-placement-state-machine
 <!-- gate: none -->
@@ -5742,6 +5745,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
   - *(2026-10-21, noninf-offline.)* write side built (not yet live: the stack is DOWN, takes effect at the next stack start): `src/backends/dispatch_log.py` `epyc.orchestrator.dispatch.v1`, one JSONL record per `ConcurrencyAwareBackend` dispatch (infer / infer_stream_text / infer_streaming) at `logs/dispatch/dispatch.jsonl` (`ORCHESTRATOR_DISPATCH_LOG`, follows the `serving_calls` kill switch when unset): ts_arrival (the primitives wait clock when staged), ts_dispatch, ts_end, queue_wait_ms, chosen instance (port, topology idx, shape), fleet in-flight requests / prompt_chars / n_tokens_budget per instance AT ARRIVAL and AT DISPATCH, request_id for the join to serving_call.v1 real token counts; a `kind=config` echo record per backend and `config_sha256` on every record; self-hashed. Lengths are chars + n_tokens budget only (no token estimate). Caveat: in-flight state is per uvicorn worker (CAB state is per worker), so a fleet-wide snapshot needs the records of all workers merged by time. Tests 7 new + 52 CAB/serving_calls/inference_mixin neighbours green. On epyc-orchestrator main (78f68032): fleet scope plus passthrough and direct single-server lanes (fleet state null). Destination is a sibling log `logs/dispatch/dispatch.jsonl` joined to serving_calls on request_id, not rows inside serving_calls. gitnexus index was stale (1193 commits behind) and impact ambiguous; accepted because signatures are unchanged and the neighbouring suites pass. Parent WP-15 stays open: needs two traffic windows (fit + holdout) after the next stack start.
 - [ ] **WP-15.2 — Record which GGUF served each dispatch (logging gap; check, then file the fix).** `src/backends/dispatch_log.py` (`dispatch.v1`) records port, topology idx and shape plus a `config_sha256` echo, but no model or GGUF field (grep for model/gguf in the module finds none), so which GGUF served :8083 on a given date cannot be recovered from it, from the tap, or from `orchestrator.log` (the 8083 server log shows Qwen3.6-27B-MTP then Qwen3.8-27B loads, undated). Task: confirm against the live record schema once the stack restarts; if the config echo does not carry the model path, add the served model id to the `kind=config` record (additive, keyword-only). Raised by CT-13 (2026-10-21).
   - *(2026-10-21, noninf-offline.)* code landed (epyc-orchestrator main 058e674b, tests green): fleet `kind=config` record carries `config.served_models` ({port: model_path, launch_id, argv_sha256, binary_realpath, identity_source}) read once from the stack launch sidecar `logs/server_launches/<port>.json`, and every dispatch record carries `instance.model` (sidecar re-read only on mtime change, so reloads show as a new launch_id; no network probe; absent sidecar reported as `absent`). Left unticked: the task's "confirm against the live record schema once the stack restarts" is still owed. Passthrough/direct lanes carry `instance.model` per dispatch but no served-model map in their config echo (keeps their config_sha256 constant).
+  - *(2026-11-09, inf45-zerocompute.)* Re-checked: `058e674b` is an ancestor of origin/main. Code needs no further change; only the live-schema confirm after a stack start remains (not zero-compute).
 
 #### Research intake 2026-10-21 — DeepSeek V4.1-Flash deployment commentary (intake-2214..2223, see research/intake_index.yaml)
 
