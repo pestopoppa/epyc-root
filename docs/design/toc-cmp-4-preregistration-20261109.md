@@ -88,6 +88,17 @@ a compute decision for the owning session, not made here.
 - Invalid-run policy: a run with a transport failure or missing pin is re-run once with the same seed; a second failure
   drops that (point, arm, repeat) and is counted in the receipt; more than 10% dropped voids the cell.
 
+## 7a. Validity rule: boundary not reached (operator-approved 2026-11-09)
+
+A run whose trajectory ends before its forced boundary turn (no `boundary` event) carries no compaction
+and is **voided**, not scored as zero blocked actions. Arms are paired by point, so the whole point is voided
+(all arms and repeats; ledger rows kept and marked void) and **replaced by the next reserve point of the same
+stratum, in the same seeded order** (hash order continuing after the frozen 10 per stratum; the reserve is
+part of the receipt). Voided points, their replacements and any exhausted reserve are reported in the run
+output and the receipt; a replacement is never chosen by outcome. Voids do not count against the section 7
+10% dropped-run limit, but the void rate is reported per stratum beside every contrast. The frozen 30-point
+sha256 is unchanged by replacements; replacements are listed separately.
+
 ## 8. What would change my mind
 
 If BAPS is ~0 in all arms at the base rate (nothing to improve), the endpoint is uninformative and the A/B is closed as
