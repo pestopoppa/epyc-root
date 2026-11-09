@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T16:24:56Z",
+  "generated_at": "2026-11-09T16:25:49Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1214,7 +1214,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1369,
+          "line": 1370,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1231,7 +1231,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1830,
+          "line": 1831,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -2627,7 +2627,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2612,
+          "line": 2613,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "ready"
@@ -2636,7 +2636,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2981,
+          "line": 2982,
           "name": "sliders-local-validation",
           "open": 2,
           "readiness": "ready"
@@ -3200,7 +3200,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3583,
+          "line": 3584,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3213,7 +3213,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3664,
+          "line": 3665,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3222,7 +3222,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": null,
-          "line": 4153,
+          "line": 4154,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3,
           "readiness": "ready"
