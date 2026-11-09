@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 479
+      "open": 478
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5990,
+          "line": 5991,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6070,
+          "line": 6071,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6367,
+          "line": 6368,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9584,
+          "line": 9585,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13934,
+          "line": 13935,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14146,
+          "line": 14147,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 17
@@ -1400,7 +1400,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2613,
+          "line": 2615,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 1
@@ -1410,7 +1410,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2982,
+          "line": 2984,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 2
@@ -1544,7 +1544,7 @@
     },
     "memory-program.md": {
       "blocked": 0,
-      "closed": 119,
+      "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-09",
       "open": 40,
@@ -1556,7 +1556,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 159,
+      "total": 160,
       "tracks": [
         {
           "blocked": 0,
@@ -1570,7 +1570,7 @@
         },
         {
           "blocked": 0,
-          "closed": 14,
+          "closed": 15,
           "gates": [],
           "guarded": 0,
           "line": 912,
@@ -1583,7 +1583,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1370,
+          "line": 1372,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1597,7 +1597,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1831,
+          "line": 1833,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2287,10 +2287,10 @@
     },
     "routing-program.md": {
       "blocked": 1,
-      "closed": 180,
+      "closed": 181,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 70,
+      "open": 69,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2373,20 +2373,20 @@
         },
         {
           "blocked": 0,
-          "closed": 26,
+          "closed": 27,
           "gates": [],
           "guarded": 0,
           "line": 2831,
           "markers": 1,
           "name": "typed-decision-plane",
-          "open": 27
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3584,
+          "line": 3585,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2398,7 +2398,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3665,
+          "line": 3666,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2408,7 +2408,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 4154,
+          "line": 4155,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3

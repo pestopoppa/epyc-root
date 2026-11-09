@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T18:29:42Z",
+  "generated_at": "2026-11-09T20:38:08Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1166,7 +1166,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 119,
+      "closed": 120,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -1214,7 +1214,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1370,
+          "line": 1372,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1231,7 +1231,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1831,
+          "line": 1833,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5990,
+          "line": 5991,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1554,7 +1554,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6070,
+          "line": 6071,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1573,7 +1573,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6367,
+          "line": 6368,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1590,7 +1590,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9584,
+          "line": 9585,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1603,7 +1603,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13934,
+          "line": 13935,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1637,7 +1637,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14146,
+          "line": 14147,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 17,
           "readiness": "blocked"
@@ -2627,7 +2627,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2613,
+          "line": 2615,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "ready"
@@ -2636,7 +2636,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2982,
+          "line": 2984,
           "name": "sliders-local-validation",
           "open": 2,
           "readiness": "ready"
@@ -3089,15 +3089,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 180,
-      "dispatchable": 70,
+      "closed": 181,
+      "dispatchable": 69,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
       "last_advanced": "2026-11-09",
       "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
-      "open": 71,
+      "open": 70,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3189,18 +3189,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 27,
+          "dispatchable": 26,
           "gates": [],
           "line": 2831,
           "name": "typed-decision-plane",
-          "open": 27,
+          "open": 26,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3584,
+          "line": 3585,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3213,7 +3213,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3665,
+          "line": 3666,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3222,7 +3222,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": null,
-          "line": 4154,
+          "line": 4155,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3,
           "readiness": "ready"

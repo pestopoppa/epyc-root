@@ -32,3 +32,4 @@
 - Pending operator ratification command (not written): AK-FUSE-GRAPH-KLD-1 threshold, 35 code-budget exceptions, planner-only budget entries.
 - Handoff edits: boxes added AK-Q38FN-REAPER-DIAG, AK-NEXT-CODE-MERGE, AK-CGROUP-FIXTURE-FIX, AK-PLANNER-ONLY-MERGE; floor box got r3/r4 sub-bullet. Checkbox flips: 0 ticks (no evidence). Belief-capture check clear (0 violations).
 - Session bus drain refused again: `autokernel` is not a roster id.
+- 2026-11-09 operator exception for row `ak-q38fn-relianceproof-c9-20261109-r4`: "OP-AK-HOLD exception: I authorize one AutoKernel loop turn on Q38FN UD-IQ4_XS CPU at C9 d210f85c2, row ak-q38fn-relianceproof-c9-20261109 (next revision after r3), regions 0-95, one iteration, critic claude-fable-5-1 medium, for VB-REFOCUS-NONEMPTY-READ-PROOF only. The hold otherwise stays in force."
