@@ -26,9 +26,9 @@
     },
     "routing-and-optimization-index.md": {
       "blocked": 14,
-      "handoffs": 8,
+      "handoffs": 9,
       "oldest_advance": "2026-11-03",
-      "open": 498
+      "open": 494
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -489,6 +489,22 @@
         }
       ]
     },
+    "churn-pipeline.md": {
+      "blocked": 0,
+      "closed": 38,
+      "guarded": 0,
+      "last_advanced": "2026-11-09",
+      "open": 16,
+      "owner_index": "routing-and-optimization-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "RTG-100",
+      "state": "active",
+      "total": 54
+    },
     "context-and-token-economy.md": {
       "blocked": 2,
       "closed": 150,
@@ -599,10 +615,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 351,
+      "closed": 316,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 52,
+      "last_advanced": "2026-11-09",
+      "open": 32,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -611,7 +627,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 403,
+      "total": 348,
       "tracks": [
         {
           "blocked": 0,
@@ -625,20 +641,20 @@
         },
         {
           "blocked": 0,
-          "closed": 35,
+          "closed": 0,
           "gates": [],
           "guarded": 0,
           "line": 2441,
           "markers": 1,
           "name": "churn-pipeline",
-          "open": 21
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 22,
           "gates": [],
           "guarded": 0,
-          "line": 2584,
+          "line": 2448,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 6
@@ -648,7 +664,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 3058,
+          "line": 2922,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -663,7 +679,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3503,
+          "line": 3367,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -679,7 +695,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5016,
+          "line": 4880,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 2
@@ -695,7 +711,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5676,
+          "line": 5540,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -711,7 +727,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5864,
+          "line": 5728,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8
@@ -721,7 +737,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6420,
+          "line": 6284,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1451,7 +1467,7 @@
       "closed": 106,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 32,
+      "open": 33,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1460,7 +1476,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 139,
+      "total": 140,
       "tracks": [
         {
           "blocked": 0,
@@ -1512,7 +1528,7 @@
           "line": 1759,
           "markers": 1,
           "name": "triattention-kv-selection",
-          "open": 10
+          "open": 11
         }
       ]
     },
@@ -2178,7 +2194,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 12,
+      "open": 11,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2187,7 +2203,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 351,
+      "total": 350,
       "tracks": [
         {
           "blocked": 0,
@@ -2196,7 +2212,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 51,
+          "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
           "open": 5
@@ -2209,7 +2225,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1483,
+          "line": 1490,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2222,7 +2238,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2639,
+          "line": 2646,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2232,7 +2248,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3011,
+          "line": 3018,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2242,7 +2258,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3524,
+          "line": 3531,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 2
@@ -2252,10 +2268,10 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 3619,
+          "line": 3626,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 4
+          "open": 3
         }
       ]
     },
@@ -2646,7 +2662,7 @@
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "index": "routing-and-optimization-index.md",
-      "line": 20,
+      "line": 21,
       "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
       "track": "episodic memory integrity"
     },
@@ -2863,6 +2879,17 @@
       "next_action": "Run RTG-EP-1 gfx90a EP probe; then RTG-VAR-1 host manifest and RTG-VAR-2 variant dimension",
       "track": "decision aware routing"
     },
+    "RTG-100": {
+      "deps": [
+        "RTG-34"
+      ],
+      "handoff": "churn-pipeline.md",
+      "id": "RTG-100",
+      "index": "routing-and-optimization-index.md",
+      "line": 18,
+      "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
+      "track": "churn pipeline"
+    },
     "RTG-22": {
       "deps": [],
       "handoff": "engineering-hygiene-backlog.md",
@@ -2878,7 +2905,7 @@
       "id": "RTG-34",
       "index": "routing-and-optimization-index.md",
       "line": 17,
-      "next_action": "Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next",
+      "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
       "track": "session bus thin dispatcher"
     },
     "RTG-36": {
@@ -2886,7 +2913,7 @@
       "handoff": "stack-lifecycle-program.md",
       "id": "RTG-36",
       "index": "routing-and-optimization-index.md",
-      "line": 18,
+      "line": 19,
       "next_action": "OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-FASTPATH; SCG-TEST-ORDER",
       "track": "stack change governance pipeline"
     },
@@ -2898,7 +2925,7 @@
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "index": "routing-and-optimization-index.md",
-      "line": 19,
+      "line": 20,
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
       "track": "kv prefix fork and paged attention"
     },

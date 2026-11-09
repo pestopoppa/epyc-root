@@ -83,6 +83,11 @@
       "to": "INF-77"
     },
     {
+      "from": "RTG-100",
+      "kind": "dep",
+      "to": "RTG-34"
+    },
+    {
       "from": "RTG-58",
       "kind": "dep",
       "to": "EVL-14"
@@ -620,6 +625,12 @@
       "weight": 1
     },
     {
+      "from": "RTG-100",
+      "kind": "ref",
+      "to": "INF-06",
+      "weight": 2
+    },
+    {
       "from": "RTG-22",
       "kind": "ref",
       "to": "EVL-47",
@@ -628,8 +639,8 @@
     {
       "from": "RTG-34",
       "kind": "ref",
-      "to": "INF-06",
-      "weight": 2
+      "to": "RTG-100",
+      "weight": 14
     },
     {
       "from": "RTG-58",
@@ -710,7 +721,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T12:34:08Z",
+  "generated_at": "2026-11-09T13:06:43Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1771,14 +1782,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 339,
-      "dispatchable": 12,
+      "dispatchable": 11,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-09",
       "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
-      "open": 12,
+      "open": 11,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1817,7 +1828,7 @@
           "gates": [
             "EVL-47"
           ],
-          "line": 51,
+          "line": 58,
           "name": "rocm-verify-profile-backend",
           "open": 5,
           "readiness": "blocked"
@@ -1832,7 +1843,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1483,
+          "line": 1490,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1847,7 +1858,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2639,
+          "line": 2646,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1856,7 +1867,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3011,
+          "line": 3018,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1865,18 +1876,18 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3524,
+          "line": 3531,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
-          "line": 3619,
+          "line": 3626,
           "name": "llama-cpp-dsa-contribution",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         }
       ]
@@ -1953,14 +1964,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 106,
-      "dispatchable": 32,
+      "dispatchable": 33,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-08",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 33,
+      "open": 34,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -2020,11 +2031,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 11,
           "gates": [],
           "line": 1759,
           "name": "triattention-kv-selection",
-          "open": 11,
+          "open": 12,
           "readiness": "ready"
         }
       ]
@@ -2423,13 +2434,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
       "open": 71,
-      "priority": 0.0022,
+      "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 29,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel akx program (keep gate + all dims)",
@@ -2503,13 +2514,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "open": 10,
-      "priority": 0.0022,
+      "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 29,
       "readiness": "blocked",
       "state": "active",
       "track": "v11 promotion checklist"
@@ -2529,13 +2540,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.0022,
+      "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 29,
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
@@ -3199,6 +3210,32 @@
     {
       "age_days": 0,
       "blocked": 0,
+      "blocked_by": [
+        "RTG-34"
+      ],
+      "closed": 38,
+      "dispatchable": 16,
+      "domain": "routing-and-optimization",
+      "guarded": 0,
+      "handoff": "churn-pipeline.md",
+      "id": "RTG-100",
+      "last_advanced": "2026-11-09",
+      "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
+      "open": 16,
+      "priority": 0.0402,
+      "priority_basis": {
+        "campaign": 1,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 28,
+      "readiness": "blocked",
+      "state": "active",
+      "track": "churn pipeline"
+    },
+    {
+      "age_days": 0,
+      "blocked": 0,
       "blocked_by": [],
       "closed": 269,
       "dispatchable": 94,
@@ -3292,18 +3329,18 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 351,
-      "dispatchable": 52,
+      "closed": 316,
+      "dispatchable": 32,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-07",
-      "next_action": "Record BUS-ID-2 dedup invariant and re-screen R6c (BUS-ID-3); CTX-HO-2 transfer ledger next",
-      "open": 52,
+      "last_advanced": "2026-11-09",
+      "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
+      "open": 32,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3313,7 +3350,7 @@
         "source": "file",
         "tier": 6,
         "tier_name": "T6 inference routine",
-        "unblocks": 0,
+        "unblocks": 1,
         "unblocks_rows": [
           "RTG-48",
           "RTG-49",
@@ -3337,18 +3374,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 21,
+          "dispatchable": 1,
           "gates": [],
           "line": 2441,
           "name": "churn-pipeline",
-          "open": 21,
+          "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2584,
+          "line": 2448,
           "name": "dashboard-architecture-restructure",
           "open": 6,
           "readiness": "ready"
@@ -3357,7 +3394,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3058,
+          "line": 2922,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3375,7 +3412,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3503,
+          "line": 3367,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3395,7 +3432,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5016,
+          "line": 4880,
           "name": "loop-owned-fleet-implementation",
           "open": 2,
           "readiness": "blocked"
@@ -3415,7 +3452,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5676,
+          "line": 5540,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3435,7 +3472,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5864,
+          "line": 5728,
           "name": "wrap-up-division-of-labor-policy",
           "open": 8,
           "readiness": "blocked"
@@ -3444,7 +3481,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6420,
+          "line": 6284,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -3830,7 +3867,7 @@
   ],
   "priority_basis": {
     "campaign_newest": 0,
-    "campaign_tiers": 11,
+    "campaign_tiers": 12,
     "file_generated_at": "2026-11-01T08:07Z",
     "file_rows_unused": [
       "EVL-01",
@@ -3985,13 +4022,14 @@
     "open_rows_missing_from_file": [
       "INF-82",
       "INF-83",
-      "INF-84"
+      "INF-84",
+      "RTG-100"
     ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 27,
-      "heuristic": 3,
+      "heuristic": 4,
       "override": 0
     },
     "tiers": {
@@ -4006,7 +4044,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 4,
+    "blocked": 5,
     "no_open": 0,
     "ready": 26
   },
