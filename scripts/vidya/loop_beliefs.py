@@ -127,6 +127,14 @@ TIER_CAPS = {"knob": 16, "target": 16, "lineup": 8, "sibling": 8, "host": 3, "ha
 #: may take at most half of the 16 model slots, so it can never displace the target's own
 #: claims from the rendered section. With no target-tier claim the knob tier keeps all 16.
 KNOB_CAP_WITH_TARGET = 8
+#: Slots of the shared model budget held for no-outcome kernel route-share rows keyed to the
+#: target's focus symbols. Outcome rows otherwise fill all 16 and the profile evidence that says
+#: which route carries the time can never appear. A slot with no eligible row goes back to the
+#: ordinary ranking; a target with no focus symbols reserves nothing.
+ROUTE_SHARE_SLOTS = 3
+#: `<route>_kernel_share_<window>` and friends: the share of device time one route takes. Not
+#: every `_share` metric: `moe_skew_top10_share` is expert load skew, not a route's cost.
+_ROUTE_SHARE_RE = re.compile(r"^(?P<route>[a-z0-9_]+?)_(?:core_)?(?:kernel|route|op|time)_share(?:_|$)")
 #: Tiers whose ids are planner evidence for the target (reliance-eligible); host is not.
 _MODEL_TIERS = ("knob", "target")
 #: Tiers shown as context only: never reliance-eligible, never planner evidence.
@@ -418,7 +426,10 @@ class Target:
     `model_sha256`, `recipe` and `focus_symbols` are optional (belief redesign §7.5). The sha
     identifies the weights even when the file name differs. `recipe` and `focus_symbols` only
     change the ORDER of target-tier lines (same recipe first, then claims on a focus symbol);
-    they never filter. A consumer that passes none of them is read exactly as before."""
+    they never filter. A consumer that passes none of them is read exactly as before.
+
+    `kernel_only` declares a target whose loop changes kernel code and cannot act on a serving
+    knob, so `knob_family`/knob-sweep rows rank last on it. Order only, never a filter."""
 
     model_file: str
     quant: str
@@ -435,6 +446,7 @@ class Target:
     scope: str = "model"
     build_sha: str = ""
     build_surface: str = ""
+    kernel_only: bool = False
 
     @property
     def is_lineup(self) -> bool:
@@ -502,7 +514,7 @@ class Target:
         symbols = tuple(sorted({str(s).strip() for s in focus if str(s).strip()}))
         return cls(context_tokens=depth, label=str(raw.get("label") or ""), model_sha256=sha,
                    recipe=recipe, focus_symbols=symbols, role=role, knob_families=families,
-                   stack_regime=regime, **values)
+                   stack_regime=regime, kernel_only=raw.get("kernel_only") is True, **values)
 
     def as_dict(self) -> dict[str, Any]:
         if self.scope == "build":
@@ -512,7 +524,7 @@ class Target:
                 "label": self.label, "model_sha256": self.model_sha256, "recipe": self.recipe,
                 "focus_symbols": list(self.focus_symbols), "role": self.role,
                 "knob_families": list(self.knob_families), "stack_regime": self.stack_regime,
-                "scope": self.scope}
+                "scope": self.scope, **({"kernel_only": True} if self.kernel_only else {})}
 
 
 def _target_families(raw: Mapping[str, Any]) -> tuple[str, ...]:
@@ -1081,6 +1093,7 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "symbol": _str(scope.get("symbol")), "op": _str(scope.get("op")),
                "hit_recipes": sorted({t.recipe for t in hits if t.recipe}),
                "hit_focus": sorted({s for t in hits for s in t.focus_symbols}),
+               "hit_kernel_only": bool(hits) and all(t.kernel_only for t in hits),
                "stale_epoch": False, "earlier": [], "linked_claim_ids": [], **obs}
         row["retrofit"] = bool(obs["retrofit"] or source_prov.get(sid, {}).get("retrofit") is True)
         if not isinstance(row["reps"], int) or isinstance(row["reps"], bool):
@@ -1171,12 +1184,43 @@ _OUTCOME_GROUP = {"improved": 1, "regressed": 1, "refused_correctness": 2, "refu
                   "divergence": 2, "null": 3, "anchor": 4, "floor": 4}
 
 
+def _knob_row(row: Mapping[str, Any]) -> bool:
+    """Evidence about a serving knob rather than a kernel: a declared knob family, or a sweep
+    (`varied`) that names no mechanism."""
+    return bool(row.get("knob_family")) or (bool(row.get("varied")) and not row.get("mechanism_id"))
+
+
+def _route_keyed(row: Mapping[str, Any]) -> bool:
+    """A verified, current-epoch, no-outcome route-share value on one of the target's focus
+    symbols. The share metric names its route by a stem (`gdn_core_kernel_share_pp2048`) and
+    the profile by a symbol (`gated_delta_net_cuda`), so the stem matches a focus symbol
+    literally, or as the leading initials of its underscore-separated words."""
+    if row["tier"] != "target" or row["status"] != "verified" or row["stale_epoch"] \
+            or row["outcome"] or row["value"] is None:
+        return False
+    match = _ROUTE_SHARE_RE.match(row["metric"] or "")
+    if match is None:
+        return False
+    focus = row.get("hit_focus") or ()
+    if row["symbol"] and row["symbol"] in focus:
+        return True
+    stem = match["route"]
+    for symbol in focus:
+        name = symbol.rsplit("::", 1)[-1].lower()
+        initials = "".join(word[0] for word in name.split("_") if word)
+        if stem in name or (len(stem) >= 2 and initials.startswith(stem)):
+            return True
+    return False
+
+
 def _group(row: Mapping[str, Any]) -> int:
     """0 flagged · 1 current-epoch decisive (improved/regressed) · 2 correctness/scope refusals
     and divergences · 3 nulls · 4 anchors/floors · 5 claims with no outcome (pre-observation
-    frames) · 6 older epochs."""
+    frames) · 6 older epochs · 7 knob rows on a kernel-only target."""
     if row["status"] != "verified":
         return 0
+    if _knob_row(row) and row.get("hit_kernel_only"):
+        return 7
     if row["stale_epoch"]:
         return 6
     return _OUTCOME_GROUP.get(row["outcome"], 5)
@@ -1272,6 +1316,10 @@ def _forced(unit: list[dict[str, Any]]) -> bool:
     return any(r["outcome"] == "floor" and r["status"] == "verified" for r in unit)
 
 
+def _reserved(unit: list[dict[str, Any]]) -> bool:
+    return all(_route_keyed(row) for row in unit)
+
+
 def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
             flagged_cap: int = FLAGGED_CAP) -> list[list[dict[str, Any]]]:
     chosen: set[int] = set()
@@ -1281,6 +1329,13 @@ def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
             if _forced(unit):
                 chosen.add(i)
                 count += len(unit)
+        reserved = 0
+        for i, unit in enumerate(units):
+            if i not in chosen and _reserved(unit) and reserved + len(unit) <= ROUTE_SHARE_SLOTS \
+                    and count + len(unit) <= cap:
+                chosen.add(i)
+                count += len(unit)
+                reserved += len(unit)
     per_bucket: dict[str, int] = {}
     for i, unit in enumerate(units):
         if i in chosen or count + len(unit) > cap:
@@ -1452,8 +1507,9 @@ def _what(row: Mapping[str, Any]) -> str:
     """The value-bearing second line, or "" when the frame carries no value and no outcome."""
     outcome, unit = row["outcome"], row["unit"]
     value, anchor = row["value"], row["anchor_value"]
+    metric = row["metric"]
     if outcome in _WORD:
-        detail = []
+        detail = [f"metric {metric}"] if metric else []
         if value is not None:
             detail.append(_value_text(value, unit)
                           + (f" vs anchor {_value_text(anchor, unit)}" if anchor is not None
@@ -1474,20 +1530,24 @@ def _what(row: Mapping[str, Any]) -> str:
         return text
     if outcome in ("refused_correctness", "refused_scope"):
         gate = "correctness" if outcome == "refused_correctness" else "scope"
-        metric = f" ({row['metric']})" if row["metric"] and ":" in row["metric"] else ""
+        shown = f" ({metric})" if metric and ":" in metric else ""
         reason = f': "{_cap(row["outcome_reason"], REASON_CAP)}"' if row["outcome_reason"] else ""
-        return f"{_subject(row)}: REFUSED by the {gate} gate{metric}{reason}"
+        return f"{_subject(row)}: REFUSED by the {gate} gate{shown}{reason}"
+    # _subject() falls back to the metric when there is no mechanism or symbol: no second copy.
+    named = f"metric {metric}; " if metric and metric != _subject(row) else ""
     if outcome == "floor":
-        parts = [f"median {_value_text(value, unit)}" if value is not None else "",
+        parts = [f"metric {metric}" if metric else "",
+                 f"median {_value_text(value, unit)}" if value is not None else "",
                  f"floor {_pct(row['noise_floor_rel'], False)}"
                  if row["noise_floor_rel"] is not None else "",
                  _n_text(row, pairs_first=False)]
         return "serving floor: " + "; ".join(p for p in parts if p)
     if outcome == "anchor":
         return (f"{_subject(row)}: ANCHOR {_value_text(value, unit)} "
-                f"({_n_text(row, pairs_first=False)})").replace("  ", " ")
+                f"({named}{_n_text(row, pairs_first=False)})").replace("  ", " ")
     if value is not None:
-        return f"{_subject(row)}: {_value_text(value, unit)} ({_n_text(row, pairs_first=False)})"
+        return (f"{_subject(row)}: {_value_text(value, unit)} "
+                f"({named}{_n_text(row, pairs_first=False)})")
     return ""
 
 
@@ -1498,6 +1558,8 @@ def _earlier_text(row: Mapping[str, Any]) -> str:
     bits = []
     for other in earlier[:EARLIER_CAP]:
         label = other["outcome"] or "recorded"
+        if other["metric"] and other["metric"] != row["metric"]:
+            label += f" [{other['metric']}]"     # the parent line names its own metric
         eff = f" {_pct(other['effect_rel'])}" if other["effect_rel"] is not None else (
             f" {_value_text(other['value'], other['unit'])}" if other["value"] is not None
             else "")
@@ -1633,8 +1695,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         "about this model, never target evidence). Grade is the folded "
         f"claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
     tail = [f"Optional reply field {reply_field}: a list of the knob-, target-, lineup- or "
-            "sibling-tier claim ids above that the proposal depends on; omit it when it depends "
-            "on none. Device-scope (host-tier) "
+            "sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) "
             "lines and contested, withdrawn or refuted claims are not evidence for a proposal."]
 
     def compose() -> str:
@@ -1721,7 +1782,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         for tier in ("target", "knob"):
             units = selected[tier]
             for i in range(len(units) - 1, -1, -1):
-                if not _forced(units[i]):
+                if not _forced(units[i]) and not _reserved(units[i]):
                     units.pop(i)
                     return True
         if selected["harness"]:

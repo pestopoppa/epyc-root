@@ -840,12 +840,12 @@ def test_value_bearing_line_and_decimal_strings(tmp_path, alarm):
     assert (f"- {_cid(reg)} [Judged/Located · verified · retrofit] DS41-Q4/cpu ds41-r1 "
             "build 7ef80392 epoch c42cd561") in text
     assert ("  akm-ds41-q4q5-two-row-activation-reuse @ mul_mat_qX_K_q8_2_X4_T: REGRESSED "
-            "-8.22% vs anchor (20.1 t/s vs anchor 21.9 t/s; floor 3.41%; 5 pairs; decisive) "
+            "-8.22% vs anchor (metric aggregate_tok_s; 20.1 t/s vs anchor 21.9 t/s; floor 3.41%; 5 pairs; decisive) "
             "-- producer verdict regression") in text
     claim = ev["claims"][0]
     assert (claim["value"], claim["unit"], claim["outcome"]) == (20.1, "t/s", "regressed")
     _, gpu = _ev(tmp_path, alarm, path, GPU_27B)
-    assert "serving floor: median 81.12 t/s; floor 0.81%" in gpu["section"]
+    assert "serving floor: metric aggregate_tok_s; median 81.12 t/s; floor 0.81%" in gpu["section"]
 
 
 def test_newest_floor_is_always_shown_and_ranking_order(tmp_path, alarm):
@@ -1479,3 +1479,69 @@ def test_c2_negative_control_never_nonempty_target_does_not_alarm(tmp_path, alar
         ans = _prepare(tmp_path, alarm, empty, DS41_CPU)
         assert ans["status"] == "ready" and ans["tier_emptied"] == []
     assert "belief-target-tier-emptied.test.loop" not in _active(alarm)
+
+
+# ------------------------------------------------------------------------------ planner selection
+
+
+def _selection_row(claim_id, **kw):
+    row = {"claim_id": claim_id, "tier": "target", "status": "verified", "outcome": "improved",
+           "recipe": "", "symbol": "", "hit_recipes": (), "hit_focus": (), "grade_rank": (3, 2),
+           "recency": 1.0, "mechanism_id": "m", "source_kind": "s", "run": None,
+           "stale_epoch": False, "metric": "", "value": 1.0, "unit": "x", "knob_family": "",
+           "varied": []}
+    return {**row, **kw}
+
+
+def test_what_names_the_metric_and_earlier_names_a_different_one():
+    base = {"outcome": "improved", "unit": "x", "value": 3.71, "anchor_value": None,
+            "noise_floor_rel": None, "decisive": None, "effect_rel": None, "outcome_native": "",
+            "outcome_reason": "", "mechanism_id": "h5", "symbol": "", "metric": "op_speedup",
+            "n_pairs": None, "n": 1, "reps": 1}
+    assert "metric op_speedup" in lb._what(base)
+    other = {**base, "metric": "e2e_tg_ratio", "outcome": "null", "effect_rel": None,
+             "value": 1.0, "revision": "2026-11-01", "stale_epoch": False}
+    same = {**other, "metric": "op_speedup"}
+    assert "[e2e_tg_ratio]" in lb._earlier_text({**base, "earlier": [other]})
+    assert "[" not in lb._earlier_text({**base, "earlier": [same]}).split(":", 1)[1]
+
+
+def test_knob_rows_rank_last_only_on_a_kernel_only_target():
+    knob = _selection_row("k", knob_family="slot_serving", outcome="regressed")
+    sweep = _selection_row("w", mechanism_id="", varied=["threads"], outcome="", value=None)
+    kernel = _selection_row("c", outcome="null")
+    assert lb._rank_key(knob) < lb._rank_key(kernel)         # unchanged without the declaration
+    for row in (knob, sweep):
+        row["hit_kernel_only"] = True
+        assert lb._group(row) == 7 and lb._rank_key(kernel) < lb._rank_key(row)
+    flagged = {**knob, "status": "contested"}
+    assert lb._group(flagged) == 0
+
+
+@pytest.mark.parametrize("metric,focus,expected", [
+    ("gdn_core_kernel_share_pp2048", ("gated_delta_net_cuda",), True),
+    ("mul_mat_q_kernel_share_d0", ("mul_mat_q",), True),
+    ("gdn_core_kernel_share_pp2048", ("mul_mat_q",), False),
+    ("gdn_core_kernel_share_pp2048", (), False),
+    ("moe_skew_top10_share_heldout", ("moe_skew",), False),
+])
+def test_route_share_is_keyed_to_focus(metric, focus, expected):
+    row = _selection_row("r", outcome="", metric=metric, hit_focus=focus, mechanism_id="")
+    assert lb._route_keyed(row) is expected
+
+
+def test_route_slots_are_reserved_capped_and_returned_when_unused():
+    outcomes = [[_selection_row(f"o{i:02d}", outcome="improved")] for i in range(20)]
+    routes = [[_selection_row(f"r{i}", outcome="", mechanism_id="", hit_focus=("mul_mat_q",),
+                              metric=f"mul_mat_q_kernel_share_w{i}")] for i in range(5)]
+    picked = [u[0]["claim_id"] for u in lb._select(outcomes + routes, 16, force=True)]
+    assert len(picked) == 16 and sum(c.startswith("r") for c in picked) == lb.ROUTE_SHARE_SLOTS
+    assert picked == [u[0]["claim_id"] for u in lb._select(outcomes + routes, 16, force=True)]
+    alone = [u[0]["claim_id"] for u in lb._select(outcomes, 16, force=True)]
+    assert alone == [f"o{i:02d}" for i in range(16)]
+
+
+def test_kernel_only_is_omitted_from_as_dict_unless_declared():
+    plain = lb.Target.from_mapping(DS41_Q4_T)
+    assert not plain.kernel_only and "kernel_only" not in plain.as_dict()
+    assert lb.Target.from_mapping({**DS41_Q4_T, "kernel_only": True}).as_dict()["kernel_only"] is True
