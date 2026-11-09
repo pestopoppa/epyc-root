@@ -1301,3 +1301,12 @@ Sources: [Handoff Debt dive](../research/deep-dives/harness-inference-20261106/i
 - **Role-boundary regression** (TOC-CMP-5): hostile tool output containing `[User]:` or `<|im_start|>` must not survive `build_consolidation_prompt` as an un-neutralised boundary. DEPTH-ENV-1 (cpu-decode-roofline-program) will assemble the prefill/decode envelope at 16K/32K/48K/128K from existing runs for the launch-flag session.
 
 Sources: [context-and-token-economy](../handoffs/active/context-and-token-economy.md) · [cpu-decode-roofline-program](../handoffs/active/cpu-decode-roofline-program.md) · [kernel-champion-and-promotion](../handoffs/active/kernel-champion-and-promotion.md)
+
+## Compiled Update — 2026-11-09 (night: checkpoint resume_state landed, compaction shadow flag built)
+
+**Confidence: verified** (commit content on origin/main; the compaction shadow is built default-off and unvalidated).
+
+- **The /log checkpoint envelope now carries a `resume_state` block.** On origin/main as `7a44e1202`: latest validation command and its observed exit and output, remaining uncertainty, rollback note, continuation state (done, resumable or blocked) and non-source artifacts; absent evidence renders the literal `unknown`, never empty. Tests cover a populated block from an executed validation and the all-unknown case. A box can be wrongly reported as "not on main" when a cherry-pick changes the SHA; check by file content.
+- **RTG-08 option C is built, not validated.** A default-off `compaction_shadow` flag computes role-aware compaction and helpfulness and records hypothetical reference misses against the would-be stub without touching `seg.consolidated`; it still needs `two_level_condensation` on to be reached.
+
+Sources: [context-and-token-economy CTX-HO-3 box](../handoffs/active/context-and-token-economy.md) · [apr2 compaction-shadow progress](../progress/2026-11/2026-11-09-apr2-compaction-shadow.md) · [apr2 rtg08 progress](../progress/2026-11/2026-11-09-apr2-rtg08-evl47-pip04-code.md)

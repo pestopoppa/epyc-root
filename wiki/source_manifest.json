@@ -4,31 +4,29 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1358,
+    "progress": 1376,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T09:05:54Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 4,
+      "added": 18,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-09T15:51:32Z",
+    "at": "2026-11-09T15:59:20Z",
     "scope_paths": [
-      "docs/design/ak-discovery-owned-cgroup-20261109.md",
-      "handoffs/active/autokernel-akx-program.md",
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/quantization-and-low-bit.md",
-      "handoffs/active/rocm-kernel-authoring.md"
+      "progress/2026-11/2026-11-09-apr-land-20261109.md",
+      "progress/2026-11/2026-11-09-apr2-*.md",
+      "progress/2026-11/2026-11-09-autopilot-refresh-*.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T15:51:32Z",
+  "scan_time": "2026-11-09T15:59:20Z",
   "schema_version": 1,
-  "source_set_hash": "cbcfc29859754befac67ba2dc01088c02ebc17ed6b233d3ef333da0bbeb1292d",
+  "source_set_hash": "396012fb7f1c5b37582d1b9b03191dd69043c05ba1d55d9b45bfbee4c241db9d",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16551,11 +16549,155 @@
       "type": "progress"
     },
     {
+      "content_hash": "0bcf258241d5e1a53b24bf2c55aea7746c218c907e5eb5cceb471b2f818ce478",
+      "modified": "2026-11-09T15:56:50Z",
+      "path": "progress/2026-11/2026-11-09-apr-land-20261109.md",
+      "size": 5783,
+      "title": "2026-11-09 \u2014 autopilot-refresh session wrap-up (apr-land-20261109)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3d54afcd98b9faa67da1cc79571d409abfc34c050b3241a6e859a24ab4ac0744",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-approved-routing.md",
+      "size": 913,
+      "title": "2026-11-09 apr2 approved-routing",
+      "type": "progress"
+    },
+    {
+      "content_hash": "be230b6c1f1d1fa094433a7c39bc54fc76c95adb68266488a920585912c20b23",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-compaction-shadow.md",
+      "size": 749,
+      "title": "2026-11-09 apr2 compaction-shadow (RTG-08 option C)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d23661e9e5ff0e0dec71f42e34b93dc1b6d49cde1572d809946e52376ae5bf7e",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-decided-rows.md",
+      "size": 2034,
+      "title": "2026-11-09 apr2 decided-rows",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5fd195654f729be61e3279ba461d1dd9ee8235b0a0f9b8feeebfa2c87244b8b9",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-prep-kbctx.md",
+      "size": 690,
+      "title": "2026-11-09 apr2 prep-kbctx",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ce32313d1c4c4b823e5d09eb5e6807156f616b5c294d57680c2ac6fa21ffa846",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-prep-memrout.md",
+      "size": 1566,
+      "title": "2026-11-09 apr2 prep-memrout: published rows for the doable-during-hold work",
+      "type": "progress"
+    },
+    {
+      "content_hash": "95f00224f8f6fc953c6f4f8bfa417f55df36d41e709443724ed77a726ddae36b",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-rtg02-code.md",
+      "size": 1850,
+      "title": "2026-11-09 apr2 rtg02-code (autopilot-program.md, RTG-02 CODE-WORK)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8915ad5cb13b2491338c59f10ca3e68223bc35f05aad7860035b15d9229c37c4",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-rtg08-evl47-pip04-code.md",
+      "size": 1344,
+      "title": "2026-11-09 apr2 rtg08-evl47-pip04-code",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ff1050458da2e186ad2c21d317067e7cddac01e111aa47866fe09172d8e13dc8",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-rtg09-evl10-code.md",
+      "size": 846,
+      "title": "2026-11-09 apr2 rtg09-evl10-code",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6bfe39b08dcf1519a55566e657f3cb73fcc057ed39f1f3320ce665878e167255",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-second-pass.md",
+      "size": 1046,
+      "title": "2026-11-09 apr2 second-pass",
+      "type": "progress"
+    },
+    {
+      "content_hash": "92cc998d694d9a53e36331714dd85c7c2eb4c3bfccc9262466af26b708a93e31",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-selector-c.md",
+      "size": 674,
+      "title": "2026-11-09 apr2 selector-c",
+      "type": "progress"
+    },
+    {
+      "content_hash": "98860d397b0048344c1387900d20095813a3022c55bcedeee8f618a2d07989b6",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-stack-ready.md",
+      "size": 1776,
+      "title": "2026-11-09 apr2 stack-ready (phase 2, Autopilot hold)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f3b6034317a39ca604f82792c0cde0eb7c0e48171448881da14da37fecc715a5",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-apr2-third-pass.md",
+      "size": 1158,
+      "title": "2026-11-09 apr2 third-pass (AP-71, BEP-5, DCP-15, M-12c, TD-12, TD-30d, UTM-V1..V3)",
+      "type": "progress"
+    },
+    {
       "content_hash": "e14d8a5cc1e487f96f8464cf44c6296c36aad3d226f420d66877f175ec2ec15d",
       "modified": "2026-11-09T09:05:16Z",
       "path": "progress/2026-11/2026-11-09-autokernel.md",
       "size": 1713,
       "title": "2026-11-09 AutoKernel",
+      "type": "progress"
+    },
+    {
+      "content_hash": "df6771b93b5bd312f0ba5bc19b89a1220ca6263b7d54551b2cd842b74deba2cc",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-autopilot-refresh-EVL-47.md",
+      "size": 290,
+      "title": "EVL-47 autopilot refresh (2026-11-09)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "680fe32c909357dfd7009725b8477a1b143161eeae858938e20ed35b54a91805",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-autopilot-refresh-EVL10-PIP04.md",
+      "size": 630,
+      "title": "2026-11-09 audit refresh: EVL-10 (memory-program.md) and PIP-04 (knowledge-pipelines.md)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e9c4ec853b6bcf5a863156ba9f1975db2a13600c6622212f04aa478574d3481d",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-autopilot-refresh-RTG-02.md",
+      "size": 961,
+      "title": "2026-11-09 autopilot-program refresh (RTG-02)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1a49715a424069b72ede2178861a76bf4ed38b731672a676c08d2ae2137a37c8",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-autopilot-refresh-RTG-08.md",
+      "size": 908,
+      "title": "RTG-08 refresh (2026-11-09)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ecc303a2e356cfab021adfa52df4e9f29b85bedb7098baac22ba411c96ed32c6",
+      "modified": "2026-11-09T15:50:43Z",
+      "path": "progress/2026-11/2026-11-09-autopilot-refresh-RTG-09.md",
+      "size": 487,
+      "title": "2026-11-09 RTG-09 audit refresh",
       "type": "progress"
     },
     {
@@ -20223,7 +20365,7 @@
       "type": "handoff-completed"
     }
   ],
-  "total_new": 2524,
+  "total_new": 2542,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

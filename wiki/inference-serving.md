@@ -3327,3 +3327,13 @@ Sources: [Foundry Local dive](../research/deep-dives/harness-inference-20261106/
 - **A re-pin must carry the pinned scripts' full dependency closure.** The 13:02 re-pin of the hub supervisor to `2c62d9458` omitted `observer_guard.sh` and `env.sh`, which pinned scripts source; every supervisor pass failed and the served view froze until the third install at 14:28 (`e4668444c`). A pin list names files, not what they source: compute the closure (sourced files and invoked helpers) before installing, and verify the first pass after the install.
 
 Sources: [workspace-f2 progress 2026-11-09](../progress/2026-11/2026-11-09-workspace-f2.md) · [kernel-store incident 2026-11-03](../docs/reference/kernel-store-incident-20261103.md) · [backup retention runbook](../scripts/backup/README-retention.txt)
+
+## Compiled Update — 2026-11-09 (night: keeper dry-run failure shapes)
+
+**Confidence: verified** (dry-run FAIL records and progress notes); the fixes are proposals.
+
+- **The keeper job environment has no `ss`.** Any job that waits on `ss` or the shared `fl_wait_own_port` helper burns its 900 s first-progress window and ends rc 7; the REPL-preview comparator uses an own-port proof from `/proc` instead, and other rows using the shared helper are exposed.
+- **A row whose first record is non-numeric can fail its dry run while healthy.** The SLIDERS phase-0 job started its 30B server and passed preflight in 19 s but wrote only identity and preflight records inside the 1,500 s limit, so the row was terminated and unpublished with no measurement; the job must write a numeric record early or declare a unit key.
+- **A port already listening is a refusal, not a retry**: the REPL-preview r3 dry run stopped in 10 s on a held port by design.
+
+Sources: [apr2 prep-memrout progress](../progress/2026-11/2026-11-09-apr2-prep-memrout.md) · [knowledge-pipelines SLIDERS box](../handoffs/active/knowledge-pipelines.md) · [memory-program D-RI-PREVIEW-1.1 box](../handoffs/active/memory-program.md)
