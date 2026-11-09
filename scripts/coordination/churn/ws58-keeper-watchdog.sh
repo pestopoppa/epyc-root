@@ -10,7 +10,8 @@ echo "$(date -u +%FT%TZ) watchdog start pid=$$" >> $LOG
 while :; do
   K=$(cat $F/ws58-calendar-keeper.current 2>/dev/null || true)
   p=$(cat $F/ws58-calendar-keeper.pid 2>/dev/null || true)
-  if [ -n "$K" ] && [ -f "$F/$K" ] && ! { [ -n "$p" ] && ps -o args= -p "$p" 2>/dev/null | grep -qF "$K"; }; then
+  args=$(ps -o args= -p "$p" 2>/dev/null || true)   # no pipe: pipefail + grep -q reads a live keeper as dead
+  if [ -n "$K" ] && [ -f "$F/$K" ] && ! { [ -n "$p" ] && [[ $args == *"$K"* ]]; }; then
     echo "$(date -u +%FT%TZ) keeper main loop (pid ${p:-none}) not alive; starting $K" >> $LOG
     (cd $F && setsid bash "$F/$K" </dev/null >/dev/null 2>&1 &)
     sleep 60
