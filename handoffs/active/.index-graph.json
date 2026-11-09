@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T14:51:33Z",
+  "generated_at": "2026-11-09T14:53:11Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1484,15 +1484,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 807,
-      "dispatchable": 154,
+      "closed": 814,
+      "dispatchable": 147,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-09",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 155,
+      "open": 148,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1529,7 +1529,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 56,
+          "dispatchable": 49,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1538,14 +1538,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 57,
+          "open": 50,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5978,
+          "line": 5982,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1554,7 +1554,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6058,
+          "line": 6062,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1573,7 +1573,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6355,
+          "line": 6359,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1590,7 +1590,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9570,
+          "line": 9574,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1603,7 +1603,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13920,
+          "line": 13924,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1637,7 +1637,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14132,
+          "line": 14136,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 16,
           "readiness": "blocked"
