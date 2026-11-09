@@ -227,6 +227,7 @@ want="$(printf '%s\n' "${COMMIT_PATHS[@]}" | sort)"
 g "$WT" commit -q \
   -m "RATIFIED $GATE_ID: subagent scratch lifetime is the main's call (signed by $RATIFY_OPERATOR)" \
   -m "OPERATING_CONSTRAINTS.md: Parallel Subagent Fan-Out (scratch lifetime per brief). Receipts: $RECEIPT_REL, $CONSOLIDATED_REL, $INDEX_REL. No process touched." \
+  -m "Operator-Ratified: yes" \
   || die "commit failed (a hook refused it?). Nothing pushed; re-run to retry."
 COMMIT_SHA="$(g "$WT" rev-parse HEAD)"
 ok "committed ${COMMIT_SHA:0:12}"
