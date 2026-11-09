@@ -5,17 +5,29 @@
 
 > **Fold destination** (BRF-T7-F13, BRF-T7-1, route 1b, 2026-11-03): renamed from `rocm-verify-profile-backend.md`; every former handoff of this plan target is a `## Track:` with its own gate marker: `rocm-verify-profile-backend`, `agentic-rocm-kernel-authoring`, `gemma-challenge-kernel-techniques-v7` (rows INF-03, INF-16 retired into INF-48). The former `rocm-verify-profile-backend.md` body is `## Track: rocm-verify-profile-backend`; tracks those handoffs already had are lifted verbatim after their owner.
 
-**Status**: ACTIVE HARDENING — v27 C6 launch boundary remains open
-**Created**: 2026-06-03 · **Updated**: 2026-08-22 (wave-1 and v27 evaluator audit checkpoint)
+**Status**: ACTIVE — triaged 2026-11-09 (inf48-triage): 76 open boxes -> 8 live items (INF48-LIVE-1..7 + the ATT/AITER/LSA boxes; see table)
+**Created**: 2026-06-03 · **Updated**: 2026-11-09 (INF-48 triage; evaluator carriers landed on research branch)
 **Priority**: MEDIUM (the substrate for [`agentic-rocm-kernel-authoring.md`](rocm-kernel-authoring.md#track-agentic-rocm-kernel-authoring))
 
-> **NEXT ACTION (2026-08-22): repair the rejected C6 evaluator carriers, then wire the verified
-> two-process oracle/Ghost boundary into the live AutoKernel producer before any launch.** Keep the
-> Hawkeye/FlashInfer rows below as the owning backlog. Exact `91a75a05` is a useful implementation
-> checkpoint, not authority: independent audit accepted its pinned upstream schemas but reproduced
-> forged sandbox, runtime, interposer, event, physical-envelope, precision, perturbation, hardlink,
-> cache-metric, and timing carriers. RVP-C4-10 is closed on this ROCm—PC sampling is unimplemented—so
-> do not rerun it. The profiling substrate remains the 465 validated SQ/TA/TCC counters.
+> **NEXT ACTION (2026-11-09): port the C6 controller wiring (INF48-LIVE-1) onto research main, then schedule the two GPU rows.**
+> The 2026-08-22 "rejected carriers" state is stale: the repairs were made on `codex/autokernel-v27-descendant-20260823`
+> (audit fixes `27602b14d`, falsified-C6 typed disposition `32d48f3da`) and the evaluator-layer subset is now landed on research
+> branch `inf48-triage-20261109` (`f69569bc4`, `1525888cc`) on top of main `645ca5b54`. Not yet on research main; the controller half
+> has 18 conflicting files (INF48-LIVE-1). Schedule `RVP-ATT-CANARY-R4` and `ROCK-AITER-GFX90A` step 2 as rowflow rows (blockers recorded
+> under each box). RVP-C4-10 stays closed (PC sampling unimplemented on this ROCm).
+
+| Live item | What | State |
+|---|---|---|
+| INF48-LIVE-1 RVP-C6-WIRE | controller half of the C6 oracle/Ghost wiring | evaluator layer landed on branch; controller port open |
+| INF48-LIVE-2 RVP-C2-PRODUCER | 16 producer-dependent C2/C3/C5 boxes | PARKED (OP-11) |
+| INF48-LIVE-3 RVP-C4-5..9,11 | rocprof v1 profile(), taxonomy, telemetry | open, no GPU except C4-7 |
+| RVP-ATT-CANARY-R4 | GPU trace-launcher canary | launcher exists; spec + source reseal missing |
+| ROCK-AITER-GFX90A | step 2 timing vs C6 | packet B exists; packet A not filed |
+| INF48-LIVE-6 GPU-AK-SIGNALS | counter/ISA/race/equivalence | open |
+| INF48-LIVE-7 INF03/INF37 | MMQ audit, AGPR, MoE Q8 fusion | partly operator-parked |
+| LSA-PORT-1 | experimental sparse-attention port | open |
+
+Triage counts (76 boxes): LIVE 41 (folded into the 8 items) · DONE 5 (RVP-C6-14/16/17/18/22) · SUPERSEDED 18 · DROP-CANDIDATE 12 (operator to confirm). Original box text: `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md`.
 
 > **Historical next action (2026-08-12): implement the exact k228 and k175 model-tensor hook manifests, then run
 > their governed real EPYC C3/C5 captures and matched whole-model exits.** OP-11 was
@@ -81,17 +93,9 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   torch-ROCm, Triton and physical `gfx90a` were identity-checked; the live add task compiled, passed
   correctness 3/3 and timing 5/5, and released the claim. The preflight honestly records
   `external_type_dispatch_present=false`, so this does not claim the full vendor launcher ran.
-- [ ] **Reproduce GEAK-eval's published MI250X task/result on the MI210.** Run the paper-era task and
-  candidate through the pinned vendor launcher, expecting lower absolute speedup at roughly half the
-  aggregate bandwidth; distinguish source compatibility from result reproduction. **External gate
-  re-audited 2026-08-11:** paper pin `a85e657f` and current upstream `453b0218` have no project-level
-  license; GitHub reports `license: null`, the license endpoint is 404, and PyPI 0.1.5 declares no
-  license expression. Licensed GEAK-v1 and AgentKernelArena do not contain the paper-era MI250X
-  harness/task. Per the pinned source-prep policy, no reproduction may run until AMD-AGI publishes a
-  covering project license or explicit grant. No cached checkout or GPU claim was used in this audit.
-- [ ] **Harden the remaining producer-dependent C2 oracle surfaces.** C2-7/C2-8/C2-9 reducers and
-  runners are durable, but their sensitivity/hostile/checker-isolation evidence waits on OP-11's
-  experimental producer identity.
+- [ ] **Reproduce GEAK-eval's published MI250X task/result on the MI210.** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): external-license gate on GEAK-eval pins (re-audited 2026-08-11: no project-level license); nothing runnable. Full text at b3bd883d3:84.
+- [ ] **INF48-LIVE-2 RVP-C2-PRODUCER (PARKED, operator OP-11 'decline for now', 2026-08-12) - C2 oracle surfaces and C3/C5 capture hooks that need the experimental producer.** Reducers/runners are durable on research main (c5fe6b51, 1a4d7dca, 000a2686, eca5dbda, 14034623); closure needs an operator-approved committed experimental producer plus fresh durable-identity replay. Do not work these until the operator reopens OP-11. NOTE: `test_c3_epyc_tensor_capture` has 12 errors on research main 645ca5b54 (pre-existing, unrelated to this triage); fix before the k228/k175 hooks. [no-belief: new consolidated box]
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:92)* **Harden the remaining producer-dependent C2 oracle surfaces.**
   - [x] **Bind the three reducer outputs into verdict-bearing source-candidate T0 authority.** ✅
     2026-08-12 — research `d8013a6c` requires measured, hash-bound sensitivity,
     hostile-distribution, and checker-isolation evidence tied to the exact candidate source,
@@ -101,7 +105,7 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
 - [x] **Build C6 reward integrity.** ✅ 2026-08-11 — immutable external scoring, exploit detectors,
   unseen/hostile shapes, stream/thread escape checks, planted red-team corpus, prompt disclosure,
   output-invariance, and ranked anti-short-circuit cases are implemented and tested.
-- [ ] **Honest baseline + E2E scoring (C3 + FastKernels gate).** Gate reward on a vendor baseline; add a whole-model exit gate via Apex's hot-patch + re-bench with captured EPYC-workload tensors.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:104)* **Honest baseline + E2E scoring (C3 + FastKernels gate).**
   - [x] **Compile the exact EPYC C3/C5 evaluation contract and controller/backend seam.** ✅ 2026-08-11
     — the offline research compiler binds HyRA `k228` attention and `k175` MoE to Apex's pinned
     Python/Triton overlay at `e06b5d1`, and binds EPYC-native Q4_K dequant to an immutable
@@ -541,11 +545,7 @@ job. It is a statement about **what a reward-bearing oracle needs that a regress
 
 Sequenced: **RVP-C2-1 is a precondition for every other row here.**
 
-- [ ] **RVP-C2-1 — Seeded input generation.** Derive each tensor's seed deterministically from
-  `(suite_seed, op, case_idx, tensor_idx)` and record `suite_seed` on the evaluation event
-  (`autokernel-research-loop.md` §7.4). Without this, a T0 failure is an anecdote: the RNG is
-  `std::random_device`-seeded per thread (`:54,:62`) and there is no flag to pin it. **Do this first.**
-  **2026-10-07 source correction:** the no-flag premise above is obsolete. Frozen v10 source `ffc1bac82eeca6f9099e1ccd9ba49703c460a115` exposes `--suite-seed`, implements the tuple-seed stream and contains seeded `AK_*` output fields. Research `de02a21d88e006dd542b7a1a56bf8090a27de1f3` validates the seed and writes `performance.search_discipline.suite_seed`. These source facts do not establish a captured native event. **C2-1 remains open for live seeded event capture and full regression/promotion:** frozen production rollback initialization still bypasses the stream; the experimental8e09 child now repairs this with independently accepted hosted3/3 and64raw initializer captures. Ordinary `test_ssm_scan` is already seeded. MAIN verified this class correction at exact frozen source; the fresh experimental child below repairs only rollback input initialization. Correct only on a fresh experimental branch; preserve the unseeded fallback and independently verify seed replay before any production promotion or live event claim. Frozen production stays untouched.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:544)* **RVP-C2-1 — Seeded input generation.**
 - [x] **RVP-C2-2 — Property layer (the only axis independent of the sibling).** ✅ 2026-08-26 —
   the producer SHIPPED: the instrument branch `codex/autokernel-gqa7-correctness-instrument-20260818`
   @ `5bbcc5498` (08-18) emits **AK_PROP_V2** from `test-backend-ops` (the earlier V1 schema is
@@ -559,48 +559,21 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     corrected before acceptance to include the operation's implicit attention sink mass rather than
     demanding that only the explicit output cells sum to one. The parent row remains open until the
     producer and seeded-defect gate are durable.
-- [ ] **RVP-C2-3 — Value transforms.** identity / ×3 / ×0.01 / negate, floats only, structure
-  preserved, **fail-any** gating. Apply per RVP-T0-5 — negate is near-useless on symmetric ranges.
-  **Do not copy the fail-open-on-reference-exception branch** the upstream design carries: a
-  reference that throws must fail the case, not pass it (`feedback_fail_open_defaults_conceal_their_own_corruption`).
-  **2026-08-11 static implementation:** research commit `eca5dbda` adds a pass separate from the
-  layout axis, exact four-transform and non-zero-case gates, suite-seed-bound `AK_VALUE_V1`
-  receipts, per-property transform binding, and fail-closed refusals for missing case receipts or
-  legacy property rows. The experimental producer compiles but remains uncommitted pending its
-  required explicit local-commit approval.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:562)* **RVP-C2-3 — Value transforms.**
   - [x] **Live value-transform acceptance.** ✅ 2026-08-11 — suite seed `4711` passed **779/779**
     cases across `SOFT_MAX`, `ARGSORT`, `TOP_K`, and `SOLVE_TRI`; every case completed identity,
     ×3, ×0.01, and negate. This validates the live pass but does not make its producer durable.
-- [ ] **RVP-C2-4 — Layout / stride axis, as a SEPARATE pass with its own flag.** Three probe families:
-  transpose (stride permutation), `as_strided`-equivalent (stride gap), offset base pointer
-  (alignment). **Kept separate from RVP-C2-3 deliberately**: the value-transform pass needs shapes
-  *fixed* to catch shape-locked hacks, while this pass needs layout *varied* to catch fragility —
-  merging them makes each weaker. `test-backend-ops` already has per-op view flags, but they are
-  opt-in and are not exercised on the paths we reward. **2026-08-11 static implementation:** research
-  commit `14034623` adds the separate `OpSuitePlan.layout_probe`, exact
-  `offset|stride_gap|transpose` family accounting, suite-seed-bound receipts and a gate requiring all
-  three families plus a non-zero case count. The experimental producer compiles but remains
-  uncommitted pending its required explicit local-commit approval.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:574)* **RVP-C2-4 — Layout / stride axis, as a SEPARATE pass with its own flag.**
   - [x] **Live layout acceptance.** ✅ 2026-08-11 — **1,048/1,048** emitted layout cases passed the
     separately gated offset, stride-gap, and transpose-family contract. This validates the live pass
     but does not make its producer durable.
-- [ ] **RVP-C2-5 — Stateful-op triad.** (1) State is an explicit graph input; (2) byte-equality
-  assertion on input buffers across both runs; (3) **the final state is in the compared output set**.
-  Rule 3 is the one that gets forgotten, and it is the one that matters — a kernel that computes the
-  right outputs and corrupts the carried state passes rules 1 and 2. Targets `SSM_SCAN`, `SSM_CONV`,
-  flash-attention-with-cache, and the k28 chunked-GDN work
-  ([`k28-fused-chunked-gdn-kernel-research.md`](../completed/k28-fused-chunked-gdn-kernel-research.md)).
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:587)* **RVP-C2-5 — Stateful-op triad.**
   - [x] **Live acceptance probe.** ✅ 2026-08-11 — suite seed `4711` passed **5,184/5,184** cases
     across `SSM_SCAN`, `SSM_CONV`, `FLASH_ATTN_EXT`, and `GATED_DELTA_NET`. Every emitted
     `AK_STATE_V1` receipt had `initial_equal=1`, `input_immutable=1`, and one or more final-state
     outputs. Research commit `9cc3ed1b` supplies the fail-closed consumer. The parent row remains
     open because its experimental producer is still uncommitted pending explicit operator approval.
-- [ ] **RVP-C2-6 — fp64 CPU reference with a ratio gate.** `e_cand ≤ κ · max(e_ref, floor)`, κ = 1.5.
-  **Implement dequantisation from the GGUF format specification, not from `ggml-quants.c`** — sourcing
-  it from our own quant code reproduces the sibling problem one level down and the independence is
-  illusory. Cheap for us specifically: CPU is our abundant resource. Note the error budget: the
-  weight-quantisation error largely cancels between the two sides, so the tolerance is set by
-  **activation requantisation**, not by reduction order.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:598)* **RVP-C2-6 — fp64 CPU reference with a ratio gate.**
   - [x] **Implement and live-validate the independent host-double oracle.** ✅ 2026-08-11 — Q4_0,
     Q8_0, Q4_K, and Q6_K are decoded directly from GGUF wire bytes rather than project quant helpers.
     The final metric id is `fp64_error_ratio/host-double-gguf-wire/v1`. Five representative CPU cases
@@ -643,22 +616,8 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     result, DP4A and least-squares negatives, and diagnostic 172/172 same-population repair as
     immutable `candidate_only` evidence. Source authoring and performance ranking now refuse until a
     committed clean-source repair passes the unchanged κ=1.5 matrix.
-  - [ ] **RVP-C2-6d — Materialize the same-population Q8 qsum repair as a committed clean experimental
-    source identity and rerun 172/172 at κ=1.5.** Only that source-bound receipt unlocks exact Q4_K
-    MMQ profiling or source authoring; the uncommitted diagnostic cannot.
-- [ ] **RVP-C2-7 — Degenerate and insensitive-case screening.** Reference-only, 3 seeds × 4
-  transforms, run once per suite version, plus an input-*insensitivity* screen (does the output move
-  at all when the input does?) and a seed-invariance screen. **Audit our own `(0.9, 1.1)`-style ranges
-  first** (RVP-T0-5) — a case whose inputs cannot distinguish a correct kernel from a constant is a
-  case that grades nothing. **2026-08-11 implementation checkpoint:** the research-side two-axis
-  reducer and claim-aware runner are complete and durable in research commit `000a2686` (promoted to
-  research `main` via `f3c6b24a`). They require reference-only materialized
-  inputs, at least three seeds, all four identity/×3/×0.01/negate transforms, and measurable input
-  and reference-output movement on both the seed and transform axes. The 14 focused reducer tests
-  pass. This parent row remains open because the `AK_SENS_V1` producer is still an uncommitted change
-  in `llama.cpp-experimental`; OP-11 declined that commit for now. Reopen only with explicit operator
-  approval, followed by a fresh matched run whose suite identity includes the durable producer commit.
-
+    - *(folded into INF48-LIVE-2; full text at b3bd883d3:646)* **(no title)**
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:649)* **RVP-C2-7 — Degenerate and insensitive-case screening.**
   - [x] **RVP-C2-7a — Build the two-axis research reducer and claim-aware runner.** ✅ 2026-08-11 —
     research commit `000a2686`, promoted to `main` via `f3c6b24a`; the focused reducer passes 14/14.
 
@@ -721,50 +680,10 @@ Sequenced: **RVP-C2-1 is a precondition for every other row here.**
     **36.4956%**, yielding workload-local `retain_novel_generator_scope`. Output
     `rvp-c4-4a-q4km-decode-20260812-prior-art.json` has SHA-256
     `c234b4b168cd4b95adb8668aa77d3c0e989807f354ae29bb9e5c51892c7243d3`.
-- [ ] **RVP-C2-8 — Hostile distribution at identical shapes.** Hold the shape fixed and change only
-  the value distribution. This is the anti-shape-detection device, and it targets something we
-  actually ship: our shape-gated default-off levers are exactly the kind of dispatch a candidate can
-  learn to satisfy without being correct. The durable research reducer/runner is in `1a4d7dca`
-  (research `main` merge `c5fe6b51`). A non-evidence smoke selected two ROCm0 `SOFT_MAX` cases;
-  hostile mode returned 0 and passed 2/2 rows, with the device claim acquired/released and four
-  sampler observations. Keep this evidence item open until the uncommitted producer gains a durable
-  identity and the claim-aware runner retains a campaign receipt.
-
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:724)* **RVP-C2-8 — Hostile distribution at identical shapes.**
   - [x] **RVP-C2-8a — Build the hostile-distribution reducer and claim-aware runner.** ✅ 2026-08-11 —
     four named same-shape populations require distinct materialized inputs and complete successfully.
-- [ ] **RVP-C2-9 — Checker precision pinning.** The property and reference paths must not run through
-  `-fa`, MFMA-f16 accumulation, or `FORCE_MMQ`. A checker validated by the same fast path it is
-  checking corrupts **claims**, not merely screens — this is the "verify THE consumer, not A consumer"
-  discipline applied to the oracle itself. Research commit `1a4d7dca` requires host-double plus CPU
-  sibling/reference checkers and refuses device-code, forced-MMQ, CUDA-FA, or rocWMMA checker paths.
-  The same non-evidence smoke returned 0 and passed 2/2 selected `SOFT_MAX` rows; claim and four-sample
-  telemetry were observed but no durable receipt was retained. Keep this evidence item open until the
-  producer identity is committed and replayed by the claim-aware runner.
-
-  **AMENDED 2026-08-21 (research-intake Stage-4) — the scope widens from CHECKER-PATH pinning to
-  OUTPUT-PRECISION equivalence, on five independent dive-verified sources.** C2-9 currently pins the
-  path the *checker* runs through. It does not yet assert that the CANDIDATE computed at the width the
-  reference did — and a gate that runs and passes can still be passed by **weakening the computation
-  under test**. This is a distinct shape from the two vacuous-pass shapes in
-  `docs/guides/agent-workflows/test-suite-conventions.md`, both of which concern tests that do not run.
-  Evidence, all read at primary source: `intake-1222#record` — the paper's ENTIRE gate is one
-  `torch.allclose(out, ref, atol=1e-2, rtol=1e-3)` line, and its own Appendix G.1 concedes the flagship
-  4.11x→11.49x leap came mostly from a TF32→BF16 tensor-core switch, which that tolerance admits by
-  construction. `intake-1224#record` — gate is `assert_close(atol=rtol=1e-2)` on a **bfloat16** suite,
-  so an fp32→bf16 downgrade is not even expressible, and its `allclose` accepts tolerance arguments
-  then silently drops them. `intake-1227#record` — a genuinely engineered gate that still plausibly
-  admits the downgrade on large-K GEMM, because `atol = 1e-4 x D_reduce` grows LINEARLY with reduction
-  depth and reaches ~0.53 at that benchmark's own BLAS shape, dominating `rtol*|ref|` by ~3 orders of
-  magnitude. `intake-1219#record` — its anti-cache defence is self-labelled "Level 1": the perturbation
-  is applied ONCE BEFORE the timed loop and, for every dtype other than fp32/fp64, is an element-order
-  REVERSAL, which is an involution and therefore an IDENTITY for order-insensitive kernels.
-  `intake-1236#record` — a released RL environment ships `CALL_LIBRARY` ("replace the selected operator
-  with library functions") and `SOTA_TRITON_API` action tags, neither disclosed in its paper.
-  THE CONCRETE ADDITION: record the reference dtype in the eval contract, and assert the observed error
-  scales as `sqrt(D_reduce) * eps(input_dtype)` against a **float64** reference — not merely that it
-  falls under a linear-in-`D_reduce` bound. Note the anti-hack tiers in C6 are ORTHOGONAL to this and
-  do NOT cover it: they test whether the kernel RAN, never at what WIDTH it computed.
-
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:735)* **RVP-C2-9 — Checker precision pinning.**
   - [x] **RVP-C2-9a — Build the checker-isolation reducer and claim-aware runner.** ✅ 2026-08-11 —
     missing receipts or accelerated checker paths fail closed.
 
@@ -904,17 +823,8 @@ the end are deliberate and recorded so they are not re-derived._
   `/mnt/raid0/llm/autokernel/probes/rvp-c5-r-gdn-bf16-20260811-r2/receipt.json`, SHA-256
   `279b7c3d6272eb6f881ca55b9599e7f341777338942490f36aadc17766aa1abb`. Research implementation:
   `1a4d7dca`, promoted via `c5fe6b51`.
-- [ ] **RVP-C5-2 — Screen the C5 seed corpus for input-INSENSITIVE ops** (the `mean(softmax(x))` /
-  `relu(x-2)`-under-uniform-sampling class). Twin of the degenerate-output screen on a different axis:
-  constant output vs insensitivity to the input. The durable research reducer now implements this
-  distinction, but this row remains open until the experimental producer is committed with operator
-  approval and the C5 corpus is screened by a fresh matched run.
-- [ ] **RVP-C3-2 — Expert-reference ceiling alongside the honest-baseline floor.** Where a task derives
-  from a real merged optimization, report candidate-vs-human-patch delta as well as
-  candidate-vs-vendor-baseline. C3 currently fixes only the floor. The sealed scorer and replay
-  receipt now establish the 21.223659% human ceiling, but this parent remains open until a terminal
-  AutoKernel candidate supplies the candidate-to-parent and candidate-to-human terms.
-
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:907)* **RVP-C5-2 — Screen the C5 seed corpus for input-INSENSITIVE ops**
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:912)* **RVP-C3-2 — Expert-reference ceiling alongside the honest-baseline floor.**
   - [x] **RVP-C3-2a — Build and validate expert-ceiling scoring for held-out historical tasks.** ✅ 2026-08-11 —
     the scorer emits both deltas when a candidate exists and returns `COULD_NOT_CHECK` when it does not.
 - [x] **RVP-C3-3 — Parse `rocm-smi` into numeric fields and add `throttle_observed`.** Capture is
@@ -943,10 +853,7 @@ the end are deliberate and recorded so they are not re-derived._
   4095 would increase cost without adding the requested non-power-of-two property. Near-zero
   cost. Keep shape-variation-as-correctness-probe distinct from shape-variation-as-hack-detector —
   different instruments, and merging them weakens both.
-- [ ] **RVP-C2-11 — Seed-invariance degeneracy screen**: an output that does not vary across input
-  seeds is cacheable and therefore unscoreable. Complements RVP-C2-7. The durable research reducer
-  now emits this axis separately from transform variation; closure still requires an operator-approved
-  experimental producer commit and a fresh durable-identity replay.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:946)* **RVP-C2-11 — Seed-invariance degeneracy screen**
 - [x] **RVP-C2-12 — A hard error on non-contiguous input must be a FAIL, never a skip.** ✅ 2026-08-13 producer `f744cc220e722d1bda93783959471d44f8e118b0`; Research `1403462340acb89c5652a157a9aacb1ebbb5dd6c`; [fixture tests](../../artifacts/compute/codex3-rvp-c2-12-20261031/TEST.log). [no-belief: source and regression verification] The reference
   - 2026-10-31 prior-work hygiene only, **excluded from today’s code quota**. The work predates today; evidence filing or verification is not a new implementation. See [operator tick audit](../../artifacts/compute/codex3-tick-audit-20261031/tick-audit-20261031.md). [no-belief: quota-accounting correction]
   suite converts these to skips in half its files; a kernel that cannot accept a strided ggml view is
@@ -1059,15 +966,7 @@ hold) — only the SECONDARY slot is re-scored._
 
 ##### C6 — reward integrity: three imports and a hardening pass
 
-- [ ] **RVP-C6-14 — Implement GHOST REPLAY as a positive proof the kernel executed.** Run the candidate
-  normally and capture outputs; then hot-swap the kernel entry point for a **no-op in memory** and replay.
-  **Identical outputs logically prove the kernel was never invoked** — raise a cheating flag. Imported from
-  `intake-1227#record` L2. Two properties make this the best C6 import available: it is a POSITIVE proof of
-  execution rather than an absence check, and it is **hardware-agnostic and profiler-free**, so it runs on
-  gfx90a unchanged and adds **no C4 coupling** (contrast that source's own L3 tier, which its authors state
-  "operates exclusively on NVIDIA hardware"). Pair with its L1 AST blacklist scan. **Acceptance: mutation-test
-  it** — a kernel that secretly calls the reference must be FLAGGED *and* the flag must be COUNTED by the
-  reporter, per the eight-ways-a-check-passes-for-the-wrong-reason rule.
+- [x] ✅ 2026-11-09 — research branch inf48-triage-20261109 commit f69569bc4 on research main 645ca5b54 (audit lineage 91a75a05e..32d48f3da on codex/autokernel-v27-descendant-20260823): Ghost Replay: two-process native no-op-interposer replay in evaluator/hawkeye_measurement.py; native identity/zero-launch/closure-mismatch/partial-log controls plus run_falsification.py L2 counting; tests green; [no-belief: software source implementation and finite regression controls; no measurement] **RVP-C6-14 — Implement GHOST REPLAY as a positive proof the kernel executed.**
 - [x] ✅ 2026-11-01 — Research implementation `66085471f2af4020da9954606e5736cfb516725e`; test `scripts/kernel_rnd/c6_mutants/test_static.py` (16/16) and artifact `epyc-inference-research/artifacts/engineering/c6-library-substitution-20261031/verification.json`, proof `752196772d7005776a390700d1ff8c73afa546ff`; [no-belief: software source implementation and finite regression controls; no measurement] **RVP-C6-15 — Add a LIBRARY-SUBSTITUTION exploit case to the C6 hostile suite.** Detect a candidate
   satisfying the speedup reward by dispatching to rocBLAS/hipBLASLt/torch instead of executing generated
   code — an AST/dispatch-trace check, not a timing check. Live published precedent, not a hypothetical:
@@ -1075,71 +974,17 @@ hold) — only the SECONDARY slot is re-scored._
   neither disclosed in the paper, whose stated action space is Tiling/Fusion/Reordering/Pipeline. A
   "generated kernel" that wins by calling the vendor library is not a generated kernel, and a
   baseline-relative speedup metric cannot distinguish the two.
-- [ ] **RVP-C6-16 — Vendor Hawkeye's measurement layer as the C6/C2/C3 base.** `workloads/_driver.cpp`
-  (262 lines) + `_tensorset.h` (176) + `_eval_correctness.py` (782) from `intake-1219#record`, Apache-2.0
-  (declared in `pyproject.toml` only — the GitHub API's `license: null` is misleading), pinned at
-  `a226e955d56c04be044d46f6fd876191cfce5bf4`. It is genuinely liftable: `_eval_correctness.py` imports
-  NOTHING from that repo, and the driver depends only on its own header plus two ~30-line JSON schemas —
-  **record those two schemas as OUR contract**. It is vendor-generic, not merely arch-neutral (it compiles
-  under nvcc via hip*→cuda* aliases) and contains zero gfx950 tokens. Brings for free: per-iteration
-  two-clock timing, a CV<=0.05 stability gate with auto-redo, fp64 comparison math, per-output tolerances,
-  and a custom-metric hook. **Do NOT import** its `spec.json`, arch registry or workload leaf layout.
-- [ ] **RVP-C6-17 — Close the four measured holes in that layer — THIS is the differentiator, not the
-  skeleton.** The lifted anti-hack property is "Level 1" by its own author's label and is bypassable four
-  ways, each verified in source at the pinned SHA: (a) the perturbation is applied IN PLACE and ONCE, before
-  the loop, so within-loop replay is caught only by a single downstream call — re-perturb **per timed
-  iteration** with a run-seeded, non-agent-readable transform; (b) for every dtype other than fp32/fp64 the
-  transform is an element-order REVERSAL, an involution and therefore a NO-OP for order-insensitive kernels
-  (reductions, norms, histograms) — replace it; (c) `g_agent_dir` hands agent code the directory still
-  holding the PRISTINE inputs, and on the documented standalone path the oracle's golden `ref_*.bin` land in
-  that same directory — never do either; (d) immutability is POSIX `chmod 0444` owned by the agent's own uid
-  plus a completion-write filter a shell bypasses, with **no checksum anywhere in the tree** — enforce with a
-  post-run SHA-256 of the compiled sources recorded in the result record.
-- [ ] **RVP-C6-18 — Add an implausible-speedup cap, sized from the roofline ceiling.** Null (never rank,
-  never feed a corpus) any speedup above a per-workload plausibility cap, mirroring `intake-1219#record`'s
-  `spec.correctness.max_speedup`. **Set ours from the workload's roofline ceiling, NOT from the largest hack
-  we happen to have seen** — that source's 1000x default sits just under its own observed 1349x exploit, so
-  a 900x fake still ranks.
-
+- [x] ✅ 2026-11-09 — research branch inf48-triage-20261109 commit f69569bc4 on research main 645ca5b54 (audit lineage 91a75a05e..32d48f3da on codex/autokernel-v27-descendant-20260823): Hawkeye measurement layer vendored and re-implemented as evaluator/hawkeye_measurement.py with the two JSON schemas recorded as our contract (schemas/HAWKEYE_NOTICE.md); [no-belief: software source implementation and finite regression controls; no measurement] **RVP-C6-16 — Vendor Hawkeye's measurement layer as the C6/C2/C3 base.**
+- [x] ✅ 2026-11-09 — research branch inf48-triage-20261109 commit f69569bc4 on research main 645ca5b54 (audit lineage 91a75a05e..32d48f3da on codex/autokernel-v27-descendant-20260823): all four holes closed in hawkeye_measurement.py: per-iteration run-seeded perturbation (PerturbationTests), non-involution transform (test_order_insensitive_sum_changes), no pristine-input dir (IsolationTests), post-run SHA-256 source integrity (SourceIntegrityTests); [no-belief: software source implementation and finite regression controls; no measurement] **no checksum anywhere in the tree**
+- [x] ✅ 2026-11-09 — research branch inf48-triage-20261109 commit f69569bc4 on research main 645ca5b54 (audit lineage 91a75a05e..32d48f3da on codex/autokernel-v27-descendant-20260823): roofline-derived implausible-speedup cap: c6_reward_integrity.py implausible_speedup_cap + RooflineTests (cap from workload envelope, unknown part refuses); [no-belief: software source implementation and finite regression controls; no measurement] **RVP-C6-18 — Add an implausible-speedup cap, sized from the roofline ceiling.**
 ##### C4 — extensions to a CLOSED component (taxonomy remains closed; these are additive)
 
-- [ ] **RVP-C4-5 — Implement `profile()` on ROCm 6.2 `rocprof` **v1** `--stats`, not rocprofv3.** The
-  counter-free kernel-trace path in `intake-1219#record` parses exactly five CSV columns —
-  Name/Calls/TotalDurationNs/AverageNs/Percentage — and those are **byte-identical** to what our own
-  side-loaded ROCm 6.2 `rocprof` v1 `--stats` emits (`rocm-profilers-6.2/opt/rocm-6.2.0/libexec/rocprofiler/dform.py:45`).
-  So the port is an argv change plus a glob change from `*kernel_stats*.csv` to `*.stats.csv`, with **zero
-  parser work**. rocprofv2 is the WRONG target (different CSV, no stats view). No counter set to port, so
-  this inherits none of the porting tax recorded against intake-662/intake-669. NOTE: `rocprofv3` was
-  provisioned into the side-loaded tree on 2026-08-21 and is now available, but this row deliberately does
-  NOT depend on it.
-- [ ] **RVP-C4-6 — Cross-check our counter taxonomy against AMD's own gfx90a set.** `intake-1223#record`
-  (IntelliPerf, MIT, first-party AMD, pinned `6dc899dd`) ships `external/guided-tuning/configs/MI2/input.json`
-  — a hand-curated **gfx90a/MI200 counter partition, 74 counters split across 6 legal rocprofv3 passes** —
-  plus the matching MI200 derived-metric algebra in `metric.py` (LDS bank-conflict rate, L1 coalescing,
-  atomic latency). Transcribe OFFLINE into a local reference table and diff against what our deterministic
-  paired-`rocprofv2` reporter collects. **Flag `TCP_GATE_EN1_sum`, `TCP_GATE_EN2_sum` and the
-  `SQ_ACCUM_PREV_HIRES` aliasing as at-risk** — availability on ROCm 6.2/gfx90a is UNVERIFIED, no execution
-  was performed. Framing note: this is an independent VENDOR CROSS-CHECK on a taxonomy the C4 row already
-  calls closed, **not** a rescue of an open problem.
-- [ ] **RVP-C4-7 — Confirm the nine Hawkeye cdna4 counters collect on gfx90a.** `SQ_WAVES`,
-  `SQ_INSTS_VMEM`, `SQ_INSTS_VALU`, `SQ_INSTS_VALU_MFMA_BF16`, `TCC_HIT_sum`, `SQ_INSTS_LDS`, `TCC_REQ_sum`,
-  `SQ_LDS_BANK_CONFLICT`, `FETCH_SIZE` — from `intake-1218#record`, where counter agreement is load-bearing
-  rather than decorative (a unit test passes only at **>=99% of the expert's counter value**, not merely on a
-  numerical match). All nine are classic CDNA SQ/TCC counters and gfx90a has MFMA BF16, so this leg likely
-  needs no re-derivation — record the absent subset if any.
-- [ ] **RVP-C4-8 — Adopt a two-slot hardware-context schema for the C4 prompt feed.** From
-  `intake-1221#record` Fig 3: an arch-constants field plus a SEPARATE block-scheduling-policy field. Fill it
-  honestly for gfx90a — **104 CUs / 8 MB UNIFIED L2 / 1 die / NO XCDs / linear dispatch** (first-party, from
-  `rocminfo` on this host). Stating the absence of XCDs is itself hardware-awareness: it suppresses a
-  proposal that is **provably the identity map** here. Keep the feed CURATED, per that source's own 3-arm
-  ablation in which a 10k-token unfiltered architecture dump performed no better than no hardware context at
-  all — and per `intake-1222#record`, where a raw ~50-counter dump measured WORSE than no profiling.
-- [ ] **RVP-C4-9 — Instrument every deterministic C4 rule with per-rule hit-rate telemetry.** Log
-  (rule_id, fired?, downstream speedup) on every eval-backend run; report the fold (tasks-covered / fires /
-  hit-rate at >1.5x / avg speedup) and prune rules at or below the base rate. Pattern from
-  `intake-1222#record` Table 9 — the METHOD ports and costs no extra GPU time; its NVIDIA numbers do not, and
-  are confounded anyway because proactive orchestration fires many tools per turn.
-
+- [ ] **INF48-LIVE-3 RVP-C4-5..9,11 - ROCm 6.2 rocprof-v1 profile() backend, counter-taxonomy cross-check, hardware-context schema, per-rule telemetry, estimated-speedup logging.** No-GPU design/code work except C4-7 (counter collection confirm). C4-10 is closed (PC sampling unimplemented on this ROCm). [no-belief: new consolidated box]
+  - *(folded into INF48-LIVE-3; full text at b3bd883d3:1106)* **RVP-C4-5 — Implement `profile()` on ROCm 6.2 `rocprof` **
+  - *(folded into INF48-LIVE-3; full text at b3bd883d3:1115)* **RVP-C4-6 — Cross-check our counter taxonomy against AMD's own gfx90a set.**
+  - *(folded into INF48-LIVE-3; full text at b3bd883d3:1124)* **RVP-C4-7 — Confirm the nine Hawkeye cdna4 counters collect on gfx90a.**
+  - *(folded into INF48-LIVE-3; full text at b3bd883d3:1130)* **RVP-C4-8 — Adopt a two-slot hardware-context schema for the C4 prompt feed.**
+  - *(folded into INF48-LIVE-3; full text at b3bd883d3:1137)* **RVP-C4-9 — Instrument every deterministic C4 rule with per-rule hit-rate telemetry.**
 ##### C5 — secondary substrate re-score and corpus seeding
 
 - **[declined: ws58 2026-11-03 content-review: benchmark-substrate bookkeeping (which external suite is "secondary"); no gate changes]** **RVP-C5-3 — Re-score the C5 SECONDARY from MultiKernelBench to KernelGenBench.** The row currently
@@ -1164,24 +1009,8 @@ hold) — only the SECONDARY slot is re-scored._
   **BOUND THE CLAIM: it is Triton-only end to end**, so a port measures Triton-on-CDNA2 and says nothing
   about llama.cpp HIP authoring; and it has NO AMD backend today (verified negative — zero AMD/ROCm/HIP/gfx
   strings in 24 pages; its six vendor requirements files contain no rocm entry). **PRIMARY UNCHANGED.**
-- [ ] **RVP-C5-4 — Seed `c5_seed_corpus.json` from the KernelGenBench vLLM subset.** 50 real inference
-  kernels — paged_attention_v1/v2, reshape_and_cache, rms_norm variants, rotary_embedding, scaled_fp8_quant,
-  moe_align_block_size, topk_softmax, selective_scan_fwd and the rest. Far closer to our serving workload
-  than KernelBench primitives, and it matches the attention / MoE-dispatch / dequant seeding C5 already calls
-  for. Their measured profile makes it the right difficulty tier: hardest to get CORRECT (68% best accuracy)
-  but the highest speedup headroom of their three sources, because the vLLM baselines are not heavily
-  hand-tuned.
-- [ ] **RVP-C5-5 — Harvest the BackendBench anti-gaming patterns into the C5 evaluation contract.** From
-  `intake-1224#record` (BSD-3-Clause): a per-op **inspectable kernel directory** as a shippable audit artifact
-  ("zip that folder and send it to your favourite performance engineer"); an **infinite-recursion trap** that
-  detects a generated kernel silently falling back to the reference; many inputs per op (~13 correctness /
-  ~110 perf) against input-distribution gaming; and live same-device baseline timing rather than stored
-  numbers. **Record the counter-example deliberately**: that project's own gate is
-  `assert_close(atol=1e-2, rtol=1e-2)` on a bf16 suite AND its `allclose` drops the caller's tolerances
-  entirely — looser than bf16 epsilon, so it cannot catch an internal precision downgrade. Its stated
-  mitigation is PROCESS (auditable artifacts) rather than a tighter number, which is a defensible position
-  worth copying on its own terms: when you cannot tighten the gate, make the artifact auditable.
-
+- [ ] **RVP-C5-4 — Seed `c5_seed_corpus.json` from the KernelGenBench vLLM subset.** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): KernelBench-style seeding; the live AK lane uses a served-shape oracle instead of C5 seed corpora. Full text at b3bd883d3:1167.
+- [ ] **RVP-C5-5 — Harvest the BackendBench anti-gaming patterns into the C5 evaluation contract.** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): BackendBench anti-gaming patterns for the C5 corpus contract; the C6 hardened evaluator covers the live threat model. Full text at b3bd883d3:1174.
 ##### Tooling note — rocprofv3 provisioned 2026-08-21
 
 `rocprofv3` is now in the side-loaded tree (`rocprofiler-sdk6.2.0_0.4.0-66~22.04`, version-matched to
@@ -1199,37 +1028,8 @@ were left neither filed nor declined and surfaced as an open decision. Operator 
 `vidya-belief-substrate-program.md` is a PREREQUISITE for both**: ParEval emits measurements, and the
 write-side adapter must exist before the first run, never after._
 
-- [ ] **RVP-C5-6 — Trial the ParEval serial+omp arms on the EPYC 9655 as a CPU parallel-code substrate.**
-  120 of its 420 tasks (serial + omp) need only `g++ -fopenmp` — **no GPU, no MPI cluster, no ROCm, no
-  PyTorch** — so this is runnable today with a stock toolchain and zero porting. It is the ONLY substrate in
-  our 30+ entry kernel-agent cluster that evaluates CPU parallel-code generation at all; every other entry
-  assumes a GPU kernel is the artifact, which leaves our 96-core first-class inference target uncovered.
-  Two concrete fits: its `efficiency_n@k` metric is speedup-per-thread against a LOCALLY measured
-  best-sequential baseline, which is the same shape our CPU operating-point work already asks (48t vs 96t vs
-  4x48t, NPS4 topology sensitivity); and the paper's own CPU baseline is an **EPYC 7763, 64 cores, swept
-  1-32 threads** — one generation behind ours — so **extending the sweep to 96 threads on Zen5 is a
-  genuinely new datapoint rather than a reproduction**. Deliverable: pass@k + efficiency@k on our CPU, and a
-  go/no-go on ParEval as the SECONDARY CPU-side C5 layer. **Verify LIVE affinity, not a topology hash.**
-  Repo pinned at `9e2a9afafa2c9686fdd3310defde0f9a8c3731c1` (branch `develop`, the default).
-  CAVEAT that must ride with any number: the drivers wrap the timed region in
-  `__attribute__((optimize("O0")))` at a fixed `DRIVER_PROBLEM_SIZE`, so absolute figures are **NOT**
-  comparable to our llama-bench protocol and must never be quoted beside them.
-  - 2026-10-31, generation first segment (`codex3-pareval120-k20-gen-20261031`, ended 12:16:21 UTC): **capability / PARTIAL, no acceptance verdict** against the predeclared 2,400-attempt capture rule. The cutoff snapshot has 52 completed native result records: 5 `ok`, 47 `UNKNOWN`; all 47 unknowns have empty completion content with a native `length` finish at 1,024 tokens, with original reasoning/response retained and no redraw. Native finish totals are 48 `length` and 4 `stop`. `PARTIAL.json` reports insufficient reserve before the next request; no final `TERMINAL.json` was present. The launcher automatically resumed at 12:18 UTC; this is the first-segment cutoff, not a current running total. Correctness, local sequential baseline, timing, pass@k, efficiency@k and SC45 measured projection remain **UNRUN**; RVP-C5-6 and SC45 remain open. Finish the existing declared capture, preserve all unknowns, then perform its separately declared contained evaluation. [Bounded native hash manifest and scope](../../artifacts/compute/codex3-pareval-segment1-20261031/README.md). [belief: cc]
-  - 2026-10-31 results filing, ParEval generation segment 2 (ended 16:08:12Z rc75; server drain recorded): cumulative native result records at that boundary are 103/2400 (5 ok, 98 UNKNOWN), an additional 51 UNKNOWN records beyond the previously filed 52 (5 ok, 47 UNKNOWN). UNKNOWN preserves native responses whose content was missing; no exposed sample is redrawn. Of the 5 ok generation records, 4 finish stop and 1 finish length; none is a correctness pass. Remaining 2297 attempts were unexposed at that boundary. PARTIAL and owned-server drain evidence support this ended segment; automatic continuation was running by 16:09Z and later records are excluded. Generation remains partial capability capture; correctness, local sequential baseline, 1–96-thread timing, pass@k, efficiency@k, SC45 records and RVP-C5-6 completion remain open under the original tasks. [Segment evidence](../../artifacts/compute/codex3-results-filing-1633-20261031/pareval-segment2-aggregate.json). [belief: cc]
-  - 2026-11-05 stop rule (operator-adhoc-takeover-20261105, for successor row `codex3-pareval120-k20-gen-r2-20261105`, which resumes the existing capture at 497/2400 with no redraw): stop-on-answer when all 2,400 declared attempts have a native record (ok or UNKNOWN); stop-on-futility when the 200 records after the resume point are >= 95% UNKNOWN empty-content `length` finishes, since the 1,024-token cap then decides the capture, not the model; gate-class = futility-only. [no-belief: stop rule, no measurement]
-- [ ] **RVP-C5-7 — Build the ParEval HIP arm on gfx90a and run its 60 HIP tasks as a smoke corpus.** The AMD
-  arm is `hipcc` with **NO `--offload-arch` pin** — it is LESS constrained than that project's own NVIDIA arm,
-  which is hard-pinned to `arch=compute_80,code=sm_80` — and it has been executed on AMD hardware by its
-  authors, so the path is exercised rather than merely present. HARDENING FIRST, because the config is
-  duplicated: add `--offload-arch=gfx90a` to the hip `CXXFLAGS` in **BOTH** `drivers/build-configs.json` AND
-  the copied dict in `drivers/cpp/cpp_driver_wrapper.py` — change one and the other silently disagrees. Then
-  re-derive `drivers/problem-sizes.json` for 64GB HBM2e (the paper sized for an MI50's 16-32GB). **THE GAP
-  THIS CLOSES AND THE ONE IT DOES NOT:** the published AMD results are **MI50 (GCN/Vega20), not CDNA**, and
-  the tree contains zero `gfx` tokens — so "not NVIDIA-pinned" is verified while "validated on CDNA2" is
-  **not**, and a gfx90a claim would be OURS to make. Per our own doctrine a HIP arm that merely BUILDS proves
-  nothing: **prove residency with VRAM sampled DURING the run and a KFD process count**, not by the absence
-  of an error. This would be the first CDNA2 datapoint for ParEval anywhere.
-
+- **[superseded: inf48-triage 2026-11-09: ParEval CPU-code trial: the live AK lane targets served llama.cpp ops (controller/discovery_controller.py on research main), not ParEval corpora, and the body already records a completed native trial; full text at b3bd883d3:1202]** **RVP-C5-6 — Trial the ParEval serial+omp arms on the EPYC 9655 as a CPU parallel-code substrate.**
+- **[superseded: inf48-triage 2026-11-09: ParEval HIP smoke corpus: same reason as RVP-C5-6; gfx90a HIP correctness is covered by c5_rocm_oracle.py + the served-shape oracle; full text at b3bd883d3:1220]** **RVP-C5-7 — Build the ParEval HIP arm on gfx90a and run its 60 HIP tasks as a smoke corpus.**
 #### Research Intake Update — 2026-08-21 (Stage-2b second wave: reward-hacking, measurement and benchmark primaries)
 
 _Filed from three Stage-2b batches that ran after the Stage-3 plan closed: `intake-1238#record` (Yang et al.,
@@ -1250,23 +1050,8 @@ blacklisted symbol (L1 passes) **and IS invoked**, so no-op-swapping it changes 
 is Shape C in its purest form. Note the two papers are **complementary, not nested** — KernelGenBench proves
 the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neither alone covers both.
 
-- [ ] **RVP-C6-19 — Add a SEMANTIC-COMPLETENESS tier to C6, and DROP the planned L3.** Port TritonRL's
-      Appendix-H rubric verbatim as an LLM-judge prompt. It is **train-free and hardware-free** — a prompt
-      plus a model call, running on the EPYC host with the GPU idle — and it does not care that we are on
-      gfx90a. The planned L3 (profiler signature) is NVIDIA-only by KernelGenBench's own statement AND is a
-      weaker version of what L2 already proves (another execution-path check), so the correct stack is
-      **L1 + L2 + SEMANTIC JUDGE**, with L3 dropped as unportable and redundant rather than deferred. Caveat
-      to carry: the LLM judge is itself an **unvalidated oracle** — the paper reports no judge-agreement
-      study, no human-labelled cheating set and no error rate, so assume the tier has its own FP/FN rate.
-      Our judge is sampling-sensitive; pin temperature and seed per `feedback_bench_defaults`.
-      **OPERATOR-RATIFIED 2026-08-21 (option (a) of the decision package), with a binding sequence:**
-      **RVP-C6-20 is a HARD PREREQUISITE — the judge tier gates nothing until it rejects all three
-      hand-authored mutants** (that is its minimal validation set, standing in for the judge-agreement
-      study TritonRL never ran); and **RVP-C6-21 is its STANDING HEALTH CHECK** thereafter — re-run the
-      differential audit whenever the judge model, prompt, or pinned sampling changes, and treat a gap
-      collapse toward zero as the judge going vacuous, not as the corpus going clean. L3 is DROPPED, not
-      deferred: reopen only if the redundancy argument (an execution-path check duplicating L2) is itself
-      refuted.
+- [ ] **INF48-LIVE-1 RVP-C6-WIRE - integrate the audited C6 oracle/Ghost wiring into the research-main discovery controller.** The carrier/evaluator layer landed in research branch inf48-triage-20261109 commit f69569bc4 (Hawkeye measurement, two-process Ghost Replay, sandbox, reward integrity; 140+ tests green). What remains is the CONTROLLER half, which lives only on `codex/autokernel-v27-descendant-20260823` (49 commits, 32d48f3da, independent-audit fixes 27602b14d): `merge-tree` against main shows 18 conflicting files (discovery_controller/_deployment/_deployment_factory/_static_registry/gpu_source_adapter/source_candidate/run_autokernel_gpu_discovery; `campaign.py` was deleted on main). Port the C6 admission + live oracle/candidate split onto main's controller, then re-run test_c6_admission_integration. Children below are folded RVP-C6-19/21/24/26 remainders. C6-26: the twin-gap screen is now two-sided (research branch commit 1525888cc, test_microbench green); remaining is the planted C-style content-hash-memo kernel in `reward_hack_corpus` (changes the 9/9 corpus identity, needs its own re-pin) and, optionally, rank-first-execution in the experimental llama-bench. C6-24: no wrapper-raise mutation test exists yet (three-run bitwise determinism part is done in c6_reward_integrity.py). [no-belief: new consolidated box]
+  - *(folded into INF48-LIVE-1; full text at b3bd883d3:1253)* **RVP-C6-19 — Add a SEMANTIC-COMPLETENESS tier to C6, and DROP the planned L3.**
 - [x] **RVP-C6-20 — Falsify "L1+L2 is enough" with three hand-authored adversarial gfx90a kernels.** ✅ 2026-08-21 A
       LayerNorm computing mean/variance/normalize but **SKIPPING scale and bias**; a matmul-then-transpose
       **omitting the transpose**; a softmax **omitting the max-subtraction**. All three are invoked and
@@ -1307,22 +1092,8 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       input curricula (non-default parameters, overflow-scale magnitudes) are the cheap complementary
       defence for both.** The judge-rejects-all-three arm is owned by C6-19's ratified hard-prerequisite
       clause; this corpus is its validation set.
-- [ ] **RVP-C6-21 — Run the DIFFERENTIAL ORACLE AUDIT on our own C6 corpus.** Score the identical generation
-      set **twice**, with and without the functionality/semantic tier, and report the gap as a number.
-      TritonRL measures **+30pp** for a hacking-prone model (AutoTriton 57%→87% on KernelBench L1; 1%→94% on
-      L2) versus **<=3pp** for a robustly-trained one. Needs no ground truth, no GPU and no training — pure
-      re-scoring of existing artifacts. It converts "is our gate doing anything?" from an opinion into a
-      measurement. Note the paper's own <=3pp self-score is **self-graded**; ours would not be.
-- [ ] **RVP-C6-22 — Close the PRECISION-DOWNGRADE gap, which NO source we hold defends against, and which
-      one of them actively REWARDS.** TritonRL has no dtype or tolerance policy anywhere in 31 pages (the
-      words dtype/precision/tolerance/atol/rtol/fp16/bfloat16 do not occur; its correctness check is exact
-      equality over five random inputs). L1 cannot see a dtype choice; L2 cannot (the kernel runs); a
-      semantic judge reading source might catch an obvious fp16 accumulate but has no ground truth for what
-      precision is REQUIRED. **Worse: `intake-1227`'s adaptive tolerance is keyed BY DTYPE** (FP32 1e-5,
-      FP16 1e-3, BF16 0.016) — so if the generated kernel picks its own output dtype, downgrading BUYS a
-      ~160x looser bar and passes. **Pin the required dtype and accumulate precision PER OPERATOR in the C6
-      contract and check them STRUCTURALLY, before tolerance is chosen.** This amends, and does not
-      duplicate, the OPEN `RVP-C2-9`. Candidate fix (absorbs C6-23): adopt FlashInfer-Bench's correctness layer, the only gate among the four dived benchmarks that refuses a precision downgrade.
+  - *(folded into INF48-LIVE-1; full text at b3bd883d3:1310)* **RVP-C6-21 — Run the DIFFERENTIAL ORACLE AUDIT on our own C6 corpus.**
+- [x] ✅ 2026-11-09 — research branch inf48-triage-20261109 commit f69569bc4 on research main 645ca5b54 (audit lineage 91a75a05e..32d48f3da on codex/autokernel-v27-descendant-20260823): precision-downgrade gap closed: PrecisionContract with structural dtype/accumulator checks before tolerance, FlashInfer matched-ratio, three-run bitwise determinism (c6_reward_integrity.py; PrecisionTests); absorbs declined C6-23; [no-belief: software source implementation and finite regression controls; no measurement] **Worse: `intake-1227`'s adaptive tolerance is keyed BY DTYPE**
 - **[declined: ws58 2026-11-03 content-review: merged into C6-22 (FlashInfer-Bench's correctness layer is the candidate fix for the precision-downgrade gap)]** **RVP-C6-23 — Adopt FlashInfer-Bench's correctness layer; it is the only gate of the four benchmarks
       dived that refuses a precision downgrade by construction.** `intake-1245#record` §4: keep the TIGHT
       per-element bound and budget a fraction `rho` of outlier elements (**matched-ratio rule**, example
@@ -1332,15 +1103,7 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       Arch-independent, so it needs no port. First read `flashinfer_bench/bench/evaluators/{lowbit,default}.py`
       @ `40e6ca78` and extract the ACTUAL default `eps_abs`, `eps_rel` and `rho` — the paper gives the
       inequality but only an example rho, and we need the numbers before claiming our gate is or is not tighter.
-- [ ] **RVP-C6-24 — Add a NINTH shape to the vacuous-verification catalogue: WRAPPER LAUNDERS A KERNEL
-      FAILURE INTO THE REFERENCE.** `intake-1249#record` Appendix B found agent submissions where the
-      surrounding `ModelNew` catches the kernel-call failure and returns the PyTorch reference — passing
-      correctness while the measured program is the fallback. **The detection mechanism is exact and
-      reusable: replace the fallback return path with a `raise` and re-run**; submissions that only passed
-      via the fallback now fail. It would have credited a baseline with a phantom ~0.96x. This is a mutation
-      test on a harness, precisely our doctrine. Also adopt `intake-1246#record`'s **bitwise-determinism**
-      stage (same input, three runs, bitwise identical) — arch-independent, near-free, and it closes the
-      reward-hacking class that relies on non-determinism, though it says nothing about precision.
+  - *(folded into INF48-LIVE-1; full text at b3bd883d3:1335)* **bitwise-determinism**
 - [x] **RVP-C6-25 ✅ 2026-08-21 (compiled into wiki/benchmark-methodology.md, evening update) — Record the KernelFalcon test-harness admission as a SIXTH Shape-C instance in
       `wiki/benchmark-methodology.md`.** It is the cleanest one in the set: the authors name the weakness of
       their own gate in the same post as the 100%-correctness headline — _"we trust the LLM-generated test
@@ -1348,18 +1111,7 @@ the kernel RAN, TritonRL judges whether it COMPUTES THE WHOLE OPERATOR, and neit
       **65 of 100** L1 tasks against plain `torch.compile`. Pair it with the existing index datapoint showing
       the same system at **0.777x** geomean against PRODUCTION baselines: same system, different denominator,
       win becomes slowdown.
-- [ ] **RVP-C6-26 — close the within-pair content-memo hole in the hardened bench (rider on RVP-C6-8).**
-      The hole: `a4cb04ca8` ranks the SECOND execution of identical content (llama-bench.cpp:2705-2723). A content-keyed
-      memo populated by the ordinary run makes that ranked replicate faster with bitwise-equal outputs. The only timing
-      screen is one-sided: `microbench.py:215, 1859-1860` flags a slower twin, never a faster one.
-      Fix it one of three ways:
-      - rank the first, unique-content execution and keep the replicate for invariance only;
-      - randomise member order per rep;
-      - make the twin-gap screen two-sided.
-      Also add a planted content-hash-memo C kernel to `reward_hack_corpus`. The `_POINTER_MEMO` lexical detector matches
-      C++ idioms, not a C-style `(uintptr_t)src->data` key. Source: intake-1426#record. Experimental-branch llama-bench
-      rebuild only.
-
+  - *(folded into INF48-LIVE-1; full text at b3bd883d3:1351)* **RVP-C6-26 — close the within-pair content-memo hole in the hardened bench (rider on RVP-C6-8).**
 ##### C4 — extensions to a CLOSED component (the taxonomy stays closed; these are additive)
 
 **GPA is counter-agnostic AND STILL NOT a better C4 template than CudaForge or KernelPro — on our hardware it
@@ -1390,12 +1142,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
       whether a 6.4+ upgrade would yield stall reasons on gfx90a (docs say host-trap only, stall reasons
       stochastic-exclusive = CDNA3+) remains untested because untestable here. Probe source:
       `tmp/intake-20260821/pcs_probe/probe.c` (session scratch; ~40 lines, gcc against the side-loaded SDK).
-- [ ] **RVP-C4-11 — Require every C4 prescription to carry an ESTIMATED speedup, and log estimate-vs-achieved
-      error.** GPA publishes estimated beside achieved for all 26 optimization rows, **mean error 4.1%**
-      (worst rows 42% and 26%, both latency-hiding — do not quote the mean as the accuracy of any single
-      prediction). Our C4 emits diagnoses with no predicted benefit and therefore **cannot be scored**.
-      Schema change plus a reducer; no PC sampling and no ROCm upgrade needed. Land with AK-PM-17 — both
-      convert a subsystem's self-assessment into a measurable error rate.
+  - *(folded into INF48-LIVE-3; full text at b3bd883d3:1393)* ** GPA publishes estimated beside achieved for all 26 optimization rows, **
 - **[declined: ws58 2026-11-03 content-review: a vocabulary diff against a third-party optimizer list; no gate or planner reads it]** **RVP-C4-12 — Diff our C4 prescription vocabulary against GPA's 12 published optimizers.** Stall
       Elimination (Register Reuse, Strength Reduction, Function Split, Fast Math, Warp Balance, Memory
       Transaction Reduction), Latency Hiding (Loop Unrolling, Code Reordering, Function Inlining), Parallel
@@ -1695,11 +1442,8 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 
 #### Research Intake Update — 2026-09-26 (ATT MFMA-efficiency metric on gfx90a; intake-1823)
 
-- [ ] **RVP-ATT-1 — desk check (no GPU): is an ATT thread-trace MFMA-efficiency metric obtainable on gfx90a with
-  ROCm 6.2 rocprofv3?** If so, record the gfx90a MFMA cycle table it needs (16x16x16 = 8 passes, SISchedule.td:259 at
-  rocm-6.2.0). Metric definition: total MFMA cycles over the average hot-loop iteration, per SIMD (intake-1823). Its
-  only consumer is a future MMQ candidate.
-
+- [ ] **INF48-LIVE-6 GPU-AK-SIGNALS - counter/ISA/race/equivalence signals for the GPU AK lane (RVP-ATT-1, RVP-CTR-1, RVP-RACE-1/2, RVP-EQV-1, C5-ISA-1/2).** Recent (Oct-Nov) intake-derived rows, kept for their own sequencing; each child is a pointer to the full text at b3bd883d3. [no-belief: new consolidated box]
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:1698)* **(no title)**
 - [ ] **RVP-ATT-CANARY-R4 — validate the repaired trace launcher on the real GPU.** Private
   `/mnt/raid0/llm/tmp/codex-att-r4-20261028` now checks the correct GPU device path, requires the full
   `mi210_0,72-95,184-191` grant, and uses a private engine retaining live admission while omitting
@@ -1708,6 +1452,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
   run the same launcher under the R7 smoke slot, verify the real trace writer, residency, rc75 partial
   and cleanup, then publish the row only after full-q3 scheduler admission is verified. This is a
   plumbing canary, not an MFMA-efficiency result. [no-belief: no measurement yet]
+  - *(2026-11-09 schedule readiness, inf48-triage)* Launcher exists, outside git: `/mnt/raid0/llm/tmp/codex-att-r4-20261028/{launch.sh,job.sh,filler_run12.sh,PREDECLARATION.json}`; MFMA probe build `refactor-01a16fc3/rvp-att-mfma-probe-ready` is COMPLETE. Missing before it can be a rowflow row: (1) no rowflow `spec.json` (the R4 dir has only PREDECLARATION.json; model on `ak-asm-aiter-vs-c6-timing-20261106/spec.json`: launcher, regions `mi210_0,72-95,184-191`, ram_gib, result_path, scratch_root, keep, estimate_s, min_window_s>=600, handoff_task, decision_rule); (2) `launch.sh` calls the private `filler_run12.sh`, rowflow now runs `compute-flags/bin/rowflow/filler_run15.sh` (needs `--precond-cmd/--complete-cmd` and the T1 requested_window_s/est_output_GiB/claimed_cpus fields); (3) `sha256sum -c source-files.sha256` FAILS for `epyc-orchestrator/src/runtime/cpu_region_lock.py` and `region_lock_cli.py` (both changed after 2026-10-28; job.sh refuses 'source') — review the diff then reseal; (4) no grant exists yet (grant writer issues it after publish); (5) commit the launcher to git so it is not tmp-only. [no-belief: readiness audit, no measurement]
 
 
 - [x] **RVP-ROLLBACK-SEED-SOURCE — repair only rollback-case integer initialization on a fresh experimental child of frozen production.** Exact private candidate`8e09a5e003f61b7ce7d58088f2f34595118068b4` parent`ffc1bac82eeca6f9099e1ccd9ba49703c460a115` consumes the existing per-tensor suite RNG and preserves unseeded fallback/float initialization. MAIN LOW source review is complete; finish prospective actual native CPU initializer/reference controls before source publication. Full GPU/production regressions, promotion and accepted live seeded event remain parent requirements; no production-tree change.
@@ -1727,11 +1472,10 @@ Exact candidate/recipe preparation remains under /mnt/raid0/llm/tmp/ni08_remaini
 
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
-- [ ] **RVP-CTR-1 — Counter-grounded planner signals for the GPU AK lane (intake-2556#record).** For the top hotspot kernel of each GPU screen, capture a fixed declared counter subset with rocprofv2 (occupancy, LDS bank conflicts, VALU/MFMA busy, memory unit stall, achieved bandwidth) and pass it to the planner with the rule that every proposed idea must cite a counter that is present, and a missing counter may not be treated as zero. Compare 2 planner rounds with and without counters on the same target and budget.
-- [ ] **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).** GPU: in a llama.cpp-experimental worktree from the v10 tip build seeded-race HIP mutants, each deleting one barrier: MMQ tile load (mmq.cuh barrier sites), MMVQ cross-warp tmp_shared reduction (mmvq.cu nwarps 4 and 8 routes), MMVQ LDS-DMA double buffer (mmvq.cu:1063-1065, run with GGML_CUDA_Q8_PREFETCH=1), FA-mma tile softmax; prove each mutant structurally (s_barrier count of that kernel in the disassembled gfx90a code object drops vs the unmutated build) and record waves-per-workgroup at each served shape (a single-wave site is excluded as not a race). Run the AK served-shape test-backend-ops case set 20x per mutant and 20x on the unmutated build (frozen case manifest, per-run raw verdicts and NMSE kept). CPU: build test-backend-ops with ThreadSanitizer using LLVM libomp with Archer annotations and run the threaded ops on the v10 anchor. Decision rule: a GPU mutant that passes the gate in >=1 of 20 runs is a measured race miss; the unmutated build must pass 20/20; the mutant set becomes the fixture set of RVP-RACE-2 either way. The v10 anchor must produce zero TSAN reports beyond a documented suppression list.
-- [ ] **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).** Not trigger-gated: 236 of 627 unique AK GPU mechanisms and 15 of 31 keeps touch sync, and v10 already ships hand-ordered LDS-DMA (mmvq.cu:1038-1093). Build in Rust on the MIT ptx_verifier @a39292a, reusing volta_graph and volta_graph_check (barrier_epoch, memory_conflict) unchanged, and extending volta_amd_analysis from gfx950/8 opcodes to gfx90a. Input is the disassembled code object of the built candidate (split with research scripts/kernel_rnd/gfx90a_isa_audit.py, the same artifact as C5-ISA-1). Launch grid, workgroup size and kernarg come from a small HIP launch-capture shim on a correctness-only served-shape run. Model: a concrete integer/address lattice with float/MFMA results opaque; exec mask; wave64 with per-wave program order (one event per wave-instruction, with the byte footprint of active lanes, plus an intra-instruction lane write-write check); ds_* complete at lgkmcnt; buffer_load...lds as AsyncIssue/AsyncComplete, completed conservatively at vmcnt(0); s_barrier as barrier generations; any branch or address that depends on an opaque value yields UNKNOWN (fail-closed, never ACCEPT). Index inputs (MoE ids, FA mask) are fed concretely. M1 (3-4 eng-weeks, the MMVQ + FA-vec opcode set, 228 distinct on v10): check WG0, the last WG and all boundary/tail WGs per served shape. M1 is accepted when it gives 0 findings on v10 MMVQ (both nwarps routes, plus q8pf with GGML_CUDA_Q8_PREFETCH=1) and on FA-vec at the AK served shapes, flags 100% of the RVP-RACE-1 MMVQ/FA mutants plus 2 ISA-only mutants that source mutation cannot make (delete the q8pf s_waitcnt vmcnt(0); move the first LDS read of a tile above its s_barrier; reassembled with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a), and finishes in <=10 min per kernel instance on one core. Any production finding is triaged to a true race or a model bug before acceptance. M2 (+2-3 weeks): MMQ, FA-mma, FA-tile, quantize, argsort/topk (316-opcode union, MFMA/AGPR opaque); cross-WG global write-set overlap on sampled WGs (MMQ tmp_fixup disjointness); deadlock via barrier epochs; a gfx90a wait-state hazard lint for inline-asm regions (quantize.cu:100-117 DPP s_nop) cross-checked against an LLVM-compiled reference. The FA-vec atomic completion protocol is declared out of scope (UNKNOWN). M3: register as race_detector_id in execution/t0_provider.py for GPU routes whose diff or ISA touches barrier/__shared__/ds_/s_waitcnt/LDS-DMA/inline asm, after M1+M2 acceptance. Budget 8-11 kLoC new plus about 12 kLoC reused, 6-9 engineer-weeks, Codex-delegable; zero GPU time beyond the capture runs.
-- [ ] **RVP-EQV-1 — Decide the equivalence-checker port by measured miss rate, quant kernels declined on coverage (intake-2570#record, intake-2557#record).** Decision part 1, decline: no Volta-class equivalence for MMVQ, MMQ, quantize_q8_1 or dequant. They are bit-level (nibble unpack, rounding), which Volta does not cover (floats are reals, conversions are the identity), and they make up about 75% of AK GPU experiment rows (1116 of 1497). KERN-4 enumeration owns decode exactness. Decision part 2, a deciding probe for the real-valued subclass (FA-mma/FA-tile at parallel_blocks=1, GDN recurrence, mmvf float GEMV). In a llama.cpp-experimental worktree from the v10 tip, build 8 seeded sub-tolerance algebraic mutants: FA online-softmax rescale skipped only when the running max changes after the first KV tile; FA KV loop dropping the last KV column; FA-tile dropping one tail tile at a non-multiple context; GDN exp(g) decay dropped at a chunk boundary; GDN beta dropped for one head; mmvf dropping the final partial k-block at ne00 % tile != 0; and two controls with an O(1) error. Prove each mutant structurally (ISA diff of that kernel). Run the AK served-shape gate plus the AKX-ALL-31 edge families and the KERN-5 worst-element bound, 5 seeds each, on a frozen case manifest, keeping per-mutant per-seed raw verdicts and NMSE; the unmutated v10 build must pass 5/5 seeds. Decision rule: if any non-control mutant survives every gate on >=1 seed, open the equivalence milestone for that subclass on the RVP-RACE-2 interpreter (symbolic float values, v_exp_f32 as 2^x, cvt as identity, the 2 MFMA lane layouts in use, DPP/swizzle value moves, FA and GDN reference specs; estimate 4-6 kLoC, 4-6 engineer-weeks; advisory, never a speed-blocking gate, because intake-2555 Table 2 shows proof-restricted FA at 0.78x vs 1.37x). If all are caught, record the catch table and close the equivalence port with that table as the reason. Correctness-only, so no quiet host is needed.
-
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:1730)* **RVP-CTR-1 — Counter-grounded planner signals for the GPU AK lane (intake-2556#record).**
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:1731)* **RVP-RACE-1 — Measure whether the correctness gate can see a race at all (intake-2557#record, intake-2570#record).**
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:1732)* **RVP-RACE-2 — gfx90a AMDGCN race/deadlock executor as the GPU race_detector_id (intake-2570#record, intake-2557#record).**
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:1733)* **RVP-EQV-1 — Decide the equivalence-checker port by measured miss rate, quant kernels declined on coverage (intake-2570#record, intake-2557#record).**
 ## Track: agentic-rocm-kernel-authoring
 <!-- gate: INF-48#rocm-verify-profile-backend, EVL-47 -->
 
@@ -1979,11 +1723,7 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   (SHA-256 `aee866ee3ebd2fe88b37185f4226c3c20a5b439c60a40fac57ef1bb42898be8c`). This closes compatibility,
   not the published-suite speedup reproduction.
 - [x] Write P-GPU-1 measurement protocol before any GPU runs ✅ 2026-07-29 — human amendment ratified the canonical MI210 GPU protocol in [`MEASUREMENT.md`](../../MEASUREMENT.md#p-gpu-1--mi210-gpu-canonical-throughput-ratified-2026-07-19) on 2026-07-19; this closes protocol authoring only, not any GPU run or decision claim.
-- [ ] Run the matched controller-authoring A/B on gfx90a across the registered Claude+Codex,
-  EvoEngineer, KernelFoundry, K-Search, Xe-Forge, GEAK, ARGUS, and baseline arms. Registration,
-  C4 prompt-hygiene binding, and the three-argument `@register_agent` bridge are complete in
-  research commit `48350b24`; the full-panel implementation now refuses honestly at 6/8, and the
-  matched eight-arm comparison waits only on the two unavailable licensed source releases.
+- **[superseded: inf48-triage 2026-11-09: matched controller-authoring A/B: R18 terminal-noncomplete and non-rankable (r4-r18 never aggregate); replaced by the AutoKernel discovery controller (controller/discovery_controller.py); full text at b3bd883d3:1982]** **(no title)**
   - [x] **Build the governed eight-arm campaign driver and audit executable coverage.** ✅ 2026-08-11
     — baseline plus Claude/Codex actor-critic, EvoEngineer, KernelFoundry, K-Search, Xe-Forge,
     GEAK-v1, and ARGUS are serialized on one MI210 at exact 2h/8h/32h checkpoints with source,
@@ -2313,12 +2053,7 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
     audit observed the new actor entrypoint but the campaign still expected the pre-repair digest, so it
     refused before controller inference, GPU execution, or device-claim acquisition. The corrected pin
     is `eb1de388`; r16 carries no empirical or comparison authority.
-  - [ ] **Drive retry-hardened seven-arm comparison to a terminal aggregate and validate the complete
-    receipt chain.** R18 is terminal-noncomplete and non-rankable after the parent rejected mutable
-    host Claude-config drift following the staged copy. No actor-cell receipt or aggregate was admitted.
-    Fresh r19 is live from clean immutable research `0b1fdbe9`; its ready 7/7 audit, completed baseline,
-    and active first actor cell grant no comparison authority. Preserve diagnostic checkpoints, but never
-    aggregate, rank, bank, promote, release, or resume r4-r18.
+  - **[superseded: inf48-triage 2026-11-09: seven-arm comparison: R18 terminal-noncomplete, non-rankable; the A/B program is replaced by the AutoKernel discovery controller; full text at b3bd883d3:2316]** **(no title)**
     - [x] **Patch the EvoEngineer evaluator-constructor call and launch a fresh immutable successor.**
       ✅ 2026-08-12 — research `381bc55e` wires governed `source_paths` through EvoEngineer, GEAK,
       K-Search, KernelFoundry, and Xe-Forge; `11bccd41` refreshes affected entrypoint pins. Research
@@ -2344,11 +2079,7 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
       inherited attempt lease, PID/start-tick cancellation, manifest-v3 validation, truthful observed
       overlap, and a required overlap A/A noise gate. This is a design/verification contract only:
       overlap remains disabled, and r19 intentionally retains the proven sequential runner.
-    - [ ] **Implement and validate deterministic controller overlap for a post-r19 successor.** Close
-      every `dfe265a1` gate: manifest-v3 lane/claim bindings, inherited attempt lease, PID/start-tick
-      cancellation, lane confinement, contention/restart regressions, truthful observed concurrency,
-      disjoint CPU placement, and a governed overlap A/A inside its predeclared noise bound. Do not
-      change r19 execution semantics or make concurrent results rankable before that matrix passes.
+    - **[superseded: inf48-triage 2026-11-09: controller-overlap successor to the dead r4-r19 comparison; replaced by the discovery controller's own lane/claim handling; full text at b3bd883d3:2347]** **Implement and validate deterministic controller overlap for a post-r19 successor.**
   - [x] **Narrow INF-03 MI210 claims to the centralized evaluator's actual GPU windows.** ✅
     2026-08-12 — research `e6c7aab6` and the r4 manifest bind
     `controller_deliberation_holds_no_gpu_claim=true`, a GPU-blind controller environment, claims
@@ -2396,12 +2127,8 @@ isolated PyTorch operator suite, not a baseline corpus for current llama.cpp HIP
   source paths, and selected-entry-only Apex admission. Focused validation passed 27 tests and the
   evaluator regression passed 1,579 tests. This closes the capture mechanism, not the model-specific
   tensor evidence.
-- [ ] **Provide the exact k228 model-tensor capture hook manifest and run the governed capture.** The
-  hook must execute the real model surface and emit the source/model/process/window identities the
-  C3/C5 provider validates; a HyRA reference tensor or synthetic fixture cannot substitute.
-- [ ] **Provide the exact k175 ordered multi-trace capture hook manifest and run the governed capture.**
-  The hook must preserve the router → top8/count/rank → dispatch → routed/shared experts →
-  weighted-undispatch graph; a single similar-looking kernel cannot satisfy the composite case.
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:2399)* **Provide the exact k228 model-tensor capture hook manifest and run the governed capture.**
+  - *(folded into INF48-LIVE-2; full text at b3bd883d3:2402)* **Provide the exact k175 ordered multi-trace capture hook manifest and run the governed capture.**
 - [x] **GEAK-family freshness sweep completed ✅ 2026-08-03** (research-intake Stage-2b): GEAK v4 retains a current gfx90a KB (`perf_knowledge/hardware/cdna2_mi200/`, `updated: 2026-06-08`) and 40 gfx90a capability entries; all published evaluation remains gfx942. Scoping caveat amended above; "677/678/679 are a coverage regression" **retired** — for GEAK proper it is unpublished coverage. `v1.0.0 @ 4ffba15a` pinned.
 - [x] Re-target the program objective from the Q8 rung to the fp16 rung, with a banded per-lever ceiling (K1–K12) ✅ 2026-08-03
 - [x] Register **ARGUS** (arXiv 2604.18616) as a controller candidate alongside EvoEngineer /
@@ -2626,12 +2353,7 @@ is fp32, while HyRA candidate metadata names fp16; k227 is bf16-only. The provid
 oracle-workload and candidate-metadata identities separate rather than repeating the earlier
 "all bf16/fp16" conflation.
 
-- [ ] **C5-3 — Use the port as a gfx90a CORRECTNESS ORACLE now, ahead of any bound port.** Target
-      `LOCAL` hardware, compile through the existing arch-agnostic path, and run the 10 fresh-input
-      correctness rounds against the live-executed references. This is the C3/C5 provider validation
-      the handoff already says a HyRA reference tensor or synthetic fixture cannot substitute for — and
-      it needs no measured constants, so it is available immediately. AutoKernel is explicitly in scope
-      to author and screen gfx90a kernels against it.
+- **[superseded: inf48-triage 2026-11-09: gfx90a correctness oracle now exists as scripts/kernel_rnd/autokernel/c5_rocm_oracle.py (+ test_c5_rocm_oracle.py) on research main; full text at b3bd883d3:2629]** **C5-3 — Use the port as a gfx90a CORRECTNESS ORACLE now, ahead of any bound port.**
   - [x] **C5-3a — Implement the sealed gfx90a correctness-only provider.** ✅ 2026-08-16 — research
         `5f1b645c0c5034137e298c1dc9732beee9742547` adds LOCAL/gfx90a planning, exact source/runtime/
         workload identities, ten fresh live-reference rounds, and `scoring.enabled=false`; later
@@ -2695,33 +2417,9 @@ MI300/CDNA3 and never mentions MI210, MI250, CDNA2 or gfx90a. The related "one o
 targeting HIP for AMD" framing is an index-internal assertion, NOT-FOUND-IN-SOURCE, and should be struck
 wherever it appears._
 
-- [ ] **C5-6 — Add a ZERO-PROFILER null arm to the controller-authoring A/B on gfx90a.** The cheapest arm
-      in the matrix: it needs a compiler, a correctness oracle and a wall-clock timer, all of which we have,
-      and it has **no C4 dependency**, so it unblocks immediately. The point is to MEASURE what our profiler
-      feed is worth instead of assuming it. Two independent sources now say the feed is a **MULTIPLIER, NOT
-      A PREREQUISITE**: `intake-1226#record` ran an AMD HIP authoring loop with NO profiler of any kind —
-      "the lack of any tools for profiling the kernels (apart from end-to-end running time...)" — and still
-      cleared the PyTorch fp16 library baseline by ~1.9x (~450us vs ~850us), losing to the human winner at
-      105us; and `intake-1222#record` found a raw ~50-counter dump measured WORSE than no profiling at all
-      (its honest null comparison is +19% at p=0.0078, not the +125% headline, which is measured against
-      that degraded arm). A third line agrees by construction: all five QiMeng papers (intake-1232..1236)
-      are profiler-free and none cites profiling-guided-optimization literature at all.
-- [ ] **C5-7 — Adopt COUNTER-GATED acceptance for agentic gfx90a kernels.** Pair every cell or kernel with
-      a bottleneck counter and an expected DIRECTION, and refuse a speedup claim whose counter did not fire.
-      From `intake-1218#record`, where this is load-bearing rather than decorative: a unit test passes only
-      at **>=99% of the expert's counter value**, and the harness always reports the counter alongside TFLOPS
-      "so a runtime improvement is verified to have come from exercising the targeted feature". This is the
-      strongest structural defence against the faster-because-it-did-less-work hack anywhere in the
-      intake-660..680 cluster. Pair it with a correctness gate STRICTER than that source's own
-      99%-of-elements at atol=rtol=0.01 single-shape check.
-- [ ] **C5-8 — Register two new controller archetypes on the adapter roster.** (a) **Hawkeye**
-      (`intake-1218#record`) as the CURATED-STATIC-SUPERVISION archetype — no population, no archive, no RL,
-      no meta-prompt evolution; a single-candidate edit/compile/profile/refine loop at a 100-productive-turn
-      budget, notable for spending 24-50k tokens per TFLOPS of result versus 120k-2216k for its own
-      baselines. (b) **SwizzlePerf's controller shape** (`intake-1221#record`) — a persistent history buffer
-      appending (code diff + bottleneck report) per iteration, with a structured output signature of
-      chain-of-thought -> JSON critique of prior iterations -> rationale -> final code. Both are
-      architecture-neutral; (b) maps onto the existing planner-memory registry.
+- **[superseded: inf48-triage 2026-11-09: controller-A/B arm; A/B program superseded by the AutoKernel discovery controller; full text at b3bd883d3:2698]** **C5-6 — Add a ZERO-PROFILER null arm to the controller-authoring A/B on gfx90a.**
+- **[superseded: inf48-triage 2026-11-09: counter-gated acceptance now carried by RVP-CTR-1 and C5-ISA-1 (live set item 6); full text at b3bd883d3:2709]** **C5-7 — Adopt COUNTER-GATED acceptance for agentic gfx90a kernels.**
+- **[superseded: inf48-triage 2026-11-09: controller-archetype roster entry for the dead A/B program; full text at b3bd883d3:2717]** **C5-8 — Register two new controller archetypes on the adapter roster.**
 - **[declined: ws58 2026-11-03 content-review: merged into C5-9a (falsify the load-bearing unknown first; the trial follows only on a pass)]** **C5-9 — Trial MANUAL-CORPUS hardware-factor extraction as a third, profiler-free supervision
       source.** Point an LLM extractor at the public AMD CDNA2 ISA reference and MI200/MI210 tuning guides
       to populate a four-slot factor schema (memory hierarchy / instructions / vector+scalar registers /
@@ -2733,41 +2431,10 @@ wherever it appears._
       IntelliPerf (intake-1223) hands us the counter LIST. Bonus axis: the same mechanism would transfer to
       our EPYC 9655 CPU-kernel work via Zen5 optimization manuals, which no other cluster entry offers.
       **Clean-room only** — that framework is unreleased AND unlicensed.
-  - [ ] **C5-9a — Falsify the load-bearing unknown behind C5-9 BEFORE investing in it.** Is cross-ISA
-        transfer carried by the EXTRACTED FACTORS, or by the LLM's PRETRAINING FAMILIARITY with the target
-        ISA? Every ISA that source tested (RVV, NEON, CuTe/PTX) is well represented in pretraining corpora;
-        **gfx90a GCN assembly is not**, and the paper runs no ablation isolating the two. Run the hint block
-        with and without the extracted factors on the same pinned cases, and compare the delta on gfx90a
-        against the same delta on a pretraining-rich ISA. Cheap, and it gates C5-9. On a pass (absorbs C5-9): trial manual-corpus hardware-factor extraction as a third, profiler-free supervision source.
-- [ ] **C5-10 — Trial the LLM-TL sketch scaffold on the HIP arm.** From `intake-1235#record`: a two-stage
-      sketch-then-parameterize scaffold whose Stage-1 DSL (Copy / Compute / Allocate / Reshape / for over a
-      global->shared->register hierarchy) is **vendor-neutral and maps directly onto gfx90a** with LDS as
-      shared and VGPRs as register — and whose prompts are published VERBATIM in that paper's appendix, so
-      this half is liftable at zero cost. The paper's evidence for the split is that "none of the existing
-      LLMs is capable of generating entirely correct TL code in a single stage", with two named reproduced
-      failure modes. Measure against free-form HIP generation on **compile rate and correctness, not speed**.
-      Stage 2 does NOT transfer — it emits CuTe, whose atom taxonomy is a 1:1 encapsulation of PTX.
-- [ ] **C5-11 — Fix the ablation protocol before running any controller A/B.** Paired one-sided Wilcoxon
-      signed-rank on a FIXED, ENUMERATED gfx90a task subset; three arms (no-feedback / raw-rocprof-dump /
-      semanticized C4 report); report effective n after tie exclusion. Two disciplines imported from
-      `intake-1222#record` and `intake-1227#record`: **(a) the honest control is NO-FEEDBACK, not a degraded
-      feedback arm** — that paper's +125% is measured against a ~50-counter dump it separately proves is
-      worse than nothing, while the no-feedback comparison is +19% at p=0.0078; and **(b) DO NOT report
-      best-of-N-seeds as a headline** — it inflates every arm. Add the matched-subset rule: never compare
-      mean speedup across arms with different pass sets, because weak configurations post higher means by
-      failing the hard tasks and never paying their penalty.
-- [ ] **C5-12 — Adopt two token-cost levers, and one falsifiable prediction to test cheaply.** (a) TWO-TIER
-      MODEL SPLIT — a cheap model for parent selection and experiment design, a strong model only for kernel
-      writing (`intake-1226#record`), mapped onto our registered Claude+Codex roster; `intake-1227#record`
-      prices why it matters, at 5.11M tokens per SUCCESSFUL operator for kernel-specialised agents versus
-      1.45-3.30M for vanilla frameworks. (b) A **FINDINGS DOCUMENT** — a one-time LLM-authored gfx90a quirks
-      digest distilled from rocWMMA docs, the HIP reference and the AMD Matrix Instruction Calculator,
-      carried in every prompt; this is the gfx90a analogue of the static constraint-KB already named as a C4
-      fallback. Also import the 3-of-5 experiment-selection rule (most-innovative + highest-max-perf +
-      highest-min-perf, without replacement) as a zero-cost diversity mechanism. PREDICTION TO TEST: a
-      traceback-only reflection arm will UNDERPERFORM independent resampling at equal token budget —
-      `intake-1227#record` measured 88% cross-turn code similarity for reflection versus 36% for independent
-      sampling, and reflection lost outright on its vLLM subset.
+  - **[superseded: inf48-triage 2026-11-09: child gate of C5-9, an A/B-program variant; superseded with it; full text at b3bd883d3:2736]** **C5-9a — Falsify the load-bearing unknown behind C5-9 BEFORE investing in it.**
+- **[superseded: inf48-triage 2026-11-09: controller-A/B arm variant; superseded by the discovery controller; full text at b3bd883d3:2742]** **C5-10 — Trial the LLM-TL sketch scaffold on the HIP arm.**
+- **[superseded: inf48-triage 2026-11-09: ablation protocol for the dead controller A/B; superseded; full text at b3bd883d3:2750]** **C5-11 — Fix the ablation protocol before running any controller A/B.**
+- **[superseded: inf48-triage 2026-11-09: token-cost levers for the dead controller A/B; superseded; full text at b3bd883d3:2759]** **C5-12 — Adopt two token-cost levers, and one falsifiable prediction to test cheaply.**
 - [x] **C5-13 — Record the DECLINE of a gfx90a taxonomy column, with its cost census as the ✅ 2026-10-29 (audit: handoffs/active/agentic-rocm-kernel-authoring.md:1030-1043 the decline is recorded in the box body with the a226e955 cost census (108 files, ~17,012 lines) and revisit condition; box is a record-only task) [no-belief: audit-reconciliation]
       justification.** A dive proposed authoring one; a later, better-evidenced dive of the same project's
       source measured what it actually costs and the decline wins. Census at `a226e955`: the cdna4 column is
@@ -2802,31 +2469,8 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       Use FlashInfer-Bench's tolerance policy (RVP-C6-23), **not** AutoKernel's 1e-2/2e-2 blanket, which is
       loose enough to admit an accumulator downgrade on the fp16/bf16 arms — the more so because its own
       playbook tier 3 sanctions changing accumulator precision as an optimization.
-- [ ] **C5-15 — Adopt the KLineage BACKWARD-LINEAGE induction mechanism as a design candidate, and test it
-      on one gfx90a expert kernel.** `intake-1249#record` inverts the family's direction: instead of
-      generate-measure-keep-what-was-fast, it walks an EXPERT kernel BACKWARD through validation-gated
-      de-optimizations, then RE-DERIVES each accepted backward step as a forward transition and re-validates
-      it — supervision from expert artifacts rather than agent exploration. It is **train-free** and its
-      profile gate is `triton.testing.do_bench` wall-clock with **`ncu`/`nsight`/`nvprof`/`nvcc` appearing
-      nowhere**, so the machinery has no NVIDIA-profiler dependency. **The decisive open question for us is
-      MODEL DOWNGRADE**: only Claude Opus 4.6 is ever evaluated, and the backward rewriter is the hardest
-      reasoning in the pipeline. Run the loop on ONE gfx90a expert kernel from our own tree (an iqk MMQ path
-      or a Composable Kernel GEMM) with a **locally-served** model; that single question gates the method for
-      us and is answerable with one kernel. Nothing is released, so adoption means reimplementing the
-      induction pipeline AND re-inducing from AMD expert kernels — do not plan around reusing their library.
-      Also lift the nine-field **SkillCard** schema (intent, anchor, carrier, pre, effect, evidence, risk,
-      scope, ver) as a STARTING POINT, noting explicitly that we ADD what they lack: a commit binding and a
-      re-verification predicate (AK-PM-10).
-- [ ] **C5-16 — Supply architecture documentation IN CONTEXT rather than relying on model priors, and cite
-      the first external measurement of what scarcity costs.** `intake-1244#record` (CodegenBench) holds the
-      architecture constant-across-tasks and varies only the chip: `Pass@1` falls from **0.74** on the
-      well-documented architecture to **0.48** on the thinly-documented one, and to **0.00** for one model.
-      **gfx90a/CDNA2 is our Sunway** — our corpus already carries three independent confirmations of CDNA2
-      ecosystem abandonment (AITER dropped CDNA2, HipKittens never supported it, the sol-execbench fork ships
-      zero cdna2 code). This is the citable prior for building a curated in-context CDNA2 reference (ISA
-      excerpts, MI200 tuning-guide facts, wavefront-64 and LDS-bank specifics, MFMA shapes) into the
-      authoring prompt. Note the effect is **NOT monotone across architectures** — the same model scored
-      HIGHER on ARM-Kunpeng than on x86 — so do not cite "non-x86 is uniformly worse" as this paper's finding.
+- **[superseded: inf48-triage 2026-11-09: controller-A/B design candidate; superseded by the discovery controller; full text at b3bd883d3:2805]** **train-free**
+- **[superseded: inf48-triage 2026-11-09: controller-A/B context variant; superseded by the discovery controller; full text at b3bd883d3:2820]** **0.74**
 - **[declined: ws58 2026-11-03 content-review: a rule for a performance predictor nobody is building; the trained artifact is already declined]** **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
       build, and decline the trained artifact.** GPU Forecasters v1 (`intake-1240#02`, `intake-1240#03`, `intake-1240#04`; `dive-1240/source.txt:L86,L131,L148`) says fine-grained numerical inference is difficult without execution; it does not establish that numeric prediction is impossible or that ordinal output is the only tractable method in general. Keep forecast accuracy separate from calibration: the tested RL rewards reduce ECE while increasing numerical forecast error, and the six-task search records three surrogate wins, one tie, and two surrogate losses to the baseline (about 5% and 7%). Preserve the existing ordinal reward shape, ECE or Brier as an ACCEPTANCE gate, and explicit DEFERRAL to real gfx90a measurement. Decline the trained forecaster: it is A100-conditioned, and the reviewed paper supplies no cross-GPU transfer test despite its dataset spanning three GPU types; no gfx90a transfer is established. Any future comparison needs the equal-budget baseline arm alongside, never a single-arm demo. Preserve **Note-the-method-do-not-build-yet** while the loop is not trustworthy and RVP-C2-8/C2-9 are open.
       **Clause (2026-10-21): decision-level rank agreement on the deployment distribution.** A surrogate acceptance report also states rank agreement (Kendall tau or top-1) between surrogate-chosen and measured-chosen candidates on held-out recorded rounds, because prediction accuracy alone did not certify play quality; the held-out rounds for that check include candidates the planner chooses under the surrogate (the deployment distribution), not only uniform samples (`intake-2233#record`, `intake-2263#record`; the game domain is a mechanism, not evidence about kernels). Document edit only; no surrogate is built.
@@ -2869,7 +2513,7 @@ KLineage and Kernel-Smith release **nothing at all**. Public-and-unlicensed is n
 
 #### Research Intake Update — 2026-09-17 (SimpleTES code: RPUCG + ROCm eval path, intake-1454)
 
-- [ ] **AR-RPUCG — A/B SimpleTES's RPUCG DAG parent-selection as a controller candidate in the MI210 verify+profile loop.** Selection-only over evaluated candidates (no re-execution; code @ `47d3413d`); compare against the current selection heuristic on one nonpromotable task; no NVIDIA-strategy import. Source: intake-1454.
+- **[superseded: inf48-triage 2026-11-09: controller-A/B parent-selection arm; superseded by the discovery controller; full text at b3bd883d3:2872]** **AR-RPUCG — A/B SimpleTES's RPUCG DAG parent-selection as a controller candidate in the MI210 verify+profile loop.**
 - [x] **AR-ROCm-eval — register SimpleTES's ROCm eval path (AMD_REQUIREMENTS rocm6.2.4; `profile_program_roc`) and issue #6 MI300 config as gfx90a port input.** Study-only; no external-benchmark re-measure (AK-RB-1). Source: intake-1454. Pinned profiler/runtime/artifact seam, host-version mismatch and issue #6 caveat are registered below; no executable port or benchmark claim was made.
 
 ##### AR-RPUCG/AR-ROCm-eval implementation intake — 2026-09-17
@@ -2936,8 +2580,8 @@ expectation. No external benchmark was re-measured here.
 
 #### Research Intake Update — 2026-09-26 (GEMM ladders and MFMA form on gfx90a; intake-1822..1826)
 
-- [ ] **INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static ISA audit.** Refine existing INF03-REGAUDIT-2 coverage for the H10a/H10b rerun consumer: before timing in the next/reused runner, require incumbent/candidate audit records whose binary SHA-256 values match the selected libraries, nonempty relevant MMQ coverage, and the existing passing ISA diff or explicitly named accepted failures. Reuse the current audit/comparator/source; preserve historical experiment evidence rather than rewriting its receipts. Fixture acceptance: matching passing audits proceed; missing records, changed hashes, empty MMQ coverage and unaccepted FAILs stop before any timing process starts; deliberate removed J-cap instances remain permitted by existing policy. No new grading rule, performance campaign, parked-experiment reopening or production change. The historical J-cap run has a passing audit; this is a future enforcement gap, not a claim that it bypassed the gate. [Review](../../docs/reviews/research-intake-practical-applications-20261004.md); record discussion: intake-1826#record.
-
+- [ ] **INF48-LIVE-7 INF03/INF37 gfx90a kernel work - MMQ ISA audit runner binding, v9->v10 spill regressions, NH-1 AGPR arm, low-quant tripwire, Q8 MoE GLU fusion.** INF03-REGAUDIT-3 and INF03-AGPR-1 are PARKED by the operator (2026-09-27); INF37-MOE-Q8-FUSION and INF03-REGAUDIT-RUNNER are PROPOSED, not build approval. [no-belief: new consolidated box]
+  - *(folded into INF48-LIVE-7; full text at b3bd883d3:2939)* **INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static ISA audit.**
 Dived: intake-1822 (HipKittens Helios GEMM ladder + code), intake-1823 (Gluon GEMM tutorial + repo, and a read-only
 extraction of our production libggml-hip.so), intake-1825 (arXiv 2609.15627, DS-V4-Flash on MI250/gfx90a),
 intake-1826 (LLVM #159493/#148079, MFMA VGPR/AGPR form). What transfers to gfx90a is lever ORDER and a short list of
@@ -2959,19 +2603,8 @@ candidate must pass a static audit first. The AGPR copy tax on <=256-thread MFMA
   `--category`/`--source-commit` so they feed SC84. ✅ 2026-09-27 — `.claude/skills/kernel-promotion/SKILL.md` step 3c
   plus the required `gpu_isa_audit` gate in `promotion_gates.yaml` (root lane `lane/park-20260927` `222a2f93`); the
   INF03-AGPR-1 accept clause below now names the same diff.
-- [ ] **INF03-REGAUDIT-3 — investigate the v9→v10 MMQ spill regressions** (Q5_0 J=64 15→46, Q1_0 21→61, Q4_0
-  need_check=1 0→32, Q8_0 32→37; Q2_K improved 346→35). Bisect which v10 change raised register pressure; feeds the
-  J-cap (AK-MMQ-H10) and any MMQ forward-port.
-  - PARKED 2026-09-27 (operator): not started. The regressions exist only as rows in the v9-vs-v10 audit (research `data/gfx90a-isa-audit-20260926/`), and no bisect build has been made. AK-MMQ-H10 came back NEGATIVE, so this is now the main MMQ register-pressure lead; resume by building gfx90a `libggml-hip.so` at bisect points between v9 `0db32c06e` and v10 `ffc1bac82` in an experimental worktree and running `gfx90a_isa_audit.py audit --families mmq` on each against the v9 audit (zero GPU).
-- [ ] **INF03-AGPR-1 — NH-1 MFMA-form arm on ROCm 6.2** (gate lifted 2026-09-27: v10 FREEZE is the consolidated champion; audit supports excluding MMA-FA DKQ≥192, already at 512 VGPR with hundreds of reloads/iteration). On an experimental
-  branch from the v10 tip, change the <=256-thread `__launch_bounds__(N,1)` of mul_mat_f (mmf.cuh) and rocWMMA FA
-  (fattn-wmma-f16.cu) to `(N,2)`, with a separate `amdgpu_num_vgpr(128)` arm (waves_per_eu also raises the scheduler's
-  occupancy target). Compile for gfx90a with ROCm 6.2. Accept only if `gfx90a_isa_audit.py diff <v10 audit> <arm
-  audit> --families mmq,fattn_mma,fattn_wmma,mmf` exits 0 (the INF03-REGAUDIT-2 gate; audit each arm with
-  `--category CANDIDATE --source-commit <sha>`) AND the arm's audit shows agpr=0, zero in-loop
-  v_accvgpr copies and no new spills; no timing before that. Then run a matched same-window ABA with correctness. Exclude MMA-FA DKQ>=192:
-  a 256 cap there would trade copies for scratch spills. Evidence: intake-1826#record, intake-1823#record.
-  - PARKED 2026-09-27 (operator): not started. The gate was lifted 2026-09-27, but no experimental branch, build or audit exists; resume by branching from the v10 tip `ffc1bac82`, changing the <=256-thread `__launch_bounds__(N,1)` in mmf.cuh and fattn-wmma-f16.cu to `(N,2)` (plus the separate `amdgpu_num_vgpr(128)` arm), compiling for gfx90a with ROCm 6.2, and passing the `gfx90a_isa_audit.py diff` gate above before the matched ABA.
+  - *(folded into INF48-LIVE-7; full text at b3bd883d3:2962)* **INF03-REGAUDIT-3 — investigate the v9→v10 MMQ spill regressions**
+  - *(folded into INF48-LIVE-7; full text at b3bd883d3:2966)* **INF03-AGPR-1 — NH-1 MFMA-form arm on ROCm 6.2**
 - [x] **INF03-GLUON-X — record, not work: Gluon and the tutorial's tools do not transfer to gfx90a.** Upstream Triton
   rejects BufferLoadToLocal on CDNA2, and local Triton 3.1.0 predates Gluon. amdgcnas hard-codes gfx950 registers,
   misses gfx90a `buffer_*` spills, and deletes in-loop s_nop wholesale. llirSched's cycle table is gfx950-only (gfx90a
@@ -2995,8 +2628,8 @@ Research implementation `39b63b061238d52d0669d2d9eb3e4d3f29affd11` adds the expl
 
 Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026-10-31-ws58.md`, sha256 `043e502133cae214175ea3f2a395f575e6ca13b9f3ee058525ed020264ab5012`; relayed by the ws58 coordinator; budget approved: about 13 MI210-hours for the drafter pilot, 6-9 engineer-weeks for the race checker, the 95.5 GB ThinkingCap download; D1 confirmed: in-weights calculator declined, GPU reason recorded on intake-2550/2574; D2 approved: scratch upstream builds are measurement instruments only). Trigger records below are prose with no checkbox until a reviewed session confirms their condition.
 
-- [ ] **C5-ISA-1 — Archive the AMDGCN ISA of every AK GPU candidate and check the claimed instructions executed (intake-2555#record, intake-2588#record).** Store the hipcc --save-temps .s (or llvm-objdump of the code object) of each touched kernel in the candidate record next to its source diff. When a candidate claims a mechanism (MFMA, LDS staging, buffer loads), confirm in the ISA, and with a rocprof instruction counter where one exists, that the instruction executes on the measured path; a candidate whose claimed instruction is absent is refused.
-- [ ] **C5-ISA-2 — GCN-Gym: LLM-edited AMDGCN for a compute-bound gfx90a kernel whose limiter is register allocation (intake-2555#record, intake-2556#record).** Not trigger-gated, because the HIP-source levers on the target are measured out: AK-MMQ-H10 (J-cap) NEGATIVE, the ak-27b-gpu-verify stream-k MMQ hypotheses were all refused or retired, and the ROCm 6.2 AGPR copy tax and MMQ spills are compiler-side (INF03-REGAUDIT-1: Q8_0 J=64 at 256 VGPR with 37 spills; MMA-FA DKQ>=192 at 512 VGPR with hundreds of reloads per iteration). Build a standalone harness (1-2 weeks). Extract the gfx90a .s of one kernel from an experimental v10-tip build via gfx90a_isa_audit.py; let the agent edit it with unified-diff patch tools; reassemble with clang -target amdgcn-amd-amdhsa -mcpu=gfx90a; load with hipModuleLoad; replay the served-shape launches (the RVP-RACE-2 capture shim); diff-test against the hipcc kernel with the AK oracle (host-double for Q8_0); require gfx90a_isa_audit.py diff to exit 0, and the RVP-RACE-2 verdict once M2 lands. Target 1: MMQ Q8_0 J=64 prefill tile. Target 2: MMA-FA DKQ>=192. Run 3 runs per target at a fixed declared token budget on a frozen shape manifest; time on the GPU window with ABBA (>=2 pairs) against the hipcc incumbent, keeping per-run raw candidate .s, oracle outputs and timings. Decision rule: if >=1 of 3 runs on a target reaches >=1.05x kernel time at the served prefill shape, passes the oracle, and its ABBA intervals do not overlap the incumbent, open an experimental-tree code-object override path for that kernel as an ISA-rung AK arm; otherwise record the null with traces and stop the ISA rung for that kernel class.
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:2998)* **C5-ISA-1 — Archive the AMDGCN ISA of every AK GPU candidate and check the claimed instructions executed (intake-2555#record, intake-2588#record).**
+  - *(folded into INF48-LIVE-6; full text at b3bd883d3:2999)* **C5-ISA-2 — GCN-Gym: LLM-edited AMDGCN for a compute-bound gfx90a kernel whose limiter is register allocation (intake-2555#record, intake-2556#record).**
 - *Intake knowledge note, K5, row KERN-9 (intake-2556#record):* Keep the AK-PL-1 prompt-leak guard. If diagnostic failure feedback (failing indices/values) is ever adopted from TAIC, generate it on a feedback seed disjoint from the acceptance seed population.
 
 ## Track: mi210-q8-dequant-gemv-roofline
@@ -3198,7 +2831,7 @@ The following original ranking and experiment sequence are historical; the updat
   residual (for example `2*nsm`) behind fresh grid/occupancy evidence; do not reopen “add stream-K.”
 - [x] Recompute the full quant ladder on one consistent basis (fp16 62.6 / Q8_0 50.2 / Q4_K 35.1 / MoE-Q8 21.3 / MoE-IQ2 10.3) ✅ 2026-08-03 — via /research-intake Stage-2b; reproduces the fable5 series to within 1 pp
 - [x] Correct the IQ2_XXS access characterization: four INDEPENDENT gathers (single 8-byte memcpy, ILP≈4) plus FOUR sign-table gathers, not a dependent pointer chase with one sign read ✅ 2026-08-03
-- [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** There is no per-element fp dequant to hide; do NOT reopen an iqk port for this rung. The governed frozen-v9 replay now supersedes async-prefetch as a presumed win: its 20-block median was only **+0.936%**, below the 2% floor, with one negative block (`NOT_REPRODUCED`; receipt SHA-256 `7b173cafcccb8a99319bf93a80fd13a2e94a400afab2bf03355363f9521ab17f`). Reopen only from fresh cache-line/MLP profiling evidence, not the 2026-07-04 patch prior.
+- [ ] **Item A — Q8_0 50→62 rung (achieved-bandwidth / occupancy).** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): frozen-v9 governed replay: NOT_REPRODUCED at +0.936% (below the 2% floor). Full text at b3bd883d3:3201.
 - [x] **Item B — attribute the Q4_K superblock-unpack mechanism before authoring.** ✅ 2026-08-11 —
   the representative-shape mechanism-counter route below passed. It supports a materially larger
   instruction burden than the same-bit Q4_0 control, but not the former +38–43% single-lever premise.
@@ -3255,9 +2888,7 @@ The following original ranking and experiment sequence are historical; the updat
     instruction-count win. The source is uncommitted, so the result is explicitly diagnostic-only:
     `/mnt/raid0/llm/autokernel/probes/inf37-q4k-branchless-scales-20260811/diagnostic-paired-r3/receipt.json`,
     SHA-256 `de4241bd26b77f5dac7df746d165034b67e6f8105133daf0359142a97dd35d5d`.
-  - [ ] **Commit only after explicit experimental-tree approval, then clean-replay the branchless
-    decoder through the governed paired runner.** The clean candidate must reproduce correctness and
-    timing before any promotion or model-level claim; the dirty diagnostic cannot satisfy this gate.
+  - **[superseded: inf48-triage 2026-11-09: Item C decoder no longer serves (stated in the box) and the 122B is retired; full text at b3bd883d3:3258]** **(no title)**
 - *(Retarget 2026-10-28 (operator): Qwen3.5-122B deprecated. It no longer serves, so Item C is not a production-serving
   rung. The IQ2_XXS kernel work is format-level. Re-measure it on a current IQ-format target: the
   DS41 or Q38FN low-bit lanes, or the TRIPWIRE's GPU-resident IQ role. Do not use the 122B.)*
@@ -3311,31 +2942,7 @@ The following original ranking and experiment sequence are historical; the updat
     **2026-09-15:** a compiler-side route reaches the same threshold without the rewrite
     (`#pragma clang loop unroll(disable)` → 44 VGPR static; autokernel-research-loop AK-QL-2b). Attempt
     v_perm_b32 only if AK-QL-7 shows the retained 4-trip loop costs more than the regained waves.
-  - [ ] **Re-run the decode attribution under governance** once RVP-C2-11's `--gen-tokens` patch
-    lands, so the 16.42% decode figure carries a durable receipt instead of a non-governed probe.
-    **Prerequisite correction 2026-11-02:** the generation flag landed under RVP-C4-4, not
-    RVP-C2-11: research `c38bf49a` / main `1527ea49`. RVP-C4-4a also captured a governed
-    122B decode trace (receipt SHA-256 `c7f3f5a243310021e022715b403fe0668b47145440bda00ee43ac6d84e14bed3`),
-    but the aggregate MMV figure is not this task's IQ2_XXS-specialized 16.42% attribution.
-    The 122B is now retired and must not be rerun; select an eligible current IQ target under
-    the 2026-10-28 retarget. Separately, the Omniperf seeded-op fallback requires a binary
-    containing `--suite-seed` and `--repeat-suite`: frozen v10 source contains both, introduced
-    by `f744cc220e722d1bda93783959471d44f8e118b0` after v9, but the old in-tree HIP test binary
-    lacks them. OP-11 declined the distinct `AK_SENS_V1` experimental producer, not these generic
-    CLI flags. Build an identity-bound test binary from a fresh experimental v10-based tree, then
-    check the fallback's own preflight and the applicable measurement authorization before a run.
-    Do not assert this task complete from aggregate data.
-    The Omniperf 2.0.1 / `rocprof` v1 fallback is now durable in research, but its first governed run
-    correctly failed compatibility before profiling: clean frozen-v9 `test-backend-ops` at
-    `0db32c06` does not implement `--suite-seed` or `--repeat-suite`. The failed receipt retains the
-    exact command, clean source/binary/profiler identities, one device sample, and claim
-    acquisition/release:
-    `/mnt/raid0/llm/autokernel/probes/inf37-iq2xxs-omniperf-v1-20260811/receipt.json`, SHA-256
-    `2054a31b5f9104bcd3437b250833de6086a7dded8533e3cc9182bc9a79222510`. A prior manual smoke at
-    `/mnt/raid0/llm/autokernel/probes/omniperf-iq2xxs-v1-smoke-20260811T1238Z` produced 260 dispatch
-    rows and proves rocprof-v1 reachability, but it has no governed receipt and is non-evidence.
-    Keep this parent open until OP-11 permits a durable seeded producer and the runner records a
-    passing matched capture.
+  - **[superseded: inf48-triage 2026-11-09: the 122B is retired and must not be rerun (stated in the box); the generation flag landed under RVP-C4-4; full text at b3bd883d3:3314]** **Re-run the decode attribution under governance**
   - [x] **Build a fail-closed Omniperf-v1 fallback runner for the IQ2 profiler boundary.** ✅ 2026-08-11 —
     it binds clean exact source/tool/Python identities, requires seeded repeated correctness before
     SQ/TCC collection, holds the MI210 claim, samples device state, and writes failure receipts.
@@ -3362,10 +2969,7 @@ The following original ranking and experiment sequence are historical; the updat
   decode sits 31–113× below the measured ridge, so native-MFMA decode hypotheses have zero value on
   this die. Composable Kernel FP8 on gfx90a is fp32 emulation, not a datapath benchmark. Durable
   citations and assembly/toolchain checks are compiled in `wiki/hardware-optimization.md`.
-- [ ] **TRIPWIRE — re-open low-quant VALU/occupancy work when an IQ-format role becomes GPU-resident.**
-  Current production has no IQ1/IQ2/IQ3/IQ4 serving role on ROCm0, so the 6-vs-8-wave loss is a
-  latent exposure rather than current payoff. Reprice immediately on a registry transition making an
-  IQ-format GGUF resident; do not close the mechanism as “not a problem.” When it fires (absorbs three rows): re-express the IQ2_XXS sign expansion with v_perm_b32 in vecdotq.cuh; with OP-12 approval commit the one-file IQ2_XXS one-row dispatch and run matched TG/PP confirmation; reprice with the AK-QL-7 unroll falsifier and the other levers on file.
+  - *(folded into INF48-LIVE-7; full text at b3bd883d3:3365)* **TRIPWIRE — re-open low-quant VALU/occupancy work when an IQ-format role becomes GPU-resident.**
   - [x] **INF37-IQ-1 — Bind the latent-residency blocker into planner memory.** ✅ 2026-08-16 —
     research `5ae54e0ae4a80ab02450f703617b6a769599caf2` assigns zero current live-stack payoff,
     preserves the IQ mechanism as ineligible memory, and requires reprice on an IQ residency change.
@@ -3394,11 +2998,7 @@ The following original ranking and experiment sequence are historical; the updat
 
 #### Proposed non-IQ follow-through — 2026-10-04 earlier-intake retrospective
 
-- [ ] **INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion slice for the existing Qwen3.6-35B Q8 MTP recipe.** PROPOSED, not build/run/deployment approval. This is independent of INF37-IQ-2's IQ-residency trigger. Main's read-only qualification found the model has separate Q8 gate/up expert tensors (41 of each), the canonical recipe uses MTP width four, and frozen v10's source still rejects multi-token MUL_MAT_ID fusion; this does not prove the running binary's route or benefit. Start an isolated experimental candidate from current production, never modify/build the frozen tree. Review upstream #27621 and AMD garbage-output report #28113; locate the exact fixing patch or implement and fixture-test a minimal gfx90a correction—closed issue status is not fix provenance. Keep scope to GLU: preserve v10's CPU-only top-k guard and do not bundle the unrelated top-k optimization. Bind source, patch, model/tensor metadata, rendered canonical recipe, compiler, actual binary/library digests and runtime fusion eligibility; inspect actual launch/verification widths rather than infer them from draft-n-max. Compare candidate fusion-on versus candidate fusion-off and fresh production on identical held-out inputs: operator differential tests including expert selection, verify widths and nonfinite/repeated-garbage cases, logits/decoded-output correctness against the measured local floor, then a bounded paired MTP end-to-end latency/throughput and acceptance screen. Charge failures and retain all outputs. Stop on any correctness failure, ineligible runtime path or no improvement beyond local paired uncertainty; report negative/inconclusive rather than widening into a kernel campaign. Render the existing `qwen3.6-35b-a3b-q8-gpu-mtp.json` recipe, do not hand-retype it. Prospective write-side capture under VB-RI-OPS-WIRE precedes any measured run, with existing ClaimTuple grading; normal campaign/resource and separate production-promotion gates remain intact. [Qualification, counter-coverage and limits](../../docs/reviews/research-intake-earlier-applications-20261004.md); record discussion: intake-1420#record.
-  - **2026-11-02 provenance review, no build or run:** [issue #28113](https://github.com/ggml-org/llama.cpp/issues/28113) initially attributed repeated punctuation on gfx1151/ROCm 7.14 to the multi-token fusion guard, but its reporter subsequently reported that isolated #27621 worked, could no longer reproduce the issue after a ROCm update, and suspected local tuning interactions. The issue identifies no confirmed upstream fix or gfx90a result; referenced fork commits are not proof of either. The exact correction/fixture gate remains open. Upstream `41ef91f7c8046087cdfbb276b79bff311ecf1c6d` changes GLU, MMVQ, top-k and tests, so a GLU-only slice requires selective review, not wholesale application. VB-RI-OPS-WIRE remains open, so no decision-bearing run is ready to publish.
-  - **Capture preparation:** `scripts/vidya/adapters/speech_ggml_optest.py` is a possible existing measurement projection scaffold, not an INF37 producer: its current profile lacks actual verify widths, three-arm MTP pairing and correctness-floor/raw-output bindings. The eventual experiment finalizer must write those fields and failed/ineligible attempts before a strict projection through the existing grader; a reader-only extension cannot satisfy the write-side gate. Select the native runner and its owner before implementing the finalizer; no runner or capture is claimed ready here.
-  - **GLU slice source map, 2026-11-02 (read-only):** v10 already matches MoE GLU graphs but rejects multi-token quantized fusion in `ggml_cuda_should_fuse_mul_mat_vec_q`; its `mmvq.cu` multi-token `has_ids` branch calls a dedicated MoE kernel without fusion arguments. The upstream GLU slice requires a bounded shape gate plus passing fusion through that launcher and implementing gate accumulation/reduction and the GLU epilogue in that kernel. Preserve v10's top-k guard and exclude the upstream top-k files and logits-alias changes. Frozen v10's matcher admits SWIGLU/GEGLU/SWIGLU_OAI, not upstream's clamp variant; do not assume clamp support. This is a source map, not a tested patch or proof of gfx90a correctness.
-
+  - *(folded into INF48-LIVE-7; full text at b3bd883d3:3397)* **INF37-MOE-Q8-FUSION — Qualify and implement a correctness-gated multi-token MoE GLU fusion slice for the existing Qwen3.6-35B Q8 MTP recipe.**
 ##### Research intake 2026-10-22 — Locals + Beacon (intake-2386..2460)
 
 - [x] **INF37-LB1 — Static ISA audit of HIP mul_mat_vec_q at ncols 1 vs 2..8 for Q8_0, Q4_K and IQ4_XS on gfx90a: count weight VMEM loads and dequant VALU per block per column with gfx90a_isa_audit.py; if loads repeat per column, seed a weight-hoisted multi-row MMVQ (Q4_K MMVQ at 8 rows measured 9.4% of roof vs 46.5% at 1 row in the lb1 profile) (intake-2386, intake-2393).** ✅ 2026-10-22
@@ -3545,7 +3145,7 @@ any real fused recurrence prototype remains post-promotion/default-off.
 - [x] **K6 — `GGML_CUDA_GRAPH_OPT=1` lever ✅ 2026-07-11**: benchmarked on MI210 → **REJECTED** (net-negative: Q8 base −16%, spec −11%). Leave off (default).
 - [x] **K7 — onegraph/shape-cache investigation + Lever A ✅ 2026-07-11**: Lever A (shape-aware graph key) implemented env-gated → **NEUTRAL** (Q8 −2% byte-identical output, Q4 +6% noisy); not landed, reverted to `llama.cpp-experimental/lever-a-shape-key.patch`. Onegraph (Lever B) **DEFERRED** — verify-side reframe + depth sweep confirm low EV; full impl plan persisted. Retracted the noisy "n_max 2→4 +20%" (clean data: n2≈n4). See "Kernel-Optimization Levers".
 - [x] **K9 — non-gemma4 graph generalization ✅ 2026-07-11**: Qwen3.6-27B (dense hybrid) + Qwen3.6-35B-A3B (MoE), native MTP. Base decode **+7–14%** (generalizes); native-MTP spec-dec only **+1.8–2.5%** (the +25% is gemma4-external-head-specific); Qwen native-MTP deterministic under load. See "Non-gemma4 generalization".
-- [ ] **K10 — (follow-up) Lever A quiet-host re-eval**: on a quiesced host (fresh-server/run, `fprintf(stderr)` keylog to confirm the `nodes[0]` collision first), decide land/drop. Only pursue if verify re-capture proves a *measured* bottleneck.
+- [ ] **K10 — (follow-up) Lever A quiet-host re-eval** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): conditional Lever A quiet-host re-eval; no measured bottleneck to justify it. Full text at b3bd883d3:3548.
 - [x] **K11 — gemma4 external-head MTP short-smoke determinism ✅ 2026-07-17; broad free-form gate reopened 2026-07-18**: the old short JSON closure remains valid but too narrow. **2026-07-16 preliminary evidence:** the new research runner (`scripts/benchmark/k11_gemma4_determinism_runner.py`) passed a GLM-download-contended 3-run fresh-server smoke on experimental v7: one output hash, `18/18` drafts accepted each run, artifact `data/k11_gemma4_determinism/k11_gemma4_determinism_20260716T194501Z/summary.json`. **2026-07-17 quiet-host repeat:** after GLM completed, the same runner passed 3 fresh sequential MI210 servers with one output hash (`5ebb69a089cc...`), `18/18` draft tokens accepted in every run, prompt `273.85-281.61 t/s`, and decode `148.58-149.59 t/s`; artifact `data/k11_gemma4_determinism/k11_gemma4_determinism_20260717Tquiet_glm_done/summary.json`. **2026-07-18 long exact-stop extension:** runner controls now cover `--spec-type none`, `--slots`, and exact repeated-word scoring. Report `data/k11_gemma4_determinism/k11_long_stop_condition_20260718Tcodex/k11_long_stop_condition_report.md` shows single-slot MTP passed `3/3` at `~158 t/s`, but multi-slot MTP failed an `n=10` long gate (`8/10` task pass, 3 output hashes), and no-spec GPU controls failed repeatedly. **Explicit-greedy attribution:** no-spec with `samplers=["temperature"]`, `top_k=0`, and `backend_sampling=false` still failed n=10 (`4/10` task pass, 3 hashes), so the ROCm `TOP_K` warning is unlikely to explain target-generation semantics. **Stop-string diagnostic:** adding a `stop=["END"]` payload made the no-spec explicit-greedy lane deterministic over 10 fresh servers, but the model emitted 512 repeated words and never emitted `END`, so this did not close task compliance. **Schema diagnostic:** request-level JSON schema closed the structured-output path: no-spec and external-head MTP each passed `10/10` fresh-server `word-array-200` runs with one hash; MTP decoded at mean `122.128 t/s` and accepted `97.3568-98.2301%` drafts. Treat external-head MTP as stable and fast for schema-constrained structured output, while free-form stop/termination remains open for a broad GPU-worker lane.
   - [x] **K11.1a — explicit-greedy no-spec attribution ✅ 2026-07-18**: `data/k11_gemma4_determinism/k11_long_nospec_explicit_greedy_np4_n10_20260718Tcodex/k11_explicit_greedy_report.md` shows CPU-side greedy request shape did not fix stop/count divergence; failures are 512-word cap hits or 289-word stops using only the requested word.
   - [x] **K11.1b — stop-string diagnostic instrument + negative result ✅ 2026-07-18**: runner now supports repeatable `--stop`; no-spec explicit-greedy with `stop=["END"]` produced one hash over `10/10` runs but still task-failed by never emitting `END` and hitting 512 repeated words.
@@ -3830,7 +3430,7 @@ Source: control-plane planning session (audit doc `research/deep-dives/2026-07-1
     - [x] **K25.2b env-gated Q8_0 route logging landed ✅ 2026-07-17**: experimental-v7 commit `9882c2c69` adds `GGML_CUDA_LOG_MMVQ_ROUTE=1` diagnostics in `ggml/src/ggml-cuda/mmvq.cu` and `ggml/src/ggml-cuda/ggml-cuda.cu`. Default behavior is silent. Pinned `test-backend-ops` smoke at `/mnt/raid0/llm/tmp/k25-route-log-smoke-20260717T102617Z/` proves `n=1` logs `use_mmvq=1` + `route=MMVQ`, and `n=4` logs `use_mmvq=0` + `route=MMQ`; all rows supported. Next e2e attempt should use this env flag and a prompt/config that actually yields draft tokens.
     - [x] **K25.2c accepted draft-tree route proof ✅ 2026-07-17**: manual external-draft server artifact `/mnt/raid0/llm/tmp/k25-mmvq-route-external-only-20260717T211050Z/` pinned experimental `LD_LIBRARY_PATH`, enabled `GGML_CUDA_LOG_MMVQ_ROUTE=1`, and generated accepted draft-tree traffic (`draft_n=120`, `draft_n_accepted=96`, decode `40.55 t/s`). Route logs show Q8_0 `ne11=1` dispatching to MMVQ and Q8_0 verify widths `ne11=2..9` plus `33` dispatching to MMQ. This closes the route-proof question; the separate Stage-2 economics gate still fails because MI210 external draft-tree is slower than the no-spec resident frontdoor path.
 - [x] **K26 (P1, GPU, config-only) — f16-vs-bf16 KV-cache bench ✅ 2026-07-17**: measured four KV dtype arms on MI210 with Qwen3.6-35B-A3B-MTP-Q8_0 (`9d70bae4b`, artifact root `/mnt/raid0/llm/tmp/k26-kv-cache-bench-20260717-codex/`). `llama-bench` decode: `f16/f16 100.013 t/s`, `bf16/f16 12.936`, `f16/bf16 12.885`, `bf16/bf16 80.896`. Server decode median across three short prompts: `f16/f16 104.375 t/s`, `bf16/f16 91.100`, `f16/bf16 88.213`, `bf16/bf16 100.224`. Prompt-processing bench: `f16/f16 2256.079 t/s`, `bf16/f16 1110.047`, `f16/bf16 531.281`, `bf16/bf16 2253.098`. Verdict: do not switch defaults to BF16 KV; `bf16/bf16` is close but not faster, and mixed K/V BF16 is a large regression. Output quality was not gated here; prompts showed normal reasoning preambles, so treat this as config-performance evidence only.
-- [ ] **K27 (P1, CPU) — x86 repack gaps**: no Q5_0/Q6_0 repack; Q8_0 still lacks a promotable optimized x86 interleave kernel (`ggml/src/ggml-cpu/repack.cpp`; iqk dir `ggml/src/ggml-cpu/iqk/`). The failed generic Q8_0 8x8 probe below is retired; any future Q8_0 work must be a real AVX2/AVX512/VNNI implementation with pinned-library canonical benches. Bit-exact checkable (lossless rearrangement); canonical bench.
+- [ ] **K27 (P1, CPU) — x86 repack gaps** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): CPU x86 repack work, not ROCm kernel authoring; belongs to the CPU kernel lane. Full text at b3bd883d3:3833.
 - [x] **K27.1 — Q8_0 8x8 generic probe gated off by default ✅ 2026-07-17**: added Q8_0 8x8 repack/gemv/gemm plumbing on experimental v7 (`ggml/src/ggml-cpu/repack.cpp`, `repack.h`) behind explicit opt-in `GGML_REPACK_Q8_0_8X8=1`. Clean same-host Qwen3-4B Q8_0 CPU-only smoke with experimental `LD_LIBRARY_PATH` pinned: default-off stays plain CPU (`CPU model buffer 4076.43 MiB`, prompt `209.66 t/s`, decode `8.10 t/s`); opt-in selects `CPU_REPACK` and logs `repack tensor ... with q8_0_8x8`, but regresses prompt to `17.34 t/s` and decode to `7.65 t/s`. Verdict: generic scalar x86 Q8_0 8x8 is a correctness-feasible experiment but **not promotable/default-safe**.
 - [x] **K27.2 — generic Q8_0 8x8 opt-in retired; optimized path deferred ✅ 2026-07-17**: official upstream `ggml-org/llama.cpp` `origin/master` at `635cdd5f` no longer carries the selectable Q8_0 8x8 repack/gemv/gemm route, and K27.1 measured the local generic scalar path as a regression when explicitly enabled. Experimental-v7 commit `aa7a2665f` removes only that failed opt-in path (`GGML_REPACK_Q8_0_8X8`, `q8_0_8x8` traits/specializations/functions) while leaving default Q8_0 dispatch and the separate proven EPYC/iqk work intact. Validation: no remaining `q8_0_8x8`/`GGML_REPACK_Q8_0_8X8` references in `repack.cpp`/`repack.h`; `cmake --build build-k24-cpu --target llama-bench llama-server -j16`; Qwen3-4B Q8 smoke with experimental `LD_LIBRARY_PATH` pinned showed default `220.61` prompt / `8.47` decode t/s and legacy-env-set `219.11` / `8.40`, with no `CPU_REPACK` or `q8_0_8x8` logs (`/mnt/raid0/llm/tmp/k27-retire-q8-8x8-20260717T101836Z/`). Future K27 work should not resurrect this generic path; only a separately optimized x86 kernel gets a new task.
 - [x] **K27.3 — default Q8_0 iqk routing to native, old path kept opt-in ✅ 2026-07-17**: experimental-v7 commit `aebb556b1` changes `GGML_IQK=1` so `GGML_TYPE_Q8_0` falls through to native CPU kernels unless `GGML_IQK_Q8_0=1` is explicitly set; all other iqk-supported quant families remain under the existing `GGML_IQK` gate. Final pinned CPU artifact `/mnt/raid0/llm/tmp/k27-q8-policy-final-20260717T105344Z/`: frontdoor Qwen3.6-35B Q8 default/native `21.38 t/s`, old iqk Q8 opt-in `20.98 t/s`, stock no-iqk `21.05 t/s`; Qwen3-4B Q8 still favors old iqk opt-in (`9.14` vs `8.90 t/s`). Verdict: this is a stack/frontdoor-safe routing policy, not a universal optimized x86 Q8 kernel. Keep K27 parent open for a real AVX2/AVX512/VNNI implementation; use `GGML_IQK_Q8_0=1` only on lanes with model-specific evidence.
@@ -3848,8 +3448,8 @@ Source: control-plane planning session (audit doc `research/deep-dives/2026-07-1
           MAIN accepts isolated historical scaffold custody at project-owned [b76d2549e4](https://github.com/pestopoppa/llama.cpp/commit/b76d2549e4f99bf5f7764c326d955308076452e4), exact two-file85+/3- patch based on owner8bb53c5205. Owner dirty tree/staging unchanged; no build, production/main merge or reopening of the recorded performance NO-GO.
   - [x] **K28.5 default-off fused recurrence prototype gate CLOSED NO-GO ✅ 2026-08-11**: direct ROCm attribution completed the accepted cheap proof step and reproduced, rather than raised, the old ceiling. The measured shares/ceilings above fail the handoff's “materially above alternatives” admission bar, so the correct gate result is to stop before kernel authoring.
 - [x] **K29 (P2) — draft hot-path malloc removal ✅ 2026-07-17**: experimental-v7 `6b93ca027` removes the `malloc`/`free` token sidecars in `common/speculative.cpp` EAGLE3 and MTP draft implementations. `llama_batch_init()` still owns/frees the embedding and metadata buffers; the extra token buffer is now owned by `std::vector<llama_token>` in the speculative implementation, and destructors null `batch.token` before `llama_batch_free()` so the batch free path only frees owned allocations. Validation: `git diff --check`; no remaining `TODO: fix, how to call without malloc` / manual `malloc` / `free(batch.token)` matches; `cmake --build build-k24-cpu --target llama-server -j16`; `cmake --build build-hip --target llama-server -j16`; pinned `llama-server --version` smoke for both builds reported `10082 (3dee86a5a)`.
-- [ ] **K30 (P2, conditional) — composed-spec state save/restore**: `common/speculative.cpp:3063` TODO (get_state unsupported for >1 impl) — blocks prompt-cache checkpoints + slot-state migration under `ngram-mod,draft-mtp`. Schedule ONLY if slot-save teleport (option i) is pursued; the re-prefill teleport v1 (mi210 roadmap) sidesteps this.
-- [ ] **K31 (P3, audits) — Expected-Attention server wiring + DSA prompt-path audit**: (a) `src/llama-kv-compress.cpp:365` `shift_positions` OFF for llama-server (position desync w/ prompt cache) → eviction leaves gaps; design a server-safe reclaim (high effort, correctness-risky); (b) `src/llama-kv-cache-dsa.cpp:116` — audit whether the sparse-index path applies during prompt processing or decode-only (GLM-5.2 now; DeepSeekV4 is explicitly outside this v7 promotion scope).
+- [ ] **K30 (P2, conditional) — composed-spec state save/restore** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): conditional on a slot-save teleport that is not being pursued. Full text at b3bd883d3:3851.
+- [ ] **K31 (P3, audits) — Expected-Attention server wiring + DSA prompt-path audit** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): Expected-Attention/DSA audit, not ROCm kernel authoring; belongs to the DSA contribution handoff. Full text at b3bd883d3:3852.
   - [x] K31.1 GLM/DSA prompt-path static audit ✅ 2026-07-17: pre-fix source loaded GLM DSA metadata/tensors but only constructed `llama_kv_cache_dsa` for `LLM_ARCH_DEEPSEEK32`; experimental-v7 `3dee86a5a` wires `LLM_ARCH_GLM_DSA` into that cache/runtime path. In the generic DSA path, indexer/top-k is constructed for prompt batches and decode, but final attention remains full-KV masked MLA (`ggml_set_rows` into a full KQ mask, then `build_attn_mha`). Current implementation should be treated as GLM-cache-runtime-wired plus generic DSA-DENSE-MASK-LIKELY.
   - **[declined: ws58 2026-11-03 content-review: merged into K31 as its open half]** K31.2 Expected-Attention server-safe reclaim remains open; do not conflate it with the GLM/DSA audit closure.
     - [x] K31.2a server response semantics guard ✅ 2026-07-18: experimental-v7 commit `8905c3d2c` now leaves server-side Expected Attention in explicit gapped-eviction mode (`compact_positions=false`) and returns `compact_positions`, `logical_context_reclaimed=false`, and `reclaim_mode=evict_only_gapped` in `/slots/{id}?action=compact` results. Direct source audit confirmed `compact_positions=true` would desync `server_slot.prompt.tokens`, checkpoints, and prompt-cache position accounting unless the server also compacts its logical token state. Validation: `git diff --check`; `cmake --build build-hip --target test-backend-ops test-llama-archs llama-server -j48`. This is an API/automation guard, not a full reclaim implementation; K31.2 remains open for a real logical-position compaction design.
@@ -3942,9 +3542,9 @@ Returns: upstream maintainers prioritizing PRs we are already waiting on (DSA
 
 #### Waypoints
 
-- [ ] **W1 — D2 PR spearhead** (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help with — upstream citizenship AND our own unlock (V3.2 + GLM-5.1 on 1.1TB). D1 pull/build/smoke is superseded: generic DSA landed through #23346; see the D2 design and profiling gates in `llama-cpp-dsa-contribution.md`. The former GLM-5.2 target was dropped in the 2026-10-29 audit, so select a supported target before specifying a new run. Acceptance: PR submitted upstream. (re-scoped 2026-11-03 from V3.2/GLM-5.1 model target: no supported DSA model on disk; PR-only, no model run until a supported target exists)
-- [ ] **W2 — methodology post** (2–3 days, research-writer role): "How we collapsed our own +17% wins to +1.6%: canonical CPU benchmarking on EPYC" — content exists in CPU20 + 2026-04-26 compounding data + MEASUREMENT.md. Venue: blog + llama.cpp discussions cross-post. Acceptance: every number carries the claims grammar. **Draft scaffold + claim backfill landed 2026-06-13**: `docs/publication/canonical-cpu-benchmarking-methodology-draft.md` now separates the April 26 EP-frontdoor `+17% -> +1.6%` collapse from the April 24 CPU2 Q8 microkernel thread-scaling lesson and records evidence readiness per claim. **Publication-prep packet landed 2026-07-06**: the draft now has public-safe claim labels, names the exact April 26 logs behind the main collapse rows, demotes the April 24 Q8 microkernel exact numbers to paraphrase-only unless raw repack logs are found or remeasured, and flags the 2026-06-14 dry-run recipe witness as pre-v6. Not publication-ready: host-attestation IDs/current-era rerun decision and final external scrub remain.
-- [ ] **W3 — public results page** [18 retained rows need protocol evidence adjudication before publication] (optional, 1 day): generated from `RESULTS.md` (models × quant × t/s on EPYC, protocol-tagged). Regenerated per release, never hand-edited. Acceptance: generation script, no manual numbers. **Generator scaffold landed 2026-06-13**: `scripts/publication/generate_public_results.py` emits `docs/publication/public-results-draft.md` from `epyc-inference-research/docs/reference/benchmarks/RESULTS.md`, with every non-protocol-tagged row held for backfill under `MEASUREMENT.md`; tests cover parser/renderer behavior. **Protocol-backfill parser landed 2026-06-14**: `1ec09e1` parses protocol id, `n/reps`, date, and attestation metadata and only promotes complete rows to `publish_candidate`; `epyc-inference-research` `7a3e931` adds initial `P-BENCH-2` metadata to the NUMA throughput section. **Missing-field summary landed 2026-06-14**: the generated draft now summarizes action counts and names missing protocol fields, turning the P-BENCH-2 gap into explicit `missing attestation` rows. **Public-scrub gate landed 2026-06-21**: publish candidates are demoted to `hold_for_public_scrub` if generated fields expose local paths, loopback endpoints, internal role aliases, or operator/internal workflow terms. **Internal-alias display scrub landed 2026-06-27**: generated section/entity/metric fields now rewrite internal role aliases to public-safe labels before rendering and scrub classification. **Backfill triage landed 2026-06-28**: the generated draft separates protocol blockers into `31` P-BENCH rows missing only attestation, `18` evidence-linked rows needing protocol tags, and `325` historical rows needing a verification decision; all `374` rows remain `public-safe surface`. The parser now avoids protocol bleed from neighboring table rows, so a complete protocol marker in one row cannot promote adjacent rows. **Pre-attestation review separation landed 2026-06-28**: the `31` P-BENCH rows dated `2026-03-21` now use `hold_for_historical_attestation_review` rather than ordinary protocol backfill, so they require a real historical attestation artifact or remeasurement instead of current-state retro-certification. **Review queue landed 2026-06-28**: `docs/publication/public-results-review-queue.md` is now generated alongside the draft and groups all `374` rows into `historical-attestation-review=31`, `protocol-tag-needed=18`, and `verification-decision-needed=325`. **Review-decision overlay landed 2026-07-06**: `docs/publication/public-results-review-decisions.json` now routes the `325` unverified historical rows to `retired_from_public_claims` by default, leaving only `31` historical-attestation/remeasurement rows and `18` protocol-tag rows as active public-results blockers. W3 remains open until the 18 retained protocol-tag rows carry complete evidence or are retired/remeasured; the 31 historical-attestation rows were retired from public claims on 2026-11-02.
+- [ ] **W1 — D2 PR spearhead** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): publication/PR work; owned by llama-cpp-dsa-contribution.md. Full text at b3bd883d3:3945.
+- [ ] **W2 — methodology post** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): publication; not INF-48 scope. Full text at b3bd883d3:3946.
+- [ ] **W3 — public results page** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): publication; blocked on protocol-evidence adjudication outside INF-48. Full text at b3bd883d3:3947.
 - **[declined: ws58 2026-11-03 content-review: a cadence rule, not a task]** **W4 — cadence**: one artifact/month max. Candidates queue: NUMA topology laws; gemma4 MTP recipe; closure-inflation/remediation story; instrument-era reconciliation (epistemics piece). Acceptance: queue maintained in this file. **Queue initialized 2026-06-13**; keep unchecked until the first monthly review uses it.
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** **W5 — social/X conversation ledger**: maintain `docs/publication/social/` as the append-only record of outbound social threads and notable inbound replies, every public claim linked to its in-repo receipt and MEASUREMENT.md grade. Layout + schema + gates: `docs/publication/social/README.md`. Acceptance: every posted thread has a ledger row **before** it goes out; no public number ships without an evidence pointer; corrections appended, never rewritten.
   - [x] Seed the ledger: README + schema + first transcript ✅ 2026-09-15 — `docs/publication/social/{README.md,conversations.yaml,threads/2026-09-15-x-mi210-low-quants.md}`; the MI210 low-bit-quant thread recorded with its 7 claims linked and its four soft spots. W5 stays open on the pre-post gate.
@@ -4014,22 +3614,7 @@ One artifact per month maximum. Do not publish two items in one month to "catch 
 > which an M4 does not report. Thread was OPEN with **zero** comments at post time, so this is the
 > first reply. **Part two — our own greedy sweep — remains blocked on G1.**
 
-- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the results half.**
-      Unusually strong material for a low-cost contribution: the issue is OPEN with **zero comments and
-      no maintainer reply**, and four things in it are demonstrably wrong or unsupported —
-      (a) its cache/checkpoint localization is refuted by **its own attached log** (`n_prompt_tokens_cache = 0`
-      on all fourteen requests: no cache engaged, every failure a cold full prefill, which also explains
-      why all three of the reporter's workarounds were ineffective); (b) its exonerating control cannot
-      detect wrong output at all — `llama-bench` feeds `std::rand()` tokens and never samples the model;
-      (c) the file named `_noflash` logs flash attention being **force-enabled** for quantized V cache;
-      (d) all four builds tested **predate** Metal fixes #27390 (2026-08-20T10:43Z, which rewrote exactly
-      the quantized-KV + FA path every run used) and #27450.
-      **Blocked on G1** — not because the analysis needs it, but because posting first offers a critique
-      with no data behind it. With our own greedy boundary sweep attached it is a contribution; without
-      it, it is an argument. Also worth offering: the cheapest decisive experiment nobody has run is a
-      single **temperature-0** trial on a **non-degenerate** prompt, which separates "the model wants to
-      stop after 18K tokens of repeated pangram" from a kernel defect.
-
+- [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the** — DROP-CANDIDATE (inf48-triage 2026-11-09; operator to confirm): blocked on G1 in log-linear-gated-deltanet-readiness.md; owned there. Full text at b3bd883d3:4017.
 ## Track: llama-cpp-dsa-contribution
 <!-- gate: none -->
 
@@ -4316,3 +3901,4 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 
 - [ ] **ROCK-AITER-GFX90A** [non-inference then inference] Probe AMD AITER (github ROCm/aiter) kernels on the MI210 (gfx90a) as a kernel source for the C6 llama.cpp HIP backend AND for vLLM (operator 2026-11-05: unconditional, since it can help our llama.cpp directly). vLLM 0.33 disables AITER on gfx90a ("AITER not built for gfx90a, rmsnorm -> SEGV", `vllm/platforms/rocm.py:1426`). Assembly and FP8 kernels need MI300-class instructions and are out of scope; the Composable Kernel and Triton ops are in scope (int8 and bf16 GEMM / scaled-mm, rmsnorm, fused MoE, paged and flash attention). Step 1 (code): build AITER for gfx90a in a scratch env, list per op builds / passes correctness / fails with the reason. Step 2 (gpu row, quiet GPU only): time each passing op against the C6 HIP equivalent at the Q38P-4b and production shapes (mmq/mmvq for Q8_0, FA at 8k/32k, rmsnorm), same inputs. Done when the op table with per-op speedup vs C6 is filed; any op >= 1.10x faster opens a port task into the llama.cpp experimental tree (champion workflow). Origin: Q38P-4/4b vLLM comparison (`mi210-serving-program.md`). [no-belief: new box]
   - *(2026-11-06, main-inf22)* **Step 1 RESULT** — AITER builds for gfx90a after a module_custom fp8-guard patch; op tests pass: rmsnorm, rope, gemm, PA, mha; CK MoE + sorting unsupported on gfx90a. Step 2 (timing vs C6) pending GPU; asm path superseded the scope note (T1 retargets gfx942 asm). [belief: cc]
+  - *(2026-11-09 schedule readiness, inf48-triage)* Step 2 packet B exists and its `SOURCE.sha256` verifies: `/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-timing-20261105/{launch.sh,spec.json,job.py,precond.py,check_complete.py}` (id `rock-aiter-timing-20261105`, regions `mi210_0,184-191`, exclusive quiet GPU, min window 3600 s, ~7200 s, `filler_run15.sh`). Blocker: `precond.py` needs packet A `rock-aiter-build-20261105/out/RESULT.json` with `complete=true`; that file is absent (out/ holds results.jsonl + units only) and packet A rows are in `needs-filing` state (BACKLOG-handoff-agentic-rocm-kernel-authoring.md) — file packet A (apply decision_rule, `touch filing-done/*.FILED`), producing RESULT.json, then `publish_row.py` packet B. Overlap: `ak-asm-aiter-vs-c6-timing-20261106-r2` already times the 7 AITER asm families vs C6 (also needs-filing); packet B covers only the CK/Triton ops (rmsnorm, gemm_i8, gemm_bf16, fa). [no-belief: readiness audit, no measurement]
