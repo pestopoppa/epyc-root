@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 670
+      "open": 671
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -94,7 +94,7 @@
       "closed": 805,
       "guarded": 0,
       "last_advanced": "2026-11-08",
-      "open": 154,
+      "open": 155,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -103,7 +103,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 960,
+      "total": 961,
       "tracks": [
         {
           "blocked": 1,
@@ -203,7 +203,7 @@
           "line": 14132,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 15
+          "open": 16
         }
       ]
     },
