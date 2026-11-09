@@ -948,7 +948,8 @@ _IN_PROGRESS = [
 ]
 
 
-def preflight(repo: os.PathLike | str, *, require_fetched: bool = True) -> dict:
+def preflight(repo: os.PathLike | str, *, require_fetched: bool = True,
+              new_branch_remote: str | None = None) -> dict:
     """Everything that must be unambiguously true before publishing.
 
     Order is deliberate. An interrupted operation is checked BEFORE detached HEAD
@@ -999,6 +1000,36 @@ def preflight(repo: os.PathLike | str, *, require_fetched: bool = True) -> dict:
 
     remote = git(repo, "config", "--get", f"branch.{branch}.remote", check=False).stdout.strip()
     merge_ref = git(repo, "config", "--get", f"branch.{branch}.merge", check=False).stdout.strip()
+    new_branch = False
+    if (not remote or not merge_ref) and new_branch_remote:
+        # LOCK-HELD FIRST PUSH (SERIALIZED-PUSH-NEW-BRANCH): the caller named the
+        # remote explicitly, so nothing is guessed. The destination is the same-named
+        # branch, and it must not already exist there -- this path only CREATES.
+        if git(repo, "remote", "get-url", new_branch_remote, check=False).returncode != 0:
+            raise PreflightError(
+                f"unknown-remote: --set-upstream names remote {new_branch_remote!r}, "
+                f"which is not configured in this repository",
+                condition="unknown-remote",
+            )
+        probe = subprocess.run(
+            ["git", "-C", str(repo), "ls-remote", "--exit-code", "--heads",
+             new_branch_remote, f"refs/heads/{branch}"],
+            capture_output=True, text=True,
+        )
+        if probe.returncode == 0:
+            raise PreflightError(
+                f"remote-branch-exists: {new_branch_remote} already has refs/heads/{branch}; "
+                f"--set-upstream only creates new branches. Set the upstream yourself "
+                f"(git branch --set-upstream-to) and push the ordinary way.",
+                condition="remote-branch-exists",
+            )
+        if probe.returncode != 2:
+            raise PreflightError(
+                f"remote-unreachable: git ls-remote {new_branch_remote} exited "
+                f"{probe.returncode}: {(probe.stdout + probe.stderr).strip()}",
+                condition="remote-unreachable",
+            )
+        remote, merge_ref, new_branch = new_branch_remote, f"refs/heads/{branch}", True
     if not remote or not merge_ref:
         raise PreflightError(
             f"no-upstream: branch {branch!r} has no upstream configured "
@@ -1018,7 +1049,7 @@ def preflight(repo: os.PathLike | str, *, require_fetched: bool = True) -> dict:
     upstream_ref = f"refs/remotes/{remote}/{remote_branch}"
     have_upstream = git(repo, "rev-parse", "--verify", "--quiet", upstream_ref,
                         check=False).returncode == 0
-    if require_fetched and not have_upstream:
+    if require_fetched and not have_upstream and not new_branch:
         raise PreflightError(
             f"upstream-ref-not-fetched: {upstream_ref} does not exist locally, so what "
             f"would be published cannot be computed. Re-run with --fetch (it runs under "
@@ -1036,6 +1067,7 @@ def preflight(repo: os.PathLike | str, *, require_fetched: bool = True) -> dict:
         "merge_ref": merge_ref,
         "upstream_ref": upstream_ref,
         "have_upstream": have_upstream,
+        "new_branch": new_branch,
     }
 
 
@@ -1061,14 +1093,22 @@ def build_manifest(repo: os.PathLike | str, pf: dict) -> dict:
     rendered output rather than letting a reader assume the author column means
     something.
     """
-    rng = f"{pf['upstream_ref']}..HEAD"
-    counts = git(repo, "rev-list", "--left-right", "--count",
-                 f"{pf['upstream_ref']}...HEAD").stdout.split()
-    behind, ahead = (int(counts[0]), int(counts[1])) if len(counts) == 2 else (0, 0)
+    if pf.get("new_branch"):
+        # First push: no upstream ref exists. What would be published is whatever
+        # HEAD has that no remote-tracking ref of that remote already carries.
+        sel = ["HEAD", "--not", f"--remotes={pf['remote']}"]
+        rng = f"HEAD --not --remotes={pf['remote']}"
+        behind, ahead = 0, int(git(repo, "rev-list", "--count", *sel).stdout.strip() or 0)
+    else:
+        sel = [f"{pf['upstream_ref']}..HEAD"]
+        rng = sel[0]
+        counts = git(repo, "rev-list", "--left-right", "--count",
+                     f"{pf['upstream_ref']}...HEAD").stdout.split()
+        behind, ahead = (int(counts[0]), int(counts[1])) if len(counts) == 2 else (0, 0)
 
     commits: list[dict] = []
     if ahead:
-        raw = git(repo, "log", "--format=%H%x1f%s%x1f%cI%x1f%an", rng).stdout
+        raw = git(repo, "log", "--format=%H%x1f%s%x1f%cI%x1f%an", *sel).stdout
         for line in raw.splitlines():
             if not line.strip():
                 continue
@@ -1078,8 +1118,12 @@ def build_manifest(repo: os.PathLike | str, pf: dict) -> dict:
 
     changed: list[str] = []
     if ahead:
-        changed = [ln for ln in git(repo, "diff", "--name-only",
-                                    f"{pf['upstream_ref']}..HEAD").stdout.splitlines() if ln]
+        if pf.get("new_branch"):
+            names = git(repo, "log", "--name-only", "--format=", *sel).stdout.splitlines()
+            changed = sorted({ln for ln in names if ln})
+        else:
+            changed = [ln for ln in git(repo, "diff", "--name-only",
+                                        sel[0]).stdout.splitlines() if ln]
 
     by_top: dict[str, int] = {}
     for path in changed:
@@ -1182,10 +1226,11 @@ def do_push(repo: os.PathLike | str, pf: dict, agent: str | None = None) -> str:
     env = dict(os.environ)
     if agent:
         env["EPYC_PUSH_LOCK_HOLDER"] = agent
-    proc = subprocess.run(
-        ["git", "-C", str(repo), "push", pf["remote"], f"HEAD:{pf['merge_ref']}"],
-        capture_output=True, text=True, env=env,
-    )
+    cmd = ["git", "-C", str(repo), "push"]
+    if pf.get("new_branch"):
+        cmd.append("--set-upstream")   # first push: also records branch.<b>.remote/merge
+    cmd += [pf["remote"], f"HEAD:{pf['merge_ref']}"]
+    proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
     output = (proc.stdout + proc.stderr).strip()
     if proc.returncode != 0:
         raise PushFailedError(
@@ -1262,6 +1307,10 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--force-release", metavar="HOLDER",
                    help="displace the named holder; must match the recorded holder exactly")
     g.add_argument("--status", action="store_true", help="report lock state and exit")
+    p.add_argument("--set-upstream", metavar="REMOTE", default=None,
+                   help="first push of a branch that has no upstream yet: create "
+                        "<REMOTE>/<this branch> under the lock and set it as upstream. "
+                        "Refuses if the branch already exists on the remote.")
     p.add_argument("--fetch", action="store_true",
                    help="update the upstream ref first (a network op: runs under the lock)")
     p.add_argument("--wait", type=float, default=0, metavar="SECONDS",
@@ -1441,11 +1490,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         try:
-            pf = preflight(repo, require_fetched=not args.fetch)
+            pf = preflight(repo, require_fetched=not args.fetch,
+                           new_branch_remote=args.set_upstream)
         except PreflightError as exc:
             print(f"serialized_push: REFUSING — {exc}", file=sys.stderr)
             return EXIT_PREFLIGHT
-        if args.fetch:
+        if args.fetch and not pf["new_branch"]:
             print(do_fetch(repo, pf["remote"], pf["remote_branch"]) or "(fetch: up to date)")
             try:
                 pf = preflight(repo)

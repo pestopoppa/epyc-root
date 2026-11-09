@@ -1370,3 +1370,54 @@ def test_hold_keeper_survives_cli_exit_and_dies_with_its_parent(tmp_path):
     rec = acquire(lock_dir, key, "mainB", str(work), name="wrapup")
     assert rec["agent"] == "mainB"
     assert "HOLD-PARENT-DIED" in (lock_dir / "displacements.jsonl").read_text()
+
+
+# ---------------------------------------------------------------------------
+# 7. FIRST PUSH OF A NEW BRANCH UNDER THE LOCK (SERIALIZED-PUSH-NEW-BRANCH)
+# ---------------------------------------------------------------------------
+
+
+def _new_branch_work(tmp_path):
+    work, bare = _clone_with_remote(tmp_path)
+    _git(work, "checkout", "-q", "-b", "exp/new")
+    _write_commit(work, "n.txt", "n\n", "feat: new-branch work")
+    return work, bare
+
+
+def test_new_branch_without_flag_is_still_refused(tmp_path):
+    work, bare = _new_branch_work(tmp_path)
+    res = _cli("--agent", "mainA", "--repo", str(work), "--lock-dir", str(tmp_path / "l"),
+               "--push")
+    assert res.returncode == EXIT_PREFLIGHT and "no-upstream" in res.stderr
+    assert _git(bare, "rev-parse", "--verify", "--quiet", "refs/heads/exp/new",
+                check=False).returncode != 0
+
+
+def test_new_branch_publishes_under_the_lock_and_sets_upstream(tmp_path):
+    work, bare = _new_branch_work(tmp_path)
+    lock_dir = tmp_path / "l"
+    res = _cli("--agent", "mainA", "--repo", str(work), "--lock-dir", str(lock_dir),
+               "--push", "--set-upstream", "origin")
+    assert res.returncode == EXIT_OK, res.stdout + res.stderr
+    assert "PUSH VERIFIED" in res.stdout
+    assert _git(bare, "rev-parse", "refs/heads/exp/new").stdout.strip() == _head(work)
+    assert _git(work, "config", "--get", "branch.exp/new.remote").stdout.strip() == "origin"
+    assert _git(work, "config", "--get", "branch.exp/new.merge").stdout.strip() == "refs/heads/exp/new"
+    # only this branch's own commit is in the manifest, not main's history
+    assert "commits     : 1" in res.stdout
+
+
+def test_new_branch_refuses_when_remote_already_has_it(tmp_path):
+    work, bare = _new_branch_work(tmp_path)
+    _git(work, "push", "-q", "origin", "HEAD:refs/heads/exp/new")  # no -u: still no upstream
+    _write_commit(work, "m.txt", "m\n", "feat: more")
+    res = _cli("--agent", "mainA", "--repo", str(work), "--lock-dir", str(tmp_path / "l"),
+               "--push", "--set-upstream", "origin")
+    assert res.returncode == EXIT_PREFLIGHT and "remote-branch-exists" in res.stderr
+
+
+def test_new_branch_flag_with_unknown_remote_is_refused(tmp_path):
+    work, _ = _new_branch_work(tmp_path)
+    with pytest.raises(PreflightError) as exc:
+        preflight(work, new_branch_remote="nope")
+    assert exc.value.condition == "unknown-remote"
