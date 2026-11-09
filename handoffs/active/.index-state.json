@@ -1050,9 +1050,9 @@
     },
     "frontier-lab-automation.md": {
       "blocked": 0,
-      "closed": 79,
+      "closed": 80,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-09",
       "open": 2,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -1062,7 +1062,7 @@
       },
       "row_id": "EVL-29",
       "state": "active",
-      "total": 81,
+      "total": 82,
       "tracks": [
         {
           "blocked": 0,
@@ -1076,7 +1076,7 @@
         },
         {
           "blocked": 0,
-          "closed": 1,
+          "closed": 2,
           "gates": [],
           "guarded": 0,
           "line": 384,
@@ -1089,7 +1089,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 483,
+          "line": 484,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 0
@@ -1099,7 +1099,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 566,
+          "line": 567,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 0
@@ -1109,7 +1109,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 758,
+          "line": 759,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 0
@@ -2701,7 +2701,7 @@
       "id": "EVL-29",
       "index": "research-evaluation-index.md",
       "line": 16,
-      "next_action": "File completed AFC-P5.E3 results (3 rows ran 11-07); Flash rerun queued, then archive",
+      "next_action": "File AFC-P5.E3 Flash r3 (smoke queued; r1 and r2 invalid); keep listed",
       "track": "intake derived work 2026 07 25"
     },
     "EVL-47": {
@@ -2916,7 +2916,7 @@
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
       "line": 16,
-      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; refactor track after promotion + AutoPilot",
+      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
       "track": "non inference backlog"
     },
     "RTG-34": {
