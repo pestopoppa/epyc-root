@@ -154,7 +154,7 @@ them with `ps -eo pid,lstart,args` and stop them by captured pid with their owne
 
 ## 7. Known open defects
 
-These are tracked as open boxes in [`handoffs/active/coordination-and-churn-pipeline.md`](../../../handoffs/active/coordination-and-churn-pipeline.md#track-churn-pipeline). Fix them there.
+These are tracked as open boxes in [`handoffs/active/churn-pipeline.md`](../../../handoffs/active/churn-pipeline.md). Fix them there.
 - Sub-quarter packing is unfixed (the packing agent was stopped).
 - Rows with a non-inference payload get published as compute rows. On 2026-11-02 a gitnexus analyze row held all 96 cores.
 - Row `estimate_s` is greatly overstated (estimator).
