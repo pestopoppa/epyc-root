@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T20:38:08Z",
+  "generated_at": "2026-11-09T20:41:52Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1412,7 +1412,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 485,
+          "line": 486,
           "name": "frontier-f2-self-running-lab",
           "open": 0,
           "readiness": "no_open"
@@ -1421,7 +1421,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 568,
+          "line": 569,
           "name": "frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -1430,7 +1430,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 760,
+          "line": 761,
           "name": "stale-open-audit-2026-07-18",
           "open": 0,
           "readiness": "no_open"
@@ -1545,7 +1545,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5991,
+          "line": 5990,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1554,7 +1554,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6071,
+          "line": 6070,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1573,7 +1573,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6368,
+          "line": 6367,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1590,7 +1590,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9585,
+          "line": 9584,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1603,7 +1603,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13935,
+          "line": 13934,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1637,7 +1637,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14147,
+          "line": 14146,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 17,
           "readiness": "blocked"
@@ -2051,14 +2051,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 191,
-      "dispatchable": 44,
+      "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-09",
       "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
-      "open": 45,
+      "open": 46,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -2092,7 +2092,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 39,
+          "dispatchable": 40,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -2101,14 +2101,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 40,
+          "open": 41,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1678,
+          "line": 1680,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2117,7 +2117,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1802,
+          "line": 1804,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2126,7 +2126,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2127,
+          "line": 2129,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2135,7 +2135,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2266,
+          "line": 2268,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2144,7 +2144,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2822,
+          "line": 2824,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2156,7 +2156,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2962,
+          "line": 2964,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2168,7 +2168,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2969,
+          "line": 2971,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
