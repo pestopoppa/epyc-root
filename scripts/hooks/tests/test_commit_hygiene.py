@@ -283,33 +283,51 @@ def test_hyg4_end_to_end(cmd: str, expect: int, env: dict, why: str) -> None:
     assert run(cmd, env) == expect, why
 
 
-def _checked_out_branch() -> str | None:
-    r = subprocess.run(["git", "-C", str(REPO_ROOT), "symbolic-ref", "--short", "-q", "HEAD"],
-                       capture_output=True, text=True)
-    return r.stdout.strip() or None
+@pytest.fixture
+def loop47(monkeypatch, tmp_path):
+    """Deterministic fixture (never skips, even on a detached-HEAD checkout): a scratch repo whose HEAD
+    is branch `fixture-br`, with the hook's shared-repo and worktree-listing lookups pinned to it."""
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "hooks"))
+    import io
+    import check_commit_hygiene as h
+    repo = tmp_path / "r"
+    subprocess.run(["git", "init", "-q", "-b", "fixture-br", str(repo)], check=True)
+    monkeypatch.setattr(h, "is_shared", lambda path: True)
+    monkeypatch.setattr(h, "checked_out_branches", lambda r: {"fixture-br"})
+    monkeypatch.setenv("CLAUDE_PROJECT_DIR", str(repo))
+    monkeypatch.setenv("EPYC_FETCH_MAX_AGE_S", "999999999")
+    monkeypatch.delenv("EPYC_ALLOW_COMMIT_HYGIENE_BYPASS", raising=False)
+
+    def go(cmd: str) -> int:
+        monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(
+            {"tool_name": "Bash", "tool_input": {"command": cmd}})))
+        return h.main()
+    return go
 
 
-@pytest.mark.skipif(_checked_out_branch() is None, reason="needs a checked-out branch")
-def test_loop47_update_ref_of_checked_out_branch_is_blocked() -> None:
-    br = _checked_out_branch()
-    res = run_result(f"git update-ref refs/heads/{br} HEAD", FRESH)
-    assert res.returncode == 2 and "CHECKED OUT" in res.stderr
-    # a bare update-ref with -m is the same hazard
-    assert run(f"git update-ref -m ff refs/heads/{br} HEAD", FRESH) == 2
+def test_loop47_update_ref_of_checked_out_branch_is_blocked(loop47) -> None:
+    assert loop47("git update-ref refs/heads/fixture-br HEAD") == 2
+    assert loop47("git update-ref -m ff refs/heads/fixture-br HEAD") == 2
 
 
-@pytest.mark.skipif(_checked_out_branch() is None, reason="needs a checked-out branch")
-def test_loop47_negative_controls_still_allowed() -> None:
-    br = _checked_out_branch()
-    # another branch, nobody has it checked out
-    assert run("git update-ref refs/heads/scratch/not-checked-out HEAD", FRESH) == 0
-    # a salvage / non-branch ref
-    assert run("git update-ref refs/salvage/x HEAD", FRESH) == 0
-    # the checked-out branch, but the same command syncs index+worktree
-    assert run(f'git update-ref refs/heads/{br} HEAD && git reset -q -- a.txt', FRESH) == 0
-    assert run("git merge --ff-only origin/main", FRESH) == 0
-    # deleting is not a move
-    assert run("git update-ref -d refs/heads/scratch/not-checked-out", FRESH) == 0
+def test_loop47_update_ref_head_symref_is_blocked(loop47) -> None:
+    assert loop47("git update-ref HEAD abc123") == 2
+    assert loop47("git update-ref -m x HEAD abc123") == 2
+
+
+def test_loop47_stdin_and_variable_ref_fail_closed(loop47) -> None:
+    assert loop47("git update-ref --stdin < cmds.txt") == 2
+    assert loop47('git update-ref "refs/heads/$B" HEAD') == 2
+    assert loop47("git update-ref $REF HEAD") == 2
+
+
+def test_loop47_negative_controls_still_allowed(loop47) -> None:
+    assert loop47("git update-ref refs/heads/scratch/not-checked-out HEAD") == 0
+    assert loop47("git update-ref refs/salvage/x HEAD") == 0
+    assert loop47('git update-ref refs/heads/fixture-br HEAD && git reset -q -- a.txt') == 0
+    assert loop47("git update-ref HEAD abc && git reset -q -- a.txt") == 0
+    assert loop47("git merge --ff-only origin/main") == 0
+    assert loop47("git update-ref -d refs/heads/scratch/not-checked-out") == 0
 
 
 def main() -> int:

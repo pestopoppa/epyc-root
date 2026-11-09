@@ -627,10 +627,26 @@ def main() -> int:
                 # commit would have reverted them). The reflog subject was empty -- a bare
                 # update-ref. The safe shape is `git merge --ff-only` (moves ref + index + tree),
                 # or the private-index recipe that ends in `git reset -q -- <paths>`.
+                # Fail-closed shapes (review 2026-11-09): `update-ref HEAD` / `@` moves the
+                # checked-out branch through the symref; `--stdin` carries ref names the hook cannot
+                # see; a variable / substituted ref name (`refs/heads/$B`) is unresolvable. Each
+                # blocks whenever any checked-out branch could move.
                 refs = [p for p in positionals if p.startswith("refs/heads/")]
-                if refs and "-d" not in flags and not command_syncs_checkout(cmd):
+                if "-d" not in flags and not command_syncs_checkout(cmd):
                     held = checked_out_branches(repo)
                     hit = [r for r in refs if r[len("refs/heads/"):] in held]
+                    first = positionals[0] if positionals else ""
+                    if first in {"HEAD", "@"}:
+                        head = subprocess.run(["git", "-C", repo, "symbolic-ref", "-q", "HEAD"],
+                                              capture_output=True, text=True, timeout=10).stdout.strip()
+                        if head.startswith("refs/heads/") and head[len("refs/heads/"):] in held:
+                            hit.append(head)
+                    if held and not hit:
+                        if "--stdin" in flags or "--stdin" in args:
+                            hit.append("--stdin")
+                        elif any(("$" in p or "`" in p) and (p.startswith("refs/heads/") or p.startswith("$") or p.startswith("`"))
+                                 for p in positionals[:1]):
+                            hit.append(first)
                     if hit:
                         return block(f"""BLOCKED: `git update-ref {hit[0]}` on a branch that is CHECKED OUT in {repo}.
 
