@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:57:42Z",
+  "generated_at": "2026-11-09T15:59:32Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1166,7 +1166,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 118,
+      "closed": 119,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -1194,27 +1194,27 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 13,
           "gates": [],
           "line": 36,
           "name": "memory-program",
-          "open": 14,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 9,
-          "gates": [],
-          "line": 911,
-          "name": "repl-session-memory-maturity",
-          "open": 9,
+          "open": 13,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1366,
+          "line": 912,
+          "name": "repl-session-memory-maturity",
+          "open": 10,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 10,
+          "gates": [],
+          "line": 1369,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1231,7 +1231,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1827,
+          "line": 1830,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1442,14 +1442,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 371,
-      "dispatchable": 88,
+      "dispatchable": 89,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-07",
       "next_action": "Land correction-fix salvage 7f2df8f61; two-CPU-model smoke; Canary B assertion; file R18-D A/A; republish R23-4",
-      "open": 89,
+      "open": 90,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2562,14 +2562,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 108,
-      "dispatchable": 12,
+      "dispatchable": 16,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-09",
       "next_action": "Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision",
-      "open": 12,
+      "open": 16,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2589,18 +2589,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 3,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1118,
+          "line": 1121,
           "name": "colbert-reranker-web-research",
           "open": 1,
           "readiness": "ready"
@@ -2609,36 +2609,36 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1868,
+          "line": 1871,
           "name": "document-parser-table-bench",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 6,
           "gates": [],
-          "line": 2492,
+          "line": 2495,
           "name": "opendataloader-pipeline-integration",
-          "open": 4,
+          "open": 6,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2606,
+          "line": 2612,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 2,
           "gates": [],
-          "line": 2975,
+          "line": 2981,
           "name": "sliders-local-validation",
-          "open": 1,
+          "open": 2,
           "readiness": "ready"
         }
       ]
@@ -2976,15 +2976,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 154,
-      "dispatchable": 42,
+      "closed": 155,
+      "dispatchable": 41,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-09",
-      "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 and CTX-HO-3 are standalone",
-      "open": 43,
+      "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
+      "open": 42,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -3076,11 +3076,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": null,
           "line": 3626,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         }
       ]
@@ -3089,7 +3089,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 179,
+      "closed": 180,
       "dispatchable": 70,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3135,18 +3135,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 16,
+          "dispatchable": 15,
           "gates": [],
           "line": 35,
           "name": "routing-program",
-          "open": 16,
+          "open": 15,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 575,
+          "line": 576,
           "name": "internal-interaction-lifecycle",
           "open": 4,
           "readiness": "ready"
@@ -3155,7 +3155,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1050,
+          "line": 1051,
           "name": "learned-routing-controller",
           "open": 8,
           "readiness": "ready"
@@ -3164,7 +3164,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2318,
+          "line": 2319,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3173,7 +3173,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2394,
+          "line": 2395,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3182,25 +3182,25 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2527,
+          "line": 2528,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 26,
+          "dispatchable": 27,
           "gates": [],
-          "line": 2830,
+          "line": 2831,
           "name": "typed-decision-plane",
-          "open": 26,
+          "open": 27,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3579,
+          "line": 3583,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3213,7 +3213,7 @@
           "gates": [
             "UFH-01"
           ],
-          "line": 3660,
+          "line": 3664,
           "name": "routing-intelligence",
           "open": 9,
           "readiness": "blocked"
@@ -3222,7 +3222,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": null,
-          "line": 4149,
+          "line": 4153,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3,
           "readiness": "ready"

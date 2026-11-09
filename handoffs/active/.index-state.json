@@ -10,13 +10,13 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-09",
-      "open": 12
+      "open": 16
     },
     "research-evaluation-index.md": {
       "blocked": 4,
       "handoffs": 5,
       "oldest_advance": "2026-11-03",
-      "open": 195
+      "open": 196
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 485
+      "open": 484
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 1,
-      "closed": 154,
+      "closed": 155,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 42,
+      "open": 41,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -613,13 +613,13 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": null,
           "guarded": 0,
           "line": 3626,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 2
+          "open": 1
         }
       ]
     },
@@ -1344,7 +1344,7 @@
       "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 12,
+      "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1353,7 +1353,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 120,
+      "total": 124,
       "tracks": [
         {
           "blocked": 0,
@@ -1363,14 +1363,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1118,
+          "line": 1121,
           "markers": 1,
           "name": "colbert-reranker-web-research",
           "open": 1
@@ -1380,7 +1380,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1868,
+          "line": 1871,
           "markers": 1,
           "name": "document-parser-table-bench",
           "open": 2
@@ -1390,17 +1390,17 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2492,
+          "line": 2495,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 4
+          "open": 6
         },
         {
           "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2606,
+          "line": 2612,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 1
@@ -1410,10 +1410,10 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2975,
+          "line": 2981,
           "markers": 1,
           "name": "sliders-local-validation",
-          "open": 1
+          "open": 2
         }
       ]
     },
@@ -1544,7 +1544,7 @@
     },
     "memory-program.md": {
       "blocked": 0,
-      "closed": 118,
+      "closed": 119,
       "guarded": 0,
       "last_advanced": "2026-11-09",
       "open": 40,
@@ -1556,34 +1556,34 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 158,
+      "total": 159,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 57,
+          "closed": 58,
           "gates": [],
           "guarded": 0,
           "line": 36,
           "markers": 1,
           "name": "memory-program",
-          "open": 14
+          "open": 13
         },
         {
           "blocked": 0,
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 911,
+          "line": 912,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 9
+          "open": 10
         },
         {
           "blocked": 0,
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1366,
+          "line": 1369,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1597,7 +1597,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1827,
+          "line": 1830,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2287,7 +2287,7 @@
     },
     "routing-program.md": {
       "blocked": 1,
-      "closed": 179,
+      "closed": 180,
       "guarded": 0,
       "last_advanced": "2026-11-09",
       "open": 70,
@@ -2299,7 +2299,7 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 250,
+      "total": 251,
       "tracks": [
         {
           "blocked": 0,
@@ -2313,20 +2313,20 @@
         },
         {
           "blocked": 0,
-          "closed": 43,
+          "closed": 44,
           "gates": [],
           "guarded": 0,
           "line": 35,
           "markers": 1,
           "name": "routing-program",
-          "open": 16
+          "open": 15
         },
         {
           "blocked": 0,
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 575,
+          "line": 576,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 4
@@ -2336,7 +2336,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1050,
+          "line": 1051,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 7
@@ -2346,7 +2346,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2318,
+          "line": 2319,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2356,7 +2356,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2394,
+          "line": 2395,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2366,7 +2366,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2527,
+          "line": 2528,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2376,17 +2376,17 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 2830,
+          "line": 2831,
           "markers": 1,
           "name": "typed-decision-plane",
-          "open": 26
+          "open": 27
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3579,
+          "line": 3583,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
@@ -2398,7 +2398,7 @@
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3660,
+          "line": 3664,
           "markers": 1,
           "name": "routing-intelligence",
           "open": 9
@@ -2408,7 +2408,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 4149,
+          "line": 4153,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3
@@ -2629,7 +2629,7 @@
       "closed": 371,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 88,
+      "open": 89,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2638,7 +2638,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 460
+      "total": 461
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
@@ -2887,7 +2887,7 @@
       "id": "RTG-08",
       "index": "routing-and-optimization-index.md",
       "line": 14,
-      "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 and CTX-HO-3 are standalone",
+      "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
       "track": "context folding progressive"
     },
     "RTG-09": {
