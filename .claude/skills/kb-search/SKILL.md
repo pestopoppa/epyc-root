@@ -82,7 +82,7 @@ To check index state:
 
 - This skill is for the markdown corpus only. For code, use GitNexus tools.
 - The encoder requires `onnxruntime` and the GTE-ModernColBERT-v1 ONNX model at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`. If absent, `kb_rag query` returns no results — fall back to grep.
-- Index location: `/workspace/repos/epyc-orchestrator/data/kb_rag/index-qd-v1/` (gitignored).
+- Index location: `/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index-qd-v2/` (gitignored). Set `KB_RAG_INDEX_DIR` to override; default it with `KB_RAG_INDEX_DIR="${KB_RAG_INDEX_DIR:-/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index-qd-v2}"` before the query command below when unset.
 - **Prefix convention (OP-24, 2026-08-12)**: the index records which ColBERT role
   convention produced its vectors (`index_meta.prefix_convention`), and `query`
   encodes the query the same way. `index-qd-v1` uses the model's trained `[Q] ` /

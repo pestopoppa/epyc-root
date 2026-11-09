@@ -15,6 +15,7 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 ORCHESTRATOR="${KB_RAG_ORCHESTRATOR:-/workspace/repos/epyc-orchestrator}"
 PYTHON="${KB_RAG_PYTHON:-${ORCHESTRATOR}/.venv/bin/python}"
+export KB_RAG_INDEX_DIR="${KB_RAG_INDEX_DIR:-/mnt/raid0/llm/epyc-orchestrator/data/kb_rag/index-qd-v2}"
 
 # Only run if the orchestrator + index infrastructure is set up.
 if [[ ! -x "$PYTHON" ]]; then
