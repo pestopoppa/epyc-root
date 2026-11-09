@@ -92,6 +92,7 @@ INSTALL=(
   "bin/churn/wrapup.py            $CH/wrapup.py"
   "bin/churn/file_result.py       $CH/file_result.py"
   "bin/churn/filing.py            $CH/filing.py"
+  "bin/churn/reclaim_row.py       $CH/reclaim_row.py"
   "bin/churn/typed_classify.py    $CH/typed_classify.py"
   "bin/churn/tokens_per_task.py   $CH/tokens_per_task.py"
   "bin/rowflow/rowflow.py         $RF/rowflow.py"
@@ -283,6 +284,20 @@ ensure_loops() {
     fi
     [ "$n" = watchdog ] && wait_keeper
   done
+  ensure_shadow
+}
+# rowflow2 shadow (run_shadow.sh writes its own pid to $SHADOW_OUT/shadow.pid). Started from the git copy (it is read-only on
+# compute-flags). Idempotent: a live pid (ps + argv, never kill -0) in shadow.pid, or any pid whose argv holds the script, blocks a start.
+SHADOW_OUT=${CHURN_SHADOW_OUT:-/mnt/raid0/llm/tmp/rowflow2-shadow}
+SHADOW_SH=$CO/rowflow2/run_shadow.sh
+ensure_shadow() {
+  local p dup; p=$(pid_of "$SHADOW_OUT/shadow.pid")
+  if is_proc "$p" run_shadow.sh; then say "  rowflow2-shadow: running pid $p"; return; fi
+  dup=$(argv_pids "$SHADOW_SH")
+  if [ -n "$dup" ]; then warn "rowflow2-shadow: already running as pid(s) $dup but shadow.pid says '${p:-none}': NOT starting a duplicate"; return; fi
+  [ -n "$p" ] && say "  rowflow2-shadow: shadow.pid pid $p is dead or not run_shadow.sh"
+  [ $MODE = dry ] || mkdir -p "$SHADOW_OUT"
+  start_bg "$SHADOW_OUT/shadow.pid" "$REPO" bash "$SHADOW_SH" --out "$SHADOW_OUT"
 }
 stop_pid() {  # stop_pid <label> <pid>: TERM, 10 s, KILL, verify with ps
   local label=$1 p=$2 i
@@ -331,6 +346,8 @@ status_loops() {
     else d=$(argv_pids "$path"); if [ -n "$d" ]; then st="UP WITHOUT PIDFILE: pid(s) $d hold $path (pidfile '${p:-none}')"; else st="DOWN (pidfile pid '${p:-none}')"; fi; RC=1; fi
     printf '  %-16s %-8s %s\n' "$n" "${p:-none}" "$st"
   done
+  p=$(pid_of "$SHADOW_OUT/shadow.pid")
+  if is_proc "$p" run_shadow.sh; then printf '  %-16s %-8s UP   since %s\n' rowflow2-shadow "$p" "$(ps -o lstart= -p "$p")"; else printf '  %-16s %-8s DOWN (restart: churn_up.sh)\n' rowflow2-shadow "${p:-none}"; RC=1; fi
   p=$(pid_of "$F/ws58-calendar-keeper.pid")
   if is_proc "$p" "$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)"; then printf '  %-16s %-8s UP   since %s (%s)\n' keeper "$p" "$(ps -o lstart= -p "$p")" "$(cat "$F/ws58-calendar-keeper.current")"; else printf '  %-16s %-8s DOWN\n' keeper "${p:-none}"; RC=1; fi
   local w; w=$(legacy_writers); if [ -n "$w" ]; then printf '  %-16s %s\n' legacy-writers "ALIVE: $w (double-booking risk; stop by pid)"; RC=1; else printf '  %-16s none\n' legacy-writers; fi
