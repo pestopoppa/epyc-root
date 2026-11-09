@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T10:24:04Z",
+  "generated_at": "2026-11-09T10:29:29Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2406,9 +2406,11 @@
       "age_days": 2,
       "blocked": 2,
       "blocked_by": [
+        "INF-06",
         "INF-06#autokernel-rebuild-program",
         "INF-06#autokernel-unified-surface-program",
         "INF-50#dflash2-block-drafter-experimental-build",
+        "INF-65",
         "INF-65#autokernel-champion-aggregate",
         "INF-77",
         "INF-82#autokernel-cross-workload-keep-gate",
@@ -2416,14 +2418,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 108,
-      "dispatchable": 66,
+      "dispatchable": 67,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-07",
       "next_action": "AUTO-4 landed; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
-      "open": 68,
+      "open": 69,
       "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
@@ -2437,6 +2439,18 @@
       "tracks": [
         {
           "blocked_by": [
+            "INF-06",
+            "INF-65"
+          ],
+          "dispatchable": 1,
+          "gates": null,
+          "line": 0,
+          "name": "(untracked)",
+          "open": 1,
+          "readiness": "blocked"
+        },
+        {
+          "blocked_by": [
             "INF-06#autokernel-rebuild-program",
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
@@ -2447,7 +2461,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 11,
+          "line": 13,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 13,
           "readiness": "blocked"
@@ -2470,7 +2484,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 920,
+          "line": 922,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 55,
           "readiness": "blocked"
