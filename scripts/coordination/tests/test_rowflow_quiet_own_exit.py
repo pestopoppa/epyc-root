@@ -152,6 +152,16 @@ class QuietSmokeExit(QuietOwnExit):
     def test_better_ranked_waiter_keeps_two(self):
         self.assertEqual(self.one(self.cand("row-a", 20), self.cand("row-b", 5)), set())
 
+    def test_foreign_after_exit_then_gone_needs_two(self):
+        self.foreign()
+        self.assertIn("not quiet", self.gate())
+        shutil.rmtree(os.path.join(self.kfd, "4242"))
+        self.assertEqual(self.one(), set())
+
+    def test_sighting_before_exit_still_qualifies(self):
+        rf.atomic_json(os.path.join(rf.state_dir(self.flags), "gpu_quiet.json"), {"quiet_n": 0, "last_kfd_at": "2026-01-01T00:00:00Z"})
+        self.assertEqual(self.one(), {"row-a"})
+
     def test_second_sample_is_ordinary(self):
         self.one()
         self.assertIsNone(self.gate())

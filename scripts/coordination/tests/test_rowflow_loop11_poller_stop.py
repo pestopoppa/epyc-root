@@ -8,6 +8,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 _TESTS = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(os.path.dirname(_TESTS), "rowflow"))
@@ -91,6 +92,29 @@ class T(unittest.TestCase):
         pid = self.poller()
         open(rf.running_path(self.flags, RID), "w").write("{}")
         self.assertEqual(rf.stop_row_poller(self.flags, RID, self.d, pid, NOLOG), "job")
+
+    def test_members_killed_after_leader_exits_and_tick_bounded(self):
+        pid = self.poller("trap '' TERM\nsleep 300 &\ntrap 'exit 0' TERM\nwait\n")
+        t0 = time.time()
+        self.assertEqual(rf.stop_row_poller(self.flags, RID, self.d, pid, NOLOG), "stopped")
+        self.assertLess(time.time() - t0, 3)
+        self.assertEqual(rf.tree_pids(pid), set())
+
+    def test_term_ignoring_group_still_goes_within_bound(self):
+        pid = self.poller("trap '' TERM\nwhile :; do sleep 1; done\n")
+        t0 = time.time()
+        self.assertEqual(rf.stop_row_poller(self.flags, RID, self.d, pid, NOLOG), "stopped")
+        self.assertLess(time.time() - t0, 3)
+
+    def test_vanished_member_is_not_foreign(self):
+        pid = self.poller()
+        real = rf.tree_pids
+        with mock.patch.object(rf, "tree_pids", side_effect=[real(pid) | {4194399}, set()]), mock.patch.object(rf, "stop_group_bounded", return_value=True) as k:
+            self.assertEqual(rf.stop_row_poller(self.flags, RID, self.d, pid, NOLOG), "stopped")
+        k.assert_called_once()
+
+    def test_vanished_poller_is_gone(self):
+        self.assertIn(rf.stop_row_poller(self.flags, RID, self.d, 4194399, NOLOG), ("gone", "not-ours"))
 
     def test_shared_group_is_not_ours(self):
         open(self.lp, "w").write("#!/bin/bash\nsleep 300\n")

@@ -3475,8 +3475,25 @@ def armed_engine_ok(pid, rid, proc="/proc"):
     return bool(o)
 
 
-def stop_row_poller(flags, rid, d, pid, log=print, grace=5, proc="/proc"):
-    """LOOP-11: stop THIS row's waiting poller; returns stopped | not-ours | job | survived. Signals only when: no grant or dry
+def stop_group_bounded(pgid, term_s=1.5, kill_s=0.5):
+    """TERM the group, settle, KILL whatever remains (even if the leader already left), settle. True when the tree is gone."""
+    for sig, wait in ((signal.SIGTERM, term_s), (signal.SIGKILL, kill_s)):
+        try:
+            os.killpg(pgid, sig)
+        except ProcessLookupError:
+            pass
+        except PermissionError:
+            return False
+        end = time.time() + wait
+        while time.time() < end:
+            if not tree_pids(pgid):
+                return True
+            time.sleep(0.1)
+    return not tree_pids(pgid)
+
+
+def stop_row_poller(flags, rid, d, pid, log=print, grace=1.5, proc="/proc"):
+    """LOOP-11: stop THIS row's waiting poller; returns stopped | gone | not-ours | job | survived. Signals only when: no grant or dry
     run exists for the row (TERM then writes no .ended: the id stays usable), argv proves the pid is this row's engine or
     launcher (a recycled pid is not-ours), its group is the private setsid group arm_one created, and no member or
     descendant is an inner engine or left that session (a launched job always runs under setsid)."""
@@ -3495,16 +3512,20 @@ def stop_row_poller(flags, rid, d, pid, log=print, grace=5, proc="/proc"):
         if pgid != sid or pgid <= 1 or pgid == os.getpgid(0):
             return "not-ours"
         for q in tree_pids(pgid):
-            g = open(f"{proc}/{q}/stat").read().rsplit(")", 1)[1].split()
+            try:
+                g = open(f"{proc}/{q}/stat").read().rsplit(")", 1)[1].split()
+            except (FileNotFoundError, ProcessLookupError):
+                continue   # exited mid-scan: neither foreign nor a job
+            except (OSError, IndexError):
+                return "job"   # unreadable member: hold, never arm beside it
             io = gate.parse_engine(gate.read_cmdline(proc, q) or [])
             if int(g[3]) != sid or (io and io["inner"]):
                 return "job"
-    except FileNotFoundError:
-        return "not-ours"
+    except (FileNotFoundError, ProcessLookupError):
+        return "gone"
     except (OSError, ValueError, IndexError, TypeError, gate.Refuse):
         return "not-ours"
-    kill_group(pgid, grace=grace)
-    if tree_pids(pgid):
+    if not stop_group_bounded(pgid, term_s=grace):
         log(f"ALERT POLLER-STOP {rid}: group {pgid} survived TERM+KILL")
         return "survived"
     log(f"POLLER-STOP {rid}: pid {pid} group {pgid} stopped")
@@ -4536,15 +4557,20 @@ def smoke_tree_proven_dead(flags, rid, now=None):
     return True
 
 
-def gpu_one_sample_row(flags, occ, cands):
+def gpu_one_sample_row(flags, occ, cands, last_kfd=None):
     """The one row allowed to go on a single quiet sample: the best-ranked waiting exclusive GPU row, its smoke proven dead, and
-    no KFD owner of any size on a readable device. Best-ranked only: never a rank inversion."""
+    no KFD owner of any size on a readable device, and none sighted since that smoke exited (last_kfd: the transient
+    two samples exist for). Best-ranked only: never a rank inversion."""
     if occ.get("pids") or not os.path.isdir(KFD_PROC):
         return None
     ex = [c for c in gpu_held_back(cands) if c.get("bench")]
     if not ex:
         return None
     c = min(ex, key=lambda x: (x["rank"], x["id"]))
+    if last_kfd:
+        ex_at, seen = iso_epoch((load_json(smoke_exited_path(flags, c["id"])) or {}).get("exited_at")), iso_epoch(last_kfd)
+        if ex_at is None or seen is None or ex_at <= seen:
+            return None
     return c["id"] if smoke_tree_proven_dead(flags, c["id"]) else None
 
 
@@ -4557,6 +4583,8 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
     sp = os.path.join(state_dir(flags), "gpu_quiet.json")
     st = load_json(sp) or {}
     held = [g for g in grants if GPU in g["holds"]]
+    last_kfd = now_iso() if occ.get("pids") else st.get("last_kfd_at")   # absent: none sighted since receipts began
+    kfd_rec = {"last_kfd_at": last_kfd} if last_kfd else {}
     if not held:
         pids, v = gpu_foreign(occ)
         n = int(st.get("quiet_n") or 0) + 1 if v < GPU_FOREIGN_VRAM_MAX else 0
@@ -4567,17 +4595,17 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
             alive(x) for x in lo.get("pids") or [])
         need = 1 if own_exit else GPU_QUIET_SAMPLES
         keep = {"last_owner": lo} if lo and 1 <= n < need else {}
-        atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v, **keep})
+        atomic_json(sp, {"quiet_n": n, "at": now_iso(), "foreign_pids": pids[:20], "foreign_vram": v, **keep, **kfd_rec})
         why = None if n >= need else (
             f"device not quiet (host view): foreign KFD pids {','.join(map(str, pids[:8])) or '-'} hold {v / (1 << 30):.1f} GiB"
             if v >= GPU_FOREIGN_VRAM_MAX else f"device quiet {n}/{GPU_QUIET_SAMPLES} samples")
         if why and n == 1 and one_sample is not None:
-            rid = gpu_one_sample_row(flags, occ, cands)
+            rid = gpu_one_sample_row(flags, occ, cands, last_kfd)
             if rid:
                 one_sample.add(rid)
                 log(f"GPU-QUIET one sample for {rid}: its smoke exited, tree proven dead, no KFD owners")
         return why
-    atomic_json(sp, {"quiet_n": 0, "at": now_iso(), "last_owner": {"ids": [g["id"] for g in held], "pids": sorted(
+    atomic_json(sp, {"quiet_n": 0, "at": now_iso(), **kfd_rec, "last_owner": {"ids": [g["id"] for g in held], "pids": sorted(
         {p for g in held for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid"))
          if str(x or "").isdigit() for p in tree_pids(int(x)) | {int(x)}})}})
     for g in held:
