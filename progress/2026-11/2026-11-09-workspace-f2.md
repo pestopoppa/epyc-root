@@ -52,3 +52,17 @@ The operator caught that approved LOOP-9, PII-NM-OFFSET and LR-13 had not been e
 
 The first host handoff had real errors (crontab owner, restore-test parsing, unsafe retention) that the host owner corrected. /workspace re-synced with reset --keep; duplicate commit saved at refs/backup/workspace-local-7adf739ae.
 
+
+## Evening 2
+The Fable audit found and fixed two defects: a PII hook bypass through the nm size field (0d4658ad1) and an LR-10 cache-eviction race (orchestrator 02af4bda).
+| Item | Result |
+|---|---|
+| LR-13 | Ratified at 214ca99c7 |
+| TOKEN-REGEN | Closed from gated regens in the hub log |
+| NIB2-99 | Drift alarm landed |
+| GitHub workflows | 66 stale workflows with no file on main disabled by operator decision; LOOP-54 stays open (newest completed `tests` run on main is cancelled, F2 branches not run in 9+ days) |
+| AFC-P5.E3 r2 | Invalid: llama-server GGML_ASSERT tensor read out of bounds after 6 min, 88 of 90 blank; filed inconclusive |
+| AFC-P5.E3-FLASH-CRASH | Closed. Root cause: fused single-token decode reuses the previous graph's t_logits, which can have 0 rows (qwen4exp-fused.cpp:1883-1888, abort at llama-context.cpp:2221); inferred, not reproduced. r3 `afc-p5e3-n30-q38_flash-r3-20261109` published with GGML_FUSED_DECODE_OFF=1, smoke queued. r1 Flash scores used the fused path and are suspect beyond the blanks. |
+| New box | FUSED-DECODE-ZERO-ROW-LOGITS (AutoKernel) |
+
+Box review: engineering-hygiene-backlog (outside the refactoring track), frontier-lab-automation and the lab-reliability-ladder track. Only the crash box was newly tickable; the rest stay open on named blockers (LOOP-11/12/58 need cutover or a real crash test, NIB2-98 is opt-in until Pipeline wires launch, W3 is ongoing, AFC-P5.E3 waits for r3).
