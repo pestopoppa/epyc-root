@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:22:48Z",
+  "generated_at": "2026-11-09T15:24:08Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1590,7 +1590,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9577,
+          "line": 9578,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1603,7 +1603,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13927,
+          "line": 13928,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1637,7 +1637,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14139,
+          "line": 14140,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 16,
           "readiness": "blocked"
@@ -2561,15 +2561,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 107,
-      "dispatchable": 13,
+      "closed": 108,
+      "dispatchable": 12,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-09",
       "next_action": "Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision",
-      "open": 13,
+      "open": 12,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2616,11 +2616,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 2492,
           "name": "opendataloader-pipeline-integration",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {

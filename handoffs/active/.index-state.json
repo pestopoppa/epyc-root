@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-09",
-      "open": 13
+      "open": 12
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9577,
+          "line": 9578,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13927,
+          "line": 13928,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14139,
+          "line": 14140,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 16
@@ -1341,10 +1341,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 107,
+      "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 13,
+      "open": 12,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1387,13 +1387,13 @@
         },
         {
           "blocked": 0,
-          "closed": 10,
+          "closed": 11,
           "gates": [],
           "guarded": 0,
           "line": 2492,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
