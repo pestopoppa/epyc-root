@@ -1,0 +1,51 @@
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -7,7 +7,7 @@
+ #   via environment variables (see .env.example):
+ #     - ORCHESTRATOR_PATHS_LLM_ROOT (default: /mnt/raid0/llm)
+ #     - ORCHESTRATOR_PATHS_MODEL_BASE (default: ${LLM_ROOT}/lmstudio/models)
+-#     - ORCHESTRATOR_PATHS_LLAMA_CPP_BIN (default: ${LLM_ROOT}/llama.cpp/build/bin)
++#     - ORCHESTRATOR_PATHS_LLAMA_CPP_BIN (default: ${LLM_ROOT}/kernels/production/cpu)
+ #
+ # Model Downloads:
+ #   Models with huggingface_id can be downloaded via:
+@@ -509,7 +509,7 @@
+     template_pins_strict: false
+   binaries:
+     # Binary path - override with ORCHESTRATOR_PATHS_LLAMA_CPP_BIN env var
+-    base_dir: /mnt/raid0/llm/llama.cpp/build/bin
++    base_dir: /mnt/raid0/llm/kernels/production/cpu   # kernel STORE; consumers override it from kernel_paths.backend_dir('cpu')
+     completion: llama-completion
+     speculative: llama-speculative
+     lookup: llama-lookup
+@@ -12378,23 +12378,23 @@
+ # permanently unreachable. This one had been unreachable since it was written. Two hints for one
+ # condition, one of them dead, is strictly worse than one hint in the position that fires.
+ command_templates:
+-  speculative_decoding: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-speculative\
++  speculative_decoding: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-speculative\
+     \ \\\n  -m {model_path} \\\n  -md {draft_path} \\\n  --draft-max {k} \\\n  -t\
+     \ {threads} \\\n  -n 100 \\\n  --temp {temperature}\n"
+-  moe_expert_reduction: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-completion\
++  moe_expert_reduction: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-completion\
+     \ \\\n  -m {model_path} \\\n  --override-kv {override_key}=int:{experts} \\\n\
+     \  -t {threads} \\\n  -n 100 \\\n  --temp {temperature}\n"
+-  prompt_lookup: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-lookup\
++  prompt_lookup: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-lookup\
+     \ \\\n  -m {model_path} \\\n  --draft-max {k} \\\n  -t {threads} \\\n  -n 100\
+     \ \\\n  --temp {temperature}\n"
+-  baseline: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-completion\
++  baseline: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-completion\
+     \ \\\n  -m {model_path} \\\n  -t {threads} \\\n  -n 100 \\\n  --temp {temperature}\n"
+-  vision: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-mtmd-cli\
++  vision: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-mtmd-cli\
+     \ \\\n  -m {model_path} \\\n  --mmproj {mmproj_path} \\\n  -t {threads}\n"
+-  server_start: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-server\
++  server_start: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-server\
+     \ \\\n  -m {model_path} \\\n  -t {threads} \\\n  --host 127.0.0.1 \\\n  --port\
+     \ {port} \\\n  -c {context_length}\n"
+-  server_start_moe: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-server\
++  server_start_moe: "numactl --interleave=all \\\n  {llama_bin_dir}/llama-server\
+     \ \\\n  -m {model_path} \\\n  -t {threads} \\\n  --host 127.0.0.1 \\\n  --port\
+     \ {port} \\\n  -c {context_length} \\\n  --override-kv {override_key}=int:{experts}\n"
+ runtime_quirks:
