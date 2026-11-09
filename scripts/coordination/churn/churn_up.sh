@@ -13,11 +13,14 @@
 #                          (4) armed launchers by their recorded pid (dryrun/*/ARMED.json|RUNNING.json, lane-*.queue),
 #                          (5) the remaining zero-token loops. TERM, wait 10 s, KILL, verify with ps. `--stop --dry-run`
 #                          prints the plan only. It does NOT stop the disk janitor (disk hygiene is not inference).
+#   churn_up.sh --supervise-watchdog  (LOOP-12) the watchdog's supervisor loop, started by a normal bring-up: every 120 s, if
+#                          the keeper watchdog is down, restart it. It never starts the keeper (only the watchdog does).
+#                          --stop stops it BEFORE the watchdog. `--supervise-watchdog --dry-run` does one pass and prints.
 #   churn_up.sh --janitor=start|stop|status|dry-run   the disk janitor only (disk_janitor.sh: keeper --reap-now every
 #                          30 min + trash-sweep --older-than 1 hourly; log disk-janitor.log). A normal bring-up starts it too.
 # Start order (live): install -> residue -> watchdog -> keeper (started by the watchdog, verified here) -> dispatcher ->
 # backlog-gen -> flow-scoreboard -> disk-trend -> filing-watch. A component already running (pidfile pid, or ANY pid whose
-# argv holds its exact installed path) is never started twice.
+# argv holds its exact installed path) is never started twice. Also started: watchdog-guard (after the watchdog).
 #
 # Rules it obeys (do not weaken): liveness is `ps -o pid= -p <pid>` + argv match, never a process-name search or kill; a running
 # .sh is never edited in place (installs go through a temp file + mv, so a running bash keeps its old inode) and never
@@ -36,13 +39,15 @@ TMUX_WINDOWS="claude codex-gen"
 MODE=live
 STOP=0
 JAN=""
+SUPERVISE=0
 for a in "$@"; do case "$a" in
   --dry-run) MODE=dry;;
   --status) MODE=status;;
   --stop) STOP=1;;
+  --supervise-watchdog) SUPERVISE=1;;
   --janitor=start|--janitor=stop|--janitor=status|--janitor=dry-run) JAN=${a#--janitor=};;
-  -h|--help) sed -n 2,28p "$0"; exit 0;;
-  *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
+  -h|--help) sed -n 2,33p "$0"; exit 0;;
+  *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]|--supervise-watchdog [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
 esac; done
 [ $MODE = status ] && [ $STOP = 1 ] && { echo "usage: --status and --stop are exclusive" >&2; exit 2; }
 KEEPER=ws58-calendar-keeper-v13.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
@@ -265,6 +270,28 @@ PY
 component_pids() {  # component_pids <pidfile> <marker> <path>
   local p; p=$(pid_of "$F/$1"); { is_proc "$p" "$2" && echo "$p"; for q in $(argv_pids "$3"); do echo "$q"; done; } | sort -un | tr '\n' ' '
 }
+# ---- LOOP-12: the watchdog's supervisor. Its exact-path key is this script, which every churn_up run shares, so a guard is
+# only an exact-argv pid that ALSO carries --supervise-watchdog (a concurrent --status is not a guard).
+GUARD_PF=ws58-watchdog-guard.pid
+GUARD_FLAG=--supervise-watchdog
+SELF=$CH/churn_up.sh
+guard_pids() {
+  local q; { q=$(pid_of "$F/$GUARD_PF"); is_proc "$q" "$GUARD_FLAG" && echo "$q"
+    for q in $(argv_pids "$SELF"); do [[ $(ps -o args= -p "$q" 2>/dev/null || true) == *"$GUARD_FLAG"* ]] && echo "$q"; done; } | sort -un | tr '\n' ' '
+}
+ensure_watchdog_once() {  # idempotent: pidfile+argv, then exact-argv; never touches the keeper
+  local pf mk path p dup; IFS='|' read -r pf mk path <<< "$(loop_field watchdog)"
+  p=$(pid_of "$F/$pf"); is_proc "$p" "$mk" && return 0
+  dup=$(argv_pids "$path"); [ -n "$dup" ] && return 0
+  [ -f "$path" ] || { warn "watchdog-guard: $path is not installed; nothing to start"; return 0; }
+  start_bg "$F/$pf" "$F" bash "$path"
+}
+ensure_guard() {
+  local g; g=$(guard_pids)
+  if [ -n "$g" ]; then say "  watchdog-guard: running pid(s) $g"; return; fi
+  start_bg "$F/$GUARD_PF" "$REPO" bash "$SELF" "$GUARD_FLAG"
+}
+stop_guard() { local p; for p in $(guard_pids); do stop_pid watchdog-guard "$p"; done; }
 wait_keeper() {  # the watchdog starts the keeper on its first pass; verify (do not race it with a second start)
   local i k K; K=$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)
   if [ $MODE = dry ]; then say "  keeper: [dry-run] the watchdog would start ${K:-<.current missing>} (from .current); churn_up would wait <=30 s for ws58-calendar-keeper.pid"; return; fi
@@ -283,7 +310,7 @@ ensure_loops() {
       if [ -n "$dup" ]; then warn "$n: already running as pid(s) $dup (argv holds $path) but pidfile $pf says '${p:-none}': NOT starting a duplicate"
       else [ -n "$p" ] && say "  $n: pidfile pid $p is dead or not $mk"; start_bg "$F/$pf" "$cwd" $cmd; fi
     fi
-    [ "$n" = watchdog ] && wait_keeper
+    [ "$n" = watchdog ] && { wait_keeper; ensure_guard; }
   done
   ensure_shadow
 }
@@ -314,7 +341,7 @@ loop_field() { local name=$1 l n pf mk cwd cmd path; for l in "${LOOPS[@]}"; do 
 stop_loop() { local pf mk path p; IFS='|' read -r pf mk path <<< "$(loop_field "$1")"; for p in $(component_pids "$pf" "$mk" "$path"); do stop_pid "$1" "$p"; done; }
 do_stop() {
   say "== stop 1/5: dispatcher"; stop_loop dispatcher
-  say "== stop 2/5: keeper watchdog(s), then keeper"; stop_loop watchdog
+  say "== stop 2/5: watchdog guard, keeper watchdog(s), then keeper"; stop_guard; stop_loop watchdog   # guard first: it would restart the watchdog
   local k f; k=$(pid_of "$F/ws58-calendar-keeper.pid"); is_proc "$k" ws58-calendar-keeper && stop_pid keeper "$k"
   for f in "$F"/ws58-calendar-keeper*.sh; do for k in $(argv_pids "$f"); do
     [ "$k" = "$(pid_of "$F/ws58-calendar-keeper.pid")" ] && [ $MODE != dry ] && continue
@@ -347,6 +374,7 @@ status_loops() {
     else d=$(argv_pids "$path"); if [ -n "$d" ]; then st="UP WITHOUT PIDFILE: pid(s) $d hold $path (pidfile '${p:-none}')"; else st="DOWN (pidfile pid '${p:-none}')"; fi; RC=1; fi
     printf '  %-16s %-8s %s\n' "$n" "${p:-none}" "$st"
   done
+  p=$(guard_pids); if [ -n "$p" ]; then printf '  %-16s %s\n' watchdog-guard "UP pid(s) $p"; else printf '  %-16s DOWN (restart: churn_up.sh)\n' watchdog-guard; RC=1; fi
   p=$(pid_of "$SHADOW_OUT/shadow.pid")
   if is_proc "$p" run_shadow.sh; then printf '  %-16s %-8s UP   since %s\n' rowflow2-shadow "$p" "$(ps -o lstart= -p "$p")"; else printf '  %-16s %-8s DOWN (restart: churn_up.sh)\n' rowflow2-shadow "${p:-none}"; RC=1; fi
   p=$(pid_of "$F/ws58-calendar-keeper.pid")
@@ -428,6 +456,9 @@ EOF
 # ---------------------------------------------------------------- main
 say "churn_up $MODE  $(date -u +%FT%TZ)  repo=$REPO ($(git -C "$REPO" rev-parse --short HEAD 2>/dev/null)) flags=$F"
 [ -d "$F" ] || { [ $MODE = live ] && mkdir -p "$F" || { fail "$F missing"; }; }
+if [ $SUPERVISE = 1 ]; then  # LOOP-12: the watchdog's supervisor loop (one pass under --dry-run)
+  while :; do ensure_watchdog_once; [ $MODE = dry ] && exit $RC; RC=0; sleep 120; done
+fi
 if [ -n "$JAN" ]; then  # the disk janitor alone; never touches inference components
   case $JAN in
     start) install_one "disk_janitor.sh" "$CH/disk_janitor.sh"; p=$(pid_of "$F/disk-janitor.pid")
