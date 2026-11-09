@@ -8,6 +8,8 @@
 #                 manifests + the idle rule at REAP_IDLE_DAYS=1, every keeper guard intact). This is the ONLY scheduled reaper:
 #                 the keeper loop no longer reaps (operator 2026-11-03). Skipped while the reap stamp
 #                 (ws58-keeper-state/reap-last, touched by every --reap-now pass, e.g. a manual one) is younger than 30 min.
+#                 Also skipped while a quiet-host grant (holds q0-q3 + gpu-quiet) is live, because a reap degrades its timing,
+#                 unless free disk is under JANITOR_REAP_DISK_FLOOR_GIB (150, the keeper's pause floor). --once still reaps.
 #   every 60 min  `trash-sweep.sh --older-than 1` for /mnt/raid0/llm/.trash and, if it exists, /mnt/raid0/llm/.trash-reap.
 #   every 30 min  LINK: filing.py autolink --apply (zero-token: an ended-unfiled row is FILED when exactly ONE origin/main commit ticks or
 #                 annotates a handoff box naming its id; ambiguous matches are listed, never filed; operator 2026-11-07).
@@ -62,6 +64,7 @@ LIFECYCLE_STAMP=${JANITOR_LIFECYCLE_STAMP:-$F/ws58-keeper-state/lifecycle-last}
 WT_MAX=${JANITOR_WT_MAX:-20}; KGC_MAX=${JANITOR_KGC_MAX:-10}; KGC_MIN_AGE_D=${JANITOR_KGC_MIN_AGE_D:-7}
 LEASE_TTL_D=${JANITOR_LEASE_TTL_D:-14}
 CODEX_KEEP_DAYS=${JANITOR_CODEX_KEEP_DAYS:-7}; COMGR_MIN_AGE_D=${JANITOR_COMGR_MIN_AGE_D:-3}
+REAP_DISK_FLOOR_GIB=${JANITOR_REAP_DISK_FLOOR_GIB:-150}
 TICK_S=${JANITOR_TICK_S:-60}
 MODE=loop
 case "${1:-}" in
@@ -78,6 +81,21 @@ log() {
 }
 free_line() { log "FREE $(df -B1G --output=avail "$DISK" 2>/dev/null | tail -1 | tr -d ' ')GiB on $DISK"; }
 
+quiet_host_grant() {  # print the id of a live quiet-host grant (holds all four quarters and gpu-quiet), if any
+  local g first holds end t ok
+  for g in "$F"/grants/*.grant; do
+    [ -f "$g" ] || continue
+    IFS= read -r first < "$g" || true
+    holds=$(printf '%s\n' "$first" | sed -n 's/.*holds=\([^ ]*\).*/\1/p')
+    end=$(printf '%s\n' "$first" | sed -n 's/.* end=\([^ ]*\).*/\1/p')
+    ok=1
+    for t in q0 q1 q2 q3 gpu-quiet; do case ",$holds," in *",$t,"*) ;; *) ok=0;; esac; done
+    [ "$ok" = 1 ] || continue
+    if [ -n "$end" ] && [ "$(date -d "$end" +%s 2>/dev/null || echo 0)" -lt "$(date +%s)" ]; then continue; fi  # an expired leftover must not stop reaping
+    basename "$g" .grant; return 0
+  done
+}
+
 reap() {  # reap [force]: the keeper's reap-only pass, unless the keeper reaped within REAP_EVERY_S
   local age rc=0
   if [ "$MODE" = dry ]; then
@@ -86,6 +104,14 @@ reap() {  # reap [force]: the keeper's reap-only pass, unless the keeper reaped 
   [ -f "$KEEPER" ] || { log "REAP-SKIP keeper $KEEPER missing"; return 0; }
   age=$(( $(date +%s) - $(stat -c %Y "$STAMP" 2>/dev/null || echo 0) ))
   if [ "${1:-}" != force ] && [ "$age" -lt "$REAP_EVERY_S" ]; then log "REAP-SKIP keeper reaped ${age}s ago"; return 0; fi
+  if [ "${1:-}" != force ]; then
+    local qg avail; qg=$(quiet_host_grant)
+    if [ -n "$qg" ]; then
+      avail=$(df -B1G --output=avail "$DISK" 2>/dev/null | tail -1 | tr -d ' ')
+      if [ "${avail:-0}" -ge "$REAP_DISK_FLOOR_GIB" ]; then log "REAP-SKIP quiet-host grant $qg live (${avail}GiB free)"; return 0; fi
+      log "REAP-OVERRIDE quiet-host grant $qg live but only ${avail:-?}GiB free (floor ${REAP_DISK_FLOOR_GIB}GiB): reaping"
+    fi
+  fi
   log "REAP start: bash $KEEPER --reap-now (decisions go to ws58-calendar-keeper.log)"
   bash "$KEEPER" --reap-now >> "$LOG" 2>&1 || rc=$?
   log "REAP end rc=$rc"

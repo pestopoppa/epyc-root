@@ -130,5 +130,50 @@ class GitReapable(unittest.TestCase):
         self.assertFalse(self.f(empty)[0])                         # no .git at all: not this rule's business
 
 
+class JanitorQuietHostSkip(unittest.TestCase):
+    """The scheduled reap stays off a live quiet-host grant unless disk is under the floor."""
+
+    def run_reap(self, grant, floor, arg=""):
+        with tempfile.TemporaryDirectory() as td:
+            os.makedirs(os.path.join(td, "grants"))
+            os.makedirs(os.path.join(td, "ws58-keeper-state"))
+            if grant:
+                with open(os.path.join(td, "grants", "r1.grant"), "w") as f:
+                    f.write(grant + "\n")
+            keeper = os.path.join(td, "keeper.sh")
+            with open(keeper, "w") as f:
+                f.write("echo KEEPER-RAN\n")
+            j = open(JANITOR).read()
+            funcs = "".join(re.search(r"^%s\(\) \{.*?^\}\n" % n, j, re.S | re.M).group(0) for n in ("quiet_host_grant", "reap"))
+            sh = ('set -euo pipefail; MODE=loop; F=%s; KEEPER=%s; STAMP=%s/none; DISK=%s; REAP_EVERY_S=1800; LOG=/dev/stdout; '
+                  'REAP_DISK_FLOOR_GIB=%d; log() { echo "$*"; }\n%s\nreap %s\n' % (td, keeper, td, td, floor, funcs, arg))
+            r = subprocess.run(["bash", "-c", sh], capture_output=True, text=True, timeout=30)
+            self.assertEqual(r.returncode, 0, r.stderr)
+            return r.stdout
+
+    QUIET = "regions=0-95 start=2026-01-01T00:00Z end=2099-01-01T00:00Z holds=gpu-quiet,q0,q1,q2,q3 id=r1"
+
+    def test_skips_during_quiet_host(self):
+        out = self.run_reap(self.QUIET, 0)
+        self.assertIn("REAP-SKIP quiet-host grant r1", out)
+        self.assertNotIn("KEEPER-RAN", out)
+
+    def test_disk_floor_overrides(self):
+        out = self.run_reap(self.QUIET, 10 ** 9)
+        self.assertIn("REAP-OVERRIDE", out)
+        self.assertIn("KEEPER-RAN", out)
+
+    def test_force_still_reaps(self):
+        self.assertIn("KEEPER-RAN", self.run_reap(self.QUIET, 0, "force"))
+
+    def test_quarter_grant_does_not_skip(self):
+        g = self.QUIET.replace("gpu-quiet,q0,q1,q2,q3", "q0,q1")
+        self.assertIn("KEEPER-RAN", self.run_reap(g, 0))
+
+    def test_expired_grant_does_not_skip(self):
+        g = self.QUIET.replace("2099", "2020")
+        self.assertIn("KEEPER-RAN", self.run_reap(g, 0))
+
+
 if __name__ == "__main__":
     unittest.main()
