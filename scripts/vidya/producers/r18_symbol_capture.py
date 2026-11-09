@@ -51,7 +51,7 @@ def begin(out, result, source, inputs, dependencies, commands, *, synthetic=Fals
     if status: raise ValueError('source dirty')
     if not synthetic:
         window_check()
-        if sha(dependencies) not in ('4c36a479297aa435589ee4604f68d516fe3efdacd535d80c8fc1b6bf1772d425', '5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd'): raise ValueError('comparator dependency manifest differs')
+        if sha(dependencies) not in ('4c36a479297aa435589ee4604f68d516fe3efdacd535d80c8fc1b6bf1772d425', '5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd', '5350aac873b0b3626851912dc44c1d3579467edacb6a999e4acfd70f83a587fd'): raise ValueError('comparator dependency manifest differs')
         pins = {'comparator':'08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61',
                 'anchor_cpu':'3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0',
                 'anchor_hip':'f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079'}

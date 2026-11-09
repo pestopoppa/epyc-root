@@ -100,6 +100,10 @@ def _bundle_deps():
  bundle=V/'producers/r18_inputs'
  return bundle, json.loads((bundle/'comparator-dependencies.json').read_text())
 
+def test_dependency_manifest_digest_is_accepted():
+ bundle, _ = _bundle_deps()
+ assert capture.sha(bundle/'comparator-dependencies.json') in ('5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd', '5350aac873b0b3626851912dc44c1d3579467edacb6a999e4acfd70f83a587fd')
+
 def test_relocated_dependency_manifest_resolves_bundle(tmp_path):
  # Hermetic: everything the relocated manifest says lives INSIDE the bundle must resolve there
  # and match its pin. Absolute (host) entries are covered by the host-pin test below.

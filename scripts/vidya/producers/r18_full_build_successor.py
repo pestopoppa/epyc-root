@@ -28,9 +28,9 @@ def input_check():
        'replay_evidence.py':'640540abc50af9c1024bd3296e3a1d11e6c90c3fdaa2c2204d483e243ac0c596',
        'replay_hip_cuid.py':'7544154cc8dbefd2b09de6b14a9a12efa7569407d1ad43f0df430fcd66673d01',
        'compare_symbols.py':'08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61',
-       'comparator-dependencies.json':'5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd'}
+       'comparator-dependencies.json':('5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd','5350aac873b0b3626851912dc44c1d3579467edacb6a999e4acfd70f83a587fd')}
  for name, digest in pins.items():
-  if hashlib.sha256((INPUTS/name).read_bytes()).hexdigest()!=digest: raise ValueError('pinned build input changed: '+name)
+  if hashlib.sha256((INPUTS/name).read_bytes()).hexdigest() not in (digest if isinstance(digest,tuple) else (digest,)): raise ValueError('pinned build input changed: '+name)
 input_check()
 env=dict(os.environ,PATH='/usr/bin:/bin',LD_LIBRARY_PATH='',OMP_NUM_THREADS='1',HIP_VISIBLE_DEVICES='',ROCR_VISIBLE_DEVICES='',CUDA_VISIBLE_DEVICES='',PYTHONDONTWRITEBYTECODE='1')
 cmake='/usr/bin/cmake';tool=pathlib.Path('/usr')

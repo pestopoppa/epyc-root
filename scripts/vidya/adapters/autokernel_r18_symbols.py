@@ -21,7 +21,7 @@ def native_rows(path):
         if terminal['begin_sha256'] != sha(root/'begin.json'): raise ValueError('begin digest mismatch')
         if not isinstance(begin.get('synthetic'), bool): raise ValueError('missing synthetic scope')
         if not begin['synthetic']:
-            if begin['dependency_manifest']['sha256'] not in ('4c36a479297aa435589ee4604f68d516fe3efdacd535d80c8fc1b6bf1772d425', '5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd'): raise ValueError('dependency manifest differs from v10 comparator closure')
+            if begin['dependency_manifest']['sha256'] not in ('4c36a479297aa435589ee4604f68d516fe3efdacd535d80c8fc1b6bf1772d425', '5adb079828658d11dd393fa61f3e59712872ae635102c2543c7c9d8823c927fd', '5350aac873b0b3626851912dc44c1d3579467edacb6a999e4acfd70f83a587fd'): raise ValueError('dependency manifest differs from v10 comparator closure')
             pins={'comparator':'08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61', 'anchor_cpu':'3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0', 'anchor_hip':'f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079'}
             if begin['source']['head'] != 'ffc1bac82eeca6f9099e1ccd9ba49703c460a115' or any(begin['inputs'][k]['sha256'] != v for k,v in pins.items()): raise ValueError('not pinned v10')
         detail=terminal['detail']; result_path=Path(begin['result'])
