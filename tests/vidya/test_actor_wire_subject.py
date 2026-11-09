@@ -28,7 +28,12 @@ def test_exact_identity_and_no_inference_applicability(tmp_path):
     assert subject.matches_native(result, native)
     assert result['producer'] == record['producer'] and result['request'] == record['request']
     assert set(result) == {'schema','producer','request','seat_digest','subject_sha256'}
-    assert not wire.project(native).applicability
+    # Consumer-scoped since VB-AK-WIRE-PLANNER-TIER (e9f943781): the tuple names its consumer,
+    # but must still carry NO inference applicability (model/device/backend) -- same contract
+    # as test_autokernel_actor_wire_adapter.
+    applicability = wire.project(native).applicability
+    assert applicability == {'consumer': wire.PLANNER_CONSUMER, 'scope_basis': 'native'}
+    assert not {'model_file', 'model_sha256', 'device', 'backend'} & set(applicability)
     result['request']['suite']['new.py'] = 'f'*64
     assert record['request']['suite'] != result['request']['suite']  # no mutable alias
 

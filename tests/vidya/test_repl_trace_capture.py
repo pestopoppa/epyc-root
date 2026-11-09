@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -63,8 +64,18 @@ def test_actual_app_spill_events_are_accepted(tmp_path, monkeypatch):
     import hashlib
     from types import SimpleNamespace
 
-    app = '/workspace/repos/epyc-orchestrator'
-    source = subprocess.check_output(['git', '-C', app, 'show', '488b31c96c6c148768508b3dcaefcb6c4c297664:src/repl_environment/trace_capture.py'], text=True)
+    # The genuine producer bytes are read from a git object, never from a moving working tree.
+    # CI checks out exactly this commit and exports EPYC_REPL_TRACE_SOURCE_ROOT (a configured but
+    # broken root FAILS); with no root configured the default clone is used and, if it does not
+    # hold the commit (a hosted runner), the test is skipped rather than reported as a defect.
+    configured = os.environ.get('EPYC_REPL_TRACE_SOURCE_ROOT')
+    app = configured or '/workspace/repos/epyc-orchestrator'
+    spec = '488b31c96c6c148768508b3dcaefcb6c4c297664:src/repl_environment/trace_capture.py'
+    shown = subprocess.run(['git', '-C', app, 'show', spec], capture_output=True, text=True)
+    if shown.returncode != 0 and not configured:
+        pytest.skip('orchestrator clone with the pinned REPL trace-capture commit is unavailable')
+    assert shown.returncode == 0, shown.stderr
+    source = shown.stdout
     ns = {'__file__': app + '/src/repl_environment/trace_capture.py', '__name__': 'native_trace_capture'}
     exec(compile(source, ns['__file__'], 'exec'), ns)
     monkeypatch.setenv('EPYC_REPL_TRACE_CAPTURE', '1')

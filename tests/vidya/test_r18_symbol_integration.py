@@ -95,10 +95,28 @@ def test_finalize_refuses_stop_deadline_and_failed_parent(tmp_path, monkeypatch)
  assert not (out/'terminal.json').exists()
 
 
-def test_relocated_dependency_manifest_resolves_bundle(tmp_path):
+def _bundle_deps():
  bundle=V/'producers/r18_inputs'
- deps=json.loads((bundle/'comparator-dependencies.json').read_text())
- for key, expected in deps.items():
-  path=bundle/'perl-lib'/key.removeprefix('@bundle/') if key.startswith('@bundle/') else Path(key)
-  assert capture.sha(path)==expected
+ return bundle, json.loads((bundle/'comparator-dependencies.json').read_text())
+
+def test_relocated_dependency_manifest_resolves_bundle(tmp_path):
+ # Hermetic: everything the relocated manifest says lives INSIDE the bundle must resolve there
+ # and match its pin. Absolute (host) entries are covered by the host-pin test below.
+ bundle, deps = _bundle_deps()
+ bundled={k:v for k,v in deps.items() if k.startswith('@bundle/')}
+ assert bundled
+ for key, expected in bundled.items():
+  assert capture.sha(bundle/'perl-lib'/key.removeprefix('@bundle/'))==expected
  assert capture.sha(bundle/'compare_symbols.py')=='08a5e9e15f8ac07d573d8e0c8c38ec4aef6d78820032ec4e2eb0325a3447bf61'
+
+def test_relocated_dependency_manifest_host_pins_match_live_host():
+ # Host-state dependency, marked as such: the manifest also pins live host files (research-repo
+ # autokernel modules, ROCm, perl, python). A hosted CI runner has none of them, so an ABSENT file
+ # is skipped; a PRESENT file whose digest differs is real drift and must fail, because
+ # capture.begin() refuses the same mismatch at run time.
+ bundle, deps = _bundle_deps()
+ host={k:v for k,v in deps.items() if not k.startswith('@bundle/')}
+ present={k:v for k,v in host.items() if Path(k).exists()}
+ if not present: pytest.skip('no pinned host dependency present on this machine (hosted CI runner)')
+ drift=[k for k,v in present.items() if capture.sha(Path(k))!=v]
+ assert not drift, f'pinned host dependencies drifted from comparator-dependencies.json: {drift}'

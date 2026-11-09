@@ -81,6 +81,18 @@ jobs:
           path: .ci-orchestrator-analysis-producer
           persist-credentials: false
 
+      - name: Checkout pinned REPL trace-capture producer
+        # tests/vidya/test_repl_trace_capture.py executes the genuine producer bytes of THIS
+        # commit (it is in neither orchestrator pin above, and `/workspace/repos/...` does not
+        # exist on a hosted runner). Sparse: only the one directory is needed.
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 488b31c96c6c148768508b3dcaefcb6c4c297664
+          path: .ci-repl-trace-producer
+          sparse-checkout: src/repl_environment
+          persist-credentials: false
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -98,6 +110,7 @@ jobs:
           EXL3_TEST_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/kernel_rnd/exl3/evidence.py
           EVIDENCE_DURABILITY_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/validate/check_evidence_durability.py
           EPYC_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-producer
+          EPYC_REPL_TRACE_SOURCE_ROOT: ${{ github.workspace }}/.ci-repl-trace-producer
           EPYC_MF_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-analysis-producer
           EPYC_EVAL_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-analysis-producer
           PYTHONPATH: ${{ github.workspace }}/.ci-orchestrator-producer:${{ github.workspace }}

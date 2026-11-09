@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import os
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -227,6 +228,10 @@ def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch, cutof
                         'SOURCE_SEALS':tuple((str(p),digest(p.read_bytes())) for p in needed),
                         'GRANTS_DIR':str(grant_dir),'HOLD_DIR':str(tmp_path)}.items():
         monkeypatch.setattr(enrollment, name, value)
+    # The launcher refuses any Python execution override (that guard is the point of the test).
+    # CI exports PYTHONPATH for the whole pytest step, so the test must run the launcher in the
+    # clean environment production gives it -- sys.path is already populated in-process.
+    for name in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP', 'PYTHONINSPECT'): monkeypatch.delenv(name, raising=False)
     values = {'M4_PLAN_CELL':'c','FILLER_ID':'grant-1','FILLER_NEEDGPU':'1',
               'FILLER_END':str(int(end_dt.timestamp())), 'FILLER_DEADLINE':str(int(end_dt.timestamp())-1),
               'FILLER_STOPFILE':str(tmp_path/'STOP'), 'M4_WATCH_DIR':str(watch_dir),
@@ -256,6 +261,16 @@ def test_actual_launcher_guarded_help_without_model(tmp_path, monkeypatch, cutof
     if not cutoff:
         with pytest.raises(RuntimeError, match='fresh attempt'):
             launcher.main()
+
+
+@pytest.mark.parametrize("name", ['PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP', 'PYTHONINSPECT'])
+def test_launcher_refuses_python_execution_override(monkeypatch, name):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_gpu_speed'))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/benchmark/m4_cpu_ownership'))
+    import launcher
+    monkeypatch.setenv(name, '/somewhere')
+    with pytest.raises(RuntimeError, match='unbound Python execution override'):
+        launcher.main()
 
 
 def test_native_request_batch_fake_http_and_partial_records(tmp_path):
@@ -480,6 +495,11 @@ def test_prehashed_custody_binds_content_receipt_and_file_identity(tmp_path):
     item={'path':str(model),'sha256':evidence['sha256'],'custody':{'path':str(out),'sha256':digest(out.read_bytes())}}
     verify_plan_file(item)
     model.write_bytes(b'changed bytes')
+    # Same inode and same size (13 bytes): identity differs only by mtime/ctime, and two writes
+    # inside one coarse filesystem timestamp tick can leave them equal -- a flake, not a defect
+    # (custody assumes an immutable file). Force a distinct mtime so the mutation is observable.
+    stamp = model.stat().st_mtime_ns + 2_000_000_000
+    os.utime(model, ns=(stamp, stamp))
     with pytest.raises(ProjectionError, match='custody mismatch'):
         verify_plan_file(item)
     out.write_text('{}')
