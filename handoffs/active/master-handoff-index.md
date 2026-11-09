@@ -143,10 +143,10 @@ nobody is moving.
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
 | inference-research | 13 | 609 | 52 | 2026-11-03 |
-| pipeline-integration | 1 | 12 | 1 | 2026-11-07 |
+| pipeline-integration | 1 | 13 | 0 | 2026-11-09 |
 | research-evaluation | 5 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
-| routing-and-optimization | 9 | 494 | 14 | 2026-11-03 |
+| routing-and-optimization | 9 | 504 | 14 | 2026-11-03 |
 | user-facing-harness | 2 | 87 | 18 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 

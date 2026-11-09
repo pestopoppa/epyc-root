@@ -46,7 +46,7 @@ AutoPilot proposes and evaluates numeric, prompt, routing, and code candidates t
 
 - [ ] **AP-HOLD-RELEASE-REVIEW** (added 2026-11-09): Immediately before the operator lifts the Autopilot hold, re-review every box that waits on the hold. Re-read each box's premise against the then-current kernel, lineup, era and code before any run is armed; tick, rewrite or close as needed. Boxes to re-review:
   - **RTG-02 (this file) NEEDS-RUN boxes:** AP-27, BSV-2, BSV-3, AP-19b, AP-29, AP-48, AP-WM-1b, AP-CH-2, BT-5b, AP-54b, AP-56, AP-70, AP-DGM-PROV, AP-DGM-SEL, SEQ-SHINKA-1, AP-55-ARM, BEP-2, DCP-6, W8, W8b, real_suite_v1 discriminability, W6f, W5 regime-profiled offered load, SEQ-3.
-  - **RTG-09:** DAR-LAT-1, DAR-LAT-2, DAR-LAT-3, DAR-LAT-3i, P3-3, P3-4, LRC-1, TD-28.
+  - **RTG-09:** DAR-LAT-1, DAR-LAT-2, DAR-LAT-3, DAR-LAT-3i, P3-3, P3-4, LRC-1, TD-28, P4-2.
   - **EVL-47:** VB-AP-FIRST-CYCLE, VB-AP-SPINUP-AP3-SCOPED, VB-CANARY-B-FRONTIER, SC14-B, VB-AP70-ROTATION-READ, P1-PHASE2, and the Autopilot half of VB-REFOCUS-NONEMPTY-READ-PROOF.
   - **Restart-preconditions checklist (from the 2026-11-09 audit; each must be re-proved at hold-lift):**
     - [ ] Operator explicitly lifts HOLD (P0.1) AFTER the next production kernel promotion + stack reorg.

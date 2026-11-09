@@ -7,10 +7,10 @@
       "open": 609
     },
     "pipeline-integration-index.md": {
-      "blocked": 1,
+      "blocked": 0,
       "handoffs": 1,
-      "oldest_advance": "2026-11-07",
-      "open": 12
+      "oldest_advance": "2026-11-09",
+      "open": 13
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-03",
-      "open": 494
+      "open": 504
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -218,11 +218,11 @@
       ]
     },
     "autopilot-program.md": {
-      "blocked": 1,
-      "closed": 286,
+      "blocked": 2,
+      "closed": 289,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 74,
+      "last_advanced": "2026-11-09",
+      "open": 82,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -231,34 +231,44 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 361,
+      "total": 373,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 42,
+          "closed": 44,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 47
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
           "gates": [],
           "guarded": 0,
           "line": 19,
           "markers": 1,
           "name": "autopilot-program",
-          "open": 37
+          "open": 0
         },
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 997,
+          "line": 1037,
           "markers": 1,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1405,
+          "line": 1447,
           "markers": 1,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1
@@ -268,7 +278,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2102,
+          "line": 2144,
           "markers": 1,
           "name": "batched-edit-parallel-apply",
           "open": 2
@@ -278,7 +288,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2238,
+          "line": 2280,
           "markers": 1,
           "name": "bep-dcp-falsification-harness",
           "open": 1
@@ -288,27 +298,27 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2307,
+          "line": 2350,
           "markers": 1,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2
         },
         {
           "blocked": 0,
-          "closed": 6,
+          "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2500,
+          "line": 2544,
           "markers": 1,
           "name": "evidence-plane-instrument-repair",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 2657,
+          "line": 2704,
           "markers": 1,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1
@@ -318,7 +328,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 3041,
+          "line": 3089,
           "markers": 1,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1
@@ -328,7 +338,7 @@
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 3433,
+          "line": 3481,
           "markers": 1,
           "name": "objective-task-rate-goodput",
           "open": 5
@@ -338,7 +348,7 @@
           "closed": 47,
           "gates": [],
           "guarded": 0,
-          "line": 3776,
+          "line": 3826,
           "markers": 1,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4
@@ -348,7 +358,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 4031,
+          "line": 4081,
           "markers": 1,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7
@@ -371,7 +381,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4261,
+          "line": 4315,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
           "open": 5
@@ -394,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4711,
+          "line": 4769,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -404,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 4986,
+          "line": 5044,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -506,11 +516,11 @@
       "total": 54
     },
     "context-and-token-economy.md": {
-      "blocked": 2,
-      "closed": 150,
+      "blocked": 1,
+      "closed": 153,
       "guarded": 0,
-      "last_advanced": "2026-11-05",
-      "open": 47,
+      "last_advanced": "2026-11-09",
+      "open": 43,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -519,24 +529,24 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 199,
+      "total": 197,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 17,
+          "closed": 18,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 13
+          "open": 11
         },
         {
           "blocked": 0,
           "closed": 18,
           "gates": [],
           "guarded": 0,
-          "line": 255,
+          "line": 286,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 8
@@ -546,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 452,
+          "line": 483,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -556,17 +566,17 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 718,
+          "line": 749,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
         },
         {
-          "blocked": 1,
-          "closed": 10,
+          "blocked": 0,
+          "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1213,
+          "line": 1244,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -576,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1750,
+          "line": 1781,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -586,27 +596,27 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2512,
+          "line": 2543,
           "markers": 1,
           "name": "reasoning-effort-levels",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 0,
-          "closed": 55,
+          "closed": 56,
           "gates": [],
           "guarded": 0,
-          "line": 2938,
+          "line": 2970,
           "markers": 1,
           "name": "tool-output-compression",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3589,
+          "line": 3621,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2
@@ -1330,11 +1340,11 @@
       ]
     },
     "knowledge-pipelines.md": {
-      "blocked": 1,
-      "closed": 106,
+      "blocked": 0,
+      "closed": 107,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 12,
+      "last_advanced": "2026-11-09",
+      "open": 13,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1343,7 +1353,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 119,
+      "total": 120,
       "tracks": [
         {
           "blocked": 0,
@@ -1353,54 +1363,54 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 1
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1104,
+          "line": 1118,
           "markers": 1,
           "name": "colbert-reranker-web-research",
           "open": 1
         },
         {
           "blocked": 0,
-          "closed": 10,
+          "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1852,
+          "line": 1868,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 2473,
+          "line": 2491,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 6
+          "open": 5
         },
         {
-          "blocked": 1,
+          "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2581,
+          "line": 2603,
           "markers": 1,
           "name": "searxng-search-backend",
-          "open": 0
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2950,
+          "line": 2972,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 1
@@ -1537,7 +1547,7 @@
       "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 40,
+      "open": 41,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1546,24 +1556,24 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 157,
+      "total": 158,
       "tracks": [
         {
           "blocked": 0,
           "closed": 56,
           "gates": [],
           "guarded": 0,
-          "line": 25,
+          "line": 36,
           "markers": 1,
           "name": "memory-program",
-          "open": 14
+          "open": 15
         },
         {
           "blocked": 0,
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 879,
+          "line": 903,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1573,7 +1583,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1333,
+          "line": 1357,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1587,7 +1597,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1790,
+          "line": 1815,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2277,10 +2287,10 @@
     },
     "routing-program.md": {
       "blocked": 1,
-      "closed": 177,
+      "closed": 179,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 65,
+      "last_advanced": "2026-11-09",
+      "open": 70,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2289,24 +2299,34 @@
       },
       "row_id": "RTG-09",
       "state": "active",
-      "total": 243,
+      "total": 250,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 42,
+          "closed": 0,
+          "gates": null,
+          "guarded": 0,
+          "line": 0,
+          "markers": 0,
+          "name": "(untracked)",
+          "open": 3
+        },
+        {
+          "blocked": 0,
+          "closed": 43,
           "gates": [],
           "guarded": 0,
-          "line": 15,
+          "line": 34,
           "markers": 1,
           "name": "routing-program",
-          "open": 15
+          "open": 16
         },
         {
           "blocked": 0,
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 536,
+          "line": 573,
           "markers": 1,
           "name": "internal-interaction-lifecycle",
           "open": 4
@@ -2316,7 +2336,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1007,
+          "line": 1048,
           "markers": 1,
           "name": "learned-routing-controller",
           "open": 7
@@ -2326,7 +2346,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2266,
+          "line": 2316,
           "markers": 1,
           "name": "model-capability-descriptors",
           "open": 0
@@ -2336,7 +2356,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2342,
+          "line": 2392,
           "markers": 1,
           "name": "retrain-routing-models",
           "open": 0
@@ -2346,7 +2366,7 @@
           "closed": 21,
           "gates": [],
           "guarded": 0,
-          "line": 2475,
+          "line": 2525,
           "markers": 1,
           "name": "tri-role-coordinator-architecture",
           "open": 2
@@ -2356,7 +2376,7 @@
           "closed": 26,
           "gates": [],
           "guarded": 0,
-          "line": 2775,
+          "line": 2828,
           "markers": 1,
           "name": "typed-decision-plane",
           "open": 26
@@ -2366,29 +2386,29 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 3489,
+          "line": 3568,
           "markers": 1,
           "name": "x-mas-text-routing",
           "open": 0
         },
         {
           "blocked": 0,
-          "closed": 6,
+          "closed": 7,
           "gates": [
             "UFH-01"
           ],
           "guarded": 0,
-          "line": 3570,
+          "line": 3649,
           "markers": 1,
           "name": "routing-intelligence",
-          "open": 8
+          "open": 9
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 4045,
+          "line": 4137,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3
@@ -2663,7 +2683,7 @@
       "id": "EVL-10",
       "index": "routing-and-optimization-index.md",
       "line": 21,
-      "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
+      "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
       "track": "episodic memory integrity"
     },
     "EVL-14": {
@@ -2690,7 +2710,7 @@
       "id": "EVL-47",
       "index": "research-evaluation-index.md",
       "line": 17,
-      "next_action": "Run VB-CANARY-B-FRONTIER once post-fence AutoPilot trials exist; VB-CC-PILOT register; GNX-REINDEX-1 receipt; file r18d/r234 rows",
+      "next_action": "Land correction-fix salvage 7f2df8f61; two-CPU-model smoke; Canary B assertion; file R18-D A/A; republish R23-4",
       "track": "vidya belief substrate program"
     },
     "INF-06": {
@@ -2838,7 +2858,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "Fix PIP02-R36-DEVNULL-FENCE, republish R36; file ODL-013/G14/OCR r2 rows; operator ratifies P-DOCPARSE-1 annex",
+      "next_action": "Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision",
       "track": "internal kb rag"
     },
     "REV-02": {
@@ -2858,7 +2878,7 @@
       "id": "RTG-02",
       "index": "routing-and-optimization-index.md",
       "line": 13,
-      "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
+      "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
       "track": "autopilot continuous optimization"
     },
     "RTG-08": {
@@ -2867,7 +2887,7 @@
       "id": "RTG-08",
       "index": "routing-and-optimization-index.md",
       "line": 14,
-      "next_action": "Amend CF-AB-1 A6 to the 7+7 handoff fields with an events co-metric; render validation evidence in /log (CTX-HO-1/3)",
+      "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 and CTX-HO-3 are standalone",
       "track": "context folding progressive"
     },
     "RTG-09": {
@@ -2876,7 +2896,7 @@
       "id": "RTG-09",
       "index": "routing-and-optimization-index.md",
       "line": 15,
-      "next_action": "Run RTG-EP-1 gfx90a EP probe; then RTG-VAR-1 host manifest and RTG-VAR-2 variant dimension",
+      "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
       "track": "decision aware routing"
     },
     "RTG-100": {

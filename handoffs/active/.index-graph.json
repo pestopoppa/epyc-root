@@ -148,7 +148,7 @@
       "from": "EVL-10",
       "kind": "ref",
       "to": "RTG-09",
-      "weight": 3
+      "weight": 5
     },
     {
       "from": "EVL-14",
@@ -571,6 +571,12 @@
       "weight": 8
     },
     {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "INF-06",
+      "weight": 2
+    },
+    {
       "from": "RTG-08",
       "kind": "ref",
       "to": "EVL-02",
@@ -592,7 +598,7 @@
       "from": "RTG-08",
       "kind": "ref",
       "to": "RTG-02",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "RTG-08",
@@ -616,7 +622,7 @@
       "from": "RTG-09",
       "kind": "ref",
       "to": "EVL-14",
-      "weight": 8
+      "weight": 9
     },
     {
       "from": "RTG-09",
@@ -721,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T13:09:45Z",
+  "generated_at": "2026-11-09T13:12:54Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1161,14 +1167,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 117,
-      "dispatchable": 40,
+      "dispatchable": 41,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-03",
-      "next_action": "Run M-12i model-free diagnostic replay after full-CPU bench release under an exclusive claim; keep M-12f metric construction separate",
-      "open": 40,
+      "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
+      "open": 41,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1188,18 +1194,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 15,
           "gates": [],
-          "line": 25,
+          "line": 36,
           "name": "memory-program",
-          "open": 14,
+          "open": 15,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 879,
+          "line": 903,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1208,7 +1214,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1333,
+          "line": 1357,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1225,7 +1231,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1790,
+          "line": 1815,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1442,7 +1448,7 @@
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-07",
-      "next_action": "Run VB-CANARY-B-FRONTIER once post-fence AutoPilot trials exist; VB-CC-PILOT register; GNX-REINDEX-1 receipt; file r18d/r234 rows",
+      "next_action": "Land correction-fix salvage 7f2df8f61; two-CPU-model smoke; Canary B assertion; file R18-D A/A; republish R23-4",
       "open": 89,
       "priority": 0.8902,
       "priority_basis": {
@@ -2552,17 +2558,17 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 2,
-      "blocked": 1,
+      "age_days": 0,
+      "blocked": 0,
       "blocked_by": [],
-      "closed": 106,
-      "dispatchable": 12,
+      "closed": 107,
+      "dispatchable": 13,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
-      "last_advanced": "2026-11-07",
-      "next_action": "Fix PIP02-R36-DEVNULL-FENCE, republish R36; file ODL-013/G14/OCR r2 rows; operator ratifies P-DOCPARSE-1 annex",
+      "last_advanced": "2026-11-09",
+      "next_action": "Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision",
       "open": 13,
       "priority": 0.6185,
       "priority_basis": {
@@ -2583,54 +2589,54 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 3,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 1,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1104,
+          "line": 1118,
           "name": "colbert-reranker-web-research",
           "open": 1,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [],
-          "line": 1852,
+          "line": 1868,
           "name": "document-parser-table-bench",
-          "open": 3,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [],
-          "line": 2473,
+          "line": 2491,
           "name": "opendataloader-pipeline-integration",
-          "open": 6,
+          "open": 5,
           "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 0,
-          "gates": [],
-          "line": 2581,
-          "name": "searxng-search-backend",
-          "open": 1,
-          "readiness": "no_open"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2950,
+          "line": 2603,
+          "name": "searxng-search-backend",
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 2972,
           "name": "sliders-local-validation",
           "open": 1,
           "readiness": "ready"
@@ -2738,18 +2744,18 @@
       ]
     },
     {
-      "age_days": 6,
-      "blocked": 1,
+      "age_days": 0,
+      "blocked": 2,
       "blocked_by": [],
-      "closed": 286,
-      "dispatchable": 74,
+      "closed": 289,
+      "dispatchable": 82,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
-      "last_advanced": "2026-11-03",
-      "next_action": "Prospectively capture menus, model/decoding identity, holdout and paired continuations; rerun sealed replay",
-      "open": 75,
+      "last_advanced": "2026-11-09",
+      "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
+      "open": 84,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2772,18 +2778,27 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 37,
-          "gates": [],
-          "line": 19,
-          "name": "autopilot-program",
-          "open": 38,
+          "dispatchable": 47,
+          "gates": null,
+          "line": 0,
+          "name": "(untracked)",
+          "open": 48,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 0,
           "gates": [],
-          "line": 997,
+          "line": 19,
+          "name": "autopilot-program",
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 1,
+          "gates": [],
+          "line": 1037,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 2,
           "readiness": "ready"
@@ -2792,7 +2807,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1405,
+          "line": 1447,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1,
           "readiness": "ready"
@@ -2801,7 +2816,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2102,
+          "line": 2144,
           "name": "batched-edit-parallel-apply",
           "open": 2,
           "readiness": "ready"
@@ -2810,7 +2825,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2238,
+          "line": 2280,
           "name": "bep-dcp-falsification-harness",
           "open": 1,
           "readiness": "ready"
@@ -2819,25 +2834,25 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2307,
+          "line": 2350,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
-          "line": 2500,
+          "line": 2544,
           "name": "evidence-plane-instrument-repair",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2657,
+          "line": 2704,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1,
           "readiness": "ready"
@@ -2846,7 +2861,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3041,
+          "line": 3089,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1,
           "readiness": "ready"
@@ -2855,7 +2870,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 3433,
+          "line": 3481,
           "name": "objective-task-rate-goodput",
           "open": 5,
           "readiness": "ready"
@@ -2864,7 +2879,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3776,
+          "line": 3826,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4,
           "readiness": "ready"
@@ -2873,7 +2888,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 4031,
+          "line": 4081,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7,
           "readiness": "ready"
@@ -2882,7 +2897,6 @@
           "blocked_by": [
             "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
             "RTG-02#autopilot-decision-plane-audit-2026-07-22",
-            "RTG-02#autopilot-program",
             "RTG-02#batched-edit-parallel-apply",
             "RTG-02#bep-dcp-falsification-harness",
             "RTG-02#evidence-plane-event-sourcing-and-narrative",
@@ -2908,7 +2922,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4261,
+          "line": 4315,
           "name": "autopilot-sequential-allocation",
           "open": 5,
           "readiness": "blocked"
@@ -2917,7 +2931,6 @@
           "blocked_by": [
             "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
             "RTG-02#autopilot-decision-plane-audit-2026-07-22",
-            "RTG-02#autopilot-program",
             "RTG-02#batched-edit-parallel-apply",
             "RTG-02#bep-dcp-falsification-harness",
             "RTG-02#evidence-plane-event-sourcing-and-narrative",
@@ -2943,7 +2956,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4711,
+          "line": 4769,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2952,7 +2965,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 4986,
+          "line": 5044,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
@@ -2960,18 +2973,18 @@
       ]
     },
     {
-      "age_days": 4,
-      "blocked": 2,
+      "age_days": 0,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 150,
-      "dispatchable": 47,
+      "closed": 153,
+      "dispatchable": 43,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-05",
-      "next_action": "Amend CF-AB-1 A6 to the 7+7 handoff fields with an events co-metric; render validation evidence in /log (CTX-HO-1/3)",
-      "open": 49,
+      "last_advanced": "2026-11-09",
+      "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 and CTX-HO-3 are standalone",
+      "open": 44,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2991,18 +3004,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 13,
+          "dispatchable": 11,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 13,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 255,
+          "line": 286,
           "name": "delegation-context-preassembly",
           "open": 8,
           "readiness": "ready"
@@ -3011,7 +3024,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 452,
+          "line": 483,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -3020,7 +3033,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 718,
+          "line": 749,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -3029,43 +3042,43 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1213,
+          "line": 1244,
           "name": "rao-redel-substrate-spike",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1750,
+          "line": 1781,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 9,
           "gates": [],
-          "line": 2512,
+          "line": 2543,
           "name": "reasoning-effort-levels",
-          "open": 11,
+          "open": 10,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
-          "line": 2938,
+          "line": 2970,
           "name": "tool-output-compression",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 2,
           "gates": null,
-          "line": 3589,
+          "line": 3621,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 2,
           "readiness": "ready"
@@ -3073,18 +3086,18 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 177,
-      "dispatchable": 65,
+      "closed": 179,
+      "dispatchable": 70,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
-      "last_advanced": "2026-11-03",
-      "next_action": "Run RTG-EP-1 gfx90a EP probe; then RTG-VAR-1 host manifest and RTG-VAR-2 variant dimension",
-      "open": 66,
+      "last_advanced": "2026-11-09",
+      "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
+      "open": 71,
       "priority": 0.1445,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): URE-2a \u2014 Non-authoritative live cascade shadow. After CJ-16 \u2014 now a LOCAL judge cascade (o",
@@ -3113,18 +3126,27 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 15,
+          "dispatchable": 3,
+          "gates": null,
+          "line": 0,
+          "name": "(untracked)",
+          "open": 3,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 16,
           "gates": [],
-          "line": 15,
+          "line": 34,
           "name": "routing-program",
-          "open": 15,
+          "open": 16,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 536,
+          "line": 573,
           "name": "internal-interaction-lifecycle",
           "open": 4,
           "readiness": "ready"
@@ -3133,7 +3155,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1007,
+          "line": 1048,
           "name": "learned-routing-controller",
           "open": 8,
           "readiness": "ready"
@@ -3142,7 +3164,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2266,
+          "line": 2316,
           "name": "model-capability-descriptors",
           "open": 0,
           "readiness": "no_open"
@@ -3151,7 +3173,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2342,
+          "line": 2392,
           "name": "retrain-routing-models",
           "open": 0,
           "readiness": "no_open"
@@ -3160,7 +3182,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2475,
+          "line": 2525,
           "name": "tri-role-coordinator-architecture",
           "open": 2,
           "readiness": "ready"
@@ -3169,7 +3191,7 @@
           "blocked_by": [],
           "dispatchable": 26,
           "gates": [],
-          "line": 2775,
+          "line": 2828,
           "name": "typed-decision-plane",
           "open": 26,
           "readiness": "ready"
@@ -3178,7 +3200,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3489,
+          "line": 3568,
           "name": "x-mas-text-routing",
           "open": 0,
           "readiness": "no_open"
@@ -3187,20 +3209,20 @@
           "blocked_by": [
             "UFH-01"
           ],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [
             "UFH-01"
           ],
-          "line": 3570,
+          "line": 3649,
           "name": "routing-intelligence",
-          "open": 8,
+          "open": 9,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": null,
-          "line": 4045,
+          "line": 4137,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 3,
           "readiness": "ready"
