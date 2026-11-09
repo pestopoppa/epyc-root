@@ -4,29 +4,32 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1376,
+    "progress": 1377,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T09:05:54Z",
   "last_touch": {
     "advanced": {
-      "added": 18,
-      "changed": 0,
+      "added": 1,
+      "changed": 5,
       "removed": 0
     },
-    "at": "2026-11-09T15:59:20Z",
+    "at": "2026-11-09T16:26:02Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-09-apr-land-20261109.md",
-      "progress/2026-11/2026-11-09-apr2-*.md",
-      "progress/2026-11/2026-11-09-autopilot-refresh-*.md"
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/rocm-kernel-authoring.md",
+      "handoffs/active/v11-promotion-checklist.md",
+      "handoffs/active/workspace-58-champion-calibration.md",
+      "progress/2026-11/2026-11-09-autokernel.md",
+      "progress/2026-11/2026-11-09-rock-aiter-file.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-09T15:59:20Z",
+  "scan_time": "2026-11-09T16:26:02Z",
   "schema_version": 1,
-  "source_set_hash": "396012fb7f1c5b37582d1b9b03191dd69043c05ba1d55d9b45bfbee4c241db9d",
+  "source_set_hash": "7199723702db50f96834d474ba6122a70b6fc504fdc0763af0c5dac37f41d8ea",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -133,10 +136,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "299194307c8d5dedcd897512fa48981982dc8a703d88954c167bc5c10d2c7d65",
-      "modified": "2026-11-09T10:41:00Z",
+      "content_hash": "155d691e3a7918234a71da7732de66044aac39545d16f6b7c25daaed3f204997",
+      "modified": "2026-11-09T16:22:17Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 637267,
+      "size": 639127,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -205,10 +208,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4c5bd3bb38ab06164d80cf2da88733900656a205be6ec9c6492561e12fc513cc",
-      "modified": "2026-11-09T15:50:27Z",
+      "content_hash": "d33d476574e3ec46b15201d131de821ceb48e5429f054d96507f22c779c3a786",
+      "modified": "2026-11-09T16:22:17Z",
       "path": "handoffs/active/rocm-kernel-authoring.md",
-      "size": 538364,
+      "size": 539329,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -253,10 +256,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ac9d7b27101aee1ac60cfff51726b81a0928a84f3dc3146d77c8c2b906ce61cc",
-      "modified": "2026-11-09T10:41:00Z",
+      "content_hash": "eb2836a3d02c89a665b3d9008b2f50a56669934528b92ba6bd68c181673d061d",
+      "modified": "2026-11-09T16:22:17Z",
       "path": "handoffs/active/v11-promotion-checklist.md",
-      "size": 23552,
+      "size": 23971,
       "title": "v11 promotion checklist \u2014 the requirements that close only at the v11 production promotion",
       "type": "handoff-active"
     },
@@ -269,10 +272,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "081213700ae5f3f1e8fe1841494dfebf25a03aa6a8e14c28d1a36c820087b502",
-      "modified": "2026-11-09T10:41:00Z",
+      "content_hash": "143bf73041ada9bd6c7b0e84b996921f04bcc7cb36d2a93ac5c615b2a8f7947c",
+      "modified": "2026-11-09T16:22:17Z",
       "path": "handoffs/active/workspace-58-champion-calibration.md",
-      "size": 40340,
+      "size": 40877,
       "title": "workspace-58 champion calibration \u2014 Q38FN floors, the batch-invariance defect, GPU host-thread pinning, keep-tail floors",
       "type": "handoff-active"
     },
@@ -16653,10 +16656,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e14d8a5cc1e487f96f8464cf44c6296c36aad3d226f420d66877f175ec2ec15d",
-      "modified": "2026-11-09T09:05:16Z",
+      "content_hash": "3ded5d5171eb72dfe44231fa26339b6e7ce7d2488b2afb0a4f51f33e038686d2",
+      "modified": "2026-11-09T16:22:17Z",
       "path": "progress/2026-11/2026-11-09-autokernel.md",
-      "size": 1713,
+      "size": 4210,
       "title": "2026-11-09 AutoKernel",
       "type": "progress"
     },
@@ -16706,6 +16709,14 @@
       "path": "progress/2026-11/2026-11-09-main-inf22.md",
       "size": 3238,
       "title": "2026-11-09 \u2014 main-inf22 (Inference Research)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8cc75bcab66965966da0ec8c297453e14a943edd0696f903742670e25bda94e8",
+      "modified": "2026-11-09T16:22:17Z",
+      "path": "progress/2026-11/2026-11-09-rock-aiter-file.md",
+      "size": 1258,
+      "title": "2026-11-09 ROCK-AITER-GFX90A step 2: packet A filed, packet B made publishable",
       "type": "progress"
     },
     {
@@ -20365,7 +20376,7 @@
       "type": "handoff-completed"
     }
   ],
-  "total_new": 2542,
+  "total_new": 2543,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
