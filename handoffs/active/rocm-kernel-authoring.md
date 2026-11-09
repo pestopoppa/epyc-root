@@ -1455,6 +1455,7 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 - [ ] **INF48-LIVE-6 GPU-AK-SIGNALS - counter/ISA/race/equivalence signals for the GPU AK lane (RVP-ATT-1, RVP-CTR-1, RVP-RACE-1/2, RVP-EQV-1, C5-ISA-1/2).** Recent (Oct-Nov) intake-derived rows, kept for their own sequencing; each child is a pointer to the full text at b3bd883d3. [no-belief: new consolidated box]
   - *(folded into INF48-LIVE-6; full text at b3bd883d3:1698)* **(no title)**
 - [ ] **RVP-ATT-CANARY-R4 — validate the repaired trace launcher on the real GPU.** Private
+  - 2026-11-09 (pipeline-mgmt, row `codex-att-r4e-20261109`, filed pass): plumbing canary PASS: native exit 0, nonempty raw `.att` (se0/se4, 17816 B each), VRAM residency 212 MB to 4.57 GB sampled, teardown process-group-dead, mfma_peak 100.05 TFLOPS; ungraded raw capture (second attempt dir under `codex-att-r4e-20261109/out/attempts/`). The rc75 partial path was not exercised in this attempt, so the box stays open. The 'missing before it can be a row' readiness text above is stale. [no-belief: partial status note]
   Row `codex-att-r4-20261109` carries this forward on filler_run15. model: none, `mfma_peak` microbenchmark (no LLM weights); quant_build: rocprofv2 ATT trace launcher on the MI210, not a kernel build. stop-on-answer when one real run writes a nonempty raw trace with VRAM residency and clean partial/cleanup; stop-on-futility on a launcher or trace-writer failure on the real GPU (one attempt, repair before any new row); gate-class = futility-only.
   `/mnt/raid0/llm/tmp/codex-att-r4-20261028` now checks the correct GPU device path, requires the full
   `mi210_0,72-95,184-191` grant, and uses a private engine retaining live admission while omitting
@@ -2592,6 +2593,7 @@ expectation. No external benchmark was re-measured here.
 #### Research Intake Update — 2026-09-26 (GEMM ladders and MFMA form on gfx90a; intake-1822..1826)
 
 - [ ] **INF48-LIVE-7 INF03/INF37 gfx90a kernel work - MMQ ISA audit runner binding, v9->v10 spill regressions, NH-1 AGPR arm, low-quant tripwire, Q8 MoE GLU fusion.** INF03-REGAUDIT-3 and INF03-AGPR-1 are PARKED by the operator (2026-09-27); INF37-MOE-Q8-FUSION and INF03-REGAUDIT-RUNNER are PROPOSED, not build approval. [no-belief: new consolidated box]
+  - 2026-11-09 (pipeline-mgmt, row `j64-widths-27b-c9-20261109`, filed fail = rule false): J64-WIDTHS on 27B Q8_0 at C9: J=64 share of busy 70.9% at p64 and 78.5% at p128 (>=20% holds) but ns/col p64/p48 = 0.90 and p128/p96 = 0.92 (needs >1.05), so no fix upside at these widths; production J=64 share ~0% (c8 trace). Resident reps only; wall reps carry no tok/s. Box stays open (REGAUDIT-3 and AGPR-1 parked). [no-belief: partial status note]
   - *(folded into INF48-LIVE-7; full text at b3bd883d3:2939)* **INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static ISA audit.**
 Dived: intake-1822 (HipKittens Helios GEMM ladder + code), intake-1823 (Gluon GEMM tutorial + repo, and a read-only
 extraction of our production libggml-hip.so), intake-1825 (arXiv 2609.15627, DS-V4-Flash on MI250/gfx90a),
