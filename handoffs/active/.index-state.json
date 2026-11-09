@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 589
+      "open": 586
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 5,
       "oldest_advance": "2026-11-03",
-      "open": 196
+      "open": 195
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 480
+      "open": 479
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 822,
+      "closed": 825,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 142,
+      "open": 139,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 372,
+          "closed": 374,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,7 +128,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 42
+          "open": 40
         },
         {
           "blocked": 0,
@@ -193,7 +193,7 @@
         },
         {
           "blocked": 0,
-          "closed": 34,
+          "closed": 35,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -213,7 +213,7 @@
           "line": 14145,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 18
+          "open": 17
         }
       ]
     },
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 291,
+      "closed": 292,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 75,
+      "open": 74,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -910,13 +910,13 @@
         },
         {
           "blocked": 0,
-          "closed": 86,
+          "closed": 87,
           "gates": [],
           "guarded": 0,
           "line": 1510,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
-          "open": 35
+          "open": 34
         },
         {
           "blocked": 0,
@@ -2626,10 +2626,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 371,
+      "closed": 372,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
-      "open": 89,
+      "last_advanced": "2026-11-09",
+      "open": 88,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
