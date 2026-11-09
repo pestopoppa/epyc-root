@@ -94,6 +94,10 @@ CHAMPION_REF_PREFIX = "refs/heads/ak/champion/"
 # requires the closing ticket's token, so a prefix alone never selects anything.
 LANE_CLASS_RE = re.compile(r"^(codex-ni|ni0\d)")
 MIN_TICKET_TOKEN = 4
+# close-lane --apply must keep an idle floor: a tree touched in the last couple of hours may still be
+# someone's live lane even when it is clean and landed. Dry-run and apply use the same value.
+CLOSE_LANE_MIN_IDLE_DAYS = 0.1
+_LANE_TOKEN_REFUSED_RE = re.compile(r"^-?(codex|ni)")   # case-sensitive: lane dirs are lowercase; tickets like NIB2-7 are uppercase
 PROTECTED_PARENT_DIRS = ("worktrees/mains", "worktrees/pool")
 VIEW_MARKER = ".epyc-view-readonly"
 # Same narrow pattern as autokernel_disk_sweep.EVIDENCE_RE (kept in sync by a test).
@@ -668,16 +672,22 @@ def remove_one(path: str, *, base: str, min_idle_days: float, fetch: bool,
     return True, f"REMOVED {path} (branch {wt.branch or '(detached)'} kept; {wt.reasons[0]})"
 
 
-def close_lane(ticket: str, repos: list[str], *, base: str, apply: bool, fetch: bool
-               ) -> tuple[int, list[str]]:
+def close_lane(ticket: str, repos: list[str], *, base: str, apply: bool, fetch: bool,
+               min_idle_days: float = CLOSE_LANE_MIN_IDLE_DAYS) -> tuple[int, list[str]]:
     """Ticket-close cleanup (LR-11): inventory the `codex-ni*`/`ni0X` worktrees of one ticket and
     (with apply) remove each through remove_one, i.e. through the full gate. Retained trees are
     listed with their verdict so the closing main can record owner and reason. Returns (rc, lines):
     rc 0 every selected tree was removed (or, in dry-run, is REMOVABLE), 1 otherwise, 2 usage."""
     ticket = ticket.strip()
-    if len(ticket) < MIN_TICKET_TOKEN or re.fullmatch(r"(codex(-ni?)?|ni0?\d?)", ticket):
+    if (len(ticket) < MIN_TICKET_TOKEN or _LANE_TOKEN_REFUSED_RE.match(ticket)
+            or re.fullmatch(r"(codex(-ni?)?|ni0?\d?)", ticket)):
         return 2, [f"REFUSED: --ticket must be at least {MIN_TICKET_TOKEN} characters and "
-                   "not just a lane prefix (a prefix alone never selects worktrees)"]
+                   "not start with a lane prefix (codex*/ni*): a prefix never selects worktrees"]
+    if apply and min_idle_days <= 0:
+        return 2, ["REFUSED: close-lane --apply needs --min-idle-days > 0 (the idle floor is the "
+                   "protection against removing a lane that is still being touched)"]
+    # token boundary: `NIB2-7` must not select `NIB2-70`
+    tok_re = re.compile(r"(^|[^A-Za-z0-9])" + re.escape(ticket) + r"([^A-Za-z0-9]|$)")
     lines: list[str] = []
     probe = gather_probe()
     selected = 0
@@ -691,15 +701,15 @@ def close_lane(ticket: str, repos: list[str], *, base: str, apply: bool, fetch: 
             continue
         for wt in wts:
             name = os.path.basename(wt.path.rstrip("/"))
-            if not LANE_CLASS_RE.match(name) or (ticket not in name and ticket not in wt.branch):
+            if not LANE_CLASS_RE.match(name) or not (tok_re.search(name) or tok_re.search(wt.branch)):
                 continue
             selected += 1
             if apply:
-                ok, msg = remove_one(wt.path, base=base, min_idle_days=0.0, fetch=fetch, probe=probe)
+                ok, msg = remove_one(wt.path, base=base, min_idle_days=min_idle_days, fetch=fetch, probe=probe)
                 lines.append(msg if ok else f"RETAINED {msg}")
                 rc |= 0 if ok else 1
             else:
-                classify(wt, base=base, min_idle_days=0.0, probe=probe,
+                classify(wt, base=base, min_idle_days=min_idle_days, probe=probe,
                          canonical_roots=["/workspace", f"{LLM}/epyc-root"], now=time.time())
                 lines.append(f"{'WOULD-REMOVE' if wt.verdict == REMOVABLE else 'RETAINED'} "
                              f"{wt.path}\t{wt.verdict}\t{'; '.join(wt.reasons)}")
@@ -728,6 +738,8 @@ def main(argv: list[str] | None = None) -> int:
     cl.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
     cl.add_argument("--apply", action="store_true", help="remove REMOVABLE trees (default: dry-run)")
     cl.add_argument("--no-fetch", action="store_true")
+    cl.add_argument("--min-idle-days", type=float, default=CLOSE_LANE_MIN_IDLE_DAYS,
+                    help="idle floor; must be > 0 with --apply")
     p = sub.add_parser("report", help="read-only inventory of every linked worktree")
     p.add_argument("--repo", action="append", dest="repos", help="repeatable; default: the 4 repos")
     p.add_argument("--min-idle-days", type=float, default=7.0)
@@ -753,7 +765,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if a.cmd == "close-lane":
         rc, lines = close_lane(a.ticket, a.repos or DEFAULT_REPOS, base=a.base, apply=a.apply,
-                               fetch=a.apply and not a.no_fetch)
+                               fetch=a.apply and not a.no_fetch, min_idle_days=a.min_idle_days)
         print("\n".join(lines), file=sys.stderr if rc == 2 else sys.stdout)
         return rc
 

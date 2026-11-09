@@ -483,6 +483,14 @@ def test_report_records_resolved_bases(kernel_repo, tmp_path):
     assert [w["verdict"] for w in rep["worktrees"] if "e4" in w["path"]] == ["UNLANDED"]
 
 def test_close_lane_selects_only_ticket_lane_class_and_goes_through_gate(repo, tmp_path):
+
+@pytest.fixture
+def idle_old(monkeypatch):
+    """New fixture trees are 0 days idle; pretend they are old enough for the close-lane idle floor."""
+    monkeypatch.setattr(wg, "_idle_days", lambda wt, now: 5.0)
+
+
+def test_close_lane_selects_only_ticket_lane_class_and_goes_through_gate(repo, tmp_path, idle_old):
     ok = add_wt(repo, tmp_path, "codex-ni-TKT777-a")
     dirty = add_wt(repo, tmp_path, "ni08-TKT777-b")
     (dirty / "untracked").write_text("x")
@@ -497,6 +505,31 @@ def test_close_lane_selects_only_ticket_lane_class_and_goes_through_gate(repo, t
     assert rc == 1
     assert not ok.exists() and dirty.exists()          # dirty refused by the gate, never forced
     assert other_ticket.exists() and other_class.exists()
+
+
+def test_close_lane_token_boundary_nib2_7_does_not_match_nib2_70(repo, tmp_path, idle_old):
+    seven = add_wt(repo, tmp_path, "codex-ni-NIB2-7-a")
+    seventy = add_wt(repo, tmp_path, "codex-ni-NIB2-70-b")
+    rc, lines = wg.close_lane("NIB2-7", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 0 and not seven.exists() and seventy.exists()
+    assert any("selected=1" in l for l in lines)
+
+
+def test_close_lane_refuses_lane_prefix_tokens(repo, tmp_path, idle_old):
+    p = add_wt(repo, tmp_path, "codex-ni-TKT999-z")
+    for tok in ("codex-ni-TKT", "-codex-ni", "ni08-TKT", "-ni", "codexTKT"):
+        rc, _ = wg.close_lane(tok, [str(repo)], base="origin/main", apply=True, fetch=False)
+        assert rc == 2 and p.exists(), tok
+
+
+def test_close_lane_apply_keeps_a_nonzero_idle_floor(repo, tmp_path):
+    p = add_wt(repo, tmp_path, "codex-ni-TKT555-a")
+    rc, _ = wg.close_lane("TKT555", [str(repo)], base="origin/main", apply=True, fetch=False,
+                          min_idle_days=0)
+    assert rc == 2 and p.exists()
+    # default floor: a just-created tree is RECENT and survives --apply
+    rc, lines = wg.close_lane("TKT555", [str(repo)], base="origin/main", apply=True, fetch=False)
+    assert rc == 1 and p.exists()
 
 
 def test_close_lane_refuses_prefix_only_selection(repo, tmp_path):
