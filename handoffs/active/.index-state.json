@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 617
+      "open": 611
     },
     "pipeline-integration-index.md": {
       "blocked": 1,
@@ -2036,7 +2036,7 @@
       "closed": 70,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 28,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2045,7 +2045,7 @@
       },
       "row_id": "INF-80",
       "state": "active",
-      "total": 98,
+      "total": 99,
       "tracks": [
         {
           "blocked": 0,
@@ -2065,14 +2065,14 @@
           "line": 208,
           "markers": 1,
           "name": "iqk-iquant-enablement",
-          "open": 4
+          "open": 5
         },
         {
           "blocked": 0,
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 652,
+          "line": 654,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 3
@@ -2168,7 +2168,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 20,
+      "open": 13,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2177,7 +2177,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 359,
+      "total": 352,
       "tracks": [
         {
           "blocked": 0,
@@ -2189,7 +2189,7 @@
           "line": 51,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 8
+          "open": 5
         },
         {
           "blocked": 0,
@@ -2215,7 +2215,7 @@
           "line": 2639,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -2225,27 +2225,27 @@
           "line": 3011,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
-          "open": 4
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3526,
+          "line": 3524,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 3622,
+          "line": 3619,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 2
+          "open": 4
         }
       ]
     },

@@ -649,6 +649,8 @@ Source: research intake session intake-ist-slq-20261022, Stage-3 plan `/mnt/raid
 
 - *NEW-12 — HELD (operator 2026-10-22: "stick to NEW-10 and then we reassess later"); no checkbox, no compute booked.* Q38FN allocation transplant plus bytes-budgeted per-tensor type allocator from the Stage-3 plan (intake-2470#record, intake-2466#record, intake-2487#record). Reassess after NEW-10's IQ3_XXS quality result. If it is ever run, use the lean form: one candidate at a time, no P0 ISTA GSQ-weights comparison, ~190 GB disk peak, and delete the Q8_0 source at the end.
 
+- [ ] **K27 (P1, CPU) — x86 repack gaps**: no Q5_0/Q6_0 repack; Q8_0 still lacks a promotable optimized x86 interleave kernel (`ggml/src/ggml-cpu/repack.cpp`; iqk dir `ggml/src/ggml-cpu/iqk/`). The failed generic Q8_0 8x8 probe below is retired; any future Q8_0 work must be a real AVX2/AVX512/VNNI implementation with pinned-library canonical benches. Bit-exact checkable (lossless rearrangement); canonical bench. (re-homed here 2026-11-09 from the INF-48 drop triage of the ROCm kernel-authoring track; original text `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 3833)
+
 ## Track: tq3-quantization-evaluation
 <!-- gate: none -->
 

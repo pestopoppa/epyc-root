@@ -329,7 +329,7 @@
       "from": "INF-48",
       "kind": "ref",
       "to": "INF-80",
-      "weight": 2
+      "weight": 3
     },
     {
       "from": "INF-50",
@@ -710,7 +710,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T11:36:47Z",
+  "generated_at": "2026-11-09T11:41:26Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1771,14 +1771,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 339,
-      "dispatchable": 20,
+      "dispatchable": 13,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-09",
       "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
-      "open": 20,
+      "open": 13,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1813,13 +1813,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 8,
+          "dispatchable": 5,
           "gates": [
             "EVL-47"
           ],
           "line": 51,
           "name": "rocm-verify-profile-backend",
-          "open": 8,
+          "open": 5,
           "readiness": "blocked"
         },
         {
@@ -1842,41 +1842,41 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2639,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 1,
-          "readiness": "blocked"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 0,
           "gates": [],
           "line": 3011,
           "name": "gemma-challenge-kernel-techniques-v7",
-          "open": 4,
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 3,
+          "gates": [],
+          "line": 3524,
+          "name": "frontier-f6-upstream-publication",
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3526,
-          "name": "frontier-f6-upstream-publication",
-          "open": 4,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 2,
-          "gates": [],
-          "line": 3622,
+          "line": 3619,
           "name": "llama-cpp-dsa-contribution",
-          "open": 2,
+          "open": 4,
           "readiness": "ready"
         }
       ]
@@ -2345,14 +2345,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
-      "dispatchable": 28,
+      "dispatchable": 29,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "quantization-and-low-bit.md",
       "id": "INF-80",
       "last_advanced": "2026-11-07",
       "next_action": "EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin",
-      "open": 28,
+      "open": 29,
       "priority": 0.8382,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): EXL3-6c5 \u2014 full-model window (main session, memory/CPU heavy). Load + greedy smoke, then s",
@@ -2381,18 +2381,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 5,
           "gates": [],
           "line": 208,
           "name": "iqk-iquant-enablement",
-          "open": 4,
+          "open": 5,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 652,
+          "line": 654,
           "name": "tq3-quantization-evaluation",
           "open": 3,
           "readiness": "ready"
