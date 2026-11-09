@@ -244,6 +244,27 @@ def keep_tail_report(m, metrics, rid, flags, journal=None):
         return {"reported": False, "reason": f"keep_tail failed: {type(e).__name__}: {e}"}
 
 
+def token_accounting(m, flags, compute=None):
+    """TOKEN-AUDIT-6: the filing record carries the token figure of the row's owner session (churn/tokens_per_task.py).
+
+    Scope is honest: Codex rollouts are attributed per SESSION per UTC day, not per row, so the figure is the owner session's
+    tokens today, its completed-task count and tokens per task (None when nothing completed). Never raises."""
+    try:
+        if compute is None:
+            import tokens_per_task
+            compute = tokens_per_task.compute
+        owner = str(m.get("owner") or "")
+        slug = re.sub(r"^(handoff-|h-)", "", owner)
+        r = (compute(flags=flags).get("per") or {}).get(slug)
+        if r is None:
+            return {"available": False, "owner_slug": slug, "reason": "no rollout tokens attributed to the owner session today"}
+        return {"available": True, "owner_slug": slug, "scope": "owner session, UTC day of filing",
+                "tokens": r["tokens"], "input": r["input"], "output": r["output"], "completed": r["completed"],
+                "tokens_per_task": r["tokens_per_task"]}
+    except Exception as e:  # noqa: BLE001
+        return {"available": False, "reason": f"token accounting failed: {type(e).__name__}: {e}"}
+
+
 def tick_line(rid, rc, verdict, values, filed_by):
     vals = " ".join(f"{k}={v:g}" for k, v in values.items())
     return (f"{rid} … ✅ {datetime.date.today().isoformat()} rc={rc} {verdict} {vals} "
@@ -361,6 +382,7 @@ def main(argv=None):
     kt = keep_tail_report(m, metrics, rid, flags)
     if kt is not None:
         rec["keep_tail"] = kt
+    rec["tokens"] = token_accounting(m, flags)
     done = os.path.join(flags, "filing-done")
     summary = f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}" + (" (dry-run)" if a.dry_run else "")
     print(summary)

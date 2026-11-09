@@ -278,6 +278,28 @@ class TestFileResult(Base):
         self.assertIn("SUGGESTED-TICK ROW-2", out)
         self.assertFalse([l for l in out.splitlines() if l.startswith("TICK ")])
 
+    def test_filing_record_carries_owner_session_token_figure(self):
+        per = {"t": {"tokens": 1500, "input": 1000, "output": 500, "completed": 3, "tokens_per_task": 500.0}}
+        self.row("ROW-1", "rc == 0", {"ok": 1})
+        with patch("tokens_per_task.compute", lambda **kw: {"per": per}):
+            self.assertEqual(self.run_main("ROW-1")[0], 0)
+        t = self.verdict("ROW-1")["tokens"]
+        self.assertTrue(t["available"])
+        self.assertEqual((t["owner_slug"], t["tokens"], t["completed"], t["tokens_per_task"]), ("t", 1500, 3, 500.0))
+
+    def test_token_accounting_never_blocks_filing(self):
+        self.row("ROW-1", "rc == 0", {"ok": 1})
+        with patch("tokens_per_task.compute", side_effect=RuntimeError("boom")):
+            self.assertEqual(self.run_main("ROW-1")[0], 0)
+        t = self.verdict("ROW-1")["tokens"]
+        self.assertFalse(t["available"])
+        self.assertIn("boom", t["reason"])
+        self.assertTrue(self.filed("ROW-1"))
+        self.row("ROW-2", "rc == 0", {"ok": 1})  # owner has no rollouts today
+        with patch("tokens_per_task.compute", lambda **kw: {"per": {}}):
+            self.run_main("ROW-2")
+        self.assertFalse(self.verdict("ROW-2")["tokens"]["available"])
+
     def test_numeric_fail_with_rc_and_armed_manifest(self):
         self.row("ROW-1", "rc == 0 and tps >= 10", {"tps": 12}, rc=1, armed=True)
         code, out, _ = self.run_main("ROW-1")
