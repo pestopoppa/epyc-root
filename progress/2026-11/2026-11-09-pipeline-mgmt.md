@@ -24,3 +24,37 @@
 
 ## Not done
 Index pruning and wiki sweep (operator-cadence; deferred, nothing run).
+
+---
+
+# 2026-11-09 evening, Pipeline Management (after e98017a0c)
+
+## Landed (each verified on origin/main)
+| Repo | Commit | What |
+|---|---|---|
+| root | 9d597d559 | Disk janitor skips scheduled reaps during a live quiet-host grant unless free disk is under 150 GiB (operator decision, D9-ack). Running copy `compute-flags/disk_janitor.sh` matches git (sha 516ea0cc...), pid 2889054 since 18:33Z. The skip has not been seen firing on a real grant. |
+| root | 54a53fabc | Filing auto-supersedes only attempts that did not complete (operator decision, D9-ack). Installed `bin/churn/filing.py` sha equals origin/main. |
+| root | 7c8436eaa | C10 gemmdown prefill KEEP (27B pp2048@d32768 1.127x vs C9), C10-FOLD-GATE box, V11-136..140. |
+| root | ee6c87c69 | VB-REFOCUS-NONEMPTY-READ-PROOF reopened (operator). |
+| research | bf94b0965 | c6-wire (7 commits, two independent reviews); 171 passed, 3 skipped after rebase. C6 admission has not run on real hardware. |
+| research | ab91897a5 | C6 harness Q8_K activations; corpus inherits the rowflow-held GPU flock. |
+
+Keeper: c303970ee was deployed through `deploy_rowflow.sh --emergency` at 20:27:22Z (`DEPLOYED.json`); installed `bin/rowflow/rowflow.py` equals the branch blob, not origin/main. Branch `keeper-frozen-20261109` is 6 commits ahead of merge base ca10e057c and 169 behind origin/main, and is unpushed.
+
+## New finding: GPU smokes refused since the keeper deploy
+Every GPU smoke that reached the residency check after the deploy failed with `VRAM never showed residency (max None B)`: c10-fold-gate, c10-gemmdown-correct-r2, vidya-r234-native-sweep-20261104b, race-eqv-gpu-r3, vidya-r18d-aa-wire-r4, c6-native-residency-r2 (20:55Z to 21:10Z). Before it, the same check read numbers: 13074432 B on failures at 16:48Z to 17:01Z, 414969856 and 549830656 B on the 20:27Z and 20:28Z passes. The c10-fold-gate job's own log shows `our_vram=1369 MiB` on three runs, so these look like false refusals by the deployed own-process-tree sampler (`sample_gpu_residency`, commits 33444b599 and c303970ee). Cause not proven. The failed rows are unpublished; none was touched here. c6-26-corpus-repin-r2 failed separately (job rc=1 after 10 s).
+
+## Keeper branch: land on main?
+Recommendation: do not land yet; decide after the sampler question is answered. For landing: main and the live keeper disagree today, so any main-based deploy reverts the live fixes; the only conflicts against main are a generated index file and one LOOP-11 line; the 61 tests in the four new files pass on the merged tree; the previous emergency (98f29180d) was landed. Against: the residency change appears to be refusing real GPU rows. Not pushed; operator decides.
+
+## Operator decisions recorded
+Reaper skip with disk override; failed-attempts-only auto-supersede; AFC no-tools rerun; OP-AK-HOLD exception for ak-q38fn-relianceproof-c9-20261109 (AutoKernel records it); INF-48 archives once AITER-PORT-1, ROCK-AITER, C6 wiring and the canary land, parked items moving to their program handoffs; C6 instrument reseal to C9; keep the 1.5B site model (a deliberate screening model).
+
+## Row status at 21:14Z (read only)
+Running: afc-p5e3-n30-q38_flash-r5, c10-fold-cpu-gate, c2-producer-replay-r2, sliders-phase0-fb5-coder30b-r4. `UNFILED-ENDED` 117 by queue_status (the session's last count was 122). Vidya ledger FRESH, lag 0.
+
+## Session errors
+A subagent's "model file absent" was repeated unverified; the file exists under `models/bartowski/`. A subagent set then unset `push.default` in the shared clone.
+
+## Not done
+Index pruning and wiki sweep: left for the owning session, which holds index edits. Open work is tracked as boxes under PIPE-EVE in `handoffs/active/churn-pipeline.md` and in `rocm-kernel-authoring.md`.

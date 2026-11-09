@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 588
+      "open": 593
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 5,
       "oldest_advance": "2026-11-03",
-      "open": 195
+      "open": 196
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 477
+      "open": 493
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -501,10 +501,10 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 38,
+      "closed": 40,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 16,
+      "open": 30,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-100",
       "state": "active",
-      "total": 54
+      "total": 70
     },
     "context-and-token-economy.md": {
       "blocked": 1,
@@ -844,10 +844,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 293,
+      "closed": 292,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 73,
+      "open": 75,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -856,24 +856,24 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 366,
+      "total": 367,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 181,
+          "closed": 180,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 32
+          "open": 33
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1227,
+          "line": 1214,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -883,7 +883,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1267,
+          "line": 1254,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -893,7 +893,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1374,
+          "line": 1361,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -903,7 +903,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1474,
+          "line": 1461,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 1
@@ -913,7 +913,7 @@
           "closed": 87,
           "gates": [],
           "guarded": 0,
-          "line": 1523,
+          "line": 1510,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 34
@@ -923,10 +923,10 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2099,
+          "line": 2086,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 3
+          "open": 4
         }
       ]
     },
@@ -1089,7 +1089,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 487,
+          "line": 486,
           "markers": 1,
           "name": "frontier-f2-self-running-lab",
           "open": 0
@@ -1099,7 +1099,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 570,
+          "line": 569,
           "markers": 1,
           "name": "frontier-f3-data-flywheel",
           "open": 0
@@ -1109,7 +1109,7 @@
           "closed": 13,
           "gates": [],
           "guarded": 0,
-          "line": 762,
+          "line": 761,
           "markers": 1,
           "name": "stale-open-audit-2026-07-18",
           "open": 0
@@ -1370,7 +1370,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 1121,
+          "line": 1122,
           "markers": 1,
           "name": "colbert-reranker-web-research",
           "open": 1
@@ -1380,7 +1380,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1871,
+          "line": 1872,
           "markers": 1,
           "name": "document-parser-table-bench",
           "open": 2
@@ -1390,7 +1390,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2495,
+          "line": 2496,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 6
@@ -1400,7 +1400,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2615,
+          "line": 2616,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 1
@@ -1410,7 +1410,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2984,
+          "line": 2985,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 2
@@ -1583,7 +1583,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1373,
+          "line": 1374,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1597,7 +1597,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1834,
+          "line": 1835,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2204,7 +2204,7 @@
       "closed": 339,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 12,
+      "open": 17,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2213,7 +2213,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 351,
+      "total": 356,
       "tracks": [
         {
           "blocked": 0,
@@ -2225,7 +2225,7 @@
           "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 5
+          "open": 9
         },
         {
           "blocked": 0,
@@ -2235,7 +2235,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1492,
+          "line": 1496,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2248,7 +2248,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2649,
+          "line": 2653,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2258,7 +2258,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3021,
+          "line": 3025,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2268,7 +2268,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3534,
+          "line": 3538,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 2
@@ -2278,10 +2278,10 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 3629,
+          "line": 3633,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 4
+          "open": 5
         }
       ]
     },
@@ -2629,7 +2629,7 @@
       "closed": 372,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 88,
+      "open": 89,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2638,7 +2638,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 461
+      "total": 462
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
