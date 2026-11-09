@@ -1126,7 +1126,6 @@ STARVED_TICKS = 2                  # keeper ticks (~2 min each) a lane may sit f
 STARVED_ALARM_EVERY_S = 30 * 60
 PUSH_LOCK_DIR = os.path.join(ROOT, "coordination", "push-locks")
 PUSH_LOCK_REPORT_EVERY_S = 10 * 60
-CONTEXT_ROTATE_TOKENS = tg.DEFAULTS["context_rotate_tokens"]  # G4 default 60k; registry token_guards.context_rotate_tokens overrides
 KILLER = tg.kill_pid  # G2 lease kill of a pid this dispatcher spawned (tests patch it)
 CODEX_SESSIONS = os.path.expanduser("~/.codex/sessions")
 GENERALIST = bg.GENERALIST        # codex-gen: an ordinary dispatcher-managed, always-on session (no handoff)
