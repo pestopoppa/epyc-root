@@ -89,6 +89,10 @@ class Request:
     paths: tuple[str, ...] = ()
     boundary_key: str = ""
     completed_at: str = ""
+    # CTX-HO-3: model-supplied resume facts; absent renders as the literal "unknown".
+    remaining_uncertainty: str = ""
+    rollback_note: str = ""
+    continuation_state: str = ""
 
 
 def _git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -247,6 +251,9 @@ def _identity(req: Request, handoff: str) -> tuple[str, str, dict]:
     spec = asdict(req)
     spec.update(handoff=handoff, paths=list(req.paths))
     spec.pop("completed_at", None)
+    for _name in RESUME_STATE_FIELDS:  # empty = pre-CTX-HO-3 request: keep its spec hash stable
+        if not spec.get(_name):
+            spec.pop(_name, None)
     spec_hash = hashlib.sha256(
         json.dumps(spec, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
@@ -576,6 +583,35 @@ def _verify_pushed(root: Path, journal: dict) -> None:
         raise CheckpointError("pushed progress evidence was superseded without a newer checkpoint")
 
 
+RESUME_STATE_FIELDS = ("remaining_uncertainty", "rollback_note", "continuation_state")
+CONTINUATION_STATES = ("done", "resumable", "blocked")
+UNKNOWN = "unknown"
+# A path is a non-source artifact unless its suffix is one of these (the rule, stated once).
+SOURCE_SUFFIXES = frozenset({
+    ".py", ".sh", ".fish", ".js", ".ts", ".tsx", ".c", ".cc", ".cpp", ".h", ".hpp",
+    ".cu", ".hip", ".rs", ".go",
+})
+
+
+def _resume_state(req: Request, validation_results: Sequence[dict], artifact_paths: Sequence[str]) -> dict:
+    """The /log resume block: latest validation command and observed output, plus the three
+    model-supplied fields. Anything not supplied or not observed is the literal "unknown"."""
+    latest = validation_results[-1] if validation_results else None
+    return {
+        "latest_validation_command": list(latest["argv"]) if latest else UNKNOWN,
+        "latest_validation_output": (
+            {"exit_code": latest["rc"], "stdout": latest["stdout"], "stderr": latest["stderr"]}
+            if latest else UNKNOWN
+        ),
+        "remaining_uncertainty": req.remaining_uncertainty or UNKNOWN,
+        "rollback_note": req.rollback_note or UNKNOWN,
+        "non_source_artifacts": sorted(
+            p for p in artifact_paths if Path(p).suffix.lower() not in SOURCE_SUFFIXES
+        ),
+        "continuation_state": req.continuation_state or UNKNOWN,
+    }
+
+
 def _bus_envelope(req: Request, payload: dict, completed_at: str) -> dict:
     stamp = datetime.fromisoformat(completed_at.replace("Z", "+00:00")).strftime(
         "%Y%m%dT%H%M%SZ"
@@ -688,7 +724,12 @@ def _normalize_request(request: Request) -> Request:
         paths=tuple(_normal_rel(path) for path in request.paths),
         boundary_key=_scalar("boundary_key", request.boundary_key, False),
         completed_at=request.completed_at,
+        remaining_uncertainty=_scalar("remaining_uncertainty", request.remaining_uncertainty, False),
+        rollback_note=_scalar("rollback_note", request.rollback_note, False),
+        continuation_state=_scalar("continuation_state", request.continuation_state, False).lower(),
     )
+    if req.continuation_state and req.continuation_state not in CONTINUATION_STATES:
+        raise CheckpointError("continuation_state must be done, resumable, or blocked")
     if req.outcome not in {"completed", "blocked", "partial"}:
         raise CheckpointError("outcome must be completed, blocked, or partial")
     if req.next_context not in {"related", "disjoint", "dry", "pre-reboot"}:
@@ -916,6 +957,7 @@ def run_checkpoint(
                     }]
                 ),
                 "validation": _receipt_validation(journal["validation_results"]),
+                "resume_state": _resume_state(req, journal["validation_results"], artifact_paths),
                 "completion_msg_id": None,
             },
         }
@@ -1014,6 +1056,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--alternative-exhausted", action="append", default=[])
     parser.add_argument("--compute-request-json", default="")
     parser.add_argument("--path", action="append", default=[], dest="paths")
+    parser.add_argument("--remaining-uncertainty", default="")
+    parser.add_argument("--rollback-note", default="")
+    parser.add_argument("--continuation-state", default="", help="done, resumable or blocked")
     parser.add_argument("--boundary-key", default="")
     parser.add_argument("--completed-at", default="")
     parser.add_argument("--repo", default=".")
@@ -1062,6 +1107,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         paths=tuple(args.paths),
         boundary_key=args.boundary_key,
         completed_at=args.completed_at,
+        remaining_uncertainty=args.remaining_uncertainty,
+        rollback_note=args.rollback_note,
+        continuation_state=args.continuation_state,
     )
     try:
         result = run_checkpoint(
