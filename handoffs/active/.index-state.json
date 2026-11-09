@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 598
+      "open": 593
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 2,
-      "closed": 112,
+      "closed": 113,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 65,
+      "open": 64,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -68,7 +68,7 @@
         },
         {
           "blocked": 0,
-          "closed": 40,
+          "closed": 41,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -78,7 +78,7 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 13
+          "open": 12
         },
         {
           "blocked": 2,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 814,
+      "closed": 818,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 147,
+      "open": 143,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 365,
+          "closed": 369,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 49
+          "open": 45
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5982,
+          "line": 5984,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6062,
+          "line": 6064,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6359,
+          "line": 6361,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9574,
+          "line": 9576,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13924,
+          "line": 13926,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14136,
+          "line": 14138,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 16

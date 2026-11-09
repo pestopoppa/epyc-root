@@ -727,7 +727,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-09T15:01:39Z",
+  "generated_at": "2026-11-09T15:03:11Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1484,15 +1484,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 814,
-      "dispatchable": 147,
+      "closed": 818,
+      "dispatchable": 143,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-09",
       "next_action": "Read surface row A2 (iglp0); AK-H5-VERIFY full-shape A/B before any hand-asm FA keep; GDN-SHARE-1 MI210 picks the C8 target",
-      "open": 148,
+      "open": 144,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1529,7 +1529,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 49,
+          "dispatchable": 45,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1538,14 +1538,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 50,
+          "open": 46,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5982,
+          "line": 5984,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1554,7 +1554,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6062,
+          "line": 6064,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1573,7 +1573,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6359,
+          "line": 6361,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1590,7 +1590,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9574,
+          "line": 9576,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1603,7 +1603,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13924,
+          "line": 13926,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1637,7 +1637,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14136,
+          "line": 14138,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 16,
           "readiness": "blocked"
@@ -2431,15 +2431,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 112,
-      "dispatchable": 65,
+      "closed": 113,
+      "dispatchable": 64,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-09",
       "next_action": "Run AK-C9-Q38FN-FLOOR r2; replay 6.528% block once a clean floor exists; build AKX-P1e classifier; wire ALL-31 gates; then P0a census",
-      "open": 67,
+      "open": 66,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2469,7 +2469,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 13,
+          "dispatchable": 12,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2477,7 +2477,7 @@
           ],
           "line": 18,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 13,
+          "open": 12,
           "readiness": "blocked"
         },
         {

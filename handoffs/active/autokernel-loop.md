@@ -3282,7 +3282,7 @@ evaluator or its own scope, and T1 may legally guide search.
   fsynced before preflight, claim, mutation, or build, identical resume is idempotent, and same-id/different-
   bytes is refused. The AP-WM-1 evaluator is implemented as an observe-only module outside the campaign
   import path and exposes no selector/champion/T2/T3 mutation API.
-- [ ] **AK-WM-2a — Materialize the first real matched completed-proposal archive.** After Step 3
+- [x] **AK-WM-2a — Materialize the first real matched completed-proposal archive.** After Step 3 ✅ 2026-11-09 CLOSED AS RETIRED (operator decision): v9-era archive path; a new campaign is needed. [no-belief: retired, operator decision 2026-11-09]
   writes proposal-v4 manifests plus clean DECIDED terminal journal/evaluation records, deterministically
   join them with the strict builder and retain the archive plus build manifest. Synthetic fixtures
   remain regression tests and cannot populate the archive.
@@ -3357,7 +3357,7 @@ evaluator or its own scope, and T1 may legally guide search.
     in parent AK-WM-2a and correctly waits for post-reboot completed journals; fixtures cannot substitute.
 
 
-- [ ] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol,
+- [x] **AK-WM-2b — Run AP-WM-1 on that archive, observe-only.** Report the archive protocol, ✅ 2026-11-09 CLOSED AS RETIRED (operator decision): v9-era archive path; a new campaign is needed. [no-belief: retired, operator decision 2026-11-09]
   matched-intervention validation, per-regime/surface results, noise floor, robust sign error, and
   recoding stability. Until real evidence shows invariant independent signal, do not add weakness,
   completion count, K-rho, scope width, prose length, patch size, or description length to live selection,
@@ -5761,12 +5761,13 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
   `__syncthreads`, the gfx90a analogue of a split barrier. Falsifier: the ISA shows MFMAs sunk after s_barrier or
   unchanged order, or the MMQ kernel time does not move beyond the noise floor at ne11 in {16,32,64}.
   - PARKED 2026-09-27 (operator): not started. No experimental branch, no ISA audit and no timing exist; the only inputs are this seed and the v10 baseline audit (research `data/gfx90a-isa-audit-20260926/`); resume by cutting an experimental branch from the v10 tip `ffc1bac82`, adding `__builtin_amdgcn_iglp_opt(0)` and `(1)` arms to `vec_dot_*_mma`, gating each arm with `gfx90a_isa_audit.py diff --families mmq` against the v10 audit (INF03-REGAUDIT-2), then timing the MMQ kernel at ne11 in {16,32,64}.
+  - 2026-11-09 (operator decision): H3 narrows to the kernels that pass the C9 static ISA gate (research `9f3f502b4`; 3 FAIL); the failing kernels are out of scope. [no-belief: operator decision 2026-11-09]
   - 2026-11-07 (autokernel): arm `iglp_opt(0)` built clean (230 s) via surface proof A; arm `iglp_opt(1)` is build-pathological on MMQ (37 min / 222 GB per TU on iq1_s/iq2_s, stopped). No timing yet; `ak-surface-proof-a2-20261107` (C6 vs iglp0) will give the first MMQ number. See AK-MMQ-IGLP1-DNR. [belief: cc]
-- [ ] **AK-MMQ-H7 — Register-staged prefetch of the next K iteration's x/y tiles across the barrier** (enabled
+- [x] **AK-MMQ-H7 — Register-staged prefetch of the next K iteration's x/y tiles across the barrier** (enabled ✅ 2026-11-09 CLOSED (operator decision) on its C9 static ISA gate failure: 4 FAIL on occupancy, the falsifier is hit, only the y-only partial survived; research `ce494f600`. [no-belief: static ISA gate FAIL at C9, operator decision 2026-11-09]
   by gfx90a FeatureBackOffBarrier). Only for instances with VGPR headroom: J<=48, or K-quants whose J=64 loop is rolled.
   Falsifier: INF03-REGAUDIT-1 shows new spills or a vmcnt(0) at the barrier, or no time change.
   - PARKED 2026-09-27 (operator): not started. No branch, audit or timing exist. AK-MMQ-H10 came back NEGATIVE (J=64 stays), so the targets are the J<=48 instances and the K-quants with a rolled J=64 loop; resume by picking the instances with VGPR headroom from the v10 audit table (research `data/gfx90a-isa-audit-20260926/`), prototyping the cross-barrier register prefetch on an experimental branch from `ffc1bac82`, and passing `gfx90a_isa_audit.py diff --families mmq` (no new spills, no hot-loop vmcnt(0) at the barrier) before any timing.
-- [ ] **AK-MMQ-H8 — y-tile fill via dword `llvm.amdgcn.raw.buffer.load.lds` plus a second y buffer** (the y
+- [x] **AK-MMQ-H8 — y-tile fill via dword `llvm.amdgcn.raw.buffer.load.lds` plus a second y buffer** (the y ✅ 2026-11-09 CLOSED (operator decision) on its C9 static ISA gate failure: 41 FAIL on spills; `d0e22e4b8`. [no-belief: static ISA gate FAIL at C9, operator decision 2026-11-09]
   fill is a lane-linear copy, mmq.cuh:853-878). The y double buffer drops 2 of 4 barriers per 256-K iteration. LDS
   fits for Q8_0/Q8_1/Q6_K layouts at J=64 (57,600 B) but not for Q2_K. Prior: the MMVQ prefetch that used the same
   intrinsic was net-negative. Falsifier: MMQ time within noise, or a correctness failure.
@@ -5794,6 +5795,7 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
   AGPR rule: 256-thread arms get AGPR form with a 512 budget and copies; the rule changes on ROCm 7.14+. Record agpr,
   copies, spills and compiler with every cell.
   - PARKED 2026-09-27 (operator): not started. No sweep cell has been built; resume by building the 256- and 512-thread `mmq-config-cdna.cuh` arms at I=128 on an experimental branch from `ffc1bac82` and recording agpr, accvgpr copies, spills and the compiler for each cell with `gfx90a_isa_audit.py audit` plus `diff --families mmq`, before any timing.
+  - 2026-11-09 (operator decision): H5 needs a written stop rule before any row is booked (research `a0a592182`). [no-belief: operator decision 2026-11-09]
 - **[declined: ws58 2026-11-03 content-review: "GATED, low prior" by its own text]** **AK-MMQ-SK — GATED, low prior. Stream-K off for MUL_MAT_ID small-M on CDNA MMQ.** Transfer is weak: intake-1825
   reports that split-K hurts BS1 small-M MoE in CKTile, not in MMQ.
 - [x] **Recorded so it is not re-derived (dives 2026-09-26).** ✅ 2026-09-26
