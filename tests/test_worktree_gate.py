@@ -482,7 +482,6 @@ def test_report_records_resolved_bases(kernel_repo, tmp_path):
     assert rep["bases"]["kernel"][0] == "refs/heads/production-consolidated-v1"
     assert [w["verdict"] for w in rep["worktrees"] if "e4" in w["path"]] == ["UNLANDED"]
 
-def test_close_lane_selects_only_ticket_lane_class_and_goes_through_gate(repo, tmp_path):
 
 @pytest.fixture
 def idle_old(monkeypatch):
