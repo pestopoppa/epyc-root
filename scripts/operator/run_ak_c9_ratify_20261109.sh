@@ -93,7 +93,7 @@ say "== research origin/main $RES_BASE =="
 # Each item's state on origin/main (empty, or "already").
 item1_state() { g "$ROOT" cat-file -e "origin/main:$INDEX_REL" 2>/dev/null && echo already || true; }
 baseline_on_main() { g "$RES" show "origin/main:$BASELINE"; }
-item2_state() { baseline_on_main | grep -q 'operator countersign pending' || echo already; }
+item2_state() { local out; out="$(baseline_on_main)"; grep -q 'operator countersign pending' <<<"$out" || echo already; }
 item3_state() {
   if g "$RES" merge-base --is-ancestor "$PLANNER_SHA" origin/main \
      && baseline_on_main | "$SYS_PY" -c "
