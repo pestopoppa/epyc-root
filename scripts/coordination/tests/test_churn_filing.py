@@ -279,6 +279,14 @@ class TestSupersede(Base):
         again = filing.supersede_lineage(self.flags, "lin-r3")
         self.assertEqual(again["superseded"], [])           # idempotent
 
+    def test_complete_predecessor_kept_unless_named(self):
+        self.row("c-r1", published="2026-11-06T01:00:00Z"); self.row("c-r2", ended=False, published="2026-11-06T02:00:00Z")
+        Path(self.flags, "grants", "c-r1.complete").write_text("done\n")
+        rep = filing.supersede_lineage(self.flags, "c-r2")
+        self.assertEqual(rep["superseded"], []); self.assertEqual(rep["skipped"], ["c-r1"]); self.assertFalse(self.filed("c-r1"))
+        self.row("c-r3", ended=False, published="2026-11-06T03:00:00Z", supersedes=["c-r1"])
+        self.assertEqual(filing.supersede_lineage(self.flags, "c-r3")["superseded"], ["c-r1"])
+
     def test_withdrawn_filed_withdrawn(self):
         self.row("w-r1", where=".withdrawn", rc=75)
         rep = filing.supersede_lineage(self.flags, "w-r2")

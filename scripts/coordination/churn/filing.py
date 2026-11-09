@@ -258,9 +258,15 @@ def successor_of(rid, mans, wd, new_id=None, explicit=()):
     return best
 
 
+def _names_as_superseded(mans, succ, rid):
+    """True when the successor's manifest lists rid in its `supersedes` (a list, or one id)."""
+    named = (mans.get(succ, (None, {}))[1] or {}).get("supersedes") or []
+    return rid in ([named] if isinstance(named, str) else named)
+
+
 def supersede_lineage(flags, new_id=None, *, by="filing.supersede", reclaim=True, no_reclaim_globs=(), explicit=(), dry_run=False, log=print):
     """Publish-time (new_id given): every ended-unfiled attempt that new_id supersedes (named in its `supersedes`, or an earlier
-    attempt of the same family) -> SUPERSEDED-BY new_id. Backfill (new_id None): every ended-unfiled row that has a LATER
+    attempt of the same family, unless that attempt ended complete and is not named) -> SUPERSEDED-BY new_id. Backfill (new_id None): every ended-unfiled row that has a LATER
     attempt -> SUPERSEDED-BY that attempt. Ended-unfiled rows in ready/.withdrawn -> WITHDRAWN. A different family is never touched.
     -> {'superseded': [...], 'withdrawn': [...], 'noop': [...], 'skipped': [...]}"""
     mans = load_all_manifests(flags)
@@ -285,6 +291,9 @@ def supersede_lineage(flags, new_id=None, *, by="filing.supersede", reclaim=True
             continue
         succ = pick or successor_of(rid, mans, wd, new_id, explicit)
         if not succ:
+            continue
+        if not pick and os.path.exists(os.path.join(flags, "grants", rid + ".complete")) and not _names_as_superseded(mans, succ, rid):
+            rep["skipped"].append(rid)   # a complete result is its owner's to file; only an explicit supersedes retires it
             continue
         r = file_terminal(flags, rid, "SUPERSEDED", by=by, superseded_by=succ, note=f"family {group_of(rid, m)}",
                           reclaim=reclaim, no_reclaim_globs=no_reclaim_globs, dry_run=dry_run, log=log)
