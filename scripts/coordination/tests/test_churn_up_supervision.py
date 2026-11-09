@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""churn_up.sh dry-run only (temp flags): the watchdog guard is started once and never duplicated."""
+"""churn_up.sh dry-run only (temp flags): the watchdog guard and core.bare watcher are started once and never duplicated."""
 import os
 import shutil
 import subprocess
@@ -34,9 +34,17 @@ class Tests(unittest.TestCase):
         time.sleep(0.3)
         return k.pid
 
-    def test_bringup_starts_guard_when_absent(self):
+    def test_bringup_starts_guard_and_watcher_when_absent(self):
         out = self.run_cu("--dry-run")
         self.assertIn("--supervise-watchdog", out)
+        self.assertRegex(out, r"START python3 -I \S+watch_git_config\.py")
+
+    def test_running_watcher_not_duplicated(self):
+        path = os.path.join(self.F, "bin", "watch_git_config.py")
+        self.holder(path)
+        out = self.run_cu("--dry-run")
+        self.assertIn("NOT starting a duplicate", out)
+        self.assertNotRegex(out, r"START python3 -I \S+watch_git_config\.py")
 
     def test_supervise_starts_absent_watchdog_only(self):
         wd = os.path.join(self.F, "ws58-keeper-watchdog.sh")

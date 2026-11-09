@@ -20,7 +20,8 @@
 #                          30 min + trash-sweep --older-than 1 hourly; log disk-janitor.log). A normal bring-up starts it too.
 # Start order (live): install -> residue -> watchdog -> keeper (started by the watchdog, verified here) -> dispatcher ->
 # backlog-gen -> flow-scoreboard -> disk-trend -> filing-watch. A component already running (pidfile pid, or ANY pid whose
-# argv holds its exact installed path) is never started twice. Also started: watchdog-guard (after the watchdog).
+# argv holds its exact installed path) is never started twice. Also started: watchdog-guard (after the watchdog) and
+# git-config-watch (log-only; like the janitor it is not inference, so --stop leaves it running).
 #
 # Rules it obeys (do not weaken): liveness is `ps -o pid= -p <pid>` + argv match, never a process-name search or kill; a running
 # .sh is never edited in place (installs go through a temp file + mv, so a running bash keeps its old inode) and never
@@ -88,6 +89,7 @@ INSTALL=(
   "ws58-flow-scoreboard-v1.sh     $CH/ws58-flow-scoreboard-v1.sh"
   "GOAL-codex-gen.md              $CH/GOAL-codex-gen.md"
   "bin/backlog_gen.py             $CO/backlog_gen.py"
+  "bin/watch_git_config.py        $CO/watch_git_config.py"
   "bin/handoff_sessions.py        $CO/handoff_sessions.py"
   "bin/flow_scoreboard.py         $CO/flow_scoreboard.py"
   "bin/worktree_footprint.py      $CO/worktree_footprint.py"
@@ -243,6 +245,7 @@ LOOPS=(
   "disk-trend|ws58-disk-trend.pid|ws58-disk-trend.sh|$F|bash $F/ws58-disk-trend.sh|$F/ws58-disk-trend.sh"
   "disk-janitor|disk-janitor.pid|disk_janitor.sh|$F|bash $F/disk_janitor.sh|$F/disk_janitor.sh"
   "filing-watch|ws58-filing-watch.pid|filing_watch.sh|$REPO|env FILING_WATCH_FLAGS_ROOT=$F FILING_WATCH_BUS_ROOT=$REPO/coordination/session-bus bash $REPO/scripts/coordination/filing_watch.sh|$REPO/scripts/coordination/filing_watch.sh"
+  "git-config-watch|git-config-watch.pid|watch_git_config.py|$F/bin|python3 -I $F/bin/watch_git_config.py|$F/bin/watch_git_config.py"
 )
 # pids whose argv has an element that IS <path> (or ./<basename> with cwd = dirname <path>). Exact-path match over
 # /proc/*/cmdline: never a name pattern, never pgrep. Excludes this script's own pid.
