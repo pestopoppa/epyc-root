@@ -473,6 +473,12 @@
       "weight": 9
     },
     {
+      "from": "INF-83",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 2
+    },
+    {
       "from": "INF-84",
       "kind": "ref",
       "to": "INF-65",
@@ -543,6 +549,12 @@
       "kind": "ref",
       "to": "INF-06",
       "weight": 2
+    },
+    {
+      "from": "RTG-02",
+      "kind": "ref",
+      "to": "PIP-04",
+      "weight": 1
     },
     {
       "from": "RTG-08",
@@ -683,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T17:46:05Z",
+  "generated_at": "2026-11-10T17:50:28Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2373,14 +2385,14 @@
         "INF-65"
       ],
       "closed": 3,
-      "dispatchable": 10,
+      "dispatchable": 11,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
-      "open": 10,
+      "open": 11,
       "priority": 0.0298,
       "priority_basis": {
         "campaign": 0,
@@ -2694,14 +2706,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 292,
-      "dispatchable": 80,
+      "dispatchable": 81,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-09",
       "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
-      "open": 82,
+      "open": 83,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2724,11 +2736,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 46,
+          "dispatchable": 47,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 47,
+          "open": 48,
           "readiness": "ready"
         },
         {
@@ -2744,7 +2756,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1051,
+          "line": 1052,
           "name": "autopilot-dashboard-fidelity-audit-2026-07-22",
           "open": 2,
           "readiness": "ready"
@@ -2753,7 +2765,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1461,
+          "line": 1462,
           "name": "autopilot-decision-plane-audit-2026-07-22",
           "open": 1,
           "readiness": "ready"
@@ -2762,7 +2774,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2159,
+          "line": 2160,
           "name": "batched-edit-parallel-apply",
           "open": 2,
           "readiness": "ready"
@@ -2771,7 +2783,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2296,
+          "line": 2297,
           "name": "bep-dcp-falsification-harness",
           "open": 1,
           "readiness": "ready"
@@ -2780,7 +2792,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2366,
+          "line": 2367,
           "name": "evidence-plane-event-sourcing-and-narrative",
           "open": 2,
           "readiness": "ready"
@@ -2789,7 +2801,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2560,
+          "line": 2561,
           "name": "evidence-plane-instrument-repair",
           "open": 3,
           "readiness": "ready"
@@ -2798,7 +2810,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2720,
+          "line": 2721,
           "name": "evidence-plane-ledger-and-sequential-verdicts",
           "open": 1,
           "readiness": "ready"
@@ -2807,7 +2819,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3105,
+          "line": 3106,
           "name": "loops-and-dashboards-audit-2026-07-05",
           "open": 1,
           "readiness": "ready"
@@ -2816,7 +2828,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 3497,
+          "line": 3498,
           "name": "objective-task-rate-goodput",
           "open": 5,
           "readiness": "ready"
@@ -2825,7 +2837,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3842,
+          "line": 3843,
           "name": "orchestration-robustness-audit-2026-07-11",
           "open": 4,
           "readiness": "ready"
@@ -2834,7 +2846,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 4097,
+          "line": 4098,
           "name": "scaffold-autopilot-cost-lever-deployment",
           "open": 7,
           "readiness": "ready"
@@ -2868,7 +2880,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4331,
+          "line": 4332,
           "name": "autopilot-sequential-allocation",
           "open": 4,
           "readiness": "blocked"
@@ -2902,7 +2914,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4787,
+          "line": 4788,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2911,7 +2923,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 5063,
+          "line": 5064,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
