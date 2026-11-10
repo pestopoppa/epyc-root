@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T12:16:00Z",
+  "generated_at": "2026-11-10T12:28:01Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1390,7 +1390,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6014,
+          "line": 6015,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1399,7 +1399,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6094,
+          "line": 6095,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1418,7 +1418,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6391,
+          "line": 6392,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1435,7 +1435,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9608,
+          "line": 9609,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1448,7 +1448,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13958,
+          "line": 13959,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1482,7 +1482,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14170,
+          "line": 14171,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1632,7 +1632,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 344,
+      "closed": 345,
       "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
@@ -1694,7 +1694,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1551,
+          "line": 1552,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1709,7 +1709,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2708,
+          "line": 2709,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1718,7 +1718,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3080,
+          "line": 3081,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1727,7 +1727,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3593,
+          "line": 3594,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
@@ -1736,7 +1736,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3688,
+          "line": 3689,
           "name": "llama-cpp-dsa-contribution",
           "open": 3,
           "readiness": "ready"
@@ -1896,14 +1896,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 193,
-      "dispatchable": 44,
+      "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-10",
       "next_action": "Champion is C10 7f1bd044b (operator 2026-11-10); AutoKernel owns promotion; C10 floors pending whole-host row; production v10",
-      "open": 45,
+      "open": 46,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1937,7 +1937,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 38,
+          "dispatchable": 39,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1946,14 +1946,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 39,
+          "open": 40,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1693,
+          "line": 1694,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1817,
+          "line": 1818,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2147,
+          "line": 2148,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2286,
+          "line": 2287,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -1989,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2842,
+          "line": 2843,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2001,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2982,
+          "line": 2983,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2013,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2989,
+          "line": 2990,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2320,7 +2320,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 24,
+          "line": 25,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 11,
           "readiness": "blocked"
@@ -2343,7 +2343,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 938,
+          "line": 939,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 51,
           "readiness": "blocked"
@@ -3110,7 +3110,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 298,
@@ -3119,7 +3119,7 @@
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
       "open": 74,
       "priority": 0.8844,
