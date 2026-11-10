@@ -1,0 +1,150 @@
+{
+  "comparison_rows": [
+    {
+      "engine": "odl-docling-fast-hybrid",
+      "metrics": {
+        "intrinsic_chunk_quality": null,
+        "reading_order": {
+          "detail": "normalized edit distance; LOWER is better",
+          "engine": "odl-docling-fast-hybrid",
+          "metric_family": "reading_order",
+          "metric_name": "reading_order.Edit_dist.ALL_page_avg",
+          "n": 0,
+          "value": 0.23513835117685725
+        },
+        "speed": null,
+        "structural_fidelity": {
+          "detail": "normalized edit distance; LOWER is better",
+          "engine": "odl-docling-fast-hybrid",
+          "metric_family": "structural_fidelity",
+          "metric_name": "text_block.Edit_dist.ALL_page_avg",
+          "n": 0,
+          "value": 0.156644596425767
+        },
+        "table_fidelity": {
+          "detail": "TEDS; HIGHER is better; TEDS_structure_only=0.41685724250422385",
+          "engine": "odl-docling-fast-hybrid",
+          "metric_family": "table_fidelity",
+          "metric_name": "table.TEDS.all",
+          "n": 0,
+          "value": 0.2654128982392229
+        }
+      },
+      "source_refs": [
+        1
+      ]
+    },
+    {
+      "engine": "paddleocr-vl-1.6",
+      "metrics": {
+        "intrinsic_chunk_quality": null,
+        "reading_order": {
+          "detail": "normalized edit distance; LOWER is better",
+          "engine": "paddleocr-vl-1.6",
+          "metric_family": "reading_order",
+          "metric_name": "reading_order.Edit_dist.ALL_page_avg",
+          "n": 0,
+          "value": 0.09627788400063184
+        },
+        "speed": null,
+        "structural_fidelity": {
+          "detail": "normalized edit distance; LOWER is better",
+          "engine": "paddleocr-vl-1.6",
+          "metric_family": "structural_fidelity",
+          "metric_name": "text_block.Edit_dist.ALL_page_avg",
+          "n": 0,
+          "value": 0.04007585515457097
+        },
+        "table_fidelity": {
+          "detail": "TEDS; HIGHER is better; TEDS_structure_only=0.9706711503549935",
+          "engine": "paddleocr-vl-1.6",
+          "metric_family": "table_fidelity",
+          "metric_name": "table.TEDS.all",
+          "n": 0,
+          "value": 0.9104792675117468
+        }
+      },
+      "source_refs": [
+        2
+      ]
+    }
+  ],
+  "gt_json": "/mnt/raid0/llm/tmp/pip02-r36-20261107/out/score-final/gt-subset.json",
+  "metric_directions": {
+    "intrinsic_chunk_quality": "higher_better",
+    "reading_order": "lower_better",
+    "speed": "lower_better",
+    "structural_fidelity": "lower_better",
+    "table_fidelity": "higher_better"
+  },
+  "metric_rows": [
+    {
+      "detail": "normalized edit distance; LOWER is better",
+      "engine": "odl-docling-fast-hybrid",
+      "metric_family": "structural_fidelity",
+      "metric_name": "text_block.Edit_dist.ALL_page_avg",
+      "n": 0,
+      "value": 0.156644596425767
+    },
+    {
+      "detail": "TEDS; HIGHER is better; TEDS_structure_only=0.41685724250422385",
+      "engine": "odl-docling-fast-hybrid",
+      "metric_family": "table_fidelity",
+      "metric_name": "table.TEDS.all",
+      "n": 0,
+      "value": 0.2654128982392229
+    },
+    {
+      "detail": "normalized edit distance; LOWER is better",
+      "engine": "odl-docling-fast-hybrid",
+      "metric_family": "reading_order",
+      "metric_name": "reading_order.Edit_dist.ALL_page_avg",
+      "n": 0,
+      "value": 0.23513835117685725
+    },
+    {
+      "detail": "normalized edit distance; LOWER is better",
+      "engine": "paddleocr-vl-1.6",
+      "metric_family": "structural_fidelity",
+      "metric_name": "text_block.Edit_dist.ALL_page_avg",
+      "n": 0,
+      "value": 0.04007585515457097
+    },
+    {
+      "detail": "TEDS; HIGHER is better; TEDS_structure_only=0.9706711503549935",
+      "engine": "paddleocr-vl-1.6",
+      "metric_family": "table_fidelity",
+      "metric_name": "table.TEDS.all",
+      "n": 0,
+      "value": 0.9104792675117468
+    },
+    {
+      "detail": "normalized edit distance; LOWER is better",
+      "engine": "paddleocr-vl-1.6",
+      "metric_family": "reading_order",
+      "metric_name": "reading_order.Edit_dist.ALL_page_avg",
+      "n": 0,
+      "value": 0.09627788400063184
+    }
+  ],
+  "notes": [],
+  "schema": "odl_bench.existing_comparison.v1",
+  "sources": [
+    {
+      "engine": "odl-docling-fast-hybrid",
+      "engines": [
+        "odl-docling-fast-hybrid"
+      ],
+      "kind": "metric_result",
+      "path": "artifacts/compute/pip02-r36-65page-20261108/odl-Lfinal_quick_match_metric_result.json"
+    },
+    {
+      "engine": "paddleocr-vl-1.6",
+      "engines": [
+        "paddleocr-vl-1.6"
+      ],
+      "kind": "metric_result",
+      "path": "artifacts/compute/pip02-r36-65page-20261108/paddle-Lfinal_quick_match_metric_result.json"
+    }
+  ]
+}
