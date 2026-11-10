@@ -9,20 +9,11 @@ This queue groups generated public-results rows by the next review action. It do
 ## Summary
 
 - Total rows: 374
-- `protocol-tag-needed`: 1
-- `retired_from_public_claims`: 373
+- `retired_from_public_claims`: 374
 
 ### Applied Review Decisions
 
-- `retired_from_public_claims`: 373
-
-## protocol-tag-needed
-
-Next action: Backfill protocol id, n/reps, date, and attestation from an evidence bundle; otherwise demote or retire the row.
-
-| Source line | Section | Entity | Metrics | Protocol status | Action |
-|---|---|---|---|---|---|
-| 46 | Research Results Summary / Best Results | Qwen3.5-122B-A10B Q4_K_M | Speed: 9.2 t/s; Speedup: -; Quality (CaJ): TBD (not yet benchmarked) | evidence-linked; needs protocol tag | hold_for_protocol_backfill |
+- `retired_from_public_claims`: 374
 
 ## retired_from_public_claims
 
@@ -39,6 +30,7 @@ Next action: Review the row action before publication.
 | 43 | Research Results Summary / Best Results | gemma-3-27B + spec (K=16) | Speed: 19.6 t/s; Speedup: 8.9x; Quality (CaJ): 78% | unverified historical row | retired_from_public_claims (no row-specific evidence bundle or protocol metadata; keep local historical reference only) |
 | 44 | Research Results Summary / Best Results | gemma-3-12b + spec (K=16) | Speed: 14.8 t/s; Speedup: 1.6x; Quality (CaJ): 79% | unverified historical row | retired_from_public_claims (no row-specific evidence bundle or protocol metadata; keep local historical reference only) |
 | 45 | Research Results Summary / Best Results | Qwen3-32B + spec (K=8) | Speed: 12.2 t/s; Speedup: 7.6x; Quality (CaJ): 69% | unverified historical row | retired_from_public_claims (no row-specific evidence bundle or protocol metadata; keep local historical reference only) |
+| 46 | Research Results Summary / Best Results | Qwen3.5-122B-A10B Q4_K_M | Speed: 9.2 t/s; Speedup: -; Quality (CaJ): TBD (not yet benchmarked) | evidence-linked; needs protocol tag | retired_from_public_claims (E0 unattested; model retired 2026-09-22 and GGUF deleted, so no v10 rerun is possible; superseded by the current-lineup P-BENCH-1 rows (INF-85 W3 2026-11-10)) |
 | 47 | Research Results Summary / Best Results | MoE Expert Reduction (4-6 experts) | Speed: +21-120%; Speedup: -; Quality (CaJ): varies | unverified historical row | retired_from_public_claims (no row-specific evidence bundle or protocol metadata; keep local historical reference only) |
 | 57 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen3.5-35B-A3B Q4KM | 192t t/s: ~12.7; NUMA t/s (per-inst): 12.7 | protocol-tagged (pre-attestation-era; missing attestation; needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21] | retired_from_public_claims (no contemporaneous attestation binding the historical claim to its run; reconsider with a valid evidence bundle or a separately attested rerun) |
 | 58 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen2.5-Coder-32B Q4KM | 192t t/s: 12.2; NUMA t/s (per-inst): 10.8 | protocol-tagged (pre-attestation-era; missing attestation; needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21] | retired_from_public_claims (no contemporaneous attestation binding the historical claim to its run; reconsider with a valid evidence bundle or a separately attested rerun) |

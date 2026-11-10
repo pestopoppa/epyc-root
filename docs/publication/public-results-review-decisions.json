@@ -80,6 +80,10 @@
     "170": {
       "decision": "retired_from_public_claims",
       "reason": "E0 concurrent sweep on a retired frontdoor model; a current-lineup np sweep would be a different claim, not a rerun of this row (INF-85 W3 adjudication 2026-11-10)"
+    },
+    "46": {
+      "decision": "retired_from_public_claims",
+      "reason": "E0 unattested; model retired 2026-09-22 and GGUF deleted, so no v10 rerun is possible; superseded by the current-lineup P-BENCH-1 rows (INF-85 W3 2026-11-10)"
     }
   }
 }

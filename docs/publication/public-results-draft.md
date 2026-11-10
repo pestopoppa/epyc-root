@@ -9,12 +9,11 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 ## Summary
 
 - Total rows: 374
-- `hold_for_protocol_backfill`: 1
-- `retired_from_public_claims`: 373
+- `retired_from_public_claims`: 374
 
 ### Protocol Backfill Summary
 
-- `protocol tag`: 1
+- No protocol backfill targets.
 
 ### Historical Attestation Review Summary
 
@@ -28,7 +27,7 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 
 ### Review Decision Summary
 
-- `retired_from_public_claims`: 373
+- `retired_from_public_claims`: 374
 
 ### Public Scrub Summary
 
@@ -47,7 +46,7 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 | Research Results Summary / Best Results | gemma-3-27B + spec (K=16) |  | Speed: 19.6 t/s; Speedup: 8.9x; Quality (CaJ): 78% | unverified historical row | public-safe surface | retired_from_public_claims | 43 |
 | Research Results Summary / Best Results | gemma-3-12b + spec (K=16) |  | Speed: 14.8 t/s; Speedup: 1.6x; Quality (CaJ): 79% | unverified historical row | public-safe surface | retired_from_public_claims | 44 |
 | Research Results Summary / Best Results | Qwen3-32B + spec (K=8) |  | Speed: 12.2 t/s; Speedup: 7.6x; Quality (CaJ): 69% | unverified historical row | public-safe surface | retired_from_public_claims | 45 |
-| Research Results Summary / Best Results | Qwen3.5-122B-A10B Q4_K_M |  | Speed: 9.2 t/s; Speedup: -; Quality (CaJ): TBD (not yet benchmarked) | evidence-linked; needs protocol tag | public-safe surface | hold_for_protocol_backfill | 46 |
+| Research Results Summary / Best Results | Qwen3.5-122B-A10B Q4_K_M |  | Speed: 9.2 t/s; Speedup: -; Quality (CaJ): TBD (not yet benchmarked) | evidence-linked; needs protocol tag | public-safe surface | retired_from_public_claims | 46 |
 | Research Results Summary / Best Results | MoE Expert Reduction (4-6 experts) |  | Speed: +21-120%; Speedup: -; Quality (CaJ): varies | unverified historical row | public-safe surface | retired_from_public_claims | 47 |
 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen3.5-35B-A3B Q4KM | Size: 20 GB | 192t t/s: ~12.7; NUMA t/s (per-inst): 12.7 | protocol-tagged (pre-attestation-era; missing attestation; needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21] | public-safe surface | retired_from_public_claims | 57 |
 | Research Results Summary / Production Throughput - NUMA Deployment (verified 2026-03-21) [Protocol: P-BENCH-2, n=5, 2026-03-21] | Qwen2.5-Coder-32B Q4KM | Size: 18.5 GB | 192t t/s: 12.2; NUMA t/s (per-inst): 10.8 | protocol-tagged (pre-attestation-era; missing attestation; needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21] | public-safe surface | retired_from_public_claims | 58 |
