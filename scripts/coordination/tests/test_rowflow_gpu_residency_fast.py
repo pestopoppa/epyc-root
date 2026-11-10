@@ -122,7 +122,7 @@ class DetachedJobIdentity(unittest.TestCase):
         own = {}
         with mock.patch.object(rf, "harness_tree", side_effect=lambda r, t: t), \
              mock.patch.object(rf, "gpu_occupancy", return_value={"pids": {4242: 1 << 30}, "vram_used": 1 << 30}), \
-             mock.patch.object(rf, "pid_filler_id", return_value=filler_id), \
+             mock.patch.object(rf, "lineage_filler_id", return_value=filler_id), \
              mock.patch.object(rf, "pid_container_id", return_value=None):
             rf.sample_gpu_residency(1, {}, own, "row-a", {})
         return own
@@ -135,6 +135,20 @@ class DetachedJobIdentity(unittest.TestCase):
 
     def test_no_filler_id_does_not_count(self):
         self.assertEqual(self.run_sample(None), {})
+
+    def test_cleaned_env_child_inherits_row_from_parent(self):
+        import subprocess, sys, time
+        code = ("import subprocess,sys,time;c=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)'],env={'PATH':'/usr/bin'},"
+                "start_new_session=True);print(c.pid,flush=True);time.sleep(30)")
+        p = subprocess.Popen([sys.executable, "-c", code], env=dict(os.environ, FILLER_ID="row-lin"), stdout=subprocess.PIPE, text=True)
+        try:
+            child = int(p.stdout.readline())
+            time.sleep(0.2)
+            self.assertIsNone(rf.pid_filler_id(child))
+            self.assertEqual(rf.lineage_filler_id(child), "row-lin")
+        finally:
+            p.kill(); p.wait()
+            subprocess.run(["kill", str(child)], check=False)
 
     def test_reads_real_environ(self):
         import subprocess, sys, time

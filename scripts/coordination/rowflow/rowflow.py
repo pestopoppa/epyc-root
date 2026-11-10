@@ -2643,6 +2643,20 @@ def pid_filler_id(pid):
     return None
 
 
+def lineage_filler_id(pid, depth=16):
+    """FILLER_ID of pid or its nearest ancestor that has one. A job may start its GPU server with a cleaned environment
+    and a new session (c10-fold-gate: env=env_for(arm), start_new_session=True); its parent still carries the row id."""
+    for _ in range(depth):
+        fid = pid_filler_id(pid)
+        if fid is not None:
+            return fid
+        st = _proc_stat(pid)
+        if not st or st[0] <= 1:
+            return None
+        pid = st[0]
+    return None
+
+
 def docker_row_label(cid):
     """The row label of a container, or None when unreadable. Asked once per container while it still exists."""
     try:
@@ -2661,7 +2675,7 @@ def sample_gpu_residency(root, tracked, own, rid=None, containers=None):
     for q, b in (gpu_occupancy().get("pids") or {}).items():
         if b <= 0:
             continue
-        mine = q in tracked or (bool(rid) and pid_filler_id(q) == rid)   # launchers detach the job from the harness tree
+        mine = q in tracked or (bool(rid) and lineage_filler_id(q) == rid)   # launchers detach the job from the harness tree
         if not mine and rid and containers is not None:
             cid = pid_container_id(q)
             if cid:
