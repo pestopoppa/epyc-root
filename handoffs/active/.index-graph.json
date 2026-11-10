@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T10:57:05Z",
+  "generated_at": "2026-11-10T11:00:03Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1694,7 +1694,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1550,
+          "line": 1551,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1709,7 +1709,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2707,
+          "line": 2708,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1718,7 +1718,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3079,
+          "line": 3080,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1727,7 +1727,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3592,
+          "line": 3593,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
@@ -1736,7 +1736,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3687,
+          "line": 3688,
           "name": "llama-cpp-dsa-contribution",
           "open": 3,
           "readiness": "ready"
