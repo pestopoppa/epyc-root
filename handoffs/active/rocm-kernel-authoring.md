@@ -113,14 +113,39 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
     Layouts: 8,983 rows, **247 `supported=0`** (MUL_MAT 100, SET_ROWS 84, CPY 63), counted as hard failures.
     Stateful: 5,186/5,186 clean. The ordinal reducer fix (research `dec858bea`, merged `f4b850f9e`) was
     already in r4's pin, so it does not change this count and **no r5 is warranted on that basis**. [belief: cc]
-    - [ ] Classify the structurally output-invariant CONV_2D geometries (output is padding-only) as C5-2 insensitive
+    - [x] Classify the structurally output-invariant CONV_2D geometries (output is padding-only) as C5-2 insensitive
       cases instead of unscoreable, with a geometry test proving the exclusion, then re-reduce the r4 CSVs offline
-      (no new compute). Re-check the residual CPY/FILL/TOP_K/ARGSORT units afterwards.
-    - [ ] Decide whether the 247 layout `supported=0` rows (MUL_MAT/SET_ROWS/CPY) are legitimate CPU-backend
+      (no new compute). Re-check the residual CPY/FILL/TOP_K/ARGSORT units afterwards. ✅ 2026-11-10 -
+      research `60d2042e0` (merged `a16499b99`): `conv2d_output_is_padding_only` (no in-range tap in either spatial
+      dim), units carry `structurally_insensitive`; only flagged when the measured output really was invariant.
+      Offline re-reduce of r4 (92,936 obs, 54,250 units): **3,696 CONV_2D units structurally insensitive,
+      unscoreable 3,894 -> 198** (CPY 69, LIGHTNING_INDEXER 32, FILL 28, FLASH_ATTN_EXT 24, TOP_K 18, ARGSORT 8,
+      SSM_SCAN_ROLLBACK 7, LOG 6, SQRT 6); outcome still FAIL. Residuals: CPY 69 = i32/quantized-src to f32 (23
+      src types x 3) - the producer's value-source collector takes only F32/F16/BF16 leaf tensors, so the
+      transform only perturbs the overwritten dst, a producer coverage gap; FILL 28 = output is the constant `c` by
+      op semantics (input overwritten; insensitive by construction, not yet classified); TOP_K 18 / ARGSORT 8 =
+      degenerate tiny shapes (ne=1 or 3) whose seed-derived inputs collide across seeds. Note: with kernel 1x1 the
+      example "padding 5, dilation 4" alone is NOT padding-only; the r4 cases are (stride1=5,padding1=2). [belief: cc]
+    - [x] Decide whether the 247 layout `supported=0` rows (MUL_MAT/SET_ROWS/CPY) are legitimate CPU-backend
       non-support, which the layout reducer should exclude, or a gap in the producer. Make the reducer count
-      unsupported separately from hard failures.
-    - [ ] Producer: find why FLASH_ATTN_EXT hsk=320 and LIGHTNING_INDEXER cases emit no AK_SENS receipt on some
-      seeds (sens phases rc=1). This is the source of the 70 unpaired units.
+      unsupported separately from hard failures. ✅ 2026-11-10 - **legitimate CPU non-support, not a producer
+      gap**: `ggml-cpu.cpp` `supports_op` declines CPY/SET_ROWS to IQ1/IQ2/IQ3 dst (no `from_float`; 63+84 rows) and
+      MUL_MAT whose src1 is f16 unless src0 is f16 (src0 vec_dot_type != f16; 100 rows). The producer emits
+      supported=0 + hard_failure=1 by design for any probe pass. Research `60d2042e0`: `BackendOpsCase.supported`,
+      `BackendOpsRun.unsupported_hard_failures_by_op()` (247) vs `hard_failures_by_op()` (0 ran-and-failed);
+      fail-closed `status` deliberately unchanged (existing test), so excluding them from a gate is a consumer
+      decision for a CPU-only run, not for GPU candidates where non-support would hide a missing kernel. [belief: cc]
+    - [x] Producer: find why FLASH_ATTN_EXT hsk=320 and LIGHTNING_INDEXER cases emit no AK_SENS receipt on some
+      seeds (sens phases rc=1). This is the source of the 70 unpaired units. ✅ 2026-11-10 - cause found, fix NOT
+      applied: the f16 KQ mask from `init_tensor_kq_mask` contains `-INFINITY` blocks (when
+      `0.2*N/8192 >= 1`, i.e. these larger FA/LI shapes); `autokernel_write_scaled_float` rejects non-finite results
+      ("value transform produced a non-finite F16 input"), so the identity pass fails (`value_receipt completed=0`,
+      error `compare failed`, supported=1, hard_failure=0) and the receipt gate
+      (`transforms_completed == 4`) emits nothing. r4: LI 52/50/52 and FA 1/2/3 rows per seed 4711/6841/8117; mask
+      occurrence is seed-dependent, hence unpaired. (REGLU f16, 6 rows, is separate: fails at transform 3.) A correct
+      fix needs a producer decision (preserve -inf mask sentinels under scale; negate must not flip -inf to +inf)
+      plus rebuild and replay, so it was not made here; stdout `VALUE TRANSFORM FAIL` text was not retained in the
+      CSV, so this is source-derived, not log-confirmed. [belief: cc]
   - *(folded into INF48-LIVE-2; full text at b3bd883d3:92)* **Harden the remaining producer-dependent C2 oracle surfaces.**
   - [x] **Bind the three reducer outputs into verdict-bearing source-candidate T0 authority.** ✅
     2026-08-12 — research `d8013a6c` requires measured, hash-bound sensitivity,

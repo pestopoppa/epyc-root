@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 589
+      "open": 586
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1540,7 +1540,7 @@
       "blocked": 1,
       "closed": 132,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-10",
       "open": 31,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -2133,10 +2133,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 341,
+      "closed": 344,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 18,
+      "open": 15,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2149,7 +2149,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 104,
+          "closed": 107,
           "gates": [
             "EVL-47"
           ],
@@ -2157,7 +2157,7 @@
           "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 12
+          "open": 9
         },
         {
           "blocked": 0,
@@ -2167,7 +2167,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1516,
+          "line": 1541,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2180,7 +2180,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2673,
+          "line": 2698,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2190,7 +2190,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3045,
+          "line": 3070,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2200,7 +2200,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3558,
+          "line": 3583,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 2
@@ -2210,7 +2210,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 3653,
+          "line": 3678,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 3
