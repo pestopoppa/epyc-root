@@ -21,6 +21,7 @@ bin/rowflow/run_direct.py            scripts/coordination/rowflow/run_direct.py 
 bin/rowflow/run_direct.sh            scripts/coordination/rowflow/run_direct.sh           hot
 bin/rowflow/task_lint.py             scripts/handoffs/task_lint.py                        hot
 bin/rowflow/task_lint_core.py        scripts/handoffs/task_lint_core.py                   hot
+bin/rowflow/handoff_ref.py           scripts/coordination/handoff_ref.py                  hot
 
 # ---- bin/churn: filing, reclaim, wrap-up (reclaim_row.py imports the scripts/system + job_templates modules from here)
 bin/churn/wrapup.py                  scripts/coordination/churn/wrapup.py                 hot
@@ -32,6 +33,7 @@ bin/churn/typed_classify.py          scripts/coordination/churn/typed_classify.p
 bin/churn/tokens_per_task.py         scripts/coordination/churn/tokens_per_task.py        hot
 bin/churn/scratch_guard.py           scripts/coordination/churn/scratch_guard.py          hot
 bin/churn/row_disk_budget.py         scripts/coordination/churn/row_disk_budget.py        hot
+bin/churn/handoff_ref.py             scripts/coordination/handoff_ref.py                  hot
 bin/churn/row_worktree.py            scripts/coordination/job_templates/row_worktree.py   hot
 bin/churn/worktree_gate.py           scripts/system/worktree_gate.py                      hot
 bin/churn/worktree_salvage.py        scripts/system/worktree_salvage.py                   hot
@@ -47,6 +49,7 @@ bin/job_templates/row_worktree.py    scripts/coordination/job_templates/row_work
 bin/backlog_gen.py                   scripts/coordination/backlog_gen.py                  hot
 bin/watch_git_config.py              scripts/coordination/watch_git_config.py             hot
 bin/handoff_sessions.py              scripts/coordination/handoff_sessions.py             hot
+bin/handoff_ref.py                   scripts/coordination/handoff_ref.py                  hot
 bin/flow_scoreboard.py               scripts/coordination/flow_scoreboard.py              hot
 bin/worktree_footprint.py            scripts/coordination/worktree_footprint.py           hot
 bin/index_regen.py                   scripts/coordination/index_regen.py                  hot

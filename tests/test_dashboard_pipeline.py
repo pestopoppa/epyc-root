@@ -221,5 +221,5 @@ def test_badge_counts_join_mixed_handoff_formats(tmp_path):
 
 def test_handoff_file_normalisation():
     for v in ("x.md", "handoffs/active/x.md", "x.md:T-1", "handoffs/blocked/x.md:T"):
-        assert ps._handoff_file(v) == "x.md"
-    assert ps._handoff_file("FILLERS") is None and ps._handoff_file(None) is None
+        assert ps._handoff_ref.file_of(v) == "x.md"
+    assert ps._handoff_ref.file_of("FILLERS") is None and ps._handoff_ref.file_of(None) is None

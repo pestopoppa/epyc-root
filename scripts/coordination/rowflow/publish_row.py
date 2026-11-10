@@ -45,6 +45,11 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import rowflow as rf  # noqa: E402
+try:
+    import handoff_ref  # noqa: E402  (installed beside this file in bin/rowflow)
+except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import handoff_ref  # noqa: E402
 
 _MARKER = re.compile(r"\.(complete|ended|done|FILED)$|/grants/|/(RUN_)?(COMPLETE|TERMINAL)[^/]*$", re.I)
 RESULT_FILE = {"json": "RESULT.json", "jsonl": "results.jsonl"}
@@ -206,7 +211,7 @@ def lint(spec):
 def check_handoff(spec, repo=None):
     """The row belongs to a handoff: handoff_task must name an existing handoffs/active/<file>.md."""
     ht = str(spec.get("handoff_task") or "").strip()
-    f = os.path.basename(ht.split(":", 1)[0])
+    f = handoff_ref.file_of(ht) or ""
     rf.need(f.endswith(".md") and os.path.isfile(os.path.join(repo or REPO, "handoffs", "active", f)),
             f"handoff_task {ht!r} names no handoffs/active/<file>.md; write \"handoff_task\": \"<file>.md:<ROW-ID>\" (or "
             f"\"<file>.md\") for the handoff whose task this row serves - the row belongs to that handoff, and its "

@@ -28,6 +28,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "rowflow"))
 
+try:
+    import handoff_ref  # noqa: E402  (installed beside this file in bin/churn)
+except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
+    sys.path.insert(0, os.path.dirname(HERE))
+    import handoff_ref  # noqa: E402
 import file_result as _fr0  # noqa: E402  (the one definition of the live flags root; filing.py itself names no scratch root)
 DEFAULT_FLAGS = _fr0.DEFAULT_FLAGS
 TERMINAL_VERDICTS = ("SUPERSEDED", "WITHDRAWN")
@@ -135,8 +140,7 @@ def verify_receipt(repo, receipt, rid, lineage, ref="origin/main", fetch=True):
     full = full.strip()
     if git(repo, "merge-base", "--is-ancestor", full, ref)[0] != 0:
         return False, f"commit {full[:12]} is not on {ref}"
-    if "/" not in handoff:
-        handoff = "handoffs/active/" + handoff
+    handoff = handoff_ref.repo_path(handoff)
     rc, diff, err = git(repo, "show", "-U0", "--format=", full, "--", handoff)
     if rc or not diff.strip():
         return False, f"commit {full[:12]} does not touch {handoff}"

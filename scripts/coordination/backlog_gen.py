@@ -79,6 +79,8 @@ _STEM_SUFFIX = re.compile(r"(?:[-_](?:\d{8}(?:T\d{4,6}Z?)?|v\d+|r\d+|rearm|retry
 _TOO_BIG = re.compile(r"\[too-big:", re.I)
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rowflow"))
+sys.path.insert(1, os.path.dirname(os.path.abspath(__file__)))
+import handoff_ref  # noqa: E402  (beside this file in the repo and in bin/)
 try:
     import rowflow as _rf
 except ImportError:  # bundle without rowflow beside it: every v3 row shows as needs-qualification
@@ -151,8 +153,7 @@ def load_pilots(path: str | None) -> dict[str, dict]:
 
 def handoff_file(handoff_task) -> str:
     """'handoffs/active/x.md:ROW' | 'x.md' -> 'x.md' (the file a row belongs to); '' when it names no .md file."""
-    f = os.path.basename(str(handoff_task or "").split(":", 1)[0].strip())
-    return f if f.endswith(".md") else ""
+    return handoff_ref.file_of(handoff_task) or ""
 
 
 def pilot_of(pilots: dict, rid: str, row_id: str | None = None, handoff: str | None = None) -> str | None:

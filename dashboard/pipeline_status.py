@@ -28,6 +28,19 @@ except ImportError:  # loaded as a top-level module (tests / scripts)
     import handoff_parser as _hp  # type: ignore[no-redef]
 
 HANDOFF_ROOT = Path(__file__).resolve().parents[1] / "handoffs"
+_COORD = Path(__file__).resolve().parents[1] / "scripts" / "coordination"
+
+
+def _load_handoff_ref():
+    """scripts/coordination/handoff_ref.py, the one parser of a row's handoff reference (loaded by path: no sys.path edit)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("_handoff_ref_for_dashboard", _COORD / "handoff_ref.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    return mod
+
+
+_handoff_ref = _load_handoff_ref()
 _ROWFLOW_PY = Path(__file__).resolve().parents[1] / "scripts" / "coordination" / "rowflow" / "rowflow.py"
 _ROWFLOW_MOD: list = []
 
@@ -382,14 +395,6 @@ def _rollup_counts(graph: dict | None, root: Path) -> dict[str, int]:
     return out
 
 
-def _handoff_file(h) -> str | None:
-    """``x.md`` | ``handoffs/<state>/x.md`` | ``x.md:TASK`` -> ``x.md`` (the graph node's file)."""
-    if not isinstance(h, str) or not h:
-        return None
-    base = h.partition(":")[0].rstrip("/").rpartition("/")[2]
-    return base if base.endswith(".md") else None
-
-
 def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = None) -> dict:
     """Group the graph's nodes by handoff and class each handoff by its blockers.
 
@@ -410,7 +415,7 @@ def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = Non
     nready: dict[str, int] = {}
     nrun: dict[str, int] = {}
     for r in rows.values():
-        f = _handoff_file(r.get("handoff"))
+        f = _handoff_ref.file_of(r.get("handoff"))
         if not f:
             continue
         if r["state"] in ("ready", "running"):
@@ -425,7 +430,7 @@ def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = Non
             continue
         state = n.get("state") or "active"
         key = f"handoffs/{state}/{n['handoff']}"
-        f = _handoff_file(n["handoff"])
+        f = _handoff_ref.file_of(n["handoff"])
         h = by.setdefault(key, {"handoff": n["handoff"], "id": f"{state}/{str(n['handoff'])[:-3] if str(n['handoff']).endswith('.md') else n['handoff']}",
                                 "open": 0, "classes": set(), "readied_rows": readied.get(f, 0),
                                 "ready_rows": nready.get(f, 0), "running_rows": nrun.get(f, 0)})
