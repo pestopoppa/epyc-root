@@ -1041,6 +1041,7 @@ hold) — only the SECONDARY slot is re-scored._
   - [x] RVP-C4-8 ✅ 2026-11-10 — research ad6e592ab: c4_hardware_context two-slot schema (arch constants + separate block-scheduling policy), closed key set + 1200-char cap; GFX90A_MI210 = 104 CU / 8 MB unified L2 / 1 die / no XCDs / linear, with an explicit "XCD remap = identity" advice; XCD dispatch on ≤1 XCD refused. [no-belief: schema, no measurement]
   - [x] RVP-C4-11 ✅ 2026-11-10 — research ad6e592ab: SourcePattern.estimated_speedup (optional, digest-stable) + profile_report.require_estimates; c4_rule_telemetry fold reports |est−ach|/ach mean AND worst per rule and overall. [no-belief: schema+reducer, no measurement]
   - RVP-C4-7: "offline leg ✅ research ad6e592ab hawkeye_plan: all nine declared, one rocprofv2 pass (SQ 6/8, TCC 4/4). Collection: row c4-7-hawkeye-counters-20261110 (rank 46, GPU smoke queued). [inference: GPU row c4-7-hawkeye-counters-20261110]"
+  - RVP-C4-7 RESULT ✅ 2026-11-10 c4-7-hawkeye-counters-20261110 rc=0 pass: COLLECTED_ALL, all nine Hawkeye counters collect in one rocprofv2 pass on MI210/ROCm 6.2 (v10 GPU store), none absent, csv sha256 5347eb2f; filed by autokernel. [no-belief: row verdict filed by agent]
   - RVP-C4-9: "reducer ✅ research ad6e592ab c4_rule_telemetry; remaining: call records_from_report + append_records from the eval-backend run path."
   - INF48-LIVE-3 note: "code landed research 44e581f8a (C4-5/6/8/11 done, C4-9 reducer not yet wired, C4-7 GPU row queued)."
 ##### C5 — secondary substrate re-score and corpus seeding
