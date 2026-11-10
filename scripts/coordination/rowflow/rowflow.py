@@ -4211,13 +4211,35 @@ def whole_quarter_reservation(cands, free, ram_gib):
     return min(want, sum(1 for q in QUARTERS if q in free))
 
 
+SMOKE_FILL_FIRST = True   # keeper audit 2026-11-10 fix 8: queued smokes whose row could fill a region idle NOW go first
+
+
+def smoke_fill_rank(flags, rid, free, qpath=None):
+    """0: the row behind this queued smoke could be granted onto regions free right now (an option fits them);
+    1: one of its options touches a free region; 2: none / unknown. A PASS is what makes a row grantable, so smoking
+    the rows that would fill idle regions first turns idle compute into work soonest. Ties keep FIFO (queued_at)."""
+    row = (load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json"))
+           or ((load_json(qpath) or {}).get("spec") if qpath else None) or {})
+    if not row:
+        return 2
+    try:
+        opts = [set(expand(set(o))) for o in contract_of(row, flags=flags)["options"] if o]
+    except Exception:  # noqa: BLE001 - an unparsable row keeps its FIFO place behind the known fillers
+        return 2
+    fr = set(free)
+    if any(o <= fr for o in opts):
+        return 0
+    return 1 if any(o & fr for o in opts) else 2
+
+
 def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), keep_whole=0):
     """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets n free cores, and its smoke starts
     detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated in place. No free cores is
     WAIT (logged), never a failure. Returns the placed (rid, cpus)."""
     placed = []
     qs = sorted(glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")),
-                key=lambda p: ((load_json(p) or {}).get("queued_at") or "", p))
+                key=lambda p: (smoke_fill_rank(flags, os.path.basename(os.path.dirname(p)), free, p) if SMOKE_FILL_FIRST else 0,
+                               (load_json(p) or {}).get("queued_at") or "", p))
     for q in qs:
         rid = os.path.basename(os.path.dirname(q))
         pl = load_json(smoke_placed_path(flags, rid)) or {}
