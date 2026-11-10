@@ -33,6 +33,17 @@
     "trimmed": "residency windows cut to scalar keys; seal re-derived"
   },
   {
+    "decisive": false,
+    "fixture": "serving/matched_runtime/serving-beliefs/145bacf23557657132b1da21f210602a7b56862dc98f9d11573274b78190e364.json",
+    "label": "matched_runtime",
+    "mechanism_id": "runtime-arm-load-threads-48",
+    "original_receipt": "/mnt/raid0/llm/autokernel/proof-q38fn-r4-20261109/serving-beliefs/478caaf083dbd2fb40d75653b11b0c8521bbb0546271305d50fd3cc5af9eb4db.json",
+    "original_source": "/mnt/raid0/llm/autokernel/proof-q38fn-r4-20261109/serving-beliefs/sources/478caaf083dbd2fb40d75653b11b0c8521bbb0546271305d50fd3cc5af9eb4db.json",
+    "original_source_sha256": "600bca53abd8fa9dcfc0a7a84b71d3a33ec96967f733ed89e2613bd33802f4c1",
+    "schema": "epyc.autokernel.serving_runtime_ab.v1",
+    "trimmed": "residency windows cut to scalar keys; seal re-derived"
+  },
+  {
     "fixture": "floor/q27b/serving-floor.q27b-9a3f1392a-gpu-dflash2-np1.requests-baa3aa6d30b8bef8263480a6d84250fabadfaac2944359111fb0a5cf9bd428ed.json",
     "original": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/store/serving-floor.q27b-9a3f1392a-gpu-dflash2-np1.requests-baa3aa6d30b8bef8263480a6d84250fabadfaac2944359111fb0a5cf9bd428ed.json",
     "original_sha256": "8ccff75f84e0b4af45731a61213b36072a3015bca8d41a1e20c76fe3a29af646",
