@@ -1,116 +1,96 @@
 # How We Collapsed Our Own CPU Wins: Canonical Benchmarking On EPYC
 
-Status: internal draft scaffold, not publication-ready. Current focus is a
-publication-prep packet: scrubbed claim labels, named evidence bundles, and a
-clear split between exact-number candidates and paraphrase-only observations.
+Status: draft. Every number below carries its claim label; numbers that cannot
+carry a complete label are stated as observations or paraphrased.
 
-This draft is the source-backed skeleton for F6-W2. It intentionally separates
-historical observations from publishable claims. Before posting externally,
-convert each publishable number into the MEASUREMENT.md grammar:
+## Claim grammar used in this post
 
-`metric [protocol-id, n/reps, date, host-attestation ref]`
+A claim is `metric [protocol-id, n/reps, date, host-attestation ref]`. A number
+missing any of those fields is an *observation*: it can motivate a hypothesis
+but cannot justify a decision. Labels used below:
+
+- `CLAIM (retro-certified)`: produced by a recorded command and environment
+  that conform to the named protocol, certified after the fact. Attestation
+  reference is stated as `pending` where no attestation artifact exists yet.
+- `OBSERVATION (pre-canonical era)`: real data from an instrument that predates
+  the canonical protocol. Hypothesis-forming only.
+- `PARAPHRASE`: no exact number is quoted because the raw rows are not retained.
+
+Nothing in this post is a statement about current performance. All throughput
+figures are from a single host (one EPYC 9655, NPS4, 96 cores, governor
+`performance`, NUMA balancing off, THP always) in late April 2026, on a
+llama.cpp development branch (build 8931), and are quoted to show how a
+comparison changes when the baseline is fixed.
 
 ## Working Thesis
 
 CPU inference optimization on a large EPYC host is easy to overclaim because
-the host state, thread placement, memory placement, and benchmark entry point
-can move more than the code. Our strongest methodology story is not that every
-optimization worked; it is that the canonical protocol forced several apparent
+host state, thread placement, memory placement and the benchmark entry point
+can move the result more than the code does. Our story is not that every
+optimization worked; it is that a canonical protocol forced several apparent
 wins to collapse, and that made the remaining wins more credible.
 
 ## Narrative Outline
 
-1. **The attractive result.** Late-April CPU optimization notes contained two
-   easy-to-overread wins: a staged NPS4/CCD stack that appeared to move a
-   single-instance configuration into the 46.6-47.2 t/s range (`+17%`), and an
-   EP-frontdoor result on Qwen3.6 Q8 that appeared to move `14.63 -> 17.18 t/s`
-   (`+17%`) against the warmed mmap reference.
-2. **The measurement trap.** The same project later encoded stricter rules:
-   codified benchmark recipes, explicit `-fa 1`, OMP stack control, host-health
-   preconditions, no concurrent inference, and live affinity verification.
-3. **The collapse.** Under the later canonical framing, the clean EP-frontdoor
-   comparison is `20.81 -> 21.15 t/s`, or `+1.6%`, not the earlier `+17%`.
-   The artifact summary explicitly labels it a downgrade/noise result.
-4. **The useful remnant.** The kernel-level intuition was not fake, but it was
-   narrower than the deployment story. The separate Q8 repack/AVX-512BW table
-   shows a clear 1-thread edge (`0.85 -> 1.12 t/s`, `+31.8%`) while production
-   thread counts converge near the same ceiling (`4.32 -> 4.39 t/s`, `+1.6%`).
-5. **The rule we now follow.** A number can only gate a decision when it carries
-   protocol, reps, date, and attestation. Everything else is an observation or
-   a prior.
-6. **What others can copy.** Publish the recipe, the host-state checks, the
-   failed hypotheses, and the reason the old number was demoted.
+1. **The attractive results.** Two easy-to-overread wins, both from late April
+   2026:
+   - A staged NPS4 plus CCD-pool configuration moved single-instance decode
+     from about 40 t/s to about 47 t/s, roughly `+17%`
+     (`OBSERVATION (pre-canonical era)`; the gain bundled a thread-count change,
+     and no raw log is retained, so it is not quoted more precisely).
+   - An expert-parallel (EP) front-door change on Qwen3.6-35B-A3B Q8_0 appeared
+     to move decode from `14.63` to `17.18 t/s`, `+17%`
+     (`OBSERVATION (pre-canonical era)`; summary-level record only, measured
+     against a warmed-mmap reference).
+2. **The measurement trap.** The reference was a warmed `mmap` run with default
+   first-touch page placement. Later rules encoded stricter recipes: a codified
+   benchmark entry point (never hand-typed commands), explicit `-fa 1`
+   (llama-bench defaults it to 0 and the difference is 8-10%), OpenMP stack
+   control, host-health preconditions, no concurrent inference, and live
+   affinity verification.
+3. **The collapse.** Against a properly distributed baseline (cold cache,
+   `--mmap 0`, `numactl --interleave=all`), the same EP change is
+   `20.81 -> 21.15 t/s`, `+1.6%`, which we treat as not distinguishable from
+   noise.
+   - `CLAIM (retro-certified)`: Qwen3.6-35B-A3B Q8_0 decode, canonical baseline
+     `20.81 +/- 0.02 t/s` and EP arm `21.15 +/- 0.04 t/s`
+     [P-BENCH-1 (retro), n=3, 2026-04-26, attestation: pending]. Per-run
+     `+/-` is the benchmark tool's own standard deviation across repetitions.
+   - Caveat on the label: n=3 is below the protocol's reps rule for effects of
+     2% or less, so `+1.6%` is reported as "no demonstrable effect", never as an
+     effect size.
+4. **The recipe was the win.** Against the same warmed reference, the canonical
+   recipe alone moved this model from `14.63` to `20.81 t/s` (`+44%`) with no
+   code change. `OBSERVATION`: this ratio mixes a pre-canonical number
+   (`14.63`) with a retro-certified one, so it is analysis across
+   instruments, not a claim. It is model- and placement-specific: for two other
+   models in the same matrix the canonical recipe was roughly equal or worse
+   than the warmed reference, so it must not be generalized.
+5. **The useful remnant.** A separate Q8_0 AVX-512BW 8x8 repack kernel
+   (`PARAPHRASE`) showed a large single-thread decode gain, tens of percent,
+   while at production thread counts decode converged to the same
+   memory-bandwidth ceiling, with a gain of a few percent at most. Exact rows
+   are not quoted because the raw per-rep logs were not retained. The kernel
+   intuition was real but narrower than the deployment story.
+6. **The rule we now follow.** A number gates a decision only when it carries
+   protocol, reps, date and attestation. Everything else is an observation or
+   a prior. When an instrument changes, older benchmark numbers are demoted to
+   priors rather than edited, and a decision resting only on demoted numbers
+   triggers a re-measurement.
+7. **What others can copy.** The recipe, the host-state checks, the failed
+   hypotheses, and the reason the old number was demoted.
 
 ## Claim Ledger
 
-| Draft claim | Source | Publication status |
+| Label | Statement | Status |
 |---|---|---|
-| `+17%` historical stage result after NPS4 + Phase 1.0-1.3 v1 | `progress/2026-04/2026-04-24.md`, "Final session single-instance throughput" | Historical observation only; use as the collapsed claim, not as a current performance claim. |
-| EP frontdoor `+17%` (`14.63 -> 17.18 t/s`) collapses to `+1.6%` (`20.81 -> 21.15 t/s`) against the proper canonical baseline | `progress/2026-04/2026-04-26.md`, "Optimization deltas re-measured against proper canonical"; `epyc-inference-research/data/cpu_optimization/2026-04-26-compounding/SUMMARY.md` | Best main publishable example after scrub. Evidence bundle records date, command shape, branch, host state, `drop_caches`, and `r=3`/`r=5` policy; still needs public-safe artifact label and host-attestation id. |
-| Proper canonical itself moved Qwen3.6 Q8 from warmed mmap reference `14.63 +/- 0.01` to cold canonical `20.81 +/- 0.02` | `epyc-inference-research/data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`, "Baseline comparison" | Candidate methodology claim: the recipe, not the code, captured the largest gain. Publish only with the recipe caveat and without implying universal model behavior. |
-| 96-thread Q8 repack row `4.32 -> 4.39 t/s`, `+1.6%` | `progress/2026-04/2026-04-24.md`, "Final thread scaling"; `epyc-inference-research/data/cpu_optimization/2026-04-24-q8-8x8-kernel/thread-scaling-summary.md` | Supplemental microkernel lesson, not the main `+17%` collapse. Artifact has date/host/build/flags; needs exact log/reps and attestation before publishing as a number. |
-| 1-thread Q8 repack row `0.85 -> 1.12 t/s`, `+31.8%` | `progress/2026-04/2026-04-24.md`, "Final thread scaling"; `epyc-inference-research/data/cpu_optimization/2026-04-24-q8-8x8-kernel/thread-scaling-summary.md` | Candidate supporting claim after protocol/rep/attestation backfill; explain why it does not imply multi-thread deployment gain. |
-| PPL preserved: Wikitext-2 3 chunks, ctx=512, `6.6985 +/- 0.708` | `progress/2026-04/2026-04-24.md`, same section; `2026-04-24-q8-8x8-kernel/thread-scaling-summary.md` correctness section | Candidate correctness guard; needs exact command/log bundle and public-safe wording before publication. |
-| Claim grammar rule: claim = metric + protocol-id + n/reps + date + host-attestation ref | `MEASUREMENT.md` section 2 | Publishable project policy. |
-| Retroactivity rule: pre-canonical CPU bench claims demote-to-prior at E0->E1 | `MEASUREMENT.md` section 5 | Publishable methodology policy, but keep internal artifact counts private unless scrubbed. |
+| `METH-C1` | EP front-door `+17%` (`14.63 -> 17.18 t/s`, pre-canonical) vs `20.81 -> 21.15 t/s`, `+1.6%`, canonical. | Collapsed side is `CLAIM (retro-certified)` [P-BENCH-1 (retro), n=3, 2026-04-26, attestation: pending]; the `+17%` side is `OBSERVATION (pre-canonical era)`. |
+| `METH-C2` | The canonical recipe, not the EP code path, explains the large Q8_0 delta versus the warmed reference. | `OBSERVATION` (cross-instrument ratio); model- and placement-specific. |
+| `METH-S1` | A large single-thread kernel win does not translate to production thread counts on a bandwidth-bound decode. | `PARAPHRASE`; no exact numbers quoted. |
+| `METH-P1` | Claim grammar: a decision-gating number includes metric, protocol id, reps, date and attestation. | Policy statement; no benchmark attestation applies. |
+| `METH-P2` | Retroactivity: when the benchmark protocol changed, earlier CPU benchmark claims were demoted to priors, not edited or deleted. | Policy statement. |
 
-## Publication Claim Packet
-
-These labels are public-safe handles for drafting. They are not host
-attestation refs and do not certify the claims by themselves.
-
-| Label | Draft-safe claim | Protocol status | Evidence bundle | Publication action |
-|---|---|---|---|---|
-| `F6-METH-C1` | Historical EP frontdoor `+17%` collapses to `+1.6%` against proper canonical placement. | P-BENCH-1-shaped, missing attestation ref. | `2026-04-26-compounding/SUMMARY.md`; `V2_q8_cold_canonical_repeat.log`; `E_q8_EP.log`; `progress/2026-04/2026-04-26.md`. | Retain as the main methodology example after adding host-attestation/ref metadata or re-running under a current attested recipe. |
-| `F6-METH-C2` | The canonical recipe, not the EP code path, explains the large Q8 delta versus the warmed mmap reference. | P-BENCH-1-shaped, missing attestation ref. | `2026-04-26-compounding/SUMMARY.md`; `V2_q8_cold_canonical_repeat.log`; historical warmed-reference notes in `progress/2026-04/2026-04-26.md`. | Retain with a strong caveat that it is model-specific and placement-specific. |
-| `F6-METH-S1` | Q8 8x8 repack shows a large single-thread win but production-thread decode remains memory-bandwidth limited. | Historical observation; exact repack raw rows not fully packaged in the retained artifact set. | `2026-04-24-q8-8x8-kernel/thread-scaling-summary.md`; `baseline/bench-96t.json`; `progress/2026-04/2026-04-24.md`. | Use as a paraphrased supporting lesson unless exact raw repack logs/reps are found or remeasured. |
-| `F6-METH-P1` | Claim grammar: a decision-gating number must include metric, protocol id, reps, date, and attestation. | Policy claim, no benchmark attestation needed. | `MEASUREMENT.md`. | Publish as project methodology, with short excerpts only. |
-
-### Protocol-backfill Status
-
-- `RESULTS.md` now marks the `Production Throughput - NUMA Deployment
-  (verified 2026-03-21)` section with `Protocol: P-BENCH-2, n=5,
-  2026-03-21`, but those rows are pre-attestation-era and still require a real
-  historical attestation artifact, a current rerun, or retirement from public
-  claims.
-- `public-results-draft.md` now surfaces `325` unverified historical rows as
-  `retired_from_public_claims` through the review-decision overlay, leaving
-  only `31` historical-attestation rows and `18` protocol-tag rows as active
-  public-results blockers.
-- `public-results-draft.md` will surface rows as `publish_candidate` only when
-  protocol metadata is complete (`protocol-id`, `n/reps`, `date`,
-  `attestation`); all others remain held or retired.
-
-## Backfilled Evidence State
-
-| Evidence item | Current state | Remaining work |
-|---|---|---|
-| April 26 compounding matrix | Strongest source for the main collapse story. Summary captures command shape, branch, host state, `drop_caches`, and rep policy. Named logs exist for the main exact rows: `V2_q8_cold_canonical_repeat.log` and `E_q8_EP.log`. | Attach/derive host-attestation id, decide whether to re-run under a current era, and cite only the rows with named logs unless more raw provenance is attached. |
-| April 24 Q8 8x8 thread scaling | Useful as a second lesson: local kernel win survives at 1 thread, disappears at production thread counts. The retained package exposes the summary and baseline JSON, but not every exact repack row as a standalone raw artifact. | Treat exact rows as historical observations unless raw repack logs are found; otherwise paraphrase as "large single-thread gain, noise-level production-thread gain." |
-| `bench_canonical.sh` / `canonical_recipe.py` | Current recipe source of truth: taskset + NUMA interleave, `-t 96`, `-fa 1`, `-mmp 0`, canonical OMP env, libomp linkage checks, host validation. | Quote the recipe behavior, not local paths. Regenerate the command shape from the current wrapper in `--dry-run` during the final publication-prep pass, because the 2026-06-14 witness predates the v6 single-kernel cutover. |
-| MEASUREMENT.md policy | Already expresses the claim grammar and the E0->E1 demotion precedent. | Keep policy excerpts short; link to public-safe policy text if this repo is published, otherwise summarize. |
-
-## Recipe Dry-run Snapshot
-
-Captured 2026-06-14 with:
-
-```bash
-bash scripts/benchmark/bench_canonical.sh \
-  -m /mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf \
-  -n 32 -p 0 -r 5 --dry-run
-```
-
-Validated dry-run output (internal witness; do not quote local paths externally,
-and regenerate this after the v6 single-kernel cutover before publication):
-
-```text
-Binary: /mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench
-Env: LD_LIBRARY_PATH=/usr/lib/llvm-20/lib:... OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false
-Cmd: taskset -c 0-95 numactl --interleave=all .../llama-bench -t 96 -fa 1 -mmp 0 -m .../Qwen_Qwen3.6-35B-A3B-Q8_0.gguf -p 0 -n 32 -r 5 -o md
-DRY RUN -- skipping llama-bench execution.
-```
-
-Public-safe command shape:
+## The Canonical Recipe (public command shape)
 
 ```text
 taskset -c <all-host-cores> numactl --interleave=all llama-bench \
@@ -118,7 +98,7 @@ taskset -c <all-host-cores> numactl --interleave=all llama-bench \
   -n <decode_tokens> -r <repetitions> -o md
 ```
 
-Public-safe environment shape:
+Environment shape:
 
 ```text
 OMP_PROC_BIND=spread
@@ -128,23 +108,19 @@ OMP_DYNAMIC=false
 LD_LIBRARY_PATH=<clang-libomp-first>
 ```
 
-Publication note: the public post should cite the command shape and recipe
-requirements, not local absolute paths, local model filenames, private build
-directories, or retired binary names. Keep the dry-run transcript here as the
-internal witness for the generated recipe, but regenerate a fresh dry-run from
-the current v6 recipe before external posting.
+Preconditions: no other inference running; governor and NUMA-balancing state
+checked per session; page cache dropped and re-warmed with NUMA interleave;
+the benchmark binary verified to resolve the intended OpenMP and ggml
+libraries (a binary that inherits another build's libraries runs silently
+wrong); at least 5 repetitions for effects of 5% or more and at least 10 for
+effects of 2% or less, reporting median and spread; cold versus warm declared.
 
-## Source Checklist Before Publication
+## Before Publication
 
-- Replace internal paths with scrubbed artifact labels or public repo links.
-- Backfill protocol IDs for every retained number; otherwise remove the number.
-- Add public-safe protocol metadata when promoting rows into publication-ready tables (protocol id + `n/reps`, date, and attestation).
-- Attach a host-attestation ref or rerun the retained exact-number candidates in
-  the current attested era.
-- Add the exact benchmark recipe from `bench_canonical.sh` / `canonical_recipe.py`
-  rather than hand-written commands. Use the wrapper's `--dry-run` output during
-  the final prep pass.
-- Do not mix the April 26 EP-frontdoor collapse with the April 24 CPU2
-  microkernel table; they are separate lessons.
-- Strip personal-task, dashboard, and host-identifier details.
-- Keep the tone focused on measurement discipline, not benchmark drama.
+- Obtain a host-attestation reference for the April 26 runs, or leave the
+  label as `attestation: pending` and say so in the post.
+- Regenerate the command shape from the current benchmark wrapper's dry-run
+  output immediately before posting.
+- Keep the April 26 EP collapse and the April 24 kernel lesson as separate
+  lessons; do not merge their numbers.
+- Tone: measurement discipline, not benchmark drama.
