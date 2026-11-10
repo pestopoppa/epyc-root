@@ -257,7 +257,12 @@ def test_regular_export_and_link_policy(tmp_path, kind):
     elif kind == 'symlink':
         path.symlink_to(FIXTURE)
     else:
-        os.link(FIXTURE, path)
+        # os.link cannot cross filesystems (EXDEV): the repo checkout and pytest's
+        # tmp_path are routinely on different mounts. Link a same-fs copy instead;
+        # the policy under test is st_nlink > 1, not which inode the fixture has.
+        source = tmp_path / 'producer-source.json'
+        source.write_bytes(FIXTURE.read_bytes())
+        os.link(source, path)
     view = reader.snapshot(path=path, now=NOW)[0]
     assert view['artifact_present'] is True
     assert view['state'] == ('malformed' if kind == 'symlink' else 'stale')
