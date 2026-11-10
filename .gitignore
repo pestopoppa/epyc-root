@@ -203,3 +203,7 @@ logs/.current_session.*
 # F3-LB1: dev-harness per-session projections/AgentRun segments are PRIVATE (never committed).
 # Default root is /mnt/raid0/llm/private/dev-harness-traces (outside every work tree); belt-and-braces:
 dev-harness-traces/
+
+# RTG-34: daemon-written bus state files; shape kept in the committed *.json.example beside each.
+coordination/session-bus/alarm_state.json
+coordination/session-bus/relay_state.json

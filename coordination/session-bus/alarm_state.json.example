@@ -1,0 +1,25 @@
+{
+  "active": {
+    "example-alarm-key": {
+      "count": 1,
+      "delivery": "ok",
+      "evidence": {
+        "owner": "<agent-id>"
+      },
+      "last_seen": "1970-01-01T00:00:00+00:00",
+      "message": "<human-readable alarm text>",
+      "notified_at": "1970-01-01T00:00:00+00:00",
+      "raised_at": "1970-01-01T00:00:00+00:00",
+      "severity": "warning"
+    }
+  },
+  "recent_resolved": [
+    {
+      "cleared_at": "1970-01-01T00:00:00+00:00",
+      "count": 1,
+      "key": "example-alarm-key",
+      "raised_at": "1970-01-01T00:00:00+00:00"
+    }
+  ],
+  "schema_version": "alarm_channel.state.v1"
+}
