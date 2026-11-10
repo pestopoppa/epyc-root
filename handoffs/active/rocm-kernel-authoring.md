@@ -102,6 +102,25 @@ Provide the **evaluation backend** the agentic kernel-authoring loop calls: give
   `external_type_dispatch_present=false`, so this does not claim the full vendor launcher ran.
 - **[declined: operator 2026-11-09 (INF-48 triage, dropped, not done): external-license gate on GEAK-eval pins (re-audited 2026-08-11: no project-level license); nothing runnable]** **Reproduce GEAK-eval's published MI250X task/result on the MI210.** — closed as dropped, not completed; original text: `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 84. [no-belief: dropped by operator 2026-11-09]
 - [ ] **INF48-LIVE-2 RVP-C2-PRODUCER (PARKED, operator OP-11 'decline for now', 2026-08-12) - C2 oracle surfaces and C3/C5 capture hooks that need the experimental producer.** Reducers/runners are durable on research main (c5fe6b51, 1a4d7dca, 000a2686, eca5dbda, 14034623); closure needs an operator-approved committed experimental producer plus fresh durable-identity replay. Do not work these until the operator reopens OP-11. NOTE: `test_c3_epyc_tensor_capture` has 12 errors on research main 645ca5b54 (pre-existing, unrelated to this triage); fix before the k228/k175 hooks. [no-belief: new consolidated box]
+  - **r4 replay result (2026-11-10, AutoKernel; row `c2-producer-replay-r4-20261109`, raw `/mnt/raid0/llm/tmp/c2-producer-replay-r4-20261109/out`).**
+    QUESTION: on the clean committed producer `llama.cpp-experimental-q38fn-20261004` @ `dd6c9cdbd`
+    (test-backend-ops sha256 `7a95ab8b…7515`, CPU backend, reducer pinned at research `dec858bea`), do the
+    AK_SENS/LAYOUT/STATE receipts satisfy the durable reducers? VERDICT: **FAIL (box stays open).**
+    Sensitivity FAIL — 92,936 observations, 54,250 units, **3,894 unscoreable**: CONV_2D 3,696 (528 of 1,570
+    cases; inputs change, output does not — degenerate geometry, e.g. 1x1 input with padding 5 / dilation 4, so
+    the output is padding-only), CPY 69, LIGHTNING_INDEXER 32, FLASH_ATTN_EXT 24, FILL 28, TOP_K 18, other ≤8.
+    70 units are `#unpaired` (11 FLASH_ATTN_EXT/LIGHTNING_INDEXER keys whose receipt is missing on some seeds).
+    Layouts: 8,983 rows, **247 `supported=0`** (MUL_MAT 100, SET_ROWS 84, CPY 63), counted as hard failures.
+    Stateful: 5,186/5,186 clean. The ordinal reducer fix (research `dec858bea`, merged `f4b850f9e`) was
+    already in r4's pin, so it does not change this count and **no r5 is warranted on that basis**. [belief: cc]
+    - [ ] Classify the structurally output-invariant CONV_2D geometries (output is padding-only) as C5-2 insensitive
+      cases instead of unscoreable, with a geometry test proving the exclusion, then re-reduce the r4 CSVs offline
+      (no new compute). Re-check the residual CPY/FILL/TOP_K/ARGSORT units afterwards.
+    - [ ] Decide whether the 247 layout `supported=0` rows (MUL_MAT/SET_ROWS/CPY) are legitimate CPU-backend
+      non-support, which the layout reducer should exclude, or a gap in the producer. Make the reducer count
+      unsupported separately from hard failures.
+    - [ ] Producer: find why FLASH_ATTN_EXT hsk=320 and LIGHTNING_INDEXER cases emit no AK_SENS receipt on some
+      seeds (sens phases rc=1). This is the source of the 70 unpaired units.
   - *(folded into INF48-LIVE-2; full text at b3bd883d3:92)* **Harden the remaining producer-dependent C2 oracle surfaces.**
   - [x] **Bind the three reducer outputs into verdict-bearing source-candidate T0 authority.** ✅
     2026-08-12 — research `d8013a6c` requires measured, hash-bound sensitivity,
