@@ -78,6 +78,11 @@
       "to": "INF-65"
     },
     {
+      "from": "INF-85",
+      "kind": "dep",
+      "to": "INF-48"
+    },
+    {
       "from": "REV-02",
       "kind": "dep",
       "to": "INF-77"
@@ -649,7 +654,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T14:23:51Z",
+  "generated_at": "2026-11-10T14:31:04Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1287,14 +1292,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 372,
-      "dispatchable": 91,
+      "dispatchable": 92,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-09",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 92,
+      "open": 93,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1304,7 +1309,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 11,
+        "unblocks": 12,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1632,15 +1637,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 345,
-      "dispatchable": 18,
+      "closed": 351,
+      "dispatchable": 11,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-10",
-      "next_action": "race-eqv r4 on new-fail-vs-baseline gate (r3 invalid baseline); reseal C6 onto C10, diagnose residency; c2-producer follow-ups",
-      "open": 18,
+      "next_action": "race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-7 counter row + C4-9 wiring",
+      "open": 11,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1650,7 +1655,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 10,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1675,28 +1680,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 12,
+          "dispatchable": 10,
           "gates": [
             "EVL-47"
           ],
           "line": 58,
           "name": "rocm-verify-profile-backend",
-          "open": 12,
-          "readiness": "blocked"
-        },
-        {
-          "blocked_by": [
-            "EVL-47",
-            "INF-48#rocm-verify-profile-backend"
-          ],
-          "dispatchable": 1,
-          "gates": [
-            "INF-48#rocm-verify-profile-backend",
-            "EVL-47"
-          ],
-          "line": 1552,
-          "name": "agentic-rocm-kernel-authoring",
-          "open": 1,
+          "open": 10,
           "readiness": "blocked"
         },
         {
@@ -1709,7 +1699,22 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2709,
+          "line": 1559,
+          "name": "agentic-rocm-kernel-authoring",
+          "open": 0,
+          "readiness": "no_open"
+        },
+        {
+          "blocked_by": [
+            "EVL-47",
+            "INF-48#rocm-verify-profile-backend"
+          ],
+          "dispatchable": 0,
+          "gates": [
+            "INF-48#rocm-verify-profile-backend",
+            "EVL-47"
+          ],
+          "line": 2716,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1718,27 +1723,27 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3081,
+          "line": 3088,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 0,
           "gates": [],
-          "line": 3594,
+          "line": 3601,
           "name": "frontier-f6-upstream-publication",
-          "open": 2,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 1,
           "gates": [],
-          "line": 3689,
+          "line": 3696,
           "name": "llama-cpp-dsa-contribution",
-          "open": 3,
+          "open": 1,
           "readiness": "ready"
         }
       ]
@@ -1815,14 +1820,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 107,
-      "dispatchable": 32,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "last_advanced": "2026-11-09",
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
-      "open": 33,
+      "open": 35,
       "priority": 0.8786,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): YARN-AGG-1 \u2014 Aggregation and recall arms for the YaRN gate: Oolong, HELMET recall and RAG,",
@@ -1882,11 +1887,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 12,
           "gates": [],
           "line": 1759,
           "name": "triattention-kv-selection",
-          "open": 11,
+          "open": 13,
           "readiness": "ready"
         }
       ]
@@ -2285,7 +2290,7 @@
       "last_advanced": "2026-11-10",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
       "open": 64,
-      "priority": 0.0022,
+      "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2365,7 +2370,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "open": 10,
-      "priority": 0.0022,
+      "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2391,7 +2396,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.0022,
+      "priority": 0.0032,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2401,6 +2406,32 @@
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
+    },
+    {
+      "age_days": 0,
+      "blocked": 0,
+      "blocked_by": [
+        "INF-48"
+      ],
+      "closed": 0,
+      "dispatchable": 2,
+      "domain": "inference-research",
+      "guarded": 0,
+      "handoff": "publication-upstream-program.md",
+      "id": "INF-85",
+      "last_advanced": "2026-11-10",
+      "next_action": "W2 final scrub + host-attestation decision; W3 adjudicate 18 retained rows",
+      "open": 2,
+      "priority": 0.0032,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 28,
+      "readiness": "blocked",
+      "state": "active",
+      "track": "upstream publication"
     },
     {
       "age_days": 0,
@@ -3098,7 +3129,7 @@
       "last_advanced": "2026-11-09",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
       "open": 30,
-      "priority": 0.0394,
+      "priority": 0.0402,
       "priority_basis": {
         "campaign": 1,
         "source": "heuristic",
@@ -3900,13 +3931,14 @@
       "INF-82",
       "INF-83",
       "INF-84",
+      "INF-85",
       "RTG-100"
     ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 26,
-      "heuristic": 4,
+      "heuristic": 5,
       "override": 0
     },
     "tiers": {
@@ -3921,7 +3953,7 @@
     }
   },
   "readiness_counts": {
-    "blocked": 5,
+    "blocked": 6,
     "no_open": 0,
     "ready": 25
   },
