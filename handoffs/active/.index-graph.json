@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T09:01:01Z",
+  "generated_at": "2026-11-10T09:21:58Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1326,7 +1326,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 830,
@@ -1335,7 +1335,7 @@
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Diagnose MMQ-H3 NaN (iglp_opt0 fails correctness); H10b same-seed rerun; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
       "open": 138,
       "priority": 0.896,
@@ -1629,18 +1629,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 339,
-      "dispatchable": 17,
+      "closed": 341,
+      "dispatchable": 15,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
-      "open": 17,
+      "open": 15,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1734,11 +1734,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 3,
           "gates": [],
           "line": 3633,
           "name": "llama-cpp-dsa-contribution",
-          "open": 5,
+          "open": 3,
           "readiness": "ready"
         }
       ]
@@ -1892,18 +1892,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 191,
-      "dispatchable": 46,
+      "closed": 192,
+      "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
-      "open": 47,
+      "open": 46,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1937,7 +1937,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 40,
+          "dispatchable": 39,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1946,14 +1946,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 41,
+          "open": 40,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1684,
+          "line": 1685,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1808,
+          "line": 1809,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2138,
+          "line": 2139,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2277,
+          "line": 2278,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -1989,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2833,
+          "line": 2834,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2001,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2973,
+          "line": 2974,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2013,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2980,
+          "line": 2981,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2262,7 +2262,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [
         "INF-06",
@@ -2282,7 +2282,7 @@
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
       "open": 66,
       "priority": 0.0022,
