@@ -3981,13 +3981,76 @@ def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
 # (first idle tick, last warning, warning count per grant); a tick that reads the grant busy again drops its entry.
 IDLE_WARN_AFTER_S = 300    # continuous IDLE-HELD before the first warning
 IDLE_WARN_REPEAT_S = 900   # at most one repeat warning per grant per this long
+# keeper audit 2026-11-10 fix 3 ("IDLE-HELD should act"): a grant IDLE-HELD continuously for IDLE_ESCALATE_AFTER_S raises
+# ONE [critical] idle-held-escalate (notify.escalate_stale pages the operator if it stays unacked). RECLAIM is OPT-IN:
+# only when <flags>/allocator.json {"idle_reclaim": true} or the row's spec {"idle_reclaim": true}, only after
+# IDLE_RECLAIM_AFTER_S continuous idle, and only while a queued row wants a region the grant holds, the keeper touches the
+# row's OWN stop file (resolve_stop_path) - the engine's STOP path: TERM the job group, KILL after its grace, .ended
+# reason=stopped rc=75 (retryable). The row is then `stopped` (never re-granted) until its owner removes the stop file.
+# The keeper never signals a process itself; a row whose stop file is unknown is escalated, never reclaimed.
+IDLE_ESCALATE_AFTER_S = 1800
+IDLE_RECLAIM_AFTER_S = 2700
+
+
+def idle_reclaim_enabled(flags, row):
+    cfg = load_json(os.path.join(flags, "allocator.json")) or {}
+    return cfg.get("idle_reclaim") is True or (row or {}).get("idle_reclaim") is True
+
+
+def _idle_act(flags, rid, e, regions, pct, idle_s, holds, owner, log, emit, wanted):
+    """Escalate / opt-in reclaim for one continuously IDLE-HELD grant (state e is updated in place)."""
+    if idle_s >= IDLE_ESCALATE_AFTER_S and not e.get("escalated_at"):
+        summary = (f"IDLE-HELD {regions} {rid}: {pct:.0f}% busy for {idle_s}s after {int(e.get('warn_n') or 0)} warning(s); "
+                   f"it holds {holds} while rows queue. Stop it (its stop file / rowflow.py withdraw) or ack this; "
+                   f"logs {dry_dir(flags, rid)}")
+        try:
+            emit(flags, "idle-held-escalate", rid, regions, summary, "critical", owner,
+                 {"regions": regions, "busy_pct": round(float(pct), 1), "idle_s": idle_s, "holds": holds,
+                  "reclaim_after_s": IDLE_RECLAIM_AFTER_S, "logs": dry_dir(flags, rid)})
+            e["escalated_at"] = time.time()
+            log(f"IDLE-HELD-ESCALATE {regions} {rid}: {idle_s}s idle; [critical] sent to owner={owner or FALLBACK_OWNER}")
+        except Exception as ex:  # noqa: BLE001
+            log(f"IDLE-HELD-ESCALATE {regions} {rid}: notify failed: {type(ex).__name__}: {ex}")
+    if idle_s < IDLE_RECLAIM_AFTER_S or e.get("reclaimed_at"):
+        return
+    row = load_json(ready_path(flags, rid)) or {}
+    if not idle_reclaim_enabled(flags, row):
+        return
+    held = expand(set(r for r in regions.split(",") if r))
+    if not any(expand(set(o)) & held for c in (wanted or ()) if c.get("id") != rid for o in c.get("options") or ()):
+        return   # nobody queues for these regions: reclaiming frees nothing anyone wants
+    sf = resolve_stop_path(row)
+    if not sf:
+        if not e.get("reclaim_refused"):
+            e["reclaim_refused"] = True
+            log(f"IDLE-RECLAIM-REFUSED {rid}: its stop file is unknown; escalated only")
+        return
+    try:
+        os.makedirs(os.path.dirname(sf), exist_ok=True)
+        with open(sf, "a") as f:
+            f.write(json.dumps({"by": "rowflow idle-reclaim", "at": now_iso(), "regions": regions, "idle_s": idle_s,
+                                "busy_pct": round(float(pct), 1)}) + "\n")
+    except OSError as ex:
+        log(f"IDLE-RECLAIM {rid}: stop file {sf} not written: {ex}")
+        return
+    e["reclaimed_at"] = time.time()
+    log(f"IDLE-RECLAIM {regions} {rid}: {idle_s}s at {pct:.0f}% busy while queued rows want {holds}; touched its stop "
+        f"file {sf} (engine stops it rc=75); remove the stop file to re-queue")
+    try:
+        emit(flags, "idle-held-reclaimed", rid, regions, f"IDLE-RECLAIM {rid}: stopped after {idle_s}s idle on {regions} "
+             f"(opt-in idle_reclaim); remove {sf} to re-queue", "warning", owner, {"stop_file": sf, "idle_s": idle_s})
+    except Exception as ex:  # noqa: BLE001
+        log(f"IDLE-RECLAIM {rid}: notify failed: {type(ex).__name__}: {ex}")
+
+
 def idle_warn_state_path(flags):
     return os.path.join(state_dir(flags), "idle_held_warn.json")
 
 
-def idle_held_notify(flags, idle, grants, log, now=None, emit=None):
+def idle_held_notify(flags, idle, grants, log, now=None, emit=None, wanted=None):
     """idle = idle_held()'s [(region, rid, pct)] for THIS tick; grants = the open grants. Returns the rids warned this
-    tick. Pure bookkeeping + notify.emit; every failure is logged and swallowed (a warning never stops allocation)."""
+    tick. Pure bookkeeping + notify.emit; every failure is logged and swallowed (a warning never stops allocation).
+    wanted = the queued candidates (allocate's cands): opt-in reclaim acts only when one of them wants the held regions."""
     now = time.time() if now is None else now
     emit = notify.emit if emit is None else emit
     sp = idle_warn_state_path(flags)
@@ -4003,13 +4066,15 @@ def idle_held_notify(flags, idle, grants, log, now=None, emit=None):
         e = st.setdefault(rid, {"idle_since": now, "warned_at": None, "warn_n": 0})
         idle_s = int(now - float(e.get("idle_since") or now))
         due = idle_s >= IDLE_WARN_AFTER_S and (e.get("warned_at") is None or now - float(e["warned_at"]) >= IDLE_WARN_REPEAT_S)
-        if not due:
-            continue
         regions = ",".join(r for r, _ in sorted(by_rid[rid]))
         pct = max(v for _, v in by_rid[rid])
-        n = int(e.get("warn_n") or 0) + 1
         g = next((x for x in grants if x["id"] == rid), {})
         holds = ",".join(compress(g.get("holds") or set())) if g else "?"
+        if idle_s >= IDLE_ESCALATE_AFTER_S:
+            _idle_act(flags, rid, e, regions, pct, idle_s, holds, notify.row_owner(flags, rid), log, emit, wanted)
+        if not due:
+            continue
+        n = int(e.get("warn_n") or 0) + 1
         owner = notify.row_owner(flags, rid)
         summary = (f"IDLE-HELD {regions} {rid}: measured {pct:.0f}% busy for {idle_s}s (warning {n}); the grant holds "
                    f"{holds} while rows queue. The keeper never ends it: check the job (stale lock? hung load?), fix or "
@@ -4494,7 +4559,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     idle_now = idle_held(flags, grants, holders, util, log, seen)
     if not dry:
         try:   # operator 2026-11-05: IDLE-HELD tells the owner (notify-only; never ends a grant)
-            idle_held_notify(flags, idle_now, grants, log)
+            idle_held_notify(flags, idle_now, grants, log, wanted=cands)
         except Exception as e:  # noqa: BLE001 - a warning never stops allocation
             log(f"IDLE-HELD-WARN failed: {type(e).__name__}: {e}")
     # 2026-11-03 session review item 7: a row that fails to arm or is refused at admission no longer idles the regions

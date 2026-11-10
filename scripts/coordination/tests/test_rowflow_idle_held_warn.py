@@ -137,3 +137,64 @@ class IdleHeldWarn(Fixture):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class IdleHeldActs(IdleHeldWarn):
+    """Keeper audit 2026-11-10 fix 3: escalate once at IDLE_ESCALATE_AFTER_S; opt-in reclaim via the row's own stop file."""
+
+    def setup_row(self, reclaim=None):
+        rid = "idle-gpu-row"
+        self.row(rid, 10, QUIET_OPT, "gpu", lane="gpu", regions="mi210_0,184-191")
+        rp = rf.ready_path(self.flags, rid)
+        d = json.load(open(rp))
+        self.sf = os.path.join(self.flags, "stopfiles", rid + ".stop")
+        d["stop_file"] = self.sf
+        if reclaim is not None:
+            d["idle_reclaim"] = reclaim
+        json.dump(d, open(rp, "w"))
+        self.grant(rid, "gpu-quiet,c88,t184", age_s=64)
+        return rid
+
+    def tick(self, rid, n, wanted):
+        for i in range(n):
+            now = self.t0 + i * TICK
+            idle = rf.idle_held(self.flags, rf.open_grants(self.flags), {"gpu-quiet": rid}, GPU_IDLE, self.lines.append, set(), now=now)
+            rf.idle_held_notify(self.flags, idle, rf.open_grants(self.flags), self.lines.append, now=now, wanted=wanted)
+
+    def queued(self):
+        return [{"id": "other", "options": [frozenset({rf.GPU})]}]
+
+    def ticks_for(self, s):
+        return int(s // TICK) + 3
+
+    def test_escalates_once_never_reclaims_without_opt_in(self):
+        rid = self.setup_row()
+        self.tick(rid, self.ticks_for(rf.IDLE_RECLAIM_AFTER_S), self.queued())
+        esc = [a for a in alerts(self.flags) if a["kind"] == "idle-held-escalate"]
+        self.assertEqual(len(esc), 1)
+        self.assertEqual(esc[0]["severity"], "critical")
+        self.assertFalse(os.path.exists(self.sf))
+
+    def test_opt_in_reclaim_touches_stop_file_once(self):
+        rid = self.setup_row(reclaim=True)
+        self.tick(rid, self.ticks_for(rf.IDLE_RECLAIM_AFTER_S) + 5, self.queued())
+        self.assertTrue(os.path.exists(self.sf))
+        self.assertEqual(len(open(self.sf).read().splitlines()), 1)
+        self.assertEqual(len([a for a in alerts(self.flags) if a["kind"] == "idle-held-reclaimed"]), 1)
+
+    def test_opt_in_reclaim_needs_a_queued_row_wanting_the_regions(self):
+        rid = self.setup_row(reclaim=True)
+        self.tick(rid, self.ticks_for(rf.IDLE_RECLAIM_AFTER_S), [{"id": "cpu", "options": [frozenset({"q0"})]}])
+        self.assertFalse(os.path.exists(self.sf))
+
+    def test_global_knob_enables_reclaim(self):
+        rid = self.setup_row()
+        json.dump({"idle_reclaim": True}, open(os.path.join(self.flags, "allocator.json"), "w"))
+        self.tick(rid, self.ticks_for(rf.IDLE_RECLAIM_AFTER_S), self.queued())
+        self.assertTrue(os.path.exists(self.sf))
+
+    def test_busy_before_reclaim_resets(self):
+        rid = self.setup_row(reclaim=True)
+        self.tick(rid, self.ticks_for(rf.IDLE_ESCALATE_AFTER_S), self.queued())
+        rf.idle_held_notify(self.flags, [], rf.open_grants(self.flags), self.lines.append, now=self.t0 + 10 ** 4, wanted=self.queued())
+        self.assertFalse(os.path.exists(self.sf))
