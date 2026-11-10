@@ -1949,6 +1949,37 @@ BACKFILL_IF_FITS = True   # operator 2026-11-07 "Approve + deploy" (port of rowf
                           # the replay gate's negative control.
 SMOKE_HOLD_S = 1200       # a live smoke's cores free within this bound (the dry-run deadline order of magnitude)
 
+DRAIN_BY_ESTIMATE = True  # keeper audit 2026-11-10 fix 2: a backfill is admitted ahead of a drain/rank-hold target T by its
+                          # ESTIMATE plus a margin (admit_s), not by its booked window. 04:33-06:38Z 2026-11-10 the MI210 sat
+                          # idle because race-eqv-gpu-r3 (window 21600 s) could not pass a drain, then ran 7 min. SAFETY: a row
+                          # admitted that way whose window outlasts T gets a grant whose end= is capped at T (plan.hard_end),
+                          # so the engine's own hard-end kill (filler_run15 reason=hard-end, rc=75) frees the regions at T
+                          # even when it overruns its estimate; the drain row still starts at T. A cap that would leave less
+                          # than min_window_s + the gate margin is never written: such a row is late (window rule). False =
+                          # the window rule (replay negative control).
+ESTIMATE_MARGIN_FRAC = 0.25  # admission margin over the estimate: max(ESTIMATE_MARGIN_S, ESTIMATE_MARGIN_FRAC * estimate)
+ESTIMATE_MARGIN_S = 300
+CAP_SLACK_S = 300 + 120   # grant_ok_launcher MARGIN_S + the grant's 1-2 min start back-dating / minute flooring
+
+
+def hold_s(c):
+    """How long a candidate's grant would hold its regions (the booked window; abstract callers: the estimate)."""
+    return float(c.get("window_s") or c.get("estimate_s") or 0)
+
+
+def admit_s(c):
+    """The duration a backfill is admitted by: estimate + margin, never more than the window (DRAIN_BY_ESTIMATE)."""
+    est, win = float(c.get("estimate_s") or 0), float(c.get("window_s") or 0)
+    if not DRAIN_BY_ESTIMATE or not est:
+        return win or est   # the window rule (a row with no estimate is admitted by its window)
+    a = est + max(ESTIMATE_MARGIN_S, ESTIMATE_MARGIN_FRAC * est)
+    return min(a, win) if win else est
+
+
+def cap_ok(c, now, T):
+    """A grant capped to end at T still clears the launcher gate's window >= min_window + margin."""
+    return T - now >= float(c.get("min_window_s") or 0) + CAP_SLACK_S
+
 
 DRAIN_MIN_BUSY = 0.5      # operator 2026-11-03 (session review 3.1): a row whose spec says it keeps < half its claim busy
                           # (a ~4%-busy row) is never promoted to a host/quiet-host drain; it still takes free regions
@@ -2209,7 +2240,7 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
     the holds that bind c, and the better rows that bind nothing because they are blocked by their own constraint."""
     reserved, holds, skips = set(), [], []
     later = [float(e) for e in grant_ends if float(e) > now]
-    dur = float(c.get("estimate_s") or c.get("window_s") or 0)
+    dur = admit_s(c)
     for h in pending:
         if h is c or h is drain or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
             continue
@@ -2226,9 +2257,11 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
             skips.append((h, why))
             continue
         T = max(later)
-        if now + dur > T:
+        if now + dur > T or (now + hold_s(c) > T and not cap_ok(c, now, T)):
             reserved |= need
             holds.append((h, T))
+        elif now + hold_s(c) > T:   # admitted by its estimate: its grant ends at T on these regions (hard-end cap)
+            plan.caps.append((c["id"], need, T))
     return reserved, holds, skips
 
 
@@ -2275,6 +2308,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.no_reserve = []
     plan.rank_holds = []   # [(lower row, better row, T)]: the lower row was kept off the better row's regions
     plan.rank_skips = []   # [(lower row, better row, reason)]: a lower row took regions a better row wants (own block)
+    plan.caps = []         # [(row id, regions, T)]: admitted by estimate ahead of T on these regions -> grant end capped at T
+    plan.hard_end = {}     # {row id: T}: the placed row's grant must end by T (DRAIN_BY_ESTIMATE safety)
     for c in pending:
         big = any(len([r for r in o if r in QUARTERS]) >= 2 for o in c["options"])
         if big and (c.get("shape") == "quiet-host" or now - float(c.get("since") or now) >= DRAIN_AFTER_S):
@@ -2308,12 +2343,15 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.last_drain = (drain, T) if drain else None
     need_r = set().union(*drain["options"]) if drain is not None else set()
     if drain is not None:  # best fit: the longest backfill that still ends by T goes first, so the gap is packed
-        dur = lambda c: float(c.get("estimate_s") or c.get("window_s") or 0)  # noqa: E731
+        dur = admit_s
         pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (now + dur(c) > T, -dur(c)))
     while pending:
         placed = None
         for c in pending:
-            late = drain is not None and c is not drain and now + float(c.get("estimate_s") or c.get("window_s") or 0) > T
+            late = drain is not None and c is not drain and now + admit_s(c) > T
+            capd = drain is not None and c is not drain and not late and now + hold_s(c) > T
+            if capd and not cap_ok(c, now, T):   # a cap below its min window would be refused at admission: window rule
+                late, capd = True, False
             opts = _fits(c, free, ram, gpu_grant_open)
             if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
                 opts = [o for o in opts if not (o & need_r)]
@@ -2344,6 +2382,11 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         if not placed:
             break
         c, o = placed
+        caps = [t for rid, need, t in plan.caps if rid == c["id"] and need & o]
+        if drain is not None and c is not drain and now + hold_s(c) > T and o & need_r:
+            caps.append(T)
+        if caps:
+            plan.hard_end[c["id"]] = min(caps)
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
         ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
@@ -2375,6 +2418,8 @@ plan.last_drain = None
 plan.drain_held = []
 plan.drain_lowbusy = []
 plan.no_reserve = []
+plan.caps = []
+plan.hard_end = {}
 
 
 def quiet_ok_now(flags, now=None):
@@ -3671,9 +3716,24 @@ def disk_budget_refusal(flags, rid, allrows, free_gib=None):
     return None
 
 
-def write_grant(flags, rid, regions, holds, window_s, lock=""):
-    start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
+def grant_start(now=None):
+    n = dt.datetime.now(dt.timezone.utc) if now is None else dt.datetime.fromtimestamp(now, dt.timezone.utc)
+    return n.replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
+
+
+def capped_window(window_s, end_cap, now=None):
+    """The grant window, shortened so a grant written now ends no later than end_cap (minute-floored); None = uncapped."""
+    if not end_cap:
+        return int(window_s)
+    start = grant_start(now).timestamp()
+    return max(0, min(int(window_s), int((int(end_cap) // 60) * 60 - start)))
+
+
+def write_grant(flags, rid, regions, holds, window_s, lock="", end_cap=None):
+    start = grant_start()
     end = start + dt.timedelta(seconds=int(window_s))
+    if end_cap:   # DRAIN_BY_ESTIMATE: the engine's hard-end kill at end= frees the regions by the drain target
+        end = min(end, dt.datetime.fromtimestamp((int(end_cap) // 60) * 60, dt.timezone.utc))
     cpus = grant_cpus(regions)   # ws58 2026-11-02: the exact cpu list (a GRANT_CPUS engine locks + pins a GPU grant to it)
     # Written only when it adds something: for regions that already spell explicit cpus (mi210_0,184-191) the engine's
     # fallback (cpus= else regions) gives the same list, and sealed jobs that parse their grant strictly (inf22 M4:
@@ -3921,8 +3981,6 @@ def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
 # (first idle tick, last warning, warning count per grant); a tick that reads the grant busy again drops its entry.
 IDLE_WARN_AFTER_S = 300    # continuous IDLE-HELD before the first warning
 IDLE_WARN_REPEAT_S = 900   # at most one repeat warning per grant per this long
-
-
 def idle_warn_state_path(flags):
     return os.path.join(state_dir(flags), "idle_held_warn.json")
 
@@ -4387,6 +4445,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         window = int(d["window_s"])
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": k["bench"], "options": k["options"], "shape": k["shape"], "window_s": window,
+                      "estimate_s": int(d.get("estimate_s") or 0), "min_window_s": int(d.get("min_window_s") or 0),
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
                       "claim": k["claim"]})
@@ -4497,7 +4556,9 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                         failed.append(rid); continue
                 else:
                     pid = a["pid"]
-                ok, line = admit(flags, rid, d, pid, regions, d["window_s"])
+                end_cap = plan.hard_end.get(rid)
+                win = capped_window(d["window_s"], end_cap)
+                ok, line = admit(flags, rid, d, pid, regions, win)
                 if not ok:
                     done = terminal_success(flags, rid) if COMPLETE_BEFORE_RC14 else None
                     if done:   # fix 2 (2026-11-06): a dead poller AFTER the job's own completion receipt is completion, not rc=14
@@ -4512,7 +4573,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                     stop_poller_if_parked(flags, rid, d, pid, line, n, log)
                     failed.append(rid); continue
                 # the engine's region-lock claim IS the contract: a CONTRACT_LOCK engine locks lock= instead of --claim-cpus
-                gl = write_grant(flags, rid, regions, opt, d["window_s"], (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "")
+                gl = write_grant(flags, rid, regions, opt, win, (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "",
+                                 end_cap=end_cap)
+                if end_cap:
+                    log(f"HARD-END-CAP {rid}: admitted by estimate {int(d.get('estimate_s') or 0)}s ahead of "
+                        f"{dt.datetime.fromtimestamp(end_cap, dt.timezone.utc):%H:%MZ}; grant ends there (engine hard-end kills an overrun)")
                 atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
                 log(f"GRANT {rid} {gl} ({line[:160]})")
                 out.append(("grant", rid, regions))
