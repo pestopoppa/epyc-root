@@ -242,12 +242,10 @@
   section.graph .glegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:2px 0 8px;font-size:12px;color:var(--muted)}
   section.graph .gsw{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:5px;vertical-align:-1px}
   section.graph .gsw.dot{border-radius:50%}
-  section.graph #graph-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 16px;align-items:start;
-    padding:6px 10px;border:1px solid var(--border,#30363d);border-radius:6px;font-size:12px;line-height:1.3}
+  section.graph #graph-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:8px 18px;align-items:start;
+    width:100%;padding:6px 10px;border:1px solid var(--border,#30363d);border-radius:6px;font-size:12px;line-height:1.3}
   section.graph .lgrp .lt{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;color:var(--muted)}
-  section.graph .lgrp .lb{display:flex;flex-direction:column;gap:2px;color:var(--text,inherit)}
-  section.graph .lgrp.lidx .lb{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-  section.graph .lgrp.lnode .lb{flex-direction:column}
+  section.graph .lgrp .lb{display:flex;flex-direction:row;flex-wrap:wrap;gap:3px 14px;color:var(--text,inherit)}
   section.graph .lgrp.lcounts{grid-column:1/-1}
   section.graph .li{display:flex;align-items:center;gap:6px;min-width:0}
   section.graph .lsw{flex:none;overflow:visible;display:inline-block;max-width:46px;max-height:16px;width:auto;height:16px;background:none;border:0}
@@ -275,6 +273,10 @@
   section.graph .gtip{box-sizing:border-box;max-height:220px;overflow:auto;padding:8px 22px 8px 10px;
     font-size:12px;line-height:1.45}
   section.graph .gtip.hint{color:var(--muted)}
+  section.graph .gtip.pinned{max-height:min(340px,60vh);overflow:auto;border-left:3px solid #f0f6fc;-webkit-overflow-scrolling:touch}
+  section.graph .gtip .tpin{margin-top:6px;font-size:10.5px;color:var(--muted);text-transform:none}
+  section.graph .node{cursor:pointer}
+  section.graph .node.pinned circle:first-child{stroke:#f0f6fc;stroke-width:3.5}
   section.graph .gtip b{font-size:12px}
   section.graph .gtip .tid{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
   section.graph .gtip .tna{margin-top:5px;color:#c9d1d9}
@@ -391,7 +393,7 @@
       </div>
       <svg id="graph-svg" viewBox="0 0 1200 780" role="img" aria-label="handoff reference graph"></svg>
       <div class="gtipbox" id="graph-tipbox"><button class="gtip-x" id="gtip-x" title="collapse / expand info panel" aria-label="toggle info panel">&minus;</button>
-      <div id="graph-tip" class="gtip hint">Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.</div></div>
+      <div id="graph-tip" class="gtip hint">Hover a node to preview: handoff, progress, blocker class, activity, priority, next action and dependency counts. Click (or tap) to pin it here.</div></div>
     </div>
   </section>
 
@@ -1239,6 +1241,8 @@ function packBands(items, colX, half, o){
   return items;
 }
 
+const GRAPH_HINT="Hover a node to preview: handoff, progress, blocker class, activity, priority, next action and dependency counts. Click (or tap) to pin it here.";
+let pinnedId=null, graphUnpin=null, graphKeyBound=false;
 async function loadGraph(){
   let g;
   try{ g = await getJSON("/api/handoff_graph"); }
@@ -1275,7 +1279,7 @@ async function loadGraph(){
   const refs=edges.filter(e=>e.kind!=="dep"), deps=edges.filter(e=>e.kind==="dep");
   $("#graph-note").textContent =
     `${refs.length} references (a handoff's markdown cites another; not a dependency claim) · `
-    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"}. Links show on hover. Active and blocked work only.`;
+    + `${deps.length} declared dependenc${deps.length===1?"y":"ies"}. References are counted but not drawn; declared dependencies are the faint white chords (hover a node to light them). Active and blocked work only.`;
 
   // ---- legend: grouped, compact; swatches are inline SVG that mirror the node rendering
   const doms=Object.keys(IDX_COLOR).filter(d=>g.nodes.some(n=>n.domain===d));
@@ -1287,25 +1291,41 @@ async function loadGraph(){
   const glyphSvg={square:'<rect x="3" y="3" width="8" height="8"/>',tri:'<polygon points="7,2 12.5,12 1.5,12"/>',
     diamond:'<polygon points="7,1.5 12.5,7 7,12.5 1.5,7"/>',circle:'<circle cx="7" cy="7" r="4.5"/>'};
   const pie=`<circle cx="9" cy="9" r="7" fill="${GR}" fill-opacity=".25" stroke="${GR}" stroke-width=".8" stroke-dasharray="2 2"/><path d="M9,9 L16,9 A7,7 0 1 1 9,2 Z" fill="${GR}"/>`;
-  grp("Node",
-    item(sv(18,18,pie),"pie = remaining (solid); faint slice = done fraction")
-    +item(sv(46,18,[[6,3.4+1.9*1],[20,3.4+1.9*2],[38,3.4+1.9*5]].map(([x,r])=>`<circle cx="${x}" cy="9" r="${Math.min(8,r)}" fill="${GR}"/>`).join("")),"size = open tasks")
+  const hatchDef=`<defs><pattern id="lg-hatch" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(45)"><rect x="0" y="0" width="1.7" height="4" fill="#0d1117" fill-opacity=".8"/></pattern></defs>`;
+  const hasReadiness = g.nodes.some(n=>typeof n.readiness==="string");
+  grp("Size and progress",
+    item(sv(46,18,[[6,3.4+1.9*1],[20,3.4+1.9*2],[38,3.4+1.9*5]].map(([x,r])=>`<circle cx="${x}" cy="9" r="${Math.min(8,r)}" fill="${GR}"/>`).join("")),"disc size = open tasks")
+    +item(sv(18,18,pie),"solid wedge = remaining; faint slice = done fraction (clockwise from 12 o\u2019clock)")
     ,"lnode");
-  grp("Fill = owning index",doms.map(d=>item(sv(12,12,`<circle cx="6" cy="6" r="5" fill="${IDX_COLOR[d]}"/>`),d)).join(""),"lidx");
-  grp("Blocker glyph",Object.keys(PCLS).filter(k=>k!=="done").map(k=>
+  grp("Fill = owning index (tinted toward linked indexes)",doms.map(d=>item(sv(12,12,`<circle cx="6" cy="6" r="5" fill="${IDX_COLOR[d]}"/>`),d)).join(""),"lidx");
+  if(hasReadiness){
+    const rsw={dot:sv(14,14,`<circle cx="7" cy="7" r="5.5" fill="${GR}"/>`),
+      hatch:sv(14,14,`${hatchDef}<circle cx="7" cy="7" r="5.5" fill="${GR}"/><circle cx="7" cy="7" r="5.5" fill="url(#lg-hatch)"/>`),
+      faded:sv(14,14,`<circle cx="7" cy="7" r="5.5" fill="${GR}" fill-opacity=".3"/>`)};
+    grp("Texture = readiness",Object.keys(READINESS_STYLE).map(k=>item(rsw[READINESS_STYLE[k].sw],
+      (k==="blocked"?"diagonal hatch = ":k==="no_open"?"faded = ":"solid = ")+READINESS_STYLE[k].label)).join(""));
+  }
+  grp("Blocker glyph (top right)",Object.keys(PCLS).filter(k=>k!=="done").map(k=>
     item(sv(14,14,`<g fill="${PCLS[k][0]}">${glyphSvg[PCLS[k][1]]}</g>`),PCLS[k][2])).join(""));
   const ring=(c,dash,w)=>sv(18,18,`<circle cx="9" cy="9" r="6.5" fill="none" stroke="${c}" stroke-width="${w||1.8}"${dash?` stroke-dasharray="${dash}"`:""}/>`);
-  grp("Activity ring",Object.keys(PACT).filter(k=>PACT[k]).map(k=>
-    item(ring(PACT[k][0],PACT[k][1]==="none"?"":PACT[k][1],k==="working"?2.6:1.8),PACT[k][2]+(k==="working"?" + engine badge":""))).join("")
-    +item(ring(GR,"4 2.5",2),"file in handoffs/blocked/")
-    +item(sv(24,14,`<text x="1" y="11" font-size="10" font-weight="700" fill="#3fb950">\u25B6N</text>`),"N ready rows (dry run PASS) waiting for compute")
-    +item(sv(14,14,`<circle cx="7" cy="7" r="3.5" fill="#ffd33d"><animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/></circle>`),"row(s) running now"));
-  const hasReadiness = g.nodes.some(n=>typeof n.readiness==="string");
+  grp("Activity ring (outer)",Object.keys(PACT).filter(k=>PACT[k]).map(k=>
+    item(ring(PACT[k][0],PACT[k][1]==="none"?"":PACT[k][1],k==="working"?2.6:1.8),PACT[k][2]+(k==="working"?" + engine badge below":""))).join("")
+    +item(ring(GR,"4 2.5",2),"tight dashed halo = file in handoffs/blocked/"));
+  grp("Badges",
+    item(sv(24,14,`<text x="1" y="11" font-size="10" font-weight="700" fill="#3fb950">\u25B6N</text>`),"N ready rows (dry run PASS) waiting for compute (top left)")
+    +item(sv(14,14,`<circle cx="7" cy="7" r="3.5" fill="#ffd33d"><animate attributeName="opacity" values="1;0.25;1" dur="1.4s" repeatCount="indefinite"/></circle>`),"pulsing dot = row(s) running now (bottom right)"));
+  grp("Lines and index nodes",
+    item(sv(30,14,`<line x1="1" y1="7" x2="29" y2="7" stroke="#f0f6fc" stroke-opacity=".35" stroke-width="1.2"/>`),"declared dependency (dep), dim at rest")
+    +item(sv(30,14,`<line x1="1" y1="7" x2="29" y2="7" stroke="#f0883e" stroke-width="2.2"/>`),"on hover: upstream blockers (orange)")
+    +item(sv(30,14,`<line x1="1" y1="7" x2="29" y2="7" stroke="#58a6ff" stroke-width="2.2"/>`),"on hover: downstream, blocked by it (blue)")
+    +item(sv(30,14,`<path d="M1,2 C15,2 15,12 29,12" fill="none" stroke="${GR}" stroke-opacity=".5" stroke-width=".9"/>`),"faint curve = index owns handoff")
+    +item(sv(16,16,`<circle cx="8" cy="8" r="6" fill="${GR}" stroke="#0d1117" stroke-width="2"/>`),"large disc = index (count of handoffs below it)")
+    +item(sv(14,14,`<circle cx="7" cy="7" r="5.5" fill="${GR}" fill-opacity=".15"/>`),"hover dims everything off the dependency web"));
   let cnt;
   if(hasReadiness){ const rc=g.readiness_counts||{};
     cnt=`${g.nodes.length} handoffs &middot; ${rc.ready??0} ready &middot; ${rc.blocked??0} dep-blocked`
       +(rc.no_open?` &middot; ${rc.no_open} no open work`:"")
-      +` &middot; hatched = dep-blocked &middot; hover a node to see its dependency web &middot; priority is in the info panel`;
+      +` &middot; hover a node to see its dependency web &middot; priority is in the info panel`;
   } else cnt=`readiness not in this graph (schema ${g.schema||"unknown"}; needs index_graph.v2)`;
   const rv=g.readiness_values||{}, rvTip=Object.keys(rv).map(k=>`${k}: ${rv[k]}`).join(" | ").replace(/"/g,"&quot;");
   grp("Counts",`<span class="lcnt" title="${rvTip}">${cnt}</span>`,"lcounts");
@@ -1401,7 +1421,7 @@ async function loadGraph(){
   }
 
   // ---- handoff nodes
-  const circles={};
+  const circles={}, pinFns={}, resets=[];
   for(const it of items){
     const n=it.n;
     // Liveness is an OUTER halo, never an inset ring: measured, a flat 2px inset
@@ -1454,7 +1474,7 @@ async function loadGraph(){
             "font-size":8,"font-weight":700,fill:"#ffd33d","pointer-events":"none"});
           t.textContent=(pi.engine||"?")+(pi.slot?` #${pi.slot}`:""); c.appendChild(t); } }
     }
-    c.addEventListener("mouseenter",()=>{
+    const render=(pinned)=>{
       // Dependency web. Edge {from,to,kind:"dep"}: `from` depends on `to`, so `to` BLOCKS `from`.
       // upstream = transitive blockers (follow from->to); downstream = transitively blocked (to->from).
       const walk=(dir)=>{ const seen=new Set(), st=[n.id];
@@ -1488,19 +1508,40 @@ async function loadGraph(){
         + (typeof n.priority==="number"?prioTip(n,g.nodes.length):"")
         + (typeof n.steps_since_tick==="number"?` &middot; ${n.steps_since_tick} steps since last tick`:"")
         + `<br>upstream ${up.size} &middot; downstream ${down.size}</div>`
-        + (n.next_action?`<div class="tna">${n.next_action}</div>`:"");
-    });
-    c.addEventListener("mouseleave",()=>{
-      tip.classList.add("hint");
-      tip.textContent="Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.";
+        + (n.next_action?`<div class="tna">${n.next_action}</div>`:"")
+        + (pinned?`<div class="tpin">PINNED &middot; click empty space or press Esc to unpin`
+            + (n.handoff?` &middot; <a href="#" class="tlink">open handoff detail</a>`:"")+`</div>`:"");
+      tip.classList.toggle("pinned",!!pinned);
+      if(pinned){ tip.scrollTop=0; const a=tip.querySelector(".tlink");
+        if(a) a.onclick=e=>{ e.preventDefault(); loadDetail(n.handoff.replace(/\.md$/,"")); }; }
+    };
+    const reset=()=>{
+      tip.classList.add("hint"); tip.classList.remove("pinned");
+      tip.textContent=GRAPH_HINT;
       for(const k in circles) circles[k].classList.remove("dimmed","hl-up","hl-down");
       lines.forEach(l=>{ l.ln.classList.remove("hl-up","hl-down");
         l.ln.setAttribute("stroke-opacity", l.isDep?DEP_REST:0); });
-    });
-    c.addEventListener("click",()=>{ if(n.handoff) loadDetail(n.handoff.replace(/\.md$/,"")); });
+    };
+    // Interaction: hover previews; click/tap PINS (hover is then ignored); clicking another
+    // node re-pins; empty graph space or Esc unpins. Navigation lives in the pinned panel's link.
+    resets[0]=reset;
+    pinFns[n.id]=()=>{ pinnedId=n.id; for(const k in circles) circles[k].classList.remove("pinned");
+      c.classList.add("pinned"); render(true); };
+    c.addEventListener("mouseenter",()=>{ if(pinnedId) return; render(false); });
+    c.addEventListener("mouseleave",()=>{ if(pinnedId) return; reset(); });
+    c.addEventListener("click",ev=>{ ev.stopPropagation(); pinFns[n.id](); });
     gNode.appendChild(c); circles[n.id]=c;
   }
   installZoom(svg, W, H);
+  graphUnpin=()=>{ if(!pinnedId) return; pinnedId=null;
+    for(const k in circles) circles[k].classList.remove("pinned"); if(resets[0]) resets[0](); };
+  { let down=null;
+    svg.onpointerdown=ev=>{ down={x:ev.clientX,y:ev.clientY}; };
+    svg.onclick=ev=>{ if(down && Math.hypot(ev.clientX-down.x,ev.clientY-down.y)>4) return;   // a pan, not a click
+      graphUnpin(); }; }
+  if(!graphKeyBound && document.addEventListener){ graphKeyBound=true;
+    document.addEventListener("keydown",ev=>{ if(ev.key==="Escape" && graphUnpin) graphUnpin(); }); }
+  if(pinnedId && pinFns[pinnedId]) pinFns[pinnedId](); else pinnedId=null;   // survive the periodic reload
   setBadge("#graph-badge",(g._freshness&&g._freshness.staleness_class)||"fresh");
 }
 
