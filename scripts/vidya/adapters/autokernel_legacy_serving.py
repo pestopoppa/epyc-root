@@ -41,6 +41,24 @@ def _digest(value):
                                     allow_nan=False).encode()).hexdigest()
 
 
+def _runtime_admission_matches(native, matched):
+    """The runtime row's admission as the producer (`serving.compare`) is able to state it.
+
+    Unmatched: observation only -- no floor, nothing decided. Matched: the ONLY runtime path is
+    keep-grade, judged against the recipe's matched serving floor, so the row must carry that
+    floor and a boolean decision. Anything else is authority the producer cannot have written.
+    """
+    if not matched:
+        return (native.get("admission") == "observation_only_original_strict_evidence_unavailable"
+                and native["decisive"] is None and native["noise_floor_pct"] is None)
+    floor = native["noise_floor_pct"]
+    return (native.get("admission") == "keep_grade_matched_serving_floor"
+            and type(native["decisive"]) is bool
+            and type(floor) in (int, float) and math.isfinite(floor) and floor > 0
+            and isinstance(native.get("floor_sha256"), str)
+            and re.fullmatch("[0-9a-f]{64}", native["floor_sha256"]) is not None)
+
+
 def _source(receipt, locator):
     if set(receipt) != {"schema", "capture_id", "capture_sha256", "native_reference"}:
         raise ProjectionError("legacy serving receipt fields differ")
@@ -94,11 +112,15 @@ def _rows(source, receipt):
             or _digest({key: value for key, value in capture.items() if key != "capture_sha256"}) != capture["capture_sha256"]):
         raise ProjectionError("legacy serving prospective capture differs")
     inputs = capture["inputs"]
-    runtime = capture["schema"] == _RUNTIME_CAPTURE
     matched = capture["schema"] == _MATCHED_CAPTURE
+    # A declared runtime arm judged at keep-grade evidence is BOTH: the producer only allows
+    # keep-grade under the matched instrument, so its v3 capture also carries the runtime pair
+    # (`serving_beliefs.prepare`). v2 captures are always runtime; v3 is runtime iff it says so.
+    runtime = capture["schema"] == _RUNTIME_CAPTURE or (
+        matched and isinstance(inputs, dict) and "runtime_pair" in inputs)
     if (set(inputs) != {"producer", "issued_at", "recipe", "pairs", "resolved_arms", "build_paths", "requests",
                        "protocol_id", "loaded_instrument_attestation"} | (
-                           {"candidate_recipe", "runtime_pair"} if runtime else
+                           {"candidate_recipe", "runtime_pair"} if runtime else set()) | (
                            {"measurement_plan"} if matched else set())
             or inputs["producer"] != "autokernel.loop.serving_beliefs/v1"
             or inputs["protocol_id"] != ""
@@ -131,8 +153,7 @@ def _rows(source, receipt):
                 or pair["anchor"]["template"] != inputs["recipe"]
                 or pair["candidate"]["template"] != inputs["candidate_recipe"]
                 or _digest(inputs["candidate_recipe"]) != native.get("candidate_recipe_hash")
-                or native.get("admission") != "observation_only_original_strict_evidence_unavailable"
-                or native["decisive"] is not None or native["noise_floor_pct"] is not None):
+                or not _runtime_admission_matches(native, matched)):
             raise ProjectionError("runtime observation differs from its original unqualified arm inputs")
     pairs = inputs["pairs"]
     if type(pairs) is not int or not 1 <= pairs <= 64 or pairs != native["pairs"]:

@@ -226,7 +226,7 @@ def _v2(path):
                                  receipt_sha256=hashlib.sha256(raw).hexdigest())
 
 
-@pytest.mark.parametrize("label", ["ds41", "q38fn", "runtime_ab"])
+@pytest.mark.parametrize("label", ["ds41", "q38fn", "runtime_ab", "matched_runtime"])
 def test_v2_projects_one_value_bearing_claim_per_real_capture(label):
     path = _p1_receipt(label)
     v1 = [reader.project(n) for n in _native(path)]
@@ -269,7 +269,7 @@ def test_v2_runtime_capture_without_a_floor_states_no_outcome():
     assert "noise_floor_rel" not in obs and "decisive" not in obs and "outcome" not in obs
 
 
-@pytest.mark.parametrize("label", ["ds41", "q38fn", "runtime_ab"])
+@pytest.mark.parametrize("label", ["ds41", "q38fn", "runtime_ab", "matched_runtime"])
 def test_v2_frames_carry_the_numbers_and_ids_are_byte_stable(label):
     from claim_tuple import to_frames
 
@@ -282,6 +282,68 @@ def test_v2_frames_carry_the_numbers_and_ids_are_byte_stable(label):
     assert evidence["metric"] == "aggregate_tok_s" and evidence["unit"] == "t/s"
     assert float(evidence["value"]) == pytest.approx(native["claim"]["value"], rel=1e-11)
     assert first[2]["frame_type"].endswith("evidence_supports_claim/v1")
+
+
+# --- keep-grade declared runtime arm under the matched instrument (AK proof r4, 2026-11-10) -------
+#
+# The producer writes a v3 capture that ALSO carries the runtime pair; the reader refused it with
+# "legacy serving inputs imply unsupported authority", so planner serving feedback went dark.
+
+
+def test_matched_keep_grade_runtime_capture_projects_both_arms_and_its_floor():
+    path = _p1_receipt("matched_runtime")
+    v1 = [reader.project(n) for n in _native(path)]
+    assert [t.extra["arm"] for t in v1] == ["anchor", "candidate"]
+    assert v1[0].extra["recipe_hash"] != v1[1].extra["recipe_hash"]  # runtime: per-arm recipe
+    assert all(t.extra["measurement_plan"]["instrument"] == "matched_process_v2" for t in v1)
+    assert all(grade(t)[:2] == ("Judged", "Located") for t in v1)
+    (native,) = _v2(path)
+    obs = reader.project_v2(native).observation
+    assert obs["decisive"] is False and obs["outcome"] == "null"
+    assert obs["noise_floor_rel"] == pytest.approx(0.04146)
+
+
+def _derive():
+    import importlib.util
+    here = ROOT / "tests/vidya/fixtures/belief_p1/derive_fixtures.py"
+    spec = importlib.util.spec_from_file_location("belief_p1_derive", here)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _resealed_matched_runtime(tmp_path, mutate):
+    """The real matched-runtime capture with one field changed and every seal re-derived, so only
+    the reader's admission rule (not a digest check) can refuse it."""
+    src = _p1_receipt("matched_runtime")
+    body = json.loads((src.parent / "sources" / src.name).read_text())
+    mutate(body["comparison"])
+    body, receipt, raw = _derive()._reseal(body)
+    dest = tmp_path / "serving-beliefs"
+    (dest / "sources").mkdir(parents=True)
+    (dest / "sources" / f"{receipt['capture_id']}.json").write_bytes(raw)
+    path = dest / f"{receipt['capture_id']}.json"
+    path.write_text(json.dumps(receipt))
+    return path
+
+
+def test_matched_runtime_reseal_without_mutation_still_projects(tmp_path):
+    assert len(_native(_resealed_matched_runtime(tmp_path, lambda c: None))) == 2
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda c: c.update(admission="observation_only_original_strict_evidence_unavailable"),
+    lambda c: c.update(admission="keep_grade_strict_frame"),
+    lambda c: c.update(decisive=None),
+    lambda c: c.update(noise_floor_pct=None),
+    lambda c: c.update(floor_sha256=None),
+    lambda c: c["belief_capture"]["inputs"].pop("runtime_pair"),
+    lambda c: c["belief_capture"]["inputs"].pop("measurement_plan"),
+], ids=["observation-admission", "unknown-admission", "no-decision", "no-floor",
+        "no-floor-identity", "inputs-drop-runtime-pair", "inputs-drop-plan"])
+def test_matched_runtime_capture_claiming_other_authority_is_refused(tmp_path, mutate):
+    with pytest.raises(ProjectionError):
+        _native(_resealed_matched_runtime(tmp_path, mutate))
 
 
 def test_v2_mutated_native_row_is_refused():
