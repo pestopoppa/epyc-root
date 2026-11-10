@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T14:14:02Z",
+  "generated_at": "2026-11-10T14:20:59Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1390,7 +1390,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6015,
+          "line": 6017,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1399,7 +1399,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6095,
+          "line": 6097,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1418,7 +1418,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6392,
+          "line": 6394,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1435,7 +1435,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9609,
+          "line": 9611,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1448,7 +1448,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13959,
+          "line": 13961,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1482,7 +1482,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14171,
+          "line": 14173,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1953,7 +1953,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1695,
+          "line": 1696,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1819,
+          "line": 1820,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2149,
+          "line": 2150,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2288,
+          "line": 2289,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -1989,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2844,
+          "line": 2845,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2001,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2984,
+          "line": 2985,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2013,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2991,
+          "line": 2992,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2320,7 +2320,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 25,
+          "line": 26,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 11,
           "readiness": "blocked"
@@ -2343,7 +2343,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 939,
+          "line": 940,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 51,
           "readiness": "blocked"
@@ -2472,7 +2472,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2619,
+          "line": 2620,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "ready"
@@ -2481,7 +2481,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2988,
+          "line": 2989,
           "name": "sliders-local-validation",
           "open": 0,
           "readiness": "no_open"
@@ -2490,7 +2490,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3119,
+          "line": 3120,
           "name": "integrated-aggregation",
           "open": 4,
           "readiness": "ready"
