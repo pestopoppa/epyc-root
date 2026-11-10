@@ -3148,6 +3148,16 @@ Design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../d
   worker_general with M1 and the M5 manifest check computed before the GPU window is requested; then audit, the
   30 P-large questions, B1 on 30, B2 on 5, P-small and B-today on 10. Done when M1-M5 and all arms are filed with
   the frozen rules' sha256 and a belief-kernel row.
+  - Progress 2026-11-10 (not ticked, autopilot-backlog-session): the arms are wired and the jobs are sealed, but nothing has run.
+    - Orchestrator `2a422b7c` adds `src/aggregation/llm_backend.py`, a private llama-server backend on `/v1/chat/completions` with GBNF grammar, cache_prompt, id_slot and an n_predict cap. Its L4a gate reads the yes/no logprobs via `typed_decisions.confidence`, and a context overflow is recorded as `out_of_window`, never truncated.
+    - Research `6877ac57c` + `5ec8e1966` add `phase0_arms.py`, which `run_phase0.py --phase cpu|gpu-audit|gpu-answers|score` drives. Coverage: M5 manifest first, lazy L4 with resumable fsynced units, M1 and futility 2, the 27B audit, P-small / B-today / P-large (size-rule planner, typed call stubbed) / B1 / B2, and the mechanical verdict via `agg_phase0.score`.
+    - The deterministic scorer replaces CJ-8. PREDECLARED.md was amended pre-data on 2026-11-10; its new sha256 is `0cb303a4d81598329a0f02466f4b18ecc973fe1609992d2e9e7950a63c7a1230`. It supersedes the AGG-0.1 `0e2b09e77f92596d` value for runs.
+    - Keeper jobs (unpublished):
+      - `/mnt/raid0/llm/tmp/agg0-arms-cpu-20261110/` runs on a CPU quarter, port 9481. It needs a COMPLETE L3 load with n_tables > 0 and pages > 1, from `AGG0_L3_DIR` (default `-r3`; `-r2` is INVALID).
+      - `/mnt/raid0/llm/tmp/agg0-arms-gpu-20261110/` runs in an MI210 gpu-quiet exclusive window on 184-191, ports 9482 and 9483. It needs the CPU job COMPLETE with M1 >= 0.70. It runs the np4 recipe for the audit, then the np1 196k recipe for every answer arm.
+    - Registry discrepancy, not edited: worker_general/ingest_long_context `draft_max 7` with KV q8_0, against the codified recipe files' `draft_n_max 8` with f16. The recipes are used.
+    - Tests: orchestrator 17 passed; research `test_agg_phase0*.py` 17 OK.
+    [no-belief: code landed, no measurement]
 - [ ] **AGG-0.5 — Verdict.** `go_phase_1` or `superseded_v2_not_viable` with the tripped gate named; closure
   scoped to "integrated planner + lazy fact layer on Qwen3.6-35B-A3B / Qwen3.8-27B at 10-doc scale". On GO,
   file AGG-1.x (25-30 docs, Oolong-real check, incremental re-ingest, one backfill field, mid-size parity) and
