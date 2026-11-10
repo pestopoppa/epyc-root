@@ -57,7 +57,6 @@
     padding:14px 16px;margin-bottom:20px;
   }
   .timeline h2{font-size:13px;margin:0 0 10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-  .stockchart{margin-bottom:18px}
   .charts{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   @media(max-width:820px){.charts{grid-template-columns:1fr}}
   .chart-title{font-size:12px;color:var(--muted);margin:0 0 4px}
@@ -130,26 +129,6 @@
   .dead-item{border:1px solid var(--border);background:var(--panel2);color:var(--muted);border-radius:6px;
     padding:4px 7px;font:inherit;font-size:11px;cursor:pointer;max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dead-item:hover{border-color:var(--accent);color:var(--text)}
-
-  /* autopilot outcome — steering card (mirrors an exported contract, :8000-owned) */
-  .outcome{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--border);
-    border-radius:10px;padding:14px 18px;margin-bottom:20px}
-  .outcome h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;flex-wrap:wrap}
-  .oc-degraded{font-size:12.5px;color:var(--muted);line-height:1.55}
-  .oc-degraded a{font-weight:600}
-  .oc-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 9px;border-radius:999px;
-    border:1px solid var(--border);color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
-  .oc-status.ok{color:var(--good);border-color:#1f4d38}
-  .oc-status.attention,.oc-status.outcome_stalled{color:var(--high);border-color:#5a3a1a}
-  .oc-status.stalled{color:var(--p0);border-color:#4d1f1c}
-  .oc-stats{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:8px}
-  .oc-stat{display:flex;flex-direction:column;gap:2px}
-  .oc-stat .n{font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
-  .oc-stat .n.warn{color:var(--high)} .oc-stat .n.bad{color:var(--p0)} .oc-stat .n.good{color:var(--good)}
-  .oc-stat .l{font-size:11px;color:var(--muted)}
-  .oc-blockers{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
-  .oc-blockers li{font-size:11.5px;color:var(--high);border-left:3px solid var(--high);padding:2px 0 2px 8px}
-  .oc-notice{font-size:10.5px;color:var(--muted);margin-top:10px;line-height:1.5}
 
   /* kanban */
   .kanban{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:14px;align-items:start}
@@ -370,28 +349,10 @@
     <div class="bk-activity" id="backlog-activity"></div>
   </section>
 
-  <section class="outcome" id="outcome-card">
-    <h2>Autopilot outcome — is the loop producing value?
-      <span class="badge" id="outcome-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>contract</span></span>
-    </h2>
-    <div id="outcome-body"><span class="muted">loading…</span></div>
-  </section>
-
   <section class="timeline">
     <h2>Progress over time
       <span class="badge" id="timeline-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>timeline</span></span>
     </h2>
-    <div class="stockchart">
-      <p class="chart-title">Open-box backlog per day — stock net of removals, with daily flow <span id="stock-total" class="muted"></span></p>
-      <svg id="chart-stock" viewBox="0 0 600 270" role="img" aria-label="open checkbox stock per day with ticked, new and closed-by-completion bars"></svg>
-      <div class="legend">
-        <span><i style="background:var(--accent)"></i>open boxes (end of day)</span>
-        <span><i style="background:var(--high)"></i>new (rewordings netted out)</span>
-        <span><i style="background:var(--completed)"></i>ticked</span>
-        <span><i style="background:var(--active)"></i>closed by handoff completion</span>
-        <span><i style="background:transparent;border:1px dashed #8b949e"></i>backlog-refactor fold day (boxes moved, not filed/closed)</span>
-      </div>
-    </div>
     <div class="charts">
       <div>
         <p class="chart-title">Weekly checkbox flow — boxes first seen vs completed per ISO week (completions dated by their ✅ date; fold moves excluded) <span id="tasks-total" class="muted"></span></p>
@@ -415,14 +376,6 @@
   </section>
 
 
-  <div class="kanban" id="kanban">
-    <div class="column" data-state="active"><h3><span class="swatch"></span>Active<span class="count"></span></h3><div class="cards"></div></div>
-    <div class="column" data-state="blocked"><h3><span class="swatch"></span>Blocked<span class="count"></span></h3><div class="cards"></div></div>
-    <div class="column" data-state="completed"><h3><span class="swatch"></span>Completed<span class="count"></span></h3><div class="cards"></div></div>
-    <div class="column" data-state="archived"><h3><span class="swatch"></span>Archived<span class="count"></span></h3><div class="cards"></div></div>
-    <div class="column" data-state="folded" title="Sources folded into another handoff (backlog refactor) — not completed work"><h3><span class="swatch"></span>Folded<span class="count"></span></h3><div class="cards"></div></div>
-  </div>
-
   <section class="graph">
     <h2>Backlog graph — how handoffs relate
       <span class="badge" id="graph-badge" style="text-transform:none;font-weight:400;margin-left:8px"><span class="dot"></span><span>graph</span></span>
@@ -441,6 +394,15 @@
       <div id="graph-tip" class="gtip hint">Hover a node: handoff, progress, blocker class, activity, priority, next action and dependency counts appear here.</div></div>
     </div>
   </section>
+
+  <div class="kanban" id="kanban">
+    <div class="column" data-state="active"><h3><span class="swatch"></span>Active<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="blocked"><h3><span class="swatch"></span>Blocked<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="completed"><h3><span class="swatch"></span>Completed<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="archived"><h3><span class="swatch"></span>Archived<span class="count"></span></h3><div class="cards"></div></div>
+    <div class="column" data-state="folded" title="Sources folded into another handoff (backlog refactor) — not completed work"><h3><span class="swatch"></span>Folded<span class="count"></span></h3><div class="cards"></div></div>
+  </div>
+
 <section id="pipeline-sec"><h2>Pipeline: compute loop and session loop</h2>
 <p class="note">Live count at each node. Read-only. Data: <a href="/api/pipeline">/api/pipeline</a> · probe <a href="/api/pipeline/health">/api/pipeline/health</a> · refreshes every 30 s.</p>
 <div id="fresh" class="fresh">Loading…</div><div id="out"></div>
@@ -927,91 +889,6 @@ async function loadBoard(){
   catch(e){ setBadge("#board-badge","stale"); console.error(e); }
 }
 
-/* ---------------- autopilot outcome (steering) ----------------
-   Mirrors a file-backed contract PRODUCED BY the orchestrator loop (:8000); the
-   hub never reaches that loop's live state, so an absent export degrades honestly
-   to a "see :8000" card rather than fabricating outcome numbers. */
-function ocNum(v){ return (typeof v==="number"&&isFinite(v)) ? v : "—"; }
-function ocPct(rateObj){
-  if(!rateObj || rateObj.rate==null) return "—";
-  return (rateObj.rate*100).toFixed(0)+"%";   // rate is a fraction 0..1
-}
-function ocStat(n, l, cls){
-  return '<div class="oc-stat"><span class="n '+(cls||"")+'">'+esc(n)+
-    '</span><span class="l">'+esc(l)+'</span></div>';
-}
-function renderOutcome(d){
-  const body=$("#outcome-body"); if(!body) return;
-  const op = d.outcome_progress || {};
-  const st = op.status || "missing";
-  setBadge("#outcome-badge", (d._freshness&&d._freshness.staleness_class)||"missing");
-  const notice = d.observation_notice || "";
-  const ap = `${location.protocol}//${location.hostname}:8000/dashboard`;
-
-  // Honest degradation: no export, or the exporter reported no journal.
-  if(["missing","disabled","unknown"].includes(st) || d.error){
-    const why = d.error ? esc(d.error)
-      : (st==="disabled" ? "outcome tracking is disabled in the export."
-      : "the exporter found no autopilot journal.");
-    body.innerHTML =
-      '<div class="oc-degraded">No outcome contract to mirror — '+why+
-      ' The autopilot loop’s live keepable / wasted-eval / learning-excluded rates and '+
-      'frontier/baseline-promotion stall counters, plus every steering action '+
-      '(pause · rewind · promote), live on the '+
-      '<a href="'+esc(ap)+'" target="_blank" rel="noopener">orchestrator dashboard (:8000) ↗</a>. '+
-      'This hub only mirrors a file-backed export the loop does not write yet.</div>'+
-      (notice?'<div class="oc-notice">'+esc(notice)+'</div>':"");
-    return;
-  }
-
-  const rates = op.rates || {};
-  const win = rates.recent_window_trials;
-  const tsf = op.trials_since_frontier, maxf = op.max_trials_since_frontier;
-  const tsp = op.trials_since_promotion, maxp = op.max_trials_since_promotion;
-  const frontierStalled = (tsf!=null && maxf!=null && maxf>=0 && tsf>maxf) ||
-    (op.latest_frontier_trial_id==null && op.latest_trial_id!=null);
-  const promoStalled = (tsp!=null && maxp!=null && maxp>=0 && tsp>maxp) ||
-    (op.latest_promotion_trial_id==null && op.latest_trial_id!=null);
-  const we = rates.wasted_eval_rate, le = rates.learning_excluded_rate;
-
-  const statusCls = ["ok","attention","outcome_stalled"].includes(st) ? st : "attention";
-  let h = '<span class="oc-status '+esc(statusCls)+'">outcome: '+esc(st)+'</span>';
-
-  h += '<div class="oc-stats">';
-  h += ocStat(ocNum(op.latest_trial_id), "latest trial");
-  h += ocStat(ocNum(tsf)+(maxf!=null?' / '+maxf:''), "trials since frontier", frontierStalled?"bad":"");
-  h += ocStat(ocNum(tsp)+(maxp!=null?' / '+maxp:''), "trials since promotion", promoStalled?"bad":"");
-  h += ocStat(ocNum(op.baseline_promotions), "baseline promotions", (op.baseline_promotions===0)?"warn":"good");
-  h += '</div>';
-
-  h += '<div class="oc-stats">';
-  h += ocStat(ocPct(rates.keepable_rate), "keepable", "good");
-  h += ocStat(ocPct(we), "wasted-eval", (we&&we.rate>0)?"warn":"");
-  h += ocStat(ocPct(le), "learning-excluded", (le&&le.rate>0)?"warn":"");
-  if(win!=null){
-    h += '<div class="oc-stat"><span class="n" style="font-size:13px;color:var(--muted)">last '+
-      esc(ocNum(win))+'</span><span class="l">rate window (trials)</span></div>';
-  }
-  h += '</div>';
-
-  const blockers = Array.isArray(op.blockers)?op.blockers:[];
-  if(blockers.length){
-    h += '<ul class="oc-blockers">';
-    for(const b of blockers) h += '<li>'+esc(b)+'</li>';
-    h += '</ul>';
-  }
-  if(notice) h += '<div class="oc-notice">'+esc(notice)+'</div>';
-  body.innerHTML = h;
-}
-async function loadOutcome(){
-  try{ renderOutcome(await getJSON("/api/outcome")); }
-  catch(e){
-    setBadge("#outcome-badge","stale");
-    $("#outcome-body").innerHTML='<div class="oc-degraded">failed to load outcome contract</div>';
-    console.error(e);
-  }
-}
-
 /* ---------------- modal ---------------- */
 const modal = $("#modal");
 function closeModal(){ modal.classList.remove("open"); modal.setAttribute("aria-hidden","true"); }
@@ -1213,70 +1090,11 @@ function lineChart(svg, series){
   const lt=svgNS("text",{x:pad.l,y:H-6,fill:"#8b949e","font-size":8}); lt.textContent=first; svg.appendChild(lt);
   const rt=svgNS("text",{x:W-pad.r,y:H-6,fill:"#8b949e","font-size":8,"text-anchor":"end"}); rt.textContent=last; svg.appendChild(rt);
 }
-/* Primary trend: open-box STOCK per day (line, top band) + daily flow (bars, bottom
-   band, diverging: new above the baseline; ticked + closed-by-completion below).
-   Source: /api/handoff_timeline -> daily_flow (build_handoff_timeline.build_daily_flow). */
-function stockChart(svg, days, windowDays, markers){
-  const W=600,H=270,pad={l:38,r:8,t:10,b:20};
-  svg.innerHTML="";
-  const msg=t=>svg.appendChild(svgNS("text",{x:W/2,y:H/2,fill:"#8b949e","text-anchor":"middle","font-size":12})).textContent=t;
-  if(!days.length){ msg("no data"); return; }
-  const rows=days.slice(-windowDays), n=rows.length;
-  const iw=W-pad.l-pad.r, bw=iw/n;
-  const topH=130, gap=14, botTop=pad.t+topH+gap, botH=H-pad.b-botTop;
-  // top band: stock line, axis not forced to zero so a 1-2% move stays visible
-  const sv=rows.map(r=>r.open_stock||0);
-  let lo=Math.min(...sv), hi=Math.max(...sv); if(hi===lo){ hi+=1; lo-=1; }
-  const padv=(hi-lo)*0.08; lo=Math.max(0,lo-padv); hi+=padv;
-  const Y=v=>pad.t+topH-topH*(v-lo)/(hi-lo);
-  if(lo>0){ // the stock axis does not start at zero: say so, so a small move is not read as a large one
-    const zz=pad.t+topH;
-    svg.appendChild(svgNS("polyline",{points:`${pad.l-4},${zz-2} ${pad.l},${zz-5} ${pad.l+4},${zz-2} ${pad.l+8},${zz-5}`,fill:"none",stroke:"#8b949e","stroke-width":1}));
-    const tl=svgNS("text",{x:pad.l+4,y:pad.t+9,fill:"#8b949e","font-size":9}); tl.textContent=`axis truncated: starts at ${Math.round(lo)}, not 0`; svg.appendChild(tl);
-  }
-  for(let g=0;g<=2;g++){ const v=lo+(hi-lo)*g/2, y=Y(v);
-    svg.appendChild(svgNS("line",{x1:pad.l,y1:y,x2:W-pad.r,y2:y,stroke:"#21262d","stroke-width":1}));
-    const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=Math.round(v); svg.appendChild(t);
-  }
-  const cx=i=>pad.l+i*bw+bw/2;
-  svg.appendChild(svgNS("polyline",{points:rows.map((r,i)=>`${cx(i).toFixed(1)},${Y(r.open_stock||0).toFixed(1)}`).join(" "),
-    fill:"none",stroke:"#60a5fa","stroke-width":1.8,"stroke-linejoin":"round"}));
-  // bottom band: diverging bars about a baseline
-  const up=Math.max(1,...rows.map(r=>r.new_open||0));
-  const dn=Math.max(1,...rows.map(r=>(r.ticked||0)+(r.closed_by_completion||0)));
-  const sc=botH/(up+dn), base=botTop+up*sc;
-  svg.appendChild(svgNS("line",{x1:pad.l,y1:base,x2:W-pad.r,y2:base,stroke:"#30363d","stroke-width":1}));
-  for(const [v,y] of [[up,botTop],[-dn,botTop+botH]]){
-    const t=svgNS("text",{x:pad.l-5,y:y+3,fill:"#8b949e","font-size":9,"text-anchor":"end"}); t.textContent=v; svg.appendChild(t);
-  }
-  rows.forEach((r,i)=>{
-    const x=pad.l+i*bw+bw*0.12, w=Math.max(1,bw*0.76);
-    const nw=r.new_open||0, tk=r.ticked||0, cc=r.closed_by_completion||0;
-    const tip=`${r.date}: ${r.open_stock} open · +${nw} new (${r.reworded||0} reworded, netted) · ${tk} ticked · ${cc} closed by completion (${r.handoffs_completed||0} handoffs) · ${r.removed_open||0} removed · ${r.born_ticked||0} born ticked`+(r.moved?` · ${r.moved} moved by fold (${r.handoffs_folded||0} handoffs folded)`:"");
-    const bar=(y,h,fill)=>{ if(h<=0) return; const e=svgNS("rect",{x,y,width:w,height:h,fill,rx:1});
-      const tt=svgNS("title"); tt.textContent=tip; e.appendChild(tt); svg.appendChild(e); };
-    bar(base-nw*sc,nw*sc,"#f0883e");
-    bar(base,tk*sc,"#3fb950");
-    bar(base+tk*sc,cc*sc,"#58a6ff");
-  });
-  // fold days (timeline refactor_markers: boxes MOVED between handoffs) -- dashed full-height marker
-  const md=new Map((Array.isArray(markers)?markers:[]).map(m=>[m.date,m]));
-  rows.forEach((r,i)=>{ const m=md.get(r.date); if(!m) return;
-    const ln=svgNS("line",{x1:cx(i),y1:pad.t,x2:cx(i),y2:H-pad.b,stroke:"#8b949e","stroke-width":1,"stroke-dasharray":"3 3"});
-    const tt=svgNS("title"); tt.textContent=`${r.date}: backlog refactor fold — ${m.moved||0} box(es) moved between handoffs, excluded from new/ticked`; ln.appendChild(tt);
-    svg.appendChild(ln); });
-  const step=Math.max(1,Math.ceil(n/6));
-  rows.forEach((r,i)=>{ if(i%step===0){
-    const t=svgNS("text",{x:cx(i),y:H-6,fill:"#8b949e","font-size":8,"text-anchor":"middle"}); t.textContent=r.date.slice(5); svg.appendChild(t); }});
-}
 async function loadTimeline(){
   let d;
   try{ d = await getJSON("/api/handoff_timeline"); }
   catch(e){ setBadge("#timeline-badge","stale"); return; }
   const flow=d.daily_flow||[];
-  stockChart($("#chart-stock"), flow, 90, d.refactor_markers||[]);
-  if(flow.length){ const a=flow.slice(-30), sum=k=>a.reduce((x,r)=>x+(r[k]||0),0), l=flow[flow.length-1];
-    $("#stock-total").textContent=`(${l.open_stock} open now · last 30d: +${sum("new_open")} new · ${sum("ticked")} ticked · ${sum("closed_by_completion")} closed by completion · ${sum("handoffs_completed")} handoffs completed)`; }
   barChart($("#chart-tasks"), d.tasks_weekly||[]);
   // extend the step series to today so the line does not stop at the last change
   const st=(d.series||[]).slice(), today=new Date().toISOString().slice(0,10);
@@ -1797,10 +1615,9 @@ async function loadDirectory(){
 }
 
 /* ---------------- boot ---------------- */
-loadBoard(); loadTimeline(); loadOutcome(); loadGraph(); loadDirectory();
+loadBoard(); loadTimeline(); loadGraph(); loadDirectory();
 setInterval(loadBoard, 45000);
 setInterval(loadTimeline, 120000);
-setInterval(loadOutcome, 60000);
 setInterval(loadGraph, 120000);
 setInterval(loadDirectory, 30000);
 </script>
