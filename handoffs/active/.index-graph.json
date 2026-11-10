@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T09:38:34Z",
+  "generated_at": "2026-11-10T09:40:21Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1639,7 +1639,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-10",
-      "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
+      "next_action": "race-eqv r4 on new-fail-vs-baseline gate (r3 invalid baseline); reseal C6 onto C10, diagnose residency; c2-producer follow-ups",
       "open": 15,
       "priority": 0.8728,
       "priority_basis": {
@@ -1902,7 +1902,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-10",
-      "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
+      "next_action": "Champion is C10 7f1bd044b (operator 2026-11-10); AutoKernel owns promotion; C10 floors pending whole-host row; production v10",
       "open": 45,
       "priority": 0.9075,
       "priority_basis": {
@@ -2277,14 +2277,14 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 115,
-      "dispatchable": 64,
+      "dispatchable": 65,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-10",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
-      "open": 66,
+      "open": 67,
       "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
@@ -2301,11 +2301,11 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 2,
+          "dispatchable": 3,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 2,
+          "open": 3,
           "readiness": "blocked"
         },
         {
@@ -2320,7 +2320,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 22,
+          "line": 23,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 11,
           "readiness": "blocked"
@@ -2343,7 +2343,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 935,
+          "line": 936,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53,
           "readiness": "blocked"
