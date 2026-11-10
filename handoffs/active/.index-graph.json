@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T10:06:51Z",
+  "generated_at": "2026-11-10T10:48:05Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2407,14 +2407,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 108,
-      "dispatchable": 16,
+      "dispatchable": 20,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-09",
       "next_action": "Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision",
-      "open": 16,
+      "open": 20,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2479,11 +2479,20 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [],
           "line": 2985,
           "name": "sliders-local-validation",
-          "open": 2,
+          "open": 1,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 5,
+          "gates": [],
+          "line": 3116,
+          "name": "integrated-aggregation",
+          "open": 5,
           "readiness": "ready"
         }
       ]

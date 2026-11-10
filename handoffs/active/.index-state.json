@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-09",
-      "open": 16
+      "open": 20
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1276,7 +1276,7 @@
       "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 16,
+      "open": 20,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1285,7 +1285,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 124,
+      "total": 128,
       "tracks": [
         {
           "blocked": 0,
@@ -1345,7 +1345,17 @@
           "line": 2985,
           "markers": 1,
           "name": "sliders-local-validation",
-          "open": 2
+          "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 3116,
+          "markers": 1,
+          "name": "integrated-aggregation",
+          "open": 5
         }
       ]
     },

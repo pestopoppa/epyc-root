@@ -2985,6 +2985,8 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 ## Track: sliders-local-validation
 <!-- gate: none -->
 
+> **2026-11-10 — Phase 0 gate 0.4 closed as superseded** (operator design audit): the call-count gate was never measurable and the r4 run is an observation, not a verdict. Nothing is concluded about SLIDERS' viability or structured-DB QA. Continues in `## Track: integrated-aggregation` below; design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../docs/design/integrated-document-aggregation-plan-20261110.md). `data/sliders_validation/01_*` and `02_*` stay as reference.
+
 > Folded from `handoffs/active/sliders-local-validation.md` @ `ccf37cd0b6a4` on 2026-11-02 (BRF-T1-F8, route 1a, operator D1/D5; retired row EVL-43 → PIP-04). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
 ### Handoff: SLIDERS Local-LLM Validation
@@ -3049,7 +3051,7 @@ Goal: a single written verdict, GO or `not_viable_local`. ~2–3 sessions of wor
   - Schema hallucination rate (defined: SQL emitted by Coder-30B references columns / tables that were not in the per-question schema spec). Detect via repo's existing schema-validation step.
   - Wall-clock time per question
   - Output: `data/sliders_validation/03_finq5_results.json`
-- [ ] **0.4 Gate decision**: write `data/sliders_validation/04_phase0_verdict.md` containing one of: Steps (absorb 0.1-0.3): clone stanford-oval/sliders into scratch and catalogue every GPT-4.1 call site; substitute the local OpenAI-compatible coder endpoint at all sites; run FinQ5 end to end; then write the verdict. Runs only if the operator answers the SLIDERS decision above with "evaluate now". **ANSWERED 2026-11-07: evaluate now, low-priority filler** — steps 0.1-0.3 are non-inference prep (scratch clone, call-site catalogue, substitution diff) followed by one CPU Coder-30B filler row. [2026-11-09 apr2 rtg08-evl47-pip04-code: 0.1 and 0.2 DONE as documents on the root branch: `data/sliders_validation/01_call_site_catalog.md` (all call sites, one factory `llm.py:145`) and `02_substitution_diff.md` (substitution is configuration: provider `openai` + `OPENAI_BASE_URL`, zero source diff, prompts untouched). 0.3 NOT started and its premise is wrong: `experiments/sec_10q.py` has no EDGAR downloader, no questions file is shipped, and FinQ100 is 36M tokens; the FinQ5 corpus must be supplied or an alternative bounded set chosen (decision needed, see 02). The filler row is not written. Box stays open. [no-belief: prep documents, no run]]
+- **[declined: superseded 2026-11-10 by AGG track; the call-count gate was unmeasurable (the paper reports no per-question call counts); Coder-30B left the stack. Observation: r4 FB5 Q1 used >=757 LLM calls / 4.05M prompt tokens without finishing (~9.7 h on one CPU quarter); /mnt/raid0/llm/tmp/sliders-phase0-fb5-coder30b-r4-20261109] [no-belief: superseded, no verdict]** **0.4 Gate decision**: write `data/sliders_validation/04_phase0_verdict.md` containing one of: Steps (absorb 0.1-0.3): clone stanford-oval/sliders into scratch and catalogue every GPT-4.1 call site; substitute the local OpenAI-compatible coder endpoint at all sites; run FinQ5 end to end; then write the verdict. Runs only if the operator answers the SLIDERS decision above with "evaluate now". **ANSWERED 2026-11-07: evaluate now, low-priority filler** — steps 0.1-0.3 are non-inference prep (scratch clone, call-site catalogue, substitution diff) followed by one CPU Coder-30B filler row. [2026-11-09 apr2 rtg08-evl47-pip04-code: 0.1 and 0.2 DONE as documents on the root branch: `data/sliders_validation/01_call_site_catalog.md` (all call sites, one factory `llm.py:145`) and `02_substitution_diff.md` (substitution is configuration: provider `openai` + `OPENAI_BASE_URL`, zero source diff, prompts untouched). 0.3 NOT started and its premise is wrong: `experiments/sec_10q.py` has no EDGAR downloader, no questions file is shipped, and FinQ100 is 36M tokens; the FinQ5 corpus must be supplied or an alternative bounded set chosen (decision needed, see 02). The filler row is not written. Box stays open. [no-belief: prep documents, no run]]
   - *2026-11-09:* `data/sliders_validation/` does not exist in root or orchestrator; a scratch clone exists at `/mnt/raid0/llm/scratch/sliders` (cloned 2026-11-02), so 0.1 may be partly done but nothing is recorded. Steps 0.1-0.3 are doable now; the final CPU Coder-30B row is a normal filler grant. No Autopilot dependency.
   - **`not_viable_local`** if EITHER schema hallucination > 20% (averaged over 5 questions × all SQL emissions) OR per-question call count > 5× the GPT-4.1 baseline. State which gate(s) tripped, with the actual measured numbers. CLOSE this handoff. Do NOT generalize to "structured-DB QA architectures are not viable on local LLMs" — the closure is specific to SLIDERS as released, on Coder-30B, at FinQ5 scale.
   - **`go_phase_1`** if BOTH gates met. Document the FinQ5 pass rate and per-stage call counts. Proceed to Phase 1.
@@ -3110,3 +3112,35 @@ Validation evidence: 53 regression tests and 16 subtests passed; the exact appro
 ##### 2026-11-05 operator-adhoc follow-ups (operator-adhoc-ops-20261105 wrap-up)
 
 - **[declined: operator 2026-11-07 — superseded: the keeper already treats rc 0/75 as a clean stop (`rowflow.py:3088-3095`), rowflow2 auto-ends rc=75 and re-queues (`4b78e3716`), and the disk floor now PAUSES instead of stopping (`d2b1be6d1`, operator 'Pause with hysteresis'); the residual per-packet paddle launcher logic belonged to the unrecoverable r35 packet (19 reaped pins) and is replaced by the reviewed R36]** **PADDLE-RC75-RESUME — the paddle wrapper must treat rc75 (tempfail/disk-floor) as resumable, not failure** (~19 rows affected; codex3).
+
+## Track: integrated-aggregation
+<!-- gate: none -->
+
+Design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../docs/design/integrated-document-aggregation-plan-20261110.md) (rev 2, operator-approved 2026-11-10). One pipeline over the current document flow with a cost-based planner; replaces the SLIDERS Phase 0 gate (superseded; reuses only SLIDERS' row shape and taxonomy). Closure scope: "integrated planner + lazy fact layer on Qwen3.6-35B-A3B / Qwen3.8-27B at 10-doc scale"; nothing is concluded about SLIDERS' viability.
+
+- [ ] **AGG-0.1 — Freeze corpus, questions and verified golds (no compute).** 10 FinanceBench 10-Ks pinned by
+  sha256 (FB5 + 5); 20 constructed cross-document aggregation questions with gold derived by script from the
+  metrics-generated gold answers **and hand-verified against the filings by a named reviewer, with the
+  verification record committed**; 10 original single-fact questions for P-large and 10 for P-small; M1-M5 and
+  the kill gate predeclared as in the design doc §(c). Done when the frozen set, verification record
+  and rules file have sha256s recorded here; an unverified question is excluded, not assumed.
+- [ ] **AGG-0.2 — Corpus store + deterministic layers over the existing parse (no compute).** Persist
+  `DocumentPreprocessResult` under content hash; L1 BM25 and L2 index registry keyed (corpus, hash, builder,
+  model); L3 `facts` from `DocumentPreprocessResult.tables` + regex spans; catalog→GBNF SQL grammar; tests with a
+  fake backend. Done when the 10 parsed docs load once and every layer reads the same store, L3-only M1 is
+  reported (informational), and out-of-catalog SQL is rejected by the grammar.
+- [ ] **AGG-0.3 — Planner and lazy L4 (no compute beyond a smoke).** Typed planner (Choice over paths + Score,
+  deterministic size rules outside the ambiguous band, `decision_receipt.v1`), L4a-d with cached prefix,
+  `pin_slot`, `n_predict` cap, quote check, native-catalogue reconcile, 27B audit sample, per-stage
+  `cache_n`/prefill receipts; planner skipped (no LLM) when C ≤ 60k and Q = 1. Done when a fake-backend run
+  produces facts end to end, the small-corpus path builds no L2-L4 index, and the job writes numeric per-stage
+  records early.
+- [ ] **AGG-0.4 — Phase-0 run (one CPU quarter + one MI210 window, normal grants).** P-large ingest on
+  worker_general with M1 and the M5 manifest check computed before the GPU window is requested; then audit, the
+  30 P-large questions, B1 on 30, B2 on 5, P-small and B-today on 10. Done when M1-M5 and all arms are filed with
+  the frozen rules' sha256 and a belief-kernel row.
+- [ ] **AGG-0.5 — Verdict.** `go_phase_1` or `superseded_v2_not_viable` with the tripped gate named; closure
+  scoped to "integrated planner + lazy fact layer on Qwen3.6-35B-A3B / Qwen3.8-27B at 10-doc scale". On GO,
+  file AGG-1.x (25-30 docs, Oolong-real check, incremental re-ingest, one backfill field, mid-size parity) and
+  the Phase-2 integration decision package.
+
