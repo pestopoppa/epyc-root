@@ -1,6 +1,6 @@
 # v11 promotion checklist — the requirements that close only at the v11 production promotion
 
-**Owner**: **main-inf22**, until v11 is promoted (operator 2026-11-07: no official v11 promotion owner is needed yet, because v11 is not being promoted).
+**Owner**: **autokernel** (operator handover 2026-11-10; was main-inf22), until v11 is promoted (operator 2026-11-07: no official v11 promotion owner is needed yet, because v11 is not being promoted).
 **Status**: ACTIVE — runbook keeper. v11 is **not** being promoted. These boxes close at the promotion, not before.
 **Purpose**: keep the v11 promotion runbook current so that no important work or upgrade is lost when v11 is promoted. **Update this file whenever a champion lands.** Record what the new champion carries that the promotion must prove, flip or re-select, and record the items that champion made moot.
 **Scratch**: none
