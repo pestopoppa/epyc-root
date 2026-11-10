@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T14:08:07Z",
+  "generated_at": "2026-11-10T14:12:45Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1329,15 +1329,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 830,
-      "dispatchable": 138,
+      "closed": 832,
+      "dispatchable": 136,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-10",
       "next_action": "Diagnose MMQ-H3 NaN (iglp_opt0 fails correctness); H10b same-seed rerun; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
-      "open": 139,
+      "open": 137,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1374,7 +1374,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 41,
+          "dispatchable": 39,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1383,7 +1383,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 42,
+          "open": 40,
           "readiness": "blocked"
         },
         {
@@ -1895,7 +1895,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 193,
+      "closed": 194,
       "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
@@ -1953,7 +1953,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1694,
+          "line": 1695,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1818,
+          "line": 1819,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2148,
+          "line": 2149,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2287,
+          "line": 2288,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -1989,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2843,
+          "line": 2844,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2001,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2983,
+          "line": 2984,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2013,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2990,
+          "line": 2991,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2276,15 +2276,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 117,
-      "dispatchable": 63,
+      "closed": 118,
+      "dispatchable": 62,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-10",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
-      "open": 65,
+      "open": 64,
       "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
@@ -2301,11 +2301,11 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
@@ -2406,15 +2406,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 109,
-      "dispatchable": 18,
+      "closed": 110,
+      "dispatchable": 19,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-10",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-0.1 corpus + hand-verified golds",
-      "open": 18,
+      "open": 19,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2461,18 +2461,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 7,
           "gates": [],
           "line": 2496,
           "name": "opendataloader-pipeline-integration",
-          "open": 6,
+          "open": 7,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2616,
+          "line": 2619,
           "name": "searxng-search-backend",
           "open": 1,
           "readiness": "ready"
@@ -2481,7 +2481,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2985,
+          "line": 2988,
           "name": "sliders-local-validation",
           "open": 0,
           "readiness": "no_open"
@@ -2490,7 +2490,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3116,
+          "line": 3119,
           "name": "integrated-aggregation",
           "open": 4,
           "readiness": "ready"
