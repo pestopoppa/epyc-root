@@ -23,13 +23,12 @@ armed before 2026-11-01 only.
 
 ## Deploying rowflow: `deploy_rowflow.sh` is the ONLY sanctioned path (operator 2026-11-05)
 
-> **FROZEN (operator 2026-11-05, "Freeze current + build rowflow2").** `rowflow.py`, `publish_row.py` and
-> `filler_run15.sh` are frozen (`bin/rowflow/DEPLOYED.json`). `deploy_rowflow.sh` refuses (exit 77) any deploy that
-> would change one of them unless `--emergency "<reason>"` is given; the reason is recorded in `DEPLOYED.json` and the
-> unit + replay gates still run. No new rules, no per-incident `if` in `plan()`/`contract_of`: a scheduling fix lands in
-> **rowflow2**, which runs in read-only SHADOW beside the live keeper. **Exit criterion:** rowflow2 passes its shadow
-> week (criteria in the design doc) and is cut over; until then the freeze holds. Other `bin/rowflow/` files
-> (`notify.py`, `hostutil.py`, …) deploy as before.
+> **FROZEN: `filler_run15.sh` only.** The 2026-11-05 freeze ("Freeze current + build rowflow2") covered `rowflow.py`,
+> `publish_row.py` and `filler_run15.sh`; on **2026-11-10 the operator lifted it on `rowflow.py` and `publish_row.py`**
+> ("Lift freeze on 2, keep engine (Recommended)", pipeline audit finding #14). Those two now deploy through the unit +
+> replay gates with a `D9-ack:` line on the commit and no per-change `--emergency`. `deploy_rowflow.sh` still refuses
+> (exit 77) a deploy that changes `filler_run15.sh` (the engine running pollers re-read) unless `--emergency "<reason>"`
+> is given; the reason is recorded in `DEPLOYED.json`. rowflow2 keeps running in read-only SHADOW beside the live keeper.
 
 Nothing may copy files into `compute-flags/bin/rowflow/` by hand. `scripts/coordination/rowflow/deploy_rowflow.sh
 [--ref origin/main] [--check-only] [--emergency "<reason>"]` stages a detached worktree of `<ref>`, runs the unit tests

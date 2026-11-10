@@ -17,12 +17,12 @@
 # 6. verify   the keeper log must show a SNAPSHOT after the install and no Traceback within --verify-s (300 s);
 #             otherwise the backups are restored (unless --no-rollback) and the script exits 3.
 #
-# FREEZE (operator 2026-11-05, "Freeze current + build rowflow2"): rowflow.py, publish_row.py and filler_run15.sh are
-# frozen at 9218dffd131008117a5f341848dce572b4669486. A deploy that would change any of them is REFUSED (exit 77)
-# before the gates run, unless --emergency "<reason>" is given; the reason, the frozen files touched and the UTC time
-# are recorded in DEPLOYED.json (`emergency`, and appended to `emergency_log`). The unit + replay gates still apply.
-# Exit criterion: rowflow2 (scripts/coordination/rowflow2/) passes its shadow week and is cut over
-# (docs/design/rowflow2-20261105.md). Other files (notify.py, hostutil.py, ...) deploy as before.
+# FREEZE: only filler_run15.sh (the engine running pollers re-read) is frozen, at 9218dffd131008117a5f341848dce572b4669486.
+# A deploy that would change it is REFUSED (exit 77) before the gates run, unless --emergency "<reason>" is given; the
+# reason, the file and the UTC time are recorded in DEPLOYED.json (`emergency`, appended to `emergency_log`). The unit +
+# replay gates still apply. rowflow.py and publish_row.py were frozen 2026-11-05 ("Freeze current + build rowflow2") and
+# UNFROZEN by operator decision 2026-11-10 ("Lift freeze on 2, keep engine (Recommended)", pipeline audit finding #14):
+# they deploy through the unit + replay gates with a D9-ack on the commit and no per-change emergency override.
 set -euo pipefail
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -33,7 +33,7 @@ FLAGS=${ROWFLOW_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}
 BIN="$FLAGS/bin/rowflow"
 LOG="$FLAGS/ws58-calendar-keeper.log"
 CHECK_ONLY=0; ALLOW_OPEN=0; ROLLBACK=1; VERIFY_S=300; EMERGENCY=""
-FROZEN=(rowflow.py publish_row.py filler_run15.sh)
+FROZEN=(filler_run15.sh)   # operator 2026-11-10: rowflow.py/publish_row.py unfrozen
 FROZEN_AT=9218dffd131008117a5f341848dce572b4669486
 FILES=(rowflow.py publish_row.py notify.py diskpause.py hostutil.py grant_ok_launcher.py filler_run15.sh filler_lib.sh run_direct.py run_direct.sh)
 SCRATCH=${REPLAY_SCRATCH:-/mnt/raid0/llm/tmp/rowflow-replay}
@@ -73,7 +73,7 @@ for f in "${FROZEN[@]}"; do
 done
 if [ ${#FROZEN_TOUCHED[@]} -gt 0 ]; then
   if [ -z "$EMERGENCY" ]; then
-    echo "REFUSED: FROZEN at ${FROZEN_AT:0:9} (operator 2026-11-05): $SHA changes ${FROZEN_TOUCHED[*]}; pass --emergency \"<reason>\" (logged in DEPLOYED.json) or land the change in rowflow2" >&2
+    echo "REFUSED: FROZEN at ${FROZEN_AT:0:9} (operator 2026-11-05, kept 2026-11-10): $SHA changes ${FROZEN_TOUCHED[*]}; pass --emergency \"<reason>\" (logged in DEPLOYED.json)" >&2
     exit 77
   fi
   echo "deploy_rowflow: EMERGENCY override of the freeze for ${FROZEN_TOUCHED[*]}: $EMERGENCY"
@@ -139,8 +139,9 @@ if emergency:
 files = {f: hashlib.sha256(open(os.path.join(os.path.dirname(out), f), "rb").read()).hexdigest()
          for f in os.listdir(os.path.dirname(out)) if f.endswith((".py", ".sh")) and ".bak" not in f}
 json.dump({"ref": ref, "sha": sha, "at": ts, "changed": changed, "files": files, "gate": "unit+replay PASS",
-           "frozen": {"files": ["rowflow.py", "publish_row.py", "filler_run15.sh"], "at": os.environ.get("ROWFLOW_FROZEN_AT"),
-                      "exit": "rowflow2 passes its shadow week (docs/design/rowflow2-20261105.md)"},
+           "frozen": {"files": ["filler_run15.sh"], "at": os.environ.get("ROWFLOW_FROZEN_AT"),
+                      "exit": "rowflow2 passes its shadow week (docs/design/rowflow2-20261105.md)",
+                      "unfrozen": {"files": ["rowflow.py", "publish_row.py"], "at": "2026-11-10", "by": "operator: Lift freeze on 2, keep engine"}},
            "emergency": emergency, "emergency_log": elog},
           open(out + ".part", "w"), indent=1, sort_keys=True)
 os.replace(out + ".part", out)

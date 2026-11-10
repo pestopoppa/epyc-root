@@ -17,10 +17,10 @@ Canonical protocol (read it once per session): `docs/guides/agent-workflows/comp
 > `filler_run15.sh`) and a small spec, `scripts/coordination/rowflow/publish_row.py` derives the rest, the keeper
 > (`rowflow.py allocate`, every 120 s, the ONLY grant writer) smokes it once on the real lane (`dryrun/<id>/PASS.json`),
 > grants it and files it. Row alerts land in the inference mailbox (`rowflow.py alerts --unacked` / `--ack`; a
-> publishing session arms the watcher in `scripts/coordination/rowflow/README.md`). `rowflow.py`, `publish_row.py`
-> and `filler_run15.sh` are **FROZEN** (operator 2026-11-05): scheduling fixes go to **rowflow2**
-> (`scripts/coordination/rowflow2/`, `docs/design/rowflow2-20261105.md`, read-only SHADOW until its shadow week passes),
-> and a frozen-keeper change needs `deploy_rowflow.sh --emergency`. FILLERS.md, writers, `grant_ok*.sh`,
+> publishing session arms the watcher in `scripts/coordination/rowflow/README.md`). Only `filler_run15.sh`
+> is **FROZEN** (needs `deploy_rowflow.sh --emergency`); `rowflow.py` and `publish_row.py` were unfrozen by the
+> operator on 2026-11-10 and deploy through the unit + replay gates with a D9-ack. rowflow2
+> (`scripts/coordination/rowflow2/`, `docs/design/rowflow2-20261105.md`) stays a read-only SHADOW. FILLERS.md, writers, `grant_ok*.sh`,
 > `ram_admit.sh` and `grant_ok_launcher.py` are retired (2026-11-01, "one allocator"); where this file still says
 > "FILLERS row" or "writer", read "v3 row" and "keeper". Flow: `docs/guides/agent-workflows/backlog-churn-flow.md`;
 > launcher contract and job-side rules: `docs/guides/agent-workflows/compute-fillers.md`.
