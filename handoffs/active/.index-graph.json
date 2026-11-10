@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T18:03:10Z",
+  "generated_at": "2026-11-10T18:05:52Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3312,15 +3312,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 330,
-      "dispatchable": 18,
+      "closed": 331,
+      "dispatchable": 17,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-10",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
-      "open": 18,
+      "open": 17,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3403,7 +3403,7 @@
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3413,8 +3413,8 @@
           ],
           "line": 4881,
           "name": "loop-owned-fleet-implementation",
-          "open": 1,
-          "readiness": "blocked"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [

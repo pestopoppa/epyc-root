@@ -5183,7 +5183,7 @@ Gate: one full day of backlog churn with zero machine pane-IO for workers.
 
 #### Trust-boundary follow-ups (research-intake 2026-09-07)
 
-- [ ] **P5-1 Trust-boundary analysis of the coordination-plane hook surface**, with a specific
+- [x] **P5-1 Trust-boundary analysis of the coordination-plane hook surface**, with a specific ✅ 2026-11-10 ROOT (P5-1 report, cherry-picked from 29ba3b1cf) — artifacts/analysis/p5-1-coordination-hook-trust-boundary-20261110.md; classifierContext declared out of bounds; guard scripts/hooks/tests/test_no_classifier_context.py; INVARIANTS 1/4 text filed as operator token-request [belief: cc]
       newly-found item: PostToolUse `hookSpecificOutput.classifierContext` — the classifier may weigh
       a user statement relayed here as user intent (it can satisfy a consent bar a user turn would
       satisfy, never a hard boundary). **Declare it out of bounds for any coordination-plane hook and

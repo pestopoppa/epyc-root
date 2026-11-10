@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 467
+      "open": 466
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 330,
+      "closed": 331,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 18,
+      "open": 17,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -696,7 +696,7 @@
         },
         {
           "blocked": 0,
-          "closed": 54,
+          "closed": 55,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -708,7 +708,7 @@
           "line": 4881,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
