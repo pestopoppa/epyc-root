@@ -262,7 +262,13 @@ def _outcome(c) -> str:
     return "improved" if mid > hi else "regressed"
 
 
-def _mappings(rows, result, sha, locator) -> list[dict]:
+#: Operator ruling 2026-11-10: R23-4 claims are low-confidence descriptive evidence. The carrier has no
+#: confidence field and the planner line renders only `outcome_native` and `decisive`, so the marker
+#: rides in both (the producer's own word stays first in `outcome_native` and verbatim in `extra`).
+LOW_CONFIDENCE = "descriptive, low confidence, no causal claim"
+
+
+def _mappings(rows, result, sha, locator, *, marked=True) -> list[dict]:
     first, out = rows[0], []
     for c in result["comparisons"]:
         out.append(dict(
@@ -281,12 +287,16 @@ def _mappings(rows, result, sha, locator) -> list[dict]:
                                model_sha256=first["input_packet"]["model_sha256"], quant="Q8_0",
                                build_sha=first["input_packet"]["source_commit"], backend="gpu",
                                run_id=result["run_id"], scope_basis="native", knob_family=c["factor"]),
-            observation=dict(outcome=_outcome(c), outcome_native=c["classification"],
+            observation=dict(outcome=_outcome(c),
+                             outcome_native=(f"{c['classification']}; {LOW_CONFIDENCE}" if marked
+                                             else c["classification"]),
                              anchor_value=c["baseline_before_median"],
+                             **({"decisive": False} if marked else {}),
                              outcome_reason="Descriptive adjacent-baseline comparison; "
                                             "window-only acceptance attribution UNKNOWN"),
             extra=dict(adapter=ADAPTER_ID, adjacent_baselines=[c["baseline_before_median"], c["baseline_after_median"]],
                        raw_repetitions=c["raw_repetitions"], response_id_attribution="UNKNOWN",
+                       producer_outcome_native=c["classification"], confidence=LOW_CONFIDENCE,
                        drafter=Path(first["native_identity"]["drafter"]["path"]).name,
                        drafter_sha256=first["input_packet"]["draft_sha256"],
                        grant_id=first["native_identity"]["grant"]["environment"].get("FILLER_ID"),
@@ -330,6 +340,7 @@ def _derive(path: str, sha: str) -> tuple:
     try:
         result = _native(rows)
         expected = _mappings(rows, result, sha, str(p))
+        producer_view = _mappings(rows, result, sha, str(p), marked=False)
     except ProjectionError:
         raise
     except (KeyError, TypeError, IndexError, ValueError, AttributeError) as exc:
@@ -338,7 +349,7 @@ def _derive(path: str, sha: str) -> tuple:
              and packet.get("comparison") == result, "native comparison does not rederive from the requests")
     mapped = packet.get("belief_measurements")
     _require(isinstance(mapped, list) and len(mapped) == len(expected)
-             and all(_covers(m, e) for m, e in zip(mapped, expected)), "native measurement mapping mismatch")
+             and all(_covers(m, e) for m, e in zip(mapped, producer_view)), "native measurement mapping mismatch")
     return tuple(json.dumps(m, sort_keys=True) for m in expected)
 
 

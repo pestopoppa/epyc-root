@@ -683,7 +683,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T17:18:45Z",
+  "generated_at": "2026-11-10T17:34:37Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1317,7 +1317,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 373,
@@ -1326,7 +1326,7 @@
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
       "open": 92,
       "priority": 0.8902,

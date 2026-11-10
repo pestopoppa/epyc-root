@@ -81,7 +81,7 @@ def _write(tmp, rows, *, native=True):
         sha = _sha(raw)
         (run / "native-comparisons.json").write_text(json.dumps(dict(
             schema=a.PACKET_SCHEMA, request_sha256=sha, comparison=result,
-            belief_measurements=a._mappings(rows, result, sha, str(path)))))
+            belief_measurements=a._mappings(rows, result, sha, str(path), marked=False))))
     return run
 
 
@@ -106,7 +106,7 @@ def test_positive_projects_every_adjacent_comparison_through_the_shared_grade(sw
     context = next(t for t in tuples if t.applicability["knob_family"] == "context"
                    and t.metric == "acceptance_ratio")
     assert context.value == 0.6 and context.observation["anchor_value"] == 0.5
-    assert context.observation["outcome_native"] == "outside-observed-baseline"
+    assert context.extra["producer_outcome_native"] == "outside-observed-baseline"
     for t in tuples:
         assert grade(t)  # the shared ladder decides; this module carries none
 
@@ -117,8 +117,14 @@ def test_outcome_is_the_descriptive_bracket_position_and_never_decisive(sweep):
     by = {(t.applicability["knob_family"], t.metric, t.measurement_id.split(":")[3]): t for t in tuples}
     # intervention median above both adjacent baselines -> improved; the producer's word is kept verbatim
     t = by[("context", "acceptance_ratio", "0")]
-    assert (t.observation["outcome"], t.observation["outcome_native"]) == ("improved", "outside-observed-baseline")
-    assert "decisive" not in t.observation and "effect_rel" not in t.observation
+    assert (t.observation["outcome"], t.extra["producer_outcome_native"]) == ("improved", "outside-observed-baseline")
+    assert t.observation["decisive"] is False and "effect_rel" not in t.observation
+    # operator ruling 2026-11-10: every claim is marked low-confidence descriptive evidence, in the
+    # rendered field (`outcome_native` after the producer's word) and in `extra`
+    for x in tuples:
+        assert x.observation["outcome_native"].endswith(a.LOW_CONFIDENCE)
+        assert x.observation["outcome_native"].startswith(x.extra["producer_outcome_native"])
+        assert x.extra["confidence"] == a.LOW_CONFIDENCE and len(x.observation["outcome_native"]) <= 120
     base = dict(baseline_before_median=0.5, baseline_after_median=0.6, intervention_median=0.55)
     assert a._outcome(dict(base, classification="within-observed-baseline")) == "null"
     assert a._outcome(dict(base, classification="outside-observed-baseline", intervention_median=0.7)) == "improved"

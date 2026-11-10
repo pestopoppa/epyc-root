@@ -1,0 +1,14 @@
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:0:client_stream_events_s [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity
+  client_stream_events_s: REGRESSED (metric client_stream_events_s; 83.53 events/s vs anchor 91.34 events/s; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:acceptance_ratio [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity
+  acceptance_ratio: IMPROVED (metric acceptance_ratio; 0.2813 ratio vs anchor 0.2701 ratio; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:1:client_stream_events_s [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity
+  client_stream_events_s: REGRESSED (metric client_stream_events_s; 35.9 events/s vs anchor 38.2 events/s; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:acceptance_ratio [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity
+  acceptance_ratio: IMPROVED (metric acceptance_ratio; 0.5132 ratio vs anchor 0.4878 ratio; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:affinity:2:client_stream_events_s [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family affinity
+  client_stream_events_s: IMPROVED (metric client_stream_events_s; 58.2 events/s vs anchor 57.28 events/s; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:0:acceptance_ratio [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family context
+  acceptance_ratio: IMPROVED (metric acceptance_ratio; 0.8431 ratio vs anchor 0.7841 ratio; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
+- clm_r234:dc2079b32cce475a9f4e62d782cb09ca:context:1:acceptance_ratio [Judged/Located · verified] Qwen3.8-27B-Q8_0/gpu build ffc1bac8 family context
+  acceptance_ratio: REGRESSED (metric acceptance_ratio; 0.2165 ratio vs anchor 0.2765 ratio; n=3; not decisive) -- producer verdict outside-observed-baseline; descriptive, low confidence, no causal claim
