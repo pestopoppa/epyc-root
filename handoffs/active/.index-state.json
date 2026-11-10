@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-10",
-      "open": 15
+      "open": 16
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1308,7 +1308,7 @@
       "closed": 114,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 15,
+      "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 129,
+      "total": 130,
       "tracks": [
         {
           "blocked": 0,
@@ -1347,14 +1347,14 @@
           "line": 1872,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 0
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 2496,
+          "line": 2497,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
           "open": 7
@@ -1364,7 +1364,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2620,
+          "line": 2621,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 1
@@ -1374,7 +1374,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2989,
+          "line": 2990,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 0
@@ -1384,7 +1384,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3120,
+          "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
           "open": 4
