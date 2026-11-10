@@ -179,12 +179,13 @@ CSRC
 VACUOUS_RC=78
 gpu_vacuous_scan() { # files... ; prints the reason and returns 0 on a vacuous GPU test
   awk '{ gsub(/\033\[[0-9;]*m/, "") }
-       /^Testing [0-9]+ devices/ { if (open && !st) { why = "test-backend-ops tested 0 backends (every backend skipped/not found)" }
-                                   open = 1; st = 0; if ($2 == 0) why = "test-backend-ops: Testing 0 devices" ; next }
+       /^Testing [0-9]+ devices/ { if (open && !st && !cs) { why = "test-backend-ops tested 0 backends (every backend skipped/not found)" }
+                                   open = 1; st = 0; cs = 0; if ($2 == 0) why = "test-backend-ops: Testing 0 devices" ; next }
        open && /^  Backend [^ ]+: (OK|FAIL)/ { st++ }
+       open && /^  [A-Z][A-Z0-9_]*\(/ { cs++ }   # a test-case line: the backend really ran (log may be cut by a cap)
        open && /^[0-9]+\/[0-9]+ backends passed/ { if (!st && why == "") why = "test-backend-ops tested 0 backends (every backend skipped/not found): " $0; open = 0 }
        /^ +0\/0 tests passed/ { if (why == "") why = "test-backend-ops ran 0 cases (0/0 tests passed)" }
-       END { if (open && !st && why == "") why = "test-backend-ops tested 0 backends (run ended before any backend status)"
+       END { if (open && !st && !cs && why == "") why = "test-backend-ops tested 0 backends (run ended before any backend status)"
              if (why != "") { print why; exit 0 } exit 1 }' "$@" 2>/dev/null
 }
 gpu_vacuous_check() { # after a fenced job: 0 = vacuous (VAC_WHY set)

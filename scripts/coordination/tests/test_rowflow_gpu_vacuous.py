@@ -32,6 +32,12 @@ CPU_RAN = ("Testing 1 devices\n\nBackend 1/1: CPU\n  Device description: AMD EPY
            "  12/12 tests passed\n  Backend CPU: \033[1;32mOK\033[0m\n1/1 backends passed\n\033[1;32mOK\033[0m\n")
 ZERO_CASES = ("Testing 1 devices\n\nBackend 1/1: ROCm0\n\n  0/0 tests passed\n  Backend ROCm0: \033[1;32mOK\033[0m\n"
               "1/1 backends passed\n\033[1;32mOK\033[0m\n")
+# 2026-11-10 race-tsan-v10-r2: a per-cell cap killed test-backend-ops mid-run, before "  Backend X: OK|FAIL" printed
+TRUNC_CPU = ("Testing 1 devices\n\nBackend 1/1: CPU\n  Device description: AMD EPYC\n\n"
+             "  FLASH_ATTN_EXT(hsk=40,hsv=40,nh=4): \033[1;32mOK\033[0m\n  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4")
+TRUNC_GPU = ("Testing 2 devices\n\nBackend 1/2: ROCm0\n  Device description: AMD Instinct MI210\n\n"
+             "  MUL_MAT(type_a=f16,type_b=f32,m=16): \033[1;32mOK\033[0m\n  MUL_MAT(type_a=q4_0")
+NEVER_STARTED = "Testing 1 devices\n\nBackend 1/1: CPU\n  Device description: AMD EPYC\n\n"
 FAKE_RL = "#!/bin/bash\nwhile [ $# -gt 0 ] && [ \"$1\" != -- ]; do shift; done; shift\n\"$@\"\n"
 
 
@@ -147,6 +153,30 @@ class EngineVacuous(unittest.TestCase):
         first, out = self.run_row("cpu-real", "cpu", "q0", "q0", CPU_RAN)
         self.assertNotIn("gpu-fence-vacuous", first)
         self.assertNotIn("GPU-FENCE-VACUOUS", out)
+
+    def test_fenced_truncated_cpu_log_not_vacuous(self):
+        first, out = self.run_row("cpu-trunc", "cpu", "q0", "q0", TRUNC_CPU)
+        self.assertNotIn("gpu-fence-vacuous", first)
+        self.assertNotIn("GPU-FENCE-VACUOUS", out)
+
+    def test_fenced_never_started_is_vacuous(self):
+        first, _ = self.run_row("cpu-nostart", "cpu", "q0", "q0", NEVER_STARTED)
+        self.assertIn("reason=gpu-fence-vacuous", first)
+
+    def scan(self, text):
+        f = os.path.join(self.d, "scan.log")
+        write(f, text)
+        src = open(os.path.join(_RF, "filler_run15.sh")).read()
+        fn = src[src.index("gpu_vacuous_scan() {"):src.index("gpu_vacuous_check() {")]
+        return subprocess.run(["bash", "-c", fn + '\ngpu_vacuous_scan "$1"', "_", f], capture_output=True, text=True)
+
+    def test_scan_truncated_gpu_cases_not_vacuous(self):
+        self.assertNotEqual(self.scan(TRUNC_GPU).returncode, 0)
+        self.assertNotEqual(self.scan(TRUNC_CPU).returncode, 0)
+        r = self.scan(NEVER_STARTED)
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("0 backends", r.stdout)
+        self.assertEqual(self.scan(SKIPPED).returncode, 0)
 
     def test_token_row_unchanged(self):
         first, out = self.run_row("gpu-tok", "gpu", "mi210_0,184-191", "gpu-quiet,t184", SKIPPED)
