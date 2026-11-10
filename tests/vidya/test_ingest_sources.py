@@ -233,6 +233,8 @@ BUILDERS = {
     "usage-provenance": _usage_provenance,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
+    "cj7a-inverse-mutation": lambda tmp: _helpers("test_cj7a_inverse_mutation_adapter").fixture(tmp),
+    "dar-join-coverage": lambda tmp: _helpers("test_dar_join_coverage_adapter").fixture(tmp),
     "contention-gate": _contention_gate,
     "contention-matrix": _contention_matrix,
     "beam": _beam,
@@ -409,6 +411,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "graph-profiler-measurement",
         # Dedicated ODL identity, refusal and CLI controls: tests/vidya/test_odl_model_gated.py.
         "odl-unlimited-ocr-run",
+        "odl-unlimited-ocr-intrinsic",  # tests/vidya/test_odl_model_gated.py (intrinsic tests)
         # Prospective SC54 receipt writer, pinned reader and shared-ladder adapter:
         # test_sc54_qwen4exp_quality_adapter.py; no historical backfill.
         "qwen4exp-quality-measurement",

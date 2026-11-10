@@ -208,6 +208,25 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                   "**/vidya_measurement_record.json"),
            project="project_unlimited_ocr_run", task="SC42 / VB-ODL-P2",
            note="prospective run-time Unlimited-OCR records only; old demo JSON is identityless and is never upgraded"),
+    Source("odl-unlimited-ocr-intrinsic", "odl_model_gated",
+           _files("vidya_measurement_record.json", "*/vidya_measurement_record.json",
+                  "**/vidya_measurement_record.json"),
+           natives="intrinsic_native_rows", project="project_intrinsic_row",
+           task="VB-ODL-INTRINSIC-PROJECTION",
+           note="non-null SC/BI/ICC/DCC diagnostic rows of verified Unlimited-OCR run records; null reasons stay in extra"),
+    Source("cj7a-inverse-mutation", "cj7a_inverse_mutation",
+           _files("native_control_proof.json", "**/native_control_proof.json"),
+           default=Path("/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/inverse_mutation_v1/fixtures"),
+           note="CJ-7a native control outcome documents (cj7a_native_control_proof.v1); verifier class: "
+                "decided_proposition re-derived from the record, undecided/out-of-coverage and "
+                "non-control (model-evaluation) records refuse; no efficacy claim",
+           task="VB-CJ7A-INVERSE-MUTATION-WRITE"),
+    Source("dar-join-coverage", "dar_join_coverage",
+           _files("*dar_join*receipt*.json", "**/*dar_join*receipt*.json"),
+           note="DAR task-ID join coverage receipts (`dar_join_coverage.py --receipt-out`, "
+                "epyc.dar_join_coverage.receipt.v1): self-hash and count invariants re-derived; "
+                "stdout-only historical audits decline; no real run yet (awaiting first run)",
+           task="VB-DAR-JOIN-COVERAGE-WIRE"),
     Source("managed-tooling-check", "managed_tooling_check",
            _files("receipt.json", "*/receipt.json", "**/receipt.json"),
            project="project_managed_tooling_check", task="VB-MANAGED-TOOLING-WIRE",

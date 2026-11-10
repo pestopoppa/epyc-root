@@ -9,8 +9,10 @@ import argparse
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 import gzip
+import hashlib
 import json
 import math
+import subprocess
 from pathlib import Path
 
 E18 = datetime.fromisoformat('2026-09-24T10:02:39+00:00')
@@ -131,17 +133,64 @@ def audit(progress, rewards, baseline_roles):
             'interpretation': 'Counts are candidate coverage only. Reward provenance, actual E18 scorer configuration, baseline provenance, role eligibility, selection bias, and feature truncation require independent verification. Stream order is not verified against the replay. No stored reward is certified E18 by this audit.'}
 
 
+RECEIPT_SCHEMA = 'epyc.dar_join_coverage.receipt.v1'
+
+
+def _file_sha256(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(1 << 20), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _git_revision():
+    try:
+        out = subprocess.run(['git', '-C', str(Path(__file__).resolve().parent), 'rev-parse', 'HEAD'],
+                             capture_output=True, text=True, timeout=10, check=True).stdout.strip()
+        return out if len(out) == 40 else None
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def receipt(progress, rewards, baseline_roles_path, roles, scorer_config, result):
+    """Write-time capture for VB-DAR-JOIN-COVERAGE-WIRE: digests and aggregates only, never paths,
+    task IDs, prompt text or exception details. Self-hashed so a reader can detect edits."""
+    body = {'schema': RECEIPT_SCHEMA,
+            'recorded_at_utc': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+            'status': 'completed',
+            'producer': {'name': Path(__file__).name, 'sha256': _file_sha256(__file__),
+                         'git_revision': _git_revision()},
+            'e18_cutoff_utc': E18.isoformat(),
+            'inputs': {'progress': [_file_sha256(p) for p in progress],
+                       'rewards': [_file_sha256(p) for p in rewards],
+                       'baseline_roles': {'sha256': _file_sha256(baseline_roles_path), 'n_roles': len(roles)},
+                       'scorer_config_sha256': _file_sha256(scorer_config)},
+            'result': result}
+    canonical = json.dumps(body, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+    body['receipt_sha256'] = hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+    return body
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--progress', nargs='+', type=Path, required=True)
     p.add_argument('--rewards', nargs='+', type=Path, required=True)
     p.add_argument('--baseline-roles', type=Path, required=True, help='JSON array of roles with validated positive p50 baselines')
+    p.add_argument('--receipt-out', type=Path, help='also write an immutable write-time receipt (needs --scorer-config)')
+    p.add_argument('--scorer-config', type=Path, help='the exact E18 scorer configuration file; its digest is recorded')
     args = p.parse_args()
+    if bool(args.receipt_out) != bool(args.scorer_config):
+        p.exit(2, '--receipt-out and --scorer-config go together.\n')
     try:
         roles = json.loads(args.baseline_roles.read_text())
         if not isinstance(roles, list) or any(not isinstance(r, str) or not r for r in roles):
             raise ValueError()
         result = audit(args.progress, args.rewards, set(roles))
+        if args.receipt_out:
+            doc = receipt(args.progress, args.rewards, args.baseline_roles, roles, args.scorer_config, result)
+            with open(args.receipt_out, 'x', encoding='utf-8') as f:
+                f.write(json.dumps(doc, indent=2, sort_keys=True) + '\n')
     except (OSError, EOFError, UnicodeError, ValueError, TypeError, OverflowError):
         p.exit(2, 'Input error; no input details emitted.\n')
     print(json.dumps(result, indent=2, sort_keys=True))
