@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 591
+      "open": 589
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 2,
-      "closed": 115,
+      "closed": 117,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 65,
+      "open": 63,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 2,
-          "closed": 71,
+          "closed": 73,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,7 +95,7 @@
           "line": 938,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 51
+          "open": 49
         }
       ]
     },
@@ -1204,7 +1204,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1692,
+          "line": 1693,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1214,7 +1214,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1816,
+          "line": 1817,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2146,
+          "line": 2147,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1234,7 +1234,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2285,
+          "line": 2286,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2841,
+          "line": 2842,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1254,7 +1254,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2981,
+          "line": 2982,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2988,
+          "line": 2989,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2177,7 +2177,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1549,
+          "line": 1550,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2190,7 +2190,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2706,
+          "line": 2707,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2200,7 +2200,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3078,
+          "line": 3079,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2210,7 +2210,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3591,
+          "line": 3592,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 2
@@ -2220,7 +2220,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 3686,
+          "line": 3687,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 3

@@ -649,7 +649,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T10:52:07Z",
+  "generated_at": "2026-11-10T10:57:05Z",
   "nodes": [
     {
       "age_days": 0,
@@ -1694,7 +1694,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1549,
+          "line": 1550,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1709,7 +1709,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2706,
+          "line": 2707,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1718,7 +1718,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3078,
+          "line": 3079,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1727,7 +1727,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3591,
+          "line": 3592,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
@@ -1736,7 +1736,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3686,
+          "line": 3687,
           "name": "llama-cpp-dsa-contribution",
           "open": 3,
           "readiness": "ready"
@@ -1953,7 +1953,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1692,
+          "line": 1693,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1816,
+          "line": 1817,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2146,
+          "line": 2147,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2285,
+          "line": 2286,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -1989,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2841,
+          "line": 2842,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2001,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2981,
+          "line": 2982,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2013,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2988,
+          "line": 2989,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2276,15 +2276,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 115,
-      "dispatchable": 65,
+      "closed": 117,
+      "dispatchable": 63,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-10",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
-      "open": 67,
+      "open": 65,
       "priority": 0.0022,
       "priority_basis": {
         "campaign": 0,
@@ -2334,7 +2334,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 51,
+          "dispatchable": 49,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2345,7 +2345,7 @@
           ],
           "line": 938,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 53,
+          "open": 51,
           "readiness": "blocked"
         }
       ]
