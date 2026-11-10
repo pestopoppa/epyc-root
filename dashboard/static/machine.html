@@ -252,8 +252,7 @@
   <div class="deadbanner" id="dead-banner">
     <b>orchestrator API (:8000) unreachable from this page</b> — the API may be down
     (llama servers can still be running), or CORS is not yet enabled
-    (pending API reload — RTG-47). The legacy page at
-    <a id="legacy-link2" href="#" target="_blank" rel="noopener">:8000/dashboard</a> is unaffected.
+    (pending API reload — RTG-47).
     <div class="dimtx" id="dead-detail" style="margin-top:5px;font-family:var(--mono);font-size:11px"></div>
   </div>
 
@@ -422,7 +421,6 @@ function slotText(s) {
 /* The orchestrator data plane. Same host, different port — cross-origin, so every
    call here depends on :8000 serving CORS headers for this origin (RTG-47). */
 const API = location.protocol + "//" + location.hostname + ":8000";
-$("#legacy-link2").href = API + "/dashboard";
 
 /* The snapshot endpoint fans out to every llama-server /slots; when ports are
    unreachable that fan-out burns its own timeout budget and the document has been

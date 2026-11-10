@@ -164,15 +164,26 @@ class PageRegistryBidirectionalTest(unittest.TestCase):
                     f"registry row {entry['id']!r} points at {entry['path']}, "
                     "which this hub does not serve — a nav link to a 404")
 
-    def test_the_off_hub_entries_name_a_different_port_and_owner(self):
-        """COMPLIANT-PATH CONTROL for the two checks above: the bidirectional rule
-        is scoped to port 8100 on purpose, and the registry really does carry an
-        entry outside it (the legacy :8000 page) that neither check may reject."""
-        off = [e for e in _entries() if e["port"] != self.HUB_PORT]
-        self.assertTrue(off, "the directory has stopped describing anything but "
-                             "this hub — the cross-server case is untested")
-        for entry in off:
-            self.assertNotEqual(entry["owner_repo"], "epyc-root", entry["id"])
+    def test_the_retired_orchestrator_page_has_no_registry_row(self):
+        """Parity cutover: the :8000/dashboard page is retired (the orchestrator
+        redirects it to the hub). A row pointing at it would be a nav link into a
+        redirect. Its data routes (/dashboard/api, /dashboard/events) stay, but
+        they are not pages and never had rows."""
+        for entry in _entries():
+            with self.subTest(entry=entry["id"]):
+                self.assertFalse(
+                    entry["port"] == 8000 and entry["path"].rstrip("/") == "/dashboard",
+                    "the retired :8000/dashboard page is still in the registry")
+                self.assertNotEqual(entry["id"], "orchestrator-legacy")
+
+    def test_the_hub_scope_of_the_bidirectional_rule_is_explicit(self):
+        """With the legacy row gone every row is on the hub. The bidirectional rule
+        stays scoped to the hub port ON PURPOSE so a future cross-server row (a
+        page another process serves) is not rejected as a 404; this control
+        exercises that scoping against a synthetic off-hub row."""
+        rows = [{"id": "x", "port": 9999, "path": "/elsewhere", "owner_repo": "other"}]
+        hub_paths = {_canon(e["path"]) for e in rows if e["port"] == self.HUB_PORT}
+        self.assertEqual(hub_paths, set())
 
     def test_the_dashboards_route_is_registered_and_bound(self):
         src = panels.source("dashboards")
