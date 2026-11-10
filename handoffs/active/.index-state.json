@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 589
+      "open": 590
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -45,7 +45,7 @@
       "closed": 115,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 64,
+      "open": 65,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 181,
+      "total": 182,
       "tracks": [
         {
           "blocked": 0,
@@ -64,7 +64,7 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 2
+          "open": 3
         },
         {
           "blocked": 0,
@@ -75,7 +75,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 22,
+          "line": 23,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 11
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 935,
+          "line": 936,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 51
@@ -1540,7 +1540,7 @@
       "blocked": 1,
       "closed": 132,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-10",
       "open": 31,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -2665,7 +2665,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2",
+      "next_action": "race-eqv r4 on new-fail-vs-baseline gate (r3 invalid baseline); reseal C6 onto C10, diagnose residency; c2-producer follow-ups",
       "track": "rocm verify profile backend"
     },
     "INF-50": {
@@ -2697,7 +2697,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
+      "next_action": "Champion is C10 7f1bd044b (operator 2026-11-10); AutoKernel owns promotion; C10 floors pending whole-host row; production v10",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
