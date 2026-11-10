@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 466
+      "open": 465
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 331,
+      "closed": 333,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 17,
+      "open": 16,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -637,7 +637,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 348,
+      "total": 349,
       "tracks": [
         {
           "blocked": 0,
@@ -661,20 +661,20 @@
         },
         {
           "blocked": 0,
-          "closed": 23,
+          "closed": 25,
           "gates": [],
           "guarded": 0,
           "line": 2448,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
-          "open": 5
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2923,
+          "line": 2925,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -689,7 +689,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3368,
+          "line": 3370,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 0
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4881,
+          "line": 4883,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,7 +721,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5541,
+          "line": 5543,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5730,
+          "line": 5732,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 1
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6286,
+          "line": 6288,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0

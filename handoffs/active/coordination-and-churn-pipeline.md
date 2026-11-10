@@ -2763,6 +2763,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       completion), so completed cards show `↑ N tok` and a fresh-gap frame cannot wipe a shown
       counter; SSE gained server-epoch `now`. Harness 81→88, 0 fail. ✅ 2026-08-10
 - [ ] Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actually
+  - 2026-11-10 (workspace-f2): BLOCKED on the stack (needs live inference). Static reading: _poll_slot lumps refused/timeout/non-200/malformed as "timed_out" (duration_s discriminates); _LAST_SLOTS is per uvicorn worker and updates only on answered>0. To prove: with the stack up and one request in flight, read /dashboard/api/snapshot slots_poll_meta, curl one unanswered /slots, eyeball the card. Orchestrator follow-ups: unanswered_reasons; cross-worker slot sample. Owner workspace-f2.
       runs (`slot_progress` verified attaching live on poll + now on SSE; full live render still
       unobserved by a human).
 - [x] Data plane (small): tap writer records terminal `n_prompt_tokens` per request so completed
@@ -2804,6 +2805,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
 ##### Phase 1b — deprecation (operator-triggered, after new-page parity is confirmed)
 
 - [ ] Operator runs old + new in parallel and confirms `/machine` + `/autopilot` cover the
+- [ ] **Parity cutover: retire :8000/dashboard after the operator says "parity OK".** Hub side prepared on branch f2-dash-cutover 551d33bb3 (registry row, nav chip, fallback copy, README, tests; 830 passed). Orchestrator side to do: redirect the route to the hub; delete src/api/routes/dashboard.html; repoint _DASHBOARD_HTML_FOR_VERSION / dashboard_html_mtime; fix 5 tests and check_cdn_urls.py. Known parity loss: the full interactive insight graph. Owner workspace-f2.
       live-view usage. Then, in one cutover (absorbs the three rows below): `:8000/dashboard` redirects to `:8100/autopilot` and `dashboard.html` is deleted (all `/dashboard/api/*` and `/dashboard/events/*` data routes stay; :8000 becomes data-plane-only); the legacy page's registry entry is removed and `dashboard/README.md` restated as the plane rule; orchestrator `dashboard_panels.py` survives as the data-plane registry.
   - *(operator 2026-11-10 accepted)* the operator does one session on :8100/machine and /autopilot and says "parity OK"; Assorted then retires :8000/dashboard. Box stays open, waiting on the operator session.
 - **[declined: ws58 2026-11-03 content-review: merged into the Phase 1b cutover row]** `:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)
@@ -2820,7 +2822,7 @@ Machine harness 25→48→59→81 checks, 0 fail (independently rerun); 4 quiet 
       `expected` flags — **owned by RTG-03 C1 fix**; this plan only inherits it onto the right
       page. No duplicate work here.
 - **[declined: ws58 2026-11-03 content-review: unbounded conditional on a deferred decision (D3)]** (If D3 = exporter) standalone machine-state exporter or hub-side reader; taps remain :8000.
-- [ ] Freshness-grammar harmonization at the seam: one envelope vocabulary
+- [x] Freshness-grammar harmonization at the seam: one envelope vocabulary ✅ 2026-11-10 hub 8bac576d0 (workspace-f2): one vocabulary fresh/aging/stale/missing; freshness.canonical_class + ALIASES inlined in /nav.js as window.epycFreshClass, adopted by /machine and /autopilot; 6 tests. Follow-up: orchestrator emits missing instead of dead. [no-belief: code change]
       (hub's four-state + `reporting`/`content`) adopted by both registries' *wire format*;
       internal code stays separate.
 
@@ -2918,7 +2920,7 @@ Plan: [README.md](../../research/deep-dives/ws58-jev-20261102/README.md). **Orde
 - [x] **JEV-5 phase A** ✅ 2026-11-02 ROOT `445b5a0d9` (live: /loop-spec and /knowledge return 200 after the 01:01Z reload) [belief: cc] [M] Typed loop-spec JSON (states, transitions, stop reasons, thresholds) for the churn loop first; phase A = a registered hub page rendering it (vendored Mermaid or cockpit-style inline SVG) with registry entry, `/api/health` probe and freshness envelope. Phases B (replay stepper over saved journals/FAIL files) and C (threshold-only patch edits) only after the operator has used phase A (intake-2609#record). removes: hand-drawn flowcharts and log-grepping to follow a loop.
 - [x] **JEV-5 phases B/C** ✅ operator 2026-11-10: dropped; phase A stands; reopen only on a replay need [no-belief: operator-decision] [M] Replay stepper over saved journals/FAIL files (B), then threshold-only patch edits (C). Gate: only after the operator has used phase A (/loop-spec). removes: log-grepping to replay a loop run; hand-editing thresholds in code.
 - [x] **KT-3** ✅ 2026-11-02 ROOT `445b5a0d9` (live: /loop-spec and /knowledge return 200 after the 01:01Z reload) [belief: cc] [M] Knowledge hub page: store counts and freshness, KT-1 lint and conflict totals, and a claim browser (claim → tuple/grade → supporting and refuting frames → run → commit, cited-by reverse lookup, `vidya impact` preview); same renderer as JEV-5; registry + probe + freshness envelope. Plan: [knowledge-transparency.md](../../research/deep-dives/ws58-jev-20261102/knowledge-transparency.md). removes: reading `.vidya` ledger JSON and `vidya query` output by hand.
-- [ ] **DASH-FU-1** [S] 5 pre-existing dashboard test failures (the /amd-ai-lab nav/registry subtests and test_dashboard_progression hardlink), failing on clean origin/main too. removes: a standing red test set that masks new regressions.
+- [x] **DASH-FU-1** [S] 5 pre-existing dashboard test failures (the /amd-ai-lab nav/registry subtests and test_dashboard_progression hardlink), failing on clean origin/main too. removes: a standing red test set that masks new regressions. ✅ 2026-11-10 hub e4459b53b (workspace-f2): canonical-route compare for /amd-ai-lab, epyc-web snapshot exempt via freshness.kind=static-snapshot with guard test, EXDEV-safe hardlink test; dashboard set 829 passed / 49 skipped. [no-belief: test/infra fix]
 
 ## Track: handoff-index-and-backlog-graph
 <!-- gate: none -->
