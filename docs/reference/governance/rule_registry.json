@@ -1,0 +1,655 @@
+{
+ "schema": "epyc.governance.rule_registry.v1",
+ "generated_surfaces": {
+  "prose": "docs/reference/governance/RULE_REGISTRY.md"
+ },
+ "rules": [
+  {
+   "id": "PROC-NO-PATTERN-KILL",
+   "rule": "Kill only self-captured PIDs; never pkill on a name pattern.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "NEVER `pkill`/`pgrep` on a name pattern"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_process_pattern_kill.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": "pgrep is prose-only (operator 2026-08-12 narrowed enforcement to pkill)."
+  },
+  {
+   "id": "PROC-VERIFY-DEAD",
+   "rule": "After killing a process verify it is dead; escalate SIGTERM to SIGKILL.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "verify it is dead"
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "TEST-PYTEST-WORKERS",
+   "rule": "Never run pytest -n auto (or more than 16 workers) on this host.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Never use `pytest -n auto` on this machine."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_pytest_safety.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "LIVE-NO-DROPCACHES-UNDER-CLAIM",
+   "rule": "No drop_caches write while a CPU region is claimed; never edit a running shell script.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "drop_caches"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_live_holder_interference.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    },
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_live_holder_interference.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": "Fails open on uncertain probes; override EPYC_ALLOW_LIVE_INTERFERENCE=1."
+  },
+  {
+   "id": "GIT-COMMIT-HYGIENE",
+   "rule": "No wholesale staging on the shared repos; stage explicit paths.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Never commit another session's in-flight work."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_commit_hygiene.py",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": "No explicit prose statement of the staging rule exists in CLAUDE.md/OPERATING_CONSTRAINTS/INVARIANTS; it lives in memory feedback files and the hook. Anchored to invariant 11, which it serves."
+  },
+  {
+   "id": "GIT-D9-COORDINATION-ACK",
+   "rule": "A commit touching scripts/coordination/** carries the operator D9 ack.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Doctrine rulings"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_d9_loop_plane.py",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    },
+    {
+     "kind": "git-hook",
+     "path": "scripts/hooks/install_git_hooks.sh",
+     "mode": "block"
+    }
+   ],
+   "notes": "Commit-time half of D9; promote_lane.py holds the merge-time half."
+  },
+  {
+   "id": "OPERATOR-APPLY-NO-COPY",
+   "rule": "Never execute a derived copy of a gated operator apply/ratify script.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Trust boundaries are human-only."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_operator_apply_copy.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "FS-SCRATCH-TRASH-FIRST",
+   "rule": "Recursive deletes under /mnt/raid0/llm/{tmp,worktrees,.trash,state} go through the guarded tools.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "trash-first rule"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_destructive_scratch.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "GIT-NO-CLEAN",
+   "rule": "No agent-typed clean that deletes untracked files.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Dangerous Operations"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_git_clean.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "GIT-NO-PRUNE-GC-REPAIR",
+   "rule": "No worktree repair/prune, gc or maintenance-gc on the shared clones.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "never `--force`/`prune`"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_destructive_git.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "FS-CONTAINMENT",
+   "rule": "Write only under the containment roots; no privileged host operations.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Use `/mnt/raid0/` for project writes and caches."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_filesystem_containment.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    },
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_filesystem_containment.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    },
+    {
+     "kind": "opencode-deny",
+     "path": "opencode.json",
+     "mode": "block"
+    }
+   ],
+   "notes": "opencode deny block is generated by generate_opencode_permissions.py; parity in test_harness_guard_parity.py."
+  },
+  {
+   "id": "INF-LLAMA-CLI-BOUNDED",
+   "rule": "llama-cli must be bounded; an unbounded REPL spins forever.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Inference and Benchmarks"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_llama_cli_guard.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "INF-REGION-CLAIM",
+   "rule": "An inference launch must acquire its region claim (flock on a cpu_region/gpu_device lock, or the calendar engine).",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Claims are ACQUIRED, never observed."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_inference_region_claim.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": "REG-ENF-2. Fail-closed on a detected unclaimed launch; fail-open on unreadable input; override EPYC_ALLOW_UNCLAIMED_INFERENCE=1."
+  },
+  {
+   "id": "INF-GRANTED-WINDOWS",
+   "rule": "Compute windows are requested via the bus and granted per policy.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Compute windows are requested via the bus"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "validator",
+     "path": "scripts/coordination/rowflow/grant_ok_launcher.py",
+     "mode": "block"
+    }
+   ],
+   "notes": "Launcher-side gate inside the calendar engine; not at the tool boundary."
+  },
+  {
+   "id": "TRUST-BOUNDARY-HUMAN-ONLY",
+   "rule": "Trust-boundary files (human_only_paths.yaml set) are human-only.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Trust boundaries are human-only."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_trust_boundary_edit.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "INV-NO-EDIT-HUMAN-ONLY-PATHS",
+   "rule": "Never edit human_only_paths.yaml.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Never edit `human_only_paths.yaml`."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_trust_boundary_edit.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "AGENTS-ROLE-SCHEMA",
+   "rule": "Role files in agents/*.md keep the minimal schema.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Agents & Automation"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/agents_schema_guard.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "AGENTS-LOCAL-REFS",
+   "rule": "Local markdown references in governance files resolve.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Agents & Automation"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/agents_reference_guard.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "BENCH-SKILL-REMINDER",
+   "rule": "Editing benchmark files uses the /benchmark workflow.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Measurement & Claims"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/benchmark_context.sh",
+     "mode": "inject",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "CLAUDE-MD-ACCOUNTING",
+   "rule": "Editing a CLAUDE policy file keeps the accounting matrix in sync.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Agents & Automation"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/claude_accounting_context.sh",
+     "mode": "inject",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "SKILLS-ALIGNED",
+   "rule": "Command-skills and packaged-skills stay aligned.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Agents & Automation"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/skills_context.sh",
+     "mode": "inject",
+     "event": "PreToolUse",
+     "matcher": "Write|Edit"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "FANOUT-DISPATCH-AUDIT",
+   "rule": "Subagent dispatches use the cheapest capable model/effort, set explicitly.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "cheapest capable"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_agent_dispatch.py",
+     "mode": "warn",
+     "event": "PreToolUse",
+     "matcher": "Agent|Task"
+    }
+   ],
+   "notes": "FM-8 warn mode; enforce mode is a separate operator decision."
+  },
+  {
+   "id": "LANE-WORKTREE-NOTICE",
+   "rule": "A session in the shared clone is told so at birth.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Working-tree identity"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/session_start_lane_notice.py",
+     "mode": "inject",
+     "event": "SessionStart"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "KB-RAG-REFRESH",
+   "rule": "HEAD-changing commands refresh the KB-RAG index.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Progress Tracking"
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/posttool_kb_rag_update.sh",
+     "mode": "inject",
+     "event": "PostToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": "Maintenance hook, not a prohibition."
+  },
+  {
+   "id": "PII-PRECOMMIT",
+   "rule": "No secrets/PII in staged content.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "External Content Handling"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "git-hook",
+     "path": "scripts/hooks/pii_precommit.sh",
+     "mode": "block"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "INSTRUCTION-SURFACE-RATIFIED",
+   "rule": "Changes to instruction surfaces carry ratification (AUD-15).",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Trust boundaries are human-only."
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "git-hook",
+     "path": "scripts/hooks/check_instruction_surface_ratified.py",
+     "mode": "block"
+    }
+   ],
+   "notes": "commit-msg hook."
+  },
+  {
+   "id": "TEST-COLLECTABLE",
+   "rule": "Staged tests must be collectable (no vacuous suites).",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Test Safety"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "git-hook",
+     "path": "scripts/hooks/check_test_collectability.py",
+     "mode": "block"
+    }
+   ],
+   "notes": ""
+  },
+  {
+   "id": "ACT-DONT-DEFER",
+   "rule": "Escalate only a decision only the operator can make; otherwise finish the work.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Act, Don't Defer"
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "SINGLE-WRITER",
+   "rule": "Each agent writes only its own outbox, heartbeat and cursor.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Single writer."
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "NO-TICK-OTHERS",
+   "rule": "Never tick another agent's checkbox.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Never tick another agent's checkbox."
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "NO-COMMIT-OTHERS-WORK",
+   "rule": "Never commit another session's in-flight work.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Never commit another session's in-flight work."
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "TWO-SAMPLE-PERSISTENCE",
+   "rule": "Two-sample persistence before destructive or escalatory action.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "Two-sample persistence"
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "QUEUE-GATING-DECL",
+   "rule": "A gating declaration is mandatory on every queue row.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "A gating declaration is mandatory on every queue row."
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "MEASUREMENT-HUMAN-ONLY",
+   "rule": "The measurement trust boundary is human-amendment-only.",
+   "source": {
+    "file": "agents/shared/INVARIANTS.md",
+    "anchor": "The measurement trust boundary is human-amendment-only."
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "KERNEL-FROZEN",
+   "rule": "Production kernels are never modified, rebased, built or committed to without explicit operator authorization.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Production kernels are FROZEN."
+   },
+   "enforcement_class": "soft",
+   "enforcement_points": [
+    {
+     "kind": "validator",
+     "path": "scripts/session/verify_llama_cpp.sh",
+     "mode": "block"
+    }
+   ],
+   "notes": "Verified at session init, not at the tool boundary."
+  },
+  {
+   "id": "BINARY-FRESHNESS-PROOF",
+   "rule": "A build path does not identify its binary; prove contents before reasoning from it.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "A build path or directory name does not identify the binary"
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "SHELL-STYLE",
+   "rule": "Shell scripts use #!/bin/bash with set -euo pipefail.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "Shell: `#!/bin/bash` with `set -euo pipefail`"
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  },
+  {
+   "id": "INDEX-ROWS-OWNER-APPLIES",
+   "rule": "Index rows, intake entries, handoff stubs: a subagent prepares, the owning session applies.",
+   "source": {
+    "file": "CLAUDE.md",
+    "anchor": "a subagent may PREPARE, the owning session"
+   },
+   "enforcement_class": "prose",
+   "enforcement_points": [],
+   "notes": ""
+  }
+ ]
+}
