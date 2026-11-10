@@ -82,12 +82,21 @@ if echo "$CMD" | grep -E '\bgit\s+(commit|merge|pull|rebase|cherry-pick)\b' >/de
            >>"$LOG_FILE" 2>/dev/null || true
     exit 0
   fi
+  # Unattended background reindex: defer while a quiet-host (whole-host) grant is live (2026-11-10 FAIL_FOREIGN_LOAD);
+  # the next HEAD-moving command after the grant ends picks the changes up. The ONE check is quiet_host.py.
+  _QH="${_KBH_DIR}/../coordination/quiet_host.py"
+  _QG=""; [[ -f "$_QH" ]] && _QG="$(python3 "$_QH" grant 2>/dev/null || true)"
+  if [[ -n "$_QG" ]]; then
+    printf '[%s] posttool DEFER-QUIET-HOST kb-rag reindex: quiet-host grant %s live (cmd: %s)\n' \
+           "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$_QG" "$CMD" >>"$LOG_FILE" 2>/dev/null || true
+    exit 0
+  fi
   if [[ -x "$HOOK_SCRIPT" ]]; then
     {
       printf '[%s] posttool dispatch (rebuilder=%s): %s\n' \
              "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${AGENT_ID:-canonical-tree}" "$CMD"
     } >>"$LOG_FILE" 2>/dev/null || true
-    nohup bash "$HOOK_SCRIPT" >>"$LOG_FILE" 2>&1 &
+    nohup nice -n 19 ionice -c3 bash "$HOOK_SCRIPT" >>"$LOG_FILE" 2>&1 &
     disown $! 2>/dev/null || true
   fi
 fi

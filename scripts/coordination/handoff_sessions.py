@@ -1826,9 +1826,23 @@ def scratch_roots(slug, e):
     return out
 
 
+def _quiet_host():
+    """The ONE quiet-host helper (quiet_host.py): beside this file when installed, else up to scripts/coordination/."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for d in (here, os.path.dirname(here)):
+        if os.path.isfile(os.path.join(d, "quiet_host.py")) and d not in sys.path:
+            sys.path.insert(0, d)
+    import quiet_host
+    return quiet_host
+
+
 def du_gib(path) -> float:
+    """GiB under path; 0.0 (unmeasured) while a quiet-host grant is live (DEFER-QUIET-HOST). nice/ionice otherwise."""
+    qh = _quiet_host()
+    if qh.defer(f"handoff_sessions du {path}", log=lambda m: print(m, file=sys.stderr)):
+        return 0.0
     try:
-        r = subprocess.run(["du", "-sk", path], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(qh.scan_prefix() + ["du", "-sk", path], capture_output=True, text=True, timeout=120)
         return int(r.stdout.split()[0]) / 1048576.0
     except (OSError, ValueError, IndexError, subprocess.TimeoutExpired):
         return 0.0

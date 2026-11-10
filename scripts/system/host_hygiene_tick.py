@@ -76,6 +76,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CODE_ROOT = HERE.parent.parent
+sys.path.insert(0, str(HERE.parent / "coordination"))
+import quiet_host  # noqa: E402  the ONE quiet-host grant check
 ROOT = Path(os.environ.get("HYGIENE_ROOT") or HERE.parent.parent)
 STATE_DIR = Path(os.environ.get("HYGIENE_STATE_DIR") or ROOT / "logs" / "hygiene")
 LLM = "/mnt/raid0/llm"
@@ -250,7 +252,7 @@ def fmt_gb(n: float | None) -> str:
 def du_bytes(path: str, timeout: int = 1800) -> int | None:
     if not os.path.exists(path):
         return None
-    cp = run(["du", "-sx", "--block-size=1", path], timeout=timeout)
+    cp = run(quiet_host.scan_prefix() + ["du", "-sx", "--block-size=1", path], timeout=timeout)
     try:
         return int(cp.stdout.split()[0]) if cp and cp.stdout else None
     except (ValueError, IndexError):
@@ -597,6 +599,9 @@ def event_duty(t: Tick, registry_path: Path = REGISTRY, root: Path = ROOT) -> No
 # --------------------------------------------------------------------------- heavy gate
 def heavy_gate() -> tuple[bool, str]:
     """(open?, why). Three-valued underneath: unreadable == closed."""
+    gid = quiet_host.quiet_host_grant()       # 2026-11-10 19:02Z: region-lock was empty while a whole-host grant was live
+    if gid:
+        return False, f"DEFER-QUIET-HOST quiet-host grant {gid} live"
     try:
         cw = json.loads(CPU_WINDOW.read_text())
         exp = cw.get("expires_at")

@@ -52,6 +52,7 @@ bin/handoff_sessions.py              scripts/coordination/handoff_sessions.py   
 bin/handoff_ref.py                   scripts/coordination/handoff_ref.py                  hot
 bin/flow_scoreboard.py               scripts/coordination/flow_scoreboard.py              hot
 bin/worktree_footprint.py            scripts/coordination/worktree_footprint.py           hot
+bin/quiet_host.py                    scripts/coordination/quiet_host.py                   hot
 bin/index_regen.py                   scripts/coordination/index_regen.py                  hot
 bin/serialized_push.py               scripts/coordination/serialized_push.py              hot
 bin/flip_checkbox.py                 scripts/coordination/flip_checkbox.py                hot

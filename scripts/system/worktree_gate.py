@@ -443,9 +443,24 @@ def _protected_reason(wt: Worktree, canonical_roots: list[str]) -> str | None:
     return None
 
 
+def _quiet_host():
+    """The ONE quiet-host helper: compute-flags/bin/ when installed (this file is bin/churn/), else scripts/coordination/."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for d in (here, os.path.dirname(here), os.path.join(os.path.dirname(here), "coordination")):
+        if os.path.isfile(os.path.join(d, "quiet_host.py")) and d not in sys.path:
+            sys.path.insert(0, d)
+    import quiet_host
+    return quiet_host
+
+
 def _du_bytes(path: str) -> int | None:
+    """du of one tree under nice/ionice. From a background job (EPYC_BACKGROUND_SCAN=1, exported by the disk janitor
+    and the hygiene tick) a live quiet-host grant defers it: None == unmeasured, logged DEFER-QUIET-HOST."""
+    qh = _quiet_host()
+    if os.environ.get("EPYC_BACKGROUND_SCAN") == "1" and qh.defer(f"worktree_gate du {path}"):
+        return None
     try:
-        cp = subprocess.run(["du", "-sx", "--block-size=1", path], capture_output=True, text=True,
+        cp = subprocess.run(qh.scan_prefix() + ["du", "-sx", "--block-size=1", path], capture_output=True, text=True,
                             timeout=1800)
         return int(cp.stdout.split()[0]) if cp.stdout else None
     except (OSError, ValueError, subprocess.TimeoutExpired):

@@ -18,11 +18,13 @@ from __future__ import annotations
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import tempfile
 import time
+
+sys.path[:0] = [os.path.dirname(os.path.abspath(__file__))]   # bin/ when installed, scripts/coordination/ in the repo
+import quiet_host  # noqa: E402  the ONE quiet-host check (2026-11-10 FAIL_FOREIGN_LOAD)
 
 LLM = "/mnt/raid0/llm"
 REPOS = [f"{LLM}/epyc-root", f"{LLM}/epyc-orchestrator", f"{LLM}/epyc-inference-research", f"{LLM}/llama.cpp"]
@@ -80,10 +82,7 @@ def list_trees(repos: list[str], remaining=None) -> list[dict]:
 
 
 def _du(path: str, timeout: float = DU_TIMEOUT_S) -> int | None:
-    cmd = ["du", "-sx", "--block-size=1", path]
-    for pre in (["ionice", "-c3"], ["nice", "-n", "19"]):
-        if shutil.which(pre[0]):
-            cmd = pre + cmd
+    cmd = quiet_host.scan_prefix() + ["du", "-sx", "--block-size=1", path]
     try:
         cp = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
         return int(cp.stdout.split()[0]) if cp.stdout.split() else None
@@ -129,7 +128,11 @@ def collect(repos: list[str] | None = None, cache: str = CACHE_DEFAULT, *, now: 
                    key=lambda p: float(sizes.get(p, {}).get("at", 0)))
     measured = 0
     exhausted = remaining() <= 0
-    for p in stale[:max(0, max_du)]:
+    if du is _du and quiet_host.defer("worktree_footprint", log=lambda m: print(m, file=sys.stderr)):
+        stale_todo = []                                # quiet-host grant live: counts only, no du this tick
+    else:
+        stale_todo = stale[:max(0, max_du)]
+    for p in stale_todo:
         left = remaining()
         if left <= 0:
             exhausted = True

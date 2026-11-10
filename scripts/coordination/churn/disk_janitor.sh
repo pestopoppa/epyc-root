@@ -10,6 +10,11 @@
 #                 (ws58-keeper-state/reap-last, touched by every --reap-now pass, e.g. a manual one) is younger than 30 min.
 #                 Also skipped while a quiet-host grant (holds q0-q3 + gpu-quiet) is live, because a reap degrades its timing,
 #                 unless free disk is under JANITOR_REAP_DISK_FLOOR_GIB (150, the keeper's pause floor). --once still reaps.
+#                 SCANS (BUDGET, the LIFECYCLE pass, SWEEP) also defer under that grant and log DEFER-QUIET-HOST (2026-11-10:
+#                 a background du failed AutoKernel's floor row closed with FAIL_FOREIGN_LOAD). Below the disk floor the reap
+#                 and the trash sweep still run (they free bytes without a du of everything); BUDGET/LIFECYCLE still defer.
+#                 The grant check is scripts/coordination/quiet_host.py (the ONE implementation); every tool runs under
+#                 nice -n 19 ionice -c3, unpinned.
 #   every 60 min  `trash-sweep.sh --older-than 1` for /mnt/raid0/llm/.trash and, if it exists, /mnt/raid0/llm/.trash-reap.
 #   every 30 min  LINK: filing.py autolink --apply (zero-token: an ended-unfiled row is FILED when exactly ONE origin/main commit ticks or
 #                 annotates a handoff box naming its id; ambiguous matches are listed, never filed; operator 2026-11-07).
@@ -65,13 +70,19 @@ WT_MAX=${JANITOR_WT_MAX:-20}; KGC_MAX=${JANITOR_KGC_MAX:-10}; KGC_MIN_AGE_D=${JA
 LEASE_TTL_D=${JANITOR_LEASE_TTL_D:-14}
 CODEX_KEEP_DAYS=${JANITOR_CODEX_KEEP_DAYS:-7}; COMGR_MIN_AGE_D=${JANITOR_COMGR_MIN_AGE_D:-3}
 REAP_DISK_FLOOR_GIB=${JANITOR_REAP_DISK_FLOOR_GIB:-150}
+_HERE=$(cd "$(dirname "$0")" && pwd)
+# the ONE quiet-host helper: $F/bin/quiet_host.py when installed (INSTALL.manifest), scripts/coordination/ in the repo
+QH=${JANITOR_QUIET_HOST:-$([ -f "$_HERE/bin/quiet_host.py" ] && echo "$_HERE/bin/quiet_host.py" || echo "$_HERE/../quiet_host.py")}
+export EPYC_BACKGROUND_SCAN=1   # worktree_gate's du (via worktree_reaper) defers itself under a live quiet-host grant
+SCAN_NICE=(nice -n 19 ionice -c3)
 TICK_S=${JANITOR_TICK_S:-60}
 MODE=loop
 case "${1:-}" in
   "") ;;
   --once) MODE=once;;
   --dry-run) MODE=dry;;
-  -h|--help) sed -n 2,38p "$0"; exit 0;;
+  --scan-check) MODE=check;;   # test hook: evaluate the loop's scan deferral once (prints DEFER/RUN), touches nothing
+  -h|--help) sed -n 2,43p "$0"; exit 0;;
   *) echo "usage: disk_janitor.sh [--once|--dry-run]" >&2; exit 2;;
 esac
 
@@ -81,19 +92,19 @@ log() {
 }
 free_line() { log "FREE $(df -B1G --output=avail "$DISK" 2>/dev/null | tail -1 | tr -d ' ')GiB on $DISK"; }
 
-quiet_host_grant() {  # print the id of a live quiet-host grant (holds all four quarters and gpu-quiet), if any
-  local g first holds end t ok
-  for g in "$F"/grants/*.grant; do
-    [ -f "$g" ] || continue
-    IFS= read -r first < "$g" || true
-    holds=$(printf '%s\n' "$first" | sed -n 's/.*holds=\([^ ]*\).*/\1/p')
-    end=$(printf '%s\n' "$first" | sed -n 's/.* end=\([^ ]*\).*/\1/p')
-    ok=1
-    for t in q0 q1 q2 q3 gpu-quiet; do case ",$holds," in *",$t,"*) ;; *) ok=0;; esac; done
-    [ "$ok" = 1 ] || continue
-    if [ -n "$end" ] && [ "$(date -d "$end" +%s 2>/dev/null || echo 0)" -lt "$(date +%s)" ]; then continue; fi  # an expired leftover must not stop reaping
-    basename "$g" .grant; return 0
-  done
+quiet_host_grant() {  # print the id of a live quiet-host grant (holds all four quarters and gpu-quiet), if any.
+  # ONE implementation: quiet_host.py (the same check every background scan uses). Missing helper -> logged, no grant.
+  [ -f "$QH" ] || { log "QH-MISSING $QH: quiet-host check unavailable"; return 0; }
+  python3 "$QH" grant --flags "$F" 2>/dev/null || true
+}
+
+scan_deferred() {  # scan_deferred TAG: true (and logs DEFER-QUIET-HOST) while a quiet-host grant is live. --once/--dry-run never defer.
+  local qg
+  case "$MODE" in loop|check) ;; *) return 1;; esac
+  qg=$(quiet_host_grant)
+  [ -n "$qg" ] || return 1
+  log "DEFER-QUIET-HOST $1: quiet-host grant $qg live; scan skipped this tick"
+  return 0
 }
 
 reap() {  # reap [force]: the keeper's reap-only pass, unless the keeper reaped within REAP_EVERY_S
@@ -118,12 +129,17 @@ reap() {  # reap [force]: the keeper's reap-only pass, unless the keeper reaped 
 }
 
 sweep() {  # trash-sweep --older-than 1 on every trash root that exists
-  local t out rc n
+  local t out rc n avail
+  if [ "$MODE" = loop ] && [ -n "$(quiet_host_grant)" ]; then   # trash-sweep deletes like a reap: same floor override
+    avail=$(df -B1G --output=avail "$DISK" 2>/dev/null | tail -1 | tr -d ' ')
+    if [ "${avail:-0}" -ge "$REAP_DISK_FLOOR_GIB" ]; then scan_deferred SWEEP; return 0; fi
+    log "SWEEP-OVERRIDE quiet-host grant live but only ${avail:-?}GiB free (floor ${REAP_DISK_FLOOR_GIB}GiB): sweeping"
+  fi
   for t in $TRASHES; do
     [ -d "$t" ] || { log "SWEEP-SKIP $t absent"; continue; }
     rc=0
-    if [ "$MODE" = dry ]; then out=$(TRASH_ROOT=$t bash "$SWEEP" --older-than 1 --dry-run 2>&1) || rc=$?
-    else out=$(TRASH_ROOT=$t bash "$SWEEP" --older-than 1 2>&1) || rc=$?; fi
+    if [ "$MODE" = dry ]; then out=$(TRASH_ROOT=$t "${SCAN_NICE[@]}" bash "$SWEEP" --older-than 1 --dry-run 2>&1) || rc=$?
+    else out=$(TRASH_ROOT=$t "${SCAN_NICE[@]}" bash "$SWEEP" --older-than 1 2>&1) || rc=$?; fi
     n=$(printf '%s\n' "$out" | grep -c -E '^(removed|\[dry-run\] would remove) ' || true)
     log "SWEEP $t rc=$rc entries=$n${out:+ last: $(printf '%s\n' "$out" | tail -1 | cut -c1-160)}"
   done
@@ -132,13 +148,14 @@ sweep() {  # trash-sweep --older-than 1 on every trash root that exists
 run_tool() {  # run_tool TAG <cmd...>: run one lifecycle tool, log its last line and rc; a missing tool is a SKIP, never an error
   local tag=$1; shift; local out rc=0
   [ -f "$1" ] || [ -f "$2" ] || { log "$tag-SKIP tool missing: $*"; return 0; }
-  out=$("$@" 2>&1) || rc=$?
+  out=$("${SCAN_NICE[@]}" "$@" 2>&1) || rc=$?   # every janitor tool runs at nice 19 / idle IO class, never pinned
   log "$tag rc=$rc ${out:+last: $(printf '%s\n' "$out" | grep -v '^$' | tail -1 | cut -c1-200)}"
   if [ "$MODE" = dry ]; then printf '%s\n' "$out" | tail -n 25 | while IFS= read -r l; do log "$tag $l"; done; fi
 }
 
 budget() {  # per-row disk budget check over live grants: alert only (row_disk_budget.py), never stops a row
   local flags=(--flags "$F" --log "$F/disk-budget.log"); [ "$MODE" = dry ] || flags+=(--alert)
+  scan_deferred BUDGET && return 0
   run_tool BUDGET python3 "$TOOLS/coordination/churn/row_disk_budget.py" "${flags[@]}"
 }
 
@@ -165,6 +182,7 @@ lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel 
   [ "$LIFECYCLE" = 1 ] || { log "LIFECYCLE-SKIP disabled (JANITOR_LIFECYCLE=0)"; return 0; }
   age=$(( $(date +%s) - $(stat -c %Y "$LIFECYCLE_STAMP" 2>/dev/null || echo 0) ))
   if [ "${1:-}" != force ] && [ "$age" -lt "$LIFECYCLE_EVERY_S" ]; then return 0; fi
+  scan_deferred LIFECYCLE && return 0   # stamp untouched: the daily pass runs on the first tick after the grant ends
   if [ "$MODE" = dry ]; then apply=(); dryf=(--dry-run); else mkdir -p "$(dirname "$LIFECYCLE_STAMP")"; touch "$LIFECYCLE_STAMP"; fi
   log "LIFECYCLE start (apply=${apply[*]:-no})"
   run_tool WTREAP python3 "$TOOLS/system/worktree_reaper.py" "${apply[@]}" --max "$WT_MAX" --log "$F/worktree-reap.log"
@@ -179,6 +197,7 @@ lifecycle() {  # lifecycle [force]: the daily pass (worktree TTL reaper, kernel 
   log "LIFECYCLE end"
 }
 
+if [ "$MODE" = check ]; then if scan_deferred "${2:-scan-check}"; then echo DEFER; else echo RUN; fi; exit 0; fi
 if [ "$MODE" != loop ]; then free_line; reap force; sweep; budget; autolink; lifecycle force; free_line; exit 0; fi
 
 # loop: one instance (pidfile pid alive with our argv, and not us -> exit)

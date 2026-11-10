@@ -415,10 +415,24 @@ def free_gib(path="/mnt/raid0"):
     return shutil.disk_usage(path).free / (1 << 30)
 
 
+def _quiet_host():
+    """The ONE quiet-host helper (quiet_host.py): beside this file when installed, else up to scripts/coordination/."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for d in (here, os.path.dirname(here)):
+        if os.path.isfile(os.path.join(d, "quiet_host.py")) and d not in sys.path:
+            sys.path.insert(0, d)
+    import quiet_host
+    return quiet_host
+
+
 def reclaimable(root, top=5, timeout=60):
-    """Largest top-level dirs under root (information only; nothing is deleted)."""
+    """Largest top-level dirs under root (information only; nothing is deleted). A du of everything: deferred while a
+    quiet-host grant is live (DEFER-QUIET-HOST), else run under nice/ionice."""
+    qh = _quiet_host()
+    if qh.defer("notify reclaimable", log=lambda m: print(m, file=sys.stderr)):
+        return [{"deferred": "DEFER-QUIET-HOST: quiet-host grant live"}]
     try:
-        r = subprocess.run(["du", "-x", "-s", "-B1G", "--", *sorted(os.path.join(root, n) for n in os.listdir(root))],
+        r = subprocess.run(qh.scan_prefix() + ["du", "-x", "-s", "-B1G", "--", *sorted(os.path.join(root, n) for n in os.listdir(root))],
                            capture_output=True, text=True, timeout=timeout)
     except (OSError, subprocess.TimeoutExpired) as e:
         return [{"error": f"{type(e).__name__}"}]
