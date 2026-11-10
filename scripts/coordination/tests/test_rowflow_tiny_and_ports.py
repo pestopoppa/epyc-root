@@ -113,6 +113,40 @@ class TinyRowTests(unittest.TestCase):
             ok, why = rf.smoke_completion_check({"launcher": {"path": lp}})
         self.assertTrue(ok, why)
 
+    @unittest.skipUnless(os.path.isfile("/usr/bin/python3") and os.path.getsize(os.path.realpath("/usr/bin/python3"))
+                         > rf.SMOKE_SCAN_MAX_BYTES and rf.smoke_trusted_interpreter("/usr/bin/python3"),
+                         "needs a root-owned /usr/bin/python3 larger than the scan cap")
+    def test_c6_python_interpreter_launcher_scores_complete(self):
+        # regression (c6-native-residency-20261109-r3, c6-26-corpus-repin-20261109-r3): `--cmd "/usr/bin/python3 -B
+        # job.py"` read the interpreter as "too large to scan" and scored a finished job incomplete
+        ck = os.path.join(self.pkt, "check.py")
+        with open(ck, "w") as f:
+            f.write("import sys\nsys.exit(0)\n")
+        lp = self._launcher(complete_cmd=f"/usr/bin/python3 -I {ck}")
+        self.assertEqual(rf.smoke_branch_files({"launcher": {"path": lp}}), [])
+        ok, why = rf.smoke_completion_check({"launcher": {"path": lp}})
+        self.assertTrue(ok, why)
+
+    def test_python_script_with_smoke_branch_still_incomplete(self):
+        ck = os.path.join(self.pkt, "check.py")
+        with open(ck, "w") as f:
+            f.write("import os, sys\nsys.exit(0 if os.environ.get('FILLER_SMOKE') else 1)\n")
+        lp = self._launcher(complete_cmd=f"/usr/bin/python3 -I {ck}")
+        ok, why = rf.smoke_completion_check({"launcher": {"path": lp}})
+        self.assertFalse(ok)
+        self.assertIn("check.py", why)
+
+    def test_unscannable_custom_binary_still_refused(self):
+        big = os.path.join(self.pkt, "python3")  # interpreter NAME, but row-owned and outside system bin dirs
+        with open(big, "wb") as f:
+            f.write(b"\0" * (rf.SMOKE_SCAN_MAX_BYTES + 1))
+        os.chmod(big, 0o755)
+        self.assertFalse(rf.smoke_trusted_interpreter(big))
+        lp = self._launcher(complete_cmd=f"{big} -c true")
+        ok, why = rf.smoke_completion_check({"launcher": {"path": lp}})
+        self.assertFalse(ok)
+        self.assertIn("too large to scan", why)
+
     def test_dryrun_native_result_never_filed_complete(self):
         ok, why = rf.smoke_completion_check({"launcher": {"path": self._launcher()}, "dryrun_native_result": True})
         self.assertFalse(ok)

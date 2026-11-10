@@ -3103,12 +3103,34 @@ def new_dryrun_native_result_path(dd):
 
 SMOKE_BRANCH_RE = re.compile(r"\bFILLER_(?:SMOKE|DRYRUN)\w*")
 SMOKE_SCAN_MAX_BYTES = 2 << 20
+# keeper-smoke-complete-fn 2026-11-10: a stock interpreter binary named on --cmd/--complete-cmd (`/usr/bin/python3 -B
+# job.py`) is not the job's code: it is >2 MiB, so it read as "too large to scan" and every python-launched job scored
+# job_complete=false (c6-native-residency-20261109-r3, c6-26-corpus-repin-20261109-r3). The SCRIPT it runs is still
+# scanned (referenced_paths yields it). Exempt only a root-owned, non-group/other-writable regular file under a system
+# bin dir whose basename is a known interpreter; any other oversized file (a custom binary) still counts as branching.
+SMOKE_SYSTEM_BIN_DIRS = ("/usr/bin/", "/bin/", "/usr/local/bin/", "/usr/sbin/", "/sbin/")
+SMOKE_INTERPRETER_RE = re.compile(r"(?:python[0-9.]*|bash|sh|dash|perl[0-9.]*|env|timeout|numactl|taskset|nice)")
+
+
+def smoke_trusted_interpreter(path):
+    """True iff `path` (followed through symlinks) is a stock system interpreter/wrapper binary, not row-owned code."""
+    import stat as _stat
+    rp = os.path.realpath(path)
+    names = {os.path.basename(path), os.path.basename(rp)}
+    if not any(SMOKE_INTERPRETER_RE.fullmatch(n) for n in names) or not rp.startswith(SMOKE_SYSTEM_BIN_DIRS):
+        return False
+    try:
+        st = os.stat(rp)
+    except OSError:
+        return False
+    return _stat.S_ISREG(st.st_mode) and st.st_uid == 0 and not st.st_mode & (_stat.S_IWGRP | _stat.S_IWOTH)
 
 
 def smoke_branch_files(d):
     """The row's own launcher and every regular file its engine line runs (--cmd / --complete-cmd tokens) that names
     FILLER_SMOKE* or FILLER_DRYRUN*: a job that branches on them does something else under a smoke than in its grant.
-    The engine itself (which honours them by design) is not scanned. An unreadable launcher counts as branching."""
+    The engine itself (which honours them by design) and stock system interpreters (smoke_trusted_interpreter) are not
+    scanned; the scripts they run are. An unreadable or oversized file otherwise counts as branching."""
     lp = d["launcher"]["path"]
     try:
         o = parse_launcher(lp)
@@ -3118,7 +3140,7 @@ def smoke_branch_files(d):
     hits, seen = [], set()
     for f in [lp] + [x for x in referenced_paths({"cmd": o["cmd"], "complete_cmd": o["complete_cmd"]}) if os.path.isfile(x)]:
         rp = os.path.realpath(f)
-        if rp in seen or rp == eng:
+        if rp in seen or rp == eng or (f != lp and smoke_trusted_interpreter(f)):
             continue
         seen.add(rp)
         try:
