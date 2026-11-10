@@ -1,0 +1,17 @@
+{
+  "seed": 20261110,
+  "resamples": 10000,
+  "margin": 0.2,
+  "n_tables": 52,
+  "n_pages": 10,
+  "paddle_mean_teds": 0.9104792675117467,
+  "odl_mean_teds": 0.26541289823922287,
+  "mean_diff": 0.6450663692725237,
+  "ci95_lower": 0.25710639222199677,
+  "ci95_upper": 0.7688002894689151,
+  "boot_mean": 0.6179671937254904,
+  "frac_tables_paddle_better": 0.9807692307692307,
+  "verdict": "PADDLE_WINS",
+  "rule": "PaddleOCR-VL wins iff lower 95% CI bound of (paddle TEDS - ODL TEDS) > 0.20; percentile CI, page-clustered resampling, statistic = mean of per-table diffs in resampled pages",
+  "source_run": "pip02-r36-english-run-20261107b"
+}
