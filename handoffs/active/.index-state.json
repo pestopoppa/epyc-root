@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 590
+      "open": 589
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 196
+      "open": 194
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -961,7 +961,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1106,
+          "line": 1108,
           "markers": 1,
           "name": "bulk-inference-campaign",
           "open": 3
@@ -971,7 +971,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1762,
+          "line": 1764,
           "markers": 1,
           "name": "eval-benchmark-cost-reduction",
           "open": 0
@@ -981,7 +981,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1863,
+          "line": 1865,
           "markers": 1,
           "name": "eval-tower-architecture-audit-2026-07-20",
           "open": 2
@@ -991,7 +991,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 2252,
+          "line": 2254,
           "markers": 1,
           "name": "eval-tower-loop-robustness-audit-2026-07-20",
           "open": 2
@@ -1001,7 +1001,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2452,
+          "line": 2454,
           "markers": 1,
           "name": "fable5-window2-findings-01-optimizer-integrity",
           "open": 1
@@ -1011,7 +1011,7 @@
           "closed": 17,
           "gates": [],
           "guarded": 1,
-          "line": 2521,
+          "line": 2523,
           "markers": 1,
           "name": "inference-batch-loop",
           "open": 4
@@ -1021,7 +1021,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 2790,
+          "line": 2792,
           "markers": 1,
           "name": "prompt-construction-determinism",
           "open": 0
@@ -1031,7 +1031,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 2914,
+          "line": 2916,
           "markers": 1,
           "name": "re4-protocol-redesign",
           "open": 2
@@ -1041,7 +1041,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 3079,
+          "line": 3081,
           "markers": 1,
           "name": "scoring-infra-standardization",
           "open": 7
@@ -1170,10 +1170,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 192,
+      "closed": 193,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 45,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1186,7 +1186,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 151,
+          "closed": 152,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1197,14 +1197,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 39
+          "open": 38
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1685,
+          "line": 1689,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1214,7 +1214,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1809,
+          "line": 1813,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2139,
+          "line": 2143,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1234,7 +1234,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2278,
+          "line": 2282,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2834,
+          "line": 2838,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1254,7 +1254,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2974,
+          "line": 2978,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2981,
+          "line": 2985,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1538,10 +1538,10 @@
     },
     "model-evaluation-queue.md": {
       "blocked": 1,
-      "closed": 130,
+      "closed": 132,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 33,
+      "open": 31,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1674,23 +1674,23 @@
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 1278,
           "markers": 1,
           "name": "meq-carve-gpu-serving-tie-in-program",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
-          "closed": 0,
+          "closed": 1,
           "gates": [],
           "guarded": 0,
           "line": 1289,
           "markers": 1,
           "name": "meq-carve-gpu-acceleration-path",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -2167,7 +2167,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1515,
+          "line": 1516,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1
@@ -2180,7 +2180,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2672,
+          "line": 2673,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2190,7 +2190,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3044,
+          "line": 3045,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2200,7 +2200,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3557,
+          "line": 3558,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 2
@@ -2210,7 +2210,7 @@
           "closed": 12,
           "gates": [],
           "guarded": 0,
-          "line": 3652,
+          "line": 3653,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 3
