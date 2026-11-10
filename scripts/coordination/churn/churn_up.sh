@@ -6,6 +6,8 @@
 #
 #   churn_up.sh            check install parity (deploy_rowflow.sh --parity; refuses on drift), clean reboot residue, start what is not running,
 #                          recreate the tmux session, print the manual steps (start Claude ws58 + codex-gen).
+#   churn_up.sh --with-dispatcher  also start the handoff-session dispatcher. WITHOUT it a bring-up leaves the dispatcher
+#                          down (CHURN-UP-NO-DISPATCHER: on 2026-11-04 an implicit start resumed 11 Codex sessions unasked).
 #   churn_up.sh --dry-run  same, printing every action instead of doing it (safe on a live system).
 #   churn_up.sh --status   read-only report: per component pid / alive / sha-vs-git; lanes; grants; sessions; tmux.
 #   churn_up.sh --stop     the 2026-11-02 operator stop order: (1) dispatcher, (2) keeper watchdog(s) THEN keeper (the
@@ -41,14 +43,16 @@ MODE=live
 STOP=0
 JAN=""
 SUPERVISE=0
+WITH_DISPATCHER=0
 for a in "$@"; do case "$a" in
   --dry-run) MODE=dry;;
   --status) MODE=status;;
   --stop) STOP=1;;
+  --with-dispatcher) WITH_DISPATCHER=1;;
   --supervise-watchdog) SUPERVISE=1;;
   --janitor=start|--janitor=stop|--janitor=status|--janitor=dry-run) JAN=${a#--janitor=};;
   -h|--help) sed -n 2,33p "$0"; exit 0;;
-  *) echo "usage: churn_up.sh [--dry-run|--status|--stop [--dry-run]|--supervise-watchdog [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
+  *) echo "usage: churn_up.sh [--with-dispatcher] [--dry-run|--status|--stop [--dry-run]|--supervise-watchdog [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
 esac; done
 [ $MODE = status ] && [ $STOP = 1 ] && { echo "usage: --status and --stop are exclusive" >&2; exit 2; }
 KEEPER=ws58-calendar-keeper-v13.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
@@ -259,6 +263,9 @@ ensure_loops() {
   for l in "${LOOPS[@]}"; do
     IFS='|' read -r n pf mk cwd cmd path <<< "$l"
     p=$(pid_of "$F/$pf")
+    if [ "$n" = dispatcher ] && [ $WITH_DISPATCHER = 0 ]; then
+      say "  dispatcher: NOT started (explicit opt-in only: --with-dispatcher; CHURN-UP-NO-DISPATCHER)"; continue
+    fi
     if is_proc "$p" "$mk"; then say "  $n: running pid $p"
     else
       dup=$(argv_pids "$path")

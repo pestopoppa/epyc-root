@@ -39,6 +39,15 @@ class Tests(unittest.TestCase):
         self.assertIn("--supervise-watchdog", out)
         self.assertRegex(out, r"START python3 -I \S+watch_git_config\.py")
 
+    def test_default_bringup_leaves_dispatcher_down(self):
+        out = self.run_cu("--dry-run")
+        self.assertNotRegex(out, r"START \S*python3 -I \S+handoff_sessions\.py")
+        self.assertIn("dispatcher: NOT started", out)
+
+    def test_dispatcher_starts_only_on_explicit_flag(self):
+        out = self.run_cu("--with-dispatcher", "--dry-run")
+        self.assertRegex(out, r"START python3 -I \S+handoff_sessions\.py dispatch")
+
     def test_running_watcher_not_duplicated(self):
         path = os.path.join(self.F, "bin", "watch_git_config.py")
         self.holder(path)
