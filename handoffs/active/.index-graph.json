@@ -683,7 +683,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T17:37:06Z",
+  "generated_at": "2026-11-10T17:39:52Z",
   "nodes": [
     {
       "age_days": 0,
@@ -2498,15 +2498,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 113,
-      "dispatchable": 16,
+      "closed": 114,
+      "dispatchable": 15,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-10",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-0.1 corpus + hand-verified golds",
-      "open": 16,
+      "open": 15,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2544,12 +2544,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 1872,
           "name": "document-parser-table-bench",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
