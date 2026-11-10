@@ -25,7 +25,7 @@ THE MACHINE'S CHANNEL TO THE WORKER IS TYPED AND ONE-WAY (D8)
 ------------------------------------------------------------
 Spawn args + a brief file in. A schema-valid report file and a process exit
 status out. **This module never types into a pane and never reads pane text to
-make a decision.** Those two channels produced the entire C51–C56 / F-33–F-43
+make a decision.** Those two channels produced the entire C51–C56 / F-33(b)–F-43
 delivery-plane defect class and a 94%-false-positive perception class; deleting
 them is the point of the restructure, not an incidental cleanup. Pane scrollback
 IS captured — but only as evidence attached to a failed row, for a human to
