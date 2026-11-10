@@ -982,6 +982,10 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         need(c["shape"] != "gpu-q3" or not held_q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (operator "
              f"2026-11-05 NARROW: a GPU timing grant never holds q3 cores 72-87, found {','.join(compress(held_q3))}; they stay "
              "grantable to CPU rows beside a GPU timing run); a quieter neighbourhood needs explicit regions + shape_override")
+    lint = regions_wider_lint(regions, c, row)
+    if lint:   # keeper audit 2026-11-10 fix 4: a lint, never a refusal (the contract already decides what is held)
+        print(f"LINT {rid}: {lint}")
+        row["publish_warnings"] = list(row.get("publish_warnings") or []) + [lint]
     if row.get("busy_fraction") is None and row.get("declared_threads"):
         row["busy_fraction"] = round(min(1.0, row["declared_threads"] / claimed_cpus(regions, o.get("claim_cpus"), row["shape"])), 3)
         row["busy_fraction_source"] = "declared_threads"
@@ -2111,6 +2115,25 @@ def check_shape_evidence(spec, o):
     if so is not None:
         need(isinstance(so, str) and re.match(r"^operator:\s*\S+.*\d{4}-\d{2}-\d{2}.*:\s*\S", so),
              "shape_override must read \"operator: <who> <YYYY-MM-DD>: <why>\"")
+
+
+def regions_wider_lint(regions, c, row=None):
+    """Keeper audit 2026-11-10 fix 4: a warning when the spec's concrete regions name more physical cores than the
+    evidence contract's widest option holds (e.g. shape quarter with regions 48-95, or a gpu row with mi210_0,48-95,...).
+    The grant follows the contract, so the extra regions only mislead readers / dashboards / hand-written launchers that
+    read regions=. None when regions are abstract, within the contract, or carry an operator shape_override."""
+    regs = str(regions or "")
+    if regs == "any-cpu-quarter" or regs.startswith("any-of") or str((row or {}).get("shape_override") or "").strip():
+        return None
+    cpus = ws58_cpus(regs)
+    if not cpus and re.fullmatch(r"q[0-3](,q[0-3])*", regs.replace(" ", "")):
+        cpus = ",".join(cpu_list(q) for q in regs.replace(" ", "").split(","))
+    cores = {x % 96 for x in _cpu_set(cpus) if x not in GPU_HOST_THREADS}   # MI210 host threads are not cores booked
+    held = int(c.get("held") or 0)
+    if len(cores) <= held:
+        return None
+    return (f"REGIONS-WIDER-THAN-SHAPE: regions {regs} name {len(cores)} cores but the contract ({c.get('shape')}) holds "
+            f"{held}; the grant follows the contract - republish with regions matching the shape (or drop regions)")
 
 
 def claimed_cpus(regions, claim, shape):
