@@ -438,11 +438,13 @@ the machine.
       **A gate whose threshold is unset cannot fail.** Human-amendment-only —
       prepare, present, park; never self-apply. P1-2 is blocked on item B.2
       (`INTERLEAVE_TOLERANCE`).
+  - **Operator decision 2026-11-10:** INTERLEAVE_TOLERANCE ±25% relative accepted. It is already in force as TBD 2 under RATIFY-INF45-P23-20261109 (`measurement/protocols/bench-cpu.md`). TBDs 3, 4, 5, 7, 8, 9, 10, 13, 14 remain open, so this box stays open.
 - [ ] **P2-4. Add a CONTEXT-DEPTH field to the claim grammar.** Same model, same
       recipe, same placement spans **40.22 tok/s at a 28-token prompt down to
       17.23 at 35k** — a 2.3× spread driven purely by depth — and **the ratified
       exemplar carries the 28-token figure with no depth term**. Proposal is
       drafted in §A of the ratification queue.
+  - **Operator decision 2026-11-10:** required `depth=<n>` claim field accepted. Amendment prepared as `scripts/operator/run_inf45_p24_ratify_20261110.sh` (RATIFY-INF45-P24-20261110, human-amendment-only); box closes when the operator signs it.
 - [x] **P2-5. ~~Fold the ngram result into the production recipe~~ — CANCELLED ✅ 2026-07-31.** The 2.80× was a warm-context self-copy artifact (see the RETRACTION section below and master index N26). Confirmatory re-run with 3 distinct prompts per rep: **−4.2% to +1.3%**; `ngram-mod` alone costs **23–31%**. **No `acceleration.spec_type` field is to be added.** Original text follows:
   > **P2-5. Fold the ngram result into the production recipe once the sweeps
       land.** Measured CPU gain: **2.80× on Qwen3.6-35B at 14k tokens**
@@ -736,6 +738,7 @@ than MTP everywhere (122B CPU: 9.38 vs 15.76).
 - [ ] Fold the four P-BENCH-PLACEMENT-1 amendments (no repeated-prompt replication
   for context-reading drafters; mandatory non-context control arm; report n/min/max
   never a bare median; `accept=1.000` is a bug report) into MEASUREMENT.md proper.
+  - **Operator decision 2026-11-10:** the four amendments ride RATIFY-INF45-P24-20261110 (`scripts/operator/run_inf45_p24_ratify_20261110.sh`) as A1-A4 in the P-BENCH-PLACEMENT-1 annex; box closes when the operator signs it.
 
 ##### Confirmatory re-run IN FLIGHT
 
@@ -857,7 +860,7 @@ Raw: `/mnt/raid0/llm/tmp/vlquality_results.json`; harness `/mnt/raid0/llm/tmp/vl
   same failure the K35 gate hit in 2026-07 (`0/4` on default reasoning mode), and it generalises to any
   reasoning-mode VLM — a scorer reading `message.content` sees an empty string and reports a quality failure
   that is really a protocol failure.
-- [ ] **`Qwen3-VL-2B-Instruct-GGUF/` is EMPTY** — download or delete the directory. It is also the *only* model
+- [x] **`Qwen3-VL-2B-Instruct-GGUF/` is EMPTY** — download or delete the directory. It is also the *only* model ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): directory no longer exists anywhere on the host (find / -maxdepth 6, 2026-11-10). [no-belief: obsolete, Qwen3-VL-2B dir absent]
   in the family with independent third-party verification, which we therefore cannot use.
 - **[declined: ws58 2026-11-03 content-review: a note]** Qwen3-VL benchmark tables on the HF cards are **JPEG images**, not text — "official model card" there means
   a marketing graphic. Weight accordingly.
@@ -959,7 +962,7 @@ production temperature + fixed seed, so those runs are formally off-recipe.
 **Operator ruling: do NOT re-run the matrix.** Re-running batch x concurrency x
 context x spec x ngram at non-zero temperature is disproportionate. Instead:
 
-- [ ] **Once vision, STT and TTS are finalized, re-run ONLY the headline numbers
+- [x] **Once vision, STT and TTS are finalized, re-run ONLY the headline numbers ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): result files /mnt/raid0/llm/tmp/halfa_optimal_results.json and full_headline_results.txt are gone and the Qwen3.6-era lineup they measured has been replaced. [no-belief: obsolete, results gone, lineup replaced]
   at production temperature + seed 42.** That is §01 of the artifact — one
   single-stream cell per model per shape. Nothing else.
   **UNBLOCKED 2026-07-31** — all three modalities are now settled (vision →
@@ -1083,7 +1086,7 @@ rediscover set intersection.
   requests**, and depth is a property of the prompt, not the server.
 - Correct shape: **one hot server per model** (4 loads), vary concurrency by how many
   requests you fire, vary depth by which prompt you send.
-- [ ] Rewrite `full_headline.sh` on this pattern before the next full-machine window.
+- [x] Rewrite `full_headline.sh` on this pattern before the next full-machine window. ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): full_headline.sh no longer exists in root, research or /mnt/raid0/llm/tmp. [no-belief: obsolete, script deleted]
 - **NOT contradicted by the preload finding**: keeping ONE server hot and reusing it
   is correct; loading FOUR different models concurrently is what poisons measurements
   (an idle llama-server burns 47 of 48 cores under `OMP_WAIT_POLICY=active`, proven at
@@ -2382,10 +2385,12 @@ comparison table + R1-R4 rule evaluation in the summarizer.
     `_apply_basis_caveat` path landed under A5. Only candidate that rescues all five while changing
     zero banked numbers. **Cost stated plainly:** promoting 5 cells to decision-grade is itself a real
     grade change on banked cells — which is why it is a token, not an edit.
-  - [ ] **Operator token OUTSTANDING** — one ask: decouple `decision_grade` from the secondary
+  - [x] **Operator token OUTSTANDING** — one ask: decouple `decision_grade` from the secondary ✅ 2026-11-10 — signed by operator via coordinator decision tool: decouple `decision_grade` from the trimmed window (both asks, one package). [no-belief: operator decision, not a measurement]
     trimmed-tasks/hour window, promoting the 5 listed cells, with `trimmed_window_empty` as a caveat.
     `TRIM_DEFINITION` is **not** amended and every banked number stands. Nothing further is owed by
     this lane until it is signed. Token 2 (absorbed): the v9 signature added a scope constraint on the consolidated era token; present both asks as one package.
+    - **Operator decision 2026-11-10:** token signed (decouple). Implementation is code work:
+    - [ ] Implement the signed decouple: stop gating `decision_grade` on the trimmed window (research `scripts/benchmark/server_numa_np_sweep.py:1501`), surface `trimmed_window_empty` via `_apply_basis_caveat`, re-grade the 5 listed cells; banked numbers unchanged.
 - [x] **R2/R4 mix metric bases and let a non-decision-grade cell win the Pareto peak (discovered 2026-07-29 by pre-validating the summarizer on a COPY of the live partial W1)** — *(⛔ every tasks/hr figure quoted in this item is SUSPENDED 2026-07-30. The defect it identifies is a metric-BASIS inconsistency — raw vs trimmed — which is scale-invariant, so the finding and its fix survive the suspension and must be applied before the re-measured cells are aggregated.)* — R2 names `qwen36_q8_0-C2-np16` peak at **578.6 tasks/hr on `aggregate_basis=raw_fallback`**, above `C2-np8` at **462.8 on `trimmed`**; `C2-np16` is `decision_grade=false` (`empty_trimmed_window`). R4's `per_shape_np_optimum` picks the same cell on the same basis and flags `mixed_metric_basis: true`. **The arithmetic settles it**: like-for-like, `C2-np8` raw **669.2** > `C2-np16` raw **578.6**, and on trimmed `C2-np16` has no value at all — so it wins on *no* consistent basis. It only appears to win because it is compared on raw while its rival is compared on trimmed, and raw is systematically higher (includes the ramp-up burst, skips steady-state trimming). **This upgrades the 16:18Z T=32 finding**: those cells do not merely fail to contribute, they *actively contaminate* R2/R4 by winning comparisons they should not be in — a reader would wrongly conclude 2×quarter @np16 is the peak provisioning shape. **R1 is unaffected** — it already guards per-pair (`mixed_metric_basis: false` on the clean half-machine T=16 pair, where C2@8 462.8 beats C1@16 327.0 by 29.3% on a consistent trimmed basis). Fix = apply R1's existing guard to R2/R4: exclude `decision_grade=false` cells from aggregation, or refuse a peak whose basis differs from its rivals. **Not changed in-flight** — instrument code, campaign live on it, and changing aggregation mid-run would make banked cells non-comparable. Pure post-hoc read, so it is fixable and re-runnable **offline** against the same run dirs at zero inference cost. Escalated `msg-20260729T162849Z-50-mainA`.
   **✅ 2026-08-11 (`mainA`) — LANDED, research `4fb44869`. Half of this was already fixed; the other half was real.**
   **Already fixed, verified by offline replay of `e5-w1-qwen36-20260729T154725Z`:** the 2026-07-30 metric
@@ -2522,7 +2527,7 @@ comparison table + R1-R4 rule evaluation in the summarizer.
     - **Remaining scope = 24 manifests**: `qwen36_q8_0` (12) + `qwen3_next_80b` (8). Launcher archived and still present 2026-08-16 at `/mnt/raid0/llm/tmp/a7-fire-20260813/a7-fire-all.sh` — reuse it (its two 2026-08-13 fixes are baked in: `setsid` so tool timeouts cannot SIGTERM the region lock into orphan `llama-server`s, and `sudo -n` for the inter-group `drop_caches`).
   - **2026-11-02 evidence qualification:** the A7 manifest directory contains 20, not 24, files for the two named remaining Qwen groups (12 + 8); this is an inventory count, not a count of replicated or decision-grade arms. In the banked Gemma run, all four C1b cells declare `numactl_policy=none` for straddling half-machine cpusets; their affinity artifacts record shared model pages across N0–N3, roughly half local to either half. They do not designate defect-replication controls. All four C1 cells declare full-machine interleave and show the expected CPU affinity, but the inspected artifacts do not independently attest runtime memory policy or a cache drop before each cell. The eight `decision_grade=true` labels therefore do **not** themselves prove compliance with the corrected placement requirements above. These observations do not establish that the full-machine cells failed; retain the run and assess any use against the applicable protocol. Source: `a7-gemma4_26b_a4b_q4km_mtp-20260813T223750Z/{cells.jsonl,affinity/}` under `epyc-inference-research/data/batched_decode/`. [belief: cc]
   - **2026-11-02 BRF-T3 E5 adjudication (ws58, zero inference; OBSERVATION):** banked A7 Gemma cells (`a7-gemma4_26b_a4b_q4km_mtp-20260813T223750Z`, cells.jsonl SHA-256 `dfc0487c7c32…`) → **VALID 0 / DEMONSTRATED-INVALID 4 / UNRESOLVED-MISSING-EVIDENCE 4**. The four C1b cells are demonstrated-invalid against requirement (b): straddling cpusets, `numactl_policy=none`, no defect-control declaration; their `pages_by_node` is byte-identical to the preceding interleave=all C1 cells (1 distinct layout across all 8). That is an inherited warm cache, which also witnesses (c) non-compliance. The four C1 cells (0-95 interleave=all, affinity match, local_fraction 1.0) are unresolved: no runtime-policy or per-cell cache-drop witness. They are not invalid. Recorded throughputs stay accurate as historical values. Qwen reconciliation: 20 manifests, (a) PASS in both groups, (b) FAIL in 10 C1b manifests, (c) 0/20 declare a per-cell drop (the harness drops between model groups only). The box stays open: re-runs are required. [belief: cc] Evidence: `docs/design/backlog-refactor-2026-11/t3-evidence/e5-adjudication-20261102.json` (re-scoped 2026-11-03 from W2 gemma and W4 qwen3_next_80b: deleted; now the current CPU roles (Qwen3.6-35B-A3B and Qwen3.8-Flash-Next IQ4_XS))
-- [ ] **Fix the production cpuset wiring in `stack_numa.py` (orchestrator; gated on the re-measurement)** — `frontdoor` idx0 (port 8070) and `ingest_long_context` idx0 (port 8085) both pin `NUMA_NODE0 = "0-47,96-143"` with **no `numactl_policy`**, which is the defective shape measured at `7.81` t/s warm. `eval_batch_frontdoor` (18070) uses the same cpuset but does carry `interleave=all`; `worker_general` (8083) already uses `NUMA_FULL` + `interleave=all` and is unaffected. **The justification comment in the file is invalid evidence**: the April 2026-04-17 head-to-head (`26.60` interleave vs `27.06` NUMA_NODE0, "B beats A by 1.7%") predates the 2026-04-24 NPS4 reboot — the cpuset genuinely WAS one node then — and its source CSV records `spec == "baseline"`, i.e. speculative decoding OFF. `ingest_long_context` cites that same dead head-to-head to "keep parity" and inherits the defect with no data of its own. The `NUMA_NODE0`/`NUMA_NODE1` names are NPS2-era artefacts and have been misleading since the NPS4 reboot; the `NUMA_Q*` quarters are correctly named and ARE the four NPS4 nodes. **Status: annotated in place 2026-07-30, change deliberately NOT applied** — the wiring is held unchanged so the re-measurement stays comparable with the recorded AutoPilot operating point being re-anchored against. Production serving-path change → operator-gated; apply only once the corrected Stage-B reports.
+- [x] **Fix the production cpuset wiring in `stack_numa.py` (orchestrator; gated on the re-measurement)** — `frontdoor` idx0 (port 8070) and `ingest_long_context` idx0 (port 8085) both pin `NUMA_NODE0 = "0-47,96-143"` with **no `numactl_policy`**, which is the defective shape measured at `7.81` t/s warm. `eval_batch_frontdoor` (18070) uses the same cpuset but does carry `interleave=all`; `worker_general` (8083) already uses `NUMA_FULL` + `interleave=all` and is unaffected. **The justification comment in the file is invalid evidence**: the April 2026-04-17 head-to-head (`26.60` interleave vs `27.06` NUMA_NODE0, "B beats A by 1.7%") predates the 2026-04-24 NPS4 reboot — the cpuset genuinely WAS one node then — and its source CSV records `spec == "baseline"`, i.e. speculative decoding OFF. `ingest_long_context` cites that same dead head-to-head to "keep parity" and inherits the defect with no data of its own. The `NUMA_NODE0`/`NUMA_NODE1` names are NPS2-era artefacts and have been misleading since the NPS4 reboot; the `NUMA_Q*` quarters are correctly named and ARE the four NPS4 nodes. **Status: annotated in place 2026-07-30, change deliberately NOT applied** — the wiring is held unchanged so the re-measurement stays comparable with the recorded AutoPilot operating point being re-anchored against. Production serving-path change → operator-gated; apply only once the corrected Stage-B reports. ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): NUMA_NODE0/NUMA_NODE1 were deleted 2026-08-11 (orchestrator scripts/server/stack_numa.py:140); frontdoor now runs on halves. [no-belief: obsolete, constants deleted 2026-08-11]
 - [x] **Retract the suspended figures in the operator-facing E5 artifact** — the authoritative local HTML (`artifacts/operator/e5_w0_preliminary_results.html`) carries the Stage-B headline and therefore still presents retracted numbers. Add the suspension banner and the "C3 never wins" retraction while retaining the figures verbatim (append-only). Do not regenerate it from the superseded markdown.
   **✅ 2026-08-11 (`mainA`) — CLOSED, and the row's premise was stale.** Verified before editing:
   the HTML carries **zero** occurrences of `Stage-B`, `W0` or `E5`, and its figures are tok/s, not
@@ -2549,7 +2554,7 @@ comparison table + R1-R4 rule evaluation in the summarizer.
 
 Tick waypoints here + one-line progress entry per session; on full completion delete the master-index row and move this file to `completed/`; every number follows the [MEASUREMENT.md](../../MEASUREMENT.md) claim grammar (metric, protocol-id, n, date, attest ref).
 
-- [ ] **Eval-batch serving lane decision (tabled here 2026-07-23 from the EV-BASELINE-E7 session)**:
+- [x] **Eval-batch serving lane decision (tabled here 2026-07-23 from the EV-BASELINE-E7 session)**: ✅ 2026-11-10 — decided by operator: option (c), batched eval decoding on the MI210. [no-belief: operator decision, not a measurement]
   the retired `eval_batch_frontdoor` lane (port 18070, warm launcher-only, -np 8 — "not a
   distinct model-routing role") posed the question: dedicated eval lane vs quiet-window 4-wide
   fan-out on production quarters (this week's proven regime). Decide WITH the E5 NUMA×batch(-np)
@@ -2561,6 +2566,8 @@ Tick waypoints here + one-line progress entry per session; on full completion de
   slot"), freeing ALL CPU quarters for interactive traffic. Note: the robust eval structure these
   designs waited on now EXISTS (decision-grade P-CAL instrument, honest error rows, per-question
   artifacts, resume/retry) — the queued design ideas across the notes can now be tested properly.
+  - **Operator decision 2026-11-10:** option (c) chosen — eval-lane fleet on the MI210 under heterogeneous-slot-fabric-residency.md, freeing all CPU quarters.
+  - [ ] Design and land the MI210 eval-lane fleet (eval-only role bound to a GPU slot fleet); size `-np` from E5/GPU batch data.
 
 #### Pre-execution audit (2026-07-23)
 
@@ -3667,6 +3674,7 @@ primary artefact.
       has 7,198,279 pages on node 3. This is direct anti-vacuity evidence for T5: declared policy is
       not proof of achieved placement, including for a multi-node `--no-mmap` process. The INF-42
       recall outputs remain usable, but its timing fields are not placement-authoritative.
+  - **Operator decision 2026-11-10:** INTERLEAVE_TOLERANCE ±25% is ratified (TBD 2, RATIFY-INF45-P23-20261109), so the blocker is gone; T5 is now code-only (`affinity_preflight.py:277`).
 - [x] **T6 — Audit the remaining roles for straddling cpusets** and for `numactl_policy: none` on
       any multi-node cpuset ✅ 2026-07-30 — done as a **programmatic invariant check over all of
       `NUMA_CONFIG`**, not a manual read: (1) no straddling cpuset without a declared memory
@@ -3747,7 +3755,7 @@ primary artefact.
       **Grade is no longer blocked by protocol status** — but see **N25 P2-2** (three of four roles
       have no anchor to satisfy the mandatory anchor gate) and **N25 P2-3** (several §7 thresholds are
       still TBD, and a gate whose threshold is unset cannot fail).
-- [ ] **T10 — Re-run the `ingest_long_context` decode-vs-context curve on the production Q4_K_M
+- [x] **T10 — Re-run the `ingest_long_context` decode-vs-context curve on the production Q4_K_M ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): ingest_long_context numa_config block removed 2026-09-22 (stack_topology.yaml:296); role is GPU Qwen3.8-27B, no CPU artefact to curve. [no-belief: obsolete, role moved to GPU]
       artefact.** The existing 3-placement × 3-prompt-length curve is IQ2_M (24.27 GiB), which no
       role serves. Only the `tg128` point exists on Q4_K_M (45.08 GiB). Needed before any
       long-context tok/s is quoted for this role, and it feeds T8. (re-scoped 2026-11-03 from IQ2_M/Q4_K_M Qwen3.5-122B-era ingest_long_context artefact: deleted; now Qwen3.8-27B-Q8_0 ingest_long_context (GPU))
@@ -3773,7 +3781,7 @@ primary artefact.
       hits are false positives in two named families (drafter GGUFs on a target line; multi-role
       lines), recorded in the audit so a mechanical version does not ship an ~80% false-positive
       rate and train readers to ignore it.
-- [ ] **T12 — Re-decide `-c` provisioning now that its cost is measured at ~zero.** Production
+- [x] **T12 — Re-decide `-c` provisioning now that its cost is measured at ~zero.** Production ✅ 2026-11-10 — decided by operator: provision the full trained window and manage context by a compaction policy above the server. [no-belief: operator decision, not a measurement]
       runs `-c 32768` = **12.5 %** of the 262,144-token window every deployed model was trained
       for, and `architect_general` halves that again to **8192/request** via `slots: 2` — a
       rationing decision made when the cost was assumed, not measured. Measured 2026-07-30:
@@ -3804,6 +3812,8 @@ primary artefact.
       worst option: a rationing decision standing on a premise now measured false. Sequencing
       per the row: fold the `-c` change into the N25 recompile to pay the recompile once.
       Ruling owner: lineup owner + operator. Row stays open pending the ruling.
+  - **Operator decision 2026-11-10:** full trained window accepted (lineup-level; not per-role).
+  - [ ] Apply full-trained-window `-c` across the lineup as one stack-change package (stack-change skill), with the compaction policy above the server; needs a running production stack.
 
 ##### Opened 2026-07-30 by the topology change — OWNED ELSEWHERE, do not re-file here
 
@@ -4244,7 +4254,7 @@ That is almost certainly the mechanism behind this handoff's two half-speed role
   priors recompiled. Full suite 14,129 pass / 35 fail, **zero attributable to the change** (33 identical on the
   pristine base, 1 flaky on both, 1 artefact).
 
-- [ ] **ACTIVATION — owned by the stack-owning session, not by INF-70.** At its own boundary:
+- [x] **ACTIVATION — owned by the stack-owning session, not by INF-70.** At its own boundary: ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): C7 pre-evict commit 070e4f28 is an ancestor of the shared orchestrator clone HEAD 68939147. [no-belief: obsolete, activation done]
       `git -C /mnt/raid0/llm/epyc-orchestrator pull --ff-only` (clean, was 3 behind), then
       `stack_change_pipeline.py check` there (expected: lean/descriptors/priors fresh). The running API serves
       from that shared clone, so the pull + reload belongs to whoever owns the stack — an experimental-kernel
@@ -5247,7 +5257,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
       reports `required_tokens` in **BYTES** and was taken against the pre-07-30 fleet. Both the A–D
       options package and the two 19 MB replacement-map candidates inherit both errors — nobody should
       act on them as they stand. Re-tokenize today; this directly unblocks A11's operator decision.
-- [ ] **S-09 — Delete the five `.staging-` bundles** left by the 2026-07-26→29 E8 `--execute` attempts.
+- [x] **S-09 — Delete the five `.staging-` bundles** left by the 2026-07-26→29 E8 `--execute` attempts. ✅ 2026-11-10 — closed as obsolete (operator 2026-11-10: close as obsolete): no E8 .staging-* bundles remain under research, orchestrator or tmp (only an unrelated hermes tool dir). [no-belief: obsolete, bundles gone]
       The runner forbids reuse, so the post-reboot run fails on residue. (Coordinate with the row's
       owner before deleting; this is their lane.)
 - **[declined: ws58 2026-11-03 content-review: stale pre-reboot staging (reboot 2026-08-13); pinning is mi210-serving-program GPS-PIN-1]** **S-10 — Land SS-BENCH-GATE-b's cpuset pinning in the launch path before the reboot** so it is
@@ -5259,6 +5269,7 @@ Dispatchable now. None requires a reboot; none runs a benchmark or starts `llama
       attestation mandatory in the emitted artifact. Route to the measurement-protocol owner — the
       trust boundary is human-amendment-only, so propose, do not amend.
   - **Source checkpoint (2026-11-01):** Research `f311e004e2eaaf23bd87d2ab4a7530396c77830f`, proof `d41be316c941097f0e54a3ec4147ef67d07afe36`, captures the existing partial host observation after region-claim admission and embeds it in the benchmark log. Synthetic fixture tests only; cache drop, re-warm and THP are not attested. Missing uptime stays unknown; the existing warning uses > one week while Annex B says >= one week. No grade or protocol amendment; measurement-protocol-owner review of this proposed attestation remains required and S-11 stays open. Scratch: `/mnt/raid0/llm/tmp/codex3-s11-health-20261101`.
+  - **Operator decision 2026-11-10:** option "mandatory attestation in the emitted artifact" chosen; box stays open as code work in research `scripts/benchmark/bench_canonical.sh` (HOST_ATTESTATION, :397).
 - **[declined: ws58 2026-11-03 content-review: bookkeeping]** **S-12 — File OP-16 as a pre-validated token block in `tokens/token-queue.md`.** It currently
       exists only as a master-index row, so the one signature the whole Category-A list waits on is
       absent from the queue the operator reads. Include the earlyoom `--ignore` line (A8) and the OP-9

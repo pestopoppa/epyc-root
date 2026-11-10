@@ -72,6 +72,7 @@ earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.m
   select a ~0.7 GB agent session against a ~20 GB deficit — **a futile kill that destroys a main
   without relieving the pressure.** That, not "agents are victims", is the argument for the tweak.
   *Not applied: host-side, operator-owned, and a restart briefly leaves the host unprotected.*
+  - **Operator status 2026-11-10:** not chosen in the 2026-11-10 package; stays an open operator decision (host-side edit).
 - **[declined: ws58 2026-11-03 content-review: an open question, not a task]** **Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #309); mlock'd pages free slowly, so it can kill several processes in ~100 ms succession before headroom is reflected. Is a pause-new-model-loads hook (triggered by the `-N` audit hook's sentinel, or by the autopilot) worth wiring into `orchestrator_stack.py`?
 - **[declined: ws58 2026-11-03 content-review: an open question, not a task]** **Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_caches/throttle-check) *before* a kill? Risk: a pre-kill script that itself allocates under memory pressure is dangerous — must be allocation-free if used.
 
