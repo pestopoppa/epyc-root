@@ -1,6 +1,6 @@
 # NUMA Placement & Contention Program (INF-45)
 
-> **Restructured 2026-11-10 (pipeline-mgmt, operator "yes, take both on").** The cutover this file was named for closed 2026-10-29 (P0-3). Two tracks were split out: `dynamic-stack-concurrency` → [`hybrid-checkpoint-prompt-reuse.md`](hybrid-checkpoint-prompt-reuse.md) (INF-85), `within-role-placement-state-machine` → [`dispatch-placement-telemetry.md`](dispatch-placement-telemetry.md) (INF-86). Historical title below.
+> **Restructured 2026-11-10 (pipeline-mgmt, operator "yes, take both on").** The cutover this file was named for closed 2026-10-29 (P0-3). Two tracks were split out: `dynamic-stack-concurrency` → [`hybrid-checkpoint-prompt-reuse.md`](hybrid-checkpoint-prompt-reuse.md) (INF-86), `within-role-placement-state-machine` → [`dispatch-placement-telemetry.md`](dispatch-placement-telemetry.md) (INF-87). Historical title below.
 
 ## (historical) NUMA Topology Cutover — RESUME DOCUMENT
 
@@ -2750,7 +2750,7 @@ but C1 and C3 are execution-blocking (must land in the harness before any decisi
 <a id="track-dynamic-stack-concurrency"></a>
 ## Moved: dynamic-stack-concurrency
 
-Split out 2026-11-10 to [`hybrid-checkpoint-prompt-reuse.md`](hybrid-checkpoint-prompt-reuse.md) (INF-85). No boxes live here.
+Split out 2026-11-10 to [`hybrid-checkpoint-prompt-reuse.md`](hybrid-checkpoint-prompt-reuse.md) (INF-86). No boxes live here.
 
 ## Track: numa-placement-defect-20260730
 <!-- gate: none -->
@@ -4931,10 +4931,10 @@ verdict is the current production shape.
 <a id="track-within-role-placement-state-machine"></a>
 ## Moved: within-role-placement-state-machine
 
-Split out 2026-11-10 to [`dispatch-placement-telemetry.md`](dispatch-placement-telemetry.md) (INF-86). No boxes live here.
+Split out 2026-11-10 to [`dispatch-placement-telemetry.md`](dispatch-placement-telemetry.md) (INF-87). No boxes live here.
 
 ## Track: reboot-gated-inventory-and-staging
-<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-85, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-86, RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->
+<!-- gate: INF-06, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-86, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-87, RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->
 
 > Folded from `handoffs/active/reboot-gated-inventory-and-staging.md` @ `04334af47404` on 2026-11-03 (BRF-T7-F10, route 1b, operator D1/D5; retired row EVL-49 → INF-45). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 
@@ -5467,7 +5467,7 @@ Prepared source validations remain unrun: NIB83 E17 has seven synthetic controls
 NIB77's refreshed 2026-10-21 frozen registration inventory contains **35 retained exact lane paths, 24 with tracked and/or untracked source status entries**. These counts do not identify active, retirable or owned lanes. Native historical PID fields are absent now; current working/compacting/idle and accountable stewardship remain unknown. Default recommendation is retain current custody and all bytes; an explicitly named willing steward is an optional operator choice. No migration, cleanup, deletion, process termination or ownership transfer is authorized. [Current package](../../artifacts/operator/decisions/NIB77-current-custody-20261021/README.md).
 
 ## Track: contention-model-device-and-load-axes-rider
-<!-- gate: INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-85, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-86 -->
+<!-- gate: INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-86, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-87 -->
 
 > Folded from `handoffs/active/contention-model-device-and-load-axes-rider.md` @ `04334af47404` on 2026-11-03 (BRF-T7-F10, route 1b, operator D1/D5; retired row RTG-07 → INF-45). Body moved verbatim, headings demoted two levels to nest under this track; every open and closed box kept its text and ID.
 

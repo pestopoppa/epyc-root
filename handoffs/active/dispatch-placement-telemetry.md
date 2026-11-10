@@ -6,7 +6,7 @@
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/dispatch-placement-telemetry/`
 **Owner**: Autopilot session (workspace-bb)
-**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-86)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-87)
 
 ---
 

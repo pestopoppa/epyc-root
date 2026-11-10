@@ -6,7 +6,7 @@
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
 **Owner**: AutoKernel session (workspace-18)
-**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-85)
+**Parent index**: [`inference-research-index.md`](inference-research-index.md) (row INF-86)
 
 ---
 

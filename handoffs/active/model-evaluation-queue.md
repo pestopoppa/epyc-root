@@ -1417,7 +1417,7 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 - **[declined: ws58 2026-11-03 content-review: a lever-category note, not a task]** **ASR / speech encoder-decoder** (Whisper large-v3-turbo) — conv frontend + bidirectional encoder + cross-attention decoder fits none of the 6 buckets.
 
 ## Track: meq-carve-reboot-gated-inventory-and-staging
-<!-- gate: INF-06#autokernel-research-loop, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-85, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-86, RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->
+<!-- gate: INF-06#autokernel-research-loop, INF-45#numa-placement-and-contention, INF-45#batched-decode-measurement, INF-86, INF-45#numa-placement-defect-20260730, INF-45#shape-keyed-contention-gating, INF-87, RTG-34#coordination-and-churn-pipeline, RTG-34#churn-pipeline, RTG-34#dashboard-architecture-restructure, RTG-34#handoff-index-and-backlog-graph -->
 
 > Carved from `handoffs/active/numa-placement-and-contention.md` (in `reboot-gated-inventory-and-staging.md`, row EVL-49) @ `1879577612a6` on 2026-11-03 (BRF-T1-MEQ, operator D2; carve list `fold-list-1a.json` excluded.meq_carves_left_for_BRF-T1-MEQ). The gate above is that unit's gate, so readiness is unchanged. 1 box(es) moved verbatim with their IDs, in source order.
 
