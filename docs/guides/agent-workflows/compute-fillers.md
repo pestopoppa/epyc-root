@@ -151,3 +151,9 @@ Throughput*.
 - **Since 2026-11-01** the day-to-day form is the churn flow (`backlog-churn-flow.md`): each worker reads
   `compute-flags/BACKLOG-<worker>.md`, clears the non-inference tasks under its blocked rows, prepares the launcher,
   lets the keeper qualify it and moves on. `[unblocks: <ready-id>]` on a task line links it to the row it frees.
+
+## Lessons from 2026-11-10 (AutoKernel)
+
+- **Harness units must stay in the row's process group.** `c11-skinny-det-gpu-20261110-r2` used `skdetjob.py` killpg isolation; at hard-end a GPU child escaped the row's group and held 36.9 GiB from 15:05 to 16:40Z. The keeper saw the VRAM as foreign, dropped the floor's reservation, and the floor r3 drain slipped from a predicted 19:07Z to about 18:35Z. Do not setsid/killpg-isolate a child out of the row's group; the engine's cgroup leaf reaping (deployed by Pipeline) is the backstop, not a licence.
+- **A replay that replays the model's own reply verbatim never enters checkpoint search.** The INF-86 v1 smoke had `attempt_lines=0` because a verbatim reply replay extends the cached prefix exactly. To exercise the hybrid-checkpoint path the harness needs a trimmed-reply divergence (the next request diverges inside the prior reply). Check `attempt_lines > 0` in the smoke before burning a window (`inf86-reprefill-rate-20261110`).
+- **Placement:** CPU rows prefer q0-q2 over q3 (operator, 2026-11-10); gpu-q3 timing rows block while another row holds q3.

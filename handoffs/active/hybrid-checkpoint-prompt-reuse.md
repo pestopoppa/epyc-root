@@ -274,6 +274,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       re-processing` occurrences and `cache_n` per turn.
       **Gate:** a non-trivial rate of forced full re-prefill on ordinary multi-turn traffic makes
       #25592 a v10 candidate ahead of #26004.
+      **Next action (2026-11-10, owner AutoKernel):** row `inf86-reprefill-rate-20261110` published 17:18Z (CPU quarter, 3x16K + 2x64K sessions x 8 turns, trimmed-reply divergence, verdict_by agent). v1 smoke showed verbatim reply replay never enters checkpoint search (`attempt_lines=0`), hence the trimmed-reply design. Tick on the row's verdict.
       **Do not conflate** with the adjacent checkpoint cluster (#24055, #25472 merged, #25592 open,
       #26004): that cluster is entirely **performance** — full re-prefill, lost reuse — and produces
       no wrong output. This row is about reuse rate, not correctness.

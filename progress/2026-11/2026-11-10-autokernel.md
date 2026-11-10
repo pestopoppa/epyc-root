@@ -22,3 +22,25 @@ AK-ADM-1 ticked (`2d60b6670`). AK-RSM-1 partial (`2962c4c6c`). AK-PM-17 partial 
 ## Governance
 
 Operator decision 2026-11-10 "AutoKernel takes all": CH-19, CH-32..CH-37, C8-1-H17 and DF2-BLOCK16 moved from main-inf22 (closed) to autokernel in `kernel-champion-and-promotion.md`. INF-06 Next-action cell refreshed.
+
+## Floor r3 and the r5 chain (evening)
+
+- Floor r3 is queued (rank 2, serving only). The predicted 19:07Z drain start slipped to about 18:35Z.
+- Cause of the slip: from 15:05 to 16:40Z an escaped GPU child, probably from `c11-skinny-det-gpu-20261110-r2`'s hard-end (`skdetjob.py` killpg isolation), held 36.9 GiB, so the keeper dropped the floor's reservation. Fix: Pipeline deployed engine cgroup leaf reaping. Lesson recorded in `docs/guides/agent-workflows/compute-fillers.md` (harness units stay in the row's process group).
+- My GPU rows (bracket, c4-7, race-eqv r5) are gpu-q3 timing rows, blocked because `afc-v3-mild` holds q3. Operator decision: CPU rows prefer q0-q2.
+
+## skinny-det r2
+
+Hard-ended in stage c. Stage a was clean: 0 new fails, 140/140 and 76/76 on both stores, 151 skinny routes each. Stage b never ran. The r3 republish is pending: `launch.sh` has the r2 id baked in and needs a reseal.
+
+## INF-86 (hybrid-checkpoint-prompt-reuse.md)
+
+Now owned by AutoKernel. Row `inf86-reprefill-rate-20261110` published 17:18Z: CPU quarter, 3x16K and 2x64K sessions of 8 turns, trimmed-reply divergence design, verdict_by agent. Lesson: verbatim reply replay never enters checkpoint search (v1 smoke had attempt_lines=0); recorded in `compute-fillers.md`. The (G) #25592 box Next action was updated; box not ticked.
+
+## Ratify package answers (to Pipeline)
+
+Drop the floor-accept C9 script (superseded by C10 floor r3). `ratify2` stays current; the operator dry-runs it first since item C may have drifted.
+
+## Housekeeping
+
+Pipeline removed the dirty worktree `ak-c10-refs2-20261110`; all contents were already on main. Earlier results were filed by a prior audit (`ea2a69982`, `5870a7962`) and are not refiled.
