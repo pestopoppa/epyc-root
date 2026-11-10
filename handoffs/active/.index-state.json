@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-10",
-      "open": 19
+      "open": 16
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1273,10 +1273,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 110,
+      "closed": 113,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 19,
+      "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1289,13 +1289,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 46,
+          "closed": 48,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 4
+          "open": 2
         },
         {
           "blocked": 0,
@@ -1309,13 +1309,13 @@
         },
         {
           "blocked": 0,
-          "closed": 11,
+          "closed": 12,
           "gates": [],
           "guarded": 0,
           "line": 1872,
           "markers": 1,
           "name": "document-parser-table-bench",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1332,7 +1332,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 2619,
+          "line": 2620,
           "markers": 1,
           "name": "searxng-search-backend",
           "open": 1
@@ -1342,7 +1342,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 2988,
+          "line": 2989,
           "markers": 1,
           "name": "sliders-local-validation",
           "open": 0
@@ -1352,7 +1352,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3119,
+          "line": 3120,
           "markers": 1,
           "name": "integrated-aggregation",
           "open": 4
