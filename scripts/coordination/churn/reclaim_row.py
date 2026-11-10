@@ -42,7 +42,7 @@ SCRIPTS = os.path.dirname(os.path.dirname(HERE))
 for _p in (HERE, os.path.join(SCRIPTS, "system"), os.path.join(SCRIPTS, "coordination", "job_templates")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
-import file_result as fr  # noqa: E402
+import filing  # noqa: E402  (the end-record / manifest readers)
 import scratch_guard  # noqa: E402
 import row_worktree as rw  # noqa: E402
 import worktree_gate as wg  # noqa: E402
@@ -250,7 +250,7 @@ def main(argv=None) -> int:
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
-    mp, m = fr.load_manifest(flags, rid)
+    mp, m = filing.load_manifest(flags, rid)
     if not m:
         print(f"REFUSED {rid}: no manifest", file=sys.stderr); return 2
     sr = m.get("scratch_root")
@@ -258,7 +258,7 @@ def main(argv=None) -> int:
     if err:
         print(f"REFUSED {rid}: {err}"); return 6
     root = os.path.normpath(sr)
-    ep, _rc, _line = fr.load_end(flags, rid)
+    ep, _rc, _line = filing.load_end(flags, rid)
     if ep is None:
         print(f"REFUSED {rid}: no end record"); return 2
     done = os.path.join(flags, "filing-done")

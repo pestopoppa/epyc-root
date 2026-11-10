@@ -40,7 +40,10 @@ from pathlib import Path
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(HERE, "..", "..", "champion", "keep_tail"))
-DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+import filing  # noqa: E402  (filing owns the end-record / manifest readers; filing never imports file_result)
+from filing import DEFAULT_FLAGS, end_source, load_end, load_manifest, run_reclaim, smoke_complete_end  # noqa: E402,F401
 OPS = {"<": lambda a, b: a < b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b,
        ">=": lambda a, b: a >= b, "==": lambda a, b: a == b, "!=": lambda a, b: a != b}
 TOKEN = re.compile(r"\s*(?:(?P<num>[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?%?)|(?P<op><=|>=|==|!=|<|>)"
@@ -132,86 +135,6 @@ def evaluate(node, metrics, values):
     a = evaluate(node[1], metrics, values)
     b = evaluate(node[2], metrics, values)
     return (a and b) if node[0] == "and" else (a or b)
-
-
-def load_manifest(flags, rid):
-    # ready/.withdrawn/ too: glob's * skips dot-dirs, and a superseded predecessor must stay fileable (2026-11-05)
-    for p in ([os.path.join(flags, "ready", rid + ".json")] + sorted(glob.glob(os.path.join(flags, "ready", "*", rid + ".json")))
-              + [os.path.join(flags, "ready", ".withdrawn", rid + ".json")]):
-        if os.path.isfile(p):
-            with open(p) as fh:
-                return p, json.load(fh)
-    # A complete-in-smoke row is deliberately removed from READY. Accept its
-    # archived manifest only with the matching completed-smoke receipt and
-    # terminal grant, never an unpublished/failed qualification manifest.
-    archive = os.path.join(flags, "dryrun", rid, "completed-manifest.json")
-    receipt = os.path.join(flags, "dryrun", rid, "PASS.json")
-    complete = os.path.join(flags, "grants", rid + ".complete")
-    try:
-        with open(archive) as fh:
-            m = json.load(fh)
-        with open(receipt) as fh:
-            p = json.load(fh)
-        if ((os.path.isfile(complete) or smoke_complete_end(flags, rid)) and isinstance(m, dict) and isinstance(p, dict)
-                and m.get("schema") == "epyc.row.v3" and m.get("id") == rid
-                and p.get("id") == rid and p.get("job_complete") is True
-                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("launcher_sha256") or ""))
-                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("engine_sha256") or ""))
-                and (m.get("launcher") or {}).get("sha256") == p["launcher_sha256"]
-                and (m.get("engine") or {}).get("sha256") == p["engine_sha256"]
-                and m.get("result_format") == p.get("result_format")):
-            return archive, m
-    except (OSError, ValueError, TypeError, AttributeError):
-        pass
-    return None, None
-
-
-def smoke_complete_end(flags, rid):
-    """2026-11-10: a dry-run smoke that completed the WHOLE job (publish_row.file_if_complete) leaves
-    dryrun/<id>/{complete,ended,completed-manifest.json,completed-smoke-filing.json} and a PASS.json with
-    job_complete=true. When the grants/<id>.ended copy is missing, dryrun/<id>/ended IS the end record.
-    A failed smoke (no complete / no job_complete) or a smoke still in flight (no ended) never qualifies."""
-    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", str(rid)):
-        return None
-    dd = os.path.join(flags, "dryrun", rid)
-    if not all(os.path.isfile(os.path.join(dd, n)) for n in
-               ("complete", "ended", "completed-manifest.json", "completed-smoke-filing.json", "PASS.json")):
-        return None
-    try:
-        with open(os.path.join(dd, "PASS.json")) as fh:
-            p = json.load(fh)
-        with open(os.path.join(dd, "completed-smoke-filing.json")) as fh:
-            r = json.load(fh)
-        with open(os.path.join(dd, "ended"), errors="replace") as fh:
-            line = fh.readline()
-    except (OSError, ValueError):
-        return None
-    if not (isinstance(p, dict) and p.get("id") == rid and p.get("job_complete") is True
-            and isinstance(r, dict) and r.get("id") == rid and re.search(r"\brc=0\b", line)):
-        return None
-    return os.path.join(dd, "ended")
-
-
-def end_source(path):
-    """'smoke-complete' when the end record came from dryrun/<id>/ended, else 'grant'."""
-    return "smoke-complete" if path and os.path.basename(os.path.dirname(os.path.dirname(path))) == "dryrun" else "grant"
-
-
-def load_end(flags, rid):
-    # An existing grants/<id>.ended|.complete always takes precedence over the smoke-complete fallback.
-    for suf in (".ended", ".complete"):
-        p = os.path.join(flags, "grants", rid + suf)
-        if os.path.isfile(p):
-            with open(p, errors="replace") as fh:
-                line = fh.readline().strip()
-            m = re.search(r"\brc=(\d+)", line)
-            return p, (int(m.group(1)) if m else (0 if suf == ".complete" else None)), line
-    p = smoke_complete_end(flags, rid)
-    if p:
-        with open(p, errors="replace") as fh:
-            line = fh.readline().strip()
-        return p, 0, line
-    return None, None, ""
 
 
 def load_result(path, fmt):
@@ -323,21 +246,6 @@ def handoff_path(lane, hpath):
     return target
 
 
-def run_reclaim(argv):
-    """Call reclaim_row.main(argv); any exception or non-zero exit prints RECLAIM-ERROR, never raises."""
-    try:
-        if HERE not in sys.path:
-            sys.path.insert(0, HERE)
-        import reclaim_row
-        code = reclaim_row.main(argv)
-        if code:
-            print(f"RECLAIM-ERROR {argv[0]}: reclaim_row exit {code}")
-        return code
-    except BaseException as e:  # noqa: BLE001 — SystemExit from argparse too
-        print(f"RECLAIM-ERROR {argv[0]}: {type(e).__name__}: {e}")
-        return -1
-
-
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("row_id")
@@ -360,7 +268,6 @@ def main(argv=None):
     ap.add_argument("--owner", help="with --no-manifest: the owner recorded on the filing")
     a = ap.parse_args(argv)
     rid, flags = a.row_id, a.flags
-    import filing
     if filing.is_filed(flags, rid):
         print(f"NOOP {rid}: already FILED ({filing.filed_path(flags, rid)})"); return 0
     if a.no_manifest:

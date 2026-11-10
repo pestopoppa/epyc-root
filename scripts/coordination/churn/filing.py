@@ -11,7 +11,9 @@ the rowflow alert and treat that as done, file_result.py never runs, filing-done
   supersede_lineage(flags, new_id|None, ...)  every earlier ended-unfiled attempt of the lineage -> SUPERSEDED-BY <later id>;
                                              new_id=None is the one-time backfill over all lineages.
   autolink(flags, repo, ...)                  janitor sweep: ONE verified origin/main commit per ended-unfiled row -> FILED.
-Stdlib only. Filing never deletes; reclaim is file_result.run_reclaim -> reclaim_row (guarded by scratch_guard.py).
+  load_manifest / load_end                    THE readers of a row's manifest and end record (file_result, auto_file and
+                                             reclaim_row import them from here; filing never imports file_result).
+Stdlib only. Filing never deletes; reclaim is run_reclaim -> reclaim_row (guarded by scratch_guard.py).
 """
 from __future__ import annotations
 
@@ -33,8 +35,7 @@ try:
 except ImportError:  # repo checkout: scripts/coordination/handoff_ref.py
     sys.path.insert(0, os.path.dirname(HERE))
     import handoff_ref  # noqa: E402
-import file_result as _fr0  # noqa: E402  (the one definition of the live flags root; filing.py itself names no scratch root)
-DEFAULT_FLAGS = _fr0.DEFAULT_FLAGS
+DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")   # the one definition of the live flags root
 TERMINAL_VERDICTS = ("SUPERSEDED", "WITHDRAWN")
 BOX_LINE = re.compile(r"^\s*[-*]\s+\[[ xX~!-]\]\s")
 BOX_ID = re.compile(r"\*\*([A-Za-z0-9][\w.\-]*)\*\*")   # a box id is the first **bold** token of the box line
@@ -198,35 +199,136 @@ def attempt_key(rid, m):
     return (int(mm.group(1)) if mm else 0, str((m or {}).get("published_at") or ""), rid)
 
 
+# ---------------------------------------------------------------- the end-record / manifest readers (pipeline audit 2026-11-10 #7)
+def load_manifest(flags, rid):
+    # ready/.withdrawn/ too: glob's * skips dot-dirs, and a superseded predecessor must stay fileable (2026-11-05)
+    for p in ([os.path.join(flags, "ready", rid + ".json")] + sorted(glob.glob(os.path.join(flags, "ready", "*", rid + ".json")))
+              + [os.path.join(flags, "ready", ".withdrawn", rid + ".json")]):
+        if os.path.isfile(p):
+            with open(p) as fh:
+                return p, json.load(fh)
+    # A complete-in-smoke row is deliberately removed from READY. Accept its
+    # archived manifest only with the matching completed-smoke receipt and
+    # terminal grant, never an unpublished/failed qualification manifest.
+    archive = os.path.join(flags, "dryrun", rid, "completed-manifest.json")
+    receipt = os.path.join(flags, "dryrun", rid, "PASS.json")
+    complete = os.path.join(flags, "grants", rid + ".complete")
+    try:
+        with open(archive) as fh:
+            m = json.load(fh)
+        with open(receipt) as fh:
+            p = json.load(fh)
+        if ((os.path.isfile(complete) or smoke_complete_end(flags, rid)) and isinstance(m, dict) and isinstance(p, dict)
+                and m.get("schema") == "epyc.row.v3" and m.get("id") == rid
+                and p.get("id") == rid and p.get("job_complete") is True
+                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("launcher_sha256") or ""))
+                and re.fullmatch(r"[0-9a-f]{64}", str(p.get("engine_sha256") or ""))
+                and (m.get("launcher") or {}).get("sha256") == p["launcher_sha256"]
+                and (m.get("engine") or {}).get("sha256") == p["engine_sha256"]
+                and m.get("result_format") == p.get("result_format")):
+            return archive, m
+    except (OSError, ValueError, TypeError, AttributeError):
+        pass
+    return None, None
+
+
+def smoke_complete_end(flags, rid):
+    """DEPRECATED (pipeline audit 2026-11-10 #7): read-only fallback for rows already on disk. publish_row.file_if_complete
+    writes grants/<id>.ended + .complete (the engine's one end record), so a new row never needs this; it stays only for a
+    smoke-completed row whose grants/ copy is missing. A dry-run smoke that completed the WHOLE job (publish_row.file_if_complete) leaves
+    dryrun/<id>/{complete,ended,completed-manifest.json,completed-smoke-filing.json} and a PASS.json with
+    job_complete=true. When the grants/<id>.ended copy is missing, dryrun/<id>/ended IS the end record.
+    A failed smoke (no complete / no job_complete) or a smoke still in flight (no ended) never qualifies."""
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", str(rid)):
+        return None
+    dd = os.path.join(flags, "dryrun", rid)
+    if not all(os.path.isfile(os.path.join(dd, n)) for n in
+               ("complete", "ended", "completed-manifest.json", "completed-smoke-filing.json", "PASS.json")):
+        return None
+    try:
+        with open(os.path.join(dd, "PASS.json")) as fh:
+            p = json.load(fh)
+        with open(os.path.join(dd, "completed-smoke-filing.json")) as fh:
+            r = json.load(fh)
+        with open(os.path.join(dd, "ended"), errors="replace") as fh:
+            line = fh.readline()
+    except (OSError, ValueError):
+        return None
+    if not (isinstance(p, dict) and p.get("id") == rid and p.get("job_complete") is True
+            and isinstance(r, dict) and r.get("id") == rid and re.search(r"\brc=0\b", line)):
+        return None
+    return os.path.join(dd, "ended")
+
+
+def end_source(path):
+    """'smoke-complete' when the end record came from dryrun/<id>/ended, else 'grant'."""
+    return "smoke-complete" if path and os.path.basename(os.path.dirname(os.path.dirname(path))) == "dryrun" else "grant"
+
+
+def load_end(flags, rid):
+    # An existing grants/<id>.ended|.complete always takes precedence over the smoke-complete fallback.
+    for suf in (".ended", ".complete"):
+        p = os.path.join(flags, "grants", rid + suf)
+        if os.path.isfile(p):
+            with open(p, errors="replace") as fh:
+                line = fh.readline().strip()
+            m = re.search(r"\brc=(\d+)", line)
+            return p, (int(m.group(1)) if m else (0 if suf == ".complete" else None)), line
+    p = smoke_complete_end(flags, rid)
+    if p:
+        with open(p, errors="replace") as fh:
+            line = fh.readline().strip()
+        return p, 0, line
+    return None, None, ""
+
+
+def run_reclaim(argv):
+    """Call reclaim_row.main(argv); any exception or non-zero exit prints RECLAIM-ERROR, never raises."""
+    try:
+        import reclaim_row
+        code = reclaim_row.main(argv)
+        if code:
+            print(f"RECLAIM-ERROR {argv[0]}: reclaim_row exit {code}")
+        return code
+    except BaseException as e:  # noqa: BLE001 — SystemExit from argparse too
+        print(f"RECLAIM-ERROR {argv[0]}: {type(e).__name__}: {e}")
+        return -1
+
+
+def smoke_complete_ids(flags):
+    """DEPRECATED fallback (see smoke_complete_end): smoke-completed rows whose end record is dryrun/<id>/ended."""
+    out = []
+    for d in glob.glob(os.path.join(flags, "dryrun", "*", "completed-smoke-filing.json")):
+        rid = os.path.basename(os.path.dirname(d))
+        ep = smoke_complete_end(flags, rid)
+        if ep:
+            out.append((rid, ep))
+    return out
+
+
 def ended_unfiled(flags):
-    """ids with grants/<id>.ended|.complete and no FILED."""
+    """ids with grants/<id>.ended|.complete (or the deprecated smoke-complete fallback) and no FILED."""
     ids = set()
     for suf in (".ended", ".complete"):
         for p in glob.glob(os.path.join(flags, "grants", "*" + suf)):
             ids.add(os.path.basename(p)[:-len(suf)])
-    import file_result as fr
-    for d in glob.glob(os.path.join(flags, "dryrun", "*", "completed-smoke-filing.json")):
-        rid = os.path.basename(os.path.dirname(d))
-        if fr.smoke_complete_end(flags, rid):
-            ids.add(rid)
+    ids.update(rid for rid, _ in smoke_complete_ids(flags))
     return sorted(i for i in ids if not is_filed(flags, i) and not i.startswith("."))
 
 
 def _end_info(flags, rid):
-    import file_result as fr
-    return fr.load_end(flags, rid)
+    return load_end(flags, rid)
 
 
 def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answer=None, reclaim=True,
                   no_reclaim_globs=(), dry_run=False, log=print):
     """FILE rid as SUPERSEDED or WITHDRAWN. -> 'FILED' | 'NOOP' (already filed) | 'SKIP:<why>'."""
-    import file_result as fr
     verdict = verdict.upper()
     assert verdict in TERMINAL_VERDICTS
     if is_filed(flags, rid):
         return "NOOP"
-    mp, m = fr.load_manifest(flags, rid)
-    ep, rc, endline = fr.load_end(flags, rid)
+    mp, m = load_manifest(flags, rid)
+    ep, rc, endline = load_end(flags, rid)
     if not m or ep is None:
         return "SKIP:no manifest or end record"
     if dry_run:
@@ -236,8 +338,8 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
            "at": now_iso(), "outcome_class": "NO-RESULT", "phase": "filing", "compute_burned": rc == 0, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": verdict.lower(), "result": verdict, "superseded_by": superseded_by},
            "row_verdict": verdict, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
-           "end_record": ep, "source": fr.end_source(ep), "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
-    summary = f"FILED {rid}: {verdict}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "") + f" rc={rc} by={by}" + (" source=smoke-complete" if fr.end_source(ep) == "smoke-complete" else "") + (f" ({note})" if note else "")
+           "end_record": ep, "source": end_source(ep), "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
+    summary = f"FILED {rid}: {verdict}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "") + f" rc={rc} by={by}" + (" source=smoke-complete" if end_source(ep) == "smoke-complete" else "") + (f" ({note})" if note else "")
     if not write_filed(flags, rid, summary, rec):
         return "NOOP"
     log(summary)
@@ -245,7 +347,7 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
     if reclaim and pinned:
         log(f"RECLAIM-SKIPPED-SHARED {rid}: operator-named shared scratch ({pinned}); filed without reclaim")
     elif reclaim:
-        fr.run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
+        run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
     return "FILED"
 
 
@@ -259,15 +361,14 @@ def file_legacy_no_manifest(flags, rid, verdict, *, owner, by, note="", supersed
     FILED *text* (first line) and the .verdict.json it parses: credit needs a SCIENCE/PARTIAL/DIAGNOSTIC class with a native
     sha (absent here), and the literal token FAILED-RUN in the FILED text can DEBIT the owner via legacy_failed, so that token
     is scrubbed from the note/summary. Never reclaims."""
-    import file_result as fr
     if is_filed(flags, rid):
         return "NOOP"
     if not str(owner or "").strip():
         return "REFUSED:--owner is required with --no-manifest"
-    mp, m = fr.load_manifest(flags, rid)
+    mp, m = load_manifest(flags, rid)
     if m:
         return f"REFUSED:a manifest exists ({mp}); --no-manifest is only for rows that never had one"
-    ep, rc, endline = fr.load_end(flags, rid)
+    ep, rc, endline = load_end(flags, rid)
     if ep is None:
         return "REFUSED:no grants/<id>.ended|.complete end record"
     v = str(verdict)
@@ -287,7 +388,7 @@ def file_legacy_no_manifest(flags, rid, verdict, *, owner, by, note="", supersed
            "verdict": {"status": "filed", "kind": v.lower() if v in TERMINAL_VERDICTS else "legacy", "result": v,
                        "superseded_by": superseded_by},
            "row_verdict": v, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
-           "end_record": ep, "source": fr.end_source(ep), "handoff_task": None, "manifest": None, "legacy_no_manifest": True, "filed_by": by, "reason": note,
+           "end_record": ep, "source": end_source(ep), "handoff_task": None, "manifest": None, "legacy_no_manifest": True, "filed_by": by, "reason": note,
            "machine_checkable": False}
     summary = (f"FILED {rid}: {v}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "")
                + f" rc={rc} legacy-no-manifest owner={owner} by={by}" + (f" ({note})" if note else ""))
@@ -476,11 +577,10 @@ def check_scope(repo, commit, m, handoff):
 def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, by="file_result --receipt", reclaim=True,
                  fetch=True, log=print):
     """Path 1. -> (code, msg). code: 0 filed, 1 noop (already FILED), 2 refused."""
-    import file_result as fr
     if is_filed(flags, rid):
         return 1, f"NOOP {rid}: already FILED"
-    mp, m = fr.load_manifest(flags, rid)
-    ep, rc, endline = fr.load_end(flags, rid)
+    mp, m = load_manifest(flags, rid)
+    ep, rc, endline = load_end(flags, rid)
     if not m or ep is None:
         return 2, f"REFUSED {rid}: no manifest or no end record"
     mans = load_all_manifests(flags)
@@ -503,7 +603,7 @@ def file_receipt(flags, rid, receipt, *, repo, verdict="RECEIPT", answer=None, b
         return 1, f"NOOP {rid}: already FILED"
     log(summary)
     if reclaim:
-        fr.run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
+        run_reclaim([rid, "--flags", flags, "--apply", "--pre-filed"])
     return 0, summary
 
 

@@ -84,7 +84,8 @@ class AutoFile(unittest.TestCase):
         self.assertEqual([r["id"] for r in q], ["r-prose"])
         self.assertEqual(self.run_pass()["queued"], [])
         alerts = [json.loads(l) for l in open(os.path.join(self.flags, "rowflow-alerts.jsonl"))]
-        self.assertEqual([a["kind"] for a in alerts], ["filing-owner-less"])
+        # one filing-due alert to the (dead) owner (8b8f0fe54) and one owner-less queue alert; neither repeats
+        self.assertEqual([a["kind"] for a in alerts], ["filing-due", "filing-owner-less"])
 
     def test_prose_rule_owner_live_left_to_owner(self):
         self.row("r-live", "owner judges", owner="h-live")

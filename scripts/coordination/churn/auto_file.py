@@ -12,12 +12,13 @@ For every unfiled run in filing-due.jsonl (grants/<id>.ended|.complete, no filin
     filer's queue: it files with `file_result.py <id> --verdict-json V`) and ONE alarm per newly queued batch.
 Each run is attempted once (filing-autofile.state.json); never writes .FILED/.verdict.json itself; kills nothing.
 """
-import glob, argparse, datetime, json, os, subprocess, sys, time
+import argparse, datetime, json, os, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(os.path.dirname(HERE), "rowflow"))
 import file_result  # noqa: E402
+import filing  # noqa: E402  (the end-record / manifest readers)
 
 DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
 DEFAULT_BUS = os.environ.get("FILING_WATCH_BUS_ROOT", "/workspace/coordination/session-bus")
@@ -110,11 +111,9 @@ def due_rows(flags):
                     seen.setdefault(r["id"], r)
     except OSError:
         pass
-    # filing_watch.sh only scans grants/; a smoke that completed the whole job may have no grants/<id>.ended copy.
-    for d in glob.glob(os.path.join(flags, "dryrun", "*", "completed-smoke-filing.json")):
-        rid = os.path.basename(os.path.dirname(d))
-        ep = rid not in seen and file_result.smoke_complete_end(flags, rid)
-        if ep and not os.path.exists(os.path.join(flags, "grants", rid + ".ended")):
+    # filing_watch.sh only scans grants/; DEPRECATED fallback for an on-disk smoke-completed row with no grants/ copy
+    for rid, ep in filing.smoke_complete_ids(flags):
+        if rid not in seen and not os.path.exists(os.path.join(flags, "grants", rid + ".ended")):
             seen[rid] = {"id": rid, "ended_file": ep, "source": "smoke-complete"}
     return list(seen.values())
 
@@ -142,8 +141,8 @@ def run_pass(flags, bus_root, dry_run=False, owner_age_s=1800, min_age_s=1200, n
         if rid in state or rid in queued:
             # already attempted/queued: the owner still gets its single filing-due alert (dedup is notify.emit's marker)
             continue
-        mp, m = file_result.load_manifest(flags, rid)
-        ep, _rc, _line = file_result.load_end(flags, rid)
+        mp, m = filing.load_manifest(flags, rid)
+        ep, _rc, _line = filing.load_end(flags, rid)
         if not m or not ep:
             report["skipped"].append(rid); continue  # file_result.py would refuse (exit 2); the alarm owns these
         rule, owner = m.get("decision_rule"), str(m.get("owner") or "")

@@ -551,8 +551,10 @@ def file_if_complete(flags, rid, row):
                 with open(dest) as f:
                     txt = f.read()
             else:
-                txt = (f"rc=0 reason=complete-in-smoke time={rf.now_iso()}\n" if term == "ended"
-                       else f"complete time={rf.now_iso()} id={rid} via=smoke\n")
+                # the engine's own end-record format (filler_run15.sh: `rc=N time=T reason=R`, `complete time=T id=ID`):
+                # grants/<id>.ended + .complete are THE end record a smoke-completed row leaves, as a granted run does
+                txt = (f"rc=0 time={rf.now_iso()} reason=complete-in-smoke\n" if term == "ended"
+                       else f"complete time={rf.now_iso()} id={rid}\n")
             if os.path.exists(dest):
                 with open(dest) as f:
                     rf.need(f.read() == txt, "existing completed-smoke terminal differs")
