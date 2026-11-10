@@ -3124,17 +3124,20 @@ Design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../d
   verification record committed**; 10 original single-fact questions for P-large and 10 for P-small; M1-M5 and
   the kill gate predeclared as in the design doc §(c). Done when the frozen set, verification record
   and rules file have sha256s recorded here; an unverified question is excluded, not assumed.
+  - Progress 2026-11-10 (not ticked): build landed in epyc-inference-research `7651a8c2c` (question set, gold review sheet, predeclared gate, runner skeleton); all 10 PDFs now present and sha256-pinned in `corpus.json`. DRAFT golds (facts_sheet 76/80 cells filled, `verified: false`, 20 aggregation golds derived, 5/5 FinanceBench anchors agree) are on research branch `agg0/gold-draft-20261110` (`005950d9d`, NOT main); awaiting operator hand-verification, then merge. [no-belief: draft awaiting verification, no measurement]
 - [ ] **AGG-0.2 — Corpus store + deterministic layers over the existing parse (no compute).** Persist
   `DocumentPreprocessResult` under content hash; L1 BM25 and L2 index registry keyed (corpus, hash, builder,
   model); L3 `facts` from `DocumentPreprocessResult.tables` + regex spans; catalog→GBNF SQL grammar; tests with a
   fake backend. Done when the 10 parsed docs load once and every layer reads the same store, L3-only M1 is
   reported (informational), and out-of-catalog SQL is rejected by the grammar.
+  - Progress 2026-11-10 (not ticked): code landed in epyc-orchestrator `e4e727ae` (store, registry, L3 facts, SQL grammar; flag-off, 11 unit tests pass). Still open: the 10 parsed docs loading once into the store and the L3-only M1 report (needs verified golds). [no-belief: code landed, no measurement]
 - [ ] **AGG-0.3 — Planner and lazy L4 (no compute beyond a smoke).** Typed planner (Choice over paths + Score,
   deterministic size rules outside the ambiguous band, `decision_receipt.v1`), L4a-d with cached prefix,
   `pin_slot`, `n_predict` cap, quote check, native-catalogue reconcile, 27B audit sample, per-stage
   `cache_n`/prefill receipts; planner skipped (no LLM) when C ≤ 60k and Q = 1. Done when a fake-backend run
   produces facts end to end, the small-corpus path builds no L2-L4 index, and the job writes numeric per-stage
   records early.
+  - Progress 2026-11-10 (not ticked): planner + lazy L4 landed in epyc-orchestrator `e4e727ae` (fake-backend end to end and small-corpus-no-index tests pass). Still open: the job writing numeric per-stage records early (receipts are in-memory only). [no-belief: code landed, no measurement]
 - [ ] **AGG-0.4 — Phase-0 run (one CPU quarter + one MI210 window, normal grants).** P-large ingest on
   worker_general with M1 and the M5 manifest check computed before the GPU window is requested; then audit, the
   30 P-large questions, B1 on 30, B2 on 5, P-small and B-today on 10. Done when M1-M5 and all arms are filed with
