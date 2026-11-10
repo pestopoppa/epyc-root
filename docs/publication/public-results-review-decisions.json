@@ -12,5 +12,74 @@
       "reason": "no contemporaneous attestation binding the historical claim to its run; reconsider with a valid evidence bundle or a separately attested rerun"
     }
   },
-  "rows": {}
+  "rows": {
+    "171": {
+      "decision": "retired_from_public_claims",
+      "reason": "rejected candidate on a retired model; no metric (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "172": {
+      "decision": "retired_from_public_claims",
+      "reason": "rejected candidate on a retired model; no metric (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "974": {
+      "decision": "retired_from_public_claims",
+      "reason": "MoE6 frontdoor 47.11 t/s has no raw evidence; retired recipe (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "975": {
+      "decision": "retired_from_public_claims",
+      "reason": "MoE4 17.7 t/s matches no banked run (22.0/28.4/25.9); retired recipe (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "976": {
+      "decision": "retired_from_public_claims",
+      "reason": "raw is a third-party abliterated quant (misattribution risk); quality 89% unsourced (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "977": {
+      "decision": "retired_from_public_claims",
+      "reason": "speed duplicates row 46; quality 86% unsourced (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "359": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "360": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "361": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "362": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "363": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "364": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "365": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "366": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "367": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "368": {
+      "decision": "retired_from_public_claims",
+      "reason": "dense spec-decode K-sweep: raw deleted 2026-01-15 for the ~28x server timing bug; no banked raw (INF-85 W3 adjudication 2026-11-10, docs/publication/public-results-adjudication-20261110.md)"
+    },
+    "170": {
+      "decision": "retired_from_public_claims",
+      "reason": "E0 concurrent sweep on a retired frontdoor model; a current-lineup np sweep would be a different claim, not a rerun of this row (INF-85 W3 adjudication 2026-11-10)"
+    }
+  }
 }
