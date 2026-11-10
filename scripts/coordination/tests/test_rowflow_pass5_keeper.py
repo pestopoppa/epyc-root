@@ -49,22 +49,6 @@ class AlarmChannel(unittest.TestCase):
         m = load_copy(tempfile.mkdtemp())
         self.assertTrue(os.path.isfile(m.ALARM_CHANNEL), f"87 escalations were dropped on this: {m.ALARM_CHANNEL}")
 
-    def test_negative_control_fallback_off_is_the_dead_path(self):
-        d = tempfile.mkdtemp()
-        text = open(os.path.join(RF_DIR, "rowflow.py")).read().replace("ALARM_CHANNEL_FALLBACK = True", "ALARM_CHANNEL_FALLBACK = False")
-        os.makedirs(os.path.join(d, "bin", "rowflow"))
-        for f in os.listdir(RF_DIR):
-            if f.endswith(".py") and f != "rowflow.py":
-                shutil.copy(os.path.join(RF_DIR, f), os.path.join(d, "bin", "rowflow"))
-        open(os.path.join(d, "bin", "rowflow", "rowflow.py"), "w").write(text)
-        sys.path.insert(0, os.path.join(d, "bin", "rowflow"))
-        try:
-            spec = importlib.util.spec_from_file_location("rf_nofb", os.path.join(d, "bin", "rowflow", "rowflow.py"))
-            m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-        finally:
-            sys.path.remove(os.path.join(d, "bin", "rowflow"))
-        self.assertFalse(os.path.isfile(m.ALARM_CHANNEL))
-
     def test_env_override_wins(self):
         os.environ["ROWFLOW_ALARM_CHANNEL"] = "/x/y.py"
         self.assertEqual(rf._alarm_channel_path(), "/x/y.py")
@@ -90,16 +74,6 @@ class Underused(unittest.TestCase):
         out, lines = self.run_underused({"q1": "c1"})
         self.assertEqual([(r, rid) for r, rid, _ in out], [("q1", "c1")])
 
-    def test_negative_control_flag_off_flags_gpu_grant(self):
-        old = rf.UNDERUSED_SKIP_GPU
-        rf.UNDERUSED_SKIP_GPU = False
-        try:
-            out, lines = self.run_underused({rf.GPU: "g1"}, vram=0)
-        finally:
-            rf.UNDERUSED_SKIP_GPU = old
-        self.assertTrue([l for l in lines if l.startswith("UNDERUSED")], "the pre-fix keeper flags a quiet-VRAM GPU grant")
-
-
 class LogTransition(unittest.TestCase):
     """Items 3 and 4: the same helper backs IDLE-HELD and WAIT-FOR-SMOKE."""
     def ticks(self, kind, seq):
@@ -115,14 +89,6 @@ class LogTransition(unittest.TestCase):
 
     def test_change_and_return_log_again(self):
         self.assertEqual(self.ticks("wait-for-smoke", [["a"], ["a"], ["a", "b"], [], ["a"]]), ["a", "b", "a"])
-
-    def test_negative_control_flag_off_logs_every_tick(self):
-        old = rf.LOG_ON_TRANSITION
-        rf.LOG_ON_TRANSITION = False
-        try:
-            self.assertEqual(len(self.ticks("idle-held", [["a"]] * 6)), 6)
-        finally:
-            rf.LOG_ON_TRANSITION = old
 
     def test_wait_for_smoke_two_ticks_same_queue_one_line(self):
         flags = tempfile.mkdtemp()

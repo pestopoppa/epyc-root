@@ -660,3 +660,35 @@ was killed); (3) two subagents left background work running and reported neither
 
 Remedy: after a hook block, re-read the form the hook prescribes and use exactly that; capture PIDs at launch
 and report them, or do not background; a brief must say "no background work" or require its PID in the report.
+
+## INC-20261110-rowflow-switches
+
+Provenance record for the keeper switches and inline incident tags removed from `rowflow.py` by the 2026-11-10 pipeline
+audit (finding #9, operator scope "Safe cleanups first"). Twelve module booleans were all `True`; each kept a dead
+pre-fix branch alive and nine were flipped from tests, which pinned the dead code. They were deleted with their
+`False` branches (behaviour unchanged; the replay gate's scenarios still run, only their flag-off negative controls
+went). Origins, for anyone reading old logs or commits:
+
+| Switch | Origin | Rule now unconditional |
+|---|---|---|
+| `FRESH_ATTEMPT_ON_SHA_CHANGE` | operator 2026-11-06 | a new launcher/job sha gives a parked lineage ONE fresh attempt |
+| `PRECOND_PARK_ONCE` | friction Pass 4 fix 1 (2026-11-06; kpf50/kpf41: 171 refusals, 171 alerts) | a `--precond-cmd` refusal parks at the first refusal |
+| `OVERRIDE_BOOKS_WIDTH` | emergency 2026-11-06 (r4-pca: multi-quarter(2) granted q1 only) | an accepted `shape_override` books the declared width |
+| `WIDTH_JUSTIFICATION` | operator 2026-11-06 | a justified multi-quarter CPU width is admitted without `shape_override` |
+| `GPU_IDLE_BY_DEVICE` | friction Pass 4 fix 3 (43/72 false IDLE flags were GPU rows) | a GPU-token grant is idle by KFD clients + device busy %, never CPU % |
+| `UNDERUSED_SKIP_GPU` | Pass 5 item 2 (2026-11-07) | `underused()` skips grants holding the GPU token |
+| `LOG_ON_TRANSITION` | Pass 5 items 3-4 (2026-11-07) | IDLE-HELD / WAIT-FOR-SMOKE log on transition only |
+| `BACKFILL_IF_FITS` | operator 2026-11-07 (port of rowflow2 59f09b81e) | a drain reserves only until its earliest feasible start; an expired T never blocks |
+| `DRAIN_BY_ESTIMATE` | keeper audit 2026-11-10 fix 2 (MI210 idle 04:33-06:38Z behind a drain) | backfill admitted by estimate + margin, grant end capped at T |
+| `ENGINE_SNAPSHOT` | operator 2026-11-07 "no-hold deploys" | `arm_one` snapshots the engine set; deploy-guard blocks only legacy grants |
+| `SMOKE_FILL_FIRST` | keeper audit 2026-11-10 fix 8 | queued smokes whose row could fill an idle region go first |
+| `ALARM_CHANNEL_FALLBACK` | Pass 5 item 1 (2026-11-07; 87 escalations dropped) | the deployed keeper falls back to the repo's `alarm_channel.py` |
+
+Also removed: `DRAIN_UNKNOWN_S` (only the pre-`BACKFILL_IF_FITS` branch read it). Inline provenance tags dropped from
+comments whose text still explains the code: "fix 1/2/3" (friction Pass 4, 2026-11-06), "Pass 5 item N" (2026-11-07),
+"keeper-hotfix 2026-11-05 (A/D9/D10/D14)" and "keeper audit 2026-11-10 fix 3/4"; the pass write-ups are in
+`docs/reports/coordination/keeper-friction-review-20261105.md`. `COMPLETE_BEFORE_RC14` keeps its flag and negative
+control.
+
+Remedy: a new keeper rule lands without a kill switch unless a replay negative control needs one, and the
+provenance goes here or in the commit message, not inline.

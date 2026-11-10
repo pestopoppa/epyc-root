@@ -47,17 +47,10 @@ class SmokeFillOrder(unittest.TestCase):
         free = free_minus("q0", "q1", "q3") | {f"c{n}" for n in range(20, 24)} | {f"t{n}" for n in range(116, 120)}
         self.assertEqual(self.order(free)[0], "new-q2")
 
-    def test_fifo_kept_without_fill_signal_and_with_knob_off(self):
+    def test_fifo_kept_without_fill_signal(self):
         self.queue("a", "0-23", "2026-11-10T00:00Z")
         self.queue("b", "48-71", "2026-11-10T01:00Z")
         self.assertEqual(self.order(ALL), ["a", "b"])   # both fill: FIFO
-        old = rf.SMOKE_FILL_FIRST
-        try:
-            rf.SMOKE_FILL_FIRST = False
-            free = free_minus("q0", "q1", "q3") | {f"c{n}" for n in range(20, 24)}
-            self.assertEqual(self.order(free)[0], "a")
-        finally:
-            rf.SMOKE_FILL_FIRST = old
 
 
 if __name__ == "__main__":

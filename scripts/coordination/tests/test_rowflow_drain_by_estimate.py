@@ -34,12 +34,6 @@ T = NOW + 2 * H
 
 
 class DrainByEstimate(unittest.TestCase):
-    def setUp(self):
-        self._flag = rf.DRAIN_BY_ESTIMATE
-
-    def tearDown(self):
-        rf.DRAIN_BY_ESTIMATE = self._flag
-
     def run_plan(self, rows):
         return rf.plan(FREE, rows, 1000, now=NOW, grant_ends=[T], region_ends=ends(T))
 
@@ -48,12 +42,6 @@ class DrainByEstimate(unittest.TestCase):
         self.assertEqual({c["id"] for c, _ in a}, {"race-eqv-gpu-r3"})
         self.assertEqual(rf.plan.last_drain[1], T)
         self.assertEqual(rf.plan.hard_end, {"race-eqv-gpu-r3": T})
-
-    def test_window_rule_negative_control_keeps_it_out(self):
-        rf.DRAIN_BY_ESTIMATE = False
-        a, idle, _ = self.run_plan([wide(), cand("race-eqv-gpu-r3", [{rf.GPU}])])
-        self.assertEqual(a, [])
-        self.assertIn("draining for quiet-host drain-host", idle[rf.GPU])
 
     def test_estimate_plus_margin_past_T_waits(self):
         # 1.8 h estimate + 25% margin = 2.25 h > 2 h to T

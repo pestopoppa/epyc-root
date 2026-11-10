@@ -88,17 +88,6 @@ class BackfillIfFits(unittest.TestCase):
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 2 * H)
         self.assertEqual(ids(a), set())
 
-    def test_negative_control_old_rule_keeps_expired_drain(self):
-        """BACKFILL_IF_FITS off (the pre-fix keeper): a persisted T in the past blocks every backfill."""
-        old = rf.BACKFILL_IF_FITS
-        rf.BACKFILL_IF_FITS = False
-        try:
-            rows = [wide(), cand("q2-3h", [{"q2"}]), cand("q3-3h", [{"q3"}])]
-            a, _, _ = self.run_plan(rows, lsa_ends(NOW + 10 * H), [NOW + 10 * H], drain_prev={"c7-wide": NOW - 2 * H})
-        finally:
-            rf.BACKFILL_IF_FITS = old
-        self.assertEqual(ids(a), set())
-
     def test_region_end_map(self):
         g = [{"id": "lsa", "holds": rf.expand({"q0"}), "end": "2026-11-08T04:45Z"},
              {"id": "noend", "holds": rf.expand({"q1"}), "end": None}]

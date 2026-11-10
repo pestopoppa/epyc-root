@@ -3,8 +3,7 @@ and the GPU for hours, and a renamed HOLD_ADMISSIONS.lifted-symlink still matche
 
 1. arm_one snapshots the engine set into <flags>/dryrun/<id>/engine/; the live engine re-execs that copy, so a running
    row executes only its snapshot and a deploy may swap bin/rowflow/ under its open grant.
-2. deploy_guard refuses only for LEGACY grants (pollers that still read the live path); ENGINE_SNAPSHOT off (the pre-fix
-   keeper) refuses under any open grant - the negative control.
+2. deploy_guard refuses only for LEGACY grants (pollers that still read the live path).
 3. The hold check takes exact HOLD_<NAME> files only; *.lifted* / *.disabled* / dangling links never hold."""
 import datetime as dt
 import json
@@ -119,18 +118,6 @@ class DeployGuard(unittest.TestCase):
         self.assertFalse(ok); self.assertIn("LEGACY", line)
         self.assertTrue(rf.deploy_guard(self.flags, ["filler_run15.sh"], allow_open=True)[0])
         self.assertTrue(rf.deploy_guard(self.flags, ["rowflow.py", "publish_row.py"])[0])   # keeper-only files never block
-
-    def test_negative_control_old_guard_refuses_snapshot_grant(self):
-        """the pre-fix keeper (ENGINE_SNAPSHOT off) refuses an engine deploy under ANY open grant."""
-        snap, _ = rf.snapshot_engine(self.flags, "row-a", self.engine)
-        self.grant("row-a"); self.armed("row-a", 999999999, snap)
-        old = rf.ENGINE_SNAPSHOT
-        rf.ENGINE_SNAPSHOT = False
-        try:
-            ok, line = rf.deploy_guard(self.flags, ["filler_run15.sh"])
-        finally:
-            rf.ENGINE_SNAPSHOT = old
-        self.assertFalse(ok, line)
 
     def test_cli_exit_codes(self):
         self.grant("row-legacy"); self.armed("row-legacy", 999999999, None)

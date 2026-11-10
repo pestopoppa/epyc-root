@@ -38,7 +38,7 @@ class Pass4(Fixture):
     def setUp(self):
         super().setUp()
         os.environ.pop("ROWFLOW_BUS_ROOT", None)
-        self.flags_saved = {k: getattr(rf, k) for k in ("PRECOND_PARK_ONCE", "COMPLETE_BEFORE_RC14", "GPU_IDLE_BY_DEVICE", "armed_engine_ok")}
+        self.flags_saved = {k: getattr(rf, k) for k in ("COMPLETE_BEFORE_RC14", "armed_engine_ok")}
         rf.armed_engine_ok = lambda pid, rid, proc="/proc": True   # the fixture's ARMED pid IS the row's engine (live incident shape)
 
     def tearDown(self):
@@ -131,18 +131,6 @@ class PrecondRefusalTerminalOnce(Pass4):
         self.assertEqual(len(self.fails(self.RID)), rf.MAX_FAILS)
         self.assertEqual(rf.status(self.flags, self.RID)["state"], "parked")
         self.assertFalse(rf.status(self.flags, self.RID).get("precond_parked"))
-
-    def test_negative_control_old_rule_refails_every_tick(self):
-        """OLD behaviour (PRECOND_PARK_ONCE off): the live poller keeps the row `armed`, so every tick re-admits it and
-        writes another FAIL + alert (the 171-record loop). The new assertions must FAIL against it."""
-        rf.PRECOND_PARK_ONCE = False
-        self.row(self.RID, 10, QUIET_OPT, "quarter")
-        self.refuse_with(lambda rid: PRECOND_LINE)
-        for _ in range(5):
-            self.tick()
-        self.assertEqual(len(self.fails(self.RID)), 5, "old rule: one FAIL per tick")
-        self.assertEqual(len(alerts(self.flags, "smoke-fail")), 5, "old rule: one alert per tick")
-        self.assertEqual(rf.status(self.flags, self.RID)["state"], "armed", "old rule: never parked while the poller lives")
 
 
 # ---------------------------------------------------------------------------------------------- fix 2
@@ -330,16 +318,6 @@ class GpuIdleByDevice(Pass4):
             rf.time.time = saved_time
         self.assertEqual([l for l in self.lines if l.startswith("IDLE-HELD")], [])
         self.assertEqual(alerts(self.flags, "idle-held"), [])
-
-    def test_negative_control_old_rule_reads_idle_held_on_a_working_harness(self):
-        rf.GPU_IDLE_BY_DEVICE = False
-        me = os.getpid()
-        self.row(self.RID, 10, GPU_OPT, "gpu", lane="gpu", regions="mi210_0,72-95")
-        self.gpu_grant(self.RID, armed_pid=me)
-        occ = {"pids": {me: 2 << 30}, "vram_used": 2 << 30}
-        idle = self.run_idle({"gpu-quiet": self.RID, "q3": self.RID}, [GPU_IDLE], [occ])
-        self.assertEqual(sorted(r for r, _, _ in idle[0]), ["gpu-quiet", "q3"], "old rule: one 0 % sample flags both regions despite the KFD client")
-        self.assertIsNotNone(rf.busy_flag(1.0, 0.1, gpu=True), "old rule: GPU rows were OVER-DECLARED by CPU %")
 
 
 if __name__ == "__main__":

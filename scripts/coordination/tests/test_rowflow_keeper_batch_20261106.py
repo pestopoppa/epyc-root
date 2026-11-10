@@ -41,40 +41,39 @@ class Lineage(unittest.TestCase):
         rf.row_sha  # noqa: B018
         return rf.status(self.fx.flags, self.rid)
 
+    def pin_current(self):
+        """one FAIL already carries the current launcher+job sha: no fresh attempt is left, the lineage is parked"""
+        put_fail(self.fx, self.rid, 9, self.cur, "2026-11-06T10:00:09Z", job_sha=rf.job_sha(os.path.join(self.d, "launch.sh")))
+
     def test_parked_by_failures_then_owner_unparks_by_lineage_id(self):
-        self.assertTrue(rf.FRESH_ATTEMPT_ON_SHA_CHANGE)
-        with mock.patch.object(rf, "FRESH_ATTEMPT_ON_SHA_CHANGE", False):
-            self.assertEqual(self.st()["state"], "parked")
-            self.assertEqual(self.st()["lineage"], "lin-a")
-            # `unpark <lineage id>`: not a ready/ row, no dryrun dir of its own yet
-            rec = rf.unpark(self.fx.flags, "lin-a", by="owner")
-            self.assertTrue(rec["at"])
-            st = self.st()
-            self.assertNotEqual(st["state"], "parked", st)
-            self.assertEqual(st["lineage_fails"], 0)
+        self.pin_current()
+        self.assertEqual(self.st()["state"], "parked")
+        self.assertEqual(self.st()["lineage"], "lin-a")
+        # `unpark <lineage id>`: not a ready/ row, no dryrun dir of its own yet
+        rec = rf.unpark(self.fx.flags, "lin-a", by="owner")
+        self.assertTrue(rec["at"])
+        st = self.st()
+        self.assertNotEqual(st["state"], "parked", st)
+        self.assertEqual(st["lineage_fails"], 0)
 
     def test_negative_control_without_unpark_stays_parked(self):
-        with mock.patch.object(rf, "FRESH_ATTEMPT_ON_SHA_CHANGE", False):
-            self.assertEqual(self.st()["state"], "parked")
-            self.assertEqual(self.st()["lineage_fails"], rf.MAX_FAILS)
+        self.pin_current()
+        self.assertEqual(self.st()["state"], "parked")
+        self.assertEqual(self.st()["lineage_fails"], rf.MAX_FAILS + 1)
 
     def test_new_failures_after_unpark_count_again(self):
-        with mock.patch.object(rf, "FRESH_ATTEMPT_ON_SHA_CHANGE", False):
-            rf.unpark(self.fx.flags, "lin-a", by="owner")
-            import time
-            time.sleep(1.1)
-            for i in range(rf.MAX_FAILS):
-                put_fail(self.fx, self.rid, 10 + i, "oldsha", rf.now_iso())
-            self.assertEqual(self.st()["state"], "parked")
+        self.pin_current()
+        rf.unpark(self.fx.flags, "lin-a", by="owner")
+        import time
+        time.sleep(1.1)
+        for i in range(rf.MAX_FAILS):
+            put_fail(self.fx, self.rid, 10 + i, "oldsha", rf.now_iso())
+        self.assertEqual(self.st()["state"], "parked")
 
     def test_changed_launcher_gets_one_fresh_attempt_then_parks_again(self):
         self.assertEqual(self.st()["state"], "needs-dryrun")          # fails recorded for "oldsha"; current sha is new
         put_fail(self.fx, self.rid, 9, self.cur, rf.now_iso(), job_sha=rf.job_sha(os.path.join(self.d, "launch.sh")))
         self.assertEqual(self.st()["state"], "parked")                # the one attempt failed: parked again, no second try
-
-    def test_negative_control_flag_off_republish_stays_parked(self):
-        with mock.patch.object(rf, "FRESH_ATTEMPT_ON_SHA_CHANGE", False):
-            self.assertEqual(self.st()["state"], "parked")
 
     def test_changed_job_file_with_same_launcher_is_fresh(self):
         job = os.path.join(self.d, "job.sh")

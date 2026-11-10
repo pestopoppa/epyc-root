@@ -131,16 +131,11 @@ def test_publish_scenario(name, tmp_path):
     assert not v, "\n".join(v)
 
 # ------------------------------------------------------------------ negative controls: friction pass-4 fixes (2026-11-06)
-# Each fix is guarded by a module flag; a copy of the candidate with the flag OFF (the pre-fix keeper) must FAIL the
-# scenario that the fix is deployed for - proving each scenario detects the incident class, not a tautology.
+# A fix still guarded by a module flag: a copy of the candidate with the flag OFF (the pre-fix keeper) must FAIL the
+# scenario that the fix is deployed for - proving the scenario detects the incident class, not a tautology. The
+# always-on switches were deleted 2026-11-10 (pipeline audit #9) together with their controls; their scenarios still run.
 P4_CONTROLS = [
-    ("PRECOND_PARK_ONCE", "p4-precond-refusal-parks-once", ("FAIL records per tick", "re-admitted")),
     ("COMPLETE_BEFORE_RC14", "p4-completed-row-not-rc14", ("got a FAIL record",)),
-    ("GPU_IDLE_BY_DEVICE", "p4-gpu-harness-with-kfd-never-idle-held", ("read IDLE-HELD",)),
-    ("GPU_IDLE_BY_DEVICE", "p4-gpu-grant-cpu-regions-not-judged", ("by CPU %",)),
-    ("OVERRIDE_BOOKS_WIDTH", "override-multiquarter-books-two", ("2-quarter row granted",)),   # negative control: old code grants 1
-    ("LOG_ON_TRANSITION", "p5-idle-held-logs-once", ("transition only",)),   # Pass 5 item 3: the pre-fix keeper logs every tick
-    ("BACKFILL_IF_FITS", "backfill-expired-drain-never-blocks", ("never granted after the drain expired",)),   # 2026-11-07
 ]
 
 
@@ -167,30 +162,6 @@ def test_negative_control_pass4_old_rule_fails_scenario(flag, name, expect, work
     viol = list(check(dec))
     assert viol and any(e in v for v in viol for e in expect), \
         f"with {flag} off the old keeper should fail {name} ({expect}); got {viol}"
-
-
-def test_negative_control_width_justification_old_code_refuses_justified_multiquarter(work, tmp_path):
-    """With WIDTH_JUSTIFICATION off (the pre-change publish gate) the justified multi-quarter scenario must FAIL."""
-    import importlib.util
-    old = _candidate_with_flag_off(work, "WIDTH_JUSTIFICATION")
-    spec_ = importlib.util.spec_from_file_location("rowflow_old_wj", os.path.join(old, "rowflow.py"))
-    sys.path.insert(0, old)
-    try:
-        rf = importlib.util.module_from_spec(spec_)
-        spec_.loader.exec_module(rf)
-    finally:
-        sys.path.remove(old)
-    root = str(tmp_path)
-    flags = os.path.join(root, "compute-flags")
-    os.makedirs(os.path.join(flags, "ready")); os.makedirs(os.path.join(flags, "grants"))
-    rf.TMP = root + "/"
-    spec, check = SC.PUBLISH_SCENARIOS["publish-wj-justified-multiquarter-accepted"](root)
-    row, err = None, None
-    try:
-        row = rf.publish(spec, flags)
-    except rf.Refused as e:
-        err = str(e)
-    assert check(row, err, rf), "the old code should refuse the justified multi-quarter row"
 
 
 def test_negative_control_multiquarter_q3_rule_off_grants_q1_q3(work):
