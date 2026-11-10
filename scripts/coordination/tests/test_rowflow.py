@@ -75,7 +75,7 @@ class Fixture:
 
     def spec(self, rid, d, **kw):
         s = {"id": rid, "owner": "codex-test", "launcher": os.path.join(d, "launch.sh"), "lane": "cpu",
-             "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "score>=1 on every item",
+             "result_path": os.path.join(d, "out", "results.jsonl"), "decision_rule": "score >= 1",
              "estimate_s": 600, "handoff_task": "handoffs/active/test.md:T-1", "priority_rank": 5, "dryrun_timeout_s": 60}
         s.update(kw)
         return s

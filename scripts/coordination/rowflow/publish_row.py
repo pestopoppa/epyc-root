@@ -23,6 +23,14 @@ handoff_task does not resolve to a real open task box (file-only, or not found).
 operator choice, non-inference payload, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
 fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the smoke still gates every row. The lint
 runs before the smoke, so a refused row costs no compute.
+Preflight (pipeline audit 2026-11-10 #4, operator scope "Publish-time checks"; `preflight`): before anything is published,
+each bounded to PREFLIGHT_TIMEOUT_S and run in the engine's --workdir with the smoke env minus FILLER_SMOKE*. REFUSED: a
+prose decision_rule (file_result/auto_file cannot parse it) unless the spec says "verdict_by": "agent" with an owner;
+a smoke_predicate that already exits 0; an engine --complete-cmd that already exits 0 ("nothing to do; already
+complete", `--rerun` overrides); an engine --precond-cmd that exits non-0 (the gate would park the row). WARNED: a check
+that timed out; job files (the smoke_branch_files set) that clean the environment without passing FILLER_ID through
+(`env -i`, `env={`, `env=dict(`) or use start_new_session=True. rowflow.publish separately refuses a launcher whose
+--claim-cpus/--gpu-quiet claim is wider than the contract's grant (CLAIM-WIDER-THAN-CONTRACT, the rc=13 class).
 Smoke = THE dry run (operator 2026-11-05: a KEEPER-SCHEDULED filler): a CPU row's smoke is QUEUED
 (dryrun/<id>/SMOKE-QUEUED.json) and this tool returns at once; the keeper's allocate places it first, on 4 genuinely
 free cores, in the next free slot. Waiting is never a failure. `--smoke-now` runs it here, at once, on free cores of the
@@ -40,6 +48,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import time
 
@@ -57,7 +66,7 @@ RESULT_NAMES = ("RESULT.json", "RESULT.jsonl", "results.jsonl", "results.json")
 SPEC_KEYS = ("id", "owner", "lane", "regions", "result_path", "result_format", "decision_rule", "estimate_s", "handoff_task",
              "priority_rank", "scratch_root", "keep", "dryrun_timeout_s", "min_window_s", "lineage", "lineage_reset", "supersedes",
              "notes", "row", "snapshot", "admission_class", "dryrun_native_result", "publish_warnings", "busy_fraction",
-             "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing")
+             "first_progress_s", "smoke_predicate", "unit_key", "fix_ref", "baseline_ref", "shape_override", "width_justification", "timing", "verdict_by")
 REPO = os.environ.get("ROWFLOW_REPO", "/mnt/raid0/llm/views/epyc-root-main")  # tracks origin/main; /workspace is a stale detached checkout
 SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
@@ -275,6 +284,172 @@ def check_task_lint(spec, repo=None):
     else:
         spec.pop("publish_warnings", None)
     return warn
+
+
+# ---------------------------------------------------------------- publish preflight (pipeline audit 2026-11-10 #4)
+# Each trip-up below cost a published, queued, placed smoke (or a whole run) plus an agent round-trip; each is decidable
+# before the smoke by running a command the row already declares, once, bounded. Operator 2026-11-10 scope "Publish-time
+# checks". Refusals raise rf.Refused (publish exits 2, nothing published, no compute spent); warnings are printed and
+# recorded in publish_warnings.
+PREFLIGHT_TIMEOUT_S = 30
+ENV_CLEAN_RX = re.compile(r"\benv\s+-i\b|\benv\s*=\s*\{|\benv\s*=\s*dict\(")
+NEW_SESSION_RX = re.compile(r"\bstart_new_session\s*=\s*True\b")
+VERDICT_BY = ("agent",)
+
+
+def _churn_mod(name):
+    """A bin/churn module: installed beside bin/rowflow (compute-flags/bin/churn) or in the checkout (scripts/coordination/churn)."""
+    d = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "churn")
+    if d not in sys.path:
+        sys.path.insert(0, d)
+    return __import__(name)
+
+
+def _warn(spec, w):
+    print(f"WARN {w}")
+    pw = list(spec.get("publish_warnings") or [])
+    if w not in pw:
+        spec["publish_warnings"] = pw + [w]
+
+
+def _rule_metrics(ast, out=None):
+    out = [] if out is None else out
+    if ast and ast[0] == "cmp":
+        out.append(f"{ast[1]} {ast[2]} {ast[3]:g}")
+    elif ast:
+        for sub in ast[1:]:
+            _rule_metrics(sub, out)
+    return out
+
+
+def check_decision_rule(spec):
+    """A rule auto_file can check (file_result.parse, as auto_file.machine_checkable) files itself; prose needs a
+    hand-written verdict, so the author must say so up front: "verdict_by": "agent" plus an owner. Returns the parsed
+    checks ([] = prose with verdict_by agent)."""
+    fr = _churn_mod("file_result")
+    rule = str(spec.get("decision_rule") or "")
+    try:
+        checks = _rule_metrics(fr.parse(rule))
+    except fr.RuleError as e:
+        vb = str(spec.get("verdict_by") or "").strip()
+        rf.need(vb in VERDICT_BY and str(spec.get("owner") or "").strip(),
+                f"decision_rule is prose, not machine-checkable ({e}): auto_file cannot file this run and it would wait as "
+                f"NEEDS-AGENT-VERDICT. FIX: write it as `<metric> <op> <number>` joined by and/or (e.g. `tps >= 10 and "
+                f"ppl_delta <= 0.01`, metrics read from result_path), or add \"verdict_by\": \"agent\" to the spec - then the "
+                f"owner ({spec.get('owner') or 'set spec.owner'}) files the verdict after the run with "
+                f"`file_result.py {spec.get('id')} --verdict-json <verdict>`")
+        print(f"DECISION-RULE prose; verdict_by agent: owner {spec.get('owner')} files the verdict by hand after the run")
+        return []
+    print(f"DECISION-RULE machine-checkable; auto_file will check: {'; '.join(checks)} (read from {spec.get('result_path')})")
+    return checks
+
+
+def preflight_env(spec, flags):
+    """The smoke's environment (rowflow.dryrun_run) for this row, minus every FILLER_SMOKE* variable: the commands are
+    asked about the job as it stands, not about a smoke."""
+    rid = str(spec.get("id") or "")
+    dd = rf.dry_dir(flags, rid)
+    regions = str(spec.get("regions") or ("mi210_0,184-191" if spec.get("lane") == "gpu" else "any-cpu-quarter"))
+    try:
+        ws = rf.ws58_cpus(regions)
+    except Exception:  # noqa: BLE001 - abstract regions have no cpu list yet
+        ws = ""
+    env = dict(os.environ, FILLER_DRYRUN="1", FILLER_DRYRUN_DIR=dd, FILLER_STATE_DIR=os.path.join(dd, "state"),
+               FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(dd, "grants"), FILLER_POLL="5",
+               FILLER_OWNER=str(spec.get("owner") or ""), FILLER_EST_WALL_S=str(spec.get("estimate_s") or ""),
+               FILLER_DRYRUN_ONE_QUARTER="0", WS58_REGIONS=ws or "", FILLER_ID=rid,
+               FILLER_RESIDENCY_FILE=os.path.join(dd, rf.SMOKE_RESIDENCY_FILE))
+    return {k: v for k, v in env.items() if not k.startswith("FILLER_SMOKE")}
+
+
+def run_bounded(cmd, cwd, env, timeout=None):
+    """(rc, first output line); rc None = could not be judged (timeout / unrunnable). Never reads stdin."""
+    timeout = timeout or PREFLIGHT_TIMEOUT_S
+    try:
+        r = subprocess.run(["bash", "-c", cmd], cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        return None, f"timed out after {timeout}s"
+    except OSError as e:
+        return None, f"could not run: {e}"
+    first = next((ln.strip() for ln in r.stdout.decode(errors="replace").splitlines() if ln.strip()), "")
+    return r.returncode, first[:160]
+
+
+def env_clean_hits(spec):
+    """(file, what) for each job file smoke_branch_files scans (rowflow.smoke_scan_files) that cleans the environment
+    without passing FILLER_ID on, or starts a new session."""
+    launcher = os.path.abspath(str(spec.get("launcher") or ""))
+    try:
+        files = rf.smoke_scan_files({"launcher": {"path": launcher}})
+    except Exception:  # noqa: BLE001 - publish reports a launcher defect itself
+        return []
+    hits = []
+    for f in files:
+        try:
+            if os.path.getsize(f) > rf.SMOKE_SCAN_MAX_BYTES:
+                continue
+            txt = "\n".join(ln for ln in open(f, errors="replace").read().splitlines() if not ln.lstrip().startswith("#"))
+        except OSError:
+            continue
+        m = ENV_CLEAN_RX.search(txt)
+        if m and "FILLER_ID" not in txt:
+            hits.append((f, f"`{m.group(0)}` (no FILLER_ID passthrough)"))
+        m = NEW_SESSION_RX.search(txt)
+        if m:
+            hits.append((f, f"`{m.group(0)}`"))
+    return hits
+
+
+def preflight(spec, flags, rerun=False):
+    """Run once each, bounded (PREFLIGHT_TIMEOUT_S), before anything is published: the decision-rule parse, the smoke
+    predicate, the engine's --complete-cmd and --precond-cmd (in the engine's --workdir, with preflight_env), and the
+    env-cleaning scan. Refuses: a prose rule without verdict_by agent; a smoke_predicate that already exits 0; a
+    --complete-cmd that already exits 0 (unless rerun); a --precond-cmd that exits non-0. Warns: a check that could not be
+    judged (timeout), env cleaning without FILLER_ID / start_new_session in the job files."""
+    check_decision_rule(spec)
+    launcher = os.path.abspath(str(spec.get("launcher") or ""))
+    try:
+        o = rf.parse_launcher(launcher)
+    except Exception:  # noqa: BLE001 - rowflow.publish reports the launcher defect in its own words
+        return
+    wd = o.get("workdir") or "/"
+    for f, what in env_clean_hits(spec):
+        _warn(spec, f"env-clean: {f} runs {what}; the keeper attributes the job's processes (and GPU residency) by "
+                    "FILLER_ID, so a child that loses it reads as not the row's. FIX: pass FILLER_ID through (env -i "
+                    "FILLER_ID=\"$FILLER_ID\" ..., env={..., \"FILLER_ID\": os.environ[\"FILLER_ID\"]}) and keep the child in "
+                    "the job's session (publish continues)")
+    if not os.path.isdir(wd):
+        _warn(spec, f"preflight: engine --workdir {wd} does not exist; smoke_predicate/--complete-cmd/--precond-cmd not run "
+                    "(the engine's `cd` would fail too)")
+        return
+    env = preflight_env(spec, flags)
+    fmt = str(spec.get("result_format") or "")
+    pred = spec.get("smoke_predicate") or (fmt[len("custom:"):] if fmt.startswith("custom:") else None)
+    if pred:
+        kind = "smoke_predicate" if spec.get("smoke_predicate") else "result_format custom:"
+        rc, out = run_bounded(pred, wd, env)
+        rf.need(rc != 0, f"{kind} `{pred[:80]}` already exits 0 BEFORE the launch, so it cannot see the smoke's progress "
+                         "and the dry run would FAIL (no first progress possible). FIX: make it test this run's own output "
+                         "(e.g. a record newer than $FILLER_SMOKE_T0), then re-run publish_row.py <spec.json>")
+        if rc is None:
+            _warn(spec, f"preflight: {kind} {out}; not judged")
+    if o.get("complete_cmd"):
+        rc, out = run_bounded(o["complete_cmd"], wd, env)
+        if rc == 0 and not rerun:
+            raise rf.Refused(f"nothing to do; already complete: the engine's --complete-cmd `{o['complete_cmd'][:100]}` exits 0 "
+                             f"before any run (in {wd}), so the job would end reason=complete at once and be mislabelled "
+                             "no-first-progress. FIX: file the existing result, or point --complete-cmd at THIS run's output, "
+                             "or publish with --rerun to run it again anyway")
+        if rc is None:
+            _warn(spec, f"preflight: --complete-cmd {out}; not judged")
+    if o.get("precond_cmd"):
+        rc, out = run_bounded(o["precond_cmd"], wd, env)
+        rf.need(rc in (0, None), f"--precond-cmd `{o['precond_cmd'][:100]}` exits {rc} now ({out or 'no output'}): the admission "
+                                 "gate refuses it rc=12 and PARKS the row at its first grant. FIX: make the precondition true "
+                                 "(build or fetch it in your turn), then re-run publish_row.py")
+        if rc is None:
+            _warn(spec, f"preflight: --precond-cmd {out}; not judged (the gate admits a timed-out precond too)")
 
 
 def smoke_regions(lane, regions, flags):
@@ -731,6 +906,8 @@ def main(argv=None):
                     "instead of queueing it for the keeper (still queued when nothing is free)")
     ap.add_argument("--run-smoke", metavar="ROW_ID", help="(allocator, detached) run ONE keeper-placed CPU smoke")
     ap.add_argument("--regions", help="with --run-smoke: the cpus the keeper assigned")
+    ap.add_argument("--rerun", action="store_true", help="publish even though the engine's --complete-cmd already exits 0 "
+                    "(the preflight otherwise refuses: nothing to do)")
     a = ap.parse_args(argv)
     if a.run_smoke:
         rf.need(a.regions, "--run-smoke needs --regions")
@@ -761,6 +938,7 @@ def main(argv=None):
         check_task_lint(spec)
         for note in lint(spec):
             print(f"LINT {note}")
+        preflight(spec, a.flags, rerun=a.rerun)   # pipeline audit 2026-11-10 #4: before anything is published or queued
         row = publish_smoked(spec, a.flags, os.path.abspath(a.spec), queue_cpu=not a.smoke_now)
         if row:
             print(rf.published_line(row, a.flags))

@@ -358,7 +358,7 @@ def parse_launcher(path):
          "complete_cmd": "", "cmd": "", "gpu_quiet": "", "claim_cpus": "", "nofold": False, "id": ""}
     j = i + 1
     one = {"--id": "id", "--class": "class", "--stop": "stop", "--workdir": "workdir", "--complete-cmd": "complete_cmd",
-           "--cmd": "cmd", "--gpu-quiet": "gpu_quiet", "--claim-cpus": "claim_cpus"}
+           "--cmd": "cmd", "--gpu-quiet": "gpu_quiet", "--claim-cpus": "claim_cpus", "--precond-cmd": "precond_cmd"}
     while j < len(toks):
         t = toks[j]
         if t == "--min-window":
@@ -367,7 +367,7 @@ def parse_launcher(path):
             o["ports"] = [int(x) for x in toks[j + 1].split(",") if x]; j += 2
         elif t in one:
             o[one[t]] = toks[j + 1]; j += 2
-        elif t in ("--sched-port", "--excl-lock", "--gpu-threads", "--role", "--precond-cmd", "--requires-tool", "--qual-interpreter"):
+        elif t in ("--sched-port", "--excl-lock", "--gpu-threads", "--role", "--requires-tool", "--qual-interpreter"):
             if t == "--role":
                 o["launch_role"] = toks[j + 1]   # gpushape: read only by gpu_timing_row (row_shape's `role` stays unset)
             j += 2
@@ -377,6 +377,7 @@ def parse_launcher(path):
             j += 1
         else:
             j += 1
+    o["argv"] = toks[i:]   # the engine argv as the launcher will exec it (publish's claim check feeds grant_ok_launcher)
     need(o["id"], "engine line has no --id")
     need(o["class"] in ("cpu", "gpu", "cpu+gpu"), "engine --class missing")
     need(o["min_window"] > 0, "engine --min-window missing")
@@ -902,7 +903,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     # who published it: INFORMATION ONLY (alerts route to the `inference` mailbox); a republish keeps the original
     row["publisher"] = spec["publisher"] if isinstance(spec.get("publisher"), dict) else notify.publisher_info()
     for k in ("lineage", "lineage_reset", "supersedes", "notes", "row", "dryrun_native_result", "publish_warnings",
-              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use"):
+              "smoke_predicate", "unit_key", "scratch_inputs", "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by"):
         if spec.get(k) is not None:
             row[k] = spec[k]
     # refinement 4/5 root cause (2026-11-05 `$D` bug): the STOP file must resolve to an absolute path at publish
@@ -974,6 +975,8 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         need(c["shape"] != "gpu-q3" or not held_q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (operator "
              f"2026-11-05 NARROW: a GPU timing grant never holds q3 cores 72-87, found {','.join(compress(held_q3))}; they stay "
              "grantable to CPU rows beside a GPU timing run); a quieter neighbourhood needs explicit regions + shape_override")
+    cw = claim_wider_refusal(row, c, o)
+    need(not cw, cw)
     lint = regions_wider_lint(regions, c, row)
     if lint:   # a lint, never a refusal (the contract already decides what is held)
         print(f"LINT {rid}: {lint}")
@@ -1106,7 +1109,7 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
-              "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use"):
+              "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -2121,6 +2124,52 @@ def regions_wider_lint(regions, c, row=None):
             f"{held}; the grant follows the contract - republish with regions matching the shape (or drop regions)")
 
 
+def claim_wider_refusal(row, c, o):
+    """Pipeline audit 2026-11-10 #2: the launcher's region-lock claim (--claim-cpus / --gpu-quiet, as grant_ok_launcher
+    reads them) must be covered by EVERY grant the contract can produce. Otherwise the planner places the row, the
+    admission gate refuses it rc=13 ("claims q0+q1+q2+q3+gpu-quiet, regions=0-23 ... missing q1+q2+q3") on every tick,
+    and the row parks after a PASS (akx-lb3-2-cv6-pair-20261107-r2: 56 refusals). Mirrors admit() + gate.check exactly
+    (same parse_regions / claim_of / cpu_regions / region_set, same reserve). Returns the refusal text, or None.
+    A claim that is not a literal cpu list at publish ($WS58_REGIONS, $CPUS) and a --self-claim job are not judged."""
+    argv = list((o or {}).get("argv") or [])
+    if not argv:
+        return None
+    gate = _gate()
+    go = gate.parse_engine(argv)
+    if not go or go.get("self_claim"):
+        return None
+    if go.get("claim_cpus") and not re.fullmatch(r"\d+(-\d+)?(,\d+(-\d+)?)*", go["claim_cpus"]):
+        return None
+    misses = []
+    for opt in c.get("options") or []:
+        regions = grant_regions(row, opt)
+        reserve = "gpu-quiet" if "mi210" not in regions else None   # as admit() passes it
+        try:
+            cpus = gate.parse_regions(regions, go["class"], go["gpu_threads"])
+        except gate.Refuse:
+            continue   # an unparsable grant is a different defect (the gate names it); not this check's
+        cl, gm = gate.claim_of(go, cpus)
+        fold = not (go["nofold"] and go["class"] != "gpu")
+        want = gate.cpu_regions(cl, fold) if cl else set()
+        if gm:
+            want.add("gpu-quiet")
+        have = gate.region_set(regions) | (gate.region_set(reserve) if reserve else set())
+        miss = want - have
+        if miss:
+            misses.append((regions, gate.fmt(want), gate.fmt(miss)))
+    if not misses:
+        return None
+    regions, want, miss = misses[0]
+    flags_s = (f"--class {go['class']}" + (f" --claim-cpus {go['claim_cpus']}" if go.get("claim_cpus") else "")
+               + (f" --gpu-quiet {go['gpu_quiet']}" if go.get("gpu_quiet") else ""))
+    return (f"CLAIM-WIDER-THAN-CONTRACT: the launcher ({flags_s}) claims {want}, but the contract ({c.get('shape')}) grants "
+            f"regions={regions} which miss {miss}; the admission gate would refuse every grant rc=13 and the row would park "
+            f"after its PASS ({len(misses)} of {len(c.get('options') or [])} grant option(s) affected). FIX: narrow the "
+            f"launcher's claim to the shape (e.g. --claim-cpus \"$WS58_REGIONS\", or drop --gpu-quiet exclusive for a CPU "
+            f"row that does not need the MI210 idle), or declare the width the claim needs (shape/regions + "
+            f"width_justification or baseline_ref), then re-run publish_row.py")
+
+
 def claimed_cpus(regions, claim, shape):
     if shape in ("host", "quiet-host"):
         return 96
@@ -2490,6 +2539,19 @@ def lineage_fails(flags, rid, allrows):
 RUN_DIRECT = os.path.join(_HERE, "run_direct.sh")
 
 
+RUNNABLE_STATES = ("grantable", "armed")
+
+
+def runnable(st):
+    """THE one candidate predicate (pipeline audit 2026-11-10 #2): may the planner place this row, and may a region it fits
+    be reported as "fits but was not placed"? `st` is status()'s dict. Parked (precond refusal or MAX_FAILS arming/launch
+    failures), failed, stopped, done, running and unpublished rows are never runnable. Every consumer (allocate's
+    candidate list, the same-tick re-plan, the in-tick and the persisted IDLE-VIOLATION) asks this one predicate."""
+    st = st or {}
+    return (st.get("state") in RUNNABLE_STATES and not st.get("precond_parked")
+            and int(st.get("arm_fails") or 0) < MAX_FAILS)
+
+
 def next_action(st, flags, rid):
     """DETERMINISTIC one-line next action per state (2026-11-03: an agent reads it, never infers it)."""
     rp = ready_path(flags, rid)
@@ -2604,17 +2666,20 @@ def _status_raw(flags, rid, allrows=None):
                        reason=f"precond-cmd refused at {pk.get('at')} ({str(pk.get('reason'))[:160]}); terminal for this "
                               f"launcher+spec: retried only after a launcher/spec edit or `rowflow.py unpark {rid}`",
                        fail_file=pk["fail_file"], fix_task=pk.get("fix_task")); return out
-        a = load_json(armed_path(flags, rid))
-        if a and alive(a.get("pid")):
-            if armed_engine_ok(a.get("pid"), rid):
-                out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
-            out["rearm"] = f"ARMED pid {a['pid']} runs no filler_run*.sh engine for this row; re-armed on the next tick"
+        # pipeline audit 2026-11-10 #2: the MAX_FAILS park is checked BEFORE the armed branch, like the precond park.
+        # akx-lb3-2-cv6-pair-20261107-r2 kept a live poller after its 3rd rc=13 refusal, read "armed", and was re-planned
+        # (RE-PLAN 37, IDLE-VIOLATION 36) for 3.5 h with its arm-fail count climbing past the park threshold.
         af = arm_fails_since_pass(flags, rid, p)
         out["arm_fails"] = len(af)
         if len(af) >= MAX_FAILS:   # ws58 2026-11-03: a PASS no longer keeps a row that cannot be armed grantable
             out.update(state="parked", reason=f"{len(af)} consecutive arming/launch failures since the PASS of {p.get('passed_at')} "
                                               f"(last: {str(af[-1].get('reason'))[:160]}); operator-escalations/{rid}.arming.md",
                        fail_file=af[-1]["fail_file"], fix_task=af[-1].get("fix_task")); return out
+        a = load_json(armed_path(flags, rid))
+        if a and alive(a.get("pid")):
+            if armed_engine_ok(a.get("pid"), rid):
+                out.update(state="armed", reason=f"poller pid {a['pid']} on {a.get('queue')} regions={a.get('regions')}", regions=a.get("regions")); return out
+            out["rearm"] = f"ARMED pid {a['pid']} runs no filler_run*.sh engine for this row; re-armed on the next tick"
         out.update(state="grantable", reason=f"dry run passed {p.get('passed_at')} ({p.get('units')} unit(s) in {p.get('result_path')})"); return out
     if nf >= MAX_FAILS and not fresh_attempt(flags, rid, allrows, cur):
         out.update(state="parked", reason=f"{nf} failed dry runs in lineage {lin}; operator-escalations/{lin}.md "
@@ -3101,6 +3166,23 @@ def smoke_trusted_interpreter(path):
     return _stat.S_ISREG(st.st_mode) and st.st_uid == 0 and not st.st_mode & (_stat.S_IWGRP | _stat.S_IWOTH)
 
 
+def smoke_scan_files(d):
+    """The files smoke_branch_files scans: the row's launcher and every regular file its engine line runs (--cmd /
+    --complete-cmd tokens), minus the engine and stock system interpreters. Raises when the launcher does not parse.
+    publish_row's preflight scans the same set for environment cleaning (pipeline audit 2026-11-10 #4)."""
+    lp = d["launcher"]["path"]
+    o = parse_launcher(lp)
+    eng = os.path.realpath(o["engine"])
+    out, seen = [], set()
+    for f in [lp] + [x for x in referenced_paths({"cmd": o["cmd"], "complete_cmd": o["complete_cmd"]}) if os.path.isfile(x)]:
+        rp = os.path.realpath(f)
+        if rp in seen or rp == eng or (f != lp and smoke_trusted_interpreter(f)):
+            continue
+        seen.add(rp)
+        out.append(f)
+    return out
+
+
 def smoke_branch_files(d):
     """The row's own launcher and every regular file its engine line runs (--cmd / --complete-cmd tokens) that names
     FILLER_SMOKE* or FILLER_DRYRUN*: a job that branches on them does something else under a smoke than in its grant.
@@ -3108,16 +3190,12 @@ def smoke_branch_files(d):
     scanned; the scripts they run are. An unreadable or oversized file otherwise counts as branching."""
     lp = d["launcher"]["path"]
     try:
-        o = parse_launcher(lp)
+        files = smoke_scan_files(d)
     except (Refused, OSError, StopIteration, ValueError) as e:
         return [f"{lp} (unparsable: {e})"]
-    eng = os.path.realpath(o["engine"])
-    hits, seen = [], set()
-    for f in [lp] + [x for x in referenced_paths({"cmd": o["cmd"], "complete_cmd": o["complete_cmd"]}) if os.path.isfile(x)]:
+    hits = []
+    for f in files:
         rp = os.path.realpath(f)
-        if rp in seen or rp == eng or (f != lp and smoke_trusted_interpreter(f)):
-            continue
-        seen.add(rp)
         try:
             if os.path.getsize(rp) > SMOKE_SCAN_MAX_BYTES:
                 hits.append(f"{f} (too large to scan)")
@@ -4530,9 +4608,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     cands = []
     for rid, d in allrows.items():
         sd = status(flags, rid, allrows)
-        st = sd["state"]
-        if st not in ("grantable", "armed"):
-            continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed rows are granted
+        if not runnable(sd):
+            continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed, unparked rows are granted
         kind = "grant"
         # 2026-11-03 session review item 2: UNDERUSED alerts, never blocks (it de-granted r3 for its engine's spin).
         k = contract_of(d, flags=flags)
@@ -4687,6 +4764,14 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         if not any(c["id"] not in excluded for c in pending):
             break
         log(f"RE-PLAN same tick: {','.join(sorted(failed))} failed to arm/launch; free={','.join(compress(plan_free)) or '-'}")
+    # pipeline audit 2026-11-10 #2: a row that failed to arm/launch this tick may have just parked (its MAX_FAILS-th
+    # refusal, or a precond refusal); runnable() is asked again so it is never reported as "fits but was not placed".
+    tried = excluded | set(failed)
+    if tried and not dry:
+        gone = {rid for rid in tried if not runnable(status(flags, rid, allrows))}
+        if gone:
+            cands = [c for c in cands if c["id"] not in gone]
+            pending = [c for c in pending if c["id"] not in gone]
     for r, why in idle.items():
         if r == GPU and held_back:
             continue   # already reported above with the actual reason; the planner never saw these rows
