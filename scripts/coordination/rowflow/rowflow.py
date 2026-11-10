@@ -2827,10 +2827,13 @@ def harness_tree(root, tracked):
     todo = [root]
     if st:
         tracked.setdefault(root, st[2])
-    while todo:
+    seen = {root}   # keeper 2026-11-10: re-walk already-tracked pids too, so a child a tracked parent starts LATER (a GPU
+    while todo:     # server two levels down) joins the tree; bounded by the one /proc scan above, `seen` stops pid cycles
         for c, birth in kids.get(todo.pop(), []):
-            if c not in tracked:
-                tracked[c] = birth
+            if c in seen:
+                continue
+            seen.add(c)
+            if tracked.setdefault(c, birth) == birth:   # a reused pid (different starttime) is not walked through
                 todo.append(c)
     return tracked
 

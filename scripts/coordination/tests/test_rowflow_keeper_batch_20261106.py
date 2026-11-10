@@ -147,6 +147,50 @@ class ResidencyContract(unittest.TestCase):
         self.assertEqual(rf.verify_job_residency(dd, {4242: 1}, {4242: 1}, t0)[0], 0)
 
 
+    def _late_grandchild_case(self, rec_pid):
+        """root 100 -> job 200 (tracked on the first sample) -> GPU server 300 started LATER by 200, cleaned env (no
+        FILLER_ID). 999 is an unrelated KFD client (ppid 1)."""
+        fx = Fixture()
+        self.addCleanup(fx.cleanup)
+        dd = os.path.join(fx.root, "dd")
+        os.makedirs(dd)
+        procs = {100: (1, 100, "s100"), 200: (100, 100, "s200"), 999: (1, 999, "s999")}
+        listdir = lambda d: [str(k) for k in procs] if d == "/proc" else os.listdir(d)
+        with mock.patch.object(rf.os, "listdir", listdir), mock.patch.object(rf, "_proc_stat", procs.get), \
+                mock.patch.object(rf, "pid_filler_id", return_value=None):
+            tracked = rf.harness_tree(100, {})
+            self.assertEqual(set(tracked), {100, 200})
+            procs[300] = (200, 100, "s300")             # the job starts its GPU server after 200 was already tracked
+            kfd = {}
+            occ = {"pids": {300: 2 << 30, 999: 4 << 30}}
+            with mock.patch.object(rf, "gpu_occupancy", return_value=occ):
+                rf.sample_gpu_residency(100, tracked, kfd, rid="row-x")
+        self.assertIn(300, tracked)
+        self.assertNotIn(999, tracked)
+        self.assertEqual(set(kfd), {300})
+        t0 = 1_800_000_000.0
+        rf.atomic_json(os.path.join(dd, rf.SMOKE_RESIDENCY_FILE),
+                       {"schema": "epyc.rowflow.residency.v1", "pid": rec_pid, "vram_bytes": 3 << 30,
+                        "at": rf.dt.datetime.fromtimestamp(t0 + 5, rf.dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
+        return rf.verify_job_residency(dd, tracked, kfd, t0)
+
+    def test_late_grandchild_residency_record_passes(self):
+        jb, why = self._late_grandchild_case(300)
+        self.assertGreaterEqual(jb, rf.RESIDENCY_FLOOR_B, why)
+
+    def test_unrelated_pid_residency_record_is_refused(self):
+        jb, why = self._late_grandchild_case(999)
+        self.assertEqual(jb, 0)
+        self.assertIn("not in the smoke's process tree", why)
+
+    def test_reused_pid_is_not_walked_through(self):
+        procs = {100: (1, 100, "s100"), 200: (100, 100, "new"), 300: (200, 100, "s300")}
+        listdir = lambda d: [str(k) for k in procs]
+        with mock.patch.object(rf.os, "listdir", listdir), mock.patch.object(rf, "_proc_stat", procs.get):
+            tracked = rf.harness_tree(100, {100: "s100", 200: "old"})
+        self.assertNotIn(300, tracked)
+
+
 class SmokeRuns(unittest.TestCase):
     """End-to-end dryrun_run with a faked MI210 (GPU residency forced on a CPU-lane row)."""
 
