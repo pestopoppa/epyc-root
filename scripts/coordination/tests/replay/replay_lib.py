@@ -510,7 +510,9 @@ class Sandbox:
                 self.stop_released[rid] = self.stop_released.get(rid, 0) + 1
                 continue
             s["started"] = True
-            if W.t >= s["end"]:
+            if s.get("hard_end") and s["hard_end"] < s["end"] and W.t >= s["hard_end"]:
+                self._end(rid, "hard-end", rc=75)
+            elif W.t >= s["end"]:
                 self._end(rid, "complete")
         # smokes the candidate spawned: done after 300 s (queue record removed; the smoke's verdict is not simulated)
         for p in glob.glob(os.path.join(self.flags, "dryrun", "*", "SMOKE-PLACED.json")):
@@ -604,9 +606,11 @@ def run_replay(rowflow_dir, trace_path, out_dir, max_ticks=None):
             ml = re.search(r" lock=(\S+)", ln)
             lock = ml.group(1) if ml and engine_locks else ""
             blob = tick["rows"].get(rid) or {}
-            est = float((blob.get("manifest") or {}).get("estimate_s") or (blob.get("manifest") or {}).get("window_s") or 600)
+            est = float(blob.get("actual_s") or (blob.get("manifest") or {}).get("estimate_s") or (blob.get("manifest") or {}).get("window_s") or 600)
             a = rf.load_json(rf.armed_path(sb.flags, rid)) or {}
-            sb.sim[rid] = {"start": W.t, "end": W.t + est, "holds": sorted(holds), "regions": regions, "pid": a.get("pid"),
+            me = re.search(r" end=(\S+)", ln)   # the engine's hard end (blob actual_s: a job that runs past its window)
+            gend = _epoch(me.group(1)) if me else None
+            sb.sim[rid] = {"start": W.t, "end": W.t + est, "hard_end": gend, "holds": sorted(holds), "regions": regions, "pid": a.get("pid"),
                            "lock": lock}
             # the engine logs START so heal_grants sees a started grant
             _write(os.path.join(sb.flags, "dryrun", rid, "poller.out"), f"START regions={regions}\n")

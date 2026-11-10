@@ -174,6 +174,15 @@ def decide(rule, metrics):
     return ("pass" if ok else "fail"), values, True, ""
 
 
+def window_end_resumable(m, rc, endline):
+    """A row published resumable: true whose engine ended it at the grant end (rc=75 reason=hard-end, or the job's own
+    rc=75 window exit reason=exited) - not a stop, not the disk floor."""
+    if not m.get("resumable") or rc != 75:
+        return False
+    r = re.search(r"\breason=(\S+)", endline or "")
+    return bool(r) and r.group(1) in ("hard-end", "exited")
+
+
 def _gpu_row(m):
     return any("gpu" in str(m.get(k) or "").lower() or "mi210" in str(m.get(k) or "").lower()
                for k in ("lane", "declared_shape", "regions"))
@@ -329,6 +338,10 @@ def main(argv=None):
     metrics = dict(metrics, rc=rc if rc is not None else "?")
     verdict, values, machine, reason = decide(rule, metrics)
     filed_by = "file_result.py"
+    if window_end_resumable(m, rc, endline) and verdict != "pass":
+        # ONE BOOKING DURATION (pipeline audit 2026-11-10 #3): a resumable row's window end is a normal end
+        verdict, machine = "partial", True
+        reason = "resumable row reached its window end: partial, resumes (republish the next round; the job continues from its checkpoint)"
     if not machine:
         if agent is None:
             print(f"NEEDS-AGENT-VERDICT {rid}: {rule}"); return 4

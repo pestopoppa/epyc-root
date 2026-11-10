@@ -873,7 +873,23 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
     minwin = int(spec.get("min_window_s") or o["min_window"])
     need(minwin == o["min_window"], f"spec min_window_s {minwin} != launcher --min-window {o['min_window']}")
     window = max(minwin + 300, int(est * 1.2) + 300)
+    # ONE BOOKING DURATION (pipeline audit 2026-11-10 #3): optional max_window_s bounds the grant (a row that must fit a
+    # window shorter than its estimate); resumable says a window end is a normal end (filed "partial, resumes").
+    res = spec.get("resumable", False)
+    need(isinstance(res, bool), f"resumable {res!r} must be true or false (true: the job checkpoints and a window end is "
+                                "a normal end, filed as partial; false: the job must finish inside one window)")
+    if spec.get("max_window_s") is not None:
+        try:
+            mx = int(spec["max_window_s"])
+        except (TypeError, ValueError):
+            raise Refused("max_window_s must be whole seconds")
+        need(mx >= minwin + 300, f"max_window_s {mx} < min_window_s {minwin} + 300 (the launcher gate refuses a shorter grant)")
+        window = min(window, mx)
     window = -(-window // 60) * 60
+    need(res or est <= window,
+         f"estimate_s {est} > window_s {window} on a row that is not resumable: it cannot finish inside one grant; "
+         f"raise max_window_s, or declare \"resumable\": true if the job checkpoints and continues on its next grant")
+    book = compute_book_s(est, minwin, window)
     try:
         rank = float(spec.get("priority_rank", 100))
     except (TypeError, ValueError):
@@ -883,6 +899,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         "launcher": {"path": launcher, "sha256": sha256(launcher)}, "engine": {"path": eng, "sha256": sha256(eng)},
         "result_path": result_path, "result_format": fmt, "decision_rule": spec["decision_rule"],
         "handoff_task": spec["handoff_task"], "estimate_s": est, "min_window_s": minwin, "window_s": window,
+        "book_s": book, "resumable": res,
         "gib": int(spec.get("ram_gib") or 48), "ports": sorted(set(o["ports"]) | {int(x) for x in (spec.get("ports") or [])}),
         "priority_rank": rank,
         "scratch_root": scratch, "keep": keep, "stop_file": o["stop"], "workdir": o["workdir"],
@@ -974,6 +991,7 @@ def publish(spec, flags=FLAGS, source=None, allow_legacy_engine=False):
         need(c["shape"] != "gpu-q3" or not held_q3, "gpu-q3 regions must claim only gpu-quiet + 88-95 + 184-191 (operator "
              f"2026-11-05 NARROW: a GPU timing grant never holds q3 cores 72-87, found {','.join(compress(held_q3))}; they stay "
              "grantable to CPU rows beside a GPU timing run); a quieter neighbourhood needs explicit regions + shape_override")
+    check_timing_shape(spec, o, c["shape"])
     cw = claim_wider_refusal(row, c, o)
     need(not cw, cw)
     lint = regions_wider_lint(regions, c, row)
@@ -1058,7 +1076,7 @@ def supersede(flags, row, log=print):
 
 def published_line(row, flags):
     return (f"PUBLISHED {row['id']} lane={row['lane']} regions={row['regions']} window_s={row['window_s']} min_window_s={row['min_window_s']} "
-            f"gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(flags, row['id'])}")
+            f"book_s={row.get('book_s')} resumable={str(bool(row.get('resumable'))).lower()} gib={row['gib']} ports={row['ports']} result={row['result_path']} ({row['result_format']}) -> {ready_path(flags, row['id'])}")
 
 
 def legacy_handoff_task(m):
@@ -1108,7 +1126,8 @@ def spec_from_legacy(manifest, flags=FLAGS, rewrite_engine=True):
     # (derived/bookkeeping fields - window_s, published_*, publisher, engine, stop_file, workdir, schema, ... - are dropped)
     for k in ("shape", "first_progress_s", "smoke_predicate", "unit_key", "dryrun_native_result", "result_format",
               "ports", "busy_fraction", "budget_gib", "total_units", "scratch_inputs", "notes", "coexist_quiet_host",
-              "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by"):
+              "fix_ref", "baseline_ref", "shape_override", "width_justification", "gpu_fence_override", "timing", "gpu_use", "verdict_by",
+              "resumable", "max_window_s"):
         if m.get(k) is not None:
             spec[k] = m[k]
     legacy_class = m.get("admission_class") or m.get("class")
@@ -1602,6 +1621,26 @@ def gpu_timing_row(row, o):
             or str((row or {}).get("timing") or "") in GPU_TIMING_KINDS)
 
 
+def check_timing_shape(spec, o, contract_shape):
+    """Publish gate (coordinator 2026-11-10, vidya-r234-native-sweep-20261104e/f): GPU timing (launcher --role bench, a
+    timing admission_class, a timing kind) makes the contract gpu-q3 and silently overrides a declared shape - the spec
+    said gpu + mi210_0,0-23,184-191 + width_justification, the grant clipped q0 and the job died. Refuse when the contract
+    resolved to gpu-q3 but the declared shape is something else, and name the field to change. (The reverse - declared
+    gpu-q3 without a timing signal - is refused by the "non-timing GPU row books q3" gate; whole-host evidence or a
+    shape_override that resolves a timing row to (quiet-)host is not an override and passes.)"""
+    decl = str(spec.get("shape") or "").strip()
+    if not decl or decl == "gpu-q3" or contract_shape != "gpu-q3":
+        return
+    if not gpu_timing_row({"admission_class": spec.get("admission_class"), "timing": spec.get("timing")}, o):
+        return
+    why = ("launcher --role bench" if (o or {}).get("launch_role") == "bench" else
+           f"admission_class {spec.get('admission_class')}" if spec.get("admission_class") in GPU_TIMING_CLASSES else
+           f"spec timing {spec.get('timing')}")
+    raise Refused(f"declared shape {decl!r} but {why} makes this a GPU-timing row, whose contract is gpu-q3 (gpu-quiet + "
+                  f"q3 cores 88-95 + MI210 host threads 184-191; any other regions are clipped from the grant): set spec "
+                  f"shape \"gpu-q3\" if it times the GPU, or remove {why} if it does not")
+
+
 def row_threads(d, flags=None):
     """declared_threads (>= 1); None when unknown (unknown != 0). Smoke measured_threads is never width evidence."""
     vals = []
@@ -1746,13 +1785,14 @@ def check_gpu_declared(row, o):
 
 
 def _sub_blocks(within=QUARTERS):
-    """Every aligned SUB_CORES-core block (cores + SMT siblings) of the given quarters, never the MI210 host threads."""
+    """Every aligned SUB_CORES-core block (cores + SMT siblings) of the given quarters, never the MI210 host threads and
+    never a block under a smoke pocket (SMOKE_POCKETS)."""
     out = []
     for q in within:
         lo = int(q[1]) * 24
         for a in range(lo, lo + 24, SUB_CORES):
             cs = range(a, a + SUB_CORES)
-            if not any(c + 96 in GPU_HOST_THREADS for c in cs):
+            if not any(c + 96 in GPU_HOST_THREADS or f"t{c + 96}" in POCKET_TOKENS for c in cs):
                 out.append(frozenset({f"c{c}" for c in cs} | {f"t{c + 96}" for c in cs}))
     return out
 
@@ -1938,18 +1978,21 @@ URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank 
 
 # BACKFILL-IF-FITS (operator 2026-11-07): a waiting wide row reserves its regions only until its EARLIEST FEASIBLE START S
 # (the ends of the grants that hold the regions it needs; live smokes count SMOKE_HOLD_S). A lower row may take them iff
-# now + its estimate <= S. S unknown (a needed region busy with no known end), not in the future (expired) or beyond the
+# now + its book_s <= S. S unknown (a needed region busy with no known end), not in the future (expired) or beyond the
 # longest busy window -> NO reservation at all; a persisted drain T in the past never blocks.
 SMOKE_HOLD_S = 1200       # a live smoke's cores free within this bound (the dry-run deadline order of magnitude)
 
-# DRAIN-BY-ESTIMATE: a backfill is admitted ahead of a drain/rank-hold target T by its ESTIMATE plus a margin (admit_s),
-# not by its booked window (a long-window row that runs minutes must not hold a drained device idle). SAFETY: a row
-# admitted that way whose window outlasts T gets a grant whose end= is capped at T (plan.hard_end), so the engine's own
-# hard-end kill (filler_run15 reason=hard-end, rc=75) frees the regions at T even when it overruns its estimate; the drain
-# row still starts at T. A cap that would leave less than min_window_s + the gate margin is never written: such a row is
-# late (window rule).
-ESTIMATE_MARGIN_FRAC = 0.25  # admission margin over the estimate: max(ESTIMATE_MARGIN_S, ESTIMATE_MARGIN_FRAC * estimate)
-ESTIMATE_MARGIN_S = 300
+# ONE BOOKING DURATION (pipeline audit 2026-11-10 #3, operator scope "Scheduling model"): every admission question -
+# backfill ahead of a drain target T, a rank hold, the earliest-start reservation - asks `now + book_s <= T`, where
+#     book_s = clamp(estimate_s * BOOK_K, min_window_s, window_s)
+# is computed ONCE at publish and stored in the row (book_s()). window_s stays the grant length (the engine's hard end).
+# SAFETY kept: a row admitted ahead of T whose window outlasts T gets a grant whose end= is capped at T (plan.hard_end), so
+# the engine's hard-end kill frees the regions at T even when it overruns its booking; a cap that would leave less than
+# min_window_s + the gate margin is never written (that row is not admitted ahead of T).
+# BOOK_K from the data (grants/*.ended 2026-10-27..11-10, actual wall / estimated_wall_s): 381 rc=0 `complete` runs of
+# >= 120 s plus 9 window-killed overruns (counted as uncovered) -> P90 = 0.74; k = 0.75 covers 90.2 % of them (all 753
+# completes incl. sub-2-minute ones: P90 0.43). Owners' estimates are long: the median run uses 14 % of its estimate.
+BOOK_K = 0.75
 CAP_SLACK_S = 300 + 120   # grant_ok_launcher MARGIN_S + the grant's 1-2 min start back-dating / minute flooring
 
 
@@ -1958,13 +2001,21 @@ def hold_s(c):
     return float(c.get("window_s") or c.get("estimate_s") or 0)
 
 
-def admit_s(c):
-    """The duration a backfill is admitted by: estimate + margin, never more than the window (DRAIN-BY-ESTIMATE)."""
-    est, win = float(c.get("estimate_s") or 0), float(c.get("window_s") or 0)
-    if not est:
-        return win or est   # the window rule (a row with no estimate is admitted by its window)
-    a = est + max(ESTIMATE_MARGIN_S, ESTIMATE_MARGIN_FRAC * est)
-    return min(a, win) if win else est
+def compute_book_s(estimate_s, min_window_s, window_s):
+    """book_s = clamp(estimate_s * BOOK_K, min_window_s, window_s), whole seconds."""
+    est, lo, hi = float(estimate_s or 0), float(min_window_s or 0), float(window_s or 0)
+    b = max(est * BOOK_K, lo)
+    return int(min(b, hi) if hi else b)
+
+
+def book_s(c):
+    """The ONE admission duration of a row/candidate: its published book_s; a row published before 2026-11-10 (no
+    book_s) gets the same formula from its estimate/min_window/window, so old and new rows are admitted alike."""
+    if c.get("book_s"):
+        return float(c["book_s"])
+    if not c.get("estimate_s"):
+        return float(c.get("window_s") or 0)   # abstract callers with only a window
+    return float(compute_book_s(c.get("estimate_s"), c.get("min_window_s"), c.get("window_s")))
 
 
 def cap_ok(c, now, T):
@@ -2296,7 +2347,7 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
     the holds that bind c, and the better rows that bind nothing because they are blocked by their own constraint."""
     reserved, holds, skips = set(), [], []
     later = [float(e) for e in grant_ends if float(e) > now]
-    dur = admit_s(c)
+    dur = book_s(c)
     for h in pending:
         if h is c or h is drain or float(h["rank"]) >= float(c["rank"]) or _fits(h, free, ram, gpu_grant_open):
             continue
@@ -2390,12 +2441,12 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.last_drain = (drain, T) if drain else None
     need_r = set().union(*drain["options"]) if drain is not None else set()
     if drain is not None:  # best fit: the longest backfill that still ends by T goes first, so the gap is packed
-        dur = admit_s
+        dur = book_s
         pending = [drain] + sorted([c for c in pending if c is not drain], key=lambda c: (now + dur(c) > T, -dur(c)))
     while pending:
         placed = None
         for c in pending:
-            late = drain is not None and c is not drain and now + admit_s(c) > T
+            late = drain is not None and c is not drain and now + book_s(c) > T
             capd = drain is not None and c is not drain and not late and now + hold_s(c) > T
             if capd and not cap_ok(c, now, T):   # a cap below its min window would be refused at admission: window rule
                 late, capd = True, False
@@ -3130,6 +3181,13 @@ def write_escalation(flags, rid, allrows):
         f.write("\n".join(L))
 
 
+def dryrun_window(d, timeout):
+    """The smoke's own grant length: its first-progress deadline + the stop grace. This is the smoke's DEADLINE, not a
+    booking (admission never reads it; a live smoke counts SMOKE_HOLD_S); it is floored at min_window_s + 300 only
+    because grant_ok_launcher refuses any grant shorter than the launcher's --min-window + MARGIN_S."""
+    return max(int(d.get("min_window_s") or 0) + 300, int(timeout) + STOP_GRACE_S + 300)
+
+
 def dryrun_grant_holds(regions):
     """a dry-run grant books the EXACT core + SMT-sibling tokens of its regions; a whole
     quarter only when the regions name one (a 4-core smoke on 4-7 holds c4-c7,t100-t103, never q0)."""
@@ -3138,7 +3196,7 @@ def dryrun_grant_holds(regions):
         return quarters_of(regs) | {GPU}
     gpu = set()
     cpu = ",".join(t for t in regs.split(",") if t.strip() and not t.strip().startswith("mi210"))
-    toks = cpu_tokens(ws58_cpus(cpu)) if cpu else set()
+    toks = expand(cpu_tokens(ws58_cpus(cpu), gpu_threads=True)) if cpu else set()   # a pocket smoke holds threads only
     whole = {q for q in QUARTERS if expand({q}) - {q} <= toks | {q}} if toks else set()
     return (toks - expand(whole)) | whole | gpu
 
@@ -3297,7 +3355,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     lp = d["launcher"]["path"]
     lsha = sha256(lp)
     timeout = int(smoke_s or d.get("first_progress_s") or d.get("dryrun_timeout_s") or FIRST_PROGRESS_S)
-    window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
+    window = dryrun_window(d, timeout)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
     for stale in ("stop", "ended", "complete", "SMOKE-EXITED.json"):
@@ -4219,6 +4277,7 @@ def host_snapshot(flags, grants=None, rl=None):
     holders = {r: t[len("filler-"):] for r, (s, t) in rl.items() if s != "free" and t.startswith("filler-") and r not in subq}
     for g in grants:
         busy |= g["holds"]
+        busy |= cpu_tokens(ws58_cpus(g.get("regions")), gpu_threads=True) & POCKET_TOKENS   # explicit sibling cpus (48-95,144-191)
         for r in g["holds"]:
             if r in REGIONS:
                 holders.setdefault(r, g["id"])
@@ -4230,6 +4289,27 @@ def host_snapshot(flags, grants=None, rl=None):
 
 # ---------------------------------------------------------------- keeper-scheduled smokes (operator 2026-11-05)
 SMOKE_CPUS = 4
+# SMOKE POCKETS (pipeline audit 2026-11-10 #5, operator scope "Scheduling model"): per quarter, the 4 SMT siblings of its
+# last 4 physical cores (q0 c20-23 -> t116-119, q1 t140-143, q2 t164-167). A whole-quarter grant never runs on them
+# (grant_cpus: a-(a+23),(a+96)-(a+111)), so a pocket costs a quarter booking nothing; sub-quarter rows lose the one 4-core
+# block under each pocket. q3 has none: its last 8 siblings are the MI210 host threads (GPU_HOST_THREADS).
+SMOKE_POCKETS = {"q0": range(116, 120), "q1": range(140, 144), "q2": range(164, 168)}
+POCKET_TOKENS = frozenset(f"t{n}" for r in SMOKE_POCKETS.values() for n in r)
+
+
+def timing_quarters(flags, grants, allrows):
+    """Quarters an open bench/timing grant holds any core of: their pockets stay empty (a smoke on the siblings would
+    perturb the measurement). An unparsable row counts as timing (never risk a measurement)."""
+    out = set()
+    for g in grants:
+        d = allrows.get(g["id"])
+        try:
+            bench = bool(contract_of(d, flags=flags)["bench"]) if d else False
+        except Exception:  # noqa: BLE001
+            bench = True
+        if bench:
+            out |= {q for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
+    return frozenset(out)
 def smoke_queued_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-QUEUED.json")
 def smoke_placed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-PLACED.json")
 
@@ -4241,7 +4321,7 @@ def live_smoke_tokens(flags):
         for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
             r = load_json(p) or {}
             if r.get("pid") and alive(r["pid"]):
-                out |= cpu_tokens(ws58_cpus(r.get("regions"))) | ({GPU} if r.get("gpu") else set())
+                out |= cpu_tokens(ws58_cpus(r.get("regions")), gpu_threads=True) | ({GPU} if r.get("gpu") else set())
     return out
 
 
@@ -4255,66 +4335,52 @@ def cpu_ranges(cs):
     return ",".join(f"{a}-{b}" if b > a else str(a) for a, b in out)
 
 
-def pick_smoke_cpus(free, n=SMOKE_CPUS, keep_whole=0):
-    """n physical cores (with their SMT siblings) of ONE quarter, all genuinely free; a partly used quarter first so a
-    whole free quarter stays whole for a row; never the MI210 host threads; a whole free quarter is broken only while
-    more whole quarters are free than keep_whole (queued whole-quarter rows). None when nothing fits."""
-    best, nwhole = None, sum(1 for q in QUARTERS if q in free)
+def pocket_tokens(q):
+    """The smoke pocket of quarter q: SMOKE_POCKET_THREADS SMT-sibling thread tokens, () for q3."""
+    return frozenset(f"t{n}" for n in SMOKE_POCKETS.get(q, ()))
+
+
+def pick_smoke_cpus(free, n=SMOKE_CPUS, timing_q=frozenset()):
+    """SMOKE POCKETS (pipeline audit 2026-11-10 #5): a <= SMOKE_CPUS-wide smoke runs in a quarter's fixed pocket - 4 SMT
+    sibling threads no quarter booking ever takes (a whole-quarter grant runs on its 24 cores + 16 siblings, the last 8
+    siblings are outside it) and no sub-quarter block is cut from (_sub_blocks). A pocket beside a timing grant
+    (timing_q: quarters a bench/timing grant holds cores of) is never used - its siblings would perturb the measurement;
+    an idle pocket's quarter first (the smoke then has the physical cores to itself). With every pocket busy or beside
+    timing, or a wider smoke: n physical cores (+ siblings) of a PARTLY used quarter, never a whole free one, never the
+    MI210 host threads. None when nothing fits (SMOKE-WAIT)."""
+    if n <= SMOKE_CPUS:
+        best = None
+        for q in QUARTERS:
+            pk = pocket_tokens(q)
+            if not pk or q in timing_q or not pk <= free:
+                continue
+            busy_cores = sum(1 for t in pk if f"c{int(t[1:]) - 96}" not in free)
+            if best is None or (busy_cores, q) < best[0]:
+                best = ((busy_cores, q), sorted(int(t[1:]) for t in pk)[:n])
+        if best:
+            return cpu_ranges(best[1])
+    best = None
     for q in QUARTERS:
-        if q in free and nwhole <= keep_whole:
-            continue
+        if q in free:
+            continue   # a whole free quarter stays whole for a row (its pocket serves the smoke)
         cs = [int(c[1:]) for c in sorted(qcores(q), key=lambda t: int(t[1:]))
-              if c in free and f"t{int(c[1:]) + 96}" in free and int(c[1:]) + 96 not in GPU_HOST_THREADS]
+              if c in free and f"t{int(c[1:]) + 96}" in free and int(c[1:]) + 96 not in GPU_HOST_THREADS
+              and f"t{int(c[1:]) + 96}" not in POCKET_TOKENS]
         if len(cs) < n:
             continue
-        key = (q in free, q != "q3", q)   # a partly used quarter first, then q3's non-GPU cores
+        key = (q != "q3", q)   # q3's non-GPU cores first
         if best is None or key < best[0]:
             best = (key, cs[:n])
     return cpu_ranges(best[1]) if best else None
 
 
-def whole_quarter_reservation(cands, free, ram_gib):
-    """Whole quarters queued whole-quarter rows may keep away from smokes (classfix, operator 2026-11-05 "fix it"): a row
-    counts only when one of its options is wholly free now (its quarters AND every other token: gpu-quiet, the MI210 host
-    threads) and its RAM fits - a row blocked on a held GPU or a busy quarter reserves nothing. Capped at the whole quarters free this tick."""
-    want = 0
-    for c in cands:
-        if not c["options"] or not all(any(t in QUARTERS for t in o) for o in c["options"]):
-            continue
-        if float(ram_gib) - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
-            continue
-        nq = [sum(1 for t in o if t in QUARTERS) for o in c["options"] if expand(set(o)) <= free]
-        if nq:
-            want += max(1, min(nq))
-    return min(want, sum(1 for q in QUARTERS if q in free))
-
-
-def smoke_fill_rank(flags, rid, free, qpath=None):
-    """0: the row behind this queued smoke could be granted onto regions free right now (an option fits them);
-    1: one of its options touches a free region; 2: none / unknown. A PASS is what makes a row grantable, so smoking
-    the rows that would fill idle regions first turns idle compute into work soonest. Ties keep FIFO (queued_at)."""
-    row = (load_json(ready_path(flags, rid)) or load_json(os.path.join(dry_dir(flags, rid), "unpublished.json"))
-           or ((load_json(qpath) or {}).get("spec") if qpath else None) or {})
-    if not row:
-        return 2
-    try:
-        opts = [set(expand(set(o))) for o in contract_of(row, flags=flags)["options"] if o]
-    except Exception:  # noqa: BLE001 - an unparsable row keeps its FIFO place behind the known fillers
-        return 2
-    fr = set(free)
-    if any(o <= fr for o in opts):
-        return 0
-    return 1 if any(o & fr for o in opts) else 2
-
-
-def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), keep_whole=0):
+def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), timing_q=frozenset()):
     """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets n free cores, and its smoke starts
     detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated in place. No free cores is
     WAIT (logged), never a failure. Returns the placed (rid, cpus)."""
     placed = []
     qs = sorted(glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")),
-                key=lambda p: (smoke_fill_rank(flags, os.path.basename(os.path.dirname(p)), free, p),
-                               (load_json(p) or {}).get("queued_at") or "", p))
+                key=lambda p: ((load_json(p) or {}).get("queued_at") or "", p))   # FIFO: pockets make order moot
     for q in qs:
         rid = os.path.basename(os.path.dirname(q))
         pl = load_json(smoke_placed_path(flags, rid)) or {}
@@ -4329,12 +4395,12 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
         if gt and GPU not in free:   # a /dev/kfd-capable smoke queues behind every GPU holder (exclusive grants first)
             log(f"SMOKE-WAIT {rid}: its job can touch the GPU and gpu-quiet is held; stays queued (not a failure)")
             continue
-        cpus = pick_smoke_cpus(free - reserved, want, keep_whole)
+        cpus = pick_smoke_cpus(free - reserved, want, timing_q)
         if not cpus:
-            log(f"SMOKE-WAIT {rid}: no {want} free cores outside the whole quarters {keep_whole} queued row(s) need; "
-                "stays queued (not a failure)")
+            log(f"SMOKE-WAIT {rid}: every smoke pocket is busy or beside a timing grant and no partly used quarter has "
+                f"{want} free cores; stays queued (not a failure)")
             continue
-        toks = cpu_tokens(cpus) | ({GPU} if gt else set())
+        toks = cpu_tokens(cpus, gpu_threads=True) | ({GPU} if gt else set())
         free -= toks
         free -= {qq for qq in QUARTERS if expand({qq}) & toks}
         if dry:
@@ -4473,14 +4539,7 @@ def reconcile_dryruns(flags, log=print, now=None, allrows=None):
             dl = iso_epoch(dict(re.findall(r"(\w+)=(\S+)", head1(grant) or "")).get("end"))
         if dl is None and r.get("started"):   # pre-hotfix RUNNING.json with its grant already gone: the window dryrun_run used
             row = allrows.get(rid) or {}
-            win = max(int(row.get("min_window_s") or 0) + 300,
-                      int(row.get("first_progress_s") or FIRST_PROGRESS_S) + STOP_GRACE_S + 300) if row else 6 * 3600
-            st0 = iso_epoch(r["started"])
-            dl = st0 + win if st0 else None
-        if dl is None and r.get("started"):   # pre-hotfix RUNNING.json with its grant already gone: the window dryrun_run used
-            row = allrows.get(rid) or {}
-            win = max(int(row.get("min_window_s") or 0) + 300,
-                      int(row.get("first_progress_s") or FIRST_PROGRESS_S) + STOP_GRACE_S + 300) if row else 6 * 3600
+            win = dryrun_window(row, int(row.get("first_progress_s") or FIRST_PROGRESS_S)) if row else 6 * 3600
             st0 = iso_epoch(r["started"])
             dl = st0 + win if st0 else None
         started = any("START regions=" in l for l in tail(os.path.join(dd, "launcher.out"), 400)[-200:])
@@ -4528,7 +4587,7 @@ def idle_partial_quarters(flags, free, busy, grants, holders):
         for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
             r = load_json(p) or {}
             tag = f"smoke {os.path.basename(os.path.dirname(p))}" + ("" if proc_alive(r.get("pid")) else f" (pid {r.get('pid')} dead)")
-            for t in cpu_tokens(ws58_cpus(r.get("regions") or "")):
+            for t in cpu_tokens(ws58_cpus(r.get("regions") or ""), gpu_threads=True):
                 owners.setdefault(t, set()).add(tag)
     out = {}
     for q in QUARTERS:
@@ -4630,6 +4689,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         cands.append({"id": rid, "kind": kind, "lane": d["lane"], "rank": row_rank(d), "lane_count": counts[d["lane"]],
                       "gib": int(d.get("gib") or 0), "bench": k["bench"], "options": k["options"], "shape": k["shape"], "window_s": window,
                       "estimate_s": int(d.get("estimate_s") or 0), "min_window_s": int(d.get("min_window_s") or 0),
+                      "book_s": int(book_s(d)), "resumable": bool(d.get("resumable")),
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
                       "claim": k["claim"]})
@@ -4665,9 +4725,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
             for c in held_back:
                 log(f"WAIT {c['id']}: gpu-quiet EXCLUSIVE needs a quiet device: {gwhy}")
-    wholeq = whole_quarter_reservation(cands, free, mem_available_gib())
     if not admit_hold:
-        place_smokes(flags, free, log, dry=dry, keep_whole=wholeq)
+        place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows))
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
@@ -4760,7 +4819,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                 gl = write_grant(flags, rid, regions, opt, win, (c.get("explicit_cpus") or lock_cpus(opt)) if c.get("lock") and c.get("claim") else "",
                                  end_cap=end_cap)
                 if end_cap:
-                    log(f"HARD-END-CAP {rid}: admitted by estimate {int(d.get('estimate_s') or 0)}s ahead of "
+                    log(f"HARD-END-CAP {rid}: admitted by book_s {int(book_s(d))}s ahead of "
                         f"{dt.datetime.fromtimestamp(end_cap, dt.timezone.utc):%H:%MZ}; grant ends there (engine hard-end kills an overrun)")
                 atomic_json(granted_path(flags, rid), {"id": rid, "at": now_iso(), "regions": regions, "pid": pid})  # resets the arm-fail count
                 log(f"GRANT {rid} {gl} ({line[:160]})")

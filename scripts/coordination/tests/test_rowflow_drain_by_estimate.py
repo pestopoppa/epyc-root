@@ -43,10 +43,13 @@ class DrainByEstimate(unittest.TestCase):
         self.assertEqual(rf.plan.last_drain[1], T)
         self.assertEqual(rf.plan.hard_end, {"race-eqv-gpu-r3": T})
 
-    def test_estimate_plus_margin_past_T_waits(self):
-        # 1.8 h estimate + 25% margin = 2.25 h > 2 h to T
-        a, _, _ = self.run_plan([wide(), cand("long", [{rf.GPU}], est=1.8 * H)])
+    def test_book_s_past_T_waits(self):
+        # audit 2026-11-10 #3: book_s = 0.75 * 2.8 h = 2.1 h > 2 h to T (1.8 h now books 1.35 h and is admitted, capped)
+        a, _, _ = self.run_plan([wide(), cand("long", [{rf.GPU}], est=2.8 * H)])
         self.assertEqual(a, [])
+        a, _, _ = self.run_plan([wide(), cand("was-long", [{rf.GPU}], est=1.8 * H)])
+        self.assertEqual({c["id"] for c, _ in a}, {"was-long"})
+        self.assertEqual(rf.plan.hard_end, {"was-long": T})
 
     def test_margin_has_a_floor(self):
         # est 1h30m + 22.5m <= T; est 60 s + the 300 s floor > 300 s to T

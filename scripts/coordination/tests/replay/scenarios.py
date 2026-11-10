@@ -10,6 +10,7 @@ from replay_lib import GPU, QUARTERS, TraceWriter, _iso, contract_lite, cpu_set,
 T0 = 1793836800.0   # 2026-11-05T00:00:00Z
 TICK = 120
 JOB = "/mnt/raid0/llm/tmp/replay-fixture"
+POCKETS = set(range(116, 120)) | set(range(140, 144)) | set(range(164, 168))   # rowflow SMOKE_POCKETS (audit 2026-11-10 #5)
 
 
 def launcher(rid, cls="cpu", claim="", gpu_quiet="", role="", extra="", job_text=None, nofold=False):
@@ -313,7 +314,7 @@ def sc_declared_shape(path):
 
 
 def sc_smoke_packing(path):
-    """PACKING (operator "fix it" 2026-11-05): a 4-core smoke and two whole-quarter rows queued; q2 foreign, q3 partly used
+    """(2026-11-10: a smoke pocket now also satisfies this.) PACKING (operator "fix it" 2026-11-05): a 4-core smoke and two whole-quarter rows queued; q2 foreign, q3 partly used
     by a GPU row's host threads. The smoke must land on q3's non-GPU cores and both whole-quarter rows get q0 + q1 the
     same tick; with no partly used quarter (variant: q2 + q3 foreign) the smoke waits rather than break a quarter."""
     gpu = row("kvu-gpu-work", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, est=7200, extra="llama-server -t 8")
@@ -337,8 +338,8 @@ def sc_smoke_packing(path):
         else:
             import re as _re
             cs = cpu_set(_re.search(r"cpus=(\S+)", pl[0]).group(1))
-            if {c % 96 for c in cs} - set(range(72, 88)):
-                out.append(f"smoke placed on {sorted(cs)[:8]}... outside q3's non-GPU cores")
+            if not (cs <= POCKETS or not {c % 96 for c in cs} - set(range(72, 88))):
+                out.append(f"smoke placed on {sorted(cs)[:8]}... outside the smoke pockets and q3's non-GPU cores")
         return out
     return write(path, ticks), check
 
@@ -499,8 +500,10 @@ def sc_cpu_whole_row_reservation_holds(path):
     def check(d):
         out = [f"whole-quarter row {rid} not granted on tick 0" for rid in ("cpu-whole-a", "cpu-whole-b")
                if not _granted(d, rid) or _granted(d, rid)[0][0] > 0]
-        if any(l.startswith("SMOKE-PLACE smoke-z") for x in d[:1] for l in x["lines"]):
-            out.append("smoke broke a whole quarter a runnable CPU row needed")
+        import re as _re
+        for l in (l for x in d[:1] for l in x["lines"] if l.startswith("SMOKE-PLACE smoke-z")):
+            if not cpu_set(_re.search(r"cpus=(\S+)", l).group(1)) <= POCKETS:
+                out.append("smoke broke a whole quarter a runnable CPU row needed")
         return out
     return write(path, [({"cpu-whole-a": r1, "cpu-whole-b": r2, "smoke-z": s}, world)] * 3), check
 
@@ -852,7 +855,117 @@ def sc_backfill_expired_drain(path):
     return path, check
 
 
+
+# ---------------------------------------------------------------------------------------------- scheduling model (audit 2026-11-10 C)
+def _held_ticks(d, rid):
+    """Ticks rid's simulated job was open (grant tick to the tick its engine ended it)."""
+    return sum(1 for x in d if rid in x["open_after"])
+
+
+def _drain_world(extra):
+    """LSA rows hold q0+q1 (est 2 h -> grant end ~2 h 15 m); the whole-host row c7 drains for them; `extra` backfills."""
+    rows = _backfill_rows(gpu=False)
+    rows = {k: rows[k] for k in ("lsa-r8-dense", "lsa-r8-pca", "c7-code28k-r3")}
+    for k in ("lsa-r8-dense", "lsa-r8-pca"):
+        rows[k]["manifest"].update(estimate_s=7200, window_s=8100)
+    lsa = {k: rows[k] for k in ("lsa-r8-dense", "lsa-r8-pca")}
+    return lsa, dict(rows, **extra)
+
+
+def sc_race_eqv_books_by_estimate(path):
+    """race-eqv-gpu-r3-20261109 (11-10 04:33-06:38): a row whose estimate overstates its run could not pass a drain and ran
+    7 minutes once admitted. Shape-equivalent on q2: estimate 9000 s, drain start ~2 h 15 m away; the old rule admitted by
+    estimate + 25 % (11250 s, window 9900 s) and held q2 idle; book_s = 0.75 * 9000 = 6750 s fits, so it is admitted with
+    its grant end capped at the drain start and runs its real 7 minutes."""
+    r = row("race-eqv-r3-shape", regions="any-of q2", extra="make -j 24", est=9000, rank=60,
+            man={"window_s": 9900, "min_window_s": 600})
+    r["actual_s"] = 420
+    lsa, rows = _drain_world({"race-eqv-r3-shape": r})
+    ticks = [(lsa, {})] + [(rows, {})] * 6
+
+    def check(d):
+        g = _granted(d, "race-eqv-r3-shape")
+        if not g or g[0][0] > 1:
+            return ["race-eqv-r3-shape not admitted ahead of the drain by its book_s (q2 idled behind the drain)"]
+        gl = [l for l in d[g[0][0]]["lines"] if l.startswith("GRANT race-eqv-r3-shape ")]
+        lsa = [l for l in d[0]["lines"] if l.startswith("GRANT lsa-r8-dense ")]
+        end = lambda l: l.split(" end=")[1].split()[0]   # noqa: E731
+        if not gl or not lsa or end(gl[0]) != end(lsa[0]):
+            return ["admitted ahead of the drain without its grant end capped at the drain start"]
+        if _held_ticks(d, "race-eqv-r3-shape") * TICK > 420 + 2 * TICK:
+            return ["did not end at its real 7-minute run"]
+        return []
+    return write(path, ticks), check
+
+
+def sc_resumable_window_end(path):
+    """ak-c10-q38fn-floor-r2-20261110 ran out of window at pairs-5 of 24: a resumable row whose job outlasts its window
+    ends at the grant end (hard-end rc=75, a normal end for it), never a FAIL, and is not re-granted by the keeper."""
+    r = row("ak-floor-resumable", regions="any-of q0", extra="make -j 24", est=4900, rank=50,
+            man={"resumable": True, "window_s": 6180, "min_window_s": 600})
+    r["actual_s"] = 4 * 4900
+    ticks = [({"ak-floor-resumable": r}, {})] * 60
+
+    def check(d):
+        out = []
+        g = _granted(d, "ak-floor-resumable")
+        if len(g) != 1:
+            out.append(f"granted {len(g)} times (want exactly 1)")
+        if not 0 < _held_ticks(d, "ak-floor-resumable") * TICK <= 6180 + 2 * TICK:
+            out.append("the job was not ended at its window")
+        if any("ak-floor-resumable" in f for x in d for f in x["fails_new"]):
+            out.append("a resumable window end was recorded as a FAIL")
+        return out
+    return write(path, ticks), check
+
+
+def sc_overrun_capped_at_drain(path):
+    """c10-fold-cpu-q38pp-r2-20261109 ran out of window after 4 of 6 rounds. A non-resumable row admitted ahead of a drain
+    that overruns its estimate is still ended at the drain start (the kept hard-end safety): the drain row starts on time."""
+    r = row("c10-fold-overrun", regions="any-of q2", extra="make -j 24", est=1800, rank=60,
+            man={"window_s": 2460, "min_window_s": 600})
+    r["actual_s"] = 3 * 3600
+    lsa, rows = _drain_world({"c10-fold-overrun": r})
+    rows["c7-code28k-r3"]["manifest"]["estimate_s"] = 600
+    ticks = [(lsa, {})] + [(rows, {})] * 90
+
+    def check(d):
+        g = _granted(d, "c10-fold-overrun")
+        if not g:
+            return ["fixture: the overrun row was never admitted"]
+        if not 0 < _held_ticks(d, "c10-fold-overrun") * TICK <= 2460 + 2 * TICK:
+            return ["overrun row held q2 past its window"]
+        return []
+    return write(path, ticks), check
+
+
+def sc_smoke_pockets_no_starvation(path):
+    """142 SMOKE-WAIT in two days ("no 4 free cores outside the whole quarters N queued rows need") while regions idled:
+    with q2 + q3 foreign and two whole-quarter rows queued, the rows take q0 + q1 AND both smokes run on tick 0 in the
+    q0 / q1 pockets."""
+    r1 = row("pk-whole-a", extra="make -j 16", est=3600)
+    r2 = row("pk-whole-b", extra="make -j 16", est=3600)
+    sm = {}
+    for i, sid in enumerate(("pk-smoke-1", "pk-smoke-2")):
+        b = row(sid, passed=False, extra="python3 x.py --workers 2")
+        b["smoke_queued"] = {"id": sid, "queued_at": _iso(T0 + i), "cpus": 4}
+        sm[sid] = b
+    world = {"foreign": {"q2": "foreign-c", "q3": "foreign-d"}}
+
+    def check(d):
+        out = [f"{rid} not granted on tick 0" for rid in ("pk-whole-a", "pk-whole-b")
+               if not _granted(d, rid) or _granted(d, rid)[0][0] > 0]
+        for sid in sm:
+            if not any(l.startswith(f"SMOKE-PLACE {sid}") for l in d[0]["lines"]):
+                out.append(f"{sid} not placed on tick 0 (starved)")
+        return out
+    return write(path, [(dict({"pk-whole-a": r1, "pk-whole-b": r2}, **sm), world)] * 3), check
+
 SCENARIOS = {
+    "sched-race-eqv-books-by-estimate": sc_race_eqv_books_by_estimate,
+    "sched-resumable-window-end": sc_resumable_window_end,
+    "sched-overrun-capped-at-drain": sc_overrun_capped_at_drain,
+    "sched-smoke-pockets-no-starvation": sc_smoke_pockets_no_starvation,
     "backfill-if-fits-lsa-whole-host": sc_backfill_if_fits,
     "backfill-reserve-binds-long-row": sc_backfill_reserve_binds,
     "backfill-expired-drain-never-blocks": sc_backfill_expired_drain,

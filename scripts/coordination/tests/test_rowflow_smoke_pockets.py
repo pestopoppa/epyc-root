@@ -1,4 +1,5 @@
-"""Keeper audit 2026-11-10 fix 8: queued smokes whose row could fill a region idle NOW are placed first; ties stay FIFO.
+"""Pipeline audit 2026-11-10 #5 (smoke pockets, replaces the fix-8 fill-first ordering): queued smokes are placed FIFO into
+the per-quarter SMT pockets, so whole free quarters stay whole for rows and smokes never wait for them.
 Temp flags only; place_smokes runs dry (nothing is started)."""
 import os
 import sys
@@ -32,25 +33,25 @@ class SmokeFillOrder(unittest.TestCase):
         placed = rf.place_smokes(self.flags, set(free), logs.append, dry=True)
         return [rid for rid, _ in placed]
 
-    def test_rank(self):
-        self.queue("fills", "48-71", "2026-11-10T01:00Z")
-        self.queue("busy", "0-23", "2026-11-10T00:00Z")
-        free = free_minus("q0", "q1", "q3")
-        self.assertEqual(rf.smoke_fill_rank(self.flags, "fills", free), 0)
-        self.assertEqual(rf.smoke_fill_rank(self.flags, "busy", free), 2)
-        self.assertEqual(rf.smoke_fill_rank(self.flags, "unknown", free), 2)
+    def test_three_smokes_run_at_once_with_every_quarter_whole(self):
+        for i, rid in enumerate(("a", "b", "c", "d")):
+            self.queue(rid, "0-23", f"2026-11-10T0{i}:00Z")
+        logs = []
+        placed = rf.place_smokes(self.flags, set(ALL), logs.append, dry=True)
+        self.assertEqual(placed, [("a", "116-119"), ("b", "140-143"), ("c", "164-167")])
+        self.assertTrue(any(l.startswith("SMOKE-WAIT d:") for l in logs))   # every quarter whole: d waits, none broken
 
-    def test_idle_filler_goes_before_an_older_smoke(self):
-        self.queue("old-q0", "0-23", "2026-11-10T00:00Z")
-        self.queue("new-q2", "48-71", "2026-11-10T01:00Z")
-        # q0 busy except c20-c23 (smoke room), q2 whole free: the q2 row's smoke is placed first
-        free = free_minus("q0", "q1", "q3") | {f"c{n}" for n in range(20, 24)} | {f"t{n}" for n in range(116, 120)}
-        self.assertEqual(self.order(free)[0], "new-q2")
-
-    def test_fifo_kept_without_fill_signal(self):
+    def test_fifo(self):
         self.queue("a", "0-23", "2026-11-10T00:00Z")
         self.queue("b", "48-71", "2026-11-10T01:00Z")
-        self.assertEqual(self.order(ALL), ["a", "b"])   # both fill: FIFO
+        self.assertEqual(self.order(ALL), ["a", "b"])
+
+    def test_wider_smoke_uses_a_partly_used_quarter(self):
+        os.makedirs(rf.dry_dir(self.flags, "w"), exist_ok=True)
+        rf.atomic_json(rf.smoke_queued_path(self.flags, "w"), {"id": "w", "queued_at": "x", "cpus": 8})
+        free = free_minus("q0") | {f"c{n}" for n in range(0, 8)} | {f"t{n}" for n in range(96, 104)}
+        logs = []
+        self.assertEqual(rf.place_smokes(self.flags, free, logs.append, dry=True), [("w", "0-7")])
 
 
 if __name__ == "__main__":

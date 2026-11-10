@@ -46,9 +46,17 @@ class BackfillIfFits(unittest.TestCase):
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 10 * H)
 
     def test_row_ending_after_the_wide_start_waits(self):
-        a, idle, _ = self.run_plan([wide(), cand("q2-12h", [{"q2"}], est=12 * H)], lsa_ends(NOW + 10 * H), [NOW + 10 * H])
+        """book_s = 0.75 * 14 h = 10.5 h > the 10 h start: waits."""
+        a, idle, _ = self.run_plan([wide(), cand("q2-14h", [{"q2"}], est=14 * H)], lsa_ends(NOW + 10 * H), [NOW + 10 * H])
         self.assertEqual(ids(a), set())
         self.assertIn("draining for host c7-wide", idle["q2"])
+
+    def test_row_booked_inside_the_wide_start_is_admitted_capped(self):
+        """ONE BOOKING DURATION (audit 2026-11-10 #3): a 12 h estimate books 9 h <= the 10 h start, so it is admitted,
+        and its 12 h window is capped at the start (the hard-end safety)."""
+        a, _, _ = self.run_plan([wide(), cand("q2-12h", [{"q2"}], est=12 * H)], lsa_ends(NOW + 10 * H), [NOW + 10 * H])
+        self.assertEqual(ids(a), {"q2-12h"})
+        self.assertAlmostEqual(rf.plan.hard_end["q2-12h"], NOW + 10 * H)
 
     def test_start_is_the_needed_regions_end_not_any_grant(self):
         """A long grant on regions the wide row does not need never pushes its start later."""

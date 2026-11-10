@@ -190,7 +190,7 @@ class DrainBackfillTests(unittest.TestCase):
     def test_no_slide_and_gap_packed(self):
         now = 1000.0
         quiet = self._c("akx", [rf.REGIONS], 3600, "quiet-host")
-        gpu_long = self._c("kvu16a", [{rf.GPU}], 1800)       # would end after T on a region the quiet row needs
+        gpu_long = self._c("kvu16a", [{rf.GPU}], 2400)       # books 0.75*2400 = 1800 s > T on a region the quiet row needs
         q_short = self._c("short", [{"q1"}], 600)
         q_longer = self._c("longer", [{"q1"}], 1200)
         free = {"q1", "q2", rf.GPU}

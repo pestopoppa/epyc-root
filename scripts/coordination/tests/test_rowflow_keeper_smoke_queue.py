@@ -44,8 +44,10 @@ class QueueAndPlaceTests(unittest.TestCase):
         self.assertTrue(os.path.exists(rf.smoke_queued_path(self.flags, self.rid)))
         self.assertFalse(os.path.exists(rf.ready_path(self.flags, self.rid)), "unpublished until PASS")
         logs = []
+        # whole host held (npd1-step5) AND every smoke pocket busy (audit 2026-11-10 #5: a whole-host grant alone leaves the
+        # pockets free - its engine pins each quarter to 24 cores + 16 siblings - see test_rowflow_smoke_pockets.py)
         with mock.patch.object(rf.subprocess, "Popen", side_effect=AssertionError("nothing is free")):
-            placed = rf.place_smokes(self.flags, free_minus(*rf.QUARTERS), logs.append)   # whole host held (npd1-step5)
+            placed = rf.place_smokes(self.flags, free_minus(*rf.QUARTERS) - rf.POCKET_TOKENS, logs.append)
         self.assertEqual(placed, [])
         self.assertTrue(any(l.startswith("SMOKE-WAIT c1") for l in logs), logs)
         self.assertEqual(rf.fail_paths(self.flags, self.rid), [])
@@ -53,7 +55,7 @@ class QueueAndPlaceTests(unittest.TestCase):
 
     def test_placed_on_the_next_tick_once_4_cpus_are_free(self):
         self._queue()
-        free = free_minus("q0", "q1", "q3") - rf.expand({"q2"}) | {f"c{n}" for n in range(48, 52)} | {f"t{n}" for n in range(144, 148)}
+        free = (free_minus("q0", "q1", "q3") - rf.expand({"q2"}) - rf.POCKET_TOKENS) | {f"c{n}" for n in range(48, 52)} | {f"t{n}" for n in range(144, 148)}
 
         class P:
             pid = os.getpid()   # alive: the placed smoke's cpus then count as busy in the next snapshot
@@ -70,7 +72,8 @@ class QueueAndPlaceTests(unittest.TestCase):
             self.assertEqual(rf.place_smokes(self.flags, set(ALL), print), [], "already running: not placed twice")
 
     def test_pick_prefers_a_partly_used_quarter_and_never_the_mi210_host_threads(self):
-        self.assertEqual(rf.pick_smoke_cpus(free_minus("c0")), "1-4")
+        self.assertEqual(rf.pick_smoke_cpus(free_minus("c0")), "116-119")   # a pocket first (audit 2026-11-10 #5)
+        self.assertEqual(rf.pick_smoke_cpus(free_minus("c0") - rf.POCKET_TOKENS), "1-4")
         only_q3_tail = {f"c{n}" for n in range(88, 96)} | {f"t{n}" for n in range(184, 192)}
         self.assertIsNone(rf.pick_smoke_cpus(only_q3_tail))
 
