@@ -3147,7 +3147,8 @@ Design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../d
 - [ ] **AGG-0.4 — Phase-0 run (one CPU quarter + one MI210 window, normal grants).** P-large ingest on
   worker_general with M1 and the M5 manifest check computed before the GPU window is requested; then audit, the
   30 P-large questions, B1 on 30, B2 on 5, P-small and B-today on 10. Done when M1-M5 and all arms are filed with
-  the frozen rules' sha256 and a belief-kernel row.
+  the frozen rules' sha256 and a belief-kernel row. [inference] est 21600 s (CPU arms ran about 6 h).
+  - 2026-11-10: CPU arms row agg0-arms-cpu-20261110 filed PASS (M1 after L4d = 0.92 ≥ 0.70, no futility stop); GPU arms row agg0-arms-gpu-20261110 published, awaiting a GPU gap; the box ticks when the combined verdict lands. [no-belief: row verdict filed by agent]
   - Progress 2026-11-10 (not ticked, autopilot-backlog-session): the arms are wired and the jobs are sealed, but nothing has run.
     - Orchestrator `2a422b7c` adds `src/aggregation/llm_backend.py`, a private llama-server backend on `/v1/chat/completions` with GBNF grammar, cache_prompt, id_slot and an n_predict cap. Its L4a gate reads the yes/no logprobs via `typed_decisions.confidence`, and a context overflow is recorded as `out_of_window`, never truncated.
     - Research `6877ac57c` + `5ec8e1966` add `phase0_arms.py`, which `run_phase0.py --phase cpu|gpu-audit|gpu-answers|score` drives. Coverage: M5 manifest first, lazy L4 with resumable fsynced units, M1 and futility 2, the 27B audit, P-small / B-today / P-large (size-rule planner, typed call stubbed) / B1 / B2, and the mechanical verdict via `agg_phase0.score`.
