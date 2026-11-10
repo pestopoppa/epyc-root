@@ -12,7 +12,7 @@ For every unfiled run in filing-due.jsonl (grants/<id>.ended|.complete, no filin
     filer's queue: it files with `file_result.py <id> --verdict-json V`) and ONE alarm per newly queued batch.
 Each run is attempted once (filing-autofile.state.json); never writes .FILED/.verdict.json itself; kills nothing.
 """
-import argparse, datetime, json, os, subprocess, sys, time
+import glob, argparse, datetime, json, os, subprocess, sys, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -110,6 +110,12 @@ def due_rows(flags):
                     seen.setdefault(r["id"], r)
     except OSError:
         pass
+    # filing_watch.sh only scans grants/; a smoke that completed the whole job may have no grants/<id>.ended copy.
+    for d in glob.glob(os.path.join(flags, "dryrun", "*", "completed-smoke-filing.json")):
+        rid = os.path.basename(os.path.dirname(d))
+        ep = rid not in seen and file_result.smoke_complete_end(flags, rid)
+        if ep and not os.path.exists(os.path.join(flags, "grants", rid + ".ended")):
+            seen[rid] = {"id": rid, "ended_file": ep, "source": "smoke-complete"}
     return list(seen.values())
 
 

@@ -152,7 +152,7 @@ def load_manifest(flags, rid):
             m = json.load(fh)
         with open(receipt) as fh:
             p = json.load(fh)
-        if (os.path.isfile(complete) and isinstance(m, dict) and isinstance(p, dict)
+        if ((os.path.isfile(complete) or smoke_complete_end(flags, rid)) and isinstance(m, dict) and isinstance(p, dict)
                 and m.get("schema") == "epyc.row.v3" and m.get("id") == rid
                 and p.get("id") == rid and p.get("job_complete") is True
                 and re.fullmatch(r"[0-9a-f]{64}", str(p.get("launcher_sha256") or ""))
@@ -166,7 +166,39 @@ def load_manifest(flags, rid):
     return None, None
 
 
+def smoke_complete_end(flags, rid):
+    """2026-11-10: a dry-run smoke that completed the WHOLE job (publish_row.file_if_complete) leaves
+    dryrun/<id>/{complete,ended,completed-manifest.json,completed-smoke-filing.json} and a PASS.json with
+    job_complete=true. When the grants/<id>.ended copy is missing, dryrun/<id>/ended IS the end record.
+    A failed smoke (no complete / no job_complete) or a smoke still in flight (no ended) never qualifies."""
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", str(rid)):
+        return None
+    dd = os.path.join(flags, "dryrun", rid)
+    if not all(os.path.isfile(os.path.join(dd, n)) for n in
+               ("complete", "ended", "completed-manifest.json", "completed-smoke-filing.json", "PASS.json")):
+        return None
+    try:
+        with open(os.path.join(dd, "PASS.json")) as fh:
+            p = json.load(fh)
+        with open(os.path.join(dd, "completed-smoke-filing.json")) as fh:
+            r = json.load(fh)
+        with open(os.path.join(dd, "ended"), errors="replace") as fh:
+            line = fh.readline()
+    except (OSError, ValueError):
+        return None
+    if not (isinstance(p, dict) and p.get("id") == rid and p.get("job_complete") is True
+            and isinstance(r, dict) and r.get("id") == rid and re.search(r"\brc=0\b", line)):
+        return None
+    return os.path.join(dd, "ended")
+
+
+def end_source(path):
+    """'smoke-complete' when the end record came from dryrun/<id>/ended, else 'grant'."""
+    return "smoke-complete" if path and os.path.basename(os.path.dirname(os.path.dirname(path))) == "dryrun" else "grant"
+
+
 def load_end(flags, rid):
+    # An existing grants/<id>.ended|.complete always takes precedence over the smoke-complete fallback.
     for suf in (".ended", ".complete"):
         p = os.path.join(flags, "grants", rid + suf)
         if os.path.isfile(p):
@@ -174,6 +206,11 @@ def load_end(flags, rid):
                 line = fh.readline().strip()
             m = re.search(r"\brc=(\d+)", line)
             return p, (int(m.group(1)) if m else (0 if suf == ".complete" else None)), line
+    p = smoke_complete_end(flags, rid)
+    if p:
+        with open(p, errors="replace") as fh:
+            line = fh.readline().strip()
+        return p, 0, line
     return None, None, ""
 
 
@@ -365,7 +402,7 @@ def main(argv=None):
         print(f"ERROR {rid}: no manifest in {flags}/ready/ or eligible completed-smoke archive", file=sys.stderr); return 2
     ep, rc, endline = load_end(flags, rid)
     if ep is None:
-        print(f"ERROR {rid}: no grants/{rid}.ended|.complete in {flags}", file=sys.stderr); return 2
+        print(f"ERROR {rid}: no grants/{rid}.ended|.complete (or completed-smoke dryrun/{rid}/ended) in {flags}", file=sys.stderr); return 2
     agent = None
     if a.verdict_json:
         try:
@@ -403,7 +440,7 @@ def main(argv=None):
            "verdict": {"status": "filed", "kind": "science", "native_result_sha256": sha or hashlib.sha256(b"").hexdigest(),
                        "result": verdict}, "native_result_path": result_path, "result_exists": sha is not None,
            "row_verdict": verdict, "rule": rule, "machine_checkable": machine, "values": values, "rc": rc, "end_line": endline,
-           "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
+           "end_record": ep, "source": end_source(ep), "result_path": result_path, "result_format": fmt, "handoff_task": m.get("handoff_task"), "manifest": mp,
            "filed_by": filed_by, "reason": reason, "agent_verdict": agent, "dry_run": a.dry_run,
            "answer": (agent or {}).get("answer") or a.answer}
     kt = keep_tail_report(m, metrics, rid, flags)
@@ -411,7 +448,8 @@ def main(argv=None):
         rec["keep_tail"] = kt
     rec["tokens"] = token_accounting(m, flags)
     done = os.path.join(flags, "filing-done")
-    summary = f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}" + (" (dry-run)" if a.dry_run else "")
+    summary = (f"FILED {rid}: {verdict} rc={rc} rule={rule!r} values={json.dumps(values)} by={filed_by}"
+               + (" source=smoke-complete" if end_source(ep) == "smoke-complete" else "")) + (" (dry-run)" if a.dry_run else "")
     print(summary)
     if a.dry_run:
         print("SUGGESTED-TICK " + tick_line(rid, rc, verdict, values, filed_by))

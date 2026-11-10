@@ -43,6 +43,29 @@ class AutoFile(unittest.TestCase):
     def run_pass(self, **kw):
         return auto_file.run_pass(self.flags, self.bus, **kw)
 
+    def test_smoke_completed_row_without_grant_is_picked_up(self):
+        rid = "smoke-done-r1"
+        self.row(rid, "tps > 5")
+        os.remove(os.path.join(self.flags, "grants", rid + ".ended"))
+        os.remove(os.path.join(self.flags, "filing-due.jsonl"))
+        man = os.path.join(self.flags, "ready", rid + ".json")
+        m = json.load(open(man))
+        m.update(launcher={"sha256": "a" * 64}, engine={"sha256": "b" * 64})
+        os.remove(man)
+        dd = os.path.join(self.flags, "dryrun", rid); os.makedirs(dd)
+        for n, v in {"PASS.json": {"id": rid, "job_complete": True, "launcher_sha256": "a" * 64, "engine_sha256": "b" * 64,
+                                   "result_format": "json"},
+                     "completed-manifest.json": m, "completed-smoke-filing.json": {"id": rid}}.items():
+            json.dump(v, open(os.path.join(dd, n), "w"))
+        open(os.path.join(dd, "ended"), "w").write("rc=0 time=2026-11-10T00:00:00Z reason=complete\n")
+        open(os.path.join(dd, "complete"), "w").write("complete\n")
+        self.assertEqual([r["id"] for r in auto_file.due_rows(self.flags)], [rid])
+        rep = self.run_pass()
+        self.assertEqual(rep["filed"], [rid], rep)
+        self.assertIn("source=smoke-complete", open(os.path.join(self.flags, "filing-done", rid + ".FILED")).read())
+        os.remove(os.path.join(dd, "complete"))
+        self.assertEqual(auto_file.due_rows(self.flags), [])
+
     def test_machine_rule_filed_via_file_result_without_owner(self):
         self.row("r-num", "tps >= 10 and rc == 0")
         rep = self.run_pass()

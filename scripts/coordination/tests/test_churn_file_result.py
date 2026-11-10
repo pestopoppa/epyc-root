@@ -641,5 +641,63 @@ class TestNoManifestMode(Base):
         self.assertNotIn("\nFILED", "\n" + out)
         self.assertFalse(self.filed("dr"))
 
+
+class TestSmokeCompleteEndRecord(Base):
+    """2026-11-10: a smoke that completed the whole job but left no grants/<id>.ended is fileable from dryrun/<id>/ended."""
+    RID = "akx-lb3-2-cv5-pair-r2"
+
+    def smoke_completed(self, *, drop=(), passed_extra=None, ended="rc=0 time=2026-11-10T02:05:22Z reason=complete\n"):
+        self.row(self.RID, "rc == 0", {"ok": True})
+        row, passed = self.smoke_identity(self.RID)
+        Path(self.flags, "ready", self.RID + ".json").unlink()
+        Path(self.flags, "grants", self.RID + ".ended").unlink()
+        dry = Path(self.flags, "dryrun", self.RID); dry.mkdir(parents=True)
+        files = {"PASS.json": json.dumps(dict(passed, **(passed_extra or {}))), "completed-manifest.json": json.dumps(row),
+                 "completed-smoke-filing.json": json.dumps({"id": self.RID}), "ended": ended,
+                 "complete": f"complete time=2026-11-10T02:05:22Z id={self.RID}\n"}
+        for n, txt in files.items():
+            if n not in drop:
+                (dry / n).write_text(txt)
+        return dry
+
+    def test_smoke_completed_row_is_fileable_with_source(self):
+        dry = self.smoke_completed()
+        code, out, err = self.run_main(self.RID)
+        self.assertEqual(code, 0, err)
+        v = self.verdict(self.RID)
+        self.assertEqual(v["source"], "smoke-complete")
+        self.assertEqual(v["end_record"], str(dry / "ended"))
+        self.assertEqual(v["rc"], 0)
+        self.assertIn("source=smoke-complete", Path(self.flags, "filing-done", self.RID + ".FILED").read_text())
+
+    def test_smoke_failed_or_in_flight_is_not_fileable(self):
+        for case in ({"drop": ("complete",)}, {"drop": ("ended",)}, {"drop": ("completed-manifest.json",)},
+                     {"drop": ("completed-smoke-filing.json",)}, {"passed_extra": {"job_complete": False}},
+                     {"ended": "rc=1 time=x reason=fail\n"}):
+            with self.subTest(case=case):
+                self.smoke_completed(**case)
+                self.assertIsNone(fr.smoke_complete_end(self.flags, self.RID))
+                self.assertEqual(self.run_main(self.RID)[0], 2)
+                self.assertFalse(self.filed(self.RID))
+                import shutil; shutil.rmtree(Path(self.flags, "dryrun", self.RID))
+
+    def test_existing_grant_ended_takes_precedence(self):
+        self.smoke_completed()
+        g = Path(self.flags, "grants", self.RID + ".ended")
+        g.write_text("rc=0 time=2026-11-10T10:06:53Z reason=complete source=hand-copy\n")
+        ep, rc, line = fr.load_end(self.flags, self.RID)
+        self.assertEqual(ep, str(g)); self.assertIn("source=hand-copy", line)
+        code, _, err = self.run_main(self.RID)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.verdict(self.RID)["source"], "grant")
+
+    def test_filing_ended_unfiled_lists_smoke_completed_row(self):
+        import filing
+        self.smoke_completed()
+        self.assertIn(self.RID, filing.ended_unfiled(self.flags))
+        import shutil; shutil.rmtree(Path(self.flags, "dryrun", self.RID))
+        self.smoke_completed(drop=("complete",))
+        self.assertNotIn(self.RID, filing.ended_unfiled(self.flags))
+
 if __name__ == "__main__":
     unittest.main()

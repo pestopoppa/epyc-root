@@ -200,6 +200,11 @@ def ended_unfiled(flags):
     for suf in (".ended", ".complete"):
         for p in glob.glob(os.path.join(flags, "grants", "*" + suf)):
             ids.add(os.path.basename(p)[:-len(suf)])
+    import file_result as fr
+    for d in glob.glob(os.path.join(flags, "dryrun", "*", "completed-smoke-filing.json")):
+        rid = os.path.basename(os.path.dirname(d))
+        if fr.smoke_complete_end(flags, rid):
+            ids.add(rid)
     return sorted(i for i in ids if not is_filed(flags, i) and not i.startswith("."))
 
 
@@ -227,8 +232,8 @@ def file_terminal(flags, rid, verdict, *, by, note="", superseded_by=None, answe
            "at": now_iso(), "outcome_class": "NO-RESULT", "phase": "filing", "compute_burned": rc == 0, "root_cause_family": None,
            "verdict": {"status": "filed", "kind": verdict.lower(), "result": verdict, "superseded_by": superseded_by},
            "row_verdict": verdict, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
-           "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
-    summary = f"FILED {rid}: {verdict}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "") + f" rc={rc} by={by}" + (f" ({note})" if note else "")
+           "end_record": ep, "source": fr.end_source(ep), "handoff_task": m.get("handoff_task"), "manifest": mp, "filed_by": by, "reason": note, "machine_checkable": False}
+    summary = f"FILED {rid}: {verdict}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "") + f" rc={rc} by={by}" + (" source=smoke-complete" if fr.end_source(ep) == "smoke-complete" else "") + (f" ({note})" if note else "")
     if not write_filed(flags, rid, summary, rec):
         return "NOOP"
     log(summary)
@@ -278,7 +283,7 @@ def file_legacy_no_manifest(flags, rid, verdict, *, owner, by, note="", supersed
            "verdict": {"status": "filed", "kind": v.lower() if v in TERMINAL_VERDICTS else "legacy", "result": v,
                        "superseded_by": superseded_by},
            "row_verdict": v, "superseded_by": superseded_by, "answer": answer, "rc": rc, "end_line": endline,
-           "handoff_task": None, "manifest": None, "legacy_no_manifest": True, "filed_by": by, "reason": note,
+           "end_record": ep, "source": fr.end_source(ep), "handoff_task": None, "manifest": None, "legacy_no_manifest": True, "filed_by": by, "reason": note,
            "machine_checkable": False}
     summary = (f"FILED {rid}: {v}" + (f" SUPERSEDED-BY {superseded_by}" if superseded_by else "")
                + f" rc={rc} legacy-no-manifest owner={owner} by={by}" + (f" ({note})" if note else ""))
