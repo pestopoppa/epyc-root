@@ -214,7 +214,6 @@ def arm_fails_since_pass(flags, rid, p=None):
 # docs/reports/coordination/keeper-friction-review-20261105.md Pass 4 (P4.3 / P4.4). A rule still carrying a module flag
 # (COMPLETE_BEFORE_RC14) keeps it for the replay gate's negative control; the always-on rules lost theirs 2026-11-10
 # (pipeline audit #9; history in docs/reference/agent-config/INCIDENT_LOG.md, INC-20261110-rowflow-switches).
-SMOKE_RESIDENCY_FILE = "residency.json"   # job-written residency record contract (verify_job_residency); env FILLER_RESIDENCY_FILE
 COMPLETE_BEFORE_RC14 = True   # a dead poller whose row has a terminal success receipt is COMPLETE, not rc=14 (11/11 false)
 GPU_IDLE_SAMPLES = 2          # consecutive quiet device samples before a GPU grant reads IDLE-HELD
 _PRECOND_REFUSED = "refuse rc=12: not ready: precond-cmd failed"
@@ -2719,6 +2718,7 @@ def vram_used_bytes():
 
 
 RESIDENCY_FLOOR_B = 64 << 20
+SMOKE_RESIDENCY_FILE = "residency.json"   # no longer read (audit #1: cgroup attribution); publish_row preflight still exports it
 GPU_SAMPLE_S = 0.15          # short GPU jobs (ATT ~0.5 s) fall between 1 s samples; ~10% of a core, harness only, smokes only
 
 
@@ -2740,8 +2740,67 @@ def pid_container_id(pid):
         return None
 
 
-def pid_filler_id(pid):
-    """FILLER_ID in a process's environment, or None. The engine exports it to the job, so it survives reparenting."""
+ROWFLOW_CGROUP = "/sys/fs/cgroup/rowflow"   # filler_run15 puts each job in its own leaf <id>@<launcher pid> (audit #1)
+
+
+def cgroup_row(text):
+    """The row id of a /proc/<pid>/cgroup text whose v2 path is /rowflow/<id>@<tag>[/...], else None."""
+    for line in (text or "").splitlines():
+        if line.startswith("0::/rowflow/"):
+            leaf = line[12:].split("/", 1)[0]
+            if "@" in leaf:
+                return leaf.split("@", 1)[0]
+    return None
+
+
+def pid_cgroup_row(pid):
+    try:
+        with open(f"/proc/{int(pid)}/cgroup") as f:
+            return cgroup_row(f.read())
+    except (OSError, ValueError):
+        return None
+
+
+def row_leaf_pids(rid):
+    """(has_leaf, pids): the pids in every populated cgroup leaf of row `rid`. has_leaf False = the row's job was started
+    by an engine without cgroup placement (pre-deploy grant): callers fall back to the legacy tree attribution."""
+    has, pids = False, set()
+    for leaf in glob.glob(os.path.join(ROWFLOW_CGROUP, glob.escape(rid) + "@*")):
+        try:
+            if "populated 1" not in open(os.path.join(leaf, "cgroup.events")).read():
+                continue
+            has = True
+            pids |= {int(x) for x in open(os.path.join(leaf, "cgroup.procs")).read().split()}
+        except (OSError, ValueError):
+            continue
+    return has, pids
+
+
+def pid_is_rows(pid, rid, legacy):
+    """THE answer to "is this host pid row `rid`'s?". A pid in a rowflow leaf belongs to that leaf's row and nothing else:
+    inherited by every child regardless of env cleaning, setsid, double fork or reparenting. MIGRATION: only while the row
+    has no populated leaf (job started by a pre-cgroup engine), `legacy` = membership of its process tree or FILLER_ID on
+    the pid or an ancestor. Delete the legacy branch once no grant predating the engine deploy is live."""
+    owner = pid_cgroup_row(pid)
+    if owner is not None:
+        return owner == rid
+    if rid and row_leaf_pids(rid)[0]:
+        return False
+    return pid in legacy or (bool(rid) and lineage_filler_id(pid) == rid)
+
+
+def own_pids(flags, g):
+    """Every pid of grant `g`'s row: its cgroup leaves; for a pre-cgroup grant, the grant's and ARMED pid's trees."""
+    has, pids = row_leaf_pids(g["id"])
+    if has:
+        return pids
+    for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
+        if str(x or "").isdigit():
+            pids |= tree_pids(int(x)) | {int(x)}
+    return pids
+
+
+def pid_filler_id(pid):   # legacy attribution only (pid_is_rows)
     try:
         with open(f"/proc/{int(pid)}/environ", "rb") as f:
             for item in f.read().split(b"\0"):
@@ -2752,9 +2811,7 @@ def pid_filler_id(pid):
     return None
 
 
-def lineage_filler_id(pid, depth=16):
-    """FILLER_ID of pid or its nearest ancestor that has one. A job may start its GPU server with a cleaned environment
-    and a new session (c10-fold-gate: env=env_for(arm), start_new_session=True); its parent still carries the row id."""
+def lineage_filler_id(pid, depth=16):   # legacy attribution only (pid_is_rows)
     for _ in range(depth):
         fid = pid_filler_id(pid)
         if fid is not None:
@@ -2777,15 +2834,15 @@ def docker_row_label(cid):
 
 
 def sample_gpu_residency(root, tracked, own, rid=None, containers=None):
-    """One sample: refresh the smoke's process tree, and keep the peak KFD VRAM of each client that is this row's: a tree
-    member, or a process in a container carrying this row's label (a docker client's job is not its descendant). Foreign
+    """One sample: refresh the smoke's process tree, and keep the peak KFD VRAM of each client that is this row's
+    (pid_is_rows), or a process in a container carrying this row's label (a docker client's job is not its descendant). Foreign
     clients and device-wide VRAM never count: the idle device reads about 13 MB and another row's model is not this row's proof."""
     harness_tree(root, tracked)
     for q, b in (gpu_occupancy().get("pids") or {}).items():
         if b <= 0:
             continue
-        mine = q in tracked or (bool(rid) and lineage_filler_id(q) == rid)   # launchers detach the job from the harness tree
-        if not mine and rid and containers is not None:
+        mine = pid_is_rows(q, rid, tracked)
+        if not mine and rid and containers is not None:   # a container's processes sit in docker's cgroup, not the row's leaf
             cid = pid_container_id(q)
             if cid:
                 if cid not in containers:
@@ -2804,31 +2861,6 @@ def gpu_sample_window(root, tracked, own, n=6, interval=GPU_SAMPLE_S, rid=None, 
 
 def own_vram_peak(own):
     return max(own.values(), default=0)
-
-
-def verify_job_residency(dd, tracked, kfd_seen, t0):
-    """Job-written residency record contract (operator 2026-11-06). The job writes $FILLER_RESIDENCY_FILE
-    (= dryrun/<id>/residency.json) as JSON {"schema": "epyc.rowflow.residency.v1", "pid": <host pid of the process holding
-    the VRAM>, "vram_bytes": <int>, "at": <ISO UTC>}. It is NOT trusted: accepted only when pid is in the smoke's own
-    process tree (`tracked`), that pid was observed as a KFD client holding VRAM in a harness sample, and `at` is no older than
-    the smoke. Returns (bytes, why): bytes is 0 when rejected."""
-    rec = load_json(os.path.join(dd, SMOKE_RESIDENCY_FILE))
-    if not isinstance(rec, dict):
-        return 0, "no residency record"
-    try:
-        pid, vb = int(rec["pid"]), int(rec["vram_bytes"])
-    except (KeyError, TypeError, ValueError):
-        return 0, "residency record malformed"
-    if rec.get("schema") != "epyc.rowflow.residency.v1":
-        return 0, "residency record schema mismatch"
-    if pid not in tracked:
-        return 0, f"residency pid {pid} is not in the smoke's process tree"
-    if pid not in kfd_seen:
-        return 0, f"residency pid {pid} was never seen as a KFD client holding VRAM"
-    at = iso_epoch(rec.get("at"))
-    if at is None or at < t0 - 1:
-        return 0, "residency record predates the smoke"
-    return max(vb, 0), f"job residency record pid {pid} {vb} B, verified as KFD client"
 
 
 def kill_group(pid, grace=20):
@@ -3268,7 +3300,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     window = max(int(d["min_window_s"]) + 300, timeout + STOP_GRACE_S + 300)
     start = dt.datetime.now(dt.timezone.utc).replace(second=0, microsecond=0) - dt.timedelta(minutes=1)
     end = start + dt.timedelta(seconds=window)
-    for stale in ("stop", "ended", "complete", SMOKE_RESIDENCY_FILE, "SMOKE-EXITED.json"):
+    for stale in ("stop", "ended", "complete", "SMOKE-EXITED.json"):
         try:
             os.remove(os.path.join(dd, stale))
         except OSError:
@@ -3285,7 +3317,6 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     if d.get("dryrun_native_result"):
         env["FILLER_DRYRUN_RESULT_PATH"] = result_path
     env["FILLER_SMOKE_T0"] = str(int(time.time()))
-    env["FILLER_RESIDENCY_FILE"] = os.path.join(dd, SMOKE_RESIDENCY_FILE)
     probe = FirstProgress(d, result_path, result_format, env, d.get("workdir"))
     if probe.stale:
         reason = (f"no first progress possible: {probe.kind} `{probe.pred[:80]}` already exits 0 BEFORE the launch, so it cannot "
@@ -3314,19 +3345,12 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     vram_max = None
     kfd_seen = {}
     gpu_containers = {}
-    residency_note = None
     gpu = gpu_residency_required(d, regions)
 
     def residency_ok():
-        nonlocal vram_max, residency_note
+        nonlocal vram_max
         vram_max = own_vram_peak(kfd_seen) or vram_max
-        if vram_max is not None and vram_max >= RESIDENCY_FLOOR_B:
-            return True
-        jb, why = verify_job_residency(dd, tracked, kfd_seen, t0)
-        if jb >= RESIDENCY_FLOOR_B:
-            vram_max, residency_note = max(vram_max or 0, jb), why
-            return True
-        return False
+        return vram_max is not None and vram_max >= RESIDENCY_FLOOR_B
     first_unit_at = None
     progress = None
     stop_requested = None
@@ -3462,7 +3486,7 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
         verdict, reason = "FAIL", "launcher changed while the dry run was running"
     rec = {"regions": regions, "units": count_units(result_path, result_format, d.get("workdir")) - units0, "result_path": result_path,
            "result_format": result_format, "first_unit_at": first_unit_at, "first_progress": progress,
-           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max, "residency_evidence": residency_note,
+           "first_progress_s": timeout, "progress_rule": probe.kind, "vram_used_max_bytes": vram_max, "residency_evidence": None,
            "engine_sha256": sha256(d["engine"]["path"]) if os.path.isfile(d["engine"]["path"]) else None,
            "ended": head1(ended) or None, "warning": warning, "dryrun_log": os.path.join(dd, "launcher.out"), "elapsed_s": int(time.time() - t0)}
     # refinement 1: what the job actually used (before the harness's stop), against the row's declared claim
@@ -3959,23 +3983,11 @@ def gpu_idle_state_path(flags):
     return os.path.join(state_dir(flags), "gpu_idle.json")
 
 
-def grant_own_pids(flags, g):
-    """The pids a grant's poller owns: the grant's pid and the ARMED pid, each with its process tree."""
-    own = set()
-    for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
-        if x:
-            try:
-                own |= tree_pids(int(x)) | {int(x)}
-            except (OSError, ValueError):
-                pass
-    return own
-
-
 def gpu_grant_busy(flags, g, util, occ):
     """(busy, why) of a GPU-token grant by GPU SIGNALS only - its own KFD clients (and their VRAM) and the device
     busy %. Busy when the grant's process tree holds any KFD client OR the device reads >= IDLE_PCT; quiet only when
     both are silent. CPU % is never consulted (ak-asm-t1-harness: a running GPU harness read IDLE-HELD by CPU %)."""
-    own = grant_own_pids(flags, g)
+    own = own_pids(flags, g)
     kfd = {p: v for p, v in (occ.get("pids") or {}).items() if p in own}
     busy_pct = (util.get("gpu") or {}).get("busy") if isinstance(util, dict) else None
     if kfd:
@@ -4939,17 +4951,12 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
                 log(f"GPU-QUIET one sample for {rid}: its smoke exited, tree proven dead, no KFD owners")
         return why
     atomic_json(sp, {"quiet_n": 0, "at": now_iso(), **kfd_rec, "last_owner": {"ids": [g["id"] for g in held], "pids": sorted(
-        {p for g in held for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid"))
-         if str(x or "").isdigit() for p in tree_pids(int(x)) | {int(x)}})}})
+        {p for g in held for p in own_pids(flags, g)})}})
     for g in held:
         d = allrows.get(g["id"]) or {}
         if not contract_of(d)["bench"]:
             continue
-        own = set()
-        for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
-            if x:
-                own |= tree_pids(int(x)) | {int(x)}
-        pids, v = gpu_foreign(occ, own)
+        pids, v = gpu_foreign(occ, own_pids(flags, g))
         if v >= GPU_FOREIGN_VRAM_MAX:
             cp = os.path.join(dry_dir(flags, g["id"]), "CONTAMINATED.json")
             if not os.path.exists(cp):
@@ -4978,14 +4985,7 @@ def gpu_fence_breach(flags, grants, log, seen, occ=None):
     for g in grants:
         if GPU in g["holds"]:
             continue
-        own = set()
-        for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
-            if x:
-                try:
-                    own |= tree_pids(int(x)) | {int(x)}
-                except (OSError, ValueError):
-                    pass
-        hit = sorted(kfd & own)
+        hit = sorted(kfd & own_pids(flags, g))
         for pid in hit:
             log(f"GPU-FENCE-BREACH {g['id']} {pid}")
             out.append((g["id"], pid))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Operator 2026-11-06 emergency batch (keeper): (1) lineage unpark + one fresh attempt per new launcher/job sha,
 (2) NEEDS-OWNER vs NEEDS-OPERATOR, (3) rank across the smoke queue, (4) predicate rows' smoke not self-shrunk to one unit,
-(5) 1 s residency + verified job residency record. Every fix carries a negative control."""
+(5) 1 s residency (the job-written record was retired by audit #1). Every fix carries a negative control."""
 import json
 import os
 import sys
@@ -124,29 +124,7 @@ class RankAcrossQueues(unittest.TestCase):
 
 
 class ResidencyContract(unittest.TestCase):
-    def test_verify_job_residency(self):
-        fx = Fixture()
-        self.addCleanup(fx.cleanup)
-        dd = os.path.join(fx.root, "dd")
-        os.makedirs(dd)
-        t0 = 1_800_000_000.0
-        rec = {"schema": "epyc.rowflow.residency.v1", "pid": 4242, "vram_bytes": 3 << 30,
-               "at": rf.dt.datetime.fromtimestamp(t0 + 5, rf.dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
-        path = os.path.join(dd, rf.SMOKE_RESIDENCY_FILE)
-        rf.atomic_json(path, rec)
-        ok = rf.verify_job_residency(dd, {4242: 1}, {4242: 1}, t0)
-        self.assertEqual(ok[0], 3 << 30)
-        # negative controls: each unverified claim is rejected
-        self.assertEqual(rf.verify_job_residency(dd, {1: 1}, {4242: 1}, t0)[0], 0)                  # pid not in the smoke's tree
-        self.assertEqual(rf.verify_job_residency(dd, {4242: 1}, {}, t0)[0], 0)                      # never a KFD client
-        self.assertEqual(rf.verify_job_residency(dd, {4242: 1}, {4242: 1}, t0 + 3600)[0], 0)        # predates the smoke
-        rf.atomic_json(path, dict(rec, schema="other"))
-        self.assertEqual(rf.verify_job_residency(dd, {4242: 1}, {4242: 1}, t0)[0], 0)
-        rf.atomic_json(path, {"pid": "x"})
-        self.assertEqual(rf.verify_job_residency(dd, {4242: 1}, {4242: 1}, t0)[0], 0)
-
-
-    def _late_grandchild_case(self, rec_pid):
+    def _late_grandchild_case(self):
         """root 100 -> job 200 (tracked on the first sample) -> GPU server 300 started LATER by 200, cleaned env (no
         FILLER_ID). 999 is an unrelated KFD client (ppid 1)."""
         fx = Fixture()
@@ -167,20 +145,10 @@ class ResidencyContract(unittest.TestCase):
         self.assertIn(300, tracked)
         self.assertNotIn(999, tracked)
         self.assertEqual(set(kfd), {300})
-        t0 = 1_800_000_000.0
-        rf.atomic_json(os.path.join(dd, rf.SMOKE_RESIDENCY_FILE),
-                       {"schema": "epyc.rowflow.residency.v1", "pid": rec_pid, "vram_bytes": 3 << 30,
-                        "at": rf.dt.datetime.fromtimestamp(t0 + 5, rf.dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
-        return rf.verify_job_residency(dd, tracked, kfd, t0)
+        return kfd
 
-    def test_late_grandchild_residency_record_passes(self):
-        jb, why = self._late_grandchild_case(300)
-        self.assertGreaterEqual(jb, rf.RESIDENCY_FLOOR_B, why)
-
-    def test_unrelated_pid_residency_record_is_refused(self):
-        jb, why = self._late_grandchild_case(999)
-        self.assertEqual(jb, 0)
-        self.assertIn("not in the smoke's process tree", why)
+    def test_late_grandchild_is_attributed_and_unrelated_pid_refused(self):   # legacy (pre-cgroup) path
+        self.assertEqual(set(self._late_grandchild_case()), {300})
 
     def test_reused_pid_is_not_walked_through(self):
         procs = {100: (1, 100, "s100"), 200: (100, 100, "new"), 300: (200, 100, "s300")}
@@ -231,12 +199,10 @@ class SmokeRuns(unittest.TestCase):
         self.assertEqual(v, "FAIL")
         self.assertIn("VRAM never showed residency", msg)
 
-    def test_job_record_verified_by_pid_and_kfd_client_passes(self):     # job saw 3.2 GiB, rowflow only 13 MB at device level
+    def test_job_written_record_is_no_longer_evidence(self):   # audit #1: residency.json retired, the cgroup leaf replaces it
         v, msg, _ = self.run_smoke("res-job-20261101", True, 1 << 20)
-        self.assertEqual(v, "PASS", msg)
-        p = rf.load_json(rf.pass_path(self.fx.flags, "res-job-20261101"))
-        self.assertGreaterEqual(p["vram_used_max_bytes"], 3 << 30)
-        self.assertIn("verified as KFD client", p["residency_evidence"])
+        self.assertEqual(v, "FAIL", msg)
+        self.assertIn("VRAM never showed residency", msg)
 
     def test_negative_control_job_record_for_a_pid_that_is_no_kfd_client_is_rejected(self):
         v, msg, _ = self.run_smoke("res-fake-20261101", True, None)

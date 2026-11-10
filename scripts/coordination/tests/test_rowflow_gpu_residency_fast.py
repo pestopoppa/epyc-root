@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fast GPU residency: only this smoke's own process tree counts, above the floor, however short the job."""
+"""Fast GPU residency: only this row's own clients count (its cgroup leaf; legacy: its process tree), above the floor."""
 import os
 import shutil
 import sys
@@ -24,6 +24,9 @@ class T(unittest.TestCase):
         p.start()
         self.addCleanup(p.stop)
         self.addCleanup(shutil.rmtree, self.kfd, True)
+        p = mock.patch.object(rf, "ROWFLOW_CGROUP", self.kfd + "/no-cgroup")
+        p.start()
+        self.addCleanup(p.stop)
         p = mock.patch.object(rf, "harness_tree", lambda root, tracked: tracked.setdefault(JOB, "1"))
         p.start()
         self.addCleanup(p.stop)
@@ -159,6 +162,117 @@ class DetachedJobIdentity(unittest.TestCase):
         finally:
             p.kill(); p.wait()
 
+
+
+class CgroupAttribution(unittest.TestCase):
+    """Audit #1: a pid is a row's iff /proc/<pid>/cgroup is under /rowflow/<id>@<tag>; legacy only for leafless rows."""
+
+    def setUp(self):
+        self.cg = tempfile.mkdtemp(prefix="cg-")
+        self.addCleanup(shutil.rmtree, self.cg, True)
+        for p in (mock.patch.object(rf, "ROWFLOW_CGROUP", self.cg),
+                  mock.patch.object(rf, "lineage_filler_id", return_value=None),
+                  mock.patch.object(rf, "harness_tree", side_effect=lambda r, t: t),
+                  mock.patch.object(rf, "pid_container_id", return_value=None)):
+            p.start()
+            self.addCleanup(p.stop)
+        self.cgroups = {}
+        p = mock.patch.object(rf, "pid_cgroup_row", lambda q: rf.cgroup_row(self.cgroups.get(q, "0::/\n")))
+        p.start()
+        self.addCleanup(p.stop)
+
+    def leaf(self, rid, pids, tag="77"):
+        d = os.path.join(self.cg, f"{rid}@{tag}")
+        os.makedirs(d, exist_ok=True)
+        open(os.path.join(d, "cgroup.events"), "w").write("populated %d\nfrozen 0\n" % bool(pids))
+        open(os.path.join(d, "cgroup.procs"), "w").write("".join(f"{x}\n" for x in pids))
+        for x in pids:
+            self.cgroups[x] = f"0::/rowflow/{rid}@{tag}\n"
+
+    def sample(self, occ, tracked=None, containers=None):
+        own = {}
+        with mock.patch.object(rf, "gpu_occupancy", return_value={"pids": occ}):
+            rf.sample_gpu_residency(1, dict(tracked or {}), own, "row-a", containers)
+        return own
+
+    def test_cgroup_row_parse(self):
+        self.assertEqual(rf.cgroup_row("0::/rowflow/row-a@123\n"), "row-a")
+        self.assertEqual(rf.cgroup_row("0::/rowflow/row-a.v2@9/sub\n"), "row-a.v2")
+        self.assertIsNone(rf.cgroup_row("0::/\n"))
+        self.assertIsNone(rf.cgroup_row("0::/rowflow\n"))
+        self.assertIsNone(rf.cgroup_row("0::/rowflow/no-tag\n"))
+        self.assertIsNone(rf.cgroup_row("0::/autokernel-1-abc\n"))
+
+    def test_leaf_pid_counts_outside_tree_and_without_filler_id(self):
+        self.leaf("row-a", [700])
+        self.assertEqual(self.sample({700: 2 << 30}), {700: 2 << 30})
+
+    def test_unrelated_pid_refused_even_in_tree_once_row_has_leaf(self):
+        self.leaf("row-a", [700])
+        self.assertEqual(self.sample({999: 8 << 30}, tracked={999: "s"}), {})
+
+    def test_other_rows_leaf_refused_even_if_tracked(self):
+        self.leaf("row-a", [700])
+        self.leaf("row-ab", [701])      # a prefix-sharing id is another row
+        self.assertEqual(self.sample({701: 8 << 30}, tracked={701: "s"}), {})
+
+    def test_floor_still_applies(self):
+        self.leaf("row-a", [700])
+        self.assertLess(rf.own_vram_peak(self.sample({700: 13 * MB})), rf.RESIDENCY_FLOOR_B)
+
+    def test_container_label_still_works_with_leaf(self):
+        self.leaf("row-a", [700])
+        cid = "c" * 64
+        with mock.patch.object(rf, "pid_container_id", lambda q: cid if q == 800 else None), \
+                mock.patch.object(rf, "docker_row_label", return_value="row-a"):
+            self.assertEqual(self.sample({800: 3 << 30}, containers={}), {800: 3 << 30})
+
+    def test_legacy_fallback_for_leafless_row(self):   # MIGRATION: a grant started by the pre-cgroup engine
+        self.assertEqual(self.sample({500: 1 << 30}, tracked={500: "s"}), {500: 1 << 30})
+        self.leaf("row-a", [])                          # an emptied leaf (job ended) is not a leaf
+        self.assertEqual(self.sample({500: 1 << 30}, tracked={500: "s"}), {500: 1 << 30})
+
+    def test_keeper_own_pids_uses_leaf_not_tree(self):
+        self.leaf("row-a", [700, 701])
+        with mock.patch.object(rf, "tree_pids") as tp, mock.patch.object(rf, "load_json", return_value=None):
+            self.assertEqual(rf.own_pids("/nonexistent", {"id": "row-a", "pid": 1234}), {700, 701})
+            tp.assert_not_called()
+        with mock.patch.object(rf, "tree_pids", return_value={1235}), mock.patch.object(rf, "load_json", return_value=None):
+            self.assertEqual(rf.own_pids("/nonexistent", {"id": "row-b", "pid": 1234}), {1234, 1235})   # legacy
+
+
+REAL_BASE = "/sys/fs/cgroup/rowflow"
+
+
+@unittest.skipUnless(os.access(REAL_BASE, os.W_OK), "no writable cgroup v2 rowflow base")
+class RealCgroupLeaf(unittest.TestCase):
+    """On the host: a cleaned-env, setsid, double-forked grandchild stays in the row's leaf."""
+
+    def test_detached_grandchild_is_attributed(self):
+        import subprocess
+        rid = f"cgtest-{os.getpid()}"
+        leaf = os.path.join(REAL_BASE, f"{rid}@1")
+        os.mkdir(leaf)
+        script = (f"echo $$ > {leaf}/cgroup.procs; exec env -i /usr/bin/setsid /bin/bash -c "
+                  "'( /usr/bin/setsid /bin/sleep 30 & echo $! >&3 ) 3>&1; exec /bin/sleep 30'")
+        p = subprocess.Popen(["/bin/bash", "-c", script], stdout=subprocess.PIPE, text=True, start_new_session=True)
+        try:
+            gc = int(p.stdout.readline())
+            self.assertEqual(rf.pid_cgroup_row(gc), rid)
+            self.assertNotIn(b"FILLER_ID", open(f"/proc/{gc}/environ", "rb").read())
+            self.assertIn(gc, rf.row_leaf_pids(rid)[1])
+            with mock.patch.object(rf, "lineage_filler_id", return_value=None):
+                self.assertTrue(rf.pid_is_rows(gc, rid, {}))
+                self.assertFalse(rf.pid_is_rows(os.getpid(), rid, {}))       # the harness itself is not the row's
+                self.assertFalse(rf.pid_is_rows(gc, "cgtest-other", {gc}))   # another row never claims it
+        finally:
+            open(os.path.join(leaf, "cgroup.kill"), "w").write("1")
+            p.wait(timeout=10)
+            for _ in range(50):
+                if "populated 0" in open(os.path.join(leaf, "cgroup.events")).read():
+                    break
+                time.sleep(0.1)
+            os.rmdir(leaf)
 
 if __name__ == "__main__":
     unittest.main()
