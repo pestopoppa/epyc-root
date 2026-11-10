@@ -26,9 +26,10 @@ on current `origin/main`. Git is the only source. `F` holds copies, and `churn_u
 | Region lock | epyc-orchestrator `src/runtime/region_lock_cli.py`, wrapper `/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock` | (orchestrator clone) | invoked by launchers. Under `FILLER_DRYRUN=1` or `FILLER_SMOKE=1` it takes **no lock**. | flock+pid records | deterministic |
 | ws58 session, codex-gen session | n/a | tmux `agent:claude`, `agent:codex-gen` | **started by hand** (section 3, step 4) | n/a | **AI** |
 
-`churn_up.sh` also installs the codex-gen goal file (git `scripts/coordination/churn/GOAL-codex-gen.md`), `bin/flip_checkbox.py`,
-`bin/keeper_qual_memo.py` and `bin/churn/{file_result,typed_classify,tokens_per_task}.py`. The full list is the `INSTALL=( … )`
-array in `scripts/coordination/churn/churn_up.sh`, and that array is the inventory of record.
+The inventory of record is `scripts/coordination/INSTALL.manifest` (published path, repo source, class): `bin/rowflow`,
+`bin/churn` (with every module `reclaim_row.py` imports), `bin/job_templates`, the `bin/` helpers, the keeper and the loop
+scripts. `scripts/coordination/rowflow/deploy_rowflow.sh` is the only installer (unit + replay gates, `DEPLOYED.json`);
+`churn_up.sh` installs nothing, it runs `deploy_rowflow.sh --parity` and refuses to start loops on drift (2026-11-10).
 
 **Keeper versioning.** `F/ws58-calendar-keeper.current` holds the file name the watchdog starts. `churn_up.sh` pins it to
 `KEEPER=ws58-calendar-keeper-v12.sh`. Older `ws58-calendar-keeper-v*.sh` files in `F` are inert history and run only if
@@ -60,7 +61,7 @@ array in `scripts/coordination/churn/churn_up.sh`, and that array is the invento
 ```bash
 cd R && git fetch origin && git status   # R must be on current origin/main
 bash scripts/coordination/churn/churn_up.sh --status    # read-only baseline
-bash scripts/coordination/churn/churn_up.sh --dry-run   # the plan: every INSTALL / MOVE / START line, nothing changed
+bash scripts/coordination/churn/churn_up.sh --dry-run   # the plan: parity, every MOVE / START line, nothing changed
 bash scripts/coordination/churn/churn_up.sh             # live (only with operator clearance)
 ```
 
@@ -142,7 +143,7 @@ them with `ps -eo pid,lstart,args` and stop them by captured pid with their owne
 
 | Question | Inspect | Proof line |
 |---|---|---|
-| Is every runtime file the git version? | `churn_up.sh --status` "install state" | `ok <sha16>` per file. Installs are logged in `F/churn-up.log` (`INSTALL …`). |
+| Is every runtime file the git version? | `churn_up.sh --status` "install state" (= `deploy_rowflow.sh --parity`) | `SAME` per manifest line, `PARITY OK`. Installs are recorded in `F/bin/rowflow/DEPLOYED.json`. |
 | Which keeper ran, and when? | `F/ws58-keeper-watchdog.log`, `F/ws58-calendar-keeper.log` | `keeper main loop (pid N) not alive; starting <file>`, then `keeper v12 start pid=N` |
 | Who got compute, and why? | `F/ws58-calendar-keeper.log` | `SNAPSHOT …` (lanes free/busy, candidates, assigned), `GRANT …`, `IDLE-WHY …`, `UNDERUSED …`, `HEAL …` |
 | Was the compute actually used? | `/proc/stat` and `rocm-smi` samples (section 4), the run's own result files | Utilisation measured during the window. Grants and SNAPSHOT `busy=` do not count. |
@@ -163,7 +164,7 @@ These are tracked as open boxes in [`handoffs/active/churn-pipeline.md`](../../.
 - Sessions over-prepare instead of publishing. Row publication has not been measured since the 10:41Z fixes.
 - SA-1/SA-2/SA-3 and JEV-3 (deferred) are open.
 - `churn_up.sh` `start_bg` wrote a wrapper pid to the janitor pidfile on 2026-11-09 (box PIPE-EVE-CHURN-UP-PIDFILE).
-- `bin/churn/reclaim_row.py` expects to sit in the repo `scripts/` tree, so its imports fail from the installed copy until its dependencies are installed beside it (box PIPE-EVE-BIN-CHURN-MODULES). An installed script's import closure is part of what the install list must cover.
+- `bin/churn/reclaim_row.py` expects to sit in the repo `scripts/` tree, so its imports fail from the installed copy until its dependencies are installed beside it (box PIPE-EVE-BIN-CHURN-MODULES). An installed script's import closure is part of what the install list must cover; since 2026-11-10 those modules are lines in `INSTALL.manifest`.
 - Seen while writing this runbook (2026-11-02 12:18Z):
   - `backlog_gen.py` was running as pid 3814559 under `backlog-gen.pid`, not the wrapper's `ws58-backlog-gen.pid`. `--status`
     now reports this as `UP WITHOUT PIDFILE`.

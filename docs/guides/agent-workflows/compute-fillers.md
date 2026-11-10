@@ -30,7 +30,8 @@ armed before 2026-11-01 only.
 > (exit 77) a deploy that changes `filler_run15.sh` (the engine running pollers re-read) unless `--emergency "<reason>"`
 > is given; the reason is recorded in `DEPLOYED.json`. rowflow2 keeps running in read-only SHADOW beside the live keeper.
 
-Nothing may copy files into `compute-flags/bin/rowflow/` by hand. `scripts/coordination/rowflow/deploy_rowflow.sh
+Nothing may copy files into `compute-flags/` by hand: every installed file is a line of
+`scripts/coordination/INSTALL.manifest`, and `deploy_rowflow.sh --parity` reports drift (SAME/DIFF/MISSING). `scripts/coordination/rowflow/deploy_rowflow.sh
 [--ref origin/main] [--check-only] [--emergency "<reason>"]` stages a detached worktree of `<ref>`, runs the unit tests
 and the replay gate (`scripts/coordination/tests/replay/`), refuses on any failure, refuses to swap `filler_run15.sh`
 under open grants, backs up each changed file, installs via `<f>.part` + `mv -f`, writes `DEPLOYED.json`, and requires a

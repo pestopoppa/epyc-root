@@ -4,7 +4,7 @@
 # Operator goal: after a host reboot the churn pipeline comes back from FORMALIZED, PERSISTED rules and code; nothing
 # depends on any session's memory. This script is the one command. Runbook: docs/guides/agent-workflows/backlog-churn-runbook.md
 #
-#   churn_up.sh            install git copies -> compute-flags, clean reboot residue, start what is not running,
+#   churn_up.sh            check install parity (deploy_rowflow.sh --parity; refuses on drift), clean reboot residue, start what is not running,
 #                          recreate the tmux session, print the manual steps (start Claude ws58 + codex-gen).
 #   churn_up.sh --dry-run  same, printing every action instead of doing it (safe on a live system).
 #   churn_up.sh --status   read-only report: per component pid / alive / sha-vs-git; lanes; grants; sessions; tmux.
@@ -18,7 +18,7 @@
 #                          --stop stops it BEFORE the watchdog. `--supervise-watchdog --dry-run` does one pass and prints.
 #   churn_up.sh --janitor=start|stop|status|dry-run   the disk janitor only (disk_janitor.sh: keeper --reap-now every
 #                          30 min + trash-sweep --older-than 1 hourly; log disk-janitor.log). A normal bring-up starts it too.
-# Start order (live): install -> residue -> watchdog -> keeper (started by the watchdog, verified here) -> dispatcher ->
+# Start order (live): parity -> residue -> watchdog -> keeper (started by the watchdog, verified here) -> dispatcher ->
 # backlog-gen -> flow-scoreboard -> disk-trend -> filing-watch. A component already running (pidfile pid, or ANY pid whose
 # argv holds its exact installed path) is never started twice. Also started: watchdog-guard (after the watchdog) and
 # git-config-watch (log-only; like the janitor it is not inference, so --stop leaves it running).
@@ -78,69 +78,23 @@ start_bg() {  # start_bg <pidfile> <cwd> <cmd...>  (setsid, detached; pidfile wr
   say "      pid $p"
 }
 
-# ---------------------------------------------------------------- 1. install git copies
-# dst-relative-to-F  src-absolute
-INSTALL=(
-  "$KEEPER    $RF/$KEEPER"
-  "ws58-keeper-watchdog.sh        $CH/ws58-keeper-watchdog.sh"
-  "ws58-disk-trend.sh             $CH/ws58-disk-trend.sh"
-  "disk_janitor.sh                $CH/disk_janitor.sh"
-  "ws58-backlog-gen-v1.sh         $CH/ws58-backlog-gen-v1.sh"
-  "ws58-flow-scoreboard-v1.sh     $CH/ws58-flow-scoreboard-v1.sh"
-  "GOAL-codex-gen.md              $CH/GOAL-codex-gen.md"
-  "bin/backlog_gen.py             $CO/backlog_gen.py"
-  "bin/watch_git_config.py        $CO/watch_git_config.py"
-  "bin/handoff_sessions.py        $CO/handoff_sessions.py"
-  "bin/flow_scoreboard.py         $CO/flow_scoreboard.py"
-  "bin/worktree_footprint.py      $CO/worktree_footprint.py"
-  "bin/index_regen.py             $CO/index_regen.py"
-  "bin/serialized_push.py         $CO/serialized_push.py"
-  "bin/flip_checkbox.py           $CO/flip_checkbox.py"
-  "bin/keeper_qual_memo.py        $CO/keeper_qual_memo.py"
-  "bin/churn/wrapup.py            $CH/wrapup.py"
-  "bin/churn/file_result.py       $CH/file_result.py"
-  "bin/churn/filing.py            $CH/filing.py"
-  "bin/churn/reclaim_row.py       $CH/reclaim_row.py"
-  "bin/churn/typed_classify.py    $CH/typed_classify.py"
-  "bin/churn/tokens_per_task.py   $CH/tokens_per_task.py"
-  "bin/rowflow/rowflow.py         $RF/rowflow.py"
-  "bin/rowflow/filler_run15.sh    $RF/filler_run15.sh"
-  "bin/rowflow/filler_lib.sh      $RF/filler_lib.sh"
-  "bin/rowflow/grant_ok_launcher.py $RF/grant_ok_launcher.py"
-  "bin/rowflow/publish_row.py     $RF/publish_row.py"
-  "bin/rowflow/hostutil.py        $RF/hostutil.py"
-  "bin/rowflow/notify.py          $RF/notify.py"
-  "bin/rowflow/run_direct.py      $RF/run_direct.py"
-  "bin/rowflow/run_direct.sh      $RF/run_direct.sh"
-)
-# RETIRED 2026-11-01 evening (allocator): grant-writer templates, grant_ok*.sh, ram_admit.sh, validate_fillers.py, the legacy
-# grant_ok_launcher.py. rowflow.py allocate (keeper v11) is the one actor that writes grants.
-# every pid the pipeline records in a pidfile whose argv names <path> (liveness by recorded pid + argv, never by name search)
-known_pids_using() {
-  local f p out=""
-  for f in "$F"/*.pid; do [ -e "$f" ] || continue; p=$(pid_of "$f"); alive "$p" && ps -o args= -p "$p" 2>/dev/null | grep -F -- "$1" >/dev/null && out="$out $p"; done
-  echo "$out"
-}
-install_one() {
-  local rel=$1 src=$2 dst=$F/$1
-  [ -f "$src" ] || { fail "missing git source $src"; return; }
-  if [ -f "$dst" ] && [ "$(sha "$dst")" = "$(sha "$src")" ]; then return; fi
-  if [ -f "$dst" ]; then
-    local run; run=$(known_pids_using "$dst")   # pidfile pids only: never a process-name search
-    [ -n "$run" ] && warn "$rel: running pid(s)$run use the OLD copy; the new file is installed beside it (mv), restart at a safe boundary"
-    act "BACKUP $dst -> $F/ws58-keeper-state/$(basename "$rel").bak-$TS"
-    [ $MODE = dry ] || { mkdir -p "$F/ws58-keeper-state"; cp -p "$dst" "$F/ws58-keeper-state/$(basename "$rel").bak-$TS"; }
-  fi
-  act "INSTALL $src -> $dst"
-  [ $MODE = dry ] && return
-  mkdir -p "$(dirname "$dst")"
-  cp -p "$src" "$dst.churn-tmp.$$" && mv -f "$dst.churn-tmp.$$" "$dst" || { fail "install $rel"; return; }
-  cmp -s "$src" "$dst" || fail "install $rel: cmp differs after mv"
+# ---------------------------------------------------------------- 1. install parity (no copies made here)
+# The ONE install list is scripts/coordination/INSTALL.manifest; the ONE installer is rowflow/deploy_rowflow.sh (gated,
+# recorded in bin/rowflow/DEPLOYED.json). churn_up only checks that compute-flags/ equals the manifest at
+# $PARITY_REF (pipeline audit 2026-11-10 #6: a second, ungated installer let bin/ drift and bypassed the gates).
+PARITY_REF=${CHURN_PARITY_REF:-origin/main}
+PARITY_OK=1
+parity() {  # parity [quiet]: run deploy_rowflow.sh --parity; sets PARITY_OK
+  local out
+  if out=$(ROWFLOW_FLAGS="$F" bash "$RF/deploy_rowflow.sh" --parity --ref "$PARITY_REF" --repo "$REPO" 2>&1); then PARITY_OK=1; else PARITY_OK=0; fi
+  if [ "${1:-}" = quiet ]; then printf '%s\n' "$out" | grep -v '^SAME ' | sed 's/^/  /'; else printf '%s\n' "$out" | sed 's/^/  /'; fi
 }
 do_install() {
-  say "== install (git -> $F)"
-  local line
-  for line in "${INSTALL[@]}"; do install_one $line; done
+  say "== install parity ($F vs INSTALL.manifest @ $PARITY_REF)"
+  parity quiet
+  if [ $PARITY_OK = 0 ]; then
+    fail "compute-flags differs from INSTALL.manifest @ $PARITY_REF: install with $RF/deploy_rowflow.sh --ref $PARITY_REF (gated), then re-run"
+  fi
   local cur; cur=$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null)
   if [ "$cur" != "$KEEPER" ]; then
     act "SET ws58-calendar-keeper.current = $KEEPER (was '${cur:-}')"
@@ -149,14 +103,9 @@ do_install() {
   [ $MODE = dry ] || mkdir -p "$F/grants" "$F/ready" "$F/dryrun" "$F/ws58-keeper-state" "$F/filing-done" "$F/briefs" "$F/handoff-sessions"
 }
 status_install() {
-  say "== install state (installed sha16 vs git sha16)"
-  local line rel src dst a b
-  for line in "${INSTALL[@]}"; do set -- $line; rel=$1; src=$2; dst=$F/$rel
-    a=$(sha "$dst"); b=$(sha "$src")
-    if [ -z "$a" ]; then printf '  %-36s MISSING (git %s)\n' "$rel" "${b:-MISSING}"; RC=1
-    elif [ "$a" = "$b" ]; then printf '  %-36s ok %s\n' "$rel" "$a"
-    else printf '  %-36s DIFFERS installed=%s git=%s\n' "$rel" "$a" "${b:-MISSING}"; RC=1; fi
-  done
+  say "== install state (deploy_rowflow.sh --parity vs $PARITY_REF)"
+  parity
+  [ $PARITY_OK = 1 ] || RC=1
   printf '  %-36s %s\n' "ws58-calendar-keeper.current" "$(cat "$F/ws58-calendar-keeper.current" 2>/dev/null || echo MISSING)"
 }
 
@@ -452,7 +401,7 @@ manual_steps() {
       cd $REPO && codex
       first message:  Read $F/GOAL-codex-gen.md and follow it exactly. Your backlog is $F/BACKLOG-codex-gen.md.
   Per-handoff sessions are started by the dispatcher in tmux windows h-<slug> (max_live in $F/handoff-sessions.json); nothing by hand.
-  Verify afterwards:  $0 --status   (every line UP, no DIFFERS, no DEAD grant)
+  Verify afterwards:  $0 --status   (every line UP, PARITY OK, no DEAD grant)
 EOF
 }
 
@@ -464,7 +413,7 @@ if [ $SUPERVISE = 1 ]; then  # LOOP-12: the watchdog's supervisor loop (one pass
 fi
 if [ -n "$JAN" ]; then  # the disk janitor alone; never touches inference components
   case $JAN in
-    start) install_one "disk_janitor.sh" "$CH/disk_janitor.sh"; p=$(pid_of "$F/disk-janitor.pid")
+    start) [ -f "$F/disk_janitor.sh" ] || { fail "disk_janitor.sh not installed: run $RF/deploy_rowflow.sh"; exit 1; }; p=$(pid_of "$F/disk-janitor.pid")
            if is_proc "$p" disk_janitor.sh; then say "  disk-janitor: running pid $p"
            elif [ -n "$(argv_pids "$F/disk_janitor.sh")" ]; then warn "disk-janitor: already running as pid(s) $(argv_pids "$F/disk_janitor.sh"); not starting a duplicate"
            else start_bg "$F/disk-janitor.pid" "$F" bash "$F/disk_janitor.sh"; fi;;
@@ -478,7 +427,10 @@ if [ -n "$JAN" ]; then  # the disk janitor alone; never touches inference compon
 fi
 case $MODE in
   status) status_install; status_loops; status_tmux; status_state;;
-  *) if [ $STOP = 1 ]; then do_stop; else do_install; clean_grants; clean_registry; show_lanes; ensure_loops; check_legacy_writers; ensure_tmux; manual_steps; fi;;
+  *) if [ $STOP = 1 ]; then do_stop
+     else do_install
+       if [ $PARITY_OK = 0 ] && [ $MODE = live ]; then say "churn_up: REFUSED to start loops on a drifted install"; exit 1; fi
+       clean_grants; clean_registry; show_lanes; ensure_loops; check_legacy_writers; ensure_tmux; manual_steps; fi;;
 esac
-[ $RC = 0 ] && say "churn_up $MODE: OK" || say "churn_up $MODE: PROBLEMS (see FAIL/DOWN/DIFFERS lines)"
+[ $RC = 0 ] && say "churn_up $MODE: OK" || say "churn_up $MODE: PROBLEMS (see FAIL/DOWN/DIFF/MISSING lines)"
 exit $RC

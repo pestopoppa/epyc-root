@@ -1,7 +1,8 @@
 # scripts/coordination/churn — the backlog-churn pipeline's installed set
 
-Git is the source; `/mnt/raid0/llm/tmp/compute-flags/` (`F`) holds installed copies plus state. `churn_up.sh` installs,
-cleans reboot residue, starts what is down, and `--status` proves installed sha == git sha for every file. Runbook:
+Git is the source; `/mnt/raid0/llm/tmp/compute-flags/` (`F`) holds installed copies plus state. `scripts/coordination/INSTALL.manifest`
+lists every installed file; `rowflow/deploy_rowflow.sh` installs it (gated). `churn_up.sh` checks parity
+(`deploy_rowflow.sh --parity`), cleans reboot residue, starts what is down, and `--status` prints the parity report. Runbook:
 `docs/guides/agent-workflows/backlog-churn-runbook.md`.
 
 | installed at (`F/…`) | git source | runs as |

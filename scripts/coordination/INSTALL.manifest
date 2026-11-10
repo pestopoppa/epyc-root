@@ -1,0 +1,65 @@
+# INSTALL.manifest - every file the live pipeline runs from compute-flags/, and its repo source (pipeline audit 2026-11-10 #6).
+# The ONE install list: scripts/coordination/rowflow/deploy_rowflow.sh installs from it (gated, recorded in
+# bin/rowflow/DEPLOYED.json); `deploy_rowflow.sh --parity` prints SAME/DIFF/MISSING per line and exits non-zero on drift;
+# churn_up.sh runs that parity check instead of copying files itself.
+#
+# Columns: <published path, relative to compute-flags/>  <source path, relative to the repo root>  <class>
+#   engine  re-read by a running poller (rowflow.ENGINE_REREAD; deploy-guard decides whether open grants block a swap)
+#   hot     read fresh on every invocation / at process start
+# Never install a file by hand; add it here.
+
+# ---- bin/rowflow: the keeper's planner/allocator, the publisher and the engine
+bin/rowflow/rowflow.py               scripts/coordination/rowflow/rowflow.py              hot
+bin/rowflow/publish_row.py           scripts/coordination/rowflow/publish_row.py          hot
+bin/rowflow/notify.py                scripts/coordination/rowflow/notify.py               engine
+bin/rowflow/diskpause.py             scripts/coordination/rowflow/diskpause.py            engine
+bin/rowflow/hostutil.py              scripts/coordination/rowflow/hostutil.py             hot
+bin/rowflow/grant_ok_launcher.py     scripts/coordination/rowflow/grant_ok_launcher.py    hot
+bin/rowflow/filler_run15.sh          scripts/coordination/rowflow/filler_run15.sh         engine
+bin/rowflow/filler_lib.sh            scripts/coordination/rowflow/filler_lib.sh           engine
+bin/rowflow/run_direct.py            scripts/coordination/rowflow/run_direct.py           hot
+bin/rowflow/run_direct.sh            scripts/coordination/rowflow/run_direct.sh           hot
+bin/rowflow/task_lint.py             scripts/handoffs/task_lint.py                        hot
+bin/rowflow/task_lint_core.py        scripts/handoffs/task_lint_core.py                   hot
+
+# ---- bin/churn: filing, reclaim, wrap-up (reclaim_row.py imports the scripts/system + job_templates modules from here)
+bin/churn/wrapup.py                  scripts/coordination/churn/wrapup.py                 hot
+bin/churn/file_result.py             scripts/coordination/churn/file_result.py            hot
+bin/churn/filing.py                  scripts/coordination/churn/filing.py                 hot
+bin/churn/auto_file.py               scripts/coordination/churn/auto_file.py              hot
+bin/churn/reclaim_row.py             scripts/coordination/churn/reclaim_row.py            hot
+bin/churn/typed_classify.py          scripts/coordination/churn/typed_classify.py         hot
+bin/churn/tokens_per_task.py         scripts/coordination/churn/tokens_per_task.py        hot
+bin/churn/scratch_guard.py           scripts/coordination/churn/scratch_guard.py          hot
+bin/churn/row_disk_budget.py         scripts/coordination/churn/row_disk_budget.py        hot
+bin/churn/row_worktree.py            scripts/coordination/job_templates/row_worktree.py   hot
+bin/churn/worktree_gate.py           scripts/system/worktree_gate.py                      hot
+bin/churn/worktree_salvage.py        scripts/system/worktree_salvage.py                   hot
+bin/churn/scratch_lease.py           scripts/system/scratch_lease.py                      hot
+
+# ---- bin/job_templates: shared job-side helpers rows import or exec (never copy)
+bin/job_templates/job_fence.py       scripts/coordination/job_templates/job_fence.py       hot
+bin/job_templates/gitnexus_impact.py scripts/coordination/job_templates/gitnexus_impact.py hot
+bin/job_templates/template_lint.py   scripts/coordination/job_templates/template_lint.py   hot
+bin/job_templates/row_worktree.py    scripts/coordination/job_templates/row_worktree.py    hot
+
+# ---- bin/: loop helpers
+bin/backlog_gen.py                   scripts/coordination/backlog_gen.py                  hot
+bin/watch_git_config.py              scripts/coordination/watch_git_config.py             hot
+bin/handoff_sessions.py              scripts/coordination/handoff_sessions.py             hot
+bin/flow_scoreboard.py               scripts/coordination/flow_scoreboard.py              hot
+bin/worktree_footprint.py            scripts/coordination/worktree_footprint.py           hot
+bin/index_regen.py                   scripts/coordination/index_regen.py                  hot
+bin/serialized_push.py               scripts/coordination/serialized_push.py              hot
+bin/flip_checkbox.py                 scripts/coordination/flip_checkbox.py                hot
+
+bin/keeper_qual_memo.py              scripts/coordination/keeper_qual_memo.py             hot
+
+# ---- compute-flags/: the keeper and the zero-token loops (a running .sh keeps its old inode: installs are .part + mv)
+ws58-calendar-keeper-v13.sh          scripts/coordination/rowflow/ws58-calendar-keeper-v13.sh hot
+ws58-keeper-watchdog.sh              scripts/coordination/churn/ws58-keeper-watchdog.sh   hot
+ws58-disk-trend.sh                   scripts/coordination/churn/ws58-disk-trend.sh        hot
+disk_janitor.sh                      scripts/coordination/churn/disk_janitor.sh           hot
+ws58-backlog-gen-v1.sh               scripts/coordination/churn/ws58-backlog-gen-v1.sh    hot
+ws58-flow-scoreboard-v1.sh           scripts/coordination/churn/ws58-flow-scoreboard-v1.sh hot
+GOAL-codex-gen.md                    scripts/coordination/churn/GOAL-codex-gen.md         hot
