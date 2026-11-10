@@ -2,8 +2,9 @@
 """BRF-T6-1 (D6 staged), RELAXED by operator decision 2026-11-03: publish_row binds `task_lint.py publish` to the task box
 handoff_task names. A row is refused before any smoke ONLY when its box names no model/build identity (check c), states no
 stop rule (check s), or handoff_task does not resolve to a real open task box (file-only, not found, not open). Every
-other finding (NEEDS-*, non-inference payload, metric/rule/region/estimate fields, ...) is a WARNING printed and recorded
-in the row's publish_warnings; the smoke still gates every row."""
+other finding (NEEDS-*, metric/rule/region/estimate fields, ...) is a WARNING printed and recorded
+in the row's publish_warnings; the smoke still gates every row. RTG-100 (2026-11-10): a compute row whose box is
+confidently non-inference, or whose launcher runs gitnexus analyze, is refused."""
 import contextlib
 import io
 import os
@@ -84,8 +85,27 @@ class PublishLintTests(unittest.TestCase):
         self.assertIn("identity incomplete", msg)
         self.assertIn("h.md:", msg)
 
-    def test_non_inference_payload_only_warns(self):
-        self.warned("T-NONINF", "non-inference payload")
+    def test_non_inference_payload_refused_as_compute_row(self):
+        # RTG-100 (operator 2026-11-10): an explicitly non-inference box cannot be a compute row
+        self.refused("T-NONINF", "non-inference payload cannot be a compute row")
+
+    def test_non_inference_payload_allowed_for_non_compute_kind(self):
+        spec = {"handoff_task": "h.md:T-NONINF", "kind": "non-inference"}
+        with contextlib.redirect_stdout(io.StringIO()):
+            w = pr.check_task_lint(spec, self.repo)
+        self.assertTrue(any("non-inference payload" in x for x in w), w)
+
+    def test_gitnexus_launcher_refused_as_compute_row(self):
+        lp = os.path.join(self.repo, "gx.sh")
+        with open(lp, "w") as f:
+            f.write("#!/bin/bash\n# gitnexus analyze is mentioned in a comment only\ncd /x && gitnexus analyze --workers 1\n")
+        self.assertIsNotNone(pr.noninference_payload(lp))
+        with self.assertRaises(rf.Refused) as cm:
+            pr.lint({"launcher": lp})
+        self.assertIn("non-inference payload", str(cm.exception))
+        with open(lp, "w") as f:
+            f.write("#!/bin/bash\n# gitnexus analyze\nllama-bench -m m.gguf\n")
+        self.assertIsNone(pr.noninference_payload(lp))
 
     def test_needs_tag_only_warns(self):
         self.warned("T-OWNER", "NEEDS tags present")

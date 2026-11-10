@@ -19,8 +19,9 @@ Ownership (operator 2026-11-02): handoff_task must name an existing handoffs/act
 Task lint (BRF-T6-1, D6 staged, operator 2026-11-02): handoff_task must also name the TASK (`file.md:<TASK-ID>` or
 `file.md:<LINE>`); that open box is linted with `scripts/handoffs/task_lint.py publish`. RELAXED (operator 2026-11-03):
 the row is REFUSED only when the box names no model/build identity (field c), states no stop rule (field s), or
-handoff_task does not resolve to a real open task box (file-only, or not found). Every other finding (NEEDS-*, pending
-operator choice, non-inference payload, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
+handoff_task does not resolve to a real open task box (file-only, or not found), or (RTG-100, 2026-11-10) a compute row's
+box is confidently non-inference / its launcher runs a known non-inference payload. Every other finding (NEEDS-*, pending
+operator choice, roll-up, prose prerequisite, standing hold, metric/rule/region/estimate
 fields) is a WARNING, printed and recorded in the row's `publish_warnings`; the smoke still gates every row. The lint
 runs before the smoke, so a refused row costs no compute.
 Preflight (pipeline audit 2026-11-10 #4, operator scope "Publish-time checks"; `preflight`): before anything is published,
@@ -171,6 +172,11 @@ def lint(spec):
         errs = gpu_quiet_guard_conflicts(dict(spec, launcher=launcher))
         if errs:
             raise rf.Refused("gpu-quiet guard: " + "; ".join(errs))
+        if str(spec.get("kind") or "compute") == "compute":
+            bad = noninference_payload(launcher)
+            if bad:
+                raise rf.Refused(f"non-inference payload as a compute row: {bad[0]} runs `{bad[1]}`; run it in the owner's "
+                                 "turn, not on a compute grant (RTG-100)")
         hit = prep_in_grant(launcher)
         if hit:  # operator 2026-11-03 (session review §5 item 8): WARN, never refuse; recorded in the row's publish_warnings
             w = f"prep-in-grant: {hit[0]} runs `{hit[1]}`; {PREP_MSG} (it spends grant time; publish continues)"
@@ -269,12 +275,40 @@ def task_box(spec, repo=None):
     return path, idx + 1, txt, ch
 
 
+NONINF_REFUSE_BASES = ("explicit", "deliverable")
+# launcher payloads that are never inference: a repo indexer holding a compute grant (gitnexus analyze held 96 cores).
+# Kernel builds are deliberately absent: a build-then-bench row is legitimate compute.
+NONINF_PAYLOAD_RX = re.compile(r"(?:^|[\s;&|/(])(?:gitnexus\s+analyze|gitnexus-analyze\.sh)\b", re.I)
+
+
+def noninference_payload(launcher):
+    """(file, line) when the launcher or a script it runs is a known non-inference payload (indexer, install, build)."""
+    for f, txt in executed_texts(launcher).items():
+        for ln in txt.splitlines():
+            if ln.lstrip().startswith("#"):
+                continue
+            if NONINF_PAYLOAD_RX.search(ln):
+                return f, ln.strip()[:160]
+    return None
+
+
 def check_task_lint(spec, repo=None):
     """BRF-T6-1, relaxed (operator 2026-11-03): refuse only (1) a box that does not resolve to a real open task (task_box),
     (2) a box with no model/build identity, (3) a box with no stop rule. Every other finding is a WARNING: printed, and
     recorded in the row's publish record as spec["publish_warnings"] (-> ready/<id>.json). Returns the warnings."""
     path, ln, txt, ch = task_box(spec, repo)
-    refuse, warn = _task_lint().publish_findings(txt, ch)
+    tl = _task_lint()
+    refuse, warn = tl.publish_findings(txt, ch)
+    # RTG-100 "Rows published with a non-inference payload as compute rows" (operator 2026-11-10): a compute row whose box
+    # is CONFIDENTLY non-inference (explicit [non-inference]/[operator-decision]/[blocked-external] tag, or the deliverable
+    # validator) is refused; the advisory regex guess stays a warning.
+    if str(spec.get("kind") or "compute") == "compute":
+        sc = tl.score2(txt, ch)
+        cls, basis = sc["class"], sc["class_basis"]
+        if cls != "inference" and basis in NONINF_REFUSE_BASES:
+            refuse = list(refuse) + [f"class {cls} ({basis}): a non-inference payload cannot be a compute row; do the work "
+                                     f"in the owner's turn, or tag the box [inference] if it really measures something"]
+            warn = [w for w in warn if not w.startswith("class ")]
     rf.need(not refuse, f"task_lint publish REFUSED {os.path.basename(path)}:{ln} ({spec.get('handoff_task')}):\n  - "
             + "\n  - ".join(refuse) + f"\nFIX: edit the box at {path}:{ln} as listed above, then re-run publish_row.py")
     warn = [f"{os.path.basename(path)}:{ln}: {w}" for w in warn]
