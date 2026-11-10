@@ -66,11 +66,22 @@ class BackfillIfFits(unittest.TestCase):
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 2 * H)
         self.assertEqual(ids(a), set())   # 3 h ends after the 2 h start: waits
 
-    def test_unknown_start_reserves_nothing(self):
+    def test_foreign_hold_on_one_region_keeps_the_reservation(self):
+        """coordinator 2026-11-10 (rank-2 floor slipped 19:07Z -> 21:11Z): q1 foreign (no known end), q0 known until 10 h.
+        The reservation stays at T = 10 h; a row booking past T waits, one booking inside T is admitted capped at T."""
         ends = lsa_ends(NOW + 10 * H)
         for r in rf.expand({"q1"}):
             ends.pop(r)   # q1 held by a foreign region-lock hold: no known end
+        a, _, _ = self.run_plan([wide(), cand("q2-14h", [{"q2"}], est=14 * H)], ends, [NOW + 10 * H])
+        self.assertEqual(ids(a), set())
+        self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 10 * H)
         a, _, _ = self.run_plan([wide(), cand("q2-12h", [{"q2"}], est=12 * H)], ends, [NOW + 10 * H])
+        self.assertEqual(ids(a), {"q2-12h"})
+        self.assertAlmostEqual(rf.plan.hard_end["q2-12h"], NOW + 10 * H)
+
+    def test_no_known_end_anywhere_reserves_nothing(self):
+        ends = {}
+        a, _, _ = self.run_plan([wide(), cand("q2-12h", [{"q2"}], est=12 * H)], ends, [])
         self.assertEqual(ids(a), {"q2-12h"})
         self.assertIsNone(rf.plan.last_drain)
         self.assertIn("c7-wide", [c["id"] for c, _ in rf.plan.no_reserve])

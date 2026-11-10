@@ -961,7 +961,41 @@ def sc_smoke_pockets_no_starvation(path):
         return out
     return write(path, [(dict({"pk-whole-a": r1, "pk-whole-b": r2}, **sm), world)] * 3), check
 
+
+def sc_foreign_hold_keeps_drain(path):
+    """coordinator 2026-11-10 (live, 15:05Z): the rank-2 quiet-host floor row drained for the host while a FOREIGN KFD
+    process held the MI210 (no known end) and q1 / q2 were busy until known ends. The keeper logged NO-RESERVE ("a needed
+    busy region has no known end") and let agg0 (until 22:21Z) and afc-v3 (until 19:39-21:11Z) take q0 / q3; the floor
+    slipped 19:07Z -> 21:11Z. A foreign hold on ONE needed region keeps the reservation at T = max(known ends): rows
+    whose book_s ends past T are not admitted on the floor's regions; a row booking inside T still is (capped at T)."""
+    floor = row("floor-r2", lane="gpu", regions="mi210_0,0-95", cls="cpu+gpu", gpu_quiet="exclusive", claim="0-95",
+                role="bench", extra="llama-server -t 48 --port 8099", est=3600, rank=2,
+                man={"shape": "quiet-host", "declared_shape": "quiet-host", "admission_class": "block-timing-quiet",
+                     "baseline_ref": "replay fixture: whole-host serving floor"})
+    q1 = row("busy-q1", regions="any-of q1", extra="make -j 24", est=3600, rank=50)
+    q2 = row("busy-q2", regions="any-of q2", extra="make -j 24", est=3600, rank=50)
+    agg0 = row("agg0-l3-load", regions="any-of q0", extra="make -j 24", est=6 * 3600, rank=60)
+    afc = row("afc-v3", regions="any-of q3", extra="make -j 24", est=3 * 3600, rank=60)
+    short = row("short-q0", regions="any-of q0", extra="make -j 24", est=1800, rank=70)
+    world = {"foreign": {GPU: "foreign-kfd"}, "kfd": {4242: 8 << 30}}
+    held = {"busy-q1": q1, "busy-q2": q2}
+    rows = dict(held, **{"floor-r2": floor, "agg0-l3-load": agg0, "afc-v3": afc, "short-q0": short})
+    ticks = [(held, world)] + [(rows, world)] * 6
+
+    def check(d):
+        out = []
+        if len(_granted(d, "busy-q1")) != 1 or len(_granted(d, "busy-q2")) != 1:
+            return ["fixture: q1/q2 rows not granted on tick 0"]
+        for rid in ("agg0-l3-load", "afc-v3"):
+            if _granted(d, rid):
+                out.append(f"{rid} admitted past the drain start although one needed region (MI210) is foreign-held")
+        if not _granted(d, "short-q0"):
+            out.append("short-q0 (books inside T) not backfilled")
+        return out
+    return write(path, ticks), check
+
 SCENARIOS = {
+    "sched-foreign-hold-keeps-drain": sc_foreign_hold_keeps_drain,
     "sched-race-eqv-books-by-estimate": sc_race_eqv_books_by_estimate,
     "sched-resumable-window-end": sc_resumable_window_end,
     "sched-overrun-capped-at-drain": sc_overrun_capped_at_drain,

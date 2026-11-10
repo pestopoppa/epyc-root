@@ -1579,6 +1579,7 @@ SHAPE_TOLERANCE_CORES = 24   # publish refuses a declaration that books >= a qua
 GPU_Q3_ALLOWED_CPUS = frozenset(range(72, 96)) | frozenset(range(168, 192))   # q3 cores + their SMT siblings (incl. 184-191)
 # q3 cores whose SMT siblings are NOT the MI210 host threads (72-87 -> siblings 168-183)
 COEXIST_Q3 = frozenset({f"c{n}" for n in range(72, 88)} | {f"t{n}" for n in range(168, 184)})
+GPU_BLOCKED = "gpu-quiet-not-quiet"   # planner-only token: a held-back EXCLUSIVE row's GPU (never free, unknown end)
 GPU_HOST_THREADS = frozenset(range(184, 192))   # filler_run15 GPUTHR default / gpu-quiet reserved MI210 host threads
 GPU_TIMING_KINDS = ("bench", "profile", "ak-keep-gate")
 GPU_TIMING_CLASSES = ("block-timing-pairable", "block-timing-quiet")
@@ -2313,8 +2314,9 @@ def own_block(h, free, ram, gpu_grant_open, ports):
 
 def earliest_start(c, free, now, grant_ends=(), region_ends=None):
     """(S, why): the earliest feasible start of waiting row c - the time every region of its best option is free, from
-    the ends of the grants (and live smokes) holding them (region_ends {token: end epoch | None}). S is None (no
-    reservation) when a needed busy region has no known end, when S is not in the future (an expired grant still
+    the ends of the grants (and live smokes) holding them (region_ends {token: end epoch | None}). A needed region with no
+    known end (foreign hold) counts as freeing at S or later, S = the latest known end (else the latest running-grant
+    end). S is None (no reservation) when nothing at all has a known end, when S is not in the future (an expired grant still
     held: it frees any moment) or when S lies beyond the longest busy window (the latest running-grant end). Abstract
     callers (region_ends None) fall back to the latest running-grant end."""
     later = [float(e) for e in grant_ends if e and float(e) > now]
@@ -2325,12 +2327,20 @@ def earliest_start(c, free, now, grant_ends=(), region_ends=None):
         best = None
         for o in c["options"]:
             ends = [region_ends.get(r) for r in (o - free)]
-            if any(e is None for e in ends):
-                continue
-            s = max([float(e) for e in ends] or [now])
+            known = [float(e) for e in ends if e is not None]
+            if len(known) < len(ends):
+                # coordinator 2026-11-10 (rank-2 floor slipped 19:07Z -> 21:11Z): a foreign / unknown-end hold on ONE
+                # needed region never releases the reservation on the others. The unknown region "frees at T or
+                # later": T = the latest KNOWN end among the needed regions; with none known, the latest running-grant
+                # end; with neither, no reservation.
+                if not known:
+                    if longest is None:
+                        continue
+                    known = [longest]
+            s = max(known or [now])
             best = s if best is None else min(best, s)
         if best is None:
-            return None, "a needed busy region has no known end (foreign hold)"
+            return None, "a needed busy region has no known end (foreign hold) and no running grant end is known"
     if best is None:
         return None, "no running grant end is known"
     if best <= now:
@@ -4720,7 +4730,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     held_back = []
     if gwhy:
         held_back = [c for c in gpu_held_back(cands) if c["id"] not in one_sample]
-        cands = [c for c in cands if c not in held_back]
+        # coordinator 2026-11-10 (rank-2 floor slipped 19:07Z -> 21:11Z): a held-back EXCLUSIVE row stays visible to
+        # the planner with its GPU token replaced by GPU_BLOCKED (never free, no known end), so it can never be placed but
+        # still drains for its other regions; it was removed outright and every quarter it needed was backfilled.
+        cands = [c for c in cands if c not in held_back] + [
+            dict(c, options=[frozenset((set(o) - {GPU}) | {GPU_BLOCKED}) for o in c["options"]]) for c in held_back]
         if held_back:
             log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
             for c in held_back:
