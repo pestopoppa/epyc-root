@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T17:57:26Z",
+  "generated_at": "2026-11-10T18:03:10Z",
   "nodes": [
     {
       "age_days": 0,
@@ -3309,7 +3309,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 330,
@@ -3318,7 +3318,7 @@
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-10",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
       "open": 18,
       "priority": 0.711,
