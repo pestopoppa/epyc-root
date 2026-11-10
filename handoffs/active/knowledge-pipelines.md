@@ -3147,3 +3147,17 @@ Design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../d
   file AGG-1.x (25-30 docs, Oolong-real check, incremental re-ingest, one backfill field, mid-size parity) and
   the Phase-2 integration decision package.
 
+
+- **AGG-0.2/0.3 non-compute finish (autopilot-backlog-session, 2026-11-10).** No box ticked: AGG-0.2 needs the granted
+  load run to complete, and AGG-0.3's L4 per-stage records are the AGG-0.4 `stage_ingest` wiring, which needs inference.
+  Done now: (a) research `6c70550e7` `benchmarks/agg_phase0/l3_load.py` writes fsynced numeric per-stage records per
+  document (`probe|parse|store|l3_doc|doc_done|doc_fail|stop|corpus|m1_l3|done`), is resumable per document (doc_done
+  skip, parse cache, idempotent ingest), honours FILLER_DEADLINE/STOPFILE/SMOKE, rc 75 partial; (b)
+  `m1_l3_report.py` (stdlib, informational: M1 is `null` with `no_gold_cells_filled` while facts_sheet.csv has 0 of 80
+  cells filled, never 0.0; plus candidate coverage); (c) keeper job `/mnt/raid0/llm/tmp/agg0-l3-load-20261110/`
+  (spec.json, launch.sh, job.sh, precond.sh, smoke_check.py, check_complete.py, SOURCE.sha256 over orchestrator
+  `e4e727ae` + research `6c70550e7` byte copies). No model: local-ODL parse (JVM + Python), deterministic store/L1/L3;
+  every record carries llm_calls 0. Tests: research `unittest discover -s tests -p "test_agg_*.py"` 17 OK (orch venv
+  python, `AGG_ORCH_ROOT`); orchestrator `test_aggregation_phase0.py` 11 passed. Not run: the parse (CPU grant).
+  Gap named: the interpreter + ODL overlay + JRE import is proven only by precond at grant time. Unpublished; the main
+  session publishes the row.
