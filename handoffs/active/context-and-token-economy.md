@@ -508,7 +508,7 @@ S1 answered the llama.cpp feasibility question. The next executor should not tou
 |---|---|
 | Which model first? | Start with a CPU-feasible Qwen3-0.6B format smoke if no GPU is available; use Qwen3-1.7B for the validation target. Do not start 8B/32B CPU training. |
 | Can S3 begin now? | No. S3 requires S2 evidence: format compliance, compression ratio, and no severe benchmark degradation. |
-| Is OpenMementos already staged? | Yes: `/mnt/raid0/llm/data/openmementos/`. Verify paths before training because dataset storage is outside this repo. |
+| Is OpenMementos already staged? | No (deleted 2026-11-02 by the disk reclaim; was `/mnt/raid0/llm/data/openmementos/`). Re-download `microsoft/OpenMementos`; `hf-cache/datasets--microsoft--OpenMementos` holds only metadata. Verify paths before training because dataset storage is outside this repo. |
 | Does block masking save peak memory? | In current llama.cpp it frees reusable KV cells; it does not shrink preallocated buffers. Phrase claims as effective context/batch capacity unless paged-attention metadata is fixed. |
 
 ##### S2 Minimal Runbook
@@ -619,7 +619,7 @@ Ran all 5 tests against Qwen3-1.7B-Q8_0 (`llama.cpp-experimental/build-diff-test
 
 ##### S2: Model Fine-Tuning (requires S1 success) — DESIGN COMPLETE (2026-04-13)
 
-**Dataset**: OpenMementos-228K downloaded at `/mnt/raid0/llm/data/openmementos/` (228,557 examples, 4.7 GB). Default config (20 shards) has training-ready block/summary formatted responses. Full config (39 shards, 9.2 GB) includes intermediate pipeline outputs (sentences, block boundaries, block summaries).
+**Dataset**: OpenMementos-228K was downloaded at `/mnt/raid0/llm/data/openmementos/` (deleted 2026-11-02 by the disk reclaim; re-download from `microsoft/OpenMementos`) (228,557 examples, 4.7 GB). Default config (20 shards) has training-ready block/summary formatted responses. Full config (39 shards, 9.2 GB) includes intermediate pipeline outputs (sentences, block boundaries, block summaries).
 
 **Dataset stats**: ~9 blocks/response median, ~12K response tokens mean, 54% math / 27% science / 19% code. Special tokens: `<|block_start|>`, `<|block_end|>`, `<|summary_start|>`, `<|summary_end|>` — all balanced, 100% have `<think>` wrapper + answer section.
 

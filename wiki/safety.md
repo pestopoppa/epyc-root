@@ -182,7 +182,7 @@ checkpoint prompt copies were re-pinned to `18f8ea01`, so a rewind no longer res
 - the pinned `multitier_v10` store, with operator approval.
 
 `--verify` passes on all of them, and backups plus the receipt are in
-`/mnt/raid0/llm/backups/episodic-leak-20260917/`.
+`/mnt/raid0/llm/backups/episodic-leak-20260917/` (deleted 2026-11-02 by the disk reclaim, 30 GB, moved to the trash and since swept; the repin ratification package is in `artifacts/operator/ratify_v10_episodic_repin_20260917*`).
 
 ### Key findings
 

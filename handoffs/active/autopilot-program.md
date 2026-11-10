@@ -4907,7 +4907,7 @@ so this is a **new active stub, not a reopen**.
   - [x] **MHS-3c — clean the out-of-scope leak copies** ✅ 2026-09-17 (all three scopes purged; `--verify` PASS on each) that MHS-3b leaves: 4 HumanEval/55 task memories in
         `episodic.db` (in every checkpoint and the live store) and Aschoff in `autopilot_state*.bak*`
         `last_traces`. Purge tool: orchestrator `41baad2b` (`scripts/maintenance/purge_eval_leak_memories_20260917.sh`),
-        backups and receipt in `/mnt/raid0/llm/backups/episodic-leak-20260917/`.
+        backups and receipt were in `/mnt/raid0/llm/backups/episodic-leak-20260917/` (deleted 2026-11-02 by the disk reclaim; the repin backups remain in `/mnt/raid0/llm/backups/v10-episodic-repin-20260917/`).
     - [x] Offline stores and state backups purged ✅ 2026-09-17: 11 checkpoint/backup `episodic.db` copies
           (4 rows + FAISS entries each, health OK) and 15 state backups redacted. `--verify` PASS. The first run
           was cut off by a caller timeout at item 19 with no damage (the original was intact); the re-run finished.
