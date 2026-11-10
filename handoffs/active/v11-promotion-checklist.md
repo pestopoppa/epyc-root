@@ -88,3 +88,7 @@ From V11-122 (llguidance fold, in the champion since C6): the promotion box and 
 ## From mi210-serving-program (archived 2026-11-05)
 
 - [ ] **V11-MI210-PREFILL-RUNBOOK** [inference] v11 promotion runbook items from mi210-serving-program (archived 2026-11-05). (1) architect_general Q38FN served on the GPU store with `-ngl 0 -ub 2048 -b 2048` + **`GGML_CUDA_NO_PINNED=1`** (HIP pinned host memory otherwise costs ~1.88x idle decode TPOT), t48 bundle, `--load-threads`: NPD1-STEP5 on C6 measured GPU prefill X/N TTFT 2.61x at 8k (59.2 -> 23.0 s) and 2.87x at 32k (276 -> 95.6 s) at idle TPOT 1.052x (`artifacts/gpu-block-20261105/npd1-step5-summary.json`). (2) Before promotion, measure GPU co-residency with :8083 (Qwen3.8-27B + DFlash2): Q38FN keeps ~6.6 GB of compute buffers resident on the MI210; quantify :8083 decode TPOT during a concurrent Q38FN 32k prefill and decide whether to gate offload on :8083 having no active slots. Done when both are in the v11 promotion runbook with the co-residency number. [no-belief: runbook carry-over]
+
+## Post-promotion (after the v11 freeze, before Autopilot relaunch)
+
+- [ ] **V11-POST-PADDLE: trigger PIP02-PADDLE-STACK-ENTRY** ([`knowledge-pipelines.md`](knowledge-pipelines.md), owner Pipeline Management). Operator directive 2026-11-10: PaddleOCR-VL enters the production stack (table regions; ODL elsewhere) once v11 is frozen and before Autopilot relaunches. Whoever closes the promotion notifies the owner.
