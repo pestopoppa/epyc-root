@@ -2383,7 +2383,7 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
 
 
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None,
-         region_ends=None):
+         region_ends=None, region_holders=None):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -2484,7 +2484,11 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 continue
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
             demand = {r: sum(1 for x in pending if x is not c for o2 in x["options"] if r in o2) for r in free}
-            o = min(opts, key=lambda o: (len(o), not (o & qcores("q3")) and not (o & set(QUARTERS)), sum(demand.get(r, 0) for r in o), sorted(o)))
+            # operator 2026-11-10 ("Prefer q0-q2 for CPU rows"): a whole-quarter option on q3 goes last - q3 holds the
+            # MI210's host cores c88-c95, so a CPU quarter row takes q3 only when it is its only fitting quarter (an
+            # explicit q3 row has no other option; order only, never a reservation)
+            o = min(opts, key=lambda o: (len(o), not (o & qcores("q3")) and not (o & set(QUARTERS)),
+                                         "q3" in o and GPU not in o, sum(demand.get(r, 0) for r in o), sorted(o)))
             placed = (c, o)
             break
         if not placed:
@@ -2519,7 +2523,33 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 elif ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
                     why.append(f"RAM: {c.get('gib')} GiB would leave {ram - float(c.get('gib') or 0):.0f} GiB < {RAM_MARGIN_GIB} margin")
         idle[r] = f"{c['kind']} {c['id']} " + ("; ".join(why) or "blocked")
+        if c is drain:   # operator 2026-11-10: the drain row's reason must not mask the next row's real blocker
+            other = next((x for x in sorted(want, key=lambda x: (float(x["rank"]), x["id"])) if x is not drain), None)
+            if other is not None:
+                idle[r] += "; also " + _blocked_by(other, r, free, region_ends, region_holders)
     return out, idle, pending
+
+
+def _blocked_by(c, r, free, region_ends=None, region_holders=None):
+    """'<shape> row <id> needs <busy>: held by <holder> until <end>' for the first option of c covering region r."""
+    o = next((o for o in c["options"] if r in o), set())
+    miss = set(o) - set(free)
+    head = f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g})"
+    if not miss:
+        return head + " fits its regions but is held by its own constraint"
+    def owner(t):
+        h = (region_holders or {}).get(t)
+        if h is None:
+            h = next(((region_holders or {}).get(q) for q in QUARTERS if t in expand({q}) and (region_holders or {}).get(q)), None)
+        return h
+    holders = sorted({str(owner(t)) for t in miss if owner(t)})
+    ends = [float(e) for e in ((region_ends or {}).get(t) for t in miss) if e]
+    msg = f"{head} needs {','.join(compress(miss))}"
+    if holders:
+        msg += f": held by {','.join(holders)}"
+    if ends:
+        msg += f" until {dt.datetime.fromtimestamp(max(ends), dt.timezone.utc):%H:%MZ}"
+    return msg
 
 
 plan.last_drain = None
@@ -4760,7 +4790,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     for _pass in range(len(cands) + 1):
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags), held_ports=held_ports,
-                                        drain_prev=drain_prev, region_ends=r_ends)
+                                        drain_prev=drain_prev, region_ends=r_ends, region_holders=holders)
         if not dry:
             atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
         for hc, bc in plan.drain_held:

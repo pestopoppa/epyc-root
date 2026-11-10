@@ -994,7 +994,30 @@ def sc_foreign_hold_keeps_drain(path):
         return out
     return write(path, ticks), check
 
+def sc_cpu_quarter_prefers_q0_over_q3(path):
+    """operator 2026-11-10 "Prefer q0-q2 for CPU rows": afc-v3-q38_flash-tools-mild (any-cpu-quarter) took q3 at 15:05Z
+    while q0 was free, and the GPU rows that smoked minutes later waited for c88-c95 until 19:39Z. With q0 and q3 free, a
+    GPU row smoking, and another (RAM-blocked) row wanting q0 - demand that used to push the CPU row onto q3 - the CPU
+    quarter row must take q0; q3 only when it is the only fitting quarter."""
+    g = row("gpu-smoking", lane="gpu", regions="mi210_0,184-191", cls="gpu", nofold=True, passed=False, est=1800,
+            role="bench", extra="llama-server -t 8")
+    g["smoke_queued"] = {"id": "gpu-smoking", "queued_at": _iso(T0), "cpus": 4}
+    c = row("cpu-quarter", regions="any-cpu-quarter", extra="make -j 24", est=3600, rank=50)
+    w = row("q0-wanter", regions="any-of q0", extra="make -j 24", est=3600, rank=200, man={"gib": 100000})
+    world = {"foreign": {"q1": "foreign-b", "q2": "foreign-c"}}
+    rows = {"gpu-smoking": g, "cpu-quarter": c, "q0-wanter": w}
+
+    def check(d):
+        gs = _granted(d, "cpu-quarter")
+        if not gs:
+            return ["cpu-quarter never granted (q0 was free)"]
+        hq = {h for h in gs[0][1]["holds"] if h in QUARTERS} | _fullq(gs[0][1]["holds"])
+        return [] if "q3" not in hq else [f"CPU quarter row took q3 ({sorted(hq)}) while q0 was free"]
+    return write(path, [(rows, world)] * 3), check
+
+
 SCENARIOS = {
+    "cpu-quarter-prefers-q0-over-q3": sc_cpu_quarter_prefers_q0_over_q3,
     "sched-foreign-hold-keeps-drain": sc_foreign_hold_keeps_drain,
     "sched-race-eqv-books-by-estimate": sc_race_eqv_books_by_estimate,
     "sched-resumable-window-end": sc_resumable_window_end,
