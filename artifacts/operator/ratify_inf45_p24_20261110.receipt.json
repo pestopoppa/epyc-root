@@ -1,0 +1,114 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-10T17:28:55Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "ead524a117b14afc3fe73fd841dd8f8011ee4417",
+  "git_head_before": "ead524a117b14afc3fe73fd841dd8f8011ee4417",
+  "operator": "Daniele",
+  "protocol_id": "P-BENCH-PLACEMENT-1",
+  "ratification_id": "RATIFY-INF45-P24-20261110",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/run_inf45_p24_ratify_20261110.sh",
+    "sha256": "cf985718c56f0cf551445b777b26e96aff0cc2bea8f2b4709ac699f0998f6ed7"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/workspace",
+  "sections": {
+    "coherence": {
+      "data": {
+        "measurement/protocols/bench-cpu.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: protocol-text amendment; depth spread cited inline (INF-45 P2-4), amendments A1-A4 from the INF-45 fold box"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-BENCH-PLACEMENT-1 present in MEASUREMENT.md",
+        "anchor present in measurement/protocols/bench-cpu.md: <!-- RATIFY-INF45-P24-20261110 BEGIN -->"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 13,
+      "lines_after": 277,
+      "lines_before": 266,
+      "lines_removed": 2,
+      "path": "measurement/protocols/bench-cpu.md",
+      "sha256_after": "4661529449a6c12199651dabb7796e2b092ed1590195de092bc5dc1599af2e60",
+      "sha256_before": "fd2745fdb4c9cb8d49a0c1660d58483a0838b883d604f4a508f7ad741dcb3bcc",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/bench-cpu.md",
+        "+++ b/measurement/protocols/bench-cpu.md",
+        "@@ -261,6 +261,17 @@",
+        " <!-- RATIFY-INF45-P23-20261109 END -->",
+        " ",
+        " ",
+        "+<!-- RATIFY-INF45-P24-20261110 BEGIN -->",
+        "+**Amendments (RATIFY-INF45-P24-20261110).** Binding on every conforming run from ratification on; earlier claims are not retro-certified.",
+        "+",
+        "+- **A1 \u2014 no repeated-prompt replication for context-reading drafters.** Replicates of an arm whose drafter reads the context (ngram, lookup, MTP over context) must use distinct prompts; re-sending one prompt measures cache reuse, not decode.",
+        "+- **A2 \u2014 mandatory non-context control arm.** Every placement comparison carries one arm whose decode does not depend on prompt content (spec-dec off or a non-context drafter), so placement and drafter effects separate.",
+        "+- **A3 \u2014 report n/min/max, never a bare median.** Every quoted central value carries its sample count, minimum and maximum.",
+        "+- **A4 \u2014 `accept=1.000` is a bug report.** A perfect draft-acceptance rate is treated as an instrumentation defect (replayed prompt, cache hit, mis-parsed counter) and the arm is REJECTED until explained.",
+        "+- **A5 \u2014 context depth is a required claim field (P2-4).** The claim grammar below carries `depth=<n>`: resident context tokens at the measured decode, read from the server's `n_tokens` (`stop processing: n_tokens`), never from the first `prompt eval time` line. Same model, recipe and placement span 40.22 tok/s at 28 tokens to 17.23 at 35k, so a claim without depth is non-conforming.",
+        "+<!-- RATIFY-INF45-P24-20261110 END -->",
+        "+",
+        "+",
+        " **Claim grammar.**",
+        "-`<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`",
+        "-",
+        "+`<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4>, depth=<n> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`",
+        "+"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "grep -cF '<!-- RATIFY-INF45-P24-20261110 BEGIN -->' measurement/protocols/bench-cpu.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "1"
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

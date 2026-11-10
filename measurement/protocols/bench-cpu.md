@@ -261,5 +261,16 @@ Not fixed here (still TBD): 3, 4, 5, 7, 8, 9, 10, 13, 14.
 <!-- RATIFY-INF45-P23-20261109 END -->
 
 
+<!-- RATIFY-INF45-P24-20261110 BEGIN -->
+**Amendments (RATIFY-INF45-P24-20261110).** Binding on every conforming run from ratification on; earlier claims are not retro-certified.
+
+- **A1 — no repeated-prompt replication for context-reading drafters.** Replicates of an arm whose drafter reads the context (ngram, lookup, MTP over context) must use distinct prompts; re-sending one prompt measures cache reuse, not decode.
+- **A2 — mandatory non-context control arm.** Every placement comparison carries one arm whose decode does not depend on prompt content (spec-dec off or a non-context drafter), so placement and drafter effects separate.
+- **A3 — report n/min/max, never a bare median.** Every quoted central value carries its sample count, minimum and maximum.
+- **A4 — `accept=1.000` is a bug report.** A perfect draft-acceptance rate is treated as an instrumentation defect (replayed prompt, cache hit, mis-parsed counter) and the arm is REJECTED until explained.
+- **A5 — context depth is a required claim field (P2-4).** The claim grammar below carries `depth=<n>`: resident context tokens at the measured decode, read from the server's `n_tokens` (`stop processing: n_tokens`), never from the first `prompt eval time` line. Same model, recipe and placement span 40.22 tok/s at 28 tokens to 17.23 at 35k, so a claim without depth is non-conforming.
+<!-- RATIFY-INF45-P24-20261110 END -->
+
+
 **Claim grammar.**
-`<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`
+`<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4>, depth=<n> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`
