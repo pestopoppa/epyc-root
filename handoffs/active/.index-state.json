@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 52,
-      "handoffs": 14,
+      "blocked": 50,
+      "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 584
+      "open": 576
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -842,6 +842,22 @@
       "state": "active",
       "total": 228
     },
+    "dispatch-placement-telemetry.md": {
+      "blocked": 0,
+      "closed": 21,
+      "guarded": 0,
+      "last_advanced": "2026-11-10",
+      "open": 3,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-87",
+      "state": "active",
+      "total": 24
+    },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
       "closed": 298,
@@ -1167,6 +1183,22 @@
           "open": 1
         }
       ]
+    },
+    "hybrid-checkpoint-prompt-reuse.md": {
+      "blocked": 0,
+      "closed": 11,
+      "guarded": 0,
+      "last_advanced": "2026-11-10",
+      "open": 6,
+      "owner_index": "inference-research-index.md",
+      "prune": {
+        "blocker": "open-tasks",
+        "candidate": false,
+        "evidence": null
+      },
+      "row_id": "INF-86",
+      "state": "active",
+      "total": 17
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
@@ -1843,10 +1875,10 @@
             "INF-06#autokernel-research-loop",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
+            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
-            "INF-45#within-role-placement-state-machine",
+            "INF-87",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
             "RTG-34#dashboard-architecture-restructure",
@@ -1893,11 +1925,11 @@
       ]
     },
     "numa-placement-and-contention.md": {
-      "blocked": 3,
-      "closed": 250,
+      "blocked": 1,
+      "closed": 231,
       "guarded": 0,
-      "last_advanced": "2026-11-09",
-      "open": 39,
+      "last_advanced": "2026-11-10",
+      "open": 22,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1906,89 +1938,69 @@
       },
       "row_id": "INF-45",
       "state": "active",
-      "total": 292,
+      "total": 254,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 105,
+          "closed": 108,
           "gates": [],
           "guarded": 0,
-          "line": 37,
+          "line": 41,
           "markers": 1,
           "name": "numa-placement-and-contention",
-          "open": 19
+          "open": 16
         },
         {
-          "blocked": 1,
-          "closed": 43,
+          "blocked": 0,
+          "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1663,
+          "line": 1670,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
         },
         {
-          "blocked": 0,
-          "closed": 11,
-          "gates": [],
-          "guarded": 0,
-          "line": 2739,
-          "markers": 1,
-          "name": "dynamic-stack-concurrency",
-          "open": 6
-        },
-        {
           "blocked": 1,
-          "closed": 37,
+          "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 3120,
+          "line": 2755,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
-          "open": 4
+          "open": 2
         },
         {
           "blocked": 0,
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4665,
+          "line": 4303,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
         },
         {
-          "blocked": 1,
-          "closed": 18,
-          "gates": [],
-          "guarded": 0,
-          "line": 5293,
-          "markers": 1,
-          "name": "within-role-placement-state-machine",
-          "open": 5
-        },
-        {
           "blocked": 0,
-          "closed": 4,
+          "closed": 5,
           "gates": [
             "INF-06",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
+            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
-            "INF-45#within-role-placement-state-machine",
+            "INF-87",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 5766,
+          "line": 4936,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1996,13 +2008,13 @@
           "gates": [
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
+            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
-            "INF-45#within-role-placement-state-machine"
+            "INF-87"
           ],
           "guarded": 0,
-          "line": 6298,
+          "line": 5469,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
@@ -2680,8 +2692,8 @@
       "id": "INF-45",
       "index": "inference-research-index.md",
       "line": 24,
-      "next_action": "No cutover work remains (P0-3 closed 2026-10-29); next P1-4, P1-8, REGION-SIBLING-1, WP-15.2, then P2-2 anchors",
-      "track": "numa topology cutover resume"
+      "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
+      "track": "numa placement and contention program"
     },
     "INF-48": {
       "deps": [
@@ -2690,7 +2702,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "index": "inference-research-index.md",
-      "line": 25,
+      "line": 27,
       "next_action": "race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-7 counter row + C4-9 wiring",
       "track": "rocm verify profile backend"
     },
@@ -2699,7 +2711,7 @@
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "index": "inference-research-index.md",
-      "line": 26,
+      "line": 28,
       "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
       "track": "speculative decoding mtp refresh"
     },
@@ -2710,7 +2722,7 @@
       "handoff": "long-context-program.md",
       "id": "INF-59",
       "index": "inference-research-index.md",
-      "line": 27,
+      "line": 29,
       "next_action": "Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); \u2265256k YaRN parked until C8-1",
       "track": "yarn context extension research"
     },
@@ -2808,9 +2820,29 @@
       "handoff": "publication-upstream-program.md",
       "id": "INF-85",
       "index": "inference-research-index.md",
-      "line": 28,
+      "line": 30,
       "next_action": "W2 final scrub + host-attestation decision; W3 adjudicate 18 retained rows",
       "track": "upstream publication"
+    },
+    "INF-86": {
+      "deps": [
+        "INF-83"
+      ],
+      "handoff": "hybrid-checkpoint-prompt-reuse.md",
+      "id": "INF-86",
+      "index": "inference-research-index.md",
+      "line": 25,
+      "next_action": "Measure #25592 forced-re-prefill rate (16K/64K -lv 4 replay, dedicated instance); then G4, G5; v11 fold verdict",
+      "track": "hybrid checkpoint prompt-reuse exposure"
+    },
+    "INF-87": {
+      "deps": [],
+      "handoff": "dispatch-placement-telemetry.md",
+      "id": "INF-87",
+      "index": "inference-research-index.md",
+      "line": 26,
+      "next_action": "After next stack start: confirm WP-15.2 live schema, capture WP-15.3 fit+holdout windows, run WP-15 replay",
+      "track": "dispatch placement telemetry"
     },
     "PIP-04": {
       "deps": [],

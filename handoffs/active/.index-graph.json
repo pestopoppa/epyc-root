@@ -83,6 +83,11 @@
       "to": "INF-48"
     },
     {
+      "from": "INF-86",
+      "kind": "dep",
+      "to": "INF-83"
+    },
+    {
       "from": "REV-02",
       "kind": "dep",
       "to": "INF-77"
@@ -256,6 +261,18 @@
       "kind": "ref",
       "to": "EVL-02",
       "weight": 2
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "INF-86",
+      "weight": 4
+    },
+    {
+      "from": "INF-45",
+      "kind": "ref",
+      "to": "INF-87",
+      "weight": 9
     },
     {
       "from": "INF-45",
@@ -468,6 +485,18 @@
       "weight": 2
     },
     {
+      "from": "INF-86",
+      "kind": "ref",
+      "to": "INF-45",
+      "weight": 2
+    },
+    {
+      "from": "INF-87",
+      "kind": "ref",
+      "to": "INF-45",
+      "weight": 6
+    },
+    {
       "from": "PIP-04",
       "kind": "ref",
       "to": "EVL-02",
@@ -654,7 +683,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T17:04:43Z",
+  "generated_at": "2026-11-10T17:07:37Z",
   "nodes": [
     {
       "age_days": 0,
@@ -941,10 +970,10 @@
           "blocked_by": [
             "INF-06#autokernel-research-loop",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-45#within-role-placement-state-machine",
+            "INF-86",
+            "INF-87",
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#dashboard-architecture-restructure"
@@ -954,10 +983,10 @@
             "INF-06#autokernel-research-loop",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
+            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
-            "INF-45#within-role-placement-state-machine",
+            "INF-87",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
             "RTG-34#dashboard-architecture-restructure",
@@ -1309,7 +1338,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 12,
+        "unblocks": 13,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1352,7 +1381,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 9,
+        "unblocks": 10,
         "unblocks_rows": [
           "EVL-49",
           "INF-62",
@@ -1495,18 +1524,18 @@
       ]
     },
     {
-      "age_days": 1,
-      "blocked": 3,
+      "age_days": 0,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 250,
-      "dispatchable": 39,
+      "closed": 231,
+      "dispatchable": 22,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
-      "last_advanced": "2026-11-09",
-      "next_action": "No cutover work remains (P0-3 closed 2026-10-29); next P1-4, P1-8, REGION-SIBLING-1, WP-15.2, then P2-2 anchors",
-      "open": 42,
+      "last_advanced": "2026-11-10",
+      "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
+      "open": 23,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1522,111 +1551,93 @@
       "priority_rank": 25,
       "readiness": "ready",
       "state": "active",
-      "track": "numa topology cutover resume",
+      "track": "numa placement and contention program",
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 19,
+          "dispatchable": 16,
           "gates": [],
-          "line": 37,
+          "line": 41,
           "name": "numa-placement-and-contention",
-          "open": 19,
+          "open": 16,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1663,
+          "line": 1670,
           "name": "batched-decode-measurement",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 2,
           "gates": [],
-          "line": 2739,
-          "name": "dynamic-stack-concurrency",
-          "open": 6,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 4,
-          "gates": [],
-          "line": 3120,
+          "line": 2755,
           "name": "numa-placement-defect-20260730",
-          "open": 5,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4665,
+          "line": 4303,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
         },
         {
-          "blocked_by": [],
-          "dispatchable": 5,
-          "gates": [],
-          "line": 5293,
-          "name": "within-role-placement-state-machine",
-          "open": 6,
-          "readiness": "ready"
-        },
-        {
           "blocked_by": [
             "INF-06",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-45#within-role-placement-state-machine",
+            "INF-86",
+            "INF-87",
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": [
             "INF-06",
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
+            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
-            "INF-45#within-role-placement-state-machine",
+            "INF-87",
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 5766,
+          "line": 4936,
           "name": "reboot-gated-inventory-and-staging",
-          "open": 2,
+          "open": 1,
           "readiness": "blocked"
         },
         {
           "blocked_by": [
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
             "INF-45#numa-placement-and-contention",
             "INF-45#numa-placement-defect-20260730",
-            "INF-45#within-role-placement-state-machine"
+            "INF-86",
+            "INF-87"
           ],
           "dispatchable": 0,
           "gates": [
             "INF-45#numa-placement-and-contention",
             "INF-45#batched-decode-measurement",
-            "INF-45#dynamic-stack-concurrency",
+            "INF-86",
             "INF-45#numa-placement-defect-20260730",
             "INF-45#shape-keyed-contention-gating",
-            "INF-45#within-role-placement-state-machine"
+            "INF-87"
           ],
-          "line": 6298,
+          "line": 5469,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
@@ -1655,7 +1666,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 11,
+        "unblocks": 12,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1770,7 +1781,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 9,
+        "unblocks": 10,
         "unblocks_rows": [
           "INF-62",
           "INF-65",
@@ -1918,7 +1929,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 8,
+        "unblocks": 9,
         "unblocks_rows": [
           "INF-66",
           "INF-73",
@@ -2290,13 +2301,13 @@
       "last_advanced": "2026-11-10",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
       "open": 64,
-      "priority": 0.0032,
+      "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 30,
       "readiness": "blocked",
       "state": "active",
       "track": "autokernel akx program (keep gate + all dims)",
@@ -2370,11 +2381,11 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "open": 10,
-      "priority": 0.0032,
+      "priority": 0.0298,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
-        "unblocks": 0
+        "unblocks": 1
       },
       "priority_rank": 28,
       "readiness": "blocked",
@@ -2396,13 +2407,13 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.0032,
+      "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 30,
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
@@ -2422,16 +2433,66 @@
       "last_advanced": "2026-11-10",
       "next_action": "W2 final scrub + host-attestation decision; W3 adjudicate 18 retained rows",
       "open": 2,
-      "priority": 0.0032,
+      "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 28,
+      "priority_rank": 30,
       "readiness": "blocked",
       "state": "active",
       "track": "upstream publication"
+    },
+    {
+      "age_days": 0,
+      "blocked": 0,
+      "blocked_by": [
+        "INF-83"
+      ],
+      "closed": 11,
+      "dispatchable": 6,
+      "domain": "inference-research",
+      "guarded": 0,
+      "handoff": "hybrid-checkpoint-prompt-reuse.md",
+      "id": "INF-86",
+      "last_advanced": "2026-11-10",
+      "next_action": "Measure #25592 forced-re-prefill rate (16K/64K -lv 4 replay, dedicated instance); then G4, G5; v11 fold verdict",
+      "open": 6,
+      "priority": 0.003,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 30,
+      "readiness": "blocked",
+      "state": "active",
+      "track": "hybrid checkpoint prompt-reuse exposure"
+    },
+    {
+      "age_days": 0,
+      "blocked": 0,
+      "blocked_by": [],
+      "closed": 21,
+      "dispatchable": 3,
+      "domain": "inference-research",
+      "guarded": 0,
+      "handoff": "dispatch-placement-telemetry.md",
+      "id": "INF-87",
+      "last_advanced": "2026-11-10",
+      "next_action": "After next stack start: confirm WP-15.2 live schema, capture WP-15.3 fit+holdout windows, run WP-15 replay",
+      "open": 3,
+      "priority": 0.0179,
+      "priority_basis": {
+        "campaign": 0,
+        "source": "heuristic",
+        "unblocks": 0
+      },
+      "priority_rank": 29,
+      "readiness": "ready",
+      "state": "active",
+      "track": "dispatch placement telemetry"
     },
     {
       "age_days": 0,
@@ -3129,7 +3190,7 @@
       "last_advanced": "2026-11-09",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
       "open": 30,
-      "priority": 0.0402,
+      "priority": 0.0417,
       "priority_basis": {
         "campaign": 1,
         "source": "heuristic",
@@ -3932,13 +3993,15 @@
       "INF-83",
       "INF-84",
       "INF-85",
+      "INF-86",
+      "INF-87",
       "RTG-100"
     ],
     "order": "per node, priority_basis.source says which won. file/override: the operator's ordering method (tier + rank in backlog-priority.json). heuristic: has open work > CURRENT-CAMPAIGN.md membership (2 newest block, 1 older) > rows transitively gated via dep edges > ready before blocked; heuristic rows sit below file rows",
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 26,
-      "heuristic": 5,
+      "heuristic": 7,
       "override": 0
     },
     "tiers": {
@@ -3953,9 +4016,9 @@
     }
   },
   "readiness_counts": {
-    "blocked": 6,
+    "blocked": 7,
     "no_open": 0,
-    "ready": 25
+    "ready": 26
   },
   "readiness_values": {
     "blocked": "open work, but at least one `dep` target still has open > 0",
