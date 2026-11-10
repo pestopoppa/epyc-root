@@ -1397,7 +1397,17 @@ class FirstProgress:
 QUARTERS = ("q0", "q1", "q2", "q3")
 GPU = "gpu-quiet"
 REGIONS = QUARTERS + (GPU,)
-RAM_MARGIN_GIB = 64          # earlyoom fires at 40 GiB available
+RAM_MARGIN_GIB = 100         # PIPE-EVE-RAM-MARGIN 2026-11-10: the ratified job_fence margin (2026-10-21); earlyoom fires at 40 GiB
+
+
+def ram_fence_env(d, env):
+    """PIPE-EVE-RAM-MARGIN: inject the row's declared ram_gib into the job as job_fence's admission inputs, so the job's own
+    pre-exec RAM check uses the same need and margin the allocator placed it with. A launcher's explicit value wins."""
+    gib = int(d.get("gib") or 0)
+    if gib > 0:
+        env.setdefault("JOB_FENCE_NEED_RAM_GIB", str(gib))
+        env.setdefault("JOB_FENCE_RAM_MARGIN_GIB", str(RAM_MARGIN_GIB))
+    return env
 UNDERUSED_PCT = 5.0
 UNDERUSED_S = 600
 ALERT_REPEATS = 3
@@ -3748,6 +3758,7 @@ def arm_one(flags, rid, d, regions=None, log=print):
                FILLER_STATE_DIR=os.path.join(dd, "state"), FILLER_FLAGS_DIR=flags, FILLER_GRANTS_DIR=os.path.join(flags, "grants"))
     if regions and ws58_cpus(regions):
         env["WS58_REGIONS"] = ws58_cpus(regions)
+    ram_fence_env(d, env)
     for k in ("FILLER_DRYRUN", "FILLER_DRYRUN_DIR", "FILLER_DRYRUN_ONE_QUARTER", "FILLER_ENGINE_SNAPSHOT", "FILLER_ENGINE_HOME"):
         env.pop(k, None)
     snap = None
