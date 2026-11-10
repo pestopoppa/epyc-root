@@ -70,11 +70,14 @@ start_bg() {  # start_bg <pidfile> <cwd> <cmd...>  (setsid, detached; pidfile wr
   act "START $* (cwd $cwd, pidfile $pf)"
   [ $MODE = dry ] && return 0
   local p
-  (cd "$cwd" && setsid "$@" </dev/null >/dev/null 2>&1 & echo $! > "$pf.tmp.$$") || { fail "start failed: $*"; return 1; }
-  p=$(cat "$pf.tmp.$$"); rm -f "$pf.tmp.$$"
+  # PIPE-EVE-CHURN-UP-PIDFILE: `&` used to background the whole `cd && setsid ...` list, so $! was the wrapper subshell's
+  # pid, not the component's. `exec` makes the backgrounded pid BE the component (setsid does not fork: a background
+  # child is never a process-group leader), so the pidfile names the process the component itself records as $$.
+  ( cd "$cwd" || exit 127; exec setsid "$@" </dev/null >/dev/null 2>&1 ) &
+  p=$!
   sleep 1
-  alive "$p" && mv -f "$pf.tmp.$$" "$pf" 2>/dev/null; echo "$p" > "$pf"
   alive "$p" || { fail "started $* but pid $p died at once (see its log)"; return 1; }
+  echo "$p" > "$pf.tmp.$$" && mv -f "$pf.tmp.$$" "$pf"
   say "      pid $p"
 }
 
