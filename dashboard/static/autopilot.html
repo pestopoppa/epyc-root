@@ -568,7 +568,7 @@ function renderPhase(){
     h += '</ul>';
   }
   if (PROC._freshness && PROC._freshness.reason){
-    h += '<div class="note">producer freshness (' + esc(PROC._freshness.staleness_class || '?') + '): ' +
+    h += '<div class="note">producer freshness (' + esc((window.epycFreshClass && window.epycFreshClass(PROC._freshness.staleness_class)) || PROC._freshness.staleness_class || '?') + '): ' +
       esc(PROC._freshness.reason) + '</div>';
   }
   body.innerHTML = h;
@@ -1256,7 +1256,7 @@ function renderGepa(d){
         lines.slice(-40).map(l => styleLogLine(String(l))).join('\n') + '</pre>'
       : '<div class="empty">no optimizer lines in the payload</div>') + '</div>';
   if (d._freshness && d._freshness.reason){
-    h += '<div class="note">producer freshness (' + esc(d._freshness.staleness_class || '?') + '): ' +
+    h += '<div class="note">producer freshness (' + esc((window.epycFreshClass && window.epycFreshClass(d._freshness.staleness_class)) || d._freshness.staleness_class || '?') + '): ' +
       esc(d._freshness.reason) + '</div>';
   }
   body.innerHTML = h;

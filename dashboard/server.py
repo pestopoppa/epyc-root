@@ -125,7 +125,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 
-from dashboard import campaign_status, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels, pipeline_status
+from dashboard import campaign_status, freshness, handoff_parser, kernel_progression, knowledge, loop_spec, loop_status, panels, pipeline_status
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -1727,7 +1727,10 @@ def nav_asset() -> bytes:
     and so a page that fails to reach ``/api/dashboards`` still has its links.
     """
     prelude = ("window.__EPYC_DASHBOARDS = "
-               + json.dumps(registry_dashboards()) + ";\n")
+               + json.dumps(registry_dashboards()) + ";\n"
+               + "window.__EPYC_FRESH_ALIASES = "
+               + json.dumps({**{c: c for c in freshness.CLASSES},
+                             **freshness.ALIASES}) + ";\n")
     try:
         body = NAV_JS.read_text(encoding="utf-8")
     except OSError as exc:
