@@ -1868,6 +1868,13 @@ Reliability notes:
 
 After S8 runs, update this handoff with the artifact fields above and the decision on S9. If S9 opens, update [inference-research-index.md](inference-research-index.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) if autopilot behavior changes, and [master-handoff-index.md](master-handoff-index.md).
 
+### DSA contribution and Expected-Attention audits
+
+> Moved here 2026-11-10 from `rocm-kernel-authoring.md` (INF-48) by operator decision (INF-48 restructure). Owner: autokernel via this handoff's header owner (operator to confirm). The DSA contribution design lives in `rocm-kernel-authoring.md#track-llama-cpp-dsa-contribution` (the folded former `llama-cpp-dsa-contribution.md`); `llama-cpp-dsa-contribution.md` is no longer a file in handoffs/active. Boxes keep their full text and checkbox state.
+
+- [ ] **W1 — D2 PR spearhead** (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help with — upstream citizenship AND our own unlock (V3.2 + GLM-5.1 on 1.1TB). D1 pull/build/smoke is superseded: generic DSA landed through #23346; see the D2 design and profiling gates in `llama-cpp-dsa-contribution.md`. The former GLM-5.2 target was dropped in the 2026-10-29 audit, so select a supported target before specifying a new run. Acceptance: PR submitted upstream. (re-scoped 2026-11-03 from V3.2/GLM-5.1 model target: no supported DSA model on disk; PR-only, no model run until a supported target exists) (re-homed here 2026-11-09 from the INF-48 drop triage of the ROCm kernel-authoring track; original text `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 3945)
+- [ ] **K31 (P3, audits) — Expected-Attention server wiring + DSA prompt-path audit**: (a) `src/llama-kv-compress.cpp:365` `shift_positions` OFF for llama-server (position desync w/ prompt cache) → eviction leaves gaps; design a server-safe reclaim (high effort, correctness-risky); (b) `src/llama-kv-cache-dsa.cpp:116` — audit whether the sparse-index path applies during prompt processing or decode-only (GLM-5.2 now; DeepSeekV4 is explicitly outside this v7 promotion scope). (re-homed here 2026-11-09 from the INF-48 drop triage of the ROCm kernel-authoring track; original text `git show b3bd883d3:handoffs/active/rocm-kernel-authoring.md` line 3852)
+
 ### D-LSA research intake — approved 2026-11-03
 
 - [ ] **LSA-SCREEN-1 — Build a disabled-by-default flat D-LSA reference selector for the sixteen Qwen3.8 global layers using pinned released PCA/distilled maps; preserve GDN, QK normalization, RoPE and output gates, validate selected-index and all-keys oracle parity, then run the bounded paired screen below on CPU and MI210.**
