@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 491
+      "open": 492
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -847,7 +847,7 @@
       "closed": 298,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 74,
+      "open": 75,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -856,7 +856,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 372,
+      "total": 373,
       "tracks": [
         {
           "blocked": 0,
@@ -926,7 +926,7 @@
           "line": 2102,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 4
+          "open": 5
         }
       ]
     },
