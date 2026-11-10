@@ -649,21 +649,21 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-10T09:30:46Z",
+  "generated_at": "2026-11-10T09:33:45Z",
   "nodes": [
     {
       "age_days": 7,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 130,
-      "dispatchable": 33,
+      "closed": 132,
+      "dispatchable": 31,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "model-evaluation-queue.md",
       "id": "EVL-02",
       "last_advanced": "2026-11-03",
       "next_action": "Rank the queue by lane fit; next: AMSB-C390-1 Coder390 vs 27B same-harness A/B, then the EffiBench-X adoption decision",
-      "open": 34,
+      "open": 32,
       "priority": 0.8208,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AMS-TCAP-1 \u2014 A/B a thinking-on effort mode for architect_general with ThinkingCap-Qwen3.8-",
@@ -791,21 +791,21 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [],
           "line": 1278,
           "name": "meq-carve-gpu-serving-tie-in-program",
-          "open": 3,
+          "open": 2,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 1289,
           "name": "meq-carve-gpu-acceleration-path",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -1203,7 +1203,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1106,
+          "line": 1108,
           "name": "bulk-inference-campaign",
           "open": 3,
           "readiness": "ready"
@@ -1212,7 +1212,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1762,
+          "line": 1764,
           "name": "eval-benchmark-cost-reduction",
           "open": 0,
           "readiness": "no_open"
@@ -1221,7 +1221,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1863,
+          "line": 1865,
           "name": "eval-tower-architecture-audit-2026-07-20",
           "open": 2,
           "readiness": "ready"
@@ -1230,7 +1230,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2252,
+          "line": 2254,
           "name": "eval-tower-loop-robustness-audit-2026-07-20",
           "open": 2,
           "readiness": "ready"
@@ -1239,7 +1239,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2452,
+          "line": 2454,
           "name": "fable5-window2-findings-01-optimizer-integrity",
           "open": 1,
           "readiness": "ready"
@@ -1248,7 +1248,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2521,
+          "line": 2523,
           "name": "inference-batch-loop",
           "open": 5,
           "readiness": "ready"
@@ -1257,7 +1257,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2790,
+          "line": 2792,
           "name": "prompt-construction-determinism",
           "open": 0,
           "readiness": "no_open"
@@ -1266,7 +1266,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2914,
+          "line": 2916,
           "name": "re4-protocol-redesign",
           "open": 2,
           "readiness": "ready"
@@ -1275,7 +1275,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 3079,
+          "line": 3081,
           "name": "scoring-infra-standardization",
           "open": 7,
           "readiness": "ready"
@@ -1694,7 +1694,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1515,
+          "line": 1516,
           "name": "agentic-rocm-kernel-authoring",
           "open": 1,
           "readiness": "blocked"
@@ -1709,7 +1709,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2672,
+          "line": 2673,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1718,7 +1718,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3044,
+          "line": 3045,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1727,7 +1727,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 3557,
+          "line": 3558,
           "name": "frontier-f6-upstream-publication",
           "open": 2,
           "readiness": "ready"
@@ -1736,7 +1736,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3652,
+          "line": 3653,
           "name": "llama-cpp-dsa-contribution",
           "open": 3,
           "readiness": "ready"
@@ -1895,15 +1895,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 192,
-      "dispatchable": 45,
+      "closed": 193,
+      "dispatchable": 44,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-10",
       "next_action": "Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request",
-      "open": 46,
+      "open": 45,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1937,7 +1937,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 39,
+          "dispatchable": 38,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1946,14 +1946,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 40,
+          "open": 39,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1685,
+          "line": 1689,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1962,7 +1962,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1809,
+          "line": 1813,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1971,7 +1971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2139,
+          "line": 2143,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -1980,7 +1980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2278,
+          "line": 2282,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -1989,7 +1989,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2834,
+          "line": 2838,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2001,7 +2001,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2974,
+          "line": 2978,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2013,7 +2013,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2981,
+          "line": 2985,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
