@@ -4,7 +4,7 @@
       "blocked": 52,
       "handoffs": 13,
       "oldest_advance": "2026-11-03",
-      "open": 591
+      "open": 590
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 194
+      "open": 196
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 493
+      "open": 492
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -42,7 +42,7 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 2,
-      "closed": 114,
+      "closed": 115,
       "guarded": 0,
       "last_advanced": "2026-11-09",
       "open": 64,
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 180,
+      "total": 181,
       "tracks": [
         {
           "blocked": 0,
@@ -68,7 +68,7 @@
         },
         {
           "blocked": 0,
-          "closed": 41,
+          "closed": 42,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -78,7 +78,7 @@
           "line": 22,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 12
+          "open": 11
         },
         {
           "blocked": 2,
@@ -92,19 +92,19 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 934,
+          "line": 935,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 50
+          "open": 51
         }
       ]
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 827,
+      "closed": 830,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 138,
+      "open": 137,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,11 +113,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 966,
+      "total": 968,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 373,
+          "closed": 376,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,14 +128,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 41
+          "open": 40
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 5994,
+          "line": 6008,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6074,
+          "line": 6088,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6371,
+          "line": 6385,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9588,
+          "line": 9602,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13938,
+          "line": 13952,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14150,
+          "line": 14164,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -1204,7 +1204,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1680,
+          "line": 1684,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1214,7 +1214,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1804,
+          "line": 1808,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2134,
+          "line": 2138,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1234,7 +1234,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2273,
+          "line": 2277,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2829,
+          "line": 2833,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1254,7 +1254,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2969,
+          "line": 2973,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2976,
+          "line": 2980,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1476,10 +1476,10 @@
     },
     "memory-program.md": {
       "blocked": 0,
-      "closed": 120,
+      "closed": 121,
       "guarded": 0,
-      "last_advanced": "2026-11-09",
-      "open": 40,
+      "last_advanced": "2026-11-10",
+      "open": 39,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1502,13 +1502,13 @@
         },
         {
           "blocked": 0,
-          "closed": 15,
+          "closed": 16,
           "gates": [],
           "guarded": 0,
           "line": 912,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 0,
@@ -2561,7 +2561,7 @@
       "closed": 372,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 89,
+      "open": 91,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2570,7 +2570,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 462
+      "total": 464
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
@@ -2645,7 +2645,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Run AK-MMQ-H3 and IQ3S profile rows (ready); decide H5 successor after UNDERFILL; GDN-SHARE-1 picks the C8 target",
+      "next_action": "Diagnose MMQ-H3 NaN (iglp_opt0 fails correctness); H10b same-seed rerun; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
       "track": "autokernel research loop"
     },
     "INF-45": {
