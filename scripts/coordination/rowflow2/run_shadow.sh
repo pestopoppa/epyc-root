@@ -1,6 +1,6 @@
 #!/bin/bash
 # run_shadow.sh - rowflow2 SHADOW beside the live keeper (operator 2026-11-05, "Freeze current + build rowflow2").
-# A SEPARATE process: the live keeper (ws58-calendar-keeper-v12.sh) is not touched and never calls this.
+# A SEPARATE process: the live keeper (ws58-calendar-keeper-v13.sh) is not touched and never calls this.
 # Every INTERVAL s: `rowflow2.py shadow --once` (read-only on compute-flags; audit-hook write guard) appends
 # SHADOW-GRANT / SHADOW-IDLE-WHY / SHADOW-HOLD lines to $OUT/shadow.log. At each UTC day rollover it writes the
 # daily live-vs-shadow diff for the finished day to $OUT/diff-<date>.md and .json.

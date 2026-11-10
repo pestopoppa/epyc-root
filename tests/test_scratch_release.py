@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts", "coordination", "rowflow"))
 import scratch_release as sr  # noqa: E402
 import rowflow as rf  # noqa: E402
 
-KEEPER = os.path.join(ROOT, "scripts", "coordination", "rowflow", "ws58-calendar-keeper-v12.sh")
+KEEPER = os.path.join(ROOT, "scripts", "coordination", "rowflow", "ws58-calendar-keeper-v13.sh")
 
 
 def git(cwd, *a):

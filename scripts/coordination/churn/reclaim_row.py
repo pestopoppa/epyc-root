@@ -3,7 +3,7 @@
 
     reclaim_row.py <row-id> [--flags DIR] [--apply] [--pre-filed] [--salvage-dir DIR] [--tmp-root DIR] [--json]
 
-Dry-run unless --apply. Complement of the keeper's REAP-AFTER-FILING (ws58-calendar-keeper-v12.sh section 6),
+Dry-run unless --apply. Complement of the keeper's REAP-AFTER-FILING (ws58-calendar-keeper-v13.sh section 6),
 never looser than it:
   * refusals: exit 2 no manifest / no end record (grants/<id>.ended|.complete); exit 6 no absolute scratch_root
     under the tmp root, no filing-done/<id>.FILED (unless --pre-filed), or a raw glob that is absolute / has '..'.

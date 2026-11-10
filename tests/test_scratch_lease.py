@@ -16,7 +16,7 @@ import scratch_lease as sl  # noqa: E402
 import scratch_cleanup as sc  # noqa: E402
 import worktree_gate as wg  # noqa: E402
 
-KEEPER = os.path.join(ROOT, "scripts", "coordination", "rowflow", "ws58-calendar-keeper-v12.sh")
+KEEPER = os.path.join(ROOT, "scripts", "coordination", "rowflow", "ws58-calendar-keeper-v13.sh")
 
 
 class Base(unittest.TestCase):

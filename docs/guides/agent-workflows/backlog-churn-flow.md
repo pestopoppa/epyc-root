@@ -117,7 +117,7 @@ Proof: `scripts/coordination/tests/test_allocator.py` (property test over random
 while a fitting row waits, starved lane first; today's incidents as regression cases) and
 `scripts/coordination/tests/test_grant_ok_launcher_flags.py` (every engine flag parses); drain tests: a host row is never starved
 by a stream of quarter rows, backfill never delays T, no double booking during a drain. `rowflow.py allocate --plan` is the
-read-only preview (`ws58-calendar-keeper-v11.sh --dry-run` prints it).
+read-only preview (`ws58-calendar-keeper-v13.sh --dry-run` prints it).
 
 ## Backlogs (`scripts/coordination/backlog_gen.py`, every 10 min)
 

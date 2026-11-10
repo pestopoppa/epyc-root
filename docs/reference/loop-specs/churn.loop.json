@@ -159,7 +159,7 @@
   {
    "id": "allocator",
    "title": "Allocator tick (rowflow.py allocate)",
-   "actor": "ws58-calendar-keeper-v11.sh -> rowflow.py allocate",
+   "actor": "ws58-calendar-keeper-v13.sh -> rowflow.py allocate",
    "cadence": "every 120 s",
    "code": [
     "scripts/coordination/rowflow/rowflow.py:allocate",

@@ -33,7 +33,7 @@ import worktree_salvage as ws  # noqa: E402
 
 DEFAULT_FLAGS = os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags")
 DEFAULT_TRASH = "/mnt/raid0/llm/.trash-reap"
-# same protected first-level names as the keeper's valid_root (ws58-calendar-keeper-v12.sh PROTECT)
+# same protected first-level names as the keeper's valid_root (ws58-calendar-keeper-v13.sh PROTECT)
 PROTECT = {"compute-flags", "disk-audit-20261028", "ws58-loop-audit"}
 
 

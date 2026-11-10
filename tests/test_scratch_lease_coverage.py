@@ -19,14 +19,12 @@ LEASE_BLIND = {
     "scripts/system/kernel_store_gc.py": "kernels/builds/* (not under tmp/; leases only exist for tmp/ top-level entries)",
     "scripts/system/worktree_salvage.py": "salvage-retire refusal for any registered worktree; no lease lookup",
     "scripts/coordination/churn/reclaim_row.py": "row scratch at filing; KEEP at any depth honoured forever",
-    "scripts/coordination/rowflow/ws58-calendar-keeper-v11.sh": "inert history keeper (runbook: runs only if .current names it)",
 }
 # Consumers that do consult the lease (the lease-aware set).
 LEASE_AWARE = {
     "scripts/system/scratch_lease.py",
     "scripts/system/scratch_cleanup.py",
     "scripts/system/worktree_gate.py",
-    "scripts/coordination/rowflow/ws58-calendar-keeper-v12.sh",
     "scripts/coordination/rowflow/ws58-calendar-keeper-v13.sh",
 }
 
