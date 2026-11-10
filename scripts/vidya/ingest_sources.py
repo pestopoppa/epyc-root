@@ -544,6 +544,15 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "pre-hook, partial, retried, unbound, unwitnessed or clock-unstable unit; BASELINE observation, "
                 "shared grade() only",
            task="VB-AK-R18D-AA-WIRE"),
+    Source("ak-r234-sweep", "autokernel_r234_sweep",
+           _run_dirs_any("native-comparisons.json", sidecar="results.jsonl"),
+           default=Path("/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs"),
+           note="R23-4 one-factor DFlash serving sweep prospective native capture (`results.jsonl` with the "
+                "producer's `native-comparisons.json`, 63 requests over seven fresh server arms); every "
+                "request's stream rate and acceptance counts and each adjacent-baseline comparison are "
+                "re-derived and refused on any mismatch, partial, mixed-identity or unwitnessed unit; "
+                "window acceptance is never response-ID proof; measurement, shared grade() only",
+           task="VB-AK-R23-4-SWEEP-WIRE"),
     Source("ak-width-dimension", "autokernel_width_dimension",
            _files("width_dimension.json", "*/width_dimension.json"),
            note="AKX-ALL-27 HIP width-invariance dimension records (`width_dimension.json` beside "

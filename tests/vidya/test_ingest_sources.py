@@ -321,6 +321,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
         "repl-shadow-observation",  # Completed shadow streams, strict reader: test_repl_shadow_observation.py.
         "committed-conclusion",  # Throwaway git repo, quote audit, tamper and reingest: test_committed_conclusion_adapter.py.
+        "ak-r234-sweep",  # Prospective native sweep: positive, refusal and tamper controls in test_autokernel_r234_sweep.py.
         "ak-r18d-aa",  # Needs the research repo bench parser (patched): positive, refusal and tamper controls in test_autokernel_r18d_aa.py.
         "kvu16a-sampled-load",  # Original-run synthetic ingest and planning canary: test_kvu16a_native.py.
         "kvu19a2-native",  # Dedicated positive ingest and tamper/pre-hook controls: test_kvu19a2_native.py.
