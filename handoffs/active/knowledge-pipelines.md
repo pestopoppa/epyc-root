@@ -3118,13 +3118,14 @@ Validation evidence: 53 regression tests and 16 subtests passed; the exact appro
 
 Design: [`docs/design/integrated-document-aggregation-plan-20261110.md`](../../docs/design/integrated-document-aggregation-plan-20261110.md) (rev 2, operator-approved 2026-11-10). One pipeline over the current document flow with a cost-based planner; replaces the SLIDERS Phase 0 gate (superseded; reuses only SLIDERS' row shape and taxonomy). Closure scope: "integrated planner + lazy fact layer on Qwen3.6-35B-A3B / Qwen3.8-27B at 10-doc scale"; nothing is concluded about SLIDERS' viability.
 
-- [ ] **AGG-0.1 — Freeze corpus, questions and verified golds (no compute).** 10 FinanceBench 10-Ks pinned by
+- [x] **AGG-0.1 — Freeze corpus, questions and verified golds (no compute).** 10 FinanceBench 10-Ks pinned by
   sha256 (FB5 + 5); 20 constructed cross-document aggregation questions with gold derived by script from the
   metrics-generated gold answers **and hand-verified against the filings by a named reviewer, with the
   verification record committed**; 10 original single-fact questions for P-large and 10 for P-small; M1-M5 and
   the kill gate predeclared as in the design doc §(c). Done when the frozen set, verification record
   and rules file have sha256s recorded here; an unverified question is excluded, not assumed.
   - Progress 2026-11-10 (not ticked): build landed in epyc-inference-research `7651a8c2c` (question set, gold review sheet, predeclared gate, runner skeleton); all 10 PDFs now present and sha256-pinned in `corpus.json`. DRAFT golds (facts_sheet 76/80 cells filled, `verified: false`, 20 aggregation golds derived, 5/5 FinanceBench anchors agree) are on research branch `agg0/gold-draft-20261110` (`005950d9d`, NOT main); awaiting operator hand-verification, then merge. [no-belief: draft awaiting verification, no measurement]
+  - Done 2026-11-10: golds hand-verified by two independent readers (78/80 cells exact match; PayPal dividends NA, 4 medium cells accepted and agg18 restated without JPMorgan by operator decision) and merged to epyc-inference-research main `aed5730f9` (verification commits `c45e784db`, `832d1f146`). All 20 aggregation questions `verified: true` in `verification_record.json`; the 10 single-fact questions stay unverified and are excluded, not assumed. sha256 (first 16) in `benchmarks/agg_phase0/`: corpus.json `86aab1bb509368c0`, aggregation_questions.json `f43c5aaca8047d15`, golds.jsonl `fd88b13f0027002d`, verification_record.json `cec684c8a897e061`, PREDECLARED.md `0e2b09e77f92596d`. Diffs and medium cells: `GOLD_DIFFS.md`. [no-belief: gold set curated, no measurement]
 - [ ] **AGG-0.2 — Corpus store + deterministic layers over the existing parse (no compute).** Persist
   `DocumentPreprocessResult` under content hash; L1 BM25 and L2 index registry keyed (corpus, hash, builder,
   model); L3 `facts` from `DocumentPreprocessResult.tables` + regex spans; catalog→GBNF SQL grammar; tests with a
