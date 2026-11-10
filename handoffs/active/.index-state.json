@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-09",
-      "open": 20
+      "open": 19
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1276,7 +1276,7 @@
       "closed": 108,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 20,
+      "open": 19,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1285,7 +1285,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 128,
+      "total": 127,
       "tracks": [
         {
           "blocked": 0,
@@ -1345,7 +1345,7 @@
           "line": 2985,
           "markers": 1,
           "name": "sliders-local-validation",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
@@ -2791,7 +2791,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-0.1 corpus + hand-verified golds",
       "track": "internal kb rag"
     },
     "REV-02": {

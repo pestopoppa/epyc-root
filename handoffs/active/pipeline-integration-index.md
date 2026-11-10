@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | Rebuild KB index for qd-v2 (PIP04-KB-INDEX-BREAK); install G14 candidate; rule on 65-page table-path decision | — |
+| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-0.1 corpus + hand-verified golds | — |
 
 ## Cross-domain
 
