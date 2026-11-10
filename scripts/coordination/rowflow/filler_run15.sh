@@ -206,6 +206,16 @@ holds_gpu_token() { # $1 = grant file; NEEDGPU / GPUQ already set
   local h; h=$(sed -n 's/.*holds=\([^ ]*\).*/\1/p' "$1" 2>/dev/null) || true
   [[ ",$h," == *",gpu-quiet,"* ]]
 }
+# audit #1: the job runs in its own cgroup v2 leaf <base>/<ID>@<launcher pid>; every descendant inherits it whatever its env,
+# session or parent, and the keeper attributes GPU clients by /proc/<pid>/cgroup (rowflow.pid_is_rows). No leaf = legacy.
+CG_BASE=${FILLER_CGROUP_BASE:-/sys/fs/cgroup/rowflow}; CG_LEAF=""
+cg_make() { CG_LEAF="$CG_BASE/$ID@$$"; mkdir -p "$CG_LEAF" 2>/dev/null || { log "WARN cgroup: no leaf $CG_LEAF"; CG_LEAF=""; }; }
+cg_exec() { [ -n "$CG_LEAF" ] && { echo "$BASHPID" > "$CG_LEAF/cgroup.procs"; } 2>/dev/null; exec "$@"; }
+cg_drop() { [ -n "$CG_LEAF" ] || return 0; local i left   # kill what kill_job missed (only this row's leaf), then remove it
+  left=$(tr '\n' ' ' < "$CG_LEAF/cgroup.procs" 2>/dev/null)
+  [ -n "${left// }" ] && { log "cgroup: killing leftover pid(s) $left"; echo 1 > "$CG_LEAF/cgroup.kill"; } 2>/dev/null
+  for i in 1 2 3 4 5 6 7 8 9 10; do rmdir "$CG_LEAF" 2>/dev/null || [ ! -d "$CG_LEAF" ] && break; sleep 0.5 7>&- 8>&-; done
+  [ -d "$CG_LEAF" ] && log "WARN cgroup: leaf $CG_LEAF not removed"; CG_LEAF=""; }
 FENCE_ENV=()
 set_gpu_fence() { # fills FENCE_ENV (an `env ...` prefix) for a grant without the GPU token; empty otherwise
   FENCE_ENV=()
@@ -447,6 +457,7 @@ on_term() {
   log "launcher signalled"
   if [ -n "$CUR" ]; then
     kill_job && kill_pidfile && kill_containers || { log "REFUSED: signal cleanup incomplete; grant retained"; exit 70; }
+    cg_drop
   fi
   [ -e "$GRANT" ] && write_ended 143 launcher-signalled
   exit 143
@@ -549,17 +560,18 @@ run_one() {
   fi
   set_gpu_fence
   snapshot_overrun "$regions"
+  cg_make
   if [ -n "${FILLER_STUB_CMD:-}" ]; then
-    "${FENCE_ENV[@]}" setsid bash -c "$FILLER_STUB_CMD" 7>&- &
+    cg_exec "${FENCE_ENV[@]}" setsid bash -c "$FILLER_STUB_CMD" 7>&- &
   elif [ "${SMOKE_NOLOCK:-0}" = 1 ] && [ ${#rlargs[@]} = 0 ]; then
-    "${FENCE_ENV[@]}" setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
+    cg_exec "${FENCE_ENV[@]}" setsid taskset -c "${CLAIM_CPUS:-$CPUS}" /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   elif [ $SELFCLAIM = 1 ] || [ ${#rlargs[@]} = 0 ]; then   # nothing to lock (gpu row, gpu-quiet none, host threads only): no region-lock call
-    "${FENCE_ENV[@]}" setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
+    cg_exec "${FENCE_ENV[@]}" setsid /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   else
     local rl_to=$(( e - $(date -u +%s) )); [ "$rl_to" -ge 1 ] || rl_to=1   # region-lock: 0 = wait forever; never that
-    "${FENCE_ENV[@]}" setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s "$rl_to" --tag "filler-$ID" -- \
+    cg_exec "${FENCE_ENV[@]}" setsid "$RL" run "${rlargs[@]}" --role "$rl_role" --timeout-s "$rl_to" --tag "filler-$ID" -- \
       /bin/bash "$SELF" --inner --id "$ID" --class "$CLASS" --cmd "$JOBCMD" --min-window "$MINWIN" --stop "$STOPFILE" \
         --port "$PORTS" --workdir "$WORKDIR" --gpu-threads "$GPUTHR" 7>&- &
   fi
@@ -596,6 +608,7 @@ run_one() {
   kill_job || cleanup_bad=1
   kill_pidfile || cleanup_bad=1
   kill_containers || cleanup_bad=1
+  [ "$cleanup_bad" = 1 ] || cg_drop
   CUR=""
   CUR_BIRTH=""
   exec 8>&-
