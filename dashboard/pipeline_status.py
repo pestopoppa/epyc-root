@@ -382,6 +382,14 @@ def _rollup_counts(graph: dict | None, root: Path) -> dict[str, int]:
     return out
 
 
+def _handoff_file(h) -> str | None:
+    """``x.md`` | ``handoffs/<state>/x.md`` | ``x.md:TASK`` -> ``x.md`` (the graph node's file)."""
+    if not isinstance(h, str) or not h:
+        return None
+    base = h.partition(":")[0].rstrip("/").rpartition("/")[2]
+    return base if base.endswith(".md") else None
+
+
 def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = None) -> dict:
     """Group the graph's nodes by handoff and class each handoff by its blockers.
 
@@ -396,33 +404,37 @@ def classify_handoffs(graph: dict | None, rows: dict, rollups: dict | None = Non
     nodes = (graph or {}).get("nodes") if isinstance(graph, dict) else None
     if not isinstance(nodes, list):
         return {"present": False, "handoffs": [], "class_counts": {}}
+    # Row handoffs arrive as ``x.md``, ``handoffs/<state>/x.md`` or ``x.md:TASK``
+    # (manifest ``handoff_task``); count per bare filename and look nodes up the same way.
     readied: dict[str, int] = {}
-    for r in rows.values():
-        if r["state"] in ("ready", "running") and r.get("handoff"):
-            readied[r["handoff"]] = readied.get(r["handoff"], 0) + 1
     nready: dict[str, int] = {}
     nrun: dict[str, int] = {}
     for r in rows.values():
-        if r.get("handoff"):
-            if r["state"] == "ready":
-                nready[r["handoff"]] = nready.get(r["handoff"], 0) + 1
-            elif r["state"] == "running":
-                nrun[r["handoff"]] = nrun.get(r["handoff"], 0) + 1
+        f = _handoff_file(r.get("handoff"))
+        if not f:
+            continue
+        if r["state"] in ("ready", "running"):
+            readied[f] = readied.get(f, 0) + 1
+        if r["state"] == "ready":
+            nready[f] = nready.get(f, 0) + 1
+        elif r["state"] == "running":
+            nrun[f] = nrun.get(f, 0) + 1
     by: dict[str, dict] = {}
     for n in nodes:
         if not isinstance(n, dict) or not n.get("handoff"):
             continue
         state = n.get("state") or "active"
         key = f"handoffs/{state}/{n['handoff']}"
+        f = _handoff_file(n["handoff"])
         h = by.setdefault(key, {"handoff": n["handoff"], "id": f"{state}/{str(n['handoff'])[:-3] if str(n['handoff']).endswith('.md') else n['handoff']}",
-                                "open": 0, "classes": set(), "readied_rows": readied.get(key, 0),
-                                "ready_rows": nready.get(key, 0), "running_rows": nrun.get(key, 0)})
+                                "open": 0, "classes": set(), "readied_rows": readied.get(f, 0),
+                                "ready_rows": nready.get(f, 0), "running_rows": nrun.get(f, 0)})
         tier = (n.get("priority_basis") or {}).get("tier")
         if not n.get("open"):
             continue
         h["open"] += n["open"]
         if tier in _INFERENCE_TIERS:
-            h["classes"].add("readied-waiting" if readied.get(key) and tier != 0 else "needs-ready")
+            h["classes"].add("readied-waiting" if readied.get(f) and tier != 0 else "needs-ready")
         else:
             h["classes"].add("non-inference")
     out, counts = [], {k: 0 for k in CLASSES}

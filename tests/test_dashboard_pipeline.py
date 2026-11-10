@@ -180,3 +180,46 @@ def test_stop_path_falls_back_to_manifest_when_rowflow_cannot_load(monkeypatch):
     monkeypatch.setattr(ps, "_ROWFLOW_MOD", [None])
     assert ps._stop_path({"stop_file": "/x/STOP"}) == "/x/STOP"
     assert ps._stop_path({}) is None
+
+
+def test_badge_counts_join_mixed_handoff_formats(tmp_path):
+    """Graph badges: ready/running rows count per node whatever form handoff_task takes."""
+    flags = tmp_path
+    for d in ("ready", "grants", "dryrun"):
+        (flags / d).mkdir()
+    manifests = {
+        "r-bare": "autokernel-akx-program.md:AK-1",                       # ready, bare + task
+        "r-path": "handoffs/active/autokernel-akx-program.md:AK-2",       # ready, prefixed + task
+        "r-plain": "handoffs/active/kernel-champion-and-promotion.md",   # ready, prefixed, no task
+        "r-run": "rocm-kernel-authoring.md:INF48-LIVE-6",                # running via grant
+        "r-ended": "rocm-kernel-authoring.md:X",                         # granted then ended
+        "r-fail": "autokernel-akx-program.md:AK-3",                       # dry run FAIL
+        "r-filler": "FILLERS",                                             # not a handoff
+    }
+    for rid, ht in manifests.items():
+        (flags / "ready" / f"{rid}.json").write_text(json.dumps({"handoff_task": ht}))
+    for rid in ("r-bare", "r-path", "r-plain", "r-run", "r-filler"):
+        (flags / "dryrun" / rid).mkdir()
+        (flags / "dryrun" / rid / "PASS.json").write_text("{}")
+    (flags / "dryrun" / "r-fail").mkdir()
+    (flags / "dryrun" / "r-fail" / "FAIL-1.json").write_text("{}")
+    (flags / "grants" / "r-run.grant").write_text("regions=gpu holds=gpu")
+    (flags / "grants" / "r-ended.grant").write_text("regions=q0")
+    (flags / "grants" / "r-ended.ended").write_text("")
+    rows = ps._rows(flags)
+    assert rows["r-run"]["state"] == "running"
+    graph = {"nodes": [
+        {"handoff": f, "state": "active", "open": 1, "priority_basis": {"tier": 5}}
+        for f in ("autokernel-akx-program.md", "kernel-champion-and-promotion.md",
+                  "rocm-kernel-authoring.md")]}
+    ov = {h["handoff"]: h for h in ps.classify_handoffs(graph, rows)["handoffs"]}
+    assert (ov["autokernel-akx-program.md"]["ready_rows"], ov["autokernel-akx-program.md"]["running_rows"]) == (2, 0)
+    assert (ov["kernel-champion-and-promotion.md"]["ready_rows"], ov["kernel-champion-and-promotion.md"]["running_rows"]) == (1, 0)
+    assert (ov["rocm-kernel-authoring.md"]["ready_rows"], ov["rocm-kernel-authoring.md"]["running_rows"]) == (0, 1)
+    assert ov["rocm-kernel-authoring.md"]["class"] == "readied-waiting"
+
+
+def test_handoff_file_normalisation():
+    for v in ("x.md", "handoffs/active/x.md", "x.md:T-1", "handoffs/blocked/x.md:T"):
+        assert ps._handoff_file(v) == "x.md"
+    assert ps._handoff_file("FILLERS") is None and ps._handoff_file(None) is None
