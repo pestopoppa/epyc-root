@@ -13,7 +13,7 @@
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | Diagnose MMQ-H3 NaN (iglp_opt0 fails correctness); H10b same-seed rerun; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target | INF-48, EVL-47 |
-| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Champion is C9 d210f85c2; kernel-speed work paused by operator; promotion package only on request | INF-06, INF-50 |
+| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | Champion is C10 7f1bd044b (operator 2026-11-10); AutoKernel owns promotion; C10 floors pending whole-host row; production v10 | INF-06, INF-50 |
 | INF-82 | autokernel akx program (keep gate + all dims) | [autokernel-akx-program.md](autokernel-akx-program.md) | Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31 | INF-06, INF-65 |
 | INF-83 | v11 promotion checklist | [v11-promotion-checklist.md](v11-promotion-checklist.md) | Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion | INF-65 |
 | INF-84 | workspace-58 champion calibration | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) | Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands | INF-65 |
@@ -22,7 +22,7 @@
 | INF-79 | conversation stack (speech) | [speech-and-multimodal.md](speech-and-multimodal.md) | Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions | — |
 | INF-80 | exl3 cpu mi210 implementation | [quantization-and-low-bit.md](quantization-and-low-bit.md) | EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin | — |
 | INF-45 | numa topology cutover resume | [numa-placement-and-contention.md](numa-placement-and-contention.md) | No cutover work remains (P0-3 closed 2026-10-29); next P1-4, P1-8, REGION-SIBLING-1, WP-15.2, then P2-2 anchors | — |
-| INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | Port C6 controller wiring (INF48-LIVE-1); run RVP-ATT-CANARY-R4; file ROCK-AITER packet A, then step 2 | EVL-47 |
+| INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | race-eqv r3 INVALID_BASELINE_FAILS: r4 on new-fail-vs-baseline gate (operator 2026-11-10); C6 reseal onto C10 + residency diagnosis; c2-producer follow-ups | EVL-47 |
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3 | — |
 | INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); ≥256k YaRN parked until C8-1 | RTG-58 |
 ## Cross-domain
