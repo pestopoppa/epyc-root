@@ -4136,6 +4136,8 @@ not memory decay — which reprices the whole refactor away from durability and 
       branch was not among the two HIGHs. **Operator decision** (narrow single-branch guard, owned by
       `mainD`). Honest limit: it models agent-typed Bash only, and who ran the 08:20Z clean is
       unrecoverable. The genuine "mechanisms cost something" datum is `e08fe836`, not this.
+  - Operator decision 2026-11-11: OP-AUD10 "Approve, steward codex-ni-main" (clean-only Bash hook, D9 package `artifacts/operator/decisions/D9-AUD10-clean-only-20261008/README.md`, option 1; steward codex-ni-main).
+    - [ ] **AUD-10-HOOK-STEWARD — codex-ni-main stewards the clean-only Bash hook: watch false-positive refusals and report them; hook landed in root commit 3bc8292fc (`scripts/hooks/check_git_clean_untracked.py` plus one PreToolUse Bash entry in `.claude/settings.json`; 26/26 tests pass).** Owner: codex-ni-main.
 - **[declined: ws58 2026-11-03 content-review: historical record re-grading with no behaviour change]** **AUD-11 — Re-grade the `Mech` column against the audit (`A-1`).** Two of six *"rules that
       held"* are as claimed. Row 4 (composer guard) is **refuted and is itself an RC-2 error** — the
       glyph mismatch made it refuse 100% of rings, so *"refused a nudge that should not have been

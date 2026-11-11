@@ -41,19 +41,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-OPENCODE-RECLAIM | DECIDED 2026-11-11 (drop readonly copies, ~15 GB): container cannot delete them (read-only mount, root-owned); refresh job is host-side (opencode-durable-sync.sh, hourly). Operator runs host commands: stop the refresh, then delete `/mnt/raid0/llm/opencode/readonly/{epyc,host-daniele,twyne}.db`. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LOOP-34 | 2026-10-29 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](engineering-hygiene-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
-| OP-PQP | Lifetime promotion error budget: recommend (a) status quo plus the SEQ-5 ledger; options in the plan DP-A. Human-amendment only. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
-| OP-ABSEQ | Sequential paired e-process for P-AB-1: recommend (a) no amendment. DP-B. | harness-improvement-loop.md HIL-9 item 11 | 2026-10-20 |
-| OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
-| OP-FLAGSRC | 17 flagged sources: recommend the table in DP-D. | harness-improvement-loop.md | 2026-10-20 |
-| OP-AMENDCAND | Two further MEASUREMENT amendment candidates: recommend hold. DP-E. | conversational-memory-eval-instrument.md CME-6 | 2026-10-20 |
-| OP-INJPOLICY | DP-H: switch `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY` default from `source` to `warn`. Recommend (b) `warn`; default (a) keep `source`. An orchestrator default, not a registry entry; the operator signs it. DP-H. | [qwen-chat-template-evaluation.md](harness-program.md#track-qwen-chat-template-evaluation) CT-19 | 2026-10-21 |
-| OP-CHUNKKV | DP-I: chunk-KV reuse depth beyond phase 1. Recommend option 1 as running plus the phase-3 skeleton in parallel, with the hybrid affine-state phase decided at the phase 0 drift-curve gate; KPF-64 runs beside it; default option 1. DP-I. | [kv-prefix-fork-and-paged-attention.md](kv-cache-program.md#track-kv-prefix-fork-and-paged-attention) KPF-62 | 2026-10-21 |
-| OP-POSTCAP | DP-J: post-cap and operator-flagged sources, one table with per-row recommendations (default: monitor all). DP-J table in the amendment. | [harness-improvement-loop.md](harness-program.md#track-harness-improvement-loop) M26 | 2026-10-21 |
-| OP-AUTOLAB1457 | DP-K: convert the intake-1457 (AutoLab) decline to knowledge_only plus a repo monitor. Recommend (a) convert; default (b) keep the decline, no index edit. DP-K. | [autokernel-research-loop.md](autokernel-loop.md#track-autokernel-research-loop) M23 | 2026-10-21 |
-| OP-AMENDCAND2 | DP-L: three further MEASUREMENT amendment candidates (area under cumulative-solved-by-turn curve, scorer-validity precondition, replicate-floor rule). Recommend (a) hold; human-amendment only, nothing drafted into any protocol. DP-L. | [harness-improvement-loop.md](harness-program.md#track-harness-improvement-loop) HIL-20 | 2026-10-21 |
-| OP-M12F | Choose prospective EPYC v3 ordering eligibility (recommend gold≥2, partial retrieval zero) or retain v2. [Concrete metric/source package](../../artifacts/operator/decisions/M12f-EPYC-v3-20261008/README.md); SC67 protocol admission remains separate. | [memory-program.md](memory-program.md) M-12f | 2026-10-08 |
-| OP-AUD10 | Approve the tested clean-only Bash hook and name its live steward (recommend codex-ni-main), name another steward, or retain current settings. [Exact D9 package](../../artifacts/operator/decisions/D9-AUD10-clean-only-20261008/README.md). | [coordinator-role-failure-modes-and-refactor.md](coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) AUD-10 | 2026-10-08 |
-| OP-LR11-LR13 | Ratify bounded additive close-time inventory and subagent scratch/records rules, or retain current policy. [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md); recommendation A, typed human terminal signature required. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LR-11 / LR-13 | 2026-10-07 |
+| OP-LR11-LR13 | operator chose A 2026-11-11; awaiting terminal signature (human-only signing script). [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md). | [non-inference-backlog.md](engineering-hygiene-backlog.md) LR-11 / LR-13 | 2026-10-07 |
 | OP-79 | Run on the HOST after the :8083 restore: install `scripts/server/gpu_window_watchdog.cron` (`* * * * *` + `@reboot sleep 90`) so the GPU-window executor ticks (G1 review F2). Verify that a tick writes `mi210.json.executor-status.json` | [autokernel-all-devices-all-dimensions.md](autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) AKX-ALL-15a | 2026-10-04 |
 | OP-78 | Approve updating the shared epyc-orchestrator checkout to include device-busy `6ce26fc9` (G1 manual-window fix; the checkout is at `c5dc4ae5` + `4b871cc5` per today's decision (d)). Options: (1) approve now, which completes the ACK-with-fixes set for manual windows (recommended); (2) hold until the AK-window fixes (AKX-ALL-15b) land, so the checkout moves once | [autokernel-all-devices-all-dimensions.md](autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) AKX-ALL-15 | 2026-10-04 |
 | OP-76 | Sign STACKCHG-8083BATCH-20261004 (:8083 `-b 512 -ub 512` + `--no-cache-idle-slots`; KVU-16f + UFH14-B4j). `--validate-only` VALID; greenlit by workspace-ec. Applies at the next :8083 relaunch (one relaunch; the post-E1 restore 2026-10-04 ~19:56Z went ahead without it). Known cost: solo shallow prefill −26%, TTFT +35% (KVU-16g removes it). Command (interactive terminal, TTY-gated): `RATIFY_OPERATOR="<name>" bash /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/ratify_stackchg_8083batch_20261004.sh --attest RATIFY-STACKCHG-8083BATCH-20261004` | [kv-unified-stack-rollout.md](kv-cache-program.md#track-kv-unified-stack-rollout) KVU-16f | 2026-10-04 |
@@ -138,12 +126,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 16 | 577 | 50 | 2026-11-03 |
+| inference-research | 16 | 578 | 50 | 2026-11-03 |
 | pipeline-integration | 1 | 16 | 0 | 2026-11-10 |
 | research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
-| routing-and-optimization | 9 | 466 | 14 | 2026-11-05 |
-| user-facing-harness | 2 | 87 | 18 | 2026-10-03 |
+| routing-and-optimization | 9 | 472 | 14 | 2026-11-05 |
+| user-facing-harness | 2 | 93 | 18 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

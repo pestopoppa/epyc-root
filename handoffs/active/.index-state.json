@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 577
+      "open": 578
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,13 +28,13 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 466
+      "open": 472
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 87
+      "open": 93
     }
   },
   "duplicates": {},
@@ -104,7 +104,7 @@
       "closed": 832,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 136,
+      "open": 137,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 969,
+      "total": 970,
       "tracks": [
         {
           "blocked": 1,
@@ -128,14 +128,14 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 39
+          "open": 40
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6018,
+          "line": 6021,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6098,
+          "line": 6101,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6395,
+          "line": 6398,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9612,
+          "line": 9615,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13962,
+          "line": 13965,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14174,
+          "line": 14177,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -222,7 +222,7 @@
       "closed": 292,
       "guarded": 0,
       "last_advanced": "2026-11-09",
-      "open": 81,
+      "open": 83,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -231,7 +231,7 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 375,
+      "total": 377,
       "tracks": [
         {
           "blocked": 1,
@@ -384,7 +384,7 @@
           "line": 4332,
           "markers": 1,
           "name": "autopilot-sequential-allocation",
-          "open": 4
+          "open": 6
         },
         {
           "blocked": 0,
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4788,
+          "line": 4792,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5064,
+          "line": 5068,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -628,7 +628,7 @@
       "closed": 333,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 16,
+      "open": 17,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -637,7 +637,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 349,
+      "total": 350,
       "tracks": [
         {
           "blocked": 0,
@@ -692,7 +692,7 @@
           "line": 3370,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
-          "open": 0
+          "open": 1
         },
         {
           "blocked": 0,
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4883,
+          "line": 4885,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,7 +721,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5543,
+          "line": 5545,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5732,
+          "line": 5734,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 1
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6288,
+          "line": 6290,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -863,7 +863,7 @@
       "closed": 300,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 76,
+      "open": 77,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 376,
+      "total": 377,
       "tracks": [
         {
           "blocked": 0,
@@ -882,14 +882,14 @@
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 32
+          "open": 33
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1230,
+          "line": 1232,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -899,7 +899,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1270,
+          "line": 1272,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -909,7 +909,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1377,
+          "line": 1379,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -919,7 +919,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1477,
+          "line": 1479,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 1
@@ -929,7 +929,7 @@
           "closed": 87,
           "gates": [],
           "guarded": 0,
-          "line": 1526,
+          "line": 1528,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 34
@@ -939,7 +939,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 2102,
+          "line": 2104,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 6
@@ -1069,7 +1069,7 @@
       "closed": 238,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 80,
+      "open": 86,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1078,7 +1078,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 336,
+      "total": 342,
       "tracks": [
         {
           "blocked": 12,
@@ -1117,7 +1117,7 @@
           "line": 761,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
-          "open": 7
+          "open": 8
         },
         {
           "blocked": 4,
@@ -1126,10 +1126,10 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1525,
+          "line": 1527,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 9
+          "open": 14
         },
         {
           "blocked": 0,
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2190,
+          "line": 2203,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2273,
+          "line": 2286,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 18
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2721,
+          "line": 2734,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3589,
+          "line": 3602,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1396,7 +1396,7 @@
       "closed": 414,
       "guarded": 0,
       "last_advanced": "2026-11-06",
-      "open": 96,
+      "open": 97,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1405,7 +1405,7 @@
       },
       "row_id": "RTG-58",
       "state": "active",
-      "total": 519,
+      "total": 520,
       "tracks": [
         {
           "blocked": 8,
@@ -1419,14 +1419,14 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 47
+          "open": 48
         },
         {
           "blocked": 1,
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1749,
+          "line": 1751,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1439,7 +1439,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2172,
+          "line": 2174,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -1521,7 +1521,7 @@
       "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 39,
+      "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1530,7 +1530,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 160,
+      "total": 161,
       "tracks": [
         {
           "blocked": 0,
@@ -1540,14 +1540,14 @@
           "line": 36,
           "markers": 1,
           "name": "memory-program",
-          "open": 13
+          "open": 14
         },
         {
           "blocked": 0,
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 914,
+          "line": 916,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1557,7 +1557,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1376,
+          "line": 1378,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1837,
+          "line": 1839,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7

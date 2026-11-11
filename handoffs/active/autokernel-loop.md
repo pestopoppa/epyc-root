@@ -5973,6 +5973,9 @@ Operator-approved Stage-3 amendment (plan sha256 2edfb0662f61e1254e7dc5e2b21888e
 
 ##### M23 — AutoKernel and self-repair follow-ons
 
+- Operator decision 2026-11-11: OP-AUTOLAB1457 "(a) Convert" (DP-K): the intake-1457 (AutoLab) decline converts to knowledge_only plus a repo monitor.
+  - [ ] **M23-AUTOLAB1457-CONVERT — convert the intake-1457 decline to `knowledge_only` in the intake index and add the AutoLab repo monitor.** Owner: autokernel-loop owner (index edit applied by the owning session).
+
 - DPF-1133-L2 (intake-1133): Learned validity predicate as a rejection sampler: synthesize a cheap deterministic is_valid(candidate) from logged rejections so invalid candidates are filtered before the expensive step. For AutoKe… — Trigger: the AK per-round record (AK-PM-17) has accumulated enough labelled rejections (named threshold set by the owner when the record exists) that one rejection class recurs. First step when it fires: replay the logged rejections as the…
 - DPF-1133-L3 (intake-1133): Same mechanism for PromptForge: a predicate learned from the AP-53 rejected-mutation ledger could extend the hand-written MHS-15 lint. Intake-1129 is the warning: every synthesized rule must cite led… — Trigger: the whole-file MHS-15 calibration baseline (HC-ARB-AL2) shows a recurrent structural rejection class not covered by the lint. First step: draft the predicate as warn-only with the L1 warrant test; no reject behaviour.
 - DPF-1133-L4 (intake-1133): Thompson-sampling tree search over code hypotheses (Tang et al. 2024, REx) as the refinement policy: which node to refine next balances exploit/explore using the average success as value. — Trigger: the AK planner needs a policy for choosing which prior patch to repair. First step: ingest-and-dive arXiv:2405.17503 (surfaced source below).

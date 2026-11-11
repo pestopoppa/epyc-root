@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T08:45:34Z",
+  "generated_at": "2026-11-11T08:52:23Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1135,14 +1135,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 121,
-      "dispatchable": 39,
+      "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-10",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 39,
+      "open": 40,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1162,18 +1162,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 13,
+          "dispatchable": 14,
           "gates": [],
           "line": 36,
           "name": "memory-program",
-          "open": 13,
+          "open": 14,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 914,
+          "line": 916,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1182,7 +1182,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1376,
+          "line": 1378,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1199,7 +1199,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1837,
+          "line": 1839,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1376,14 +1376,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 832,
-      "dispatchable": 136,
+      "dispatchable": 137,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-10",
       "next_action": "H10b: onset C6F2->C7 bracketed; run same-seed rerun on C10; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
-      "open": 137,
+      "open": 138,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1420,7 +1420,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 39,
+          "dispatchable": 40,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1429,14 +1429,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 40,
+          "open": 41,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6018,
+          "line": 6021,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1445,7 +1445,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6098,
+          "line": 6101,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1464,7 +1464,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6395,
+          "line": 6398,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1481,7 +1481,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9612,
+          "line": 9615,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1494,7 +1494,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13962,
+          "line": 13965,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1528,7 +1528,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14174,
+          "line": 14177,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2706,14 +2706,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 292,
-      "dispatchable": 81,
+      "dispatchable": 83,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-09",
       "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
-      "open": 83,
+      "open": 85,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2865,7 +2865,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "dispatchable": 4,
+          "dispatchable": 6,
           "gates": [
             "RTG-02#autopilot-program",
             "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
@@ -2882,7 +2882,7 @@
           ],
           "line": 4332,
           "name": "autopilot-sequential-allocation",
-          "open": 4,
+          "open": 6,
           "readiness": "blocked"
         },
         {
@@ -2914,7 +2914,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4788,
+          "line": 4792,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2923,7 +2923,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 5064,
+          "line": 5068,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
@@ -3218,14 +3218,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 300,
-      "dispatchable": 76,
+      "dispatchable": 77,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-11",
       "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
-      "open": 76,
+      "open": 77,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3245,18 +3245,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 32,
+          "dispatchable": 33,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 32,
+          "open": 33,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1230,
+          "line": 1232,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3265,7 +3265,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1270,
+          "line": 1272,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3274,7 +3274,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1377,
+          "line": 1379,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3283,7 +3283,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1477,
+          "line": 1479,
           "name": "loop-state-offraid-backup",
           "open": 1,
           "readiness": "ready"
@@ -3292,7 +3292,7 @@
           "blocked_by": [],
           "dispatchable": 34,
           "gates": [],
-          "line": 1526,
+          "line": 1528,
           "name": "refactoring-multirepo-2026-10",
           "open": 34,
           "readiness": "ready"
@@ -3301,7 +3301,7 @@
           "blocked_by": [],
           "dispatchable": 6,
           "gates": [],
-          "line": 2102,
+          "line": 2104,
           "name": "repo-readiness-scorer",
           "open": 6,
           "readiness": "ready"
@@ -3313,14 +3313,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 333,
-      "dispatchable": 16,
+      "dispatchable": 17,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
       "last_advanced": "2026-11-10",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
-      "open": 16,
+      "open": 17,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3385,7 +3385,7 @@
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#dashboard-architecture-restructure"
           ],
-          "dispatchable": 0,
+          "dispatchable": 1,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -3394,13 +3394,14 @@
           ],
           "line": 3370,
           "name": "coordinator-role-failure-modes-and-refactor",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 1,
+          "readiness": "blocked"
         },
         {
           "blocked_by": [
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#coordinator-role-failure-modes-and-refactor",
             "RTG-34#dashboard-architecture-restructure"
           ],
           "dispatchable": 0,
@@ -3411,7 +3412,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4883,
+          "line": 4885,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
@@ -3420,6 +3421,7 @@
           "blocked_by": [
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#coordinator-role-failure-modes-and-refactor",
             "RTG-34#dashboard-architecture-restructure"
           ],
           "dispatchable": 4,
@@ -3430,7 +3432,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5543,
+          "line": 5545,
           "name": "fleet-fanout-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -3439,6 +3441,7 @@
           "blocked_by": [
             "RTG-34#churn-pipeline",
             "RTG-34#coordination-and-churn-pipeline",
+            "RTG-34#coordinator-role-failure-modes-and-refactor",
             "RTG-34#dashboard-architecture-restructure"
           ],
           "dispatchable": 1,
@@ -3449,7 +3452,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5732,
+          "line": 5734,
           "name": "wrap-up-division-of-labor-policy",
           "open": 1,
           "readiness": "blocked"
@@ -3458,7 +3461,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6288,
+          "line": 6290,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -3586,14 +3589,14 @@
       "blocked": 9,
       "blocked_by": [],
       "closed": 414,
-      "dispatchable": 96,
+      "dispatchable": 97,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "kv-cache-program.md",
       "id": "RTG-58",
       "last_advanced": "2026-11-06",
       "next_action": "Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort",
-      "open": 105,
+      "open": 106,
       "priority": 1.0,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep kpf18-g3-r10-integration-cpu: harness fix: rc1 06:03:31Z, framing_pass=fals",
@@ -3619,7 +3622,7 @@
             "INF-65",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 47,
+          "dispatchable": 48,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -3627,14 +3630,14 @@
           ],
           "line": 34,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 55,
+          "open": 56,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1749,
+          "line": 1751,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3649,7 +3652,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2172,
+          "line": 2174,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
@@ -3661,14 +3664,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 238,
-      "dispatchable": 80,
+      "dispatchable": 86,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-07",
       "next_action": "Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel",
-      "open": 98,
+      "open": 104,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3729,24 +3732,24 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 8,
           "gates": [],
           "line": 761,
           "name": "qwen-chat-template-evaluation",
-          "open": 7,
+          "open": 8,
           "readiness": "ready"
         },
         {
           "blocked_by": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "dispatchable": 9,
+          "dispatchable": 14,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1525,
+          "line": 1527,
           "name": "harness-improvement-loop",
-          "open": 13,
+          "open": 18,
           "readiness": "blocked"
         },
         {
@@ -3757,7 +3760,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2190,
+          "line": 2203,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3778,7 +3781,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2273,
+          "line": 2286,
           "name": "repl-embedding-retrieval",
           "open": 20,
           "readiness": "blocked"
@@ -3793,7 +3796,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2721,
+          "line": 2734,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3804,7 +3807,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3589,
+          "line": 3602,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

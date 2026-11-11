@@ -439,6 +439,8 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       lifetime per brief. Same `LR-12` guard defect blocks editing these files from a lane ahead of
       `/workspace` — land LR-12 first or edit once `/workspace` has caught up.
   - *(workspace-f2 2026-11-09.)* Two of three rules already exist in agents/shared. The third is scripted: `scripts/operator/ratify_lr13_subagent_scratch_20261109.sh`, awaiting the operator --apply. Signing it invalidates the older OP-LR11-LR13 package pin for OPERATING_CONSTRAINTS.md.
+  - Operator decision 2026-11-11: OP-LR11-LR13 "A: Ratify" (bounded additive close-time inventory and subagent scratch/records rules).
+    - [ ] **LR-11-13-SIGN — operator runs the typed human terminal signature for the LR11-LR13 package (`artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md`); then verify the two additive rules landed in agents/shared.** Human-only signing script; no session may sign. Owner: codex-ni-main.
 
 ## 2026-09-27 compaction — orphaned residuals boxed
 

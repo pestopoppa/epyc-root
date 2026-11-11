@@ -1,6 +1,6 @@
 # Public Results Adjudication - 18 Retained Protocol-Tag Rows (INF-85 W3)
 
-Date: 2026-11-10. Owner: workspace-f2. Production kernel at adjudication: production-consolidated-v10
+Date: 2026-11-10. Owner: AutoKernel (workspace-18) as of 2026-11-11 (adjudication authored by workspace-f2). Production kernel at adjudication: production-consolidated-v10
 (`llama-server --version` 10303, `ffc1bac82`).
 
 Source: `epyc-inference-research` `docs/reference/benchmarks/RESULTS.md` (HEAD `a794f5b54`), run through
