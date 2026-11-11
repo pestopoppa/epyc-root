@@ -12,9 +12,9 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | H10b: onset C6F2->C7 bracketed; run same-seed rerun on C10; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target | INF-48, EVL-47 |
-| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | C10 floor accept script 8fa7b645b pending operator run; C11 skinny-det closed (accept nondeterminism); iqk Q8_0 prefill ON in C11; v10 | INF-06, INF-50 |
-| INF-82 | autokernel akx program (keep gate + all dims) | [autokernel-akx-program.md](autokernel-akx-program.md) | Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31 | INF-06, INF-65 |
+| INF-06 | autokernel research loop | [autokernel-loop.md](autokernel-loop.md) | H10b same-seed rerun on C10; reliance proof r5 (queued); H13 e2e bar 1.010 needs operator confirm; vLLM AITER r2; GDN-SHARE-1 | INF-48, EVL-47 |
+| INF-65 | autokernel aggregate candidate (champion) | [kernel-champion-and-promotion.md](kernel-champion-and-promotion.md) | C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 re-measures r2/r4 queued; v10 | INF-06, INF-50 |
+| INF-82 | autokernel akx program (keep gate + all dims) | [autokernel-akx-program.md](autokernel-akx-program.md) | Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native rows queued; fix W2 keeper residency bug, then run census | INF-06, INF-65 |
 | INF-83 | v11 promotion checklist | [v11-promotion-checklist.md](v11-promotion-checklist.md) | Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion | INF-65 |
 | INF-84 | workspace-58 champion calibration | [workspace-58-champion-calibration.md](workspace-58-champion-calibration.md) | Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands | INF-65 |
 | INF-70 | cpu decode roofline program | [cpu-decode-roofline-program.md](cpu-decode-roofline-program.md) | CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval | INF-65 |
@@ -22,12 +22,12 @@
 | INF-79 | conversation stack (speech) | [speech-and-multimodal.md](speech-and-multimodal.md) | Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions | — |
 | INF-80 | exl3 cpu mi210 implementation | [quantization-and-low-bit.md](quantization-and-low-bit.md) | EXL3-6c5a: emit epyc.exl3.measurement.v1 rows (10-04 copy + research data/exl3-6c5-quality), ingest, tick; 6c5b p1 margin | — |
 | INF-45 | numa placement and contention program | [numa-placement-and-contention.md](numa-placement-and-contention.md) | P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure | — |
-| INF-86 | hybrid checkpoint prompt-reuse exposure | [hybrid-checkpoint-prompt-reuse.md](hybrid-checkpoint-prompt-reuse.md) | INF-86-CMS512 stack-change (min-step 512, 3 ckpt roles, applying) + INF-86-TEMPLATE re-render (landing); then G4, G5; v11 fold verdict | INF-83 |
+| INF-86 | hybrid checkpoint prompt-reuse exposure | [hybrid-checkpoint-prompt-reuse.md](hybrid-checkpoint-prompt-reuse.md) | CMS512 reload HELD for live-probe row; TEMPLATE reload by owner, then cache_n probe; then G4, G5; v11 fold verdict | INF-83 |
 | INF-87 | dispatch placement telemetry | [dispatch-placement-telemetry.md](dispatch-placement-telemetry.md) | After next stack start: confirm WP-15.2 live schema, capture WP-15.3 fit+holdout windows, run WP-15 replay | — |
-| INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-9 wiring | EVL-47 |
+| INF-48 | rocm verify profile backend | [rocm-kernel-authoring.md](rocm-kernel-authoring.md) | race-eqv r6 (queued); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring | EVL-47 |
 | INF-50 | speculative decoding mtp refresh | [speculative-decoding.md](speculative-decoding.md) | DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3 | — |
 | INF-59 | yarn context extension research | [long-context-program.md](long-context-program.md) | Run YARN-NATIVE-WINDOW-GATE; then the REPL-EMB-A7 file + bounded-read probe (harness-program.md); ≥256k YaRN parked until C8-1 | RTG-58 |
-| INF-85 | upstream publication | [publication-upstream-program.md](publication-upstream-program.md) | W2 final scrub + host-attestation decision; W3 adjudicate 18 retained rows | INF-48 |
+| INF-85 | upstream publication | [publication-upstream-program.md](publication-upstream-program.md) | W2 final scrub + host-attestation decision; W3 done (no public URL, WEB-2 hold); next WEB-2 launch decision | INF-48 |
 ## Cross-domain
 
 Edges to other domains go in the `Deps` column as bare IDs (e.g. `RTG-12`). Do **not** add a second row for a handoff another index owns.

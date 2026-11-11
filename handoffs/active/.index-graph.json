@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T15:37:09Z",
+  "generated_at": "2026-11-11T15:55:30Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1373,16 +1373,16 @@
     },
     {
       "age_days": 1,
-      "blocked": 1,
+      "blocked": 2,
       "blocked_by": [],
       "closed": 832,
-      "dispatchable": 137,
+      "dispatchable": 136,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-10",
-      "next_action": "H10b: onset C6F2->C7 bracketed; run same-seed rerun on C10; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
+      "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued); H13 e2e bar 1.010 needs operator confirm; vLLM AITER r2; GDN-SHARE-1",
       "open": 138,
       "priority": 0.896,
       "priority_basis": {
@@ -1420,7 +1420,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 40,
+          "dispatchable": 39,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1436,7 +1436,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6022,
+          "line": 6023,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1445,7 +1445,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6102,
+          "line": 6103,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1464,7 +1464,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6399,
+          "line": 6400,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1481,7 +1481,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9616,
+          "line": 9617,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1494,7 +1494,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13966,
+          "line": 13967,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1528,7 +1528,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14178,
+          "line": 14179,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1667,7 +1667,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-11",
-      "next_action": "race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-9 wiring",
+      "next_action": "race-eqv r6 (queued); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
       "open": 7,
       "priority": 0.8728,
       "priority_basis": {
@@ -1930,7 +1930,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-11",
-      "next_action": "C10 floor accept script 8fa7b645b pending operator run; C11 skinny-det closed (accept nondeterminism); iqk Q8_0 prefill ON in C11; v10",
+      "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 re-measures r2/r4 queued; v10",
       "open": 44,
       "priority": 0.9075,
       "priority_basis": {
@@ -2311,7 +2311,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-11",
-      "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
+      "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native rows queued; fix W2 keeper residency bug, then run census",
       "open": 63,
       "priority": 0.003,
       "priority_basis": {
@@ -2443,7 +2443,7 @@
       "handoff": "publication-upstream-program.md",
       "id": "INF-85",
       "last_advanced": "2026-11-11",
-      "next_action": "W2 final scrub + host-attestation decision; W3 adjudicate 18 retained rows",
+      "next_action": "W2 final scrub + host-attestation decision; W3 done (no public URL, WEB-2 hold); next WEB-2 launch decision",
       "open": 1,
       "priority": 0.003,
       "priority_basis": {
@@ -2469,7 +2469,7 @@
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-11",
-      "next_action": "INF-86-CMS512 stack-change (min-step 512, 3 ckpt roles, applying) + INF-86-TEMPLATE re-render (landing); then G4, G5; v11 fold verdict",
+      "next_action": "CMS512 reload HELD for live-probe row; TEMPLATE reload by owner, then cache_n probe; then G4, G5; v11 fold verdict",
       "open": 9,
       "priority": 0.003,
       "priority_basis": {

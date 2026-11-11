@@ -160,3 +160,10 @@ Throughput*.
 - **A fail-closed foreign-load guard needs a threshold matched to the window's width, plus two-sample persistence.** Floor r3 died on a janitor `du` scan at 57% and r4 on a single 8.7% `git log` sample; either transient killed a whole-host drain. r5 uses a 25% threshold with two-sample persistence.
 - **When copying a row dir to a new attempt, drop one-shot marks** such as ONE-WINDOW, or the new attempt inherits a spent window.
 - **In the shared clone, commit from a temp worktree and never `update-ref` local main.** An `update-ref` on main left /workspace stale (2026-11-10) and a restore had to put 5 docs/publication files back to HEAD. Use `git worktree add -b <tmp> <path> origin/main` and `serialized_push.py --push`.
+
+## Lessons from 2026-11-11 (AutoKernel)
+
+- **Never run network pulls inside a grant.** `vllm-aiter-gfx90a-gpu-20261111` r1 pulled a ~35 GB image under the GPU grant and was killed at rc=143 three minutes in. Pre-stage large downloads outside the grant (prep step, before publishing) and make the row fail fast when the artifact is absent.
+- **Read `queue_status.py` output WITH its section headers.** Grepping lines without the headers misattributed GRANTABLE/QUEUED rows as RUNNING. Always `grep -n -A` from the header.
+- **Check the `.ended` reason before reporting a withdrawal or stop as a bug.** `reason=job-rc-143:exited` (session kill) and `partial-native-incomplete` (smoke rc75) are normal stop paths; only `reason=complete` is a run result, and smoke-stage ends live in `dryrun/<id>/ended`, not `grants/`.
+- **An analysis harness that fakes the phenomenon overstates real-world gains.** The INF-86 replay's wasted-token metric counted the unavoidable SSM suffix as waste, and the replay does not look like real orchestrator traffic. Probe on real logged traffic (e.g. `inf86-cms512-live-probe`) before a stack change; hold the reload until it reads RELOAD_OK.
