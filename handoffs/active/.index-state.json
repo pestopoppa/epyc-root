@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 576
+      "open": 577
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -860,7 +860,7 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 299,
+      "closed": 300,
       "guarded": 0,
       "last_advanced": "2026-11-11",
       "open": 75,
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 374,
+      "total": 375,
       "tracks": [
         {
           "blocked": 0,
@@ -936,7 +936,7 @@
         },
         {
           "blocked": 0,
-          "closed": 14,
+          "closed": 15,
           "gates": [],
           "guarded": 0,
           "line": 2102,
@@ -1189,7 +1189,7 @@
       "closed": 11,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1198,7 +1198,7 @@
       },
       "row_id": "INF-86",
       "state": "active",
-      "total": 17
+      "total": 18
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,

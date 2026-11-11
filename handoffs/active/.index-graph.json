@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T01:37:28Z",
+  "generated_at": "2026-11-11T04:07:36Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2463,14 +2463,14 @@
         "INF-83"
       ],
       "closed": 11,
-      "dispatchable": 6,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-10",
       "next_action": "r2 NONE_OBSERVED (0/35); 10/15 turns fall back to first checkpoint; then G4, G5; v11 fold verdict",
-      "open": 6,
+      "open": 7,
       "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
@@ -3217,7 +3217,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 299,
+      "closed": 300,
       "dispatchable": 75,
       "domain": "routing-and-optimization",
       "guarded": 0,
