@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T09:49:32Z",
+  "generated_at": "2026-11-11T13:45:52Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1173,7 +1173,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 916,
+          "line": 919,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1182,7 +1182,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1378,
+          "line": 1381,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1199,7 +1199,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1839,
+          "line": 1842,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1923,15 +1923,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 195,
-      "dispatchable": 45,
+      "closed": 197,
+      "dispatchable": 43,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-11",
       "next_action": "C10 floor r5 (25% guard, 2-sample persistence) pending; keep iqk Q8_0 prefill ON in C11; production v10",
-      "open": 46,
+      "open": 44,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1965,7 +1965,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 39,
+          "dispatchable": 37,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1974,7 +1974,7 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 40,
+          "open": 38,
           "readiness": "blocked"
         },
         {
@@ -2457,20 +2457,20 @@
       "track": "upstream publication"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-83"
       ],
-      "closed": 11,
-      "dispatchable": 7,
+      "closed": 12,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "next_action": "r2 NONE_OBSERVED (0/35); 10/15 turns fall back to first checkpoint; then G4, G5; v11 fold verdict",
-      "open": 7,
+      "open": 6,
       "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
