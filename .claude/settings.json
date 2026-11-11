@@ -77,6 +77,11 @@
           },
           {
             "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_git_sequencer.sh\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_destructive_git.sh\"",
             "timeout": 5
           },

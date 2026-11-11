@@ -676,6 +676,25 @@
     }
    ],
    "notes": "REG-ENF-2. Fail-open on non-launch; fail-closed on unreadable claim state. Operator override EPYC_ALLOW_UNCLAIMED_LAUNCH=1."
+  },
+  {
+   "id": "GIT-NO-WRITE-DURING-SEQUENCER",
+   "rule": "No git write in a shared child clone while another op's sequencer (cherry-pick/merge/revert/rebase/am) is live.",
+   "source": {
+    "file": "scripts/hooks/git_sequencer_scan.py",
+    "anchor": "refuse a git WRITE in a shared child clone while another op's sequencer is live"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_git_sequencer.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": "DP-4. Sequencer controls (--continue/--abort/--skip/--quit) are allowed; owner override SEQUENCER_OWNER=1."
   }
  ]
 }
