@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T16:26:49Z",
+  "generated_at": "2026-11-11T16:37:01Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1372,10 +1372,10 @@
     },
     {
       "age_days": 1,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 832,
-      "dispatchable": 136,
+      "dispatchable": 137,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
@@ -1419,7 +1419,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 39,
+          "dispatchable": 40,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -2508,7 +2508,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 118,
+      "closed": 119,
       "dispatchable": 18,
       "domain": "pipeline-integration",
       "guarded": 0,

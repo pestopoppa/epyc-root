@@ -1,10 +1,10 @@
 {
   "domains": {
     "inference-research-index.md": {
-      "blocked": 51,
+      "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 566
+      "open": 567
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -100,11 +100,11 @@
       ]
     },
     "autokernel-loop.md": {
-      "blocked": 2,
+      "blocked": 1,
       "closed": 832,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 136,
+      "open": 137,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -116,7 +116,7 @@
       "total": 970,
       "tracks": [
         {
-          "blocked": 2,
+          "blocked": 1,
           "closed": 378,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
@@ -128,7 +128,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 39
+          "open": 40
         },
         {
           "blocked": 0,
@@ -1305,7 +1305,7 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 118,
+      "closed": 119,
       "guarded": 0,
       "last_advanced": "2026-11-11",
       "open": 18,
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 136,
+      "total": 137,
       "tracks": [
         {
           "blocked": 0,
@@ -1381,7 +1381,7 @@
         },
         {
           "blocked": 0,
-          "closed": 5,
+          "closed": 6,
           "gates": [],
           "guarded": 0,
           "line": 3121,
