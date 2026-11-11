@@ -2608,6 +2608,15 @@ Validation:
   - The registry edit is held by the orchestrator pre-commit contention-matrix freshness check; that matrix is stale for unrelated reasons. Refresh it, or land within the sign-off.
   - Prepared groundwork, uncommitted: worktree `/mnt/raid0/llm/worktrees/f2-toolperm-doc` has `ToolPermissions.all_tools`, the executor.py LEGACY note and a parity test. Snapshot script: `/mnt/raid0/llm/tmp/toolperm_snapshot.py`.
   - Owner workspace-f2.
+  - *(workspace-f2 2026-11-11.)* **SIGNED by the operator** (decision tool), with one change: `http_post` is forbidden for architect_general and architect_critic, which keep read-only web.
+    - Resolution: frontdoor 36 and worker_general 26, unchanged. coder_escalation and toolrunner 65, via explicit `all_tools`. Architects 35. worker_math 35 (math, data). Nine roles go to 0: worker_vision, vision_escalation, worker_summarize, ingest_long_context, both drafters and three `*_local` rows; 124 progress-log shards show no registry tool use by any of them. No role gains a tool. REPL builtins are unaffected.
+    - Also added: `_resolve_role_alias`, so legacy alias role strings canonicalise instead of silently getting nothing.
+    - Tests: 71 targeted tests pass. The broad sweep's 19 failures and 16 errors are identical to the pre-change baseline.
+    - Diff: `/mnt/raid0/llm/tmp/toolperm-deny-diff.md`.
+    - Package: uncommitted in worktree `/mnt/raid0/llm/worktrees/f2-toolperm-doc`. Backup: `/mnt/raid0/llm/tmp/toolperm-deny-default-signed-20261111.patch`, with its base sha in the `.base` file alongside.
+    - Landing, operator choice (no `--no-verify`): wait for the contention-matrix refresh. It is item 1 of the production relaunch queue, `/mnt/raid0/llm/tmp/relaunch-queue-20261111/README.md`. Production stays down until after the v11 promotion and PaddleOCR.
+    - Sequence: matrix refresh → workspace-f2 commits and pushes this package → orchestrator API reload at the inference owner's boundary.
+    - AFC-V3C-PROD-TOOLS already uses the signed architect set. [no-belief: operator decision + code change, no measurement]
 - [ ] **LINEUP-CTX-DEPTH-CURVE [inference] — after the NEXT production kernel promotion (v11), measure decode versus context depth for the three lineup models.** Models: Qwen3.6-35B-A3B Q8_0, Qwen3.8-Flash-Next UD-IQ4_XS, Qwen3-VL-30B-A3B Q4_K_M.
   - Why: INF-85 W3 r3 (2026-11-11) published tg128 at depth 0, single stream, 96t, no MTP: 57.01, 25.59 and 84.42 tok/s. That is a best case, not serving throughput.
   - Gated on the v11 promotion: operator 2026-11-11, "we'll do the context-depth curve after the next production kernel promotion". Do not run it on v10.
