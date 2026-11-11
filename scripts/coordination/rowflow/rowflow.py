@@ -3353,13 +3353,25 @@ def smoke_branch_files(d):
     return hits
 
 
-def smoke_completion_check(d):
+def smoke_units_capped(d, smoke_s):
+    """True when the smoke ran with FILLER_SMOKE_UNITS=1 (dryrun_run sets it unless the row has a smoke_predicate): the
+    job was shrunk, so whatever it wrote (e.g. the file a --complete-cmd tests) is the smoke's, not the full job's."""
+    return bool(smoke_s) and not (d or {}).get("smoke_predicate")
+
+
+def smoke_completion_check(d, units_capped=False, units=None):
     """Operator 2026-11-02 (ws58): a smoke/dry-run PASS may file a row COMPLETE only when (1) the launcher has no smoke
     branch (no FILLER_SMOKE*/FILLER_DRYRUN* in it or in the files its --cmd/--complete-cmd run), (2) the result is not a
     dry-run-native isolated result, and (3) the engine's --complete-cmd, re-run in --workdir with every FILLER_SMOKE*/
     FILLER_DRYRUN* variable removed, passes on the artifacts the full job writes. Returns (ok, reason)."""
     if d.get("dryrun_native_result"):
         return False, "dryrun_native_result: the smoke wrote an isolated per-attempt result, not the full job's artifacts"
+    # ROWFLOW-SMOKE-COMPLETE-GENERAL: a unit-capped smoke writes the very artifact the --complete-cmd tests, so the
+    # predicate passing proves nothing. Only a smoke that actually reached the declared total_units may be the job.
+    if units_capped:
+        tu = d.get("total_units")
+        if not (tu and units is not None and int(units) >= int(tu)):
+            return False, "smoke ran unit-capped (FILLER_SMOKE_UNITS=1) and did not reach total_units: a smoke is not the job"
     hits = smoke_branch_files(d)
     if hits:
         return False, "launcher branches on FILLER_SMOKE/FILLER_DRYRUN (" + ", ".join(hits[:4]) + "): a smoke is not the job"
@@ -3616,7 +3628,8 @@ def dryrun_run(flags, rid, regions, one_quarter=False, smoke_s=None):
     # but only when the smoke WAS the job: no smoke branch, and the full-job completion predicate holds (smoke_completion_check)
     if verdict == "PASS" and (os.path.exists(os.path.join(dd, "complete"))
                               or (d.get("total_units") and rec["units"] >= int(d["total_units"]))):
-        ok, why = smoke_completion_check(d)
+        rec["smoke_units_capped"] = smoke_units_capped(d, smoke_s)
+        ok, why = smoke_completion_check(d, rec["smoke_units_capped"], rec.get("units"))
         rec["job_complete"] = ok
         rec["job_complete_reason"] = why
         if not ok:

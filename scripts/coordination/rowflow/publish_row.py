@@ -736,7 +736,7 @@ def file_if_complete(flags, rid, row):
         previous = rf.load_json(receipt_path)
         rf.need(not os.path.exists(receipt_path) or previous == bindings,
                 "completed smoke filing content hash changed")
-        ok, why = rf.smoke_completion_check(row)
+        ok, why = rf.smoke_completion_check(row, bool(p.get("smoke_units_capped")), p.get("units"))
         if not ok:
             print(f"smoke passed but the row is NOT complete ({rid}): {why}; it stays a row")
             return False

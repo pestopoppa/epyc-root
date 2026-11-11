@@ -37,7 +37,7 @@ class TinyRowTests(unittest.TestCase):
                     f"--cmd '/bin/true' --complete-cmd '{cc}' --stop {self.pkt}/STOP --workdir {self.pkt}\n")
         return lp
 
-    def _smoke(self, complete, launcher=None, write_result=True):
+    def _smoke(self, complete, launcher=None, write_result=True, capped=False):
         rid, res = self.rid, self.res
         lp = launcher or self._launcher()
 
@@ -56,8 +56,8 @@ class TinyRowTests(unittest.TestCase):
                 open(res, "w").write("{}")
             open(os.path.join(dd, "ended"), "w").write("rc=0 reason=complete\n")
             rf.atomic_json(rf.pass_path(flags, rid_), {"id": rid_, "result_path": res, "job_complete": complete,
-                                                      "launcher_sha256": rf.sha256(lp),
-                                                      "engine_sha256": rf.sha256(self.engine)})
+                                                      "launcher_sha256": rf.sha256(lp), "smoke_units_capped": capped,
+                                                      "units": 1, "engine_sha256": rf.sha256(self.engine)})
             return "PASS", "1 unit(s)"
         with mock.patch.object(pr, "smoke_regions", return_value="0-3"), mock.patch.object(rf, "publish", publish), \
                 mock.patch.object(rf, "dryrun_run", dry):
@@ -78,6 +78,24 @@ class TinyRowTests(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(g, self.rid + ".ended")))
         self.assertFalse(os.path.exists(rf.ready_path(self.flags, self.rid)))
         self.assertTrue(os.path.exists(self.res))
+
+    def test_unit_capped_smoke_writing_completion_artifact_stays_ready(self):
+        # ROWFLOW-SMOKE-COMPLETE-GENERAL: the smoke itself writes the file --complete-cmd tests; it must not file the row
+        self._assert_not_filed(self._smoke(True, capped=True))
+
+    def test_unit_capped_smoke_that_reached_total_units_may_file(self):
+        os.makedirs(os.path.dirname(self.res), exist_ok=True)
+        open(self.res, "w").write("{}")
+        ok, why = rf.smoke_completion_check({"launcher": {"path": self._launcher()}, "total_units": 2}, True, 2)
+        self.assertTrue(ok, why)
+        ok, why = rf.smoke_completion_check({"launcher": {"path": self._launcher()}, "total_units": 5}, True, 1)
+        self.assertFalse(ok)
+        self.assertIn("unit-capped", why)
+
+    def test_smoke_units_capped_follows_smoke_predicate(self):
+        self.assertTrue(rf.smoke_units_capped({}, 300))
+        self.assertFalse(rf.smoke_units_capped({"smoke_predicate": "true"}, 300))
+        self.assertFalse(rf.smoke_units_capped({}, None))
 
     def test_partial_smoke_stays_a_row(self):
         self.assertIsNotNone(self._smoke(False))
