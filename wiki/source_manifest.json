@@ -1,18 +1,36 @@
 {
   "by_type": {
     "docs": 443,
-    "handoff-active": 32,
+    "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1385,
+    "progress": 1386,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
-  "mode": "touch",
-  "scan_time": "2026-11-09T21:39:25Z",
+  "last_touch": {
+    "advanced": {
+      "added": 2,
+      "changed": 5,
+      "removed": 0
+    },
+    "at": "2026-11-11T01:30:29Z",
+    "scope_paths": [
+      "docs/guides/agent-workflows/compute-fillers.md",
+      "handoffs/active/autokernel-akx-program.md",
+      "handoffs/active/autokernel-loop.md",
+      "handoffs/active/hybrid-checkpoint-prompt-reuse.md",
+      "handoffs/active/kernel-champion-and-promotion.md",
+      "handoffs/active/rocm-kernel-authoring.md",
+      "progress/2026-11/2026-11-10-autokernel.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-11-11T01:30:29Z",
   "schema_version": 1,
-  "source_set_hash": "d80b02600994cc9e6697947186f0c65d8e3fbdc399f4d260771c217a6ba8cf99",
+  "source_set_hash": "e0e875ac7c49c972386874c0e038585d74146b7496a84c0aa169f2a133f70612",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -23,18 +41,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c9898b83ed0a9716e2861221d722130d84433b24885ada667647bd6c2f509374",
-      "modified": "2026-11-09T21:33:03Z",
+      "content_hash": "e6a1c0af584a0642b0fcb54e6b6c330cb4378c09bf31498e985131aeb0d89c47",
+      "modified": "2026-11-11T01:29:21Z",
       "path": "handoffs/active/autokernel-akx-program.md",
-      "size": 494630,
+      "size": 505459,
       "title": "AutoKernel AKX program \u2014 cross-workload keep gate, and every device / every dimension",
       "type": "handoff-active"
     },
     {
-      "content_hash": "a9bc47de0222f8a94825397542c1351fbfdcb62ee93c9ed353db96deabbf3c18",
-      "modified": "2026-11-09T21:38:46Z",
+      "content_hash": "9c80e6416d98d548a7ce271639a354477f86635a90e7ed76069029b97f38e6c5",
+      "modified": "2026-11-11T01:29:21Z",
       "path": "handoffs/active/autokernel-loop.md",
-      "size": 1642978,
+      "size": 1663990,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -111,14 +129,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "493cca083733faaabfb56873f7b63390d6e03dcd7cb6fd6216f787e97a62778e",
-      "modified": "2026-11-09T21:31:46Z",
-      "path": "handoffs/active/frontier-lab-automation.md",
-      "size": 212776,
-      "title": "Intake-Derived Work \u2014 2026-07-25 sweep",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "437e8e5d02137d55adea3756331666231ffc09e6a911da3df3f84db381a4612a",
       "modified": "2026-11-09T21:31:46Z",
       "path": "handoffs/active/harness-program.md",
@@ -127,10 +137,18 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d4caa44c23a586329254d24a3fc60fd643c7681160b125ecdcabbce5bc871c55",
-      "modified": "2026-11-09T21:31:46Z",
+      "content_hash": "09c8ed25b7948a68ea2bde654d638d9bcd261a5c42610912597ce7b7743e6757",
+      "modified": "2026-11-11T01:29:21Z",
+      "path": "handoffs/active/hybrid-checkpoint-prompt-reuse.md",
+      "size": 44784,
+      "title": "Hybrid-Model Checkpoint & Prompt-Reuse Exposure (+ KVCOMM fork)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "8b85f7e52c681b1c269912c66c8478bcb95e1b54c52e1be840e5671ca3621147",
+      "modified": "2026-11-11T01:29:21Z",
       "path": "handoffs/active/kernel-champion-and-promotion.md",
-      "size": 640803,
+      "size": 655447,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -199,10 +217,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "06a63dca17a3587b830d4d8d3e5aab4fb3f7e4011b7dc55dd485ff7f685c718c",
-      "modified": "2026-11-09T21:31:46Z",
+      "content_hash": "f3fcd93e8ef80f87e66337a1ccbb48e4486ad3563835fcc7e89efc7e079f7b20",
+      "modified": "2026-11-11T01:29:21Z",
       "path": "handoffs/active/rocm-kernel-authoring.md",
-      "size": 542288,
+      "size": 558783,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -16783,6 +16801,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "7e351e3da7d9063b10590c147e1124cc8913be3f360069bb12081325438041c3",
+      "modified": "2026-11-11T01:29:28Z",
+      "path": "progress/2026-11/2026-11-10-autokernel.md",
+      "size": 4866,
+      "title": "2026-11-10 \u2014 autokernel",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-09T21:31:46Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -18031,10 +18057,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "993ddee4c40a9788dc1d424f3c70db81147592b6ac39627ac24e4f9b7bf3245c",
-      "modified": "2026-11-09T21:31:45Z",
+      "content_hash": "01804b3315efa2743954a70197abb587ac33f6eea4f93083299547d98f16c822",
+      "modified": "2026-11-11T01:29:28Z",
       "path": "docs/guides/agent-workflows/compute-fillers.md",
-      "size": 14909,
+      "size": 17137,
       "title": "Compute Fillers",
       "type": "docs"
     },
@@ -20461,9 +20487,17 @@
       "size": 32349,
       "title": "Runbook \u2014 Deterministic `vision_escalation` \u2192 MiniCPM-o Promotion (port 8087, MI210)",
       "type": "docs"
+    },
+    {
+      "content_hash": "493cca083733faaabfb56873f7b63390d6e03dcd7cb6fd6216f787e97a62778e",
+      "modified": "2026-11-09T21:31:46Z",
+      "path": "handoffs/active/frontier-lab-automation.md",
+      "size": 212776,
+      "title": "Intake-Derived Work \u2014 2026-07-25 sweep",
+      "type": "handoff-active"
     }
   ],
-  "total_new": 2556,
+  "total_new": 2558,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -7244,3 +7244,17 @@ Sources: `handoffs/active/autokernel-loop.md`, `handoffs/active/autokernel-akx-p
 - `handoffs/active/vidya-belief-substrate-program.md` (VB-REFOCUS-NONEMPTY-READ-PROOF); `progress/2026-11/2026-11-09-autokernel.md`
 - `docs/guides/agent-workflows/compute-fillers.md` (Publishing discipline); evidence `artifacts/analysis/ak-c9-h5-lb49-20261109/`
 
+
+## Compiled Update - 2026-11-11 (autokernel, fifth sweep): skinny-det r3, H10b onset, quality r2, INF-86 r2, floor r3-r5
+Sources: `handoffs/active/autokernel-loop.md`, `handoffs/active/autokernel-akx-program.md`, `handoffs/active/kernel-champion-and-promotion.md`, `handoffs/active/hybrid-checkpoint-prompt-reuse.md`, `handoffs/active/rocm-kernel-authoring.md`, `progress/2026-11/2026-11-10-autokernel.md`, `docs/guides/agent-workflows/compute-fillers.md`.
+
+- **Skinny-det r3 misses the keep bar** (KEEP_BAR_MISS). The skinny route is deterministic, but its geomean is 0.728 of stock, about 27% slower, so determinism does not buy a keep.
+- **H10b MoE `--autokernel-harden` non-determinism has an onset between C6F2 and C7.** Fail counts: V10/C6/C6F2 0, C7 1, C7R 3, C10 1. Knobs: H15OFF/NOGRAPH/FAASM0 0, H20R0 3, so H20R0 does not cure it and the three off-knobs did not fail.
+- **The iqk Q8_0 prefill route stays ON in C11** (operator). Quality r2: C10 route-on 150/200 MMLU-Pro and 128/195 GPQA; route-off and C5 both 148/200 and 128/195; McNemar p 0.73 / 1.0, so the +1.04% Q38FN CPU PPL shift is not a measurable task-quality cost.
+- **INF-86 r2 observed no forced re-prefill** (NONE_OBSERVED, 0/35 forced). The checkpoint-spacing exposure is real though: the last+older rewrite falls back to the first checkpoint (cache_n 106) in 10/15 turns, which is where a #25592-style forced re-prefill would bite.
+- **C4-7 collected all nine Hawkeye counters on gfx90a** (COLLECTED_ALL, pass).
+- **Fail-closed foreign-load guards need a window-matched threshold.** Floor r3 died on a janitor `du` scan at 57% and r4 on one 8.7% `git log` sample; r5 uses a 25% threshold with two-sample persistence. Copied row dirs must drop one-shot marks (ONE-WINDOW).
+
+### Source References (2026-11-11 autokernel fifth sweep)
+- `handoffs/active/autokernel-loop.md` (AK-MMQ-H10b), `handoffs/active/kernel-champion-and-promotion.md` (C6-Q38FN-PPL-IQK-Q8-PREFILL-DECISION, C10 floors), `handoffs/active/hybrid-checkpoint-prompt-reuse.md` (INF-86), `handoffs/active/rocm-kernel-authoring.md` (RVP-C4-7)
+- `progress/2026-11/2026-11-10-autokernel.md`; `docs/guides/agent-workflows/compute-fillers.md` (Lessons from 2026-11-10)

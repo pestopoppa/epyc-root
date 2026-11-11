@@ -44,3 +44,16 @@ Drop the floor-accept C9 script (superseded by C10 floor r3). `ratify2` stays cu
 ## Housekeeping
 
 Pipeline removed the dirty worktree `ak-c10-refs2-20261110`; all contents were already on main. Earlier results were filed by a prior audit (`ea2a69982`, `5870a7962`) and are not refiled.
+
+## After the first wrap-up (late 2026-11-10 into 11-11)
+
+- **C4-7**: COLLECTED_ALL, pass.
+- **INF-86 r2**: NONE_OBSERVED, 0/35 forced. Checkpoint-spacing exposure: the last+older rewrite falls back to the first checkpoint (cache_n 106) in 10/15 turns.
+- **Skinny-det r3**: KEEP_BAR_MISS. Deterministic, but geomean 0.728, about 27% slower.
+- **H10b bracket**: onset between C6F2 and C7. Fail counts: V10/C6/C6F2 0, C7 1, C7R 3, C10 1. Knobs: H15OFF/NOGRAPH/FAASM0 0, H20R0 3.
+- **Quality r2**: C10 route-on 150/200 MMLU-Pro and 128/195 GPQA. Route-off and C5 both 148/200 and 128/195. McNemar p 0.73 / 1.0. Operator decision: keep the iqk Q8_0 prefill route ON in C11.
+- **Floor attempts**:
+  - r3 FAIL_FOREIGN_LOAD on a janitor `du` scan at 57%. Pipeline is building a scan-defer helper.
+  - r4 FAIL_FOREIGN_LOAD in-window on a single 8.7% `git log` sample.
+  - r5 (`/mnt/raid0/llm/tmp/ak-c10-q38fn-floor-r5-20261111`) is published with sampler threshold 25% and two-sample persistence.
+- **Stale /workspace restore**: the 5 docs/publication and publication-upstream files went back to HEAD; 15 real edits were left alone.
