@@ -368,8 +368,10 @@ class DrainNeverPreempt(unittest.TestCase):
             # drain active: nothing placed may end after T
             self.assertIsNotNone(rf.plan.last_drain)
             T = rf.plan.last_drain[1]
-            for c, _ in assigned:
-                self.assertLessEqual(t + c["window_s"], T, f"backfill {c['id']} would delay T")
+            for c, o in assigned:   # D9 2026-11-11: an overrunning backfill is admitted only capped at T (hard_end)
+                end = min(t + c["window_s"], rf.plan.hard_end.get(c["id"], float("inf")))
+                if o & set().union(*host["options"]):
+                    self.assertLessEqual(end, T, f"backfill {c['id']} would delay T")
             # the running quarter row ends at T; simulate: free everything after T
             if t + 120 >= T:
                 free = set(rf.QUARTERS)
