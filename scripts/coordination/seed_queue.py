@@ -39,6 +39,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -99,9 +100,47 @@ def classify(text: str) -> tuple[str | None, str | None, str]:
     return None, None, "no confident lane signal — neither a compute verb nor a doc/code verb"
 
 
+def text_identity(text: str) -> str:
+    """Line-independent identity of a box: sha256 of its whitespace/markup-normalized task text, 8 hex."""
+    norm = re.sub(r"\s+", " ", re.sub(r"\*\*|`", "", text)).strip().lower()
+    return hashlib.sha256(norm.encode("utf-8")).hexdigest()[:8]
+
+
+def known_seeded(bus_root: Path) -> dict[str, str]:
+    """text_identity(summary) -> task_id for every box ALREADY proposed or queued, whatever its id scheme.
+
+    PICK-IDENTITY migration: rows seeded before the text-hash ids carry `-L<lineno>` task_ids, so an id match alone
+    would re-propose every one of them under its new `-T<hash>` id. The proposal's own text (payload summary /
+    task_text, written by this script at birth) is the identity, so dedup on it. Reads every outbox's task-propose
+    messages plus queue.jsonl rows that carry text; unreadable lines are skipped, never fatal."""
+    known: dict[str, str] = {}
+    files = sorted((bus_root / "outbox").glob("*.jsonl")) + [bus_root / "queue.jsonl"]
+    for f in files:
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            try:
+                m = json.loads(line)
+            except ValueError:
+                continue
+            if not isinstance(m, dict) or (m.get("kind") not in (None, "task-propose")):
+                continue
+            pl = m.get("payload") if isinstance(m.get("payload"), dict) else m
+            text = pl.get("task_text") or pl.get("summary")
+            tid = m.get("task_id")
+            if isinstance(text, str) and text.strip() and tid:
+                known.setdefault(text_identity(text), tid)
+            if tid:
+                known.setdefault("id:" + tid, tid)
+    return known
+
+
 def extract(handoff: Path) -> list[dict]:
     slug = handoff.stem
     out, n = [], 0
+    seen: dict[str, int] = {}
     for lineno, line in enumerate(handoff.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
         m = OPEN_BOX.match(line)
         if not m:
@@ -109,11 +148,14 @@ def extract(handoff: Path) -> list[dict]:
         n += 1
         text = m.group("text").strip()
         tok = TOKEN.match(text)
-        # Always suffix the line number. Handoffs reuse short tokens (two items
-        # both labelled `P2` is common), and intake is idempotent on task_id, so a
-        # collision would SILENTLY drop the second item rather than erroring.
+        # Always suffix a TEXT hash (not the line number: the task text is the row identity, file:line is only a hint
+        # that rots on every edit). Handoffs reuse short tokens (two items both labelled `P2` is common), and intake is
+        # idempotent on task_id, so a collision would SILENTLY drop the second item. Byte-identical texts in one file
+        # get an ordinal so they stay distinct.
         stem = tok.group("tok") if tok else f"{n:03d}"
-        task_id = f"{slug}--{stem}-L{lineno}"
+        h = text_identity(text)
+        seen[h] = seen.get(h, 0) + 1
+        task_id = f"{slug}--{stem}-T{h}" + (f"-{seen[h]}" if seen[h] > 1 else "")
         task_id = re.sub(r"[^A-Za-z0-9._-]", "-", task_id)[:120]
         lane, gating, reason = classify(text)
         summary = re.sub(r"\s+", " ", re.sub(r"\*\*|`", "", text))[:180]
@@ -147,6 +189,13 @@ def cmd_seed(args: argparse.Namespace) -> int:
     items = extract(handoff)
     seedable = [i for i in items if i["lane"]]
     skipped = [i for i in items if not i["lane"]]
+    # Text-match dedup (PICK-IDENTITY): a box already proposed under ANY id (incl. the old `-L<lineno>` ids) is not
+    # proposed again. Applied before --limit so already-seeded rows do not eat the cap.
+    known = known_seeded(BUS_ROOT)
+    already = [(i, known.get("id:" + i["task_id"]) or known.get(text_identity(i["summary"]))) for i in seedable]
+    already = [(i, t) for i, t in already if t]
+    dup_ids = {id(i) for i, _ in already}
+    seedable = [i for i in seedable if id(i) not in dup_ids]
     if args.limit:
         seedable = seedable[: args.limit]
 
@@ -189,6 +238,10 @@ def cmd_seed(args: argparse.Namespace) -> int:
 
     print(f"{handoff.name}: {len(items)} open, {len(seedable)} to propose, "
           f"{len(skipped)} unclassifiable, {len(refused)} refused by the screener\n")
+    if already:
+        print(f"  = {len(already)} row(s) already proposed (text match, any id scheme): not re-proposed")
+        for i, t in already[: args.show_skipped]:
+            print(f"      {i['task_id']:<52} = {t}")
     if unestimated_hw:
         print(f"  ⚠ {len(unestimated_hw)} HARDWARE-LANE row(s) state no duration, so they can only "
               f"ever be dispatched BY HAND:")
