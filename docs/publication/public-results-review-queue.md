@@ -8,12 +8,23 @@ This queue groups generated public-results rows by the next review action. It do
 
 ## Summary
 
-- Total rows: 374
+- Total rows: 377
+- `publish-candidate-review`: 3
 - `retired_from_public_claims`: 374
 
 ### Applied Review Decisions
 
 - `retired_from_public_claims`: 374
+
+## publish-candidate-review
+
+Next action: Final human review before moving into a public artifact.
+
+| Source line | Section | Entity | Metrics | Protocol status | Action |
+|---|---|---|---|---|---|
+| 1432 | List all runs / CPU Decode Throughput - Serving Lineup Models (production kernel v10) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-92c4b2f171e7] | Qwen3.6-35B-A3B (MTP build) | Decode t/s (median +/- MAD): 57.01 +/- 0.64 (Caveat: these are llama-bench tg128 at depth 0, single stream, 96 threads, no MTP. They are best-case bench figures, not serving throughput.) | protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-92c4b2f171e7] | publish_candidate |
+| 1442 | List all runs / CPU Decode Throughput - Serving Lineup Models (production kernel v10) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-b758c7787cc5] | Qwen3.8-Flash-Next | Decode t/s (median +/- MAD): 25.59 +/- 0.16 (Caveat: these are llama-bench tg128 at depth 0, single stream, 96 threads, no MTP. They are best-case bench figures, not serving throughput.) | protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-b758c7787cc5] | publish_candidate |
+| 1452 | List all runs / CPU Decode Throughput - Serving Lineup Models (production kernel v10) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-94c211362192] | Qwen3-VL-30B-A3B-Instruct (text decode) | Decode t/s (median +/- MAD): 84.42 +/- 1.30 (Caveat: these are llama-bench tg128 at depth 0, single stream, 96 threads, no MTP. They are best-case bench figures, not serving throughput.) | protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-94c211362192] | publish_candidate |
 
 ## retired_from_public_claims
 
