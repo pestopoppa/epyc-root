@@ -1847,7 +1847,12 @@ def contract_of(d, o=None, flags=None):
     decl_cpus = "" if abstract else ws58_cpus(regs)
     if not abstract and not decl_cpus and re.fullmatch(r"q[0-3](,q[0-3])*", regs.replace(" ", "")):
         decl_cpus = ",".join(cpu_list(q) for q in regs.replace(" ", "").split(","))   # regions "q2": that quarter
-    whole = len(quarters_of(cc or decl_cpus, fold=True)) >= 4 and (evidence or gib > 3 * QUARTER_RAM_GIB)
+    # rtg34-r1a 2026-11-11: an abstract-region row (any-cpu-quarter, e.g. --self-claim) with > 72 threads or a declared
+    # host / quiet-host shape and whole-host evidence IS a host row; it fell to multi-quarter(3) and was granted q0-q2
+    # while its own 0-95 claim then waited 600 s on q3. Three quarters cannot host more than 72 threads.
+    dshape = str(d.get("declared_shape") or d.get("shape") or "").strip()
+    whole = ((len(quarters_of(cc or decl_cpus, fold=True)) >= 4 or (threads or 0) > 72 or dshape in ("host", "quiet-host"))
+             and (evidence or gib > 3 * QUARTER_RAM_GIB))
     gpu_tok = {GPU} if (gpu_row or gq == "exclusive" or gpu_touch(d, o)) and not cpu_declared(d, o) else set()
     lock_tokens, floored = set(), False
     if gpu_use and not whole:
