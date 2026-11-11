@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T20:45:51Z",
+  "generated_at": "2026-11-11T20:48:25Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1381,7 +1381,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-10",
-      "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued); H13 e2e bar 1.010 needs operator confirm; vLLM AITER r2; GDN-SHARE-1",
+      "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued, quiet-host); H13 r2 queued (1.010 bar confirmed); vLLM AITER r2 queued; GDN-SHARE-1",
       "open": 138,
       "priority": 0.896,
       "priority_basis": {
@@ -1435,7 +1435,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6023,
+          "line": 6024,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1444,7 +1444,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6103,
+          "line": 6104,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1463,7 +1463,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6400,
+          "line": 6401,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1480,7 +1480,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9617,
+          "line": 9618,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1493,7 +1493,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13967,
+          "line": 13968,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1527,7 +1527,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14179,
+          "line": 14180,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1665,7 +1665,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-11",
-      "next_action": "race-eqv r6 (queued); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
+      "next_action": "publish race-eqv r9 (no ready/ entry); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
       "open": 7,
       "priority": 0.8728,
       "priority_basis": {
@@ -1720,7 +1720,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1560,
+          "line": 1561,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1735,7 +1735,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2717,
+          "line": 2718,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1744,7 +1744,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3089,
+          "line": 3090,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1753,7 +1753,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3602,
+          "line": 3603,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1762,7 +1762,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 3697,
+          "line": 3698,
           "name": "llama-cpp-dsa-contribution",
           "open": 1,
           "readiness": "ready"
@@ -1928,7 +1928,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-11",
-      "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 re-measures r2/r4 queued; v10",
+      "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
       "open": 43,
       "priority": 0.9075,
       "priority_basis": {
@@ -2309,7 +2309,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-11",
-      "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native rows queued; fix W2 keeper residency bug, then run census",
+      "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native DONE (both legs pass); fix W2 keeper residency bug, then run census",
       "open": 62,
       "priority": 0.003,
       "priority_basis": {

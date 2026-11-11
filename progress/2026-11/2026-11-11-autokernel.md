@@ -26,3 +26,12 @@ Filed this wrap-up: ak-c10-q38fn-floor-r3 (inconclusive), r4 (inconclusive), r5 
 - **INF-85 W3** ticked: three v10 P-BENCH-1 rows (57.01 / 25.59 / 84.42 tok/s). No public URL: epyc-web WEB-2 hold.
 - **Keeper fixes by Pipeline:** cap-backfill 407666d71, same-id requeue eea000786.
 - **Filing audit:** no autokernel row is ended-and-unfiled. UNFILED-ENDED are `inf45-judge79-q38-27b-20261111` and `rtg34-r1a-bench-claim-20261111` (owner pipeline-mgmt, not filed here).
+
+## Evening (wrap-up 2026-11-11c)
+- **Filing audit:** no autokernel row is ended-and-unfiled. The one UNFILED-ENDED is `afc-v3c-q38_flash-tools-aggressive-20261111` (owner workspace-f2, not filed here). Already filed today: race-eqv r7/r8 (inconclusive), akx-all-31 cpu r1 (inconclusive), cpu r4 and gpu r4 (pass), c6-features-cpu-r4 (pass). Still queued or running, not ended: ak-q38fn-relianceproof-c10-r5, c10-local-serving-profile-r1, c10-local-code28k-r1, c6-port35186-remeasure-r2, b3-gdn-bf16-c10-20261111-r3, ak-asm-h13-hctail-gpu-20261111-r2, vllm-aiter-gfx90a-gpu-20261111-r2, inf86-cms512-live-probe (running).
+- **Correctness rows reshaped gpu-q3 -> gpu** (race-eqv, b3-gdn r3) so they backfill while q3 is busy.
+- **race-eqv instrument chain:** r7 failed on GDN+VT (fail lines unparsed, negate transform out of domain); r8 on GDN+HD (exemption covered VT only). Fixes: research 7e481ef5f (harness saved), 4d441c131 (all-suite domain exemption, derived-suite exclusion, offline replay test). r9 has no ready/ entry (not published), so it is NOT queued; correcting my earlier report.
+- **AKX-31 judge semantics:** judged against ggml POOL_2D(MAX): CPU trailing NaN survives, HIP fmaxf drops all NaN. Both legs NATIVE_PASS (4ceace312); box already ticked.
+- **H13 smoke fix:** r1 smoke made no GPU contact so publish refused; r2 published with a real residency smoke; operator confirmed the 1.010 e2e bar.
+- **Pipeline keeper fixes:** smoke hold 210dc250a; cap-at-T covers GPU (my earlier statement that it did not was a misreport).
+- Lessons (a)-(e) added to compute-fillers.md.
