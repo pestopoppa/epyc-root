@@ -100,6 +100,7 @@ RECENT_S = 3600   # any write inside a root within the last hour blocks deletion
 budget = dict(b=0, n=0)   # bytes and dirs reaped (or would-be reaped) this pass
 F = '/mnt/raid0/llm/tmp/compute-flags/'; G = F + 'grants/'; R = F + 'ready/'; TMP = '/mnt/raid0/llm/tmp/'
 VAULT = '/mnt/raid0/llm/archive/scratch-vault/'; TRASH = '/mnt/raid0/llm/.trash-reap'
+GRM = '/workspace/scripts/safety/guarded_rm.sh'
 VMAX = 2048 << 20; FMAX = 512 << 20; SMALL = 4 << 20
 MARKERS = ('.epyc-keep', '.epyc-load-bearing', 'KEEP', 'LOAD-BEARING')
 PROTECT = {'compute-flags', 'disk-audit-20261028', 'ws58-loop-audit'}
@@ -330,12 +331,14 @@ def vault(name, root, files, filed_at):
     try:
         r = json.load(open(rec))
         if r.get('digest') == dig and os.path.exists(r['tar']) and sha(r['tar']) == r['tar_sha256']: return True, 'vault ok %s (%d files, %s) digest unchanged' % (r['tar'], len(idx), gib(tot))
-    except Exception: pass
+    except Exception: r = None
+    if r and os.path.exists(r.get('tar', '')) and sha(r['tar']) == r.get('tar_sha256') and any(now - os.lstat(f).st_mtime < RECENT_S for f in files if os.path.lexists(f)):
+        return True, 'vault deferred: keep files written <1h ago (prior verified vault %s)' % r['tar']   # no new version per churn tick
     if MODE == 'dry': return True, 'WOULD-VAULT %d files %s -> %s<YYYY-MM>/%s.tar.gz' % (len(idx), gib(tot), VAULT, name)
     d = VAULT + dt.datetime.utcfromtimestamp(filed_at).strftime('%Y-%m') + '/'
     os.makedirs(d, exist_ok=True)
-    ver = 1
-    while os.path.exists('%s%s.v%d.tar.gz' % (d, name, ver)): ver += 1
+    vrx = re.compile('^' + re.escape(name) + r'\.v(\d+)\.tar\.gz$')   # max+1, not first free slot: pruning leaves holes at the low end
+    ver = 1 + max([0] + [int(m.group(1)) for m in (vrx.match(f) for f in os.listdir(d)) if m])
     tar = '%s%s.v%d.tar.gz' % (d, name, ver)
     with tarfile.open(tar + '.part', 'w:gz') as t:
         for i in idx: t.add(os.path.join(root, i['path']), arcname=i['path'], recursive=False)
@@ -346,7 +349,28 @@ def vault(name, root, files, filed_at):
     open(tar + '.sha256', 'w').write('%s  %s\n' % (ts, os.path.basename(tar)))
     json.dump(dict(root=root, filed_at=filed_at, files=idx, tar_sha256=ts), open(tar[:-7] + '.index.json', 'w'), indent=1)
     json.dump(dict(tar=tar, tar_sha256=ts, digest=dig, n=len(idx)), open(rec, 'w'))
-    return True, 'VAULTED %s (%d files, %s, sha256 %s)' % (tar, len(idx), gib(tot), ts[:16])
+    pr = prune_vault(d, name)
+    return True, 'VAULTED %s (%d files, %s, sha256 %s)%s' % (tar, len(idx), gib(tot), ts[:16], pr)
+def prune_vault(d, name, keep=2):
+    """after a verified new tar: drop versions of `name` older than the newest `keep` (tar, .sha256, .index.json) via guarded_rm
+    (TRASH_ROOT=reap trash; trash-sweep frees it); if guarded_rm fails, move the paths into TRASH."""
+    rx = re.compile('^' + re.escape(name) + r'\.v(\d+)\.tar\.gz$'); vs = sorted(int(m.group(1)) for m in (rx.match(f) for f in os.listdir(d)) if m)
+    old = []
+    for n in vs[:-keep]:
+        for suf in ('.tar.gz', '.tar.gz.sha256', '.index.json'):
+            q = '%s%s.v%d%s' % (d, name, n, suf)
+            if os.path.lexists(q): old.append(q)
+    if not old: return ''
+    os.makedirs(TRASH, exist_ok=True); moved = 0
+    for i in range(0, len(old), 150):
+        chunk = old[i:i + 150]
+        r = subprocess.run(['bash', GRM] + chunk, env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)
+        if r.returncode == 0: moved += len(chunk); continue
+        for q in chunk:
+            if os.path.lexists(q):
+                try: os.replace(q, '%s/%s.%d' % (TRASH, os.path.basename(q), int(now))); moved += 1
+                except OSError: pass
+    return '; pruned %d old version file(s) of %s (kept newest %d)' % (moved, name, keep)
 def delplan(root, ks, prot):
     keepp = set(ks) | set(prot); anc = set()
     for k in keepp:
@@ -455,7 +479,7 @@ def really_delete(tag, root, dels, dbytes, note=''):
     # re-check right before delete (a process may have started since the snapshot)
     chk = subprocess.run(['bash', '-c', 'for q in /proc/[0-9]*; do tr "\\0" " " < $q/cmdline 2>/dev/null | grep -qF "$0/" && exit 3; ls -l $q/fd 2>/dev/null | grep -qF "$0/" && exit 3; done; exit 0', root]).returncode
     if chk != 0: out('BLOCKED', tag, 'process appeared at delete time'); return
-    r = subprocess.run(['bash', '/workspace/scripts/safety/guarded_rm.sh'] + dels, env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)
+    r = subprocess.run(['bash', GRM] + dels, env=dict(os.environ, TRASH_ROOT=TRASH), capture_output=True, text=True)
     moved = re.findall(r'^trashed: .* -> (' + re.escape(TRASH) + r'/[^/\n]+) \(', r.stdout, re.M)
     out('REAPED' if r.returncode == 0 else 'REAP-FAIL', tag, '%d entries %s moved=%d rc=%d %s%s' % (len(dels), gib(dbytes), len(moved), r.returncode, r.stdout.strip().splitlines()[-1][:120] if r.stdout.strip() else r.stderr.strip()[:120], ('; ' + note) if note else ''))
     freed = 0; bad = 0
