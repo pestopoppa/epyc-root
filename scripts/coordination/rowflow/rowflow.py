@@ -4046,6 +4046,7 @@ def write_grant(flags, rid, regions, holds, window_s, lock="", end_cap=None):
 # ---------------------------------------------------------------- D9 capcut requeue (operator: "Requeue same id")
 CAPCUT_MAX = 6            # requeues per row per CAPCUT_WINDOW_S; then the row ends normally
 CAPCUT_WINDOW_S = 86400
+CAPCUT_SLACK_S = 1800     # .ended time may trail the stamped cap by the engine's kill/poll latency (grant already deleted)
 
 
 def capcut_dir(flags):
@@ -4074,6 +4075,28 @@ def clear_capstamp(flags, rid, archive_as=None):
 
 
 def capcut_pending(flags, rid):
+    """Cut at our own drain cap AND not filed/superseded (capcut_closed)."""
+    return capcut_cut(flags, rid) and not capcut_closed(flags, rid)
+
+
+def capcut_closed(flags, rid):
+    """Coordinator guard 2026-11-11: a capcut row is NOT requeued when it is already filed (filing-done/<id>.FILED) or
+    SUPERSEDED (any ready/*.json names it in `supersedes`) - requeueing would duplicate work. Returns the reason or ""."""
+    if os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
+        return "already filed"
+    for mp in glob.glob(os.path.join(flags, "ready", "*.json")):
+        try:
+            with open(mp, errors="replace") as fh:
+                sup = (json.load(fh) or {}).get("supersedes")
+        except (OSError, ValueError, AttributeError):
+            continue
+        for v in (sup if isinstance(sup, list) else [sup]):
+            if rid in re.findall(r"[A-Za-z0-9_.-]+", str(v or "")):
+                return f"superseded by {os.path.basename(mp)[:-5]}"
+    return ""
+
+
+def capcut_cut(flags, rid):
     """True when grants/<id>.ended is the engine's hard-end kill AT THE KEEPER'S OWN drain cap: rc=75 reason=hard-end,
     the grant is cap-stamped and its end= equals the stamped cap. The keeper requeues such a row under the same id;
     filing must not file it. (The same predicate lives in churn/filing.py:capcut_pending - keep them in step.)"""
@@ -4084,9 +4107,28 @@ def capcut_pending(flags, rid):
     if not (re.search(r"(^|\s)rc=75(\s|$)", h) and re.search(r"(^|\s)reason=hard-end(\s|$)", h)):
         return False
     st = head1(capstamp_path(flags, rid)) or ""
-    gl = head1(os.path.join(G, rid + ".grant")) or ""
-    se, ge = re.search(r"\bend=(\S+)", st), re.search(r"\bend=(\S+)", gl)
-    return bool(re.search(r"\bcap=\d+", st) and se and ge and se.group(1) == ge.group(1))
+    return _capcut_matches(st, head1(os.path.join(G, rid + ".grant")) or "", h)
+
+
+def _capcut_matches(st, gl, h):
+    """2026-11-11 fix (afc-v3c-q38_flash-tools-mild-20261111): the launcher (filler_run15.sh end path) DELETES the
+    .grant right after writing .ended, so at requeue time there is normally no grant end= to compare. Grant present:
+    its end= must equal the stamped end (a re-grant without a cap cleared the stamp anyway). Grant gone: the .ended
+    time must be at/after the stamped cap minute (the engine killed it AT the cap) and within CAPCUT_SLACK_S of it."""
+    cm, se = re.search(r"\bcap=(\d+)", st), re.search(r"\bend=(\S+)", st)
+    if not (cm and se):
+        return False
+    ge = re.search(r"\bend=(\S+)", gl)
+    if ge:
+        return se.group(1) == ge.group(1)
+    tm = re.search(r"(?:^|\s)time=(\d{4}-\d\d-\d\dT\d\d:\d\d(?::\d\d)?Z)", h)
+    if not tm:
+        return False
+    t = tm.group(1)
+    fmt = "%Y-%m-%dT%H:%M:%SZ" if t.count(":") == 2 else "%Y-%m-%dT%H:%MZ"
+    te = dt.datetime.strptime(t, fmt).replace(tzinfo=dt.timezone.utc).timestamp()
+    cap = int(cm.group(1))
+    return cap - 60 <= te <= cap + CAPCUT_SLACK_S
 
 
 def capcut_requeue(flags, log=print, now=None):
@@ -4099,7 +4141,7 @@ def capcut_requeue(flags, log=print, now=None):
     out = []
     for e in sorted(glob.glob(os.path.join(G, "*.ended"))):
         rid = os.path.basename(e)[:-6]
-        if rid.startswith(".") or not capcut_pending(flags, rid):
+        if rid.startswith(".") or not capcut_cut(flags, rid):
             continue
         cd = capcut_dir(flags)
         os.makedirs(cd, exist_ok=True)
@@ -4109,6 +4151,11 @@ def capcut_requeue(flags, log=print, now=None):
         hp = os.path.join(cd, rid + ".history.json")
         hist = [float(x) for x in ((load_json(hp) or {}).get("requeued_at") or []) if now - float(x) < CAPCUT_WINDOW_S]
         why = None
+        closed = capcut_closed(flags, rid)
+        if closed:
+            clear_capstamp(flags, rid, archive_as=os.path.join(cd, f"{rid}.{ts}.cap-final"))
+            log(f"CAPCUT-END {rid}: already filed/superseded ({closed}); ends normally")
+            continue
         if not d:
             why = "no ready manifest (withdrawn/moved)"
         elif sf and os.path.exists(sf):

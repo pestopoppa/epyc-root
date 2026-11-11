@@ -99,6 +99,74 @@ class CapcutRequeue(unittest.TestCase):
         self.assertIn("n", filing.ended_unfiled(self.f))
         self.assertEqual(filing.load_end(self.f, "n")[1], 75)
 
+    def test_hardend_cap_admission_grant_deleted_by_launcher(self):
+        """Live 2026-11-11 afc-v3c-q38_flash-tools-mild-20261111: HARD-END-CAP 'admitted by book_s 37800s ahead of
+        21:47Z'; end= floored to T; filler_run15 wrote .ended (rc=75 time=21:47:10Z reason=hard-end) and DELETED the
+        .grant. No CAPCUT-REQUEUE followed because the predicate needed the grant's end=."""
+        rid = "afc-mild"
+        with open(rf.ready_path(self.f, rid), "w") as fh:
+            json.dump({"id": rid, "stop_file": os.path.join(self.f, rid + ".STOP")}, fh)
+        T = (int(time.time()) // 60 + 45) * 60 + 37            # a T that is not on a minute boundary
+        line = rf.write_grant(self.f, rid, "48-71", ["q2"], 37800, end_cap=T)
+        floored = (T // 60) * 60
+        end_iso = time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime(floored))
+        self.assertIn(f"end={end_iso}", line)
+        with open(rf.capstamp_path(self.f, rid)) as fh:
+            self.assertIn(f"end={end_iso}", fh.read())
+        os.remove(os.path.join(self.G, rid + ".grant"))         # filler_run15.sh end path: rm -f "$GRANT"
+        with open(os.path.join(self.G, rid + ".ended"), "w") as fh:
+            fh.write(f"rc=75 time={time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(floored + 10))} reason=hard-end\n"
+                     f"job_id={rid}\nstep=job-run\n")
+        self.assertTrue(rf.capcut_pending(self.f, rid))
+        self.assertTrue(filing.capcut_pending(self.f, rid))
+        self.assertNotIn(rid, filing.ended_unfiled(self.f))
+        self.assertEqual(self.tick(), [rid])
+        self.assertFalse(os.path.exists(os.path.join(self.G, rid + ".ended")))
+        self.assertTrue(any(l.startswith(f"CAPCUT-REQUEUE {rid}") for l in self.logs))
+
+    def test_grant_deleted_but_ended_far_from_cap_stays_ended(self):
+        """A stamp whose cap is far from the .ended time (stale stamp) or an .ended without time= does not requeue."""
+        self.row("z")
+        os.remove(os.path.join(self.G, "z.grant"))
+        with open(os.path.join(self.G, "z.ended"), "w") as fh:
+            fh.write("rc=75 time=2020-01-01T00:00:00Z reason=hard-end\n")
+        self.assertFalse(rf.capcut_pending(self.f, "z"))
+        self.assertFalse(filing.capcut_pending(self.f, "z"))
+        self.assertEqual(self.tick(), [])
+        with open(os.path.join(self.G, "z.ended"), "w") as fh:
+            fh.write("rc=75 reason=hard-end\n")
+        self.assertFalse(rf.capcut_pending(self.f, "z"))
+
+    def test_already_filed_is_not_requeued(self):
+        self.row("f")
+        os.makedirs(os.path.join(self.f, "filing-done"))
+        open(os.path.join(self.f, "filing-done", "f.FILED"), "w").close()
+        self.assertFalse(rf.capcut_pending(self.f, "f"))
+        self.assertFalse(filing.capcut_pending(self.f, "f"))
+        self.assertEqual(self.tick(), [])
+        self.assertTrue(os.path.exists(os.path.join(self.G, "f.ended")))
+        self.assertFalse(os.path.exists(rf.capstamp_path(self.f, "f")))   # stamp archived
+        self.assertTrue(any(l.startswith("CAPCUT-END f: already filed/superseded") for l in self.logs))
+
+    def test_superseded_is_not_requeued(self):
+        self.row("p")
+        with open(rf.ready_path(self.f, "p-r2"), "w") as fh:
+            json.dump({"id": "p-r2", "supersedes": ["p"]}, fh)
+        self.assertFalse(rf.capcut_pending(self.f, "p"))
+        self.assertFalse(filing.capcut_pending(self.f, "p"))
+        self.assertEqual(self.tick(), [])
+        self.assertTrue(os.path.exists(os.path.join(self.G, "p.ended")))
+        self.assertFalse(os.path.exists(rf.capstamp_path(self.f, "p")))
+        self.assertTrue(any(l.startswith("CAPCUT-END p: already filed/superseded") for l in self.logs))
+        # string supersedes with free text counts by exact token; a different id does not
+        self.row("q")
+        with open(rf.ready_path(self.f, "q2"), "w") as fh:
+            json.dump({"id": "q2", "supersedes": "qq (unrelated)"}, fh)
+        self.assertTrue(rf.capcut_pending(self.f, "q"))
+        with open(rf.ready_path(self.f, "q3"), "w") as fh:
+            json.dump({"id": "q3", "supersedes": "q (cut at cap)"}, fh)
+        self.assertFalse(filing.capcut_pending(self.f, "q"))
+
 
 if __name__ == "__main__":
     unittest.main()
