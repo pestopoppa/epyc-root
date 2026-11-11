@@ -16,6 +16,13 @@ but cannot justify a decision. Labels used below:
   the canonical protocol. Hypothesis-forming only.
 - `PARAPHRASE`: no exact number is quoted because the raw rows are not retained.
 
+**What "attestation: pending" means.** The run behind this number has its raw
+logs and a recorded command, but no host-health receipt (a machine-state
+snapshot taken alongside the run) was captured, because that receipt was
+introduced later. So the label says "pending" openly rather than implying a
+check that never happened. Separately, the sample is only n=3, which is why
+the result is stated as "no demonstrable effect" and not as an effect size.
+
 Nothing in this post is a statement about current performance. All throughput
 figures are from a single host (one EPYC 9655, NPS4, 96 cores, governor
 `performance`, NUMA balancing off, THP always) in late April 2026, on a
@@ -93,7 +100,7 @@ wins to collapse, and that made the remaining wins more credible.
 ## The Canonical Recipe (public command shape)
 
 ```text
-taskset -c <all-host-cores> numactl --interleave=all llama-bench \
+taskset -c <all-host-cores> numactl --interleave=all <build>/bin/llama-bench \
   -t <all-host-cores> -fa 1 -mmp 0 -m <model.gguf> -p <prompt_tokens> \
   -n <decode_tokens> -r <repetitions> -o md
 ```
@@ -101,12 +108,17 @@ taskset -c <all-host-cores> numactl --interleave=all llama-bench \
 Environment shape:
 
 ```text
+LD_LIBRARY_PATH=<clang-libomp-first>:<other-runtime-libs>
 OMP_PROC_BIND=spread
 OMP_PLACES=cores
 OMP_WAIT_POLICY=active
 OMP_DYNAMIC=false
-LD_LIBRARY_PATH=<clang-libomp-first>
+GGML_IQK=1
 ```
+
+The wrapper also holds the CPU region for the run, pre-evicts page cache per
+NUMA node, and requires proof of memory placement (no node holding more than
+40% of the pages) before a result is accepted.
 
 Preconditions: no other inference running; governor and NUMA-balancing state
 checked per session; page cache dropped and re-warmed with NUMA interleave;
