@@ -2908,7 +2908,7 @@
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
       "line": 16,
-      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
+      "next_action": "AFC-V3C Q38 verdict; TOOLPERM landing after matrix refresh; NIB2-102.b; NIB2-77 from 11-16; LOOP-54 F2/F4 CI; refactor",
       "track": "non inference backlog"
     },
     "RTG-34": {

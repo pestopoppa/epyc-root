@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T20:53:26Z",
+  "generated_at": "2026-11-11T20:53:53Z",
   "nodes": [
     {
       "age_days": 1,
@@ -3222,7 +3222,7 @@
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-11",
-      "next_action": "Prove NIB2-102.b at next stack start; NIB2-77 removals from 11-16; LOOP-54 F2/F4 CI; refactor track after promotionilot",
+      "next_action": "AFC-V3C Q38 verdict; TOOLPERM landing after matrix refresh; NIB2-102.b; NIB2-77 from 11-16; LOOP-54 F2/F4 CI; refactor",
       "open": 80,
       "priority": 0.8844,
       "priority_basis": {
