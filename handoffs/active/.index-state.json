@@ -830,7 +830,7 @@
       "blocked": 1,
       "closed": 108,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-11",
       "open": 119,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -1547,7 +1547,7 @@
           "closed": 16,
           "gates": [],
           "guarded": 0,
-          "line": 912,
+          "line": 914,
           "markers": 1,
           "name": "repl-session-memory-maturity",
           "open": 9
@@ -1557,7 +1557,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1374,
+          "line": 1376,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1835,
+          "line": 1837,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7

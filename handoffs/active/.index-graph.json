@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T08:38:02Z",
+  "generated_at": "2026-11-11T08:40:27Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1173,7 +1173,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 912,
+          "line": 914,
           "name": "repl-session-memory-maturity",
           "open": 9,
           "readiness": "ready"
@@ -1182,7 +1182,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1374,
+          "line": 1376,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1199,7 +1199,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1835,
+          "line": 1837,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -2140,7 +2140,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2152,7 +2152,7 @@
       "guarded": 0,
       "handoff": "deepseek-v41-flash-evaluation.md",
       "id": "INF-77",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-11",
       "next_action": "W5 closed INVALID; W5d baseline+MMID 10-24 ~10:00Z, C46 j64 repro 10-23 q2; rest held for AK kernel work; W8d ram_admit",
       "open": 120,
       "priority": 0.6069,
