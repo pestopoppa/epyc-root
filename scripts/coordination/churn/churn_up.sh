@@ -43,6 +43,7 @@ MODE=live
 STOP=0
 JAN=""
 SUPERVISE=0
+OBSERVE=0
 WITH_DISPATCHER=0
 for a in "$@"; do case "$a" in
   --dry-run) MODE=dry;;
@@ -50,15 +51,23 @@ for a in "$@"; do case "$a" in
   --stop) STOP=1;;
   --with-dispatcher) WITH_DISPATCHER=1;;
   --supervise-watchdog) SUPERVISE=1;;
+  observe) OBSERVE=1;;
   --janitor=start|--janitor=stop|--janitor=status|--janitor=dry-run) JAN=${a#--janitor=};;
   -h|--help) sed -n 2,33p "$0"; exit 0;;
-  *) echo "usage: churn_up.sh [--with-dispatcher] [--dry-run|--status|--stop [--dry-run]|--supervise-watchdog [--dry-run]|--janitor=start|stop|status|dry-run]" >&2; exit 2;;
+  *) echo "usage: churn_up.sh [--with-dispatcher] [--dry-run|--status|--stop [--dry-run]|--supervise-watchdog [--dry-run]|--janitor=start|stop|status|dry-run]|observe" >&2; exit 2;;
 esac; done
 [ $MODE = status ] && [ $STOP = 1 ] && { echo "usage: --status and --stop are exclusive" >&2; exit 2; }
 KEEPER=ws58-calendar-keeper-v13.sh   # the version churn_up installs and writes into ws58-calendar-keeper.current
 RC=0
 TS=$(date -u +%Y%m%dT%H%M%SZ)
 LOG=$F/churn-up.log
+
+# OBS-CHURN-UP: every liveness probe folds its identity channels through observer_guard.sh into present | absent | unobservable.
+# OG_STATE_DIR must be set BEFORE sourcing: observer_guard.sh defaults it on source (to the repo's logs/), so a later
+# ${OG_STATE_DIR:-...} would never apply and every flags dir (tests included) would share one blind-streak store.
+OG_STATE_DIR=${OG_STATE_DIR:-$F/observer_alerts}
+# shellcheck disable=SC1091
+source "$CO/observer_guard.sh"
 
 say()  { printf '%s\n' "$*"; }
 act()  { if [ $MODE = dry ]; then say "[dry-run] $*"; else say "[do] $*"; printf '%s %s\n' "$(date -u +%FT%TZ)" "$*" >> "$LOG"; fi; }
@@ -225,6 +234,60 @@ for pid in os.listdir("/proc"):
 print(" ".join(sorted(out, key=int)))
 PY
 }
+# argv_scan <path>: exact-path /proc scan with an explicit "cannot see" outcome. Prints "unavailable" when /proc cannot be
+# walked or when not even this probe's own cmdline is readable (a blind scan is not a negative), else the pids (possibly none).
+argv_scan() {
+  python3 -I - "$1" "$$" <<'PY'
+import os, sys
+path, me = sys.argv[1], sys.argv[2]
+d, b = os.path.dirname(path), os.path.basename(path)
+try:
+    pids = [p for p in os.listdir("/proc") if p.isdigit()]
+    open("/proc/self/cmdline", "rb").read()
+except OSError:
+    print("unavailable"); sys.exit(0)
+out, readable = [], 0
+for pid in pids:
+    if pid in (me, str(os.getpid())): continue
+    try:
+        argv = open(f"/proc/{pid}/cmdline", "rb").read().split(b"\0"); readable += 1
+        argv = [a.decode(errors="replace") for a in argv if a]
+    except OSError: continue
+    hit = path in argv
+    if not hit and f"./{b}" in argv:
+        try: hit = os.readlink(f"/proc/{pid}/cwd") == d
+        except OSError: pass
+    if hit: out.append(pid)
+if not readable: print("unavailable"); sys.exit(0)
+print(" ".join(sorted(out, key=int)))
+PY
+}
+# loop_state <name> <pidfile> <marker> <path>: three-valued identity (observer_guard.sh) -> sets LOOP_ST (present|absent|unobservable), LOOP_PIDS, LOOP_PIDFILE_PID; NOT run in a subshell.
+# Channels: (1) pidfile pid, alive AND argv names the marker (pidfile missing/empty = absent, unparsable = unavailable);
+# (2) exact-path argv scan. A live pidfile pid already is `present`, so the scan only speaks when it SEES a holder (a
+# pidfile-less or pid-reused holder -> disagrees with an absent pidfile) or when the pidfile does not already answer.
+# Corrective action (a start) is permitted ONLY on `absent`; `unobservable` alarms and suppresses it.
+loop_state() {
+  local n=$1 pf=$2 mk=$3 path=$4 raw="" p="" st scan
+  og_init "churn_up.$n"; og_round_begin
+  if [ ! -e "$F/$pf" ]; then og_channel pidfile absent "no $pf"
+  elif [ ! -r "$F/$pf" ]; then og_channel pidfile unavailable "$pf unreadable"
+  else
+    raw=$(tr -d ' \n' < "$F/$pf" 2>/dev/null)
+    if [ -z "$raw" ]; then og_channel pidfile absent "$pf empty"
+    elif [[ "$raw" =~ ^[0-9]+$ ]]; then p=$raw
+    else p=$(og_json_pid "$F/$pf"); [ -n "$p" ] || og_channel pidfile unavailable "$pf holds no parsable pid"; fi
+    [ -n "$p" ] && { st=$(og_pid_alive "$p" "$mk"); og_channel pidfile "$st" "pid $p"; }
+  fi
+  scan=$(argv_scan "$path")
+  if [ "$scan" = unavailable ]; then og_channel argv_scan unavailable "/proc not walkable"
+  elif [ -n "${scan// /}" ]; then og_channel argv_scan present "pid(s) $scan"
+  elif [[ " ${OG_CHANNELS[*]-} " != *"pidfile|present"* ]]; then og_channel argv_scan absent "no argv holds $path"; fi
+  LOOP_PIDS=$scan; LOOP_PIDFILE_PID=$p
+  LOOP_ST=$(og_verdict)
+  case $LOOP_ST in present) og_note_sighting; og_clear;; unobservable) og_alarm >&2;; esac
+  return 0
+}
 # pidfile pid (if alive with the marker) plus every exact-argv-path pid, deduplicated
 component_pids() {  # component_pids <pidfile> <marker> <path>
   local p; p=$(pid_of "$F/$1"); { is_proc "$p" "$2" && echo "$p"; for q in $(argv_pids "$3"); do echo "$q"; done; } | sort -un | tr '\n' ' '
@@ -240,8 +303,10 @@ guard_pids() {
 }
 ensure_watchdog_once() {  # idempotent: pidfile+argv, then exact-argv; never touches the keeper
   local pf mk path p dup; IFS='|' read -r pf mk path <<< "$(loop_field watchdog)"
-  p=$(pid_of "$F/$pf"); is_proc "$p" "$mk" && return 0
-  dup=$(argv_pids "$path"); [ -n "$dup" ] && return 0
+  loop_state watchdog "$pf" "$mk" "$path"; case $LOOP_ST in
+    present) return 0;;
+    unobservable) warn "watchdog-guard: cannot observe the watchdog ($(og_why)); not starting one"; RC=1; return 0;;
+  esac
   [ -f "$path" ] || { warn "watchdog-guard: $path is not installed; nothing to start"; return 0; }
   start_bg "$F/$pf" "$F" bash "$path"
 }
@@ -266,12 +331,11 @@ ensure_loops() {
     if [ "$n" = dispatcher ] && [ $WITH_DISPATCHER = 0 ]; then
       say "  dispatcher: NOT started (explicit opt-in only: --with-dispatcher; CHURN-UP-NO-DISPATCHER)"; continue
     fi
-    if is_proc "$p" "$mk"; then say "  $n: running pid $p"
-    else
-      dup=$(argv_pids "$path")
-      if [ -n "$dup" ]; then warn "$n: already running as pid(s) $dup (argv holds $path) but pidfile $pf says '${p:-none}': NOT starting a duplicate"
-      else [ -n "$p" ] && say "  $n: pidfile pid $p is dead or not $mk"; start_bg "$F/$pf" "$cwd" $cmd; fi
-    fi
+    loop_state "$n" "$pf" "$mk" "$path"; case $LOOP_ST in
+      present) if is_proc "$p" "$mk"; then say "  $n: running pid $p"; else say "  $n: running as pid(s) ${LOOP_PIDS:-?} (argv holds $path)"; fi;;
+      unobservable) warn "$n: OBSERVATION BLIND or channels disagree ($(og_why)); pidfile $pf says '${p:-none}', argv pid(s) '${LOOP_PIDS:-none}': NOT starting a duplicate (no corrective action while unobservable)"; RC=1;;
+      *) [ -n "$p" ] && say "  $n: pidfile pid $p is dead or not $mk"; start_bg "$F/$pf" "$cwd" $cmd && { [ $MODE = dry ] || og_note_launch; };;  # a dry-run launch is not a launch: no blind-streak tick
+    esac
     [ "$n" = watchdog ] && { wait_keeper; ensure_guard; }
   done
   ensure_shadow
@@ -332,8 +396,11 @@ status_loops() {
   local l n pf mk cwd cmd path p st d
   for l in "${LOOPS[@]}"; do
     IFS='|' read -r n pf mk cwd cmd path <<< "$l"; p=$(pid_of "$F/$pf")
-    if is_proc "$p" "$mk"; then st="UP   since $(ps -o lstart= -p "$p")"
-    else d=$(argv_pids "$path"); if [ -n "$d" ]; then st="UP WITHOUT PIDFILE: pid(s) $d hold $path (pidfile '${p:-none}')"; else st="DOWN (pidfile pid '${p:-none}')"; fi; RC=1; fi
+    loop_state "$n" "$pf" "$mk" "$path"; case $LOOP_ST in
+      present) if is_proc "$p" "$mk"; then st="UP   since $(ps -o lstart= -p "$p")"; else st="UP WITHOUT PIDFILE: pid(s) $LOOP_PIDS hold $path (pidfile '${p:-none}')"; RC=1; fi;;
+      unobservable) st="UNOBSERVABLE ($(og_why))"; RC=1;;
+      *) st="DOWN (pidfile pid '${p:-none}')"; RC=1;;
+    esac
     printf '  %-16s %-8s %s\n' "$n" "${p:-none}" "$st"
   done
   p=$(guard_pids); if [ -n "$p" ]; then printf '  %-16s %s\n' watchdog-guard "UP pid(s) $p"; else printf '  %-16s DOWN (restart: churn_up.sh)\n' watchdog-guard; RC=1; fi
@@ -416,6 +483,10 @@ EOF
 }
 
 # ---------------------------------------------------------------- main
+if [ $OBSERVE = 1 ]; then  # OBS-CHURN-UP battery entrypoint: one three-valued probe, no side effects beyond the guard's breadcrumb
+  loop_state "${CHURN_OBS_NAME:-probe}" "${CHURN_OBS_PIDFILE:?CHURN_OBS_PIDFILE}" "${CHURN_OBS_MARKER:?CHURN_OBS_MARKER}" "${CHURN_OBS_PATH:?CHURN_OBS_PATH}"
+  echo "state=$LOOP_ST"; case $LOOP_ST in present) exit 0;; absent) exit 1;; *) exit 3;; esac
+fi
 say "churn_up $MODE  $(date -u +%FT%TZ)  repo=$REPO ($(git -C "$REPO" rev-parse --short HEAD 2>/dev/null)) flags=$F"
 [ -d "$F" ] || { [ $MODE = live ] && mkdir -p "$F" || { fail "$F missing"; }; }
 if [ $SUPERVISE = 1 ]; then  # LOOP-12: the watchdog's supervisor loop (one pass under --dry-run)
