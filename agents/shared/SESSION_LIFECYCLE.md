@@ -111,6 +111,14 @@ dashboard sees checkbox state only (axiom above).
 - **Nothing may auto-trigger the full routine.** There is no `Stop`, `SessionEnd` or `PreCompact`
   hook, no cron and no nightshift task that calls it, and there must not be one. A per-task wrap-up
   is invoked by the session doing the work.
+- **Ticket/PR close includes the same task-owned scratch gate.** Before closing a completed
+  ticket, its main inventories the exact declared scratch roots and lane worktrees, including
+  `codex-ni*` and `ni0X` lanes, and records which remain needed for review, evidence or follow-on
+  work. Release only the main-approved paths through the existing cleanup gate in
+  `agents/commands/wrap-up.md` §7b; retain any path refused by that gate. The close record carries
+  the cleanup result or the named continuing owner/purpose. Prefixes identify inventory, never
+  deletion authority. This is a close-time step of the owning task, never a hook, cron, broad
+  sweep or automatic invocation of the full wrap-up routine.
 - **A main dispatches a wrap-up subagent at major work boundaries, unprompted (operator, 2026-10-21).**
   Examples: the end of an intake campaign's Stage 4, a champion milestone. When the main's own compaction is looming it dispatches the wrap-up PREEMPTIVELY, before the context is lost (operator, 2026-10-21). This is a session
   action taken by the main, not a hook, so it does not conflict with the no-auto-trigger rule above.
