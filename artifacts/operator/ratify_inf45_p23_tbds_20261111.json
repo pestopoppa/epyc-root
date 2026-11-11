@@ -1,0 +1,25 @@
+{
+  "schema": "epyc.measurement_protocol_amendment.v1",
+  "decision": "INF45-P23-TBDS",
+  "gate_id": "RATIFY-INF45-P23-TBDS-20261111",
+  "operator_decision": "explicit human ratification of the one-file additive amendment",
+  "ratified_at": "2026-11-11T14:38:03Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "targets": [
+    "measurement/protocols/bench-cpu.md"
+  ],
+  "rule": "Fixes P-BENCH-PLACEMENT-1 / MRG-1 TBDs 3 (concurrency floor 0.75), 4 (closed-loop arrival, >=4xT requests), 5 (anchors only from production traffic), 7 (starved < 0.25 x cell median), 8 (starved fraction <= 0.05, p10/p50 >= 0.50), 9 (context rungs to served -c), 10 (real ROCm co-residency), 13 (prodopt local_fraction UNMEASURED, observation-grade), 14 (hybrid KV layers from live load).",
+  "not_changed": "one additive block only; no lines rewritten or deleted; earlier ratified blocks untouched",
+  "patch": {
+    "path": "artifacts/operator/inf45-p23-tbds-20261111.patch",
+    "sha256": "c2acdab2bfa5be483bf001b2b3cb65ac057a2d806aba4cf8d7fe4835a48a693c"
+  },
+  "state": {
+    "measurement/protocols/bench-cpu.md": {
+      "sha256_after": "0279771fe0eaecd4e5b401bc5a8437e9e8fe3247041a36fb74f3b011c3c4c9a8"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_inf45_p23_tbds_20261111.receipt.json",
+  "applied_by": "artifacts/operator/ratify_inf45_p23_tbds_20261111.sh"
+}

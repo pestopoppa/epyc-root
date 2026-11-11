@@ -271,6 +271,20 @@ Not fixed here (still TBD): 3, 4, 5, 7, 8, 9, 10, 13, 14.
 - **A5 — context depth is a required claim field (P2-4).** The claim grammar below carries `depth=<n>`: resident context tokens at the measured decode, read from the server's `n_tokens` (`stop processing: n_tokens`), never from the first `prompt eval time` line. Same model, recipe and placement span 40.22 tok/s at 28 tokens to 17.23 at 35k, so a claim without depth is non-conforming.
 <!-- RATIFY-INF45-P24-20261110 END -->
 
+<!-- RATIFY-INF45-P23-TBDS-20261111 BEGIN -->
+**Ratified values (RATIFY-INF45-P23-TBDS-20261111).** Fixes the remaining TBDs of MRG-1 section 5 / protocol section 7 (TBD 11 closed 2026-07-30 by committed evidence; 1, 2, 6, 12 ratified by RATIFY-INF45-P23-20261109). Pre-registered, binding on every conforming run from ratification on; earlier claims are not retro-certified.
+
+- TBD 3 `ACHIEVED_CONCURRENCY_FLOOR` = **0.75**. A rung is reportable only if achieved/nominal concurrency (sum(predicted_ms) / union window) >= 0.75; below = rung VOID. Evidence: data/numa_placement/20260730-P-BENCH-PLACEMENT-1/e5_rederived.md section 4 (1.00/0.86/0.80/0.77/0.47 at T=1/4/8/16/32).
+- TBD 4 `OCCUPANCY_DESIGN` = **closed-loop arrival**. Each of the T clients resubmits on completion; at least 4 x T completed requests per rung; ramp-up and drain tails are excluded from the measurement window; distinct prompts per request (A1). The TBD 3 floor gates the result. Evidence: e5_rederived.md section 4 (a fixed 43-prompt batch drained to 0.47 at T=32).
+- TBD 5 `ROLE_ANCHORS` = **rule, no values**. A role anchor is derived from production traffic under TBD 6 (median of >= 50 samples, band +/-10%), never from a bench invocation. A role without one fails MRG-1 Step 3; the 2026-07-30 prodopt medians are candidates only. Evidence: only frontdoor has one (35.7 tok/s, n=154).
+- TBD 7 `STARVATION_THRESHOLD` = **0.25 x cell median**. A stream whose decode rate is below 0.25 x the cell median is starved. Evidence: slotcheck_results.txt (short prompts min/median >= 0.98; 8k np=4 min 0.80 vs median 20.05, np=8 min 0.32 vs 12.60).
+- TBD 8 `MAX_STARVED_FRACTION` = **0.05**, `MIN_P10_OVER_P50` = **0.50**. MRG-1 Step 7 PASSES only if both hold. Evidence: slotcheck_results.txt and ratification_queue_20260730.md B.5-B.6 (short 0% starved, p10/p50 0.99; 8k 25-29% starved, p10/p50 0.035-0.065).
+- TBD 9 `CONTEXT_RUNGS` = **0.5k / 8k / 32k, then every power of two from 64k below the role's served `-c`, plus the served `-c` itself**. The served `-c` is read from the registry at run time. Evidence: MRG-1 Step 6 standing minimum; frontdoor curve 40.22 to 17.23 tok/s from 28 to 35k tokens.
+- TBD 10 `CORESIDENCY_FIDELITY` = **real ROCm llama-server from the production GPU kernel store**. A Step 8 figure that gates a decision comes from a real GPU-lane llama-server (`kernels/production/gpu`, HIP residency proved by non-zero VRAM sampled during the run). The gpuoverlap/gpuoverlap2 proxies are bracketing, observation-grade only.
+- TBD 13 `PRODOPT_LOCAL_FRACTION` = **UNMEASURED; observation-grade**. The 2026-07-30 prodopt/shapes_prodopt figures carry `local_fraction UNMEASURED`, may not gate a decision, and are not backfilled. A rerun with numa_maps capture is needed before any of them is quoted as conforming.
+- TBD 14 `HYBRID_KV_LAYERS` = **read from a live load**. The KV layer count of an SSM/MoE hybrid is the number of layers the server allocates KV for, read from its load log. Until read, `ggufmeta.py`'s all-layers figure is quoted as an UPPER BOUND, never as exact. Evidence: the 27B hybrid holds KV on 16 of 64 layers (progress/2026-10/2026-10-03-workspace-ec.md).
+<!-- RATIFY-INF45-P23-TBDS-20261111 END -->
+
 
 **Claim grammar.**
 `<value> tok/s <per-stream|aggregate(T=n)>, spec-dec <on|off>, arm <A0..A4>, depth=<n> [P-BENCH-PLACEMENT-1, n=<reps>, <date>, attest <ref>]`
