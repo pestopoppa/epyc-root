@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 567
+      "open": 565
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 470
+      "open": 469
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 2,
-      "closed": 119,
+      "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 61,
+      "open": 60,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 2,
-          "closed": 73,
+          "closed": 74,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,7 +95,7 @@
           "line": 941,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 49
+          "open": 48
         }
       ]
     },
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 339,
+      "closed": 341,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 11,
+      "open": 10,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -637,11 +637,11 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 350,
+      "total": 351,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 146,
+          "closed": 147,
           "gates": [],
           "guarded": 0,
           "line": 19,
@@ -654,7 +654,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2456,
+          "line": 2458,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 0
@@ -664,7 +664,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2464,
+          "line": 2466,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 4
@@ -674,7 +674,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2941,
+          "line": 2943,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -689,7 +689,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3386,
+          "line": 3388,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4901,
+          "line": 4903,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,14 +721,14 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5561,
+          "line": 5563,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 3
         },
         {
           "blocked": 0,
-          "closed": 28,
+          "closed": 29,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -737,17 +737,17 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5752,
+          "line": 5754,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6308,
+          "line": 6310,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 197,
+      "closed": 198,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 43,
+      "open": 42,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 156,
+          "closed": 157,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,7 +1229,7 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 37
+          "open": 36
         },
         {
           "blocked": 0,
@@ -1955,7 +1955,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1686,
+          "line": 1687,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2774,
+          "line": 2776,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4322,
+          "line": 4324,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4955,
+          "line": 4957,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5488,
+          "line": 5490,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0

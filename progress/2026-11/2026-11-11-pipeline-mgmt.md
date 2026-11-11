@@ -86,3 +86,30 @@ No other-owner rows completed and unfiled. Verdict JSONs are in `/mnt/raid0/llm/
 ### Follow-ups
 - [ ] Republish R1a as a whole-host successor row (pipeline-mgmt). Tracked in the R1a box note.
 - [ ] Grade judge79 with run_judge_suite.py report (zero compute, pipeline-mgmt). Tracked in the judge79 box note.
+
+## Wrap-up 4 (work since root 603722b39 / 0bf695bc5)
+
+### Filing (20:44Z)
+No pipeline-mgmt row was completed and unfiled. `rtg34-r1a-bench-claim-r2-20261111`, `inf45-e5v2-stageb-r2-20261111` and `inf45-interference-r1-20261111` are all GRANTABLE/QUEUED and not yet placed, so they have no results.
+Other owners, left unfiled: workspace-f2 has `afc-v3c-q38_flash-tools-aggressive-20261111` (ended and complete, unfiled).
+
+### Handoffs
+| Item | Action |
+|---|---|
+| ROWFLOW-SMOKE-COMPLETE-GENERAL | ticked. Fix `f0b66044a` and its regression test, live in deployed rowflow `28a295d32` (DEPLOYED.json 16:29Z) |
+| Smoke hold (operator "Hold smokes", `210dc250a`) | new ticked record line in the RTG-34 section, live in `28a295d32` |
+| R1a | note: whole-host self-claim fix `4b282344b` is live in `28a295d32` (operator "Land + deploy"). r2 is republished with regions 0-95 and queued. Box stays open |
+| judge79 | verified only: already ticked at `358fcdcfb` (210/237, 88.6%; 6-suite 168/183 vs 165/183 on 08-02) |
+| E5 r2 and interference | status notes in numa-placement-and-contention: queued, no result |
+| GPU-lane cap-at-T | no bug. Regression test `3f2c4c6e6` (operator "Extend to GPU"). No handoff box records cap-at-T, so no note was added there |
+| IDLE-WHY lists every ready row (`f138b95ab`) | committed (operator "Land + deploy"). NOT confirmed live: deployed is still `28a295d32`, and deploy run `deploy-20261111T204323Z` was still in its unit tests with no `deploy_rowflow: OK` |
+
+### Coordination incidents
+- **AutoKernel GPU-idle false alarm.** AutoKernel reported the GPU as idle while its rows waited. The GPU was in fact held by `agg1-arms-gpu-20261111` (gpu-quiet, 100%). The real blockers of AK's GPU rows (`ak-asm-h13-hctail-gpu-r2`, `b3-gdn-bf16-c10-r3`, `vllm-aiter-gfx90a-gpu-r2`) are "waiting on GPU (gpu-quiet:agg1-arms-gpu)". Its CPU rows wait on keeper placement behind the host/quiet-host rows ahead of them in rank order. Nothing was broken.
+- **Cap ack not reused for the GPU lane.** The classifier denied applying the operator's CPU cap-at-T ack to the GPU lane. pipeline-mgmt asked, and the operator answered explicitly "Extend to GPU". The regression tests then landed (`3f2c4c6e6`).
+- **Relayed D9 ack refused.** A subagent refused to commit on a D9 ack that was relayed rather than given directly. pipeline-mgmt then committed itself on the operator's direct ack.
+- **Containment hook and a $VAR write target.** The filesystem-containment hook denied a write whose target was a `$VAR`. Rewriting it with literal absolute paths resolved it.
+
+### Follow-ups
+- [ ] Confirm the IDLE-WHY deploy (`deploy_rowflow: OK` naming a sha that contains `f138b95ab`) and note it under RTG-34 (pipeline-mgmt).
+- [ ] File the three pipeline-mgmt r2/interference rows when they end (pipeline-mgmt).
