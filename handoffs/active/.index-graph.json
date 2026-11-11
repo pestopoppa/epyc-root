@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T20:54:25Z",
+  "generated_at": "2026-11-11T21:29:53Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1921,15 +1921,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 198,
-      "dispatchable": 42,
+      "closed": 199,
+      "dispatchable": 41,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-11",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 43,
+      "open": 42,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1963,7 +1963,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 36,
+          "dispatchable": 35,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1972,7 +1972,7 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 37,
+          "open": 36,
           "readiness": "blocked"
         },
         {
