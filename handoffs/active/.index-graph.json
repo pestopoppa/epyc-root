@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T14:34:38Z",
+  "generated_at": "2026-11-11T14:39:47Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1536,18 +1536,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 233,
-      "dispatchable": 20,
+      "closed": 234,
+      "dispatchable": 19,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
-      "open": 21,
+      "open": 20,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1567,18 +1567,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 14,
+          "dispatchable": 13,
           "gates": [],
           "line": 41,
           "name": "numa-placement-and-contention",
-          "open": 14,
+          "open": 13,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1678,
+          "line": 1679,
           "name": "batched-decode-measurement",
           "open": 3,
           "readiness": "ready"
@@ -1587,7 +1587,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2763,
+          "line": 2764,
           "name": "numa-placement-defect-20260730",
           "open": 3,
           "readiness": "ready"
@@ -1596,7 +1596,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4311,
+          "line": 4312,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
@@ -1627,7 +1627,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 4944,
+          "line": 4945,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1649,7 +1649,7 @@
             "INF-45#shape-keyed-contention-gating",
             "INF-87"
           ],
-          "line": 5477,
+          "line": 5478,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
@@ -2290,7 +2290,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [
         "INF-06",
@@ -2304,15 +2304,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 118,
-      "dispatchable": 62,
+      "closed": 119,
+      "dispatchable": 61,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); fix W2 keeper residency bug, then run census; reissue Q38FN floor window; wire ALL-31",
-      "open": 64,
+      "open": 63,
       "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
@@ -2329,11 +2329,11 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 2,
+          "open": 1,
           "readiness": "blocked"
         },
         {
@@ -2431,20 +2431,20 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-48"
       ],
-      "closed": 0,
-      "dispatchable": 2,
+      "closed": 1,
+      "dispatchable": 1,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "publication-upstream-program.md",
       "id": "INF-85",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "next_action": "W2 final scrub + host-attestation decision; W3 adjudicate 18 retained rows",
-      "open": 2,
+      "open": 1,
       "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
@@ -3309,7 +3309,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 336,
@@ -3318,7 +3318,7 @@
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
       "open": 14,
       "priority": 0.711,

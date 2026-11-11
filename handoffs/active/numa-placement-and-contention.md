@@ -433,7 +433,8 @@ the machine.
       `ingest_long_context` have no anchor, so
       `P-BENCH-PLACEMENT-1`'s **mandatory anchor gate has nothing to gate
       against**. Derive them the same way — not from a bench invocation.
-- [ ] **P2-3. Ratify the 14 TBDs in
+- [x] **P2-3. Ratify the 14 TBDs in
+  - *(pipeline-mgmt 2026-11-11.)* RATIFIED by operator: RATIFY-INF45-P23-TBDS-20261111, root `70ba71701` (TBDs 3,4,5,7,8,9,10,13,14; 1,2,6,11,12 previously ratified or closed). [no-belief: governance ratification, not a measurement]
       [`../../artifacts/operator/ratification_queue_20260730.md`](../../artifacts/operator/ratification_queue_20260730.md).**
       **A gate whose threshold is unset cannot fail.** Human-amendment-only —
       prepare, present, park; never self-apply. P1-2 is blocked on item B.2

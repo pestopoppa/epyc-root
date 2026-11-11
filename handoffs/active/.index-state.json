@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 572
+      "open": 569
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 2,
-      "closed": 118,
+      "closed": 119,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
-      "open": 62,
+      "last_advanced": "2026-11-11",
+      "open": 61,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -58,13 +58,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 3,
+          "closed": 4,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -627,7 +627,7 @@
       "blocked": 0,
       "closed": 336,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "open": 14,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1926,10 +1926,10 @@
     },
     "numa-placement-and-contention.md": {
       "blocked": 1,
-      "closed": 233,
+      "closed": 234,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
-      "open": 20,
+      "last_advanced": "2026-11-11",
+      "open": 19,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1942,20 +1942,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 110,
+          "closed": 111,
           "gates": [],
           "guarded": 0,
           "line": 41,
           "markers": 1,
           "name": "numa-placement-and-contention",
-          "open": 14
+          "open": 13
         },
         {
           "blocked": 0,
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1678,
+          "line": 1679,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2763,
+          "line": 2764,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4311,
+          "line": 4312,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4944,
+          "line": 4945,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5477,
+          "line": 5478,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
@@ -2023,10 +2023,10 @@
     },
     "publication-upstream-program.md": {
       "blocked": 0,
-      "closed": 0,
+      "closed": 1,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
-      "open": 2,
+      "last_advanced": "2026-11-11",
+      "open": 1,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
