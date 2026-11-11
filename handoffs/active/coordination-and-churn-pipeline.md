@@ -2428,6 +2428,14 @@ gate on WS-2**; **WS-4 is independent of the other three.**_
   2.1.263"** wherever `asyncRewake`, `additionalContext` or `PreCompact` are relied on — note the
   **stale npm-global 2.1.241 on this host**, which is not the version these facts were verified
   against. `intake-1325#record`, `intake-1331#record`, `intake-1333#record`.
+  - **2026-11-11 note (spike prepared, NOT run; no tick).** Host is Claude Code **2.1.321**. Official hooks docs
+    (code.claude.com/docs/en/hooks) confirm: an `asyncRewake` hook that exits 2 "wakes Claude immediately even when
+    the session is idle"; stderr (stdout if stderr empty) is shown to Claude as a system reminder; headless `-p`
+    kills async hooks at teardown. **Correction to fact (a):** timeout is NOT unenforced for `asyncRewake` hooks
+    (docs: "still enforces `timeout` on a hook you run with `asyncRewake`"; default 600 s) - only plain `async` is
+    exempt, so the waiter needs a large timeout and re-arm at each Stop. Each Stop spawns a separate waiter process.
+    The spike needs an idle interactive TUI, which an agent may not start; scratch dir, waiter script, negative-control
+    settings variants and PASS/FAIL steps are at `/mnt/raid0/llm/tmp/ws4-spike/OPERATOR_STEPS.md`.
 
 **Design input, UNMEASURED — gates nothing (2026-09-07).** Shared-transcript in-thread coordination is
 a **token multiplier by construction**: each participant re-reads the growing conversation and carries
