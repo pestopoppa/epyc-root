@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-0.1 corpus + hand-verified golds",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.1 step A (28-doc freeze + verified golds + Phase 1 PREDECLARED)",
       "track": "internal kb rag"
     },
     "REV-02": {

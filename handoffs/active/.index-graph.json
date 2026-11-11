@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T09:40:48Z",
+  "generated_at": "2026-11-11T09:49:32Z",
   "nodes": [
     {
       "age_days": 1,
@@ -2517,7 +2517,7 @@
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-11",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-0.1 corpus + hand-verified golds",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.1 step A (28-doc freeze + verified golds + Phase 1 PREDECLARED)",
       "open": 17,
       "priority": 0.6185,
       "priority_basis": {
