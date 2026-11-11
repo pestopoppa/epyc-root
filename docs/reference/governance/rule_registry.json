@@ -175,6 +175,13 @@
      "mode": "block",
      "event": "PreToolUse",
      "matcher": "Bash"
+    },
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_git_clean_untracked.py",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
     }
    ],
    "notes": ""
