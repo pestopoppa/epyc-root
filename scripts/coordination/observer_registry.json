@@ -410,10 +410,23 @@
     {
       "id": "churn_up",
       "script": "scripts/coordination/churn/churn_up.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/coordination-and-churn-pipeline.md",
-      "task_marker": "OBS-CHURN-UP",
-      "notes": "Identifies pipeline loops by pidfile pid + argv marker and by exact installed-path argv element over /proc/*/cmdline (never a name pattern). A blind read (unreadable /proc) reports DOWN, not dead-forever: it never relaunch-loops (one-shot command, and it refuses a duplicate when any exact-path argv match exists). Adopt observer_guard.sh three-valued state under OBS-CHURN-UP."
+      "contract": "v1",
+      "notes": "OBS-CHURN-UP adopted. Every loop probe (ensure_loops, status_loops, watchdog-guard) folds two channels through observer_guard.sh: the pidfile pid (alive AND argv marker; unparsable = unavailable) and an exact-path argv scan over /proc (unavailable when /proc is not walkable). present = no action; absent = start permitted; unobservable (channels disagree, or a channel is blind) = loud alarm and NO start. Launch notes og_note_launch (blind streak). `observe` runs one probe from CHURN_OBS_* env; the sandbox battery drives it with a pidfile-shaped heartbeat and a real stand-in process. Registry row retired its owning_handoff/task_marker with the flip (v1 rows carry neither; origin: churn-pipeline.md moved-box note).",
+      "sandbox": {
+        "env": {
+          "EPYC_ROOT": "{root}",
+          "CHURN_REPO": "{root}",
+          "CHURN_FLAGS": "{tmp}/flags",
+          "CHURN_OBS_PIDFILE": "hb.json",
+          "CHURN_OBS_MARKER": "{mark}",
+          "CHURN_OBS_PATH": "{tmp}/{mark}.sh",
+          "OG_STATE_DIR": "{tmp}/alerts"
+        },
+        "heartbeat": "{tmp}/flags/hb.json",
+        "observe_argv": [
+          "observe"
+        ]
+      }
     },
     {
       "id": "rowflow_filler_run15_kill_job",
