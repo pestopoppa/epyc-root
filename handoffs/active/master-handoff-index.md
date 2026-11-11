@@ -127,7 +127,7 @@ nobody is moving.
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
 | inference-research | 16 | 578 | 50 | 2026-11-03 |
-| pipeline-integration | 1 | 15 | 0 | 2026-11-10 |
+| pipeline-integration | 1 | 17 | 0 | 2026-11-11 |
 | research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
 | routing-and-optimization | 9 | 472 | 14 | 2026-11-05 |

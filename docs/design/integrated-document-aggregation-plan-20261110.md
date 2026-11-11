@@ -1,6 +1,6 @@
 # Integrated document aggregation plan: exhaustive QA over 1M+ token corpora
 
-**Status**: design only, rev 2, 2026-11-10 (operator-approved; no compute run). Tracked by `## Track: integrated-aggregation` in [`handoffs/active/knowledge-pipelines.md`](../../handoffs/active/knowledge-pipelines.md) (boxes AGG-0.1 to AGG-0.5).
+**Status**: design only, rev 2, 2026-11-10 (operator-approved; no compute run). Tracked by `## Track: integrated-aggregation` in [`handoffs/active/knowledge-pipelines.md`](../../handoffs/active/knowledge-pipelines.md) (boxes AGG-0.1 to AGG-0.5 and AGG-1.1 to AGG-1.5).
 
 Rev 2 (operator revision): §(b) is now ONE integrated pipeline over the current document flow with a cost-based
 planner; SLIDERS closes as **superseded**; constructed golds need hand-verification; Phase 0 also tests the
@@ -230,3 +230,37 @@ New code ≈ 1.5-2.2k lines Python plus prompts [speculation]; nothing from SLID
 ## Phase 0 result (2026-11-11)
 
 Mechanical verdict `go_phase_1` under PREDECLARED sha256 `976a5fe87e3db33d6a5e4547ee4bb6cae324f44d107980342b62f7b6212b8bc9`, no kill gate tripped: M1 0.92; M2 P-large 0.55 vs B1 0.20 on the 20 aggregation questions (+35 pp against the 25 pp gate, about 3 SE; P-large single-fact 0.40); M3 prefill ratio 0.31 and 19.4 calls per 100 chunks; M4 median 2 calls, 510 prefill; M5 parity holds (0 accuracy difference, +0 calls, +180 prefill max, no index built). Caveats: fixes were made post-data after the first run failed (`superseded_v2_not_viable`, both results kept); n=20 questions on one 10-filing corpus; the verdict spans r2/r3/r4 in one resumed job dir. Owner: knowledge-pipelines.md AGG-0.4 / AGG-0.5.
+
+---
+
+## Phase 2 integration decision package (2026-11-11, for the operator; no decision taken)
+
+**Status.** Prepared under AGG-0.5 after Phase 0 returned `go_phase_1`. The decision is not due now: it blocks only Phase 2 wiring, and the AGG-1.1 to AGG-1.5 boxes in `knowledge-pipelines.md` run first. It is due when the Phase 1 gates (M1 >= 0.75, M4 unchanged, backfill <= 100 calls, mid-size parity as M5) have been read. Nothing below changes production behaviour; `ORCHESTRATOR_FEATURE_AGG_LAYER` stays default-off and no existing module imports `src/aggregation/`.
+
+**What is being decided.** How the aggregation layer (store + L1/L2 index registry + L3/L4 facts + typed planner) joins the one document flow. The Phase 2 scope in §(c) names four edits: `context_bundle.py` reads L1/L2 from the store (today `:580-636` rebuilds per request); the planner replaces the document branch of `routing_decision.py:229` (the token-count rule stays as the fallback, never "unavailable = answered"); a `facts_query` REPL tool; TD-11 (`typed-decision-plane.md`) owns the route policy.
+
+**Constraints that fix the option space.** Local-only (no cloud baselines); maximum efficiency (nothing built below ~60k tokens, planner skipped at C <= 60k and Q = 1); ONE integrated document stack, not a second system by stealth; schema work evaluates Jev-style typed/constrained outputs (the L4 grammar and the catalog-to-GBNF SQL grammar already are that) and a REPL-retrieval alternative.
+
+### Options
+
+| | Option | What changes | Gain | Cost / risk |
+|---|---|---|---|---|
+| A | **Full cut-over** | All four edits land together behind one flag; planner owns document routing from day one | Fastest to one stack; no dual maintenance | Biggest blast radius on a hot path (`routing_decision.py:229`); Phase 0 evidence is 10 docs, n=20 aggregation questions, post-data fixes; a regression shows up in live traffic first |
+| B | **Staged, shadow first (recommended)** | Step 1: `context_bundle` reads L1/L2 from the store (also a saving for today's flow). Step 2: the planner runs in shadow, writing `decision_receipt.v1` and the would-be route beside the live route, no routing effect. Step 3: `facts_query` REPL tool behind the flag. Step 4: the planner takes over the document branch only after shadow parity and the Phase 1 gates, TD-11 recording the route policy | Same end state as A; each step is separately revertable; shadow data supplies the held-out threshold curve the design still lacks ([speculation] thresholds today) | Longer calendar; shadow adds one planner call (~1.5 s, [measured] routing-program.md:3122) on non-trivial document requests; needs a TD-11 owner for the policy step |
+| C | **Opt-in side-car** | Aggregation stays an explicit tool or endpoint for requests that ask for exhaustive aggregation; `routing_decision.py` untouched | Lowest risk | Two document paths forever, which breaks the ONE-stack constraint; the small-corpus parity guarantee (M5) is never exercised on live traffic |
+| D | **Stop at Phase 1** | Keep the code flag-off, record Phase 1 results, do not integrate | Zero live risk, no calendar | Leaves the measured aggregation lift (P-large 0.55 vs B1 0.20, Phase 0) unused; the persistent L1/L2 saving in `context_bundle` is also forgone |
+
+### Recommendation
+
+Option B: ship the store-backed L1/L2 read first (a saving even with the planner off), run the planner in shadow to collect receipts, and let the planner take over the document branch only after Phase 1 passes and shadow routing matches. It reaches the ONE-stack end state of A with per-step rollback, and avoids the permanent second path of C.
+
+### What would change the recommendation
+
+- Phase 1 trips a gate (M1 < 0.75, M4 grows, backfill > 100 calls, or mid-size parity fails): choose D, or hold at B step 1 only. A failed gate goes into the AGG-1.x box that owns it, not into this package.
+- Shadow routing disagrees with the live route on single-fact or small-corpus requests: stay at step 2 and fix the size rules before any takeover; the M5 "planner costs nothing on small corpora" property is the stop condition.
+- The operator wants aggregation only on request: choose C and accept the second path knowingly.
+
+### Open items that do not block the decision
+
+- Store engine: the Phase 0 store is stdlib sqlite (`src/aggregation/store.py`); DuckDB is optional and a dependency decision (`pyproject.toml:65`). It affects Phase 2 only if SQL over L3 outgrows sqlite at 25-30 docs; AGG-1.1 reports the query latency.
+- Model roles: Phase 0 used Qwen3.6-35B-A3B for extraction and Qwen3.8-27B for audit and answers. Phase 2 inherits the role bindings from the registry; no role change is proposed here.
