@@ -43,10 +43,11 @@ class DrainByEstimate(unittest.TestCase):
         self.assertEqual(rf.plan.last_drain[1], T)
         self.assertEqual(rf.plan.hard_end, {"race-eqv-gpu-r3": T})
 
-    def test_book_s_past_T_waits(self):
-        # audit 2026-11-10 #3: book_s = 0.75 * 2.8 h = 2.1 h > 2 h to T (1.8 h now books 1.35 h and is admitted, capped)
+    def test_book_s_past_T_is_capped_when_cap_ok(self):
+        # D9 2026-11-11 (operator "Cap backfill at T"): book_s 2.1 h > 2 h to T, but min_window 300 s fits: capped at T
         a, _, _ = self.run_plan([wide(), cand("long", [{rf.GPU}], est=2.8 * H)])
-        self.assertEqual(a, [])
+        self.assertEqual({c["id"] for c, _ in a}, {"long"})
+        self.assertEqual(rf.plan.hard_end, {"long": T})
         a, _, _ = self.run_plan([wide(), cand("was-long", [{rf.GPU}], est=1.8 * H)])
         self.assertEqual({c["id"] for c, _ in a}, {"was-long"})
         self.assertEqual(rf.plan.hard_end, {"was-long": T})
@@ -73,6 +74,44 @@ class DrainByEstimate(unittest.TestCase):
         a, _, _ = self.run_plan([wide_q, cand("gpu-long", [{rf.GPU}], est=600)])
         self.assertEqual({c["id"] for c, _ in a}, {"gpu-long"})
         self.assertEqual(rf.plan.hard_end, {})
+
+
+class CapBackfillAtT(unittest.TestCase):
+    """D9 2026-11-11: the afc-v3b-q38_flash-tools-*-r3 case - book_s 27000 s, min_window 3600 s, drain T 2 h away."""
+
+    def afc(self, rid, minwin=3600):
+        c = cand(rid, [{rf.GPU}], est=27000, window=27000, minwin=minwin)
+        c["book_s"] = 27000
+        return c
+
+    def test_long_book_row_with_min_window_in_gap_is_placed_capped_at_T(self):
+        a, _, _ = rf.plan(FREE, [wide(), self.afc("afc-mild")], 1000, now=NOW, grant_ends=[T], region_ends=ends(T))
+        self.assertEqual({c["id"] for c, _ in a}, {"afc-mild"})
+        self.assertEqual(rf.plan.hard_end, {"afc-mild": T})
+
+    def test_min_window_beyond_gap_still_waits(self):
+        a, _, _ = rf.plan(FREE, [wide(), self.afc("afc-big", minwin=2 * H)], 1000, now=NOW, grant_ends=[T],
+                          region_ends=ends(T))
+        self.assertEqual(a, [])
+        self.assertEqual(rf.plan.hard_end, {})
+
+    def test_drain_row_still_takes_host_at_T(self):
+        rf.plan(FREE, [wide(), self.afc("afc-mild")], 1000, now=NOW, grant_ends=[T], region_ends=ends(T))
+        self.assertEqual(rf.plan.hard_end["afc-mild"], T)
+        a, _, _ = rf.plan(FREE | {"q0", "q1"}, [wide(), self.afc("afc-medium")], 1000, now=T, grant_ends=[],
+                          drain_prev={"drain-host": T}, region_ends={})
+        self.assertEqual([c["id"] for c, _ in a], ["drain-host"])
+
+    def test_rank_reservation_caps_instead_of_reserving_when_cap_ok(self):
+        better = cand("better", [{"q0", "q2"}], rank=10, shape="multi-quarter(2)", window=H)
+        lower = self.afc("lower-long", minwin=600)
+        lower["options"] = [frozenset({"q2"})]; lower["rank"] = 60
+        a, _, _ = rf.plan({"q2", "q3"}, [better, lower], 1000, now=NOW, grant_ends=[NOW + H])
+        self.assertEqual({c["id"] for c, _ in a}, {"lower-long"})
+        self.assertEqual(rf.plan.hard_end.get("lower-long"), NOW + H)
+        lower["min_window_s"] = 2 * H
+        a, _, _ = rf.plan({"q2", "q3"}, [better, lower], 1000, now=NOW, grant_ends=[NOW + H])
+        self.assertEqual(a, [])
 
 
 class OverrunSafety(unittest.TestCase):

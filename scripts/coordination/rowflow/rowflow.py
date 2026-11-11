@@ -2384,10 +2384,11 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
             skips.append((h, why))
             continue
         T = max(later)
-        if now + dur > T or (now + hold_s(c) > T and not cap_ok(c, now, T)):
+        over = now + dur > T or now + hold_s(c) > T
+        if over and not cap_ok(c, now, T):
             reserved |= need
             holds.append((h, T))
-        elif now + hold_s(c) > T:   # admitted by its estimate: its grant ends at T on these regions (hard-end cap)
+        elif over:   # D9 2026-11-11: overruns T but a T-capped grant clears its min window: its grant ends at T (hard-end cap)
             plan.caps.append((c["id"], need, T))
     return reserved, holds, skips
 
@@ -2466,10 +2467,11 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     while pending:
         placed = None
         for c in pending:
-            late = drain is not None and c is not drain and now + book_s(c) > T
-            capd = drain is not None and c is not drain and not late and now + hold_s(c) > T
-            if capd and not cap_ok(c, now, T):   # a cap below its min window would be refused at admission: window rule
-                late, capd = True, False
+            # D9 2026-11-11 (operator "Cap backfill at T"): a row whose booking or hold overruns T is admitted capped at T
+            # when the cap clears its min window (cap_ok); only a row the cap would starve below min_window stays late
+            over = drain is not None and c is not drain and (now + book_s(c) > T or now + hold_s(c) > T)
+            late = over and not cap_ok(c, now, T)
+            capd = over and not late
             opts = _fits(c, free, ram, gpu_grant_open)
             if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
                 opts = [o for o in opts if not (o & need_r)]
@@ -2505,7 +2507,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             break
         c, o = placed
         caps = [t for rid, need, t in plan.caps if rid == c["id"] and need & o]
-        if drain is not None and c is not drain and now + hold_s(c) > T and o & need_r:
+        if drain is not None and c is not drain and (now + hold_s(c) > T or now + book_s(c) > T) and o & need_r:
             caps.append(T)
         if caps:
             plan.hard_end[c["id"]] = min(caps)

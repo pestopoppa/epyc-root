@@ -34,7 +34,7 @@ def incident_free():
 class RankInversion(unittest.TestCase):
     def setUp(self):
         self.noise = cand("m4-gpu-aa-noise-20261104", NOISE_OPT, 1, 300, ports=[18792])
-        self.yarn = cand("codex-ni-yarn-e1-mem-chain-r2-20261104", YARN_OPT, 80, 4800, ports=[18438])
+        self.yarn = cand("codex-ni-yarn-e1-mem-chain-r2-20261104", YARN_OPT, 80, 4800, ports=[18438], min_window_s=1000 * 3600)  # D9 2026-11-11: min_window above the gap, so the cap fails cap_ok and the row stays late
 
     def test_incident_replay_lower_row_not_granted_the_gpu(self):
         out, _, pend = rf.plan(incident_free(), [self.yarn, self.noise], 1000, now=NOW, grant_ends=[NOW + 1080])

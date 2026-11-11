@@ -32,7 +32,7 @@ def run(cands, free):
 class BusyFractionDrain(unittest.TestCase):
     def test_low_busy_quiet_host_row_does_not_drain_the_host(self):
         qh = cand("qh-4pct", ALL, 1, shape="quiet-host", busy_fraction=0.04)
-        q = cand("quarter-row", QUARTER_OPTS, 50)
+        q = cand("quarter-row", QUARTER_OPTS, 50, min_window_s=1000 * 3600)  # D9 2026-11-11: min_window above the gap, so the cap fails cap_ok and the row stays late
         placed, pend, drain, low = run([qh, q], {"q0", "q1"})
         self.assertIsNone(drain)
         self.assertEqual(placed, ["quarter-row"])          # the free quarter is used, not held empty for the 4% row
@@ -41,7 +41,7 @@ class BusyFractionDrain(unittest.TestCase):
 
     def test_unset_busy_fraction_is_one_and_still_drains(self):
         qh = cand("qh-unknown", ALL, 1, shape="quiet-host")
-        q = cand("quarter-row", QUARTER_OPTS, 50)
+        q = cand("quarter-row", QUARTER_OPTS, 50, min_window_s=1000 * 3600)  # D9 2026-11-11: min_window above the gap, so the cap fails cap_ok and the row stays late
         placed, pend, drain, low = run([qh, q], {"q0", "q1"})
         self.assertEqual(drain[0]["id"], "qh-unknown")     # control: the drain rule itself is kept
         self.assertEqual(placed, [])                       # a 3000 s quarter row would end after T: not backfilled

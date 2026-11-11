@@ -36,7 +36,7 @@ class Plan(unittest.TestCase):
         self.assertEqual(out, [])
         self.assertEqual(rf.plan.last_drain[0]["id"], "npd1")
         # an unmarked low-busy q3 row is still held back by the drain
-        gx = cand("plain", [cx_opt("74-75")], rank=55, busy=0.05, est=7200)
+        gx = {**cand("plain", [cx_opt("74-75")], rank=55, busy=0.05, est=7200), "min_window_s": 1000 * 3600}  # D9 2026-11-11: min_window above the gap, so the cap fails cap_ok and the row stays late
         out, _, _ = rf.plan(free, [npd, gx], 1000, now=now, grant_ends=[now + 1800])
         self.assertEqual(out, [])
 

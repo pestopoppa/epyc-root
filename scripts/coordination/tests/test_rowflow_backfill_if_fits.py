@@ -47,7 +47,7 @@ class BackfillIfFits(unittest.TestCase):
 
     def test_row_ending_after_the_wide_start_waits(self):
         """book_s = 0.75 * 14 h = 10.5 h > the 10 h start: waits."""
-        a, idle, _ = self.run_plan([wide(), cand("q2-14h", [{"q2"}], est=14 * H)], lsa_ends(NOW + 10 * H), [NOW + 10 * H])
+        a, idle, _ = self.run_plan([wide(), {**cand("q2-14h", [{"q2"}], est=14 * H), "min_window_s": 1000 * 3600}], lsa_ends(NOW + 10 * H), [NOW + 10 * H])
         self.assertEqual(ids(a), set())
         self.assertIn("draining for host c7-wide", idle["q2"])
 
@@ -62,7 +62,7 @@ class BackfillIfFits(unittest.TestCase):
         """A long grant on regions the wide row does not need never pushes its start later."""
         ends = lsa_ends(NOW + 2 * H)
         ends[rf.GPU] = NOW + 30 * H
-        a, _, _ = self.run_plan([wide(), cand("q2-3h", [{"q2"}])], ends, [NOW + 2 * H, NOW + 30 * H])
+        a, _, _ = self.run_plan([wide(), {**cand("q2-3h", [{"q2"}]), "min_window_s": 1000 * 3600}], ends, [NOW + 2 * H, NOW + 30 * H])
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 2 * H)
         self.assertEqual(ids(a), set())   # 3 h ends after the 2 h start: waits
 
@@ -72,7 +72,7 @@ class BackfillIfFits(unittest.TestCase):
         ends = lsa_ends(NOW + 10 * H)
         for r in rf.expand({"q1"}):
             ends.pop(r)   # q1 held by a foreign region-lock hold: no known end
-        a, _, _ = self.run_plan([wide(), cand("q2-14h", [{"q2"}], est=14 * H)], ends, [NOW + 10 * H])
+        a, _, _ = self.run_plan([wide(), {**cand("q2-14h", [{"q2"}], est=14 * H), "min_window_s": 1000 * 3600}], ends, [NOW + 10 * H])
         self.assertEqual(ids(a), set())
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 10 * H)
         a, _, _ = self.run_plan([wide(), cand("q2-12h", [{"q2"}], est=12 * H)], ends, [NOW + 10 * H])
@@ -102,7 +102,7 @@ class BackfillIfFits(unittest.TestCase):
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 10 * H)
 
     def test_future_persisted_drain_still_only_moves_earlier(self):
-        a, _, _ = self.run_plan([wide(), cand("q2-3h", [{"q2"}])], lsa_ends(NOW + 10 * H), [NOW + 10 * H],
+        a, _, _ = self.run_plan([wide(), {**cand("q2-3h", [{"q2"}]), "min_window_s": 1000 * 3600}], lsa_ends(NOW + 10 * H), [NOW + 10 * H],
                                 drain_prev={"c7-wide": NOW + 2 * H})
         self.assertAlmostEqual(rf.plan.last_drain[1], NOW + 2 * H)
         self.assertEqual(ids(a), set())
