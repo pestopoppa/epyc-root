@@ -310,7 +310,12 @@ PYEOF
   ok "receipt checker passes"
   g "$WT" add -- "$RECEIPT_REL" "$INDEX_REL" "$SCRIPT_REL"
   staged="$(g "$WT" diff --cached --name-only HEAD | sort)"
-  want="$(printf '%s\n' "$RECEIPT_REL" "$INDEX_REL" "$SCRIPT_REL" | sort)"
+  # the script itself is staged only when it differs from HEAD (it is already on main once committed)
+  if g "$WT" diff --cached --quiet HEAD -- "$SCRIPT_REL"; then
+    want="$(printf '%s\n' "$RECEIPT_REL" "$INDEX_REL" | sort)"
+  else
+    want="$(printf '%s\n' "$RECEIPT_REL" "$INDEX_REL" "$SCRIPT_REL" | sort)"
+  fi
   [ "$staged" = "$want" ] || die "root index holds an unexpected path set; not committed: $staged"
   g "$WT" commit -q -m "RATIFIED $GATE_ID: accept Q38FN C10 floors (signed by $SIGNER)" \
     -m "Research commit: $RES_COMMIT. Receipt: $RECEIPT_REL." -m "$TRAILERS" || die "root commit failed (hook?); re-run."
