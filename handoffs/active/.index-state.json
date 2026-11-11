@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 575
+      "open": 577
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -75,7 +75,7 @@
             "INF-65#autokernel-champion-aggregate"
           ],
           "guarded": 0,
-          "line": 26,
+          "line": 27,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 11
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 940,
+          "line": 941,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 49
@@ -1189,7 +1189,7 @@
       "closed": 12,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 6,
+      "open": 8,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1198,7 +1198,7 @@
       },
       "row_id": "INF-86",
       "state": "active",
-      "total": 18
+      "total": 20
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
