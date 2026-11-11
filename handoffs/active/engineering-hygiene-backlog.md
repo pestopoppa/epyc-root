@@ -2608,6 +2608,11 @@ Validation:
   - The registry edit is held by the orchestrator pre-commit contention-matrix freshness check; that matrix is stale for unrelated reasons. Refresh it, or land within the sign-off.
   - Prepared groundwork, uncommitted: worktree `/mnt/raid0/llm/worktrees/f2-toolperm-doc` has `ToolPermissions.all_tools`, the executor.py LEGACY note and a parity test. Snapshot script: `/mnt/raid0/llm/tmp/toolperm_snapshot.py`.
   - Owner workspace-f2.
+- [ ] **LINEUP-CTX-DEPTH-CURVE [inference] — after the NEXT production kernel promotion (v11), measure decode versus context depth for the three lineup models.** Models: Qwen3.6-35B-A3B Q8_0, Qwen3.8-Flash-Next UD-IQ4_XS, Qwen3-VL-30B-A3B Q4_K_M.
+  - Why: INF-85 W3 r3 (2026-11-11) published tg128 at depth 0, single stream, 96t, no MTP: 57.01, 25.59 and 84.42 tok/s. That is a best case, not serving throughput.
+  - Gated on the v11 promotion: operator 2026-11-11, "we'll do the context-depth curve after the next production kernel promotion". Do not run it on v10.
+  - When it runs: P-BENCH-1 with `-d` depths of roughly 0, 4k, 16k and 32k, n=10, quiet-host.
+  - Owner workspace-f2.
 - [ ] **AFC-V3C-PROD-TOOLS [inference] — suite v3c: the v3b harness with each role's PRODUCTION tool set, resolved from the enforcement path.** Generator: `tests/compliance/agent_file/gen_role_tools.py`, landed in 8363a8fff. Two models:
   - Qwen3.6-35B-A3B-MTP-Q8_0 (worker_general): `tools_worker_general_prod.json`, 26 tools. Rows `afc-v3c-q36_35b-tools-{none,mild,medium,aggressive}-20261111`, published now.
   - Qwen3.8-Flash-Next-UD-IQ4_XS (architect_general): rows `afc-v3c-q38_flash-tools-{...}`, published only after TOOLPERM-DENY-DEFAULT fixes architect_general's allowlist.
