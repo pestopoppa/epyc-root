@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T14:07:26Z",
+  "generated_at": "2026-11-11T14:11:21Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1930,7 +1930,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-11",
-      "next_action": "C10 floor r5 (25% guard, 2-sample persistence) pending; keep iqk Q8_0 prefill ON in C11; production v10",
+      "next_action": "C10 floor accept script 8fa7b645b pending operator run; C11 skinny-det closed (accept nondeterminism); iqk Q8_0 prefill ON in C11; v10",
       "open": 44,
       "priority": 0.9075,
       "priority_basis": {
@@ -2469,7 +2469,7 @@
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-11",
-      "next_action": "r2 NONE_OBSERVED (0/35); 10/15 turns fall back to first checkpoint; then G4, G5; v11 fold verdict",
+      "next_action": "INF-86-CMS512 stack-change (min-step 512, 3 ckpt roles, applying) + INF-86-TEMPLATE re-render (landing); then G4, G5; v11 fold verdict",
       "open": 8,
       "priority": 0.003,
       "priority_basis": {

@@ -2735,7 +2735,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "C10 floor r5 (25% guard, 2-sample persistence) pending; keep iqk Q8_0 prefill ON in C11; production v10",
+      "next_action": "C10 floor accept script 8fa7b645b pending operator run; C11 skinny-det closed (accept nondeterminism); iqk Q8_0 prefill ON in C11; v10",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
@@ -2832,7 +2832,7 @@
       "id": "INF-86",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "r2 NONE_OBSERVED (0/35); 10/15 turns fall back to first checkpoint; then G4, G5; v11 fold verdict",
+      "next_action": "INF-86-CMS512 stack-change (min-step 512, 3 ckpt roles, applying) + INF-86-TEMPLATE re-render (landing); then G4, G5; v11 fold verdict",
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     "INF-87": {
