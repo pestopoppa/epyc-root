@@ -191,7 +191,7 @@ def test_negative_control_strict_reserve_fails_backfill_incident(work):
     old = os.path.join(work, "strict-reserve-cand")
     shutil.copytree(CAND, old, ignore=shutil.ignore_patterns("__pycache__", "*.bak*"))
     src = os.path.join(old, "rowflow.py")
-    text, n = re.subn(r"late = drain is not None and c is not drain and now \+ .*\n",
+    text, n = re.subn(r"late = over and not cap_ok\(c, now, T\)\n",
                       "late = drain is not None and c is not drain\n", open(src).read(), count=1)
     assert n == 1, "the drain fit check (late = ...) was not found in the candidate"
     open(src, "w").write(text)

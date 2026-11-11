@@ -825,7 +825,7 @@ def sc_backfill_if_fits(path):
 def sc_backfill_reserve_binds(path):
     """Counter-case: a row that would END AFTER the whole-host row's earliest feasible start may not take its regions."""
     rows = _backfill_rows(gpu=False)
-    long_q2 = row("bf-q2-long", regions="any-of q2", extra="make -j 24", est=20 * 3600, rank=60)
+    long_q2 = row("bf-q2-long", regions="any-of q2", extra="make -j 24", est=20 * 3600, rank=60, man={"min_window_s": 100 * 3600})  # D9 2026-11-11: a T-cap would starve it below min_window, so it stays late
     rows = {k: v for k, v in rows.items() if k not in ("bf-q2-build", "bf-q3-build")}
     rows["bf-q2-long"] = long_q2
     lsa = {k: rows[k] for k in ("lsa-r8-dense", "lsa-r8-pca")}
@@ -974,8 +974,8 @@ def sc_foreign_hold_keeps_drain(path):
                      "baseline_ref": "replay fixture: whole-host serving floor"})
     q1 = row("busy-q1", regions="any-of q1", extra="make -j 24", est=3600, rank=50)
     q2 = row("busy-q2", regions="any-of q2", extra="make -j 24", est=3600, rank=50)
-    agg0 = row("agg0-l3-load", regions="any-of q0", extra="make -j 24", est=6 * 3600, rank=60)
-    afc = row("afc-v3", regions="any-of q3", extra="make -j 24", est=3 * 3600, rank=60)
+    agg0 = row("agg0-l3-load", regions="any-of q0", extra="make -j 24", est=6 * 3600, rank=60, man={"min_window_s": 100 * 3600})  # D9 2026-11-11: a T-cap would starve it below min_window, so it stays late
+    afc = row("afc-v3", regions="any-of q3", extra="make -j 24", est=3 * 3600, rank=60, man={"min_window_s": 100 * 3600})  # D9 2026-11-11: a T-cap would starve it below min_window, so it stays late
     short = row("short-q0", regions="any-of q0", extra="make -j 24", est=1800, rank=70)
     world = {"foreign": {GPU: "foreign-kfd"}, "kfd": {4242: 8 << 30}}
     held = {"busy-q1": q1, "busy-q2": q2}
