@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 473
+      "open": 475
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -654,7 +654,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 2441,
+          "line": 2446,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 1
@@ -664,7 +664,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2448,
+          "line": 2453,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 4
@@ -674,7 +674,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2925,
+          "line": 2930,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -689,7 +689,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3370,
+          "line": 3375,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4885,
+          "line": 4890,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,7 +721,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5545,
+          "line": 5550,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5734,
+          "line": 5739,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 1
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6290,
+          "line": 6295,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -863,7 +863,7 @@
       "closed": 300,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 78,
+      "open": 80,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 378,
+      "total": 380,
       "tracks": [
         {
           "blocked": 0,
@@ -942,7 +942,7 @@
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 7
+          "open": 9
         }
       ]
     },
@@ -1955,7 +1955,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1670,
+          "line": 1676,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2755,
+          "line": 2761,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4303,
+          "line": 4309,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4936,
+          "line": 4942,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5469,
+          "line": 5475,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.1 step A (28-doc freeze + verified golds + Phase 1 PREDECLARED)",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.1 step B (runner wiring, then ingest + arms rows)",
       "track": "internal kb rag"
     },
     "REV-02": {
