@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 567
+      "open": 566
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1926,10 +1926,10 @@
     },
     "numa-placement-and-contention.md": {
       "blocked": 1,
-      "closed": 235,
+      "closed": 236,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 18,
+      "open": 17,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1942,20 +1942,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 112,
+          "closed": 113,
           "gates": [],
           "guarded": 0,
           "line": 41,
           "markers": 1,
           "name": "numa-placement-and-contention",
-          "open": 12
+          "open": 11
         },
         {
           "blocked": 0,
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1684,
+          "line": 1686,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2772,
+          "line": 2774,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4320,
+          "line": 4322,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4953,
+          "line": 4955,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5486,
+          "line": 5488,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0

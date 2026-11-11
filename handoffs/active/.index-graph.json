@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T16:12:29Z",
+  "generated_at": "2026-11-11T16:26:49Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1538,15 +1538,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 235,
-      "dispatchable": 18,
+      "closed": 236,
+      "dispatchable": 17,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
       "last_advanced": "2026-11-11",
       "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
-      "open": 19,
+      "open": 18,
       "priority": 0.0751,
       "priority_basis": {
         "basis": "T7 non-inference best open item (N): Note this regression is independent of ngram \u2014 it reproduces on `draft-mtp`",
@@ -1566,18 +1566,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 11,
           "gates": [],
           "line": 41,
           "name": "numa-placement-and-contention",
-          "open": 12,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1684,
+          "line": 1686,
           "name": "batched-decode-measurement",
           "open": 3,
           "readiness": "ready"
@@ -1586,7 +1586,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2772,
+          "line": 2774,
           "name": "numa-placement-defect-20260730",
           "open": 3,
           "readiness": "ready"
@@ -1595,7 +1595,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4320,
+          "line": 4322,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
@@ -1625,7 +1625,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 4953,
+          "line": 4955,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1647,7 +1647,7 @@
             "INF-45#shape-keyed-contention-gating",
             "INF-87"
           ],
-          "line": 5486,
+          "line": 5488,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
