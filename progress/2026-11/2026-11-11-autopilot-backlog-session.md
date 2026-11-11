@@ -15,3 +15,5 @@
 - Cleanup: the abandoned Group A worktree was force-removed without its backup being saved because a save command was blocked. Content is fully recoverable from main `9047ad47f` plus the intact source worktree `vb-belief-park-20261108`. All old branches deleted.
 - Shared-clone dirty files `.opencode/plugins/filesystem-containment.ts` and `scripts/hooks/tests/test_harness_guard_parity.py` are not this session's; referred to Pipeline Management with a caution about V2 opencode.
 - Re-verified on origin/main: VB-AK-R23-4-SWEEP-WIRE ticked; PIPE-EVE-VIDYA-GROUP-A ticked; PaddleOCR precondition present in AP-HOLD-RELEASE-REVIEW; INF-87 owned once (inference-research-index.md).
+- AGG Phase 0 verdict recorded: `agg0-arms-gpu-20261110-r4` PASS, `go_phase_1` (M1 0.92; M2 0.55 vs B1 0.20, +35 pp; M3 0.31 / 19.4 calls per 100 chunks; M4 median 2 calls; M5 holds) under PREDECLARED `976a5fe8...`. AGG-0.4 ticked in knowledge-pipelines.md; design doc has a Phase 0 result section. AGG-0.5 and AGG-1.x not started. Caveats: post-data fixes after the failed first run, n=20 on one corpus, verdict spans r2/r3/r4.
+

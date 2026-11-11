@@ -224,3 +224,9 @@ document branch of `routing_decision.py:229`; `facts_query` REPL tool; TD-11 own
 New code ≈ 1.5-2.2k lines Python plus prompts [speculation]; nothing from SLIDERS' orchestration is vendored.
 
 ---
+
+---
+
+## Phase 0 result (2026-11-11)
+
+Mechanical verdict `go_phase_1` under PREDECLARED sha256 `976a5fe87e3db33d6a5e4547ee4bb6cae324f44d107980342b62f7b6212b8bc9`, no kill gate tripped: M1 0.92; M2 P-large 0.55 vs B1 0.20 on the 20 aggregation questions (+35 pp against the 25 pp gate, about 3 SE; P-large single-fact 0.40); M3 prefill ratio 0.31 and 19.4 calls per 100 chunks; M4 median 2 calls, 510 prefill; M5 parity holds (0 accuracy difference, +0 calls, +180 prefill max, no index built). Caveats: fixes were made post-data after the first run failed (`superseded_v2_not_viable`, both results kept); n=20 questions on one 10-filing corpus; the verdict spans r2/r3/r4 in one resumed job dir. Owner: knowledge-pipelines.md AGG-0.4 / AGG-0.5.
