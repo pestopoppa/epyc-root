@@ -4,33 +4,27 @@
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1386,
+    "progress": 1387,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 5,
+      "added": 1,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-11T01:30:29Z",
+    "at": "2026-11-11T20:48:50Z",
     "scope_paths": [
-      "docs/guides/agent-workflows/compute-fillers.md",
-      "handoffs/active/autokernel-akx-program.md",
-      "handoffs/active/autokernel-loop.md",
-      "handoffs/active/hybrid-checkpoint-prompt-reuse.md",
-      "handoffs/active/kernel-champion-and-promotion.md",
-      "handoffs/active/rocm-kernel-authoring.md",
-      "progress/2026-11/2026-11-10-autokernel.md"
+      "progress/2026-11/2026-11-11-workspace-f2.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-11T01:30:29Z",
+  "scan_time": "2026-11-11T20:48:50Z",
   "schema_version": 1,
-  "source_set_hash": "e0e875ac7c49c972386874c0e038585d74146b7496a84c0aa169f2a133f70612",
+  "source_set_hash": "734558d0fa3307d4896e145cf43ab66c4a8d66c0e677c68d8506b13100349e92",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16809,6 +16803,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "70fcc433456449450f41b7d1ecd32c001211859db2b5d696617083e48f07c7f5",
+      "modified": "2026-11-11T20:46:29Z",
+      "path": "progress/2026-11/2026-11-11-workspace-f2.md",
+      "size": 3020,
+      "title": "2026-11-11 workspace-f2: agent-file compression with tools (v3b/v3c), tool-permission trace, INF-85 W3 lineup rows",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-09T21:31:46Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -20497,7 +20499,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2558,
+  "total_new": 2559,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
