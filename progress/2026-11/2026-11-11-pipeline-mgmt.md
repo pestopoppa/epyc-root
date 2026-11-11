@@ -58,3 +58,31 @@ No boxes were ticked: none of the rows is owned by pipeline-mgmt. [no-belief: fi
 Boxes ticked this wrap-up (pipeline-mgmt-owned): REG-ENF-1, REG-ENF-2, DP-4 (coordination-and-churn-pipeline.md); INF-45 P1-8 and W2 (numa-placement-and-contention.md). W6 has a PARTIAL note and stays open. [no-belief: tooling/plumbing, not results]
 
 Filing re-audit 14:32Z: UNFILED-ENDED 1, `afc-v3b-q38_flash-tools-none-r2-20261111` (f2, just finished). Left to its owner.
+
+## Wrap-up 3 (work since root 21078443f)
+
+### Filing (15:55Z)
+| Row | Verdict | Evidence |
+|---|---|---|
+| `inf45-judge79-q38-27b-20261111` | pass (capture only) | 79/79 captured ok, `/mnt/raid0/llm/tmp/inf45-judge79-q38-27b-20261111/out/result.json`; grade (Claude-as-Judge, per suite) still to run |
+| `rtg34-r1a-bench-claim-20261111` | fail | bench rc 1: region-lock TIMEOUT at 600 s on q3, held by f2 filler `afc-v3c-q36_35b-tools-mild`. The grant booked 0-71 while bench_canonical pins 0-95. Booking-shape defect, not a claim/release defect |
+| `inf45-e5v2-stageb-r1-20261111` | already filed SUPERSEDED by `-r2` (filing.supersede, 15:26Z) | — |
+
+No other-owner rows completed and unfiled. Verdict JSONs are in `/mnt/raid0/llm/tmp/pm-filing-20261111/`.
+
+### Handoffs
+- Ticked in coordination-and-churn-pipeline.md: OBS-CHURN-UP (`1ffdb6d93`), Re-anchor picks on row identity (`9f5b6c5ed`), FM-9 (README `ab1f1d38d`, operator ratify `fd21d6476`; guards rc 0, cite-check rc 0). Ticked in numa-placement-and-contention.md: P2-4 (operator ratify `a0e248d40`). All carry `[belief: cc]` or `[no-belief]`.
+- Notes added: R1a FAIL (box open, republish as whole-host); E5 Stage-B now r2 (`421845e63`); interference row queued; capacity fitter `268c9895a`; MI210 eval-lane design `1ca21d7c4`; judge79 capture pass (grading pending).
+- Verified only: P2-3 (`70ba71701`), FM-4 (`0ae751280`, unknown rate 53%, open), WS-4 (`740414d8f`), contention-matrix refresh (already noted under TOOLPERM-DENY-DEFAULT, engineering-hygiene-backlog).
+- ROWFLOW-SMOKE-COMPLETE-GENERAL left open. The fix `f0b66044a` is on origin/main, but the deployed rowflow is `eea000786` (DEPLOYED.json at 15:27:58Z) and no newer `deploy_rowflow: OK` was found.
+- Drain cap-at-T (`407666d71`) and same-id requeue after a cap cut (`eea000786`): no open box in engineering-hygiene-backlog or coordination-and-churn-pipeline names them, so nothing was annotated.
+
+### Coordination
+- P2-4 was already ratified (`a0e248d40`).
+- The AutoKernel "host idle" reports were explained by three things: the quiet-host inf85 grant, smoke GPU locks, and an unpublished AK backlog. AutoKernel was told to publish it.
+- The INF-85 W3 r3 results were relayed to AutoKernel.
+- New memory: a ratify script must be apply-tested before it is handed over, and given as one single-line command.
+
+### Follow-ups
+- [ ] Republish R1a as a whole-host successor row (pipeline-mgmt). Tracked in the R1a box note.
+- [ ] Grade judge79 with run_judge_suite.py report (zero compute, pipeline-mgmt). Tracked in the judge79 box note.
