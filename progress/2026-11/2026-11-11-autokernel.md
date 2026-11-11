@@ -9,3 +9,4 @@
 
 ## Filing audit (2026-11-10/11)
 Filed this wrap-up: ak-c10-q38fn-floor-r3 (inconclusive), r4 (inconclusive), r5 (fail), ak-mmq-h10b-dense-ctxstate-bracket-20261110-r2 (inconclusive, STOPPED duplicate of the filed pass). Boxes AK-C10-Q38FN-FLOOR and AK-MMQ-H10b stay open (floor registration pending operator script; H10b has further arms). UNFILED-ENDED 7 = 4 autokernel (above) + 3 operator-adhoc-ops-20261105 rows (pip02-r36-english-run-20261107, vidya-kvq-v10-sweep-20261107, vidya-r234-native-sweep-20261104), not filed here.
+- 2026-11-11 operator exception for row `ak-q38fn-relianceproof-c10-20261110-r5` (operator decision tool 2026-11-11, covers r5 only): one AutoKernel loop turn on Q38FN UD-IQ4_XS CPU at C10 `7f1bd044b`, regions 0-95, for VB-REFOCUS-NONEMPTY-READ-PROOF only. The hold otherwise stays in force.
