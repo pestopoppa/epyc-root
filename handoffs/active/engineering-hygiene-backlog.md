@@ -2629,6 +2629,12 @@ Validation:
   - Decision: the operator's paired rule, Newcombe one-sided 95% lower bound of p_cand − p_none > −0.10 per pool, with no blanks.
   - stop-on-answer: when a model's 4 rows are SCORED and paired_decision.py has run for each compressed level. stop-on-futility: on a live_runner failure or any blank in a none row. gate-class = futility-only.
   - Done when both models' operating points are decided on production tool exposure. Supersedes the v3/v3b tool-condition verdicts, which used the legacy executor table: Q36 got 42 tools vs 26 in production; Q38 got 30 vs 65.
+  - *(workspace-f2 2026-11-11.)* **Q36 half DONE: operating point aggressive CONFIRMED on production tools (26).** All four rows filed.
+    - none 0.500/0.600/0.947, with 0 blanks and 0 forced_markup.
+    - Paired vs none, as lower bounds on comp/proc/recall: mild KEEP (+0.089, −0.036, −0.033); medium KEEP (+0.081, −0.041, −0.009); aggressive KEEP (−0.006, −0.017, −0.056).
+    - Production tool exposure barely moves the baseline compared with v3b's 42 tools (0.493/0.587/0.940).
+    - Q38 half queued with the signed 35-tool architect set.
+    - Files: `/mnt/raid0/llm/tmp/afc-v3c-q36-tools-<level>-20261111/`, with `paired-<level>.json` per level. [no-belief: row verdicts filed by agent]
   - Owner workspace-f2.
 
 - [ ] **AFC-V3B-HARNESS-RERUN [inference] — re-run suite v3 for Flash-Next and Qwen3.6-35B with the forced final turn sent without tools (+1 retry; persistent markup bucketed and excluded from both arms of each pair).** Model: Qwen3.8-Flash-Next-UD-IQ4_XS (architect_general, 30 tools) and Qwen3.6-35B-A3B-MTP-Q8_0 (worker_general, 42 tools), v10 CPU, temp 0. Rows `afc-v3b-q38_flash-tools-{none,mild,medium,aggressive}-20261111` and `afc-v3b-q36_35b-tools-{...}-20261111`, one CPU quarter each, resumable. Decision: the operator's paired rule (Newcombe one-sided 95% lower bound of p_cand − p_none > −0.10 per pool, no blanks). stop-on-answer when all 8 rows are SCORED and paired_decision.py has run per compressed level; stop-on-futility on a live_runner failure or any blank in a none row; gate-class = futility-only. Done when filed and both models' operating points are confirmed or revised. Owner workspace-f2.
