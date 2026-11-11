@@ -93,6 +93,38 @@ class Pure(unittest.TestCase):
         st, acts, _ = dp.decide(st, 140, [row("r1", 1000 * MB, alive=False)], CFG, 20)
         self.assertEqual(st["paused_ids"], {})
 
+    def test_zero_growth_row_never_stopped(self):
+        prev = [row("r1", 0), row("r2", 0)]
+        now = [row("r1", 1000 * MB), row("r2", 100)]     # r2 grows ~10 B/s: positive but frees nothing
+        st, acts, _ = dp.decide(seeded(prev), 100, now, CFG | {"min_growth": MB}, 10)
+        self.assertEqual([r["id"] for k, r in acts if k == "stop"], ["r1"])
+        self.assertEqual(sorted(st["paused_ids"]), ["r1"])
+        # control: with no threshold the trickle writer would be a candidate
+        _, acts, _ = dp.decide(seeded([row("r2", 0)]), 100, [row("r2", 100)], CFG | {"min_growth": 0}, 10)
+        self.assertEqual([k for k, _ in acts], ["stop"])
+
+    def test_no_writer_releases_stopped_rows(self):
+        st, _, _ = dp.decide(seeded([row("r1", 0), row("r2", 5)]), 140, [row("r1", 1000 * MB), row("r2", 5)], CFG, 10)
+        self.assertEqual(sorted(st["paused_ids"]), ["r1"])
+        st, acts, ev = dp.decide(st, 140, [row("r1", 1000 * MB), row("r2", 5)], CFG, 20)   # r2 not growing, r1 stopped
+        self.assertEqual([(k, r["id"]) for k, r in acts], [("cont", "r1")])
+        self.assertEqual(st["paused_ids"], {})
+        self.assertTrue(any("NO-WRITER" in e for e in ev) and any(e.startswith("DISK-PAUSE-RELEASE r1") for e in ev))
+
+    def test_stopped_row_not_the_writer_is_released(self):
+        st = dp.new_state(); st["paused"] = True
+        st["paused_ids"] = {"r1": {"pgid": "1001", "birth": "b", "growth_bps": 0.0, "at": 0}}   # legacy 0.0 MiB/s stop
+        st, acts, _ = dp.decide(st, 140, [row("r1", 5), row("r2", 1000 * MB)], CFG, 10)
+        self.assertIn(("cont", "r1"), [(k, r["id"]) for k, r in acts])
+        self.assertNotIn("r1", st["paused_ids"])
+
+    def test_leftover_stopped_rows_resumed_when_not_paused(self):
+        st = dp.new_state()
+        st["paused_ids"] = {"r1": {"pgid": "1001", "birth": "b", "growth_bps": 9e9, "at": 0}}
+        st, acts, _ = dp.decide(st, 400, [row("r1", 5)], CFG, 10)
+        self.assertEqual([(k, r["id"]) for k, r in acts], [("cont", "r1")])
+        self.assertEqual(st["paused_ids"], {})
+
     def test_config_env(self):
         c = dp.config({"FILLER_DISK_FLOOR_GIB": "100", "FILLER_DISK_RESUME_GIB": "120", "FILLER_DISK_EMERGENCY_GIB": "30"})
         self.assertEqual((c["floor"], c["resume"], c["emergency"]), (100.0, 120.0, 30.0))
@@ -173,6 +205,24 @@ class Signals(unittest.TestCase):
         self.assertIn("owner=op", why); self.assertIn("deploy drain", why)
         os.remove(os.path.join(self.flags, "HOLD-ADMISSIONS"))
         self.assertIsNone(dp.admission_gate(self.flags, persist=False))      # control: no file, no gate
+
+    def test_stopped_set_exposed_and_resume_idempotent(self):
+        a = self.spawn("ra")
+        self.tick(140, {"ra": 0}, 1000.0)
+        self.tick(140, {"ra": 900 * MB}, 1020.0)
+        time.sleep(0.2)
+        self.assertEqual(self.st(a), "T")
+        self.assertEqual(dp.stopped_ids(self.flags), {"ra"})
+        # a leftover record with the pause already cleared is resumed by the next tick, and again harmlessly
+        self.tick(400, {"ra": 900 * MB}, 1040.0)
+        time.sleep(0.2)
+        self.assertEqual(self.st(a), "S"); self.assertEqual(dp.stopped_ids(self.flags), set())
+        self.assertEqual(self.tick(400, {"ra": 900 * MB}, 1060.0), [])
+        # a vanished group is verified, not signalled
+        st = dp.new_state(); st["paused_ids"] = {"gone": {"pgid": "999999", "birth": "1", "growth_bps": 9e9, "at": 0}}
+        dp._atomic_json(os.path.join(dp.dp_dir(self.flags), "state.json"), st)
+        ev = self.tick(400, {}, 1080.0)
+        self.assertEqual(dp.stopped_ids(self.flags), set())   # a group that no longer exists is dropped, never signalled
 
 
 class Mirror(unittest.TestCase):

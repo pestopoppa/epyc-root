@@ -2720,7 +2720,9 @@ def status(flags, rid, allrows=None, util=None):
                     idle = [GPU] if n >= GPU_IDLE_SAMPLES else []
                 else:
                     idle = hostutil.idle_regions(util, held)
-                if idle and st.get("grant_age_s", 0) > IDLE_HELD_AFTER_S:
+                if idle and rid in diskpause.stopped_ids(flags):
+                    st["blocker"] = f"DISK-PAUSED (self): {rid} SIGSTOPped by the disk-pause guard until free disk is back above the resume level"
+                elif idle and st.get("grant_age_s", 0) > IDLE_HELD_AFTER_S:
                     st["blocker"] = f"IDLE-HELD {','.join(idle)}: measured <{hostutil.IDLE_PCT:g}% busy {st['grant_age_s']}s into the grant"
     return st
 
@@ -4144,8 +4146,12 @@ def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
             continue
     gpu_ids = {g["id"] for g in grants if GPU in g["holds"]}
     out, lines = [], {}
+    self_paused = diskpause.stopped_ids(flags)   # rows the disk-pause guard itself SIGSTOPped: idle by our own hand
     for r, rid in sorted(holders.items()):
         if rid not in age or age[rid] <= IDLE_HELD_AFTER_S:
+            continue
+        if rid in self_paused:
+            lines[f"{r}:{rid}"] = f"DISK-PAUSED (self) {r} {rid}: SIGSTOPped by the disk-pause guard; not IDLE-HELD"
             continue
         if rid in gpu_ids:
             continue   # judged below, by the device
@@ -4164,6 +4170,10 @@ def idle_held(flags, grants, holders, util, log, seen, now=None, occ=None):
     for rid in sorted(gpu_ids):
         if rid not in age or age[rid] <= IDLE_HELD_AFTER_S:
             st[rid] = 0
+            continue
+        if rid in self_paused:
+            st[rid] = 0
+            lines[f"{GPU}:{rid}"] = f"DISK-PAUSED (self) {GPU} {rid}: SIGSTOPped by the disk-pause guard; not IDLE-HELD"
             continue
         busy, why = gpu_grant_busy(flags, by_id[rid], util, occ)
         st[rid] = 0 if busy else int(st.get(rid) or 0) + 1

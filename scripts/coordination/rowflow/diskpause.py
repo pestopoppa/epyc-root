@@ -53,6 +53,7 @@ def config(env=None):
         "resume": float(e.get("FILLER_DISK_RESUME_GIB", max(180.0, floor + 30.0))),
         "emergency": min(float(e.get("FILLER_DISK_EMERGENCY_GIB", 50)), floor),
         "cover": float(e.get("FILLER_DISK_PAUSE_COVER", 0.9)),
+        "min_growth": float(e.get("FILLER_DISK_PAUSE_MIN_GROWTH_MIB", 1.0)) * (1 << 20),   # bytes/s; below this stopping frees nothing
         "sample_s": float(e.get("FILLER_DISK_PAUSE_SAMPLE_S", 5)),
         "min_s": float(e.get("FILLER_DISK_PAUSE_MIN_S", 10)),
         "path": e.get("FILLER_DISK_PATH", "/mnt/raid0"),
@@ -95,7 +96,8 @@ def decide(state, free, rows, cfg, now):
     if paused and free < cfg["floor"]:
         cand = [r for r in rows if r.get("alive") and r.get("pgid") and r["id"] not in st["paused_ids"]]
         ranked = sorted(((growth.get(r["id"], 0.0), r) for r in cand), key=lambda x: -x[0])
-        ranked = [(g, r) for g, r in ranked if g > 0]
+        mg = max(cfg.get("min_growth", 1 << 20), 1e-9)
+        ranked = [(g, r) for g, r in ranked if g >= mg]   # a ~0-growth row is never stopped: it frees nothing
         total = sum(g for g, _ in ranked)
         acc = 0.0
         for g, r in ranked:
@@ -108,7 +110,16 @@ def decide(state, free, rows, cfg, now):
         if cand and not ranked and not st["noattr"]:
             events.append("DISK-PAUSE-NO-WRITER no running row's scratch_root is growing (sampled); admissions stay stopped, nothing stopped")
         st["noattr"] = bool(cand) and not ranked
-    if was and not paused:
+        # release rows that are not (or no longer proven to be) the writer: recorded growth under the threshold (nothing
+        # to free), or NO-WRITER concluded (no running row is growing) -> SIGCONT, never leave them frozen
+        mg = max(cfg.get("min_growth", 1 << 20), 1e-9)
+        rel = [i for i, v in st["paused_ids"].items() if float(v.get("growth_bps") or 0) < mg or st["noattr"]]
+        for i in sorted(rel):
+            v = st["paused_ids"].pop(i)
+            actions.append(("cont", {"id": i, "pgid": v["pgid"], "birth": v["birth"]}))
+            events.append(f"DISK-PAUSE-RELEASE {i}: SIGCONT group {v['pgid']} (" +
+                          ("no writer attributable" if st["noattr"] else "not the writer: recorded growth under threshold") + ")")
+    if not paused and (was or st["paused_ids"]):   # pause cleared (this tick, or earlier with rows still recorded): resume every stopped group
         for i, v in sorted(st["paused_ids"].items()):
             actions.append(("cont", {"id": i, "pgid": v["pgid"], "birth": v["birth"]}))
         events.append(f"DISK-RESUME free={free:.0f}GiB >= {cfg['resume']:.0f}GiB: SIGCONT {len(st['paused_ids'])} row(s) "
@@ -184,6 +195,11 @@ def dp_dir(flags):
 
 def is_paused(flags):
     return os.path.exists(os.path.join(dp_dir(flags), "PAUSED"))
+
+
+def stopped_ids(flags):
+    """Row ids this guard itself has SIGSTOPped and not yet resumed (stopped.json); rowflow labels them DISK-PAUSED (self)."""
+    return set(_read_json(os.path.join(dp_dir(flags), "stopped.json")) or {})
 
 
 def state_dir_default():
@@ -263,7 +279,7 @@ def tick(flags=None, log=print, state_dir=None, free_gib=None, cfg=None, now=Non
             st.setdefault(k, v)
         free = free_gib if free_gib is not None else shutil.disk_usage(cfg["path"]).free / GIB
         want_paused = next_paused(bool(st["paused"]), free, cfg["floor"], cfg["resume"])
-        if not want_paused and not st["paused"]:
+        if not want_paused and not st["paused"] and not st["paused_ids"]:
             return []
         if now - float(st.get("last_eval") or 0) < cfg["min_s"] and want_paused == bool(st["paused"]):
             return []
@@ -280,7 +296,7 @@ def tick(flags=None, log=print, state_dir=None, free_gib=None, cfg=None, now=Non
                 sleep(cfg["sample_s"])
                 now = now + cfg["sample_s"]
                 mf(rows)
-        elif want_paused != bool(st["paused"]):
+        elif want_paused != bool(st["paused"]) or st["paused_ids"]:
             mf(rows)   # resume path: sizes only refresh the sample baseline
         st2, actions, events = decide_with_baseline(st, free, rows, cfg, now, sampling)
         for kind, r in actions:
@@ -291,6 +307,7 @@ def tick(flags=None, log=print, state_dir=None, free_gib=None, cfg=None, now=Non
                     st2["paused_ids"].pop(r["id"], None)
         st2["last_eval"] = now
         _atomic_json(sp, st2)
+        _atomic_json(os.path.join(dp_dir(flags), "stopped.json"), st2["paused_ids"])
         marker = os.path.join(dp_dir(flags), "PAUSED")
         if st2["paused"]:
             open(marker, "a").close()

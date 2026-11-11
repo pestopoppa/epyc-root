@@ -88,6 +88,25 @@ class StatusSurfaces(Fixture):
         self.assertIn("publish_row.py", rf.next_action({"state": "failed", "fix_task": "fix X"}, self.flags, rid))
         self.assertEqual(rf.next_action({"state": "held", "fix": "rm /x/STOP"}, self.flags, rid), "rm /x/STOP")
 
+    def test_guard_stopped_row_is_disk_paused_self_not_idle_held(self):
+        import diskpause
+        rid = "row-sp"
+        self.row(rid, 10, QUIET_OPT, "quiet-host"); self.grant(rid, holds="q1", age_s=600)
+        holders = {"q1": rid}
+        out = rf.idle_held(self.flags, rf.open_grants(self.flags), holders, BUSY, self.lines.append, set())
+        self.assertEqual(out, [("q1", rid, 3.0)])      # control: not guard-stopped -> IDLE-HELD
+        os.makedirs(diskpause.dp_dir(self.flags), exist_ok=True)
+        json.dump({rid: {}}, open(os.path.join(diskpause.dp_dir(self.flags), "stopped.json"), "w"))
+        self.lines.clear()
+        try:
+            os.remove(os.path.join(rf.state_dir(self.flags), "logstate.json"))   # transition-only logging: reset the dedup memory
+        except OSError:
+            pass
+        out = rf.idle_held(self.flags, rf.open_grants(self.flags), holders, BUSY, self.lines.append, set())
+        self.assertEqual(out, [])
+        self.assertTrue(any(l.startswith(f"DISK-PAUSED (self) q1 {rid}") for l in self.lines))
+        self.assertFalse(any(l.startswith("IDLE-HELD") for l in self.lines))
+
     def test_idle_held_logs_measured_idle_grants_only(self):
         rid, fresh = "row-old", "row-new"
         self.row(rid, 10, QUIET_OPT, "quiet-host"); self.row(fresh, 11, QUIET_OPT, "quiet-host")
