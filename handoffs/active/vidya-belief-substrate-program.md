@@ -1933,6 +1933,19 @@ Source: `rlm-contested-claims-self-evaluation.md` E1/E1a. The scorer is epyc-inf
   kv-quant-27b-v10-measurement`, verify 12 rows from one run reach the fold, and check that the
   AutoPilot planner block names the run, grades and bench-only cautions. No old summary or
   pre-hook run may be backfilled into a ClaimTuple.
+  - 2026-11-11 FAILED (pipeline-mgmt): row `vidya-kvq-v10-sweep-20261107` ended rc=1 at
+    2026-11-08T17:57Z. All 30 launches ran (`matrix_cardinality_valid: true`), but the summary
+    voided both depths: "post-execution binary differs from pre-execution witness". The only field
+    that differs is `binary/linkage_receipt/ldd/stdout`, which holds the raw `ldd` output, and that
+    output carries ASLR load addresses that change on every call. The binary sha256, the library
+    paths and the linkage verdict are identical. This is a producer bug in
+    `epyc-inference-research/scripts/benchmark/kv_quant_27b_v10_sweep.py` `linkage_receipt()`,
+    not an environment fault. The sidecar has 0 rows. Evidence:
+    `/mnt/raid0/llm/tmp/vb-runs-20261107/vidya-kvq-v10-sweep-20261107/out/run-20261108T164754Z/summary.json`
+    (scratch kept). Next step: strip the `(0x…)` addresses from the `ldd` capture, or keep only
+    the parsed SONAME→path/sha set, in the witness. Add a regression test that runs two witnesses
+    and requires them to be equal. Then repin the job's producer clone and republish the row with a
+    new id.
 - [x] ✅ 2026-11-01 — APP implementation `6eb94e9597a0243bbd20516e1b8dcb350f8d1c9b`; [12 native-ledger synthetic controls](https://github.com/pestopoppa/epyc-orchestrator/blob/faa2c25d8d80b9f64542324feeb7f66492d99045/artifacts/kvq-reconsider-20261101/README.md). [belief: cc] **VB-KVQ-V10-RECONSIDER — flag archived AutoPilot decisions that declared reliance when their Vidya support is corrected or retracted.**
   Use the recorded claim IDs and fold frontier, preserve human promotion authority, and
   distinguish a review prompt from an automatic reversal. Exercise against a synthetic
