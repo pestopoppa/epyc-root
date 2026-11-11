@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 577
+      "open": 574
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -889,7 +889,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1232,
+          "line": 1233,
           "markers": 1,
           "name": "amd-ai-lab-website-publication",
           "open": 3
@@ -899,7 +899,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1272,
+          "line": 1273,
           "markers": 1,
           "name": "frontier-f4-continuity-backup",
           "open": 0
@@ -909,7 +909,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1379,
+          "line": 1380,
           "markers": 1,
           "name": "integration-test-coverage",
           "open": 0
@@ -919,7 +919,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1479,
+          "line": 1480,
           "markers": 1,
           "name": "loop-state-offraid-backup",
           "open": 1
@@ -929,7 +929,7 @@
           "closed": 87,
           "gates": [],
           "guarded": 0,
-          "line": 1528,
+          "line": 1529,
           "markers": 1,
           "name": "refactoring-multirepo-2026-10",
           "open": 34
@@ -939,7 +939,7 @@
           "closed": 15,
           "gates": [],
           "guarded": 0,
-          "line": 2104,
+          "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
           "open": 7
@@ -1189,7 +1189,7 @@
       "closed": 12,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 8,
+      "open": 9,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1198,7 +1198,7 @@
       },
       "row_id": "INF-86",
       "state": "active",
-      "total": 20
+      "total": 21
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
@@ -2171,10 +2171,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 351,
+      "closed": 355,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
-      "open": 11,
+      "last_advanced": "2026-11-11",
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2187,7 +2187,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 113,
+          "closed": 117,
           "gates": [
             "EVL-47"
           ],
@@ -2195,7 +2195,7 @@
           "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 10
+          "open": 6
         },
         {
           "blocked": 0,

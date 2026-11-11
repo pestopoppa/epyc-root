@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-11T14:11:21Z",
+  "generated_at": "2026-11-11T14:22:35Z",
   "nodes": [
     {
       "age_days": 1,
@@ -1657,18 +1657,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 351,
-      "dispatchable": 11,
+      "closed": 355,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "next_action": "race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-9 wiring",
-      "open": 11,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1703,13 +1703,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 10,
+          "dispatchable": 6,
           "gates": [
             "EVL-47"
           ],
           "line": 58,
           "name": "rocm-verify-profile-backend",
-          "open": 10,
+          "open": 6,
           "readiness": "blocked"
         },
         {
@@ -2463,14 +2463,14 @@
         "INF-83"
       ],
       "closed": 12,
-      "dispatchable": 8,
+      "dispatchable": 9,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-11",
       "next_action": "INF-86-CMS512 stack-change (min-step 512, 3 ckpt roles, applying) + INF-86-TEMPLATE re-render (landing); then G4, G5; v11 fold verdict",
-      "open": 8,
+      "open": 9,
       "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
@@ -3256,7 +3256,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1232,
+          "line": 1233,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3265,7 +3265,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1272,
+          "line": 1273,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3274,7 +3274,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1379,
+          "line": 1380,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3283,7 +3283,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1479,
+          "line": 1480,
           "name": "loop-state-offraid-backup",
           "open": 1,
           "readiness": "ready"
@@ -3292,7 +3292,7 @@
           "blocked_by": [],
           "dispatchable": 34,
           "gates": [],
-          "line": 1528,
+          "line": 1529,
           "name": "refactoring-multirepo-2026-10",
           "open": 34,
           "readiness": "ready"
@@ -3301,7 +3301,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 2104,
+          "line": 2105,
           "name": "repo-readiness-scorer",
           "open": 7,
           "readiness": "ready"

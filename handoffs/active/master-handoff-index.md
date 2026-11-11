@@ -41,7 +41,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-OPENCODE-RECLAIM | DECIDED 2026-11-11 (drop readonly copies, ~15 GB): container cannot delete them (read-only mount, root-owned); refresh job is host-side (opencode-durable-sync.sh, hourly). Operator runs host commands: stop the refresh, then delete `/mnt/raid0/llm/opencode/readonly/{epyc,host-daniele,twyne}.db`. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LOOP-34 | 2026-10-29 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](engineering-hygiene-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
-| OP-LR11-LR13 | operator chose A 2026-11-11; awaiting terminal signature (human-only signing script). [Prevalidated package](../../artifacts/operator/decisions/LR11-LR13-close-rules-20261007/README.md). | [non-inference-backlog.md](engineering-hygiene-backlog.md) LR-11 / LR-13 | 2026-10-07 |
 | OP-79 | Run on the HOST after the :8083 restore: install `scripts/server/gpu_window_watchdog.cron` (`* * * * *` + `@reboot sleep 90`) so the GPU-window executor ticks (G1 review F2). Verify that a tick writes `mi210.json.executor-status.json` | [autokernel-all-devices-all-dimensions.md](autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) AKX-ALL-15a | 2026-10-04 |
 | OP-78 | Approve updating the shared epyc-orchestrator checkout to include device-busy `6ce26fc9` (G1 manual-window fix; the checkout is at `c5dc4ae5` + `4b871cc5` per today's decision (d)). Options: (1) approve now, which completes the ACK-with-fixes set for manual windows (recommended); (2) hold until the AK-window fixes (AKX-ALL-15b) land, so the checkout moves once | [autokernel-all-devices-all-dimensions.md](autokernel-akx-program.md#track-autokernel-all-devices-all-dimensions) AKX-ALL-15 | 2026-10-04 |
 | OP-76 | Sign STACKCHG-8083BATCH-20261004 (:8083 `-b 512 -ub 512` + `--no-cache-idle-slots`; KVU-16f + UFH14-B4j). `--validate-only` VALID; greenlit by workspace-ec. Applies at the next :8083 relaunch (one relaunch; the post-E1 restore 2026-10-04 ~19:56Z went ahead without it). Known cost: solo shallow prefill −26%, TTFT +35% (KVU-16g removes it). Command (interactive terminal, TTY-gated): `RATIFY_OPERATOR="<name>" bash /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/ratify_stackchg_8083batch_20261004.sh --attest RATIFY-STACKCHG-8083BATCH-20261004` | [kv-unified-stack-rollout.md](kv-cache-program.md#track-kv-unified-stack-rollout) KVU-16f | 2026-10-04 |
@@ -126,7 +125,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 16 | 577 | 50 | 2026-11-03 |
+| inference-research | 16 | 574 | 50 | 2026-11-03 |
 | pipeline-integration | 1 | 17 | 0 | 2026-11-11 |
 | research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
