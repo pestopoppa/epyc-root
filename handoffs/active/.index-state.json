@@ -862,7 +862,7 @@
       "blocked": 0,
       "closed": 299,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-11",
       "open": 74,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2683,7 +2683,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Diagnose MMQ-H3 NaN (iglp_opt0 fails correctness); H10b same-seed rerun; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
+      "next_action": "H10b: onset C6F2->C7 bracketed; run same-seed rerun on C10; reliance proof r5; H5 successor; GDN-SHARE-1 picks C8 target",
       "track": "autokernel research loop"
     },
     "INF-45": {
@@ -2703,7 +2703,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 27,
-      "next_action": "race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-7 counter row + C4-9 wiring",
+      "next_action": "race-eqv r5 (new-fail gate); TSAN fix numeric-identity r2; C6 wiring on C10 pins; LIVE-3 C4-9 wiring",
       "track": "rocm verify profile backend"
     },
     "INF-50": {
@@ -2735,7 +2735,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "Champion is C10 7f1bd044b (operator 2026-11-10); AutoKernel owns promotion; C10 floors pending whole-host row; production v10",
+      "next_action": "C10 floor r5 (25% guard, 2-sample persistence) pending; keep iqk Q8_0 prefill ON in C11; production v10",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
@@ -2832,7 +2832,7 @@
       "id": "INF-86",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "Measure #25592 forced-re-prefill rate (16K/64K -lv 4 replay, dedicated instance); then G4, G5; v11 fold verdict",
+      "next_action": "r2 NONE_OBSERVED (0/35); 10/15 turns fall back to first checkpoint; then G4, G5; v11 fold verdict",
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     "INF-87": {
