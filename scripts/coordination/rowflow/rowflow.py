@@ -4849,8 +4849,6 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     gids = {g["id"] for g in grants}
     busy, free, holders = host_snapshot(flags, grants, rl)
     gpu_open = any(GPU in g["holds"] for g in grants)
-    if GPU in free and not dry and not admit_hold and start_gpu_batch(flags, log):
-        free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     counts = lane_counts(flags, allrows)
     cands = []
     for rid, d in allrows.items():
@@ -4871,10 +4869,37 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                       "claim": k["claim"]})
     if admit_hold:
         cands = []   # operator 2026-11-07: nothing new is granted; the reason was logged once on its transition
+    qh_hold = None
+    if GPU in free and not dry and not admit_hold and not gpu_batch_running(flags) \
+            and glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+        try:   # operator D9 2026-11-11 "Hold smokes": a quiet-host row about to start keeps the GPU free of a smoke batch
+            qh_hold = quiet_host_smoke_hold(
+                cands, free, mem_available_gib(), time.time(), queued_gpu_batch_s(flags), gpu_open,
+                held_ports={int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])},
+                grant_ends=[e for e in (iso_epoch(g["end"]) for g in grants if g.get("end")) if e],
+                region_ends=region_end_map(flags, grants, busy), quiet_ok=quiet_ok_now(flags))
+        except Exception as e:  # noqa: BLE001 - a fault in the hold check never stops allocation; smokes run as before
+            log(f"SMOKE-HOLD check failed: {type(e).__name__}: {e}")
+            qh_hold = None
+    if not dry and not admit_hold and smoke_hold_lapsed(flags, qh_hold):
+        log(f"SMOKE-HOLD-LAPSED {qh_hold[0]['id']}: held the queued GPU smokes > {QH_SMOKE_HOLD_MAX_S}s without starting; "
+            "smokes run")
+        qh_hold = None
+    if qh_hold:
+        hc, S = qh_hold
+        log_transition(flags, "smoke-hold", {hc["id"]: f"SMOKE-HOLD: quiet-host {hc['id']} (rank {hc['rank']:g}) can start by "
+                       f"{dt.datetime.fromtimestamp(S, dt.timezone.utc):%H:%MZ} (<= {QH_SMOKE_HOLD_S}s); queued GPU smoke batch "
+                       f"({queued_gpu_batch_s(flags)}s) not started"}, log, persist=True)
+    else:
+        log_transition(flags, "smoke-hold", {}, log, persist=not dry)
+        if GPU in free and not dry and not admit_hold and start_gpu_batch(flags, log):
+            free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
     wait_lines = {}
     if qr is not None:
-        worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr]
+        # a held quiet-host row is exempt: its smoke-hold already keeps the queued batch off the GPU for it
+        worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr
+                 and not (qh_hold and c["id"] == qh_hold[0]["id"])]
         if worse:
             cands = [c for c in cands if c not in worse]
             wl = f"WAIT-FOR-SMOKE: queued GPU smoke rank {qr:g} runs first; GPU row(s) {','.join(c['id'] for c in worse[:5])} (worse rank) wait"
@@ -5354,6 +5379,82 @@ def start_gpu_batch(flags, log):
     atomic_json(gpu_batch_lock(flags), {"pid": p.pid, "started": now_iso()})
     log(f"GPU-SMOKE-BATCH started pid={p.pid}")
     return True
+
+
+# HOLD SMOKES FOR A QUIET-HOST ROW (operator D9 2026-11-11 "Hold smokes (Recommended)"; 14:20Z: AutoKernel's queued GPU
+# smokes took the GPU lock, so the inf85 quiet-host row waited while all 4 CPU quarters sat idle). The keeper does not
+# START a GPU-SMOKE-BATCH while a quiet-host row is the next drain/placement candidate and could start within
+# QH_SMOKE_HOLD_S. Smokes still run in gaps they finish before that row could start (now + batch_s <= S).
+QH_SMOKE_HOLD_S = 600
+QUEUED_SMOKE_DEFAULT_S = 300   # publish_row.SMOKE_TIMEOUT_S: a marker without smoke_s
+
+
+def queued_gpu_batch_s(flags):
+    """Upper bound of the queued batch's wall time: the sum of the markers' smoke_s (they run one after another)."""
+    tot = 0
+    for q in glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")):
+        try:
+            tot += int((load_json(q) or {}).get("smoke_s") or QUEUED_SMOKE_DEFAULT_S)
+        except (TypeError, ValueError):
+            tot += QUEUED_SMOKE_DEFAULT_S
+    return tot
+
+
+def quiet_host_smoke_hold(cands, free, ram, now, batch_s, gpu_grant_open=False, held_ports=(), grant_ends=(),
+                          region_ends=None, quiet_ok=True, horizon_s=QH_SMOKE_HOLD_S):
+    """PURE. (c, S) when a GPU smoke batch must NOT start this tick, else None.
+
+    c is the quiet-host candidate at the head of plan_order that needs the GPU, is not failing to arm, has no held port,
+    fits RAM, and is not out-ranked by a better placeable row on its regions (drain_blocker) - i.e. the next drain /
+    placement candidate. S is when it could start: now when its option fits the free regions (GPU included) or its
+    holders are past their end; else earliest_start's S. Hold iff S - now <= horizon_s AND now + batch_s > S (the batch
+    would still hold the GPU at S). Unknown S (foreign hold, beyond the busy window) or quiet hours off -> no hold."""
+    if not quiet_ok or batch_s <= 0:
+        return None
+    qh = sorted((c for c in cands if c.get("shape") == "quiet-host" and any(GPU in o for o in c["options"])), key=plan_order)
+    for c in qh:
+        if int(c.get("arm_fails") or 0) > 0:
+            continue
+        if {int(p) for p in held_ports} & {int(p) for p in (c.get("ports") or [])}:
+            continue
+        if ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
+            continue
+        if drain_blocker(c, cands, free, ram, gpu_grant_open, held_ports) is not None:
+            continue
+        if any(o and o <= set(free) for o in c["options"]):
+            S = now
+        else:
+            S, why = earliest_start(c, set(free), now, grant_ends, region_ends)
+            if S is None:
+                if why and "expired" in why:
+                    S = now
+                else:
+                    return None
+        if S - now <= horizon_s and now + batch_s > S:
+            return c, S
+        return None
+    return None
+
+
+QH_SMOKE_HOLD_MAX_S = 2 * QH_SMOKE_HOLD_S   # a hold whose row has not started by then lapses (no indefinite GPU idle)
+
+
+def smoke_hold_lapsed(flags, hold, now=None):
+    """Persist when the current smoke hold began (per held row id). True when the same row has held the batch off for
+    more than QH_SMOKE_HOLD_MAX_S: the row did not start (a constraint the hold check cannot see), so smokes run again.
+    hold None clears the state."""
+    now = time.time() if now is None else now
+    p = os.path.join(state_dir(flags), "smoke_hold.json")
+    old = load_json(p) or {}
+    if not hold:
+        if old:
+            atomic_json(p, {})
+        return False
+    rid = hold[0]["id"]
+    since = float(old["since"]) if old.get("id") == rid and old.get("since") else now
+    if old.get("id") != rid:
+        atomic_json(p, {"id": rid, "since": since})
+    return now - since > QH_SMOKE_HOLD_MAX_S
 
 
 def gpu_batch(flags, log=print):
