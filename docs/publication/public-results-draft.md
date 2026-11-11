@@ -8,7 +8,8 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 
 ## Summary
 
-- Total rows: 374
+- Total rows: 377
+- `publish_candidate`: 3
 - `retired_from_public_claims`: 374
 
 ### Protocol Backfill Summary
@@ -23,6 +24,9 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 
 - `evidence-linked; needs protocol tag`: 18
 - `protocol-tagged (pre-attestation-era; missing attestation; needs historical attestation or remeasurement) [P-BENCH-2; n=5; 2026-03-21]`: 31
+- `protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-92c4b2f171e7]`: 1
+- `protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-94c211362192]`: 1
+- `protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-b758c7787cc5]`: 1
 - `unverified historical row`: 325
 
 ### Review Decision Summary
@@ -31,7 +35,7 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 
 ### Public Scrub Summary
 
-- `public-safe surface`: 374
+- `public-safe surface`: 377
 
 ## Rows
 
@@ -411,6 +415,9 @@ This page is generated from `RESULTS.md`. Rows without explicit protocol tags ar
 | List all runs / v3 Perplexity Baselines (2026-04-13) | Qwen3-Coder-30B-A3B | Quant: Q4_K_M | PPL: 9.14; Throughput: 2196 tok/s | unverified historical row | public-safe surface | retired_from_public_claims | 1386 |
 | List all runs / v3 Perplexity Baselines (2026-04-13) | REAP-246B-A35B | Quant: Q4_K_M | PPL: 9.62; Throughput: 249 tok/s | unverified historical row | public-safe surface | retired_from_public_claims | 1387 |
 | List all runs / v3 Perplexity Baselines (2026-04-13) | Qwen3.5-35B-A3B | Quant: Q4_K_M | PPL: BLOCKED; Throughput: - | unverified historical row | public-safe surface | retired_from_public_claims | 1388 |
+| List all runs / CPU Decode Throughput - Serving Lineup Models (production kernel v10) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-92c4b2f171e7] | Qwen3.6-35B-A3B (MTP build) | Quant: Q8_0; Size: 37.8 GB | Decode t/s (median +/- MAD): 57.01 +/- 0.64 (Caveat: these are llama-bench tg128 at depth 0, single stream, 96 threads, no MTP. They are best-case bench figures, not serving throughput.) | protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-92c4b2f171e7] | public-safe surface | publish_candidate | 1432 |
+| List all runs / CPU Decode Throughput - Serving Lineup Models (production kernel v10) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-b758c7787cc5] | Qwen3.8-Flash-Next | Quant: UD-IQ4_XS; Size: 94.6 GB | Decode t/s (median +/- MAD): 25.59 +/- 0.16 (Caveat: these are llama-bench tg128 at depth 0, single stream, 96 threads, no MTP. They are best-case bench figures, not serving throughput.) | protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-b758c7787cc5] | public-safe surface | publish_candidate | 1442 |
+| List all runs / CPU Decode Throughput - Serving Lineup Models (production kernel v10) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-94c211362192] | Qwen3-VL-30B-A3B-Instruct (text decode) | Quant: Q4_K_M; Size: 18.6 GB | Decode t/s (median +/- MAD): 84.42 +/- 1.30 (Caveat: these are llama-bench tg128 at depth 0, single stream, 96 threads, no MTP. They are best-case bench figures, not serving throughput.) | protocol-tagged [P-BENCH-1; n=10; 2026-11-11; attest hh-94c211362192] | public-safe surface | publish_candidate | 1452 |
 
 ## Regeneration
 
