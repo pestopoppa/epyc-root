@@ -65,6 +65,7 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
 - **Publish a row the moment it is ready.** The keeper ranks and serializes rows; never hold one back to protect another row's window.
 - **One publish per id at a time, in the foreground.** A republish during that id's smoke unpublishes the row.
 - **Before a row's first keeper launch** read the entrypoint's docstring, `--help` and refusal paths, and run one manual `--dry-run`. After merging into code a prepared row uses, redo its gates before publishing.
+- **A job dir's `launch.sh` ignores `--dry-run` and starts a REAL launcher.** Dry-run a row with its `precond.sh` plus the runner's own `--dry-run`, never `launch.sh --dry-run` (2026-11-11, AGG-1.5 prep).
 - **Smokes hold GPU residency about 45 s**, the keeper's minimum is 40 s; a longer idle load blocks every other row's quiet check.
 - **Non-inference work never waits behind inference, but during a quiet-host measurement builds and tests may use only the partial q3 cores that do not interfere with the GPU management threads (72-87 and siblings 168-183), and only if those are free.** Never 88-95 or 184-191. If the measurement holds them too, as a CPU row on 0-95 does, builds and tests wait for its `.ended`; edits, commits and dispatch continue (operator 2026-11-09).
 - **A job must propagate its real exit code**, and a smoke's output must not satisfy the live `--complete-cmd`.
