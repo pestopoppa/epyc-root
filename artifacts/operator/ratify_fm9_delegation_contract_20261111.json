@@ -1,0 +1,25 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "RTG34-FM9-DELEGATION-CONTRACT",
+  "gate_id": "RATIFY-FM9-DELEGATION-CONTRACT-20261111",
+  "operator_decision": "explicit human ratification of the one-file additive amendment",
+  "ratified_at": "2026-11-11T14:53:53Z",
+  "operator": "Daniele",
+  "status": "ratified",
+  "targets": [
+    "agents/shared/OPERATING_CONSTRAINTS.md"
+  ],
+  "rule": "Codex sub-delegation contract: luna/terra/sol/astra tier ladder, effort before tier, bounded sub-agent length (F = 21.8k Codex / 49.9k Claude), shared brief/return/accounting contracts (FM-7 basis).",
+  "not_changed": "one additive bullet only; no lines rewritten or deleted; no human_only_paths.yaml or pin change",
+  "patch": {
+    "path": "artifacts/operator/fm9-delegation-contract-20261111.patch",
+    "sha256": "b02e0309582466f5525ca189129e3e4aaa7ed2e44f3e13a1c238edb04c740e0f"
+  },
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_after": "b6ff16c9f66eea35dbbfc72de3704f56f499578a2edaaf558464f0939650c0d4"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_fm9_delegation_contract_20261111.receipt.json",
+  "applied_by": "artifacts/operator/ratify_fm9_delegation_contract_20261111.sh"
+}

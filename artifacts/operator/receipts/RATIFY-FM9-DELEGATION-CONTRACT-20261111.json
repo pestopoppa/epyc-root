@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-FM9-DELEGATION-CONTRACT-20261111",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_fm9_delegation_contract_20261111.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

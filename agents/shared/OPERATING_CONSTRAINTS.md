@@ -617,6 +617,26 @@ Harness-specific sizing and scheduling for the fan-out default above.
   or `gpt-5.6-luna` agent at the lowest adequate effort (`low`/`medium`/`high`/`xhigh`).
 - Every sub-agent result is PROPOSED work: review its evidence and diffs and run validation
   before accepting.
+- **Codex sub-delegation contract (FM-9; mirrors `agents/README.md` → *Codex sub-agent routing*
+  at `ab1f1d38d`).** Measured basis: FM-7, `data/fanout_timing/delegation_accounting_report.v1.json`
+  (commit `8a1ca9227`). The README section is the full text; these four rules bind here:
+  - *Tier ladder* (`CODEX_TIERS` in `scripts/coordination/delegation_accounting.py`): `luna` for
+    clerical, search, mechanical transforms and wrap-up writing (a luna reader returns
+    `path:start-end` citations, never a summary the main acts on); `terra` for code reading,
+    implementation, routine fixes, tests and execution; `sol` for hard design or hard debugging
+    only, or after a checkable terra failure that a higher-effort terra re-run did not fix;
+    `astra` only on explicit operator request. Set model and effort explicitly on every spawn.
+  - *Effort before tier*: on a checkable failure, re-run the same tier at higher effort
+    (`low` → `medium` → `high` → `xhigh`), then escalate exactly one tier (luna → terra → sol).
+  - *Bounded length*: one unit of work per sub-agent, with a stop condition in the brief. Codex
+    spend follows request count, not tier (FM-7: luna 21.7% of Codex tokens at 259 mean requests
+    per sub-agent, terra 31.2% at 310), and the fixed load F = 21.8k tokens (Claude: 49.9k) is
+    resent on every request, so a three-request sub-agent costs at least 65k tokens (Claude:
+    150k); a known-target lookup that fits in one main request stays inline. On Claude the lever
+    is Opus subagents (35.9% of Claude spend) versus Haiku (0.65%), not more Haiku.
+  - *Shared contracts*: the brief, return and main+subagent+total accounting contracts in
+    `agents/README.md` → *Delegation brief and report contract* bind Codex sub-agents unchanged;
+    a Codex claim about read volume uses the tool-output proxy and says so.
 - **Auditor exception:** for implementation discovered during an audit, the Auditor Main uses
   `gpt-5.6-terra` subagents for the focused work and keeps its main thread available for audit
   intake, subagent control, and acceptance. This is a role-specific floor, not a model identity.
