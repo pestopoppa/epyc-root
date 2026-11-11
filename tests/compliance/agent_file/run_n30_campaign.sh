@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "SUPERSEDED 2026-11-07: use /mnt/raid0/llm/tmp/afc-p5e3-n30-20261107/launch.sh via the rowflow rows (roster + kernel path here are stale)" >&2; exit 64
 # AFC-P5.E3 — n=30 compliance campaign (suite v2), sequential bench-style servers.
 # Usage: region-lock run --cpu-list 0-95 -- bash tests/compliance/agent_file/run_n30_campaign.sh
 # Incremental persistence: one JSON per (model, level); campaign.log per step.

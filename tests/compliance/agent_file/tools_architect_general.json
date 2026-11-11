@@ -1,0 +1,765 @@
+[
+ {
+  "type": "function",
+  "function": {
+   "name": "http_get",
+   "description": "Fetch content from a URL via HTTP GET",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "description": "URL to fetch"
+     },
+     "headers": {
+      "type": "object",
+      "description": "Optional headers"
+     },
+     "timeout": {
+      "type": "integer",
+      "description": "Timeout in seconds"
+     }
+    },
+    "required": [
+     "url"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "http_post",
+   "description": "Send data to a URL via HTTP POST",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string"
+     },
+     "data": {
+      "type": "object",
+      "description": "JSON body"
+     },
+     "headers": {
+      "type": "object"
+     },
+     "timeout": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "url"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "web_search",
+   "description": "Search the web using DuckDuckGo (no API key needed)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer"
+     },
+     "region": {
+      "type": "string",
+      "description": "Region code"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "web_research",
+   "description": "Deep web research: search, fetch top pages, and synthesize with worker models. Returns dense summaries instead of bare snippets.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer",
+      "description": "Maximum search results to retrieve"
+     },
+     "max_pages": {
+      "type": "integer",
+      "description": "Maximum pages to fetch and synthesize"
+     },
+     "domain_filter": {
+      "type": "string",
+      "description": "Optional domain filter (e.g. docs.python.org)"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "fetch_wikipedia",
+   "description": "Fetch Wikipedia article summary",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string",
+      "description": "Article title"
+     },
+     "sentences": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "title"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_arxiv",
+   "description": "Search arXiv for academic papers by keyword, author, or topic",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query (supports arXiv syntax)"
+     },
+     "max_results": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_papers",
+   "description": "Search Semantic Scholar for academic papers with citation data",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer"
+     },
+     "year_range": {
+      "type": "string",
+      "description": "Year range filter (e.g. 2020-2025)"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_wikipedia",
+   "description": "Search Wikipedia for articles matching a query (returns summaries)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer"
+     },
+     "language": {
+      "type": "string",
+      "description": "Wikipedia language code"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "get_wikipedia_article",
+   "description": "Fetch the full text of a Wikipedia article by title",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "title": {
+      "type": "string",
+      "description": "Exact article title"
+     },
+     "language": {
+      "type": "string",
+      "description": "Wikipedia language code"
+     }
+    },
+    "required": [
+     "title"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "search_books",
+   "description": "Search Google Books for publications",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query"
+     },
+     "max_results": {
+      "type": "integer"
+     },
+     "filter": {
+      "type": "string",
+      "description": "Filter: ebooks, free-ebooks, paid-ebooks, partial, full"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "json_query",
+   "description": "Query JSON data using JMESPath expressions",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "object",
+      "description": "JSON data to query"
+     },
+     "query": {
+      "type": "string",
+      "description": "JMESPath expression"
+     }
+    },
+    "required": [
+     "data",
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "csv_to_json",
+   "description": "Convert CSV data to JSON array",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "csv_content": {
+      "type": "string",
+      "description": "CSV string"
+     },
+     "delimiter": {
+      "type": "string"
+     },
+     "has_header": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "csv_content"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "json_to_csv",
+   "description": "Convert JSON array to CSV",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Array of objects",
+      "items": {}
+     },
+     "columns": {
+      "type": "array",
+      "description": "Column order (optional)",
+      "items": {}
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "sql_query",
+   "description": "Execute SQL query on in-memory SQLite database",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "SQL query"
+     },
+     "tables": {
+      "type": "object",
+      "description": "Dict of table_name -> list of dicts"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_braille",
+   "description": "Create braille character plot for terminal (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "array",
+      "description": "X coordinates",
+      "items": {}
+     },
+     "y": {
+      "type": "array",
+      "description": "Y coordinates",
+      "items": {}
+     },
+     "plot_type": {
+      "type": "string",
+      "description": "scatter, line"
+     },
+     "width": {
+      "type": "integer"
+     },
+     "height": {
+      "type": "integer"
+     },
+     "title": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_function",
+   "description": "Plot mathematical function (sin, cos, exp, etc.)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "function": {
+      "type": "string",
+      "description": "sin, cos, exp, log, x^2, x^3, sqrt, tanh, sigmoid, gaussian"
+     },
+     "x_min": {
+      "type": "number"
+     },
+     "x_max": {
+      "type": "number"
+     },
+     "width": {
+      "type": "integer"
+     },
+     "height": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "function"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "histogram",
+   "description": "Create histogram from data (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "data": {
+      "type": "array",
+      "description": "Data values",
+      "items": {}
+     },
+     "bins": {
+      "type": "integer"
+     },
+     "width": {
+      "type": "integer"
+     },
+     "height": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "data"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "plot_sixel",
+   "description": "Create high-resolution sixel graphics plot (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "x": {
+      "type": "array",
+      "description": "X coordinates",
+      "items": {}
+     },
+     "y": {
+      "type": "array",
+      "description": "Y coordinates",
+      "items": {}
+     },
+     "plot_type": {
+      "type": "string"
+     },
+     "width": {
+      "type": "integer",
+      "description": "Pixel width"
+     },
+     "height": {
+      "type": "integer",
+      "description": "Pixel height"
+     },
+     "title": {
+      "type": "string"
+     },
+     "colors": {
+      "type": "array",
+      "description": "Color palette",
+      "items": {}
+     }
+    },
+    "required": [
+     "x",
+     "y"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "render_math",
+   "description": "Render LaTeX to Unicode/ASCII (C++)",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "latex": {
+      "type": "string",
+      "description": "LaTeX expression"
+     },
+     "format": {
+      "type": "string",
+      "description": "unicode or ascii"
+     }
+    },
+    "required": [
+     "latex"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "embed_text",
+   "description": "Generate embedding for text",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string"
+     },
+     "side": {
+      "type": "string",
+      "description": "Embedding role; required when the EG2 seam is enabled"
+     }
+    },
+    "required": [
+     "text"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "similarity_search",
+   "description": "Find similar items by embedding",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string"
+     },
+     "items": {
+      "type": "array",
+      "description": "Array of strings to search",
+      "items": {}
+     },
+     "top_k": {
+      "type": "integer"
+     }
+    },
+    "required": [
+     "query",
+     "items"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "classify_text",
+   "description": "Classify text into categories",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string"
+     },
+     "categories": {
+      "type": "array",
+      "description": "Possible categories",
+      "items": {}
+     }
+    },
+    "required": [
+     "text",
+     "categories"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_create",
+   "description": "Create a task to track a unit of work.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "subject": {
+      "type": "string",
+      "description": "Brief imperative title"
+     },
+     "description": {
+      "type": "string",
+      "description": "What needs to be done"
+     },
+     "active_form": {
+      "type": "string",
+      "description": "Present continuous status text"
+     }
+    },
+    "required": [
+     "subject",
+     "description"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_update",
+   "description": "Update task status.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "task_id": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "task_id"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "task_list",
+   "description": "List tracked tasks for this request.",
+   "parameters": {
+    "type": "object",
+    "properties": {}
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "budget_override",
+   "description": "Request additional tool budget for active task.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "category": {
+      "type": "string",
+      "description": "Budget category: read|write|exec|llm"
+     },
+     "reason": {
+      "type": "string",
+      "description": "Why extra budget is needed"
+     }
+    },
+    "required": [
+     "category"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_profile",
+   "description": "Retrieve the current user profile (preferences, facts, background).",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "user_id": {
+      "type": "string",
+      "description": "User identifier"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_search",
+   "description": "Search stored user facts by keyword.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query (case-insensitive substring)"
+     },
+     "user_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_context",
+   "description": "Get contextual answer about the user's preferences or background.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "question": {
+      "type": "string",
+      "description": "Question about user preferences"
+     },
+     "user_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "question"
+    ]
+   }
+  }
+ },
+ {
+  "type": "function",
+  "function": {
+   "name": "user_conclude",
+   "description": "Persist a durable user preference or fact. Scanned for injection safety.",
+   "parameters": {
+    "type": "object",
+    "properties": {
+     "fact": {
+      "type": "string",
+      "description": "The preference or fact to store"
+     },
+     "category": {
+      "type": "string",
+      "description": "One of: general, format, workflow, style, domain"
+     },
+     "user_id": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "fact"
+    ]
+   }
+  }
+ }
+]
