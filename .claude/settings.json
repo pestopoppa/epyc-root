@@ -52,6 +52,11 @@
           },
           {
             "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_inference_launch_claim.sh\"",
+            "timeout": 5
+          },
+          {
+            "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_git_clean_untracked.py\"",
             "timeout": 10
           },

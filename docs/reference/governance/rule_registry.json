@@ -657,6 +657,25 @@
    "enforcement_class": "prose",
    "enforcement_points": [],
    "notes": ""
+  },
+  {
+   "id": "INFER-LAUNCH-REGION-CLAIM",
+   "rule": "Never launch a self-run inference process without a held region claim covering it.",
+   "source": {
+    "file": "agents/shared/OPERATING_CONSTRAINTS.md",
+    "anchor": "Never launch a process that runs inference ITSELF"
+   },
+   "enforcement_class": "hard",
+   "enforcement_points": [
+    {
+     "kind": "claude-hook",
+     "path": "scripts/hooks/check_inference_launch_claim.sh",
+     "mode": "block",
+     "event": "PreToolUse",
+     "matcher": "Bash"
+    }
+   ],
+   "notes": "REG-ENF-2. Fail-open on non-launch; fail-closed on unreadable claim state. Operator override EPYC_ALLOW_UNCLAIMED_LAUNCH=1."
   }
  ]
 }
