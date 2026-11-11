@@ -31,6 +31,9 @@ PY="$(command -v python3)"
 export GIT_CONFIG_GLOBAL=/dev/null GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t \
        GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
 
+# Never read the live host's grants: every refresher run below sees this (empty unless a case writes a grant).
+export QUIET_HOST_FLAGS="$TMP/qflags"; mkdir -p "$QUIET_HOST_FLAGS/grants"
+
 pass=0; fail=0
 chk() { if [ "$2" = "$3" ]; then echo "  PASS  $1"; pass=$((pass+1));
         else echo "  FAIL  $1 (got $2, want $3)"; fail=$((fail+1)); fi; }
@@ -119,6 +122,27 @@ git -C "$VIEW" remote set-url origin "$ORIGIN"
 LOGF="$TMP/refresh.log"
 HUB_VIEW_LOG="$LOGF" "$REFRESH" "$VIEW" 2>/dev/null
 chk "A8 HUB_VIEW_LOG receives the result line" "$(grep -c '\[hub-view\] refresh view=' "$LOGF")" 1
+
+# A10. quiet-host deferral: heavy regeneration defers under a live whole-host grant, runs without one.
+printf 'holds=q0,q1,q2,q3,gpu-quiet owner=test\n' > "$QUIET_HOST_FLAGS/grants/g-test.grant"
+touch -d '-2 hours' "$VIEW/handoffs/active/.index-graph.json"
+n_before="$(wc -c < "$VIEW/regen.count")"
+LOGQ="$TMP/quiet.log"
+HUB_VIEW_LOG="$LOGQ" "$REFRESH" "$VIEW" 2>/dev/null; rc=$?
+chk "A10 grant live -> rc 0" "$rc" 0
+chk "A10 grant live -> generators did NOT run" "$(wc -c < "$VIEW/regen.count")" "$n_before"
+chk "A10 grant live -> DEFER-QUIET-HOST logged" "$(grep -c '\[hub-view\] DEFER-QUIET-HOST' "$LOGQ")" "2"
+chk "A10 grant live -> result says deferred" "$(grep -c 'regen=no(quiet-host-deferred)' "$LOGQ")" 1
+chk "A10 grant live -> view still clean" "$(git -C "$VIEW" status --porcelain | wc -l)" 0
+rm -f "$QUIET_HOST_FLAGS/grants/g-test.grant"
+"$REFRESH" "$VIEW" 2>/dev/null
+chk "A11 no grant -> generators run (deferred work caught up)" "$(wc -c < "$VIEW/regen.count")" "$((n_before+1))"
+# an expired grant defers nothing
+printf 'holds=q0,q1,q2,q3,gpu-quiet end=2000-01-01T00:00:00Z\n' > "$QUIET_HOST_FLAGS/grants/g-old.grant"
+touch -d '-2 hours' "$VIEW/handoffs/active/.index-graph.json"
+"$REFRESH" "$VIEW" 2>/dev/null
+chk "A12 expired grant -> still runs" "$(wc -c < "$VIEW/regen.count")" "$((n_before+2))"
+rm -f "$QUIET_HOST_FLAGS/grants/g-old.grant"
 
 # ------------------------------------------- A9. one regen per BATCH (debounce) #
 # TOKEN-REGEN-TRIPLE-DEBOUNCE: three commits landing in one batch must cost ONE regen,

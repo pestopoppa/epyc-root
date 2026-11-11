@@ -52,6 +52,11 @@ PY="${HUB_VIEW_PYTHON:-$(command -v python3 || true)}"
 GATE="${HUB_VIEW_REGEN_GATE:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../coordination/index_regen.py}"
 GATE_FLAGS="${HUB_VIEW_GATE_FLAGS:-/mnt/raid0/llm/tmp/compute-flags}"
 GATE_QUIET_S="${HUB_VIEW_GATE_QUIET_S:-180}"
+# The ONE quiet-host check (scripts/coordination/quiet_host.py). Heavy regeneration (index_state.py, and
+# build_handoff_timeline.py's `git log -M -p` over handoffs/) defers under a live whole-host grant and otherwise
+# runs niced; the cheap fetch + checkout above it always runs. Origin: 2026-11-10 23:36Z, AutoKernel
+# ak-c10-q38fn-floor-r4-20261110 failed closed on this job's `git log -p -- handoffs/`.
+QUIET="${HUB_VIEW_QUIET_HOST:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../coordination/quiet_host.py}"
 
 log() {
   local line
@@ -181,23 +186,43 @@ fi
 
 rc=0
 regen="no"
+deferred=0
 if [[ -n "${regen_reason}" ]]; then
   regen="yes(${regen_reason})"
   if [[ -z "${PY}" ]]; then
     log "regen SKIPPED: no python3"; rc=1
   else
-    if ! (cd "${VIEW}" && "${PY}" scripts/handoffs/index_state.py >/dev/null 2>>"${LOG_FILE:-/dev/stderr}"); then
-      log "WARN: index_state.py failed in ${VIEW}"; rc=1
-    fi
-    if ! (cd "${VIEW}" && "${PY}" scripts/handoffs/build_handoff_timeline.py --repo "${VIEW}" >/dev/null 2>>"${LOG_FILE:-/dev/stderr}"); then
-      log "WARN: build_handoff_timeline.py failed in ${VIEW}"; rc=1
-    fi
+    # quiet_host.py exec: exit 75 under a live grant (DEFER-QUIET-HOST on stderr -> the log), else nice/ionice.
+    # A missing helper fails open to a plain nice -n 19 run.
+    qexec() {  # TAG cmd...  (cwd = view)
+      local tag="$1"; shift
+      if [[ -f "${QUIET}" ]]; then
+        "${PY}" "${QUIET}" exec "${tag}" -- "$@"
+      else
+        nice -n 19 "$@"
+      fi
+    }
+    for step in index_state build_handoff_timeline; do
+      if [[ "${step}" == "index_state" ]]; then
+        cmd=("${PY}" scripts/handoffs/index_state.py)
+      else
+        cmd=("${PY}" scripts/handoffs/build_handoff_timeline.py --repo "${VIEW}")
+      fi
+      src=0
+      (cd "${VIEW}" && qexec "hub-view-${step}" "${cmd[@]}" >/dev/null 2>>"${LOG_FILE:-/dev/stderr}") || src=$?
+      if [[ "${src}" == "75" ]]; then
+        log "DEFER-QUIET-HOST hub-view-${step}: quiet-host grant live; regeneration skipped this pass"
+        deferred=1
+      elif [[ "${src}" != "0" ]]; then
+        log "WARN: ${step} failed in ${VIEW}"; rc=1
+      fi
+    done
   fi
   # --- 4. keep the view byte-identical to origin/main ----------------------- #
   # index_state.py splices its rollup into the tracked master index. Revert any
   # tracked edit. Only the touched files are rewritten, so dashboard/ mtimes stay.
   # Record the regen against the gate so the next head move is judged since THIS one.
-  if [[ "${rc}" == "0" && -f "${GATE}" ]]; then
+  if [[ "${rc}" == "0" && "${deferred}" == "0" && -f "${GATE}" ]]; then
     "${PY:-python3}" "${GATE}" --gate hub-view --record --worktree "${VIEW}" --flags "${GATE_FLAGS}" \
       >/dev/null 2>>"${LOG_FILE:-/dev/stderr}" || log "WARN: could not record hub-view regen state"
   fi
@@ -209,9 +234,10 @@ if [[ -n "${regen_reason}" ]]; then
 fi
 
 [[ "${gated}" == "yes" ]] && regen="no(gated)"
+[[ "${deferred}" == "1" ]] && regen="no(quiet-host-deferred)"
 log "refresh view=${VIEW} head=${moved} regen=${regen} rc=${rc}"
 if [[ "${rc}" == "0" ]]; then
-  regenerated=0; [[ -n "${regen_reason}" ]] && regenerated=1
+  regenerated=0; [[ -n "${regen_reason}" && "${deferred}" == "0" ]] && regenerated=1
   report_status true done "" "${regenerated}"
 else
   report_status false regen "artifact regeneration failed; see ${LOG_FILE:-stderr}" 0
