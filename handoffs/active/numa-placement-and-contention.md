@@ -394,10 +394,10 @@ the machine.
       `8187/8287/8387/8487` **never existed** and are declared in
       `src/config/models.py` (see the comment at `:273`) and
       `stack_templates/default.yaml:145-148`.
-- [ ] **P1-8. Land `region_lock_wait_s_by_holder` telemetry BEFORE exposing any
+- [x] **P1-8. Land `region_lock_wait_s_by_holder` telemetry BEFORE exposing any
       routing knob to autopilot.** A lever autopilot can move but cannot score is
       exactly how `dual-half-negative` (P1-3) got mislearned. This ordering is the
-      point of the task.
+      point of the task. ✅ 2026-11-11 (pipeline-mgmt) — autopilot-visible reader orchestrator `cfa503e5` (read-only, surfaced in the optimization brief; no routing knob). [no-belief: telemetry plumbing, not a measurement]
       - *(2026-11-09, inf45-zerocompute.)* Telemetry merged (`0b342a07`, dispatch log `aa86437c`); an autopilot-visible reader is still needed. It adds `region_lock_wait_s_by_holder()` (blocked-wait seconds + count keyed by holder role from the lock payload, observation-only, process-local) in `src/runtime/cpu_region_lock.py`, 3 new tests + 183-test lock/topology suite green. Surfaced additively as `region_lock_wait_s_by_holder` (process-cumulative) on every `dispatch.v1` dispatch record, with tests (77 pass); the dashboard route is untouched. Unticked until the branch is merged and an autopilot-visible reader exists.
 - [x] **P1-9. Delete-candidate: `scripts/server/quarter_scheduler.py` — ADJUDICATED: DO NOT
       DELETE.** ✅ 2026-08-12 (`mainA`) — orchestrator `1fe3b57e`, additive only (+83/-0). Two of
@@ -1233,7 +1233,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       the old model is wrong the instant the model changes; splitting them is how every stale prior
       corrected today was minted. `frontdoor.shared_with` must become `[worker_summarize]` in the
       same commit that moves `coder_escalation`.
-- [ ] **W2. Era plumbing for `cost` BEFORE regenerating.** `active_instrument_eras` exists only for
+- [x] **W2. Era plumbing for `cost` BEFORE regenerating.** `active_instrument_eras` exists only for
       `eval_quality`; `baseline_state.cost` is a bare `0.5` with no era field, and
       `safety_gate.py:1193`'s own docstring says it is *"inert (always False) when no active era is
       set."* Cost is exactly the dimension the q_scorer normalizer moves (+65% frontdoor, +48%
@@ -1241,6 +1241,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       enforcement. Add `active_instrument_eras.cost`, stamp `baseline_state.cost_era`, clone the
       staleness check at `safety_gate.py:782/1020/1087/1193`. Mechanism is live and exercised —
       `eval_quality_era` is E7 against an active E8 right now.
+      ✅ 2026-11-11 (pipeline-mgmt) — orchestrator `9ce3f4b3`: `baseline.cost_era`, `active_instrument_eras.cost`, `cost_rebaseline_required` (inert when unset). [no-belief: plumbing, not a measurement]
       Rescore was **declined** on facts: `strategy_store.db` is 0 bytes and `warm_start.py` has no
       journal references, so nothing replays old-normalization scores.
 - [x] **W3. Regenerate `derived/stack_priors.yaml`** ✅ 2026-07-31 — orchestrator `ed891211`.
@@ -1262,6 +1263,7 @@ now trustworthy, where before they were not. Verified against the live registry 
       while still reporting 22 targets — invisible. Also `:829` (errors 12→0), `:962` (model-path
       coverage 10/10→8/10), `:1184`, `:1669`. **The correct pattern already exists in the same file**
       at `:1188` and `:1724` — inconsistently applied, so the fix is small.
+      - *(2026-11-11, pipeline-mgmt; PARTIAL, box stays open.)* Orchestrator `15402376` closes the remaining fail-open paths in the launch view and serving alignment; the rest of the seven guards are not yet proven closed against `/mnt/raid0/llm/tmp/guard-audit/`. [no-belief: partial]
 - [x] **W7. Make the ratify scripts emit a receipt.** `MEASUREMENT.md:138-145` requires a ✅ 2026-10-29 (audit: root cb6ea5093 (2026-08-02) "W7: ratification receipts"; scripts/operator/ratification_receipt.py + check_ratifier_receipt_contract.sh exist; 25e399bf3/c97a8b552 (2026-10-27) emit the section-5 receipt) [no-belief: audit-reconciliation]
       consolidated bundle with evidence hashes and an exact state diff; none of the three 2026-07
       ratifications emitted one. These scripts amend the file defining what a valid verification is,

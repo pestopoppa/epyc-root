@@ -37,3 +37,24 @@
 Two manifest-less ended rows not counted by the script: `c7-q38-ppl-bisect-20261106-r2` (main-inf22, rc 0, its box AK-ASM-C7-Q38-BISECT already ticked) and `c2-q38fn-aa-floor` (complete, no handoff hit). Both forwarded; they need `file_result.py --no-manifest` from their owner.
 
 No boxes were ticked: none of the rows is owned by pipeline-mgmt. [no-belief: filing audit, not a result]
+
+## Wrap-up 2 (since 956c95b54)
+
+| Item | Pointer |
+|---|---|
+| `c2-q38fn-aa-floor` filed WITHDRAWN (operator skipped it 10-22) | filing-done |
+| `vidya-kvq-v10-sweep-20261107` filed as a failure; VB-KVQ-V10-INGEST stays open | root `dda834b43` |
+| Index regen | root `4b852fb82` |
+| C10 accept script path-set fix and C10 floor ratification | root `888481bc8`; research `13a0678ee`, `520395b72`, `e3aac480b` |
+| LR-11 signed; OP-LR11-LR13 queue row removed | root `c58f8da6c`, `e6111df1a` |
+| INF-45 code: W2 era plumbing, P1-8 reader, W6 partial; research parser bug and signed decouple | orch `9ce3f4b3`, `cfa503e5`, `15402376`; research `18d0c3ea` |
+| RTG-34 batch: ① REG-ENF-2 `b6b761603`, ② DP-4 `d2aa30025`, REG-ENF-1 drift fix `873095891`; ③ OBS-CHURN-UP and ④⑤ smoke-complete + pick id still being landed by another subagent | root |
+| Operator decisions: "Hold smokes", "Cap backfill at T" (`c046a6b4a`), "Requeue same id", P2-3 "Ratify all now" | — |
+| P2-3 ratify package, waiting for the operator to run it in a terminal | root `87eb4c431` |
+| R1a and judge79 rows published | root `bef92ac82` |
+| AutoKernel afc-r3 withdrawal alarm was false: f2 had withdrawn those rows at 14:09 | — |
+| New feedback memory: ratify scripts must be apply-tested | memory |
+
+Boxes ticked this wrap-up (pipeline-mgmt-owned): REG-ENF-1, REG-ENF-2, DP-4 (coordination-and-churn-pipeline.md); INF-45 P1-8 and W2 (numa-placement-and-contention.md). W6 has a PARTIAL note and stays open. [no-belief: tooling/plumbing, not results]
+
+Filing re-audit 14:32Z: UNFILED-ENDED 1, `afc-v3b-q38_flash-tools-none-r2-20261111` (f2, just finished). Left to its owner.

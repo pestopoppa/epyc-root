@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 574
+      "open": 572
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 475
+      "open": 473
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 333,
+      "closed": 336,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 17,
+      "open": 14,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -641,20 +641,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 142,
+          "closed": 145,
           "gates": [],
           "guarded": 0,
           "line": 19,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 6
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 2446,
+          "line": 2454,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 1
@@ -664,7 +664,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2453,
+          "line": 2461,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 4
@@ -674,7 +674,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2930,
+          "line": 2938,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -689,7 +689,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3375,
+          "line": 3383,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4890,
+          "line": 4898,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,7 +721,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5550,
+          "line": 5558,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 4
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5739,
+          "line": 5748,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 1
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6295,
+          "line": 6304,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -863,7 +863,7 @@
       "closed": 300,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 80,
+      "open": 81,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 380,
+      "total": 381,
       "tracks": [
         {
           "blocked": 0,
@@ -942,7 +942,7 @@
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 9
+          "open": 10
         }
       ]
     },
@@ -1926,10 +1926,10 @@
     },
     "numa-placement-and-contention.md": {
       "blocked": 1,
-      "closed": 231,
+      "closed": 233,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 22,
+      "open": 20,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1942,20 +1942,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 108,
+          "closed": 110,
           "gates": [],
           "guarded": 0,
           "line": 41,
           "markers": 1,
           "name": "numa-placement-and-contention",
-          "open": 16
+          "open": 14
         },
         {
           "blocked": 0,
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1676,
+          "line": 1678,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2761,
+          "line": 2763,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4309,
+          "line": 4311,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4942,
+          "line": 4944,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5475,
+          "line": 5477,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
