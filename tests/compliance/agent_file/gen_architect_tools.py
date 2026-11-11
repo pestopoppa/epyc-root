@@ -1,4 +1,8 @@
-"""Generate the OpenAI-style `tools` array offered to architect_general (AFC-P5.E3 r6).
+"""SUPERSEDED by gen_role_tools.py (v3c): the category table below (executor.py ROLE_PERMISSIONS) is legacy and
+unused on the production serving path, so its tool sets differ from what the orchestrator actually enforces.
+Kept because v3/v3b rows cite tools_*.json produced here.
+
+Generate the OpenAI-style `tools` array offered to architect_general (AFC-P5.E3 r6).
 
 Source of truth (read-only, epyc-orchestrator):
   orchestration/tool_registry.yaml            -- tool specs
