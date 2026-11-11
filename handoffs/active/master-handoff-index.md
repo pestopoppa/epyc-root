@@ -41,7 +41,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-OPENCODE-RECLAIM | Reclaim ~26 GB of opencode DB: a live copy plus hourly root snapshots (not growing; last use 10-20). Options: keep newest snapshot only, or drop the live copy. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LOOP-34 | 2026-10-29 |
 | OP-HOSTMEM | Apply RATIFY-HOST-MEMORY-RULES-20261021 (3 host-safety rules + INC entry) from a fresh origin/main worktree, then the printed host earlyoom drop-in (dry-run gate first). | [non-inference-backlog.md](engineering-hygiene-backlog.md) NIB2-98 | 2026-10-21 |
 | OP-OPCONST-3C4 | After OP-HOSTMEM lands: ratify two one-line OPERATING_CONSTRAINTS additions (compute-filler guide pointer; subagent close-out wires measurements into the belief kernel). Main prepares the bundle. | [CURRENT-CAMPAIGN.md](CURRENT-CAMPAIGN.md) operator items | 2026-10-21 |
-| OP-DSPARK-RM | Delete `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10.0 GB, unmapped, no live refs; the agent's rm was blocked by the classifier), then the graveyard row. | [deepseek-v41-flash-evaluation.md](deepseek-v41-flash-evaluation.md) DS41-W7.2 | 2026-10-22 |
 | OP-PQP | Lifetime promotion error budget: recommend (a) status quo plus the SEQ-5 ledger; options in the plan DP-A. Human-amendment only. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
 | OP-ABSEQ | Sequential paired e-process for P-AB-1: recommend (a) no amendment. DP-B. | harness-improvement-loop.md HIL-9 item 11 | 2026-10-20 |
 | OP-ALPHAWIN | Rolling-window fingerprint alpha budget: recommend (a) status quo plus reporting. DP-C. | autopilot-sequential-allocation.md SEQ-5 | 2026-10-20 |
@@ -139,7 +138,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 16 | 578 | 50 | 2026-11-03 |
+| inference-research | 16 | 577 | 50 | 2026-11-03 |
 | pipeline-integration | 1 | 16 | 0 | 2026-11-10 |
 | research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |

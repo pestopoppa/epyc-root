@@ -1525,9 +1525,10 @@ Working notes (scratch, KEEP until W7): `/mnt/raid0/llm/tmp/ds41-1017-swap/` (`a
     row 98 -> 99, research `7f2f7fece`).
   - The Sept DSpark drafter (9.4 GiB) goes once the W6 drafter passes. That deletion is not yet
     approved; confirm it with the operator.
-  - [ ] **DS41-W7.2 — delete the Sept DSpark drafter `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10,004,008,256 B), then record its graveyard row. PENDING OPERATOR.** No longer needed since DS41-W6.2 was cancelled 2026-10-22. Unmapped, with no live references (checked 2026-10-22). workspace-58's `rm` was BLOCKED by the auto-mode classifier, so the operator runs or approves it. Write no graveyard row until the file is gone. (filed 2026-10-22, workspace-58)
+  - [x] **DS41-W7.2 — delete the Sept DSpark drafter `/mnt/raid0/llm/models/deepseek-ai/DeepSeek-V4.1-Flash-DSpark.gguf` (10,004,008,256 B), then record its graveyard row. PENDING OPERATOR.** No longer needed since DS41-W6.2 was cancelled 2026-10-22. Unmapped, with no live references (checked 2026-10-22). workspace-58's `rm` was BLOCKED by the auto-mode classifier, so the operator runs or approves it. Write no graveyard row until the file is gone. (filed 2026-10-22, workspace-58)
     - 2026-11-02 operator decision: Approve the delete (decisions-batch2-4-20261102.json)
     - 2026-11-09 (AutoKernel wrap check): the file is gone (`ls` finds no `DeepSeek-V4.1-Flash-DSpark.gguf`; only `-1017-DSpark.gguf` remains), so "PENDING OPERATOR" above is stale. No graveyard row for it was found in research or root, so the box stays open for that row only. [no-belief: status correction]
+    - 2026-11-11 graveyard row recorded in the research master registry (research `f7a95d276`, deprecated_models 108 -> 109; lean/derived copy regenerates at the next registry compile). Done. [no-belief: ledger bookkeeping]
 - [ ] DS41-W8 — **Re-point AutoKernel at the MXFP4 expert path.** The DS41 keeps (+7.11% serving;
   keeps 3 and 4 target the Q4_K X4_T kernel) do not apply to MXFP4 experts. After W5, re-anchor the
   DS41 AK campaign on the 1017 MXFP4 artifact and seed the AVX2 `mxfp4_8x8_q8_0` repack GEMV/GEMM as
