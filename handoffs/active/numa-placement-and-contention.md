@@ -1332,6 +1332,12 @@ now trustworthy, where before they were not. Verified against the live registry 
       for null-quality roles, or close the root gap by running the judge suite.
 - [ ] **Run the canonical 79-question judge suite on Qwen3.8-27B-Q8_0.** This is the root close for both
       the three accepted gaps (expiring 2026-09-01) and the `q_scorer` degraded fallback. (re-scoped 2026-11-03 from Qwen3.6-27B: deleted; judge now Qwen3.8-27B-Q8_0)
+      Identity and stop rule (2026-11-11, pipeline-mgmt): quant_build = Qwen3.8-27B-Q8_0 + DFlash2-Q8_0 drafter on the
+      v10 production GPU kernel store, recipe qwen3.8-27b-q8-gpu-dflash2-np4 at `-np 2 -c 196608`; capture with the
+      pinned `run_judge_suite.py` anchor shape (thinking off, suite temperatures, seed 42), graded afterwards by the
+      Claude-as-Judge anchor protocol, reported per suite. Stop-on-answer when >= 70 of 79 questions are captured with
+      a non-empty answer; stop-on-futility on a failed GPU-residency/own-pid proof or > 9 request errors/empty
+      answers; gate-class = futility-only (fixed n = 79, one pass), est 5400 s. Row `inf45-judge79-q38-27b-20261111`.
 - [x] **`stack_templates/default.yaml` has 9 errors the launch gate never sees.** ✅ 2026-10-31 — orchestrator implementation `c01e72bfe8d69a79c955f7d4b2bef5ea459bce96`; `tests/unit/test_stack_template_launch_gate.py` and Git capsule `artifacts/audit/stack-template-launch-gate-20261031/verification.md`; 115 focused tests pass. [no-belief: source launch-gate regression controls]
       `validate_template()` reports them (missing `architect_critic`, `vision_escalation` on retired
       8087, `coder_escalation` aliasing frontdoor, quarter-port rows for quarters retired

@@ -318,7 +318,12 @@ freezes/cutovers, host reboots).
     and released it. Closing this needs one short smoke run (e.g. `-n 128 -r 1` on a small model),
     which under the amended clause needs a held claim rather than an operator signature. Deferred
     by the operator 2026-07-27; until it runs, treat A0 as structurally-verified, not
-    end-to-end-verified.
+    end-to-end-verified. Identity (2026-11-11, pipeline-mgmt): quant_build = v10 production kernel
+    store `llama-bench` via `bench_canonical.sh`, model Qwen2.5-0.5B-Instruct f16, `-n 128 -p 0 -r 1`.
+    Stop-on-answer when bench rc 0 and >= 2 in-run `region-lock status --json` samples show q0-q3 held
+    by a bench-canonical holder and the post-run sample shows none; stop-on-futility on bench rc != 0,
+    no in-run sample showing the claim, or a stale holder after exit; gate-class = futility-only
+    (existence proof, n = 1), est 300 s. Row `rtg34-r1a-bench-claim-20261111`.
 - [x] **R2 — retire per-run operator approval (A1).** ✅ 2026-07-27 — ratified and applied by the
   operator via `artifacts/operator/ratify_inference_gate_amendment_20260727.sh`
   (`OPERATING_CONSTRAINTS.md` → `bc290da2…`). M4's zero-idle acceptance is no longer gated on a
