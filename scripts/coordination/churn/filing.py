@@ -265,8 +265,33 @@ def end_source(path):
     return "smoke-complete" if path and os.path.basename(os.path.dirname(os.path.dirname(path))) == "dryrun" else "grant"
 
 
+def _head1(path):
+    try:
+        with open(path, errors="replace") as fh:
+            return fh.readline().strip()
+    except OSError:
+        return ""
+
+
+def capcut_pending(flags, rid):
+    """D9 (operator "Requeue same id"): grants/<id>.ended is the engine's hard-end kill at the keeper's OWN drain cap
+    (rc=75 reason=hard-end, grant cap-stamped in grants/.capcut/stamps/<id>.cap with end == cap). The keeper requeues it
+    under the same id next tick, so filing must not file it. Mirrors rowflow.capcut_pending."""
+    g = os.path.join(flags, "grants")
+    if os.path.exists(os.path.join(g, rid + ".complete")):
+        return False
+    h = _head1(os.path.join(g, rid + ".ended"))
+    if not (re.search(r"(^|\s)rc=75(\s|$)", h) and re.search(r"(^|\s)reason=hard-end(\s|$)", h)):
+        return False
+    st = _head1(os.path.join(g, ".capcut", "stamps", rid + ".cap"))
+    se, ge = re.search(r"\bend=(\S+)", st), re.search(r"\bend=(\S+)", _head1(os.path.join(g, rid + ".grant")))
+    return bool(re.search(r"\bcap=\d+", st) and se and ge and se.group(1) == ge.group(1))
+
+
 def load_end(flags, rid):
     # An existing grants/<id>.ended|.complete always takes precedence over the smoke-complete fallback.
+    if capcut_pending(flags, rid):   # D9: not an end - the keeper requeues it under the same id; nothing to file
+        return None, None, ""
     for suf in (".ended", ".complete"):
         p = os.path.join(flags, "grants", rid + suf)
         if os.path.isfile(p):
@@ -313,7 +338,7 @@ def ended_unfiled(flags):
         for p in glob.glob(os.path.join(flags, "grants", "*" + suf)):
             ids.add(os.path.basename(p)[:-len(suf)])
     ids.update(rid for rid, _ in smoke_complete_ids(flags))
-    return sorted(i for i in ids if not is_filed(flags, i) and not i.startswith("."))
+    return sorted(i for i in ids if not is_filed(flags, i) and not i.startswith(".") and not capcut_pending(flags, i))
 
 
 def _end_info(flags, rid):

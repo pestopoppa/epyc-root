@@ -3974,10 +3974,106 @@ def write_grant(flags, rid, regions, holds, window_s, lock="", end_cap=None):
     line = (f"regions={regions} start={start:%Y-%m-%dT%H:%MZ} end={end:%Y-%m-%dT%H:%MZ} holds={','.join(compress(holds))}"
             + (f" cpus={cpus}" if cpus else "") + (f" lock={lock}" if lock else "") + "\n")
     p = os.path.join(flags, "grants", rid + ".grant")
+    # D9 capcut: the cap stamp is a SIDECAR (grants/.capcut/stamps/<id>.cap), not a grant field - sealed jobs parse
+    # their grant strictly. Written only when end_cap actually shortened end=; an uncapped grant clears a stale stamp.
+    cap_floor = (int(end_cap) // 60) * 60 if end_cap else None
+    if cap_floor is not None and int(end.timestamp()) == cap_floor:
+        write_capstamp(flags, rid, cap_floor, f"{end:%Y-%m-%dT%H:%MZ}")
+    else:
+        clear_capstamp(flags, rid)
     with open(p + ".tmp", "w") as f:
         f.write(line)
     os.replace(p + ".tmp", p)
     return line.strip()
+
+
+# ---------------------------------------------------------------- D9 capcut requeue (operator: "Requeue same id")
+CAPCUT_MAX = 6            # requeues per row per CAPCUT_WINDOW_S; then the row ends normally
+CAPCUT_WINDOW_S = 86400
+
+
+def capcut_dir(flags):
+    return os.path.join(flags, "grants", ".capcut")
+
+
+def capstamp_path(flags, rid):
+    return os.path.join(capcut_dir(flags), "stamps", rid + ".cap")
+
+
+def write_capstamp(flags, rid, cap, end_iso):
+    p = capstamp_path(flags, rid)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p + ".tmp", "w") as f:
+        f.write(f"cap={int(cap)} end={end_iso}\n")
+    os.replace(p + ".tmp", p)
+
+
+def clear_capstamp(flags, rid, archive_as=None):
+    p = capstamp_path(flags, rid)
+    if os.path.exists(p):
+        if archive_as:
+            os.replace(p, archive_as)
+        else:
+            os.remove(p)
+
+
+def capcut_pending(flags, rid):
+    """True when grants/<id>.ended is the engine's hard-end kill AT THE KEEPER'S OWN drain cap: rc=75 reason=hard-end,
+    the grant is cap-stamped and its end= equals the stamped cap. The keeper requeues such a row under the same id;
+    filing must not file it. (The same predicate lives in churn/filing.py:capcut_pending - keep them in step.)"""
+    G = os.path.join(flags, "grants")
+    if os.path.exists(os.path.join(G, rid + ".complete")):
+        return False
+    h = head1(os.path.join(G, rid + ".ended")) or ""
+    if not (re.search(r"(^|\s)rc=75(\s|$)", h) and re.search(r"(^|\s)reason=hard-end(\s|$)", h)):
+        return False
+    st = head1(capstamp_path(flags, rid)) or ""
+    gl = head1(os.path.join(G, rid + ".grant")) or ""
+    se, ge = re.search(r"\bend=(\S+)", st), re.search(r"\bend=(\S+)", gl)
+    return bool(re.search(r"\bcap=\d+", st) and se and ge and se.group(1) == ge.group(1))
+
+
+def capcut_requeue(flags, log=print, now=None):
+    """Each tick, before filing/status: a row cut by our own drain cap is made grantable again under the SAME id -
+    its .ended, .grant and cap stamp move to grants/.capcut/<id>.<ts>.*; the ready manifest is untouched. A row whose
+    owner STOPped it, whose manifest is gone, or that hit CAPCUT_MAX requeues in 24 h ends as today (stamp archived,
+    so filing proceeds). Returns the requeued ids."""
+    now = time.time() if now is None else now
+    G = os.path.join(flags, "grants")
+    out = []
+    for e in sorted(glob.glob(os.path.join(G, "*.ended"))):
+        rid = os.path.basename(e)[:-6]
+        if rid.startswith(".") or not capcut_pending(flags, rid):
+            continue
+        cd = capcut_dir(flags)
+        os.makedirs(cd, exist_ok=True)
+        ts = dt.datetime.fromtimestamp(now, dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        d = load_json(ready_path(flags, rid))
+        sf = resolve_stop_path(d) if d else None
+        hp = os.path.join(cd, rid + ".history.json")
+        hist = [float(x) for x in ((load_json(hp) or {}).get("requeued_at") or []) if now - float(x) < CAPCUT_WINDOW_S]
+        why = None
+        if not d:
+            why = "no ready manifest (withdrawn/moved)"
+        elif sf and os.path.exists(sf):
+            why = f"STOP file {sf} present"
+        elif len(hist) >= CAPCUT_MAX:
+            why = f"requeue limit {CAPCUT_MAX}/24h reached"
+        if why:
+            clear_capstamp(flags, rid, archive_as=os.path.join(cd, f"{rid}.{ts}.cap-final"))
+            log(f"CAPCUT-END {rid}: cut at the drain cap but {why}; ends normally")
+            continue
+        for suf in (".ended", ".grant"):
+            src = os.path.join(G, rid + suf)
+            if os.path.exists(src):
+                shutil.move(src, os.path.join(cd, f"{rid}.{ts}{suf}"))
+        clear_capstamp(flags, rid, archive_as=os.path.join(cd, f"{rid}.{ts}.cap"))
+        hist.append(now)
+        atomic_json(hp, {"id": rid, "requeued_at": hist})
+        log(f"CAPCUT-REQUEUE {rid}: hard-end at the keeper's drain cap; .ended/.grant archived to .capcut/{rid}.{ts}.*, "
+            f"same id grantable again ({len(hist)}/{CAPCUT_MAX} in 24h)")
+        out.append(rid)
+    return out
 
 
 # ---------------------------------------------------------------- invariants (self-healing, every tick)
@@ -4711,6 +4807,10 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         log(f"HOLD present ({','.join(holds)}); nothing allocated"); return []
     seen = set()
     if not dry:
+        try:   # D9: before filing/status passes - a row cut by our own drain cap is requeued under the same id
+            capcut_requeue(flags, log)
+        except Exception as e:  # noqa: BLE001 - never stops allocation
+            log(f"CAPCUT-REQUEUE failed: {type(e).__name__}: {e}")
         try:
             finish_withdrawals(flags, log)
         except Exception as e:  # noqa: BLE001 - never stops allocation
