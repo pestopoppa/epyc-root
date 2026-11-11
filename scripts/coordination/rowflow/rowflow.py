@@ -2519,6 +2519,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
         ports |= {int(x) for x in (c.get("ports") or [])}
     idle = {}
+    plan.idle_entries = {}   # {region: (head, [other rows' reasons])}: the keeper appends WAIT-FOR-SMOKE rows
     for r in sorted(x for x in free if x in REGIONS):
         want = [c for c in pending if any(r in o for o in c["options"])]
         if not want:
@@ -2539,12 +2540,48 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                     why.append("timing row keeps off q3 while a GPU grant is open")
                 elif ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
                     why.append(f"RAM: {c.get('gib')} GiB would leave {ram - float(c.get('gib') or 0):.0f} GiB < {RAM_MARGIN_GIB} margin")
-        idle[r] = f"{c['kind']} {c['id']} " + ("; ".join(why) or "blocked")
-        if c is drain:   # operator 2026-11-10: the drain row's reason must not mask the next row's real blocker
-            other = next((x for x in sorted(want, key=lambda x: (float(x["rank"]), x["id"])) if x is not drain), None)
-            if other is not None:
-                idle[r] += "; also " + _blocked_by(other, r, free, region_ends, region_holders)
+        head = f"{c['kind']} {c['id']} " + ("; ".join(why) or "blocked")
+        # pipeline-mgmt 2026-11-11: EVERY other ready row that could use r, each with its own blocker (the drain row plus
+        # one other row hid busy q3 cores, port/RAM holds and drain-late rows). Diagnostics only: placement is above.
+        rest = [_idle_row_why(x, r, free, ram, gpu_grant_open, ports, drain, T, now, region_ends, region_holders)
+                for x in sorted(want, key=lambda x: (float(x["rank"]), x["id"])) if x is not c]
+        plan.idle_entries[r] = (head, rest)
+        idle[r] = idle_why_line(head, rest)
     return out, idle, pending
+
+
+IDLE_WHY_MAX_ROWS = 8   # rows named per region per IDLE-WHY line; the rest collapse to "+N more"
+
+
+def idle_why_line(head, rest, cap=IDLE_WHY_MAX_ROWS):
+    """ONE line per region: the head row's reason, then up to cap-1 more rows' own reasons, then '+N more'."""
+    rest = list(rest)
+    shown, more = rest[:max(cap - 1, 0)], len(rest) - max(cap - 1, 0)
+    return head + "".join("; also " + e for e in shown) + (f"; +{more} more" if more > 0 else "")
+
+
+def _idle_row_why(c, r, free, ram, gpu_grant_open, ports, drain, T, now, region_ends=None, region_holders=None):
+    """Why ready row c is not on idle region r this tick, from c's OWN constraint: drain-late, arming, port, RAM, a busy
+    region (holder + end), the timing-row q3 rule, or a rank reservation."""
+    head = f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g})"
+    if drain is not None and c is not drain and now is not None and T is not None:
+        need_r = set().union(*drain["options"]) if drain["options"] else set()
+        over = now + book_s(c) > T or now + hold_s(c) > T
+        if over and not cap_ok(c, now, T) and any(r in o and o & need_r for o in c["options"]):
+            return f"{head} drain-late: would end after T {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}"
+    if int(c.get("arm_fails") or 0) > 0:
+        return f"{head} failing to arm (arm_fails={int(c.get('arm_fails') or 0)})"
+    clash = set(ports) & {int(x) for x in (c.get("ports") or [])}
+    if clash:
+        return f"{head} port {','.join(map(str, sorted(clash)))} held by a running grant"
+    if ram - float(c.get("gib") or 0) < RAM_MARGIN_GIB:
+        return f"{head} RAM: {c.get('gib')} GiB would leave {ram - float(c.get('gib') or 0):.0f} GiB < {RAM_MARGIN_GIB} margin"
+    o = next((o for o in c["options"] if r in o), set())
+    if set(o) - set(free):
+        return _blocked_by(c, r, free, region_ends, region_holders)
+    if c.get("bench") and gpu_grant_open and "q3" in o:
+        return f"{head} timing row keeps off q3 while a GPU grant is open"
+    return f"{head} fits but is held for a better-ranked row (rank reservation)"
 
 
 def _blocked_by(c, r, free, region_ends=None, region_holders=None):
@@ -2575,6 +2612,7 @@ plan.drain_lowbusy = []
 plan.no_reserve = []
 plan.caps = []
 plan.hard_end = {}
+plan.idle_entries = {}
 
 
 def quiet_ok_now(flags, now=None):
@@ -4899,6 +4937,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         log_transition(flags, "smoke-hold", {}, log, persist=not dry)
         if GPU in free and not dry and not admit_hold and start_gpu_batch(flags, log):
             free.discard(GPU)  # queued GPU smokes run in the gap before the next GPU grant
+    smoke_waits = []   # [(row, reason)]: ready rows taken out of the planner by WAIT-FOR-SMOKE; still named in IDLE-WHY
     qr = queued_gpu_min_rank(flags)   # operator 2026-11-06: a queued smoke competes by its OWN rank against ready rows
     wait_lines = {}
     if qr is not None:
@@ -4906,6 +4945,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         worse = [c for c in cands if any(GPU in o for o in c["options"]) and c["rank"] > qr
                  and not (qh_hold and c["id"] == qh_hold[0]["id"])]
         if worse:
+            smoke_waits += [(c, f"{c.get('shape') or c['kind']} row {c['id']} (rank {float(c['rank']):g}) WAIT-FOR-SMOKE: "
+                                f"queued GPU smoke rank {qr:g} runs first") for c in worse]
             cands = [c for c in cands if c not in worse]
             wl = f"WAIT-FOR-SMOKE: queued GPU smoke rank {qr:g} runs first; GPU row(s) {','.join(c['id'] for c in worse[:5])} (worse rank) wait"
             wait_lines[wl] = wl
@@ -5056,6 +5097,12 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     for r, why in idle.items():
         if r == GPU and held_back:
             continue   # already reported above with the actual reason; the planner never saw these rows
+        if r in plan.idle_entries:
+            head, rest = plan.idle_entries[r]
+            why = idle_why_line(head, rest + [w for c, w in smoke_waits if any(r in o for o in c["options"])])
+        elif any(r in o for c, _ in smoke_waits for o in c["options"]):
+            sw = [w for c, w in smoke_waits if any(r in o for o in c["options"])]
+            why = idle_why_line(sw[0], sw[1:])
         log(f"IDLE-WHY {r}: {why}")
     for r, why in idle_partial_quarters(flags, free, busy, grants, holders).items():   # idle CPU quarters too
         log(f"IDLE-WHY {r}: {why}")
