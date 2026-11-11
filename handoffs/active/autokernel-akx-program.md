@@ -1400,6 +1400,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
   - 2026-10-04: recipe `GFX90A_ROCM62_V10_RECIPE` and `hip_launch_proof.py` on research main (`9313ad32`). Run 1
     built candidates, but none reached a measured launch (AKX-ALL-15c-1), so no receipt carries a residency proof yet.
 - [ ] **AKX-ALL-15 (G1): MI210 window and handover with the stack owner.** Needs workspace-ec. `:8083` holds
+  - 2026-11-11: OP-AKX-KEEPER-APPROVALS approved (operator, yes to all). Row prepared at `/mnt/raid0/llm/tmp/akx-all-15-window-20261111/` (unpublished, unsmoked). Blockers: stack-owner window open plus grant, no coordinator-daemon (F5 half not exercised), :8083 stopped-by-operator since 2026-10-27. [no-belief: prep]
   - Owner: Pipeline Management (routed by AutoKernel; AK supplies requirements). Action: ROUTE:Pipeline Management. Next: Pipeline Mgmt takes window protocol; AK supplies requirements Evidence: Window/handover/ACK plumbing, owner dormant since 10-07 (AUDIT.md:150) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
   51–59 GiB of 64, so AutoKernel needs an exclusive window:
   1. AutoKernel sends a bus window request to workspace-ec (duration, batches, reason).
@@ -1434,6 +1435,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     Manual `gpu_window park` only writes the window file and does NOT stop servers or free the GPU. Stop servers through `gpu_window_executor open` with a schedule entry and compute grant (60 min default cap; approved schedule policy may allow longer windows). See APP `c7d573c2661dc90aa83494d2b3f9e680742cf1d1` for the CLI warning.
     - 2026-11-07: watchdog liveness check FIXED (orchestrator 35cdc460, `gpu_window_executor.production_liveness`: registered pid via `ps` + :8083 /health, else `holder: none` verdict down/stale; operator-stop marker `logs/stack_stopped_by_operator.json` gives `stopped-by-operator`, no alarm). Box stays open: needs one live restore check once the operator restarts the stack.
   - [x] **AKX-ALL-15b — close review F3/F4/F5/F6 so that AK-requested windows can be ACKed.** (filed 2026-10-04,
+    - 2026-11-11: d6b1a5ac1 is superseded by its rebased copy e50adce0b on research origin/main; no further merge needed. [no-belief: not-a-result]
     - Owner: Pipeline Management (routed by AutoKernel; AK supplies requirements). Action: ROUTE:Pipeline Management. Next: Close F3/F4/F5/F6 items Evidence: Dispatcher plumbing (AUDIT.md:152) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
     workspace-ec; needs a coordinator grant path)
     - F4: a window-scoped flock held in `serial_run`'s parent across batches.

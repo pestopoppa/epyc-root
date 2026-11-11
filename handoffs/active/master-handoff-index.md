@@ -36,7 +36,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-AKX-KEEPER-APPROVALS | Approve: (1) keeper wrapper v13 swap (d9c9e95e5; drain watcher deploys code, not the swap); (2) review+merge research d6b1a5ac1 (F4/F5/F6, 70 tests pass); (3) live AKX-ALL-15 window cycle (drains :8083). | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) KEEPER-WRAPPER-V13-SWAP; [autokernel-akx-program.md](autokernel-akx-program.md) AKX-ALL-15 / 15b | 2026-11-07 |
 | OP-TOKEN-DISPATCHER-RESTART | Dispatcher stays STOPPED (doctrine already ratified 2026-11-06). Before any restart: `handoff_sessions.py preflight-restart` must pass, unpark sessions as needed, Codex reset 2026-11-11. | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) TOKEN-DISPATCHER-RESTART-GATE | 2026-11-06 |
 | OP-WT-NEEDS-HUMAN | 20 NEEDS-HUMAN worktrees (39 GB: llama.cpp-experimental, -preserved-20260724, DS41 experimental trees, ~14 autokernel lanes) — keep, salvage+remove, or per-tree. List: /workspace/tmp/cleanup-20261105/review_triage.md. | [engineering-hygiene-backlog.md](engineering-hygiene-backlog.md) | 2026-11-06 |
 | OP-OPENCODE-RECLAIM | Reclaim ~26 GB of opencode DB: a live copy plus hourly root snapshots (not growing; last use 10-20). Options: keep newest snapshot only, or drop the live copy. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LOOP-34 | 2026-10-29 |
@@ -140,7 +139,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 16 | 577 | 50 | 2026-11-03 |
+| inference-research | 16 | 578 | 50 | 2026-11-03 |
 | pipeline-integration | 1 | 16 | 0 | 2026-11-10 |
 | research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |

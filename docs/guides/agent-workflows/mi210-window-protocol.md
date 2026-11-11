@@ -12,10 +12,10 @@ Owner: operator-adhoc-ops-20261105 (took the lines from dormant workspace-ec, 20
 ## Watchdog (F2)
 `scripts/server/gpu_window_watchdog.cron` (orchestrator) ticks `gpu_window_executor tick` every minute and at boot. Evidence it is live: `/mnt/raid0/llm/tmp/gpu-window/mi210.json.executor-status.json` is rewritten every pass (`verdict ok`, `holder production`, `fresh_for_s 180`). Check: `generated_at_epoch` within 180 s of now.
 
-## AK-requested windows (F3-F6, NACK until a third review ACKs)
+## AK-requested windows (F3-F6, ACK; merged)
 - F3 `--compute-grant` verified against the coordinator grant file: orchestrator `4b871cc5`, on origin/main and in the shared checkout.
-- F4 window-scoped flock, F5 compute-request sender and handshake, F6 `expected_end` abort: research `d6b1a5ac` on `feat/g1-ak-20261004`, not on research main; 70 tests pass there (`test_gpu_window.py`, `test_gpu_window_round2.py`, run 2026-11-07).
-- Gate to ACK: a third review of `d6b1a5ac`, then merge, then one real AK-requested window with receipts.
+- F4 window-scoped flock, F5 compute-request sender and handshake, F6 `expected_end` abort: research `d6b1a5ac` (third review ACK), merged to research main as the rebased `e50adce0b`; 70 tests pass (`test_gpu_window.py`, `test_gpu_window_round2.py`, run 2026-11-07).
+- Remaining gate: one real AK-requested window with receipts (AKX-ALL-15; row `/mnt/raid0/llm/tmp/akx-all-15-window-20261111/`). The F5 sender needs a live coordinator-daemon.
 
 ## Publish-time guard (job.py:46 class)
 `rowflow2.publish` refuses a row whose launcher or sibling `job.py` requires a GPU-quiet ancestor lock unless the row declares `gpu: exclusive` (or `quiet`). Test: `scripts/coordination/rowflow2/tests/test_pass4.py::test_gpu_quiet_guard_cpu_row_refused_at_publish`.
