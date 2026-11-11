@@ -139,8 +139,10 @@ class DiskFloor(Base):
         os.makedirs(big)
         with open(os.path.join(big, "f"), "wb") as f:
             f.write(b"x" * 1024)
-        notify.disk_floor_check(self.flags, os.path.join(self.flags, "st.json"), [], free=1, floor=150, hyst=25,
-                                reclaim_root=os.path.join(self.root, "junk"), log=lambda *_: None)
+        from unittest import mock   # hermetic: a LIVE quiet-host grant on the host must not defer the scan here
+        with mock.patch.object(notify._quiet_host(), "defer", return_value=False):
+            notify.disk_floor_check(self.flags, os.path.join(self.flags, "st.json"), [], free=1, floor=150, hyst=25,
+                                    reclaim_root=os.path.join(self.root, "junk"), log=lambda *_: None)
         self.assertTrue(os.path.exists(os.path.join(big, "f")))
         self.assertEqual(alerts(self.flags)[0]["detail"]["reclaimable_candidates_info_only"][0]["path"], big)
 
