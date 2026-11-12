@@ -761,7 +761,7 @@ Sources: [Progress 3c4ca599 2026-10-24](../progress/2026-10/2026-10-24-3c4ca599.
 - **Prompt content explains the apparent regression**: matched orchestrator-code prompts at 7,167 tokens gave 29.35/30.26 tok/s (acceptance 0.860), and at 14,089 tokens 29.37/29.86 (0.947). The 28k code arms were invalid (EOS on the first token). The prose 16 at 28k is a worst-case prompt, not a kernel regression.
 - **GPU 27B Q8_0 + DFlash2 n8** at 54,329 greedy: f16/n8 across np1/np2/np4 42.8–43.8; q8_0 KV/n7 40–42; short 16k reference 71.06. Slot count is not a speed lever; q8 KV is slower.
 - **Sampling**: Qwen3.8 thinking `1.0/0.95/20/min_p 0/presence 0`; non-thinking `0.7/0.80/20/min_p 0/presence 1.5`; both models share the same official preset because both are hybrid thinking models. Benchmark recipes' `temp 0/top_k 1` are controls, not production sampling.
-- **Launcher**: `scripts/session/launch_local_inference.sh` defaults CPU `t96 + MTP + np4/262144 + f16` and GPU `np4/262144 + f16 + n8 + cache flags`.
+- **Launcher**: `scripts/session/launch_local_inference.sh` defaults CPU `t48 + MTP + np4/262144 + f16` (t48 ratified 2026-11-12, row c10-local-serving-profile-r1-20261111; override CPU_THREADS=96 for 54K+) and GPU `np4/262144 + f16 + n8 + cache flags`.
 
 Sources: [progress](../progress/2026-11/2026-11-06-inference-serving-launch.md) · [artifact](../artifacts/compute/local-launch-optimization-20261106/) · [launcher](../scripts/session/launch_local_inference.sh) · [C6 handoff](../handoffs/active/kernel-champion-and-promotion.md)
 

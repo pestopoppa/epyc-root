@@ -27,13 +27,16 @@
 # The script only ever stops PIDs recorded in its own pidfiles. It never uses
 # a broad process-name or argv pattern, because this is a shared host.
 #
-# Measured 2026-11-06 (54k-token prompt, greedy, C6 champion stores):
-#   CPU thread optimum flips with context: t48 wins at 8-28k (16.07 at 28k),
-#   t96 wins at 55k+ (16.05 vs 14.29 at 54,329 prompt). Default is 96 for the
-#   57k serving workload; use CPU_THREADS=48 for short-context (8k) serving.
+# Ratified 2026-11-12 (operator, decision tool): local long-context CPU profile is
+#   t48 (row c10-local-serving-profile-r1-20261111, verdict CONTEXT_SPLIT: t96 is
+#   12.8% faster at 54K context; t48 is 5.5% faster at 14K and 15.2% faster at 28K).
+#   Default CPU_THREADS=48 (q38fn-cpu-t48 shape); the ~13% loss vs t96 at ~54K+ is
+#   accepted. For 54K+ serving override explicitly: CPU_THREADS=96.
+# Measured 2026-11-06 (54k-token prompt, greedy, C6 champion stores; superseded
+#   default, kept as evidence):
+#   t48 wins at 8-28k (16.07 at 28k), t96 wins at 55k+ (16.05 vs 14.29 at 54,329).
 #   MTP stays ON. At t48/55k, no-MTP was slightly better (15.07 vs 14.29), but
 #   both are below t96+MTP (16.05); at t96/55k, no-MTP collapses to 12.86.
-#   Default is t96 + MTP for the 57k workload.
 #   GPU np4/262k f16 n8: ~43.5 tok/s; np1/196k: ~43.0; 16k greedy: ~71.
 #   Slower variants (do NOT use as defaults): IQK-FA ON, q8_0 KV, unified KV,
 #   DFlash2 n7. Keep f16 / n8 / no-kv-unified.
@@ -51,11 +54,12 @@ CPU_MODEL="${CPU_MODEL:-/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD
 CPU_MTP="${CPU_MTP:-/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf}"
 CPU_NP="${CPU_NP:-4}"
 CPU_CTX="${CPU_CTX:-262144}"
-CPU_THREADS="${CPU_THREADS:-96}"
+# Ratified t48 (c10-local-serving-profile-r1-20261111); override with CPU_THREADS=96 for 54K+.
+CPU_THREADS="${CPU_THREADS:-48}"
 CPU_KV="${CPU_KV:-f16}"
 CPU_UNIFIED="${CPU_UNIFIED:-0}"
 CPU_FA="${CPU_FA:-0}"
-# MTP is ON by default: t96+MTP is the 55k winner (16.05); t96/no-MTP collapses to 12.86.
+# MTP is ON by default (t96/no-MTP collapses to 12.86 at 55k).
 CPU_MTP_ON="${CPU_MTP_ON:-1}"
 CPU_PORT="${CPU_PORT:-8074}"
 
@@ -88,7 +92,7 @@ alive() {
 }
 
 usage() {
-  sed -n '2,32p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,40p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 require_file() {
