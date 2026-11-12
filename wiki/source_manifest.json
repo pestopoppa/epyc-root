@@ -1,30 +1,32 @@
 {
   "by_type": {
-    "docs": 443,
+    "docs": 444,
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1388,
+    "progress": 1389,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 0,
+      "added": 2,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-12T13:34:03Z",
+    "at": "2026-11-12T13:35:14Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-12-workspace-f2.md"
+      "docs/design/integrated-document-aggregation-plan-20261110.md",
+      "handoffs/active/knowledge-pipelines.md",
+      "progress/2026-11/2026-11-12-autopilot-backlog-session.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-12T13:34:03Z",
+  "scan_time": "2026-11-12T13:35:14Z",
   "schema_version": 1,
-  "source_set_hash": "c78e50f3b732eae4b4efc5db5afc0c5f785d91fad4d0d7b93ce0138cc43d4393",
+  "source_set_hash": "2457dddb9f15973a7cfc696c41e0e190768c79a4eeb09eb42749993f2b7f00dd",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -147,10 +149,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "b07d1f4a6c5db902c1d7820a7be116c4bc367ba3df94e8331a82e9403d509fcc",
-      "modified": "2026-11-09T21:31:46Z",
+      "content_hash": "2b4bb0ce5855f179cb7110a89678b1e831f08c8f5f615c576ed7768658fc2da2",
+      "modified": "2026-11-12T13:35:09Z",
       "path": "handoffs/active/knowledge-pipelines.md",
-      "size": 456960,
+      "size": 512306,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -16811,6 +16813,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "675c3d37d0ef44d1f4eacb49fcbff47c7b6732e9271f1db8d3195e54ff1ca0ce",
+      "modified": "2026-11-12T13:35:09Z",
+      "path": "progress/2026-11/2026-11-12-autopilot-backlog-session.md",
+      "size": 2636,
+      "title": "2026-11-12 autopilot-backlog-session",
+      "type": "progress"
+    },
+    {
       "content_hash": "ef0048f2f794f8c399e48821245066926a4bc19ee09c6957cda4b423bbe5543e",
       "modified": "2026-11-12T13:31:36Z",
       "path": "progress/2026-11/2026-11-12-workspace-f2.md",
@@ -17736,6 +17746,14 @@
       "path": "docs/design/inf70-r2362-evidence-20261102/PROPOSED-48-ACCOUNTING.md",
       "size": 5257,
       "title": "Proposed R23-62 48-thread residual-accounting rule \u2014 NOT RATIFIED",
+      "type": "docs"
+    },
+    {
+      "content_hash": "b8ef1563b6f2298b8e29de875259fb14df478cabf795a8dd602b96fa712a24f9",
+      "modified": "2026-11-12T13:35:09Z",
+      "path": "docs/design/integrated-document-aggregation-plan-20261110.md",
+      "size": 28301,
+      "title": "Integrated document aggregation plan: exhaustive QA over 1M+ token corpora",
       "type": "docs"
     },
     {
@@ -20507,7 +20525,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2560,
+  "total_new": 2562,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

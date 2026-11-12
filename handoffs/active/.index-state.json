@@ -25,10 +25,10 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 14,
+      "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 467
+      "open": 469
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -859,11 +859,11 @@
       "total": 24
     },
     "engineering-hygiene-backlog.md": {
-      "blocked": 0,
-      "closed": 303,
+      "blocked": 1,
+      "closed": 305,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 80,
+      "open": 82,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 383,
+      "total": 388,
       "tracks": [
         {
           "blocked": 0,
@@ -935,14 +935,14 @@
           "open": 34
         },
         {
-          "blocked": 0,
-          "closed": 18,
+          "blocked": 1,
+          "closed": 20,
           "gates": [],
           "guarded": 0,
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 9
+          "open": 11
         }
       ]
     },

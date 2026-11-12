@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-12T13:34:08Z",
+  "generated_at": "2026-11-12T13:35:23Z",
   "nodes": [
     {
       "age_days": 2,
@@ -3215,17 +3215,17 @@
     },
     {
       "age_days": 0,
-      "blocked": 0,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 303,
-      "dispatchable": 80,
+      "closed": 305,
+      "dispatchable": 82,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-12",
       "next_action": "AFC-V3C Q38 verdict; TOOLPERM landing after matrix refresh; NIB2-102.b; NIB2-77 from 11-16; LOOP-54 F2/F4 CI; refactor",
-      "open": 80,
+      "open": 83,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3299,11 +3299,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 11,
           "gates": [],
           "line": 2105,
           "name": "repo-readiness-scorer",
-          "open": 9,
+          "open": 12,
           "readiness": "ready"
         }
       ]
