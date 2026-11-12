@@ -4,7 +4,7 @@
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1387,
+    "progress": 1388,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
@@ -15,16 +15,16 @@
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-11T20:48:50Z",
+    "at": "2026-11-12T13:34:03Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-11-workspace-f2.md"
+      "progress/2026-11/2026-11-12-workspace-f2.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-11T20:48:50Z",
+  "scan_time": "2026-11-12T13:34:03Z",
   "schema_version": 1,
-  "source_set_hash": "734558d0fa3307d4896e145cf43ab66c4a8d66c0e677c68d8506b13100349e92",
+  "source_set_hash": "c78e50f3b732eae4b4efc5db5afc0c5f785d91fad4d0d7b93ce0138cc43d4393",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16811,6 +16811,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "ef0048f2f794f8c399e48821245066926a4bc19ee09c6957cda4b423bbe5543e",
+      "modified": "2026-11-12T13:31:36Z",
+      "path": "progress/2026-11/2026-11-12-workspace-f2.md",
+      "size": 2135,
+      "title": "2026-11-12 \u2014 workspace-f2",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-09T21:31:46Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -20499,7 +20507,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2559,
+  "total_new": 2560,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
