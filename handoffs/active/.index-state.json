@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-12",
-      "open": 19
+      "open": 18
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1305,10 +1305,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 125,
+      "closed": 126,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 19,
+      "open": 18,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1381,13 +1381,13 @@
         },
         {
           "blocked": 0,
-          "closed": 12,
+          "closed": 13,
           "gates": [],
           "guarded": 0,
           "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
-          "open": 7
+          "open": 6
         }
       ]
     },
