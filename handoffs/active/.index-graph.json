@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-12T13:35:23Z",
+  "generated_at": "2026-11-12T13:37:41Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2517,7 +2517,7 @@
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-12",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10 scale-accuracy fixes; AGG-1.6, AGG-1.7",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10/1.11 accuracy fixes; AGG-1.6/1.7",
       "open": 18,
       "priority": 0.6185,
       "priority_basis": {

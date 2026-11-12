@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10 scale-accuracy fixes; AGG-1.6, AGG-1.7",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10/1.11 accuracy fixes; AGG-1.6/1.7",
       "track": "internal kb rag"
     },
     "REV-02": {
