@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-11",
-      "open": 17
+      "open": 18
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -627,7 +627,7 @@
       "blocked": 0,
       "closed": 342,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-12",
       "open": 9,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1308,7 +1308,7 @@
       "closed": 120,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 17,
+      "open": 18,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 137,
+      "total": 138,
       "tracks": [
         {
           "blocked": 0,
@@ -1387,7 +1387,7 @@
           "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
-          "open": 5
+          "open": 6
         }
       ]
     },
