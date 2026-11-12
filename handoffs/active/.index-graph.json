@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-12T12:02:39Z",
+  "generated_at": "2026-11-12T13:18:53Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1371,16 +1371,16 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 832,
+      "closed": 833,
       "dispatchable": 137,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-12",
       "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued, quiet-host); H13 r2 queued (1.010 bar confirmed); vLLM AITER r2 queued; GDN-SHARE-1",
       "open": 138,
       "priority": 0.896,
@@ -1435,7 +1435,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6024,
+          "line": 6026,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1444,7 +1444,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6104,
+          "line": 6106,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1463,7 +1463,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6401,
+          "line": 6403,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1480,7 +1480,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9618,
+          "line": 9620,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1493,7 +1493,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13968,
+          "line": 13970,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1527,7 +1527,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14180,
+          "line": 14182,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1924,14 +1924,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 202,
-      "dispatchable": 38,
+      "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-12",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 39,
+      "open": 40,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1965,7 +1965,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 32,
+          "dispatchable": 33,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1974,14 +1974,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 33,
+          "open": 34,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1700,
+          "line": 1701,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1824,
+          "line": 1825,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2154,
+          "line": 2155,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2293,
+          "line": 2294,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2849,
+          "line": 2850,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2989,
+          "line": 2990,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2996,
+          "line": 2997,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2510,14 +2510,14 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 121,
+      "closed": 123,
       "dispatchable": 17,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-12",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.3/1.4 on the 28-doc store",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10 scale-accuracy fixes; AGG-1.6, AGG-1.7",
       "open": 17,
       "priority": 0.6185,
       "priority_basis": {
@@ -3218,14 +3218,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 303,
-      "dispatchable": 79,
+      "dispatchable": 80,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-12",
       "next_action": "AFC-V3C Q38 verdict; TOOLPERM landing after matrix refresh; NIB2-102.b; NIB2-77 from 11-16; LOOP-54 F2/F4 CI; refactor",
-      "open": 79,
+      "open": 80,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3299,11 +3299,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [],
           "line": 2105,
           "name": "repo-readiness-scorer",
-          "open": 8,
+          "open": 9,
           "readiness": "ready"
         }
       ]

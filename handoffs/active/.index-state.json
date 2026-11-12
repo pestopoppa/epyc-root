@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 561
+      "open": 562
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 466
+      "open": 467
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -101,9 +101,9 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 832,
+      "closed": 833,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-12",
       "open": 137,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -113,11 +113,11 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 970,
+      "total": 971,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 378,
+          "closed": 379,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6024,
+          "line": 6026,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6104,
+          "line": 6106,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6401,
+          "line": 6403,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 18
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9618,
+          "line": 9620,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 58
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13968,
+          "line": 13970,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14180,
+          "line": 14182,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -863,7 +863,7 @@
       "closed": 303,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 79,
+      "open": 80,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 382,
+      "total": 383,
       "tracks": [
         {
           "blocked": 0,
@@ -942,7 +942,7 @@
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 8
+          "open": 9
         }
       ]
     },
@@ -1205,7 +1205,7 @@
       "closed": 202,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 38,
+      "open": 39,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1214,7 +1214,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 241,
+      "total": 242,
       "tracks": [
         {
           "blocked": 1,
@@ -1229,14 +1229,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 32
+          "open": 33
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1700,
+          "line": 1701,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1824,
+          "line": 1825,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2154,
+          "line": 2155,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2293,
+          "line": 2294,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2849,
+          "line": 2850,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2989,
+          "line": 2990,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2996,
+          "line": 2997,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1305,7 +1305,7 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 121,
+      "closed": 123,
       "guarded": 0,
       "last_advanced": "2026-11-12",
       "open": 17,
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 138,
+      "total": 140,
       "tracks": [
         {
           "blocked": 0,
@@ -1381,7 +1381,7 @@
         },
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 10,
           "gates": [],
           "guarded": 0,
           "line": 3121,
@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.3/1.4 on the 28-doc store",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10 scale-accuracy fixes; AGG-1.6, AGG-1.7",
       "track": "internal kb rag"
     },
     "REV-02": {
