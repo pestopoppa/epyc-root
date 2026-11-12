@@ -4,13 +4,13 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 562
+      "open": 560
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-12",
-      "open": 18
+      "open": 19
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1186,10 +1186,10 @@
     },
     "hybrid-checkpoint-prompt-reuse.md": {
       "blocked": 0,
-      "closed": 12,
+      "closed": 14,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
-      "open": 9,
+      "last_advanced": "2026-11-12",
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1202,7 +1202,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 202,
+      "closed": 203,
       "guarded": 0,
       "last_advanced": "2026-11-12",
       "open": 39,
@@ -1214,11 +1214,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 242,
+      "total": 243,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 161,
+          "closed": 162,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1236,7 +1236,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1701,
+          "line": 1702,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1825,
+          "line": 1826,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2155,
+          "line": 2156,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2294,
+          "line": 2295,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2850,
+          "line": 2851,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2990,
+          "line": 2991,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2997,
+          "line": 2998,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1308,7 +1308,7 @@
       "closed": 125,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 18,
+      "open": 19,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 143,
+      "total": 144,
       "tracks": [
         {
           "blocked": 0,
@@ -1387,7 +1387,7 @@
           "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
-          "open": 6
+          "open": 7
         }
       ]
     },

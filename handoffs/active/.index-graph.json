@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-12T16:24:07Z",
+  "generated_at": "2026-11-12T19:36:59Z",
   "nodes": [
     {
       "age_days": 2,
@@ -1923,7 +1923,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 202,
+      "closed": 203,
       "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
@@ -1981,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1701,
+          "line": 1702,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1825,
+          "line": 1826,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2155,
+          "line": 2156,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2294,
+          "line": 2295,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2850,
+          "line": 2851,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2990,
+          "line": 2991,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2997,
+          "line": 2998,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2457,20 +2457,20 @@
       "track": "upstream publication"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-83"
       ],
-      "closed": 12,
-      "dispatchable": 9,
+      "closed": 14,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-12",
       "next_action": "CMS512 reload HELD for live-probe row; TEMPLATE reload by owner, then cache_n probe; then G4, G5; v11 fold verdict",
-      "open": 9,
+      "open": 7,
       "priority": 0.003,
       "priority_basis": {
         "campaign": 0,
@@ -2511,14 +2511,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 125,
-      "dispatchable": 18,
+      "dispatchable": 19,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-12",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.12 adopt typed L4 + re-ingest; AGG-1.7",
-      "open": 18,
+      "open": 19,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2592,11 +2592,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 7,
           "gates": [],
           "line": 3121,
           "name": "integrated-aggregation",
-          "open": 6,
+          "open": 7,
           "readiness": "ready"
         }
       ]
