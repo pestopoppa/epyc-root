@@ -1,0 +1,49 @@
+{
+  "schema": "epyc.agent_file_amendment.v1",
+  "gate_id": "RATIFY-AFC-CONFLICT-DIRECTIVE-20261112",
+  "status": "ratified",
+  "ratified_at": "2026-11-12T18:11:33Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-12: operator asked for the agent-file rewording follow-up to be tackled; adopted on measured benefit for both serving models"
+  },
+  "evidence": {
+    "rows": [
+      "afc-v3d-q36_35b-tools-aggressive-reword-20261112",
+      "afc-v3d-q38_flash-tools-aggressive-reword-20261112"
+    ],
+    "q36_compliance_vs_v3c_aggressive": {
+      "d": 0.22,
+      "lb": 0.1525
+    },
+    "q38_compliance_vs_v3c_aggressive": {
+      "d": 0.08,
+      "lb": 0.0238
+    },
+    "regressions": "none (every pool LB > -0.10 vs v3c none for both models)"
+  },
+  "base_origin_main": "767d71b59e403204ca26f2d950b20449307b57e3",
+  "consolidated_receipt": "artifacts/operator/ratify_afc_conflict_directive_20261112.receipt.json",
+  "state": {
+    "agents/shared/ENGINEERING_STANDARDS.md": {
+      "sha256_before": "f319dece71b2c9fde34e07aa56bcf82ea4eab61d79d85ba4c5cfbf37c9fe5db9",
+      "sha256_after": "ad5e8d5f433a514aab5e9f90674f5ca2a4e4a061240d2bd724981341120b2760"
+    },
+    "agents/shared/ENGINEERING_STANDARDS.compressed-mild.md": {
+      "sha256_before": "0010c35fe9b8d8f9f14c81fc90fa5910a5c3e8538cd8679bd225cb1738af4dea",
+      "sha256_after": "98609a2708980ba1bfdcfe6368a2390cd22ee5b6f8c1184e3c7d15ae63acf140"
+    },
+    "agents/shared/ENGINEERING_STANDARDS.compressed-medium.md": {
+      "sha256_before": "08c1348baf07e10f2f0eb9ec64d7d9cecc3cf4a83df8078c0a837529899611b5",
+      "sha256_after": "108c89a68257e7d2fdf16833434f4ddeb66876445e3ec6e8e232d5ea80c1eec0"
+    },
+    "agents/shared/ENGINEERING_STANDARDS.compressed-aggressive.md": {
+      "sha256_before": "5d91b805eeb5bb8b33dc82125c7e6e932d9cdec0977ccdfc62b045bf04d712fa",
+      "sha256_after": "b4dcc85ba882d9307baf6cd13cef540e68d2c6077a5b53475447b33a2dcfc634"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_afc_conflict_directive_20261112.sh",
+  "ratify_script_sha256": "af7f8e528a04326bb4cd21ba818da2694412d7167c0f9e3178bc755393bf84ba",
+  "processes_touched": []
+}
