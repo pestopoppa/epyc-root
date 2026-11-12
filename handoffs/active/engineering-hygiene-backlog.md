@@ -2621,6 +2621,20 @@ Validation:
     - Landing, operator choice (no `--no-verify`): wait for the contention-matrix refresh. It is item 1 of the production relaunch queue, `/mnt/raid0/llm/tmp/relaunch-queue-20261111/README.md`. Production stays down until after the v11 promotion and PaddleOCR.
     - Sequence: matrix refresh → workspace-f2 commits and pushes this package → orchestrator API reload at the inference owner's boundary.
     - AFC-V3C-PROD-TOOLS already uses the signed architect set. [no-belief: operator decision + code change, no measurement]
+- [ ] **AGENTFILE-INJECT-DEPLOY — deliver the measured agent-file operating point to worker_general and architect_general in production.** Before this change, no production path gave a local model any agent file: `agent_file_compression_operating_point` was validated, never applied (trace 2026-11-12). Operator decision 2026-11-12: wire it for both roles.
+  - Code is landed on epyc-orchestrator 440ed243c, behind `agent_file_injection`, which defaults OFF (flag-off prompts are byte-identical; this is tested):
+    - `src/config/agent_files.py` `resolve_agent_file`: an explicit per-role value only;
+    - `src/prompt_builders/agent_file.py`;
+    - injection in `builder.py:267` and `:696`, `chat_pipeline/direct_stage.py:139` and `chat_delegation_reports.py:98`;
+    - role allowlist `ORCHESTRATOR_AGENT_FILE_ROLES`, default `worker_general,architect_general`.
+  - Signed package, still to do, landing with TOOLPERM-DENY-DEFAULT after the production relaunch:
+    1. model_registry.yaml: worker_general gets `agent_file_compression_operating_point: aggressive`; architect_general gets a provenance note, re-measured on Qwen3.8-Flash-Next v3c 2026-11-12 (the old value came from Qwen3.5-122B). Keep the per-server copies near yaml ~2064 and ~2125 consistent.
+    2. If AFC-Q36-AGENTFILE-CTX-REFUSAL passes, land its directive into `agents/shared/ENGINEERING_STANDARDS.md` and regenerate the compressed variants first.
+    3. Set `ORCHESTRATOR_AGENT_FILE_INJECTION=1` in the orchestrator API env (confirm where the stack sets it).
+    4. Reload at the inference owner's boundary.
+  - Cost: about +3,520 chars (~900 tokens) per injected prompt at aggressive.
+  - Not covered: frontdoor root prompts (`stream_adapter.py:207`, `chat.py:1598`); they have no role argument.
+  - Owner workspace-f2.
 - [ ] **LINEUP-CTX-DEPTH-CURVE [inference] — after the NEXT production kernel promotion (v11), measure decode versus context depth for the three lineup models.** Models: Qwen3.6-35B-A3B Q8_0, Qwen3.8-Flash-Next UD-IQ4_XS, Qwen3-VL-30B-A3B Q4_K_M.
   - Why: INF-85 W3 r3 (2026-11-11) published tg128 at depth 0, single stream, 96t, no MTP: 57.01, 25.59 and 84.42 tok/s. That is a best case, not serving throughput.
   - Gated on the v11 promotion: operator 2026-11-11, "we'll do the context-depth curve after the next production kernel promotion". Do not run it on v10.
