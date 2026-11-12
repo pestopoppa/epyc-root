@@ -9,7 +9,7 @@
     "pipeline-integration-index.md": {
       "blocked": 0,
       "handoffs": 1,
-      "oldest_advance": "2026-11-11",
+      "oldest_advance": "2026-11-12",
       "open": 17
     },
     "research-evaluation-index.md": {
@@ -1307,7 +1307,7 @@
       "blocked": 0,
       "closed": 121,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-12",
       "open": 17,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
