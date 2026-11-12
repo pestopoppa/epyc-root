@@ -2937,15 +2937,43 @@ def pid_is_rows(pid, rid, legacy):
     return pid in legacy or (bool(rid) and lineage_filler_id(pid) == rid)
 
 
-def own_pids(flags, g):
-    """Every pid of grant `g`'s row: its cgroup leaves; for a pre-cgroup grant, the grant's and ARMED pid's trees."""
+_CONTAINER_ROW = {}   # container id -> its DOCKER_ROW_LABEL value ("" = unlabelled); only definite answers are cached
+
+
+def container_row(cid):
+    """The row label of container `cid` ("" when it has none), or None when docker could not answer (not cached)."""
+    if cid not in _CONTAINER_ROW:
+        lab = docker_row_label(cid)
+        if lab is None:
+            return None
+        if len(_CONTAINER_ROW) > 512:
+            _CONTAINER_ROW.clear()
+        _CONTAINER_ROW[cid] = lab
+    return _CONTAINER_ROW[cid]
+
+
+def row_container_pids(rid, cand):
+    """The pids of `cand` that run inside a container labelled DOCKER_ROW_LABEL=<rid>. A container's processes are children
+    of containerd-shim, never of the job (vllm-aiter-gfx90a-gpu-20261111-r3: its own vLLM pid read FOREIGN and the row was
+    marked CONTAMINATED). The label is stamped by filler_run15's docker shim; an unlabelled or other-row container stays foreign."""
+    out = set()
+    for q in cand or ():
+        cid = pid_container_id(q)
+        if cid and container_row(cid) == rid:
+            out.add(q)
+    return out
+
+
+def own_pids(flags, g, cand=()):
+    """Every pid of grant `g`'s row: its cgroup leaves; for a pre-cgroup grant, the grant's and ARMED pid's trees. Plus
+    the pids of `cand` (pass the KFD clients) that sit in a container carrying this row's docker label."""
     has, pids = row_leaf_pids(g["id"])
-    if has:
-        return pids
-    for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
-        if str(x or "").isdigit():
-            pids |= tree_pids(int(x)) | {int(x)}
-    return pids
+    if not has:
+        for x in (g.get("pid"), (load_json(armed_path(flags, g["id"])) or {}).get("pid")):
+            if str(x or "").isdigit():
+                pids |= tree_pids(int(x)) | {int(x)}
+    rest = [q for q in (cand or ()) if q not in pids]
+    return pids | row_container_pids(g["id"], rest) if rest else pids
 
 
 def pid_filler_id(pid):   # legacy attribution only (pid_is_rows)
@@ -4299,7 +4327,7 @@ def gpu_grant_busy(flags, g, util, occ):
     """(busy, why) of a GPU-token grant by GPU SIGNALS only - its own KFD clients (and their VRAM) and the device
     busy %. Busy when the grant's process tree holds any KFD client OR the device reads >= IDLE_PCT; quiet only when
     both are silent. CPU % is never consulted (ak-asm-t1-harness: a running GPU harness read IDLE-HELD by CPU %)."""
-    own = own_pids(flags, g)
+    own = own_pids(flags, g, (occ.get("pids") or {}))
     kfd = {p: v for p, v in (occ.get("pids") or {}).items() if p in own}
     busy_pct = (util.get("gpu") or {}).get("busy") if isinstance(util, dict) else None
     if kfd:
@@ -5314,12 +5342,12 @@ def gpu_quiet_gate(flags, grants, allrows, log, seen, cands=(), one_sample=None)
                 log(f"GPU-QUIET one sample for {rid}: its smoke exited, tree proven dead, no KFD owners")
         return why
     atomic_json(sp, {"quiet_n": 0, "at": now_iso(), **kfd_rec, "last_owner": {"ids": [g["id"] for g in held], "pids": sorted(
-        {p for g in held for p in own_pids(flags, g)})}})
+        {p for g in held for p in own_pids(flags, g, (occ.get("pids") or {}))})}})
     for g in held:
         d = allrows.get(g["id"]) or {}
         if not contract_of(d)["bench"]:
             continue
-        pids, v = gpu_foreign(occ, own_pids(flags, g))
+        pids, v = gpu_foreign(occ, own_pids(flags, g, (occ.get("pids") or {})))
         if v >= GPU_FOREIGN_VRAM_MAX:
             cp = os.path.join(dry_dir(flags, g["id"]), "CONTAMINATED.json")
             if not os.path.exists(cp):
@@ -5348,7 +5376,7 @@ def gpu_fence_breach(flags, grants, log, seen, occ=None):
     for g in grants:
         if GPU in g["holds"]:
             continue
-        hit = sorted(kfd & own_pids(flags, g))
+        hit = sorted(kfd & own_pids(flags, g, kfd))
         for pid in hit:
             log(f"GPU-FENCE-BREACH {g['id']} {pid}")
             out.append((g["id"], pid))
