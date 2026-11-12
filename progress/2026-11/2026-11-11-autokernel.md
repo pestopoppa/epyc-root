@@ -35,3 +35,4 @@ Filed this wrap-up: ak-c10-q38fn-floor-r3 (inconclusive), r4 (inconclusive), r5 
 - **H13 smoke fix:** r1 smoke made no GPU contact so publish refused; r2 published with a real residency smoke; operator confirmed the 1.010 e2e bar.
 - **Pipeline keeper fixes:** smoke hold 210dc250a; cap-at-T covers GPU (my earlier statement that it did not was a misreport).
 - Lessons (a)-(e) added to compute-fillers.md.
+- 2026-11-12 operator exception for row `ak-q38fn-relianceproof-c10-20261110-r6` (operator decision tool 2026-11-11, covers r6 only; publish after gdb verified in the container): one AutoKernel loop turn at C10 `7f1bd044b`, for VB-REFOCUS-NONEMPTY-READ-PROOF only. The hold otherwise stays in force.
