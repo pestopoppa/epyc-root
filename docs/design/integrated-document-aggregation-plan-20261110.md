@@ -264,3 +264,8 @@ Option B: ship the store-backed L1/L2 read first (a saving even with the planner
 
 - Store engine: the Phase 0 store is stdlib sqlite (`src/aggregation/store.py`); DuckDB is optional and a dependency decision (`pyproject.toml:65`). It affects Phase 2 only if SQL over L3 outgrows sqlite at 25-30 docs; AGG-1.1 reports the query latency.
 - Model roles: Phase 0 used Qwen3.6-35B-A3B for extraction and Qwen3.8-27B for audit and answers. Phase 2 inherits the role bindings from the registry; no role change is proposed here.
+
+### Extraction lessons from Phase 1 (2026-11-12)
+
+- **A frozen extraction prompt that names a fiscal year must be parameterised when the corpus changes years.** AGG-1.3 r2 scored 0/24 changed slots because the L4 field descriptions hard-coded FY2022 while the replacement filings were FY2021 (19 no-fact, 3 period-label). The per-document fiscal year now enters the description (research `a1f2a7ab4`, amendment 2) and the preflight records `fy_contract`; diagnosis in research `101e6671d`.
+- **Never trust a model-chosen unit label over the filing's declared table scale.** AGG-1.4 r2 backfilled 0/9 because the model labelled long_term_debt "USD" on 13/13 facts and reconcile scaled by 1e-6. L4d now cross-checks the label against the declared scale (`unit_override` note, orchestrator `1a408ce4`); the preflight records `scale_signature`.

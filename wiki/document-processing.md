@@ -2,7 +2,7 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
+**Last compiled**: 2026-11-12 (operator wiki sweep, AGG Phase 1 update, autopilot-backlog-session). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (operator wiki sweep 2, workspace-58). Earlier: 2026-10-31 (operator wiki sweep, workspace-58): PIP-02 descriptive partial-cohort TEDS (Paddle union 359 pages/84 tables; ODL shards), still no 755-page verdict. Earlier: 2026-08-25 (PIP-05: the ODL three-way harness closes the 2026-08-13 durability (the stranded lane record landed: the demo DID run on a quant-compliant artifact, the receipt's `held_s` defect is root-caused and fixed forward, and the write-side wiring row survived an id collision)
 gaps — fail-closed extractor accounting, pinned engine versions, per-document latencies; the
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
@@ -529,3 +529,11 @@ Sources: [knowledge-pipelines handoff](../handoffs/active/knowledge-pipelines.md
 - **Why the OCR arm costs time:** 43 of the 200 documents are flagged `needs_ocr`, which the earlier four arms never exercised.
 
 Sources: [knowledge-pipelines parser-quality box](../handoffs/active/knowledge-pipelines.md) · [parser arm scores](../artifacts/compute/filed-rows-20261109/parser-arms/parser-scores.json) · [ODL-013 r2 report](../artifacts/compute/pip04-odl013-r2-20261107/report.md)
+
+## Compiled Update — 2026-11-12 (AGG Phase 1: scale run, incremental re-ingest, lazy backfill)
+
+- **Phase 1 gates hold at 28 documents, planner accuracy dropped.** AGG-1.1 (28 FinanceBench 10-Ks): M1 0.877 (185/211), M3 prefill ratio 0.378, M4 median 2 calls / 606.5 prefill; P-large accuracy fell to 0.31 over 58 questions (0.55 at 10 documents). The AGG-1.8 miss table names the cause for the scale drop as the M1 store gap: re-running the 14 saved store-gap SQLs on gold-corrected cells flips 14 of 14 (0.55 on saved plans); 17 wrong plans and 9 broken SQL (7 truncated at n_predict) need a GPU re-score (AGG-1.9, AGG-1.10).
+- **Incremental re-ingest works by content hash.** AGG-1.3 r3: 3 changed documents re-parsed, 25 skipped by hash, superseded facts absent from SQL, 146 calls / 189,422 prefill (inside the 3/28 + 10% bound), M1 0.848 (changed-slot recall 0.583, below the bar on its own). AGG-1.4 r3: lazy `long_term_debt` backfill took 72 calls (<= 100), M1 0.88 on the field, no prior unit touched.
+- **Two extraction failures cost a full rerun each (r2).** A frozen L4 field description naming FY2022 scored 0/24 on FY2021 filings; a model-chosen unit label "USD" scaled by 1e-6 in reconcile scored 0/9 on the backfill. Fix: per-document fiscal year in the description and a unit-label cross-check against the filing's declared table scale (amendments 2; preflight records `fy_contract` and `scale_signature`).
+
+Sources: [knowledge-pipelines AGG-1.x boxes](../handoffs/active/knowledge-pipelines.md) · [aggregation design doc, extraction lessons](../docs/design/integrated-document-aggregation-plan-20261110.md) · [progress 2026-11-12](../progress/2026-11/2026-11-12-autopilot-backlog-session.md)
