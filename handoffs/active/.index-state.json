@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 564
+      "open": 561
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 14,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 468
+      "open": 466
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 341,
+      "closed": 342,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 10,
+      "open": 9,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -641,20 +641,20 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 147,
+          "closed": 148,
           "gates": [],
           "guarded": 0,
           "line": 19,
           "markers": 1,
           "name": "coordination-and-churn-pipeline",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2458,
+          "line": 2459,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 0
@@ -664,7 +664,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2466,
+          "line": 2467,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 4
@@ -674,7 +674,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2943,
+          "line": 2944,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -689,7 +689,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3388,
+          "line": 3389,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4903,
+          "line": 4904,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,7 +721,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5563,
+          "line": 5564,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 3
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5754,
+          "line": 5755,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6310,
+          "line": 6311,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -860,10 +860,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 0,
-      "closed": 302,
+      "closed": 303,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
-      "open": 80,
+      "last_advanced": "2026-11-12",
+      "open": 79,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -936,13 +936,13 @@
         },
         {
           "blocked": 0,
-          "closed": 17,
+          "closed": 18,
           "gates": [],
           "guarded": 0,
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 9
+          "open": 8
         }
       ]
     },
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 199,
+      "closed": 202,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
-      "open": 41,
+      "last_advanced": "2026-11-12",
+      "open": 38,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 158,
+          "closed": 161,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,7 +1229,7 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 35
+          "open": 32
         },
         {
           "blocked": 0,
@@ -1955,7 +1955,7 @@
           "closed": 46,
           "gates": [],
           "guarded": 0,
-          "line": 1687,
+          "line": 1688,
           "markers": 1,
           "name": "batched-decode-measurement",
           "open": 3
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2776,
+          "line": 2778,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4324,
+          "line": 4326,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4957,
+          "line": 4959,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5490,
+          "line": 5492,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0
@@ -2171,9 +2171,9 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 355,
+      "closed": 357,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-12",
       "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2183,11 +2183,11 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 362,
+      "total": 364,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 117,
+          "closed": 118,
           "gates": [
             "EVL-47"
           ],
@@ -2195,7 +2195,7 @@
           "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 6
+          "open": 7
         },
         {
           "blocked": 0,
@@ -2205,7 +2205,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1561,
+          "line": 1563,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2218,7 +2218,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2718,
+          "line": 2720,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2228,7 +2228,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3090,
+          "line": 3092,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2238,20 +2238,20 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3603,
+          "line": 3605,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
         },
         {
           "blocked": 0,
-          "closed": 13,
+          "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3698,
+          "line": 3700,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
-          "open": 1
+          "open": 0
         }
       ]
     },

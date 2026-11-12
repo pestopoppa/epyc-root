@@ -312,7 +312,7 @@ freezes/cutovers, host reboots).
   child's lifetime; `bench_canonical.sh` derives its cpu list from the emitted canonical command
   and fails closed. Verified: contention serializes, SIGKILL releases (kernel fd-close), signals
   forwarded for drain, stale payloads never reported as holders.
-  - [ ] **R1a — end-to-end bench claim never fired (open gap, inference-gated).** The wiring is
+  - [x] **R1a — end-to-end bench claim never fired (open gap, inference-gated).** The wiring is
     verified structurally via `bench_canonical.sh --dry-run`, and contention was verified against
     *synthetic* holders. A real `llama-bench` has never acquired the claim, held it through a run,
     and released it. Closing this needs one short smoke run (e.g. `-n 128 -r 1` on a small model),
@@ -320,6 +320,7 @@ freezes/cutovers, host reboots).
     by the operator 2026-07-27; until it runs, treat A0 as structurally-verified, not
     end-to-end-verified. Identity (2026-11-11, pipeline-mgmt): quant_build = v10 production kernel
     store `llama-bench` via `bench_canonical.sh`, model Qwen2.5-0.5B-Instruct f16, `-n 128 -p 0 -r 1`.
+    - ✅ 2026-11-12 (pipeline-mgmt): **acceptance met — the claim fired, held and released.** Row `rtg34-r1a-bench-claim-r2-20261111` (rc=0, 11:06Z): a real v10 `llama-bench` (build ffc1bac82 10303, tg128 240.42 t/s) went through `bench_canonical.sh` → `region-lock`, which logged `held ['q0','q1','q2','q3'] after 0.0s wait` as role `bench-canonical`. The monitor saw all four held during the run (3 of 200 samples), and pre- and post-run status both show no holders (`post_bench_holder_present=false`). The job's own `FAIL` comes only from `bench_rc=1` at the placement-proof gate: the 0.5B f16 model peaked at 257,660 pages, under the 262,144-page RSS floor, so no in-window placement sample qualified. That is a smoke-model-size artifact, not the claim. A0 is now end-to-end-verified. Evidence: `/mnt/raid0/llm/tmp/rtg34-r1a-bench-claim-r2-20261111/out/RESULT.json`, `out/bench.stdout`. Filed pass. [belief: cc]
     Stop-on-answer when bench rc 0 and >= 2 in-run `region-lock status --json` samples show q0-q3 held
     by a bench-canonical holder and the post-run sample shows none; stop-on-futility on bench rc != 0,
     no in-run sample showing the claim, or a stale holder after exit; gate-class = futility-only
