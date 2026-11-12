@@ -216,7 +216,7 @@ done
 
 ### Step 6.5: Compression-Tolerance Probe (Deployment Gate)
 
-After benchmark validates speed + quality, probe the model's tolerance for compressed agent files. Models with `operating_point: none` cannot be deployed to roles that consume agent files — the orchestrator routes the model to the highest compression level it can faithfully follow.
+After benchmark validates speed + quality, probe the model's tolerance for compressed agent files. Models with `operating_point: none` cannot be deployed to roles that consume agent files — the measured level is recorded per role as `agent_file_compression_operating_point` in `model_registry.yaml`. It is applied to prompts only when the orchestrator's `agent_file_injection` flag is on (`ORCHESTRATOR_AGENT_FILE_INJECTION=1`, default OFF; roles in `ORCHESTRATOR_AGENT_FILE_ROLES`, default `worker_general,architect_general`). With the flag off, no local model receives an agent file.
 
 ```bash
 # Run the live compliance suite against the new model at each level.
