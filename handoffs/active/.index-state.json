@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 469
+      "open": 467
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -860,10 +860,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 1,
-      "closed": 305,
+      "closed": 307,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 82,
+      "open": 80,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -936,13 +936,13 @@
         },
         {
           "blocked": 1,
-          "closed": 20,
+          "closed": 22,
           "gates": [],
           "guarded": 0,
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 11
+          "open": 9
         }
       ]
     },
@@ -1305,7 +1305,7 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 124,
+      "closed": 125,
       "guarded": 0,
       "last_advanced": "2026-11-12",
       "open": 17,
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 141,
+      "total": 142,
       "tracks": [
         {
           "blocked": 0,
@@ -1381,7 +1381,7 @@
         },
         {
           "blocked": 0,
-          "closed": 11,
+          "closed": 12,
           "gates": [],
           "guarded": 0,
           "line": 3121,
@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10/1.11 accuracy fixes; AGG-1.6/1.7",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.12 adopt typed L4 + re-ingest; AGG-1.7",
       "track": "internal kb rag"
     },
     "REV-02": {

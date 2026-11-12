@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-12T14:46:14Z",
+  "generated_at": "2026-11-12T15:49:11Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2510,14 +2510,14 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 124,
+      "closed": 125,
       "dispatchable": 17,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-12",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.9/1.10/1.11 accuracy fixes; AGG-1.6/1.7",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.12 adopt typed L4 + re-ingest; AGG-1.7",
       "open": 17,
       "priority": 0.6185,
       "priority_basis": {
@@ -3217,15 +3217,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 305,
-      "dispatchable": 82,
+      "closed": 307,
+      "dispatchable": 80,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-12",
       "next_action": "File v3d Q38 reword, land directive; TOOLPERM+AGENTFILE-INJECT after matrix refresh; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 83,
+      "open": 81,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3299,11 +3299,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 9,
           "gates": [],
           "line": 2105,
           "name": "repo-readiness-scorer",
-          "open": 12,
+          "open": 10,
           "readiness": "ready"
         }
       ]
