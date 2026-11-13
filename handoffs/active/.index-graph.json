@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-13T10:46:03Z",
+  "generated_at": "2026-11-13T11:45:31Z",
   "nodes": [
     {
       "age_days": 3,
@@ -1535,7 +1535,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 237,
@@ -1544,7 +1544,7 @@
       "guarded": 0,
       "handoff": "numa-placement-and-contention.md",
       "id": "INF-45",
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-13",
       "next_action": "P1-8 autopilot reader for region_lock_wait_s_by_holder; W2 cost era; W6 fail-open guards; then E5 Stage-B re-measure",
       "open": 17,
       "priority": 0.0751,
@@ -2510,15 +2510,15 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 126,
-      "dispatchable": 18,
+      "closed": 127,
+      "dispatchable": 17,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-12",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.12 adopt typed L4 + re-ingest; AGG-1.7",
-      "open": 18,
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.13 out-of-sample check (step A: corpus+golds); AGG-1.7",
+      "open": 17,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2592,11 +2592,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 5,
           "gates": [],
           "line": 3121,
           "name": "integrated-aggregation",
-          "open": 6,
+          "open": 5,
           "readiness": "ready"
         }
       ]

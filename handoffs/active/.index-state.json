@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-12",
-      "open": 18
+      "open": 17
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1305,10 +1305,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 126,
+      "closed": 127,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 18,
+      "open": 17,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1381,13 +1381,13 @@
         },
         {
           "blocked": 0,
-          "closed": 13,
+          "closed": 14,
           "gates": [],
           "guarded": 0,
           "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
-          "open": 6
+          "open": 5
         }
       ]
     },
@@ -1928,7 +1928,7 @@
       "blocked": 1,
       "closed": 237,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-13",
       "open": 16,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.12 adopt typed L4 + re-ingest; AGG-1.7",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.13 out-of-sample check (step A: corpus+golds); AGG-1.7",
       "track": "internal kb rag"
     },
     "REV-02": {
