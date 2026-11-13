@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 560
+      "open": 559
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 203,
+      "closed": 204,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 39,
+      "open": 38,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 162,
+          "closed": 163,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,7 +1229,7 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 33
+          "open": 32
         },
         {
           "blocked": 0,
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2778,
+          "line": 2779,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4326,
+          "line": 4327,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4959,
+          "line": 4960,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5492,
+          "line": 5493,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0

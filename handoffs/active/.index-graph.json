@@ -695,10 +695,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-12T19:47:53Z",
+  "generated_at": "2026-11-13T10:43:06Z",
   "nodes": [
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
       "closed": 132,
@@ -1042,7 +1042,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 0,
       "blocked_by": [],
       "closed": 67,
@@ -1130,7 +1130,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 121,
@@ -1206,7 +1206,7 @@
       ]
     },
     {
-      "age_days": 9,
+      "age_days": 10,
       "blocked": 2,
       "blocked_by": [],
       "closed": 215,
@@ -1328,7 +1328,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
       "closed": 373,
@@ -1371,7 +1371,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 833,
@@ -1535,7 +1535,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [],
       "closed": 236,
@@ -1586,7 +1586,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2778,
+          "line": 2779,
           "name": "numa-placement-defect-20260730",
           "open": 3,
           "readiness": "ready"
@@ -1595,7 +1595,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4326,
+          "line": 4327,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
@@ -1625,7 +1625,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 4959,
+          "line": 4960,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1647,7 +1647,7 @@
             "INF-45#shape-keyed-contention-gating",
             "INF-87"
           ],
-          "line": 5492,
+          "line": 5493,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
@@ -1655,7 +1655,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "EVL-47"
@@ -1772,7 +1772,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 2,
       "blocked_by": [],
       "closed": 129,
@@ -1839,7 +1839,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 107,
@@ -1920,18 +1920,18 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 203,
-      "dispatchable": 39,
+      "closed": 204,
+      "dispatchable": 38,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-12",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 40,
+      "open": 39,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1965,7 +1965,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 33,
+          "dispatchable": 32,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1974,7 +1974,7 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 34,
+          "open": 33,
           "readiness": "blocked"
         },
         {
@@ -2049,7 +2049,7 @@
       ]
     },
     {
-      "age_days": 9,
+      "age_days": 10,
       "blocked": 0,
       "blocked_by": [],
       "closed": 146,
@@ -2140,7 +2140,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2181,7 +2181,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 9,
+      "age_days": 10,
       "blocked": 41,
       "blocked_by": [],
       "closed": 120,
@@ -2231,7 +2231,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2290,7 +2290,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 2,
       "blocked_by": [
         "INF-06",
@@ -2379,7 +2379,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2405,7 +2405,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2431,7 +2431,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [
         "INF-48"
@@ -2457,7 +2457,7 @@
       "track": "upstream publication"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "INF-83"
@@ -2483,7 +2483,7 @@
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
       "closed": 21,
@@ -2507,7 +2507,7 @@
       "track": "dispatch placement telemetry"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 126,
@@ -2602,7 +2602,7 @@
       ]
     },
     {
-      "age_days": 9,
+      "age_days": 10,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2702,7 +2702,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 2,
       "blocked_by": [],
       "closed": 292,
@@ -2931,7 +2931,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 155,
@@ -3044,7 +3044,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 1,
       "blocked_by": [],
       "closed": 181,
@@ -3188,7 +3188,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3214,7 +3214,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 307,
@@ -3309,7 +3309,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 342,
@@ -3465,7 +3465,7 @@
       ]
     },
     {
-      "age_days": 7,
+      "age_days": 8,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3581,7 +3581,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 9,
       "blocked_by": [],
       "closed": 414,
@@ -3656,7 +3656,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 18,
       "blocked_by": [],
       "closed": 238,
@@ -3811,7 +3811,7 @@
       ]
     },
     {
-      "age_days": 40,
+      "age_days": 41,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
