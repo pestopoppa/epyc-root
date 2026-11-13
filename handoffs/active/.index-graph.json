@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-13T11:45:31Z",
+  "generated_at": "2026-11-13T12:04:49Z",
   "nodes": [
     {
       "age_days": 3,
@@ -2507,7 +2507,7 @@
       "track": "dispatch placement telemetry"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 127,
@@ -2516,7 +2516,7 @@
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
-      "last_advanced": "2026-11-12",
+      "last_advanced": "2026-11-13",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.13 out-of-sample check (step A: corpus+golds); AGG-1.7",
       "open": 17,
       "priority": 0.6185,
