@@ -4600,6 +4600,29 @@ def timing_quarters(flags, grants, allrows):
         if bench:
             out |= {q for q in QUARTERS if q in g["holds"] or g["holds"] & qcores(q)}
     return frozenset(out)
+def quiet_host_drain_target(cands, drain_prev):
+    """The quiet-host candidate the planner is draining for (drain_state.json), or None."""
+    for c in cands:
+        if c.get("shape") == "quiet-host" and c["id"] in (drain_prev or {}):
+            return c["id"]
+    return None
+
+
+def quiet_host_smoke_live(flags, placed=()):
+    """QUIET-HOST-SMOKE (2026-11-12, inf45-e5v2-stageb-r2 vs agg13-reingest-cpu-r2): pocket smokes sit on SMT siblings
+    OUTSIDE every quarter token, so a quiet-host grant (holds q0-q3 + gpu-quiet) never saw them and was issued in the
+    same tick a smoke was placed; its harness then refused the smoke's llama-servers. Ids of smokes placed this tick or
+    still live (RUNNING.json / SMOKE-PLACED.json with a live pid); any -> no quiet-host grant this tick."""
+    out = [rid for rid, _ in placed]
+    for pat in ("RUNNING.json", "SMOKE-PLACED.json"):
+        for p in glob.glob(os.path.join(flags, "dryrun", "*", pat)):
+            r = load_json(p) or {}
+            rid = os.path.basename(os.path.dirname(p))
+            if r.get("pid") and alive(r["pid"]) and rid not in out:
+                out.append(rid)
+    return out
+
+
 def smoke_queued_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-QUEUED.json")
 def smoke_placed_path(flags, rid): return os.path.join(dry_dir(flags, rid), "SMOKE-PLACED.json")
 
@@ -5051,10 +5074,23 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             log(f"IDLE-WHY {GPU}: {gwhy}; EXCLUSIVE row(s) {','.join(c['id'] for c in held_back[:5])} wait")
             for c in held_back:
                 log(f"WAIT {c['id']}: gpu-quiet EXCLUSIVE needs a quiet device: {gwhy}")
-    if not admit_hold:
-        place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows))
     dfile = os.path.join(flags, "drain_state.json")
     drain_prev = {k: v for k, v in (load_json(dfile) or {}).items() if k in allrows}
+    qh_drain = quiet_host_drain_target(cands, drain_prev)
+    placed_smokes = []
+    if not admit_hold:
+        if qh_drain:   # QUIET-HOST-SMOKE 2026-11-12: a pocket smoke never starts under a quiet-host drain
+            if glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")):
+                log(f"SMOKE-WAIT quiet-host drain {qh_drain}: no pocket smoke starts until it is granted (not a failure)")
+        else:
+            placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows))
+    quiet_ok = quiet_ok_now(flags)
+    if quiet_ok:
+        smoke_live = quiet_host_smoke_live(flags, placed_smokes)
+        if smoke_live:
+            quiet_ok = False
+            if any(c.get("shape") == "quiet-host" for c in cands):
+                log(f"QUIET-HOST-WAIT smoke(s) live in pockets ({','.join(smoke_live[:5])}): no quiet-host grant this tick")
     held_ports = {int(p) for g in grants for p in ((allrows.get(g["id"]) or {}).get("ports") or [])}
     ends = [iso_epoch(g["end"]) for g in grants if g.get("end")]
     r_ends = region_end_map(flags, grants, busy)
@@ -5071,7 +5107,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     # of candidates); plan_order already puts arm-failed rows last so a healthy row is never behind one.
     for _pass in range(len(cands) + 1):
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
-                                        grant_ends=[e for e in ends if e], quiet_ok=quiet_ok_now(flags), held_ports=held_ports,
+                                        grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
                                         drain_prev=drain_prev, region_ends=r_ends, region_holders=holders)
         if not dry:
             atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
