@@ -8,7 +8,7 @@ Sources (all under compute-flags, FILLERS.md is retired and never read):
     dryrun/<id>/{PASS.json,FAIL-N.json,SMOKE-QUEUED.json,GPU-SMOKE-QUEUED.json,UNPARK.json}
     filing-done/<id>.FILED                                      ws58-calendar-keeper.log (latest SNAPSHOT + IDLE-WHY)
 
-Sections: RUNNING, GRANTABLE/QUEUED, SMOKE-QUEUED/FAILED, PARKED/BLOCKED, IDLE, UNFILED-ENDED (count).
+Sections: RUNNING, GRANTABLE/QUEUED, SMOKE-QUEUED, NEEDS-REPUBLISH, FAILED, NOT-A-ROW, PARKED/BLOCKED, IDLE,\nUNFILED-ENDED (count). Row state is rowflow.status()/runnable() - the keeper's own predicate, never re-derived.
 A row that ended/completed is DONE and appears nowhere except the UNFILED-ENDED count (when not yet FILED).
 Zero compute, stdlib only, never writes. Exit 0.
 """
@@ -54,6 +54,13 @@ def _hostutil():
         sys.path.insert(0, d)
     import hostutil
     return hostutil
+
+
+def _rowflow():
+    """scripts/coordination/rowflow/rowflow.py: status()/runnable() are THE keeper predicate; this page never re-derives it."""
+    _hostutil()   # puts the rowflow dir on sys.path
+    import rowflow
+    return rowflow
 
 
 def measure_util():
@@ -115,7 +122,10 @@ def _wants_gpu(m):
 def classify(flags, owner=None, now=None):
     now = now or datetime.now(timezone.utc)
     G = os.path.join(flags, "grants")
-    out = {k: [] for k in ("RUNNING", "GRANTABLE", "SMOKE-QUEUED", "FAILED", "PARKED", "BLOCKED")}
+    out = {k: [] for k in ("RUNNING", "GRANTABLE", "SMOKE-QUEUED", "NEEDS-REPUBLISH", "FAILED", "PARKED", "BLOCKED",
+                           "NOT-A-ROW")}
+    rf = _rowflow()
+    allrows = rf.rows(flags)
     keeper = keeper_state(flags)
     busy = keeper.get("parsed", {}).get("busy", [])
     gpu_busy = [b for b in busy if b.startswith("gpu")]
@@ -127,15 +137,10 @@ def classify(flags, owner=None, now=None):
         rid = m["id"]
         if owner and owner.lower() not in str(m.get("owner", "")).lower():
             continue
-        done = os.path.exists(os.path.join(G, rid + ".ended")) or os.path.exists(os.path.join(G, rid + ".complete"))
-        if done:
-            if not os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
-                unfiled += 1
-            continue
         rec = {"id": rid, "owner": m.get("owner"), "shape": m.get("shape") or m.get("declared_shape"),
                "rank": m.get("priority_rank"), "regions": m.get("regions"), "handoff_task": m.get("handoff_task")}
         gp = os.path.join(G, rid + ".grant")
-        if os.path.exists(gp):
+        if os.path.exists(gp) and rid in allrows:
             g = GRANT_RE.search(_read(gp))
             if g:
                 rec.update(regions=g.group(1), start=g.group(2), end=g.group(3))
@@ -144,38 +149,45 @@ def classify(flags, owner=None, now=None):
                     rec["ends_in_min"] = round((e - now).total_seconds() / 60)
                 except ValueError:
                     pass
+        # The keeper's own predicate decides (2026-11-13: this page called PARKED/DONE rows GRANTABLE and un-queued
+        # needs-dryrun rows SMOKE-QUEUED while the keeper, rightly, considered none of them -> host idle 10:39Z).
+        st = rf.status(flags, rid, allrows) if rid in allrows else None
+        state = (st or {}).get("state")
+        rec["reason"] = str((st or {}).get("reason") or "")[:160]
+        if st is None:
+            rec["reason"] = (f"not an {rf.SCHEMA} row (schema={m.get('schema')!r}); the keeper ignores it - "
+                             "owner publishes it via rowflow/publish_row.py")
+            out["NOT-A-ROW"].append(rec)
+        elif state == "done":
+            if not os.path.exists(os.path.join(flags, "filing-done", rid + ".FILED")):
+                unfiled += 1
+        elif state == "running":
             out["RUNNING"].append(rec)
-            continue
-        dd = os.path.join(flags, "dryrun", rid)
-        stop = m.get("stop_file")
-        if stop and os.path.exists(stop):
-            rec["reason"] = f"stop file exists: {stop}"
-            out["BLOCKED"].append(rec)
-            continue
-        fails = sorted(glob.glob(os.path.join(dd, "FAIL-*.json")),
-                       key=lambda p: int(re.search(r"FAIL-(\d+)\.json$", p).group(1)))
-        passed = os.path.exists(os.path.join(dd, "PASS.json"))
-        if passed:
+        elif rf.runnable(st):
             rec["gpu_wait"] = (f"waiting on GPU ({', '.join(gpu_busy)})" if gpu_busy else None) if _wants_gpu(m) else None
             out["GRANTABLE"].append(rec)
-            continue
-        queued = next((p for p in (os.path.join(dd, "SMOKE-QUEUED.json"), os.path.join(dd, "GPU-SMOKE-QUEUED.json"))
-                       if os.path.exists(p)), None)
-        if queued:
-            q = _load(queued) or {}
-            rec["reason"] = (f"{os.path.basename(queued)} queued_at={q.get('queued_at')}"
-                             + (" (waiting on GPU)" if "GPU" in queued else ""))
+        elif state == "dryrun-running":
             out["SMOKE-QUEUED"].append(rec)
-            continue
-        if fails:
-            last = _load(fails[-1]) or {}
-            rec["fails"] = len(fails)
-            rec["reason"] = str(last.get("reason") or last.get("fix_task") or "(no reason recorded)")[:160]
-            unparked = os.path.exists(os.path.join(dd, "UNPARK.json"))
-            out["PARKED" if len(fails) >= MAX_FAILS and not unparked else "FAILED"].append(rec)
-            continue
-        rec["reason"] = "no dry run yet (needs-dryrun)"
-        out["SMOKE-QUEUED"].append(rec)
+        elif state in ("needs-dryrun", "stale"):
+            dd = os.path.join(flags, "dryrun", rid)
+            queued = next((p for p in (os.path.join(dd, "SMOKE-QUEUED.json"), os.path.join(dd, "GPU-SMOKE-QUEUED.json"))
+                           if os.path.exists(p)), None)
+            if queued:
+                q = _load(queued) or {}
+                rec["reason"] = (f"{os.path.basename(queued)} queued_at={q.get('queued_at')}"
+                                 + (" (waiting on GPU)" if "GPU" in queued else ""))
+                out["SMOKE-QUEUED"].append(rec)
+            else:
+                rec["reason"] = (f"{state}, no smoke queued: the keeper never smokes it; owner re-runs "
+                                 "publish_row.py <spec.json>")
+                out["NEEDS-REPUBLISH"].append(rec)
+        elif state == "failed":
+            out["FAILED"].append(rec)
+        elif state == "stopped":
+            out["BLOCKED"].append(rec)
+        else:   # parked (arming/launch, precond or lineage) and anything unrunnable
+            rec["arm_fails"] = st.get("arm_fails")
+            out["PARKED"].append(rec)
     out["UNFILED-ENDED"] = unfiled
     out["keeper"] = keeper
     return out
@@ -203,8 +215,9 @@ def main(argv=None) -> int:
     if a.json:
         # compatible field set: as_of, util, buckets (RUNNING/BACKLOG keys kept; BACKLOG = GRANTABLE for old readers)
         buckets = {"RUNNING": r["RUNNING"], "GRANTABLE": r["GRANTABLE"], "ARMED-UNBOOKED": r["GRANTABLE"],
-                   "BACKLOG": r["SMOKE-QUEUED"] + r["FAILED"] + r["PARKED"] + r["BLOCKED"],
-                   "SMOKE-QUEUED": r["SMOKE-QUEUED"], "FAILED": r["FAILED"], "PARKED": r["PARKED"],
+                   "BACKLOG": r["SMOKE-QUEUED"] + r["NEEDS-REPUBLISH"] + r["FAILED"] + r["PARKED"] + r["BLOCKED"],
+                   "SMOKE-QUEUED": r["SMOKE-QUEUED"], "NEEDS-REPUBLISH": r["NEEDS-REPUBLISH"],
+                   "NOT-A-ROW": r["NOT-A-ROW"], "FAILED": r["FAILED"], "PARKED": r["PARKED"],
                    "BLOCKED": r["BLOCKED"]}
         json.dump({"as_of": now.strftime("%Y-%m-%dT%H:%MZ"), "util": util, "buckets": buckets,
                    "idle": r["keeper"]["idle_why"], "snapshot": r["keeper"]["snapshot"],
@@ -223,7 +236,8 @@ def main(argv=None) -> int:
     for x in sorted(r["GRANTABLE"], key=lambda x: (x.get("rank") is None, x.get("rank") or 0, x["id"])):
         print(f"  {ow(x):<18} {x['id']:<44} shape={x.get('shape')} rank={x.get('rank')}"
               + (f"\n    GPU: {x['gpu_wait']}" if x.get("gpu_wait") else ""))
-    for title, key in (("SMOKE-QUEUED", "SMOKE-QUEUED"), ("FAILED", "FAILED")):
+    for title, key in (("SMOKE-QUEUED", "SMOKE-QUEUED"), ("NEEDS-REPUBLISH", "NEEDS-REPUBLISH"), ("FAILED", "FAILED"),
+                       ("NOT-A-ROW (keeper ignores)", "NOT-A-ROW")):
         print(f"\n{title} ({len(r[key])})")
         for x in sorted(r[key], key=lambda x: x["id"]):
             print(f"  {ow(x):<18} {x['id']:<44} {x.get('reason','')}")
