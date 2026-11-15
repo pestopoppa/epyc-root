@@ -2639,6 +2639,10 @@ Validation:
   - Signed package, still to do, landing with TOOLPERM-DENY-DEFAULT after the production relaunch:
     1. model_registry.yaml: worker_general gets `agent_file_compression_operating_point: aggressive`; architect_general gets a provenance note, re-measured on Qwen3.8-Flash-Next v3c 2026-11-12 (the old value came from Qwen3.5-122B). Keep the per-server copies near yaml ~2064 and ~2125 consistent.
     2. DONE 2026-11-13: the AFC-Q36-AGENTFILE-CTX-REFUSAL directive is ratified on main (a81fc882e). The deployed aggressive variant is byte-identical to the measured file.
+       - [ ] **Scope the directive to the local-model variants.** Operator decision 2026-11-15, via the decision tool after a side-agent heads-up: the section landed in the FULL `ENGINEERING_STANDARDS.md` too, which every Claude session loads at start-up, and it was never measured on Claude sessions.
+         - Fix: remove it from the full file only. The mild, medium and aggressive variants keep it; local roles only receive a compressed variant, so the measured gain stays.
+         - Ratify script: `scripts/operator/ratify_afc_directive_scope_20261115.sh`. Its dry run passes: removals only, 7 lines; the full file is restored to its exact pre-a81fc882e sha f319dece; receipt RATIFIED.
+         - The operator runs: `env RATIFY_OPERATOR=Daniele bash scripts/operator/ratify_afc_directive_scope_20261115.sh --apply --attest RATIFY-AFC-DIRECTIVE-SCOPE-20261115`, from a clean origin/main checkout.
     3. Set `ORCHESTRATOR_AGENT_FILE_INJECTION=1` in the orchestrator API env (confirm where the stack sets it).
     4. Reload at the inference owner's boundary.
   - Cost: about +3,520 chars (~900 tokens) per injected prompt at aggressive.
