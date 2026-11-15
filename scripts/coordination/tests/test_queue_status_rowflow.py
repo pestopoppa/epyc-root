@@ -23,19 +23,25 @@ class Fixture(unittest.TestCase):
         self.td = tempfile.TemporaryDirectory()
         self.f = f = self.td.name
         w(os.path.join(f, "FILLERS.md"), "| garbage |\n")   # must be ignored
-        def row(i, **kw):
-            w(os.path.join(f, "ready", i + ".json"), {"id": i, "owner": "o-" + i, "shape": "quarter", "priority_rank": 5.0, **kw})
+        rf = qs._rowflow()
+        lp = os.path.join(f, "launcher.sh"); w(lp, "#!/bin/bash\n")
+        sha = rf.sha256(lp)
+
+        def row(i, **kw):   # a real epyc.row.v3 row: rowflow.rows() ignores anything else (NOT-A-ROW)
+            w(os.path.join(f, "ready", i + ".json"), {"schema": rf.SCHEMA, "id": i, "owner": "o-" + i, "lane": "l-" + i,
+                                                      "launcher": {"path": lp}, "shape": "quarter", "priority_rank": 5.0, **kw})
+        ok = {"launcher_sha256": sha}
         row("run1", shape="gpu-q3")
         w(f + "/grants/run1.grant", "regions=mi210_0,184-191 start=2026-11-07T17:13Z end=2026-11-07T22:06Z holds=x\n")
-        row("ready-cpu"); w(f + "/dryrun/ready-cpu/PASS.json", {})
-        row("ready-gpu", shape="gpu-q3"); w(f + "/dryrun/ready-gpu/PASS.json", {})
-        row("smoke"); w(f + "/dryrun/smoke/GPU-SMOKE-QUEUED.json", {"queued_at": "T0"})
-        row("failed"); w(f + "/dryrun/failed/FAIL-1.json", {"reason": "boom"})
+        row("ready-cpu"); w(f + "/dryrun/ready-cpu/PASS.json", ok)
+        row("ready-gpu", shape="gpu-q3"); w(f + "/dryrun/ready-gpu/PASS.json", ok)
+        row("smoke"); w(f + "/dryrun/smoke/RUNNING.json", {"pid": os.getpid(), "started": "T0"})
+        row("failed"); w(f + "/dryrun/failed/FAIL-1.json", {"reason": "boom", **ok})
         row("parked")
         for n in (1, 2, 3):
-            w(f + f"/dryrun/parked/FAIL-{n}.json", {"reason": f"bad{n}"})
+            w(f + f"/dryrun/parked/FAIL-{n}.json", {"reason": f"bad{n}", **ok})
         stop = os.path.join(f, "STOPFILE"); w(stop)
-        row("stopped", stop_file=stop)
+        row("stopped", stop_file=stop); w(f + "/dryrun/stopped/PASS.json", ok)
         row("done-filed"); w(f + "/grants/done-filed.ended", "rc=0"); w(f + "/filing-done/done-filed.FILED")
         row("done-unfiled"); w(f + "/grants/done-unfiled.complete")
         w(os.path.join(f, "ready", "gone.json.withdrawn-x"), {"id": "gone"})
