@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-15T00:50:11Z",
+  "generated_at": "2026-11-15T02:18:18Z",
   "nodes": [
     {
       "age_days": 5,
@@ -1920,18 +1920,18 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 207,
-      "dispatchable": 40,
+      "closed": 209,
+      "dispatchable": 41,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-14",
+      "last_advanced": "2026-11-15",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 41,
+      "open": 42,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1965,7 +1965,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 34,
+          "dispatchable": 35,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1974,14 +1974,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 35,
+          "open": 36,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1707,
+          "line": 1710,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1831,
+          "line": 1834,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2161,
+          "line": 2164,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2300,
+          "line": 2303,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2856,
+          "line": 2859,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 2996,
+          "line": 2999,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3003,
+          "line": 3006,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2510,15 +2510,15 @@
       "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 127,
-      "dispatchable": 17,
+      "closed": 128,
+      "dispatchable": 16,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-13",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.13 out-of-sample check (step A: corpus+golds); AGG-1.7",
-      "open": 17,
+      "open": 16,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2592,11 +2592,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 4,
           "gates": [],
           "line": 3121,
           "name": "integrated-aggregation",
-          "open": 5,
+          "open": 4,
           "readiness": "ready"
         }
       ]

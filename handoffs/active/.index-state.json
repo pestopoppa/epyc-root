@@ -4,13 +4,13 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 560
+      "open": 561
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-13",
-      "open": 17
+      "open": 16
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 207,
+      "closed": 209,
       "guarded": 0,
-      "last_advanced": "2026-11-14",
-      "open": 40,
+      "last_advanced": "2026-11-15",
+      "open": 41,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1214,11 +1214,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 248,
+      "total": 251,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 166,
+          "closed": 168,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,14 +1229,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 34
+          "open": 35
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1707,
+          "line": 1710,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1831,
+          "line": 1834,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2161,
+          "line": 2164,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2300,
+          "line": 2303,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2856,
+          "line": 2859,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 2996,
+          "line": 2999,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3003,
+          "line": 3006,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1305,10 +1305,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 127,
+      "closed": 128,
       "guarded": 0,
       "last_advanced": "2026-11-13",
-      "open": 17,
+      "open": 16,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1381,13 +1381,13 @@
         },
         {
           "blocked": 0,
-          "closed": 14,
+          "closed": 15,
           "gates": [],
           "guarded": 0,
           "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
-          "open": 5
+          "open": 4
         }
       ]
     },
