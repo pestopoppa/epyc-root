@@ -625,7 +625,7 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 342,
+      "closed": 343,
       "guarded": 0,
       "last_advanced": "2026-11-12",
       "open": 9,
@@ -637,11 +637,11 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 351,
+      "total": 352,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 148,
+          "closed": 149,
           "gates": [],
           "guarded": 0,
           "line": 19,
@@ -654,7 +654,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 2459,
+          "line": 2460,
           "markers": 1,
           "name": "churn-pipeline",
           "open": 0
@@ -664,7 +664,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2467,
+          "line": 2468,
           "markers": 1,
           "name": "dashboard-architecture-restructure",
           "open": 4
@@ -674,7 +674,7 @@
           "closed": 25,
           "gates": [],
           "guarded": 0,
-          "line": 2944,
+          "line": 2945,
           "markers": 1,
           "name": "handoff-index-and-backlog-graph",
           "open": 0
@@ -689,7 +689,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 3389,
+          "line": 3390,
           "markers": 1,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1
@@ -705,7 +705,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 4904,
+          "line": 4905,
           "markers": 1,
           "name": "loop-owned-fleet-implementation",
           "open": 0
@@ -721,7 +721,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5564,
+          "line": 5565,
           "markers": 1,
           "name": "fleet-fanout-measurement",
           "open": 3
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5755,
+          "line": 5756,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6311,
+          "line": 6312,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1965,7 +1965,7 @@
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 2781,
+          "line": 2782,
           "markers": 1,
           "name": "numa-placement-defect-20260730",
           "open": 2
@@ -1975,7 +1975,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 4329,
+          "line": 4330,
           "markers": 1,
           "name": "shape-keyed-contention-gating",
           "open": 0
@@ -1997,7 +1997,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 4962,
+          "line": 4963,
           "markers": 1,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1
@@ -2014,7 +2014,7 @@
             "INF-87"
           ],
           "guarded": 0,
-          "line": 5495,
+          "line": 5496,
           "markers": 1,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0

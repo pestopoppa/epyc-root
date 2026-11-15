@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-15T18:27:58Z",
+  "generated_at": "2026-11-15T19:19:28Z",
   "nodes": [
     {
       "age_days": 5,
@@ -1586,7 +1586,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 2781,
+          "line": 2782,
           "name": "numa-placement-defect-20260730",
           "open": 3,
           "readiness": "ready"
@@ -1595,7 +1595,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 4329,
+          "line": 4330,
           "name": "shape-keyed-contention-gating",
           "open": 0,
           "readiness": "no_open"
@@ -1625,7 +1625,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 4962,
+          "line": 4963,
           "name": "reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1647,7 +1647,7 @@
             "INF-45#shape-keyed-contention-gating",
             "INF-87"
           ],
-          "line": 5495,
+          "line": 5496,
           "name": "contention-model-device-and-load-axes-rider",
           "open": 0,
           "readiness": "no_open"
@@ -3312,7 +3312,7 @@
       "age_days": 3,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 342,
+      "closed": 343,
       "dispatchable": 9,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3356,7 +3356,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2459,
+          "line": 2460,
           "name": "churn-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -3365,7 +3365,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2467,
+          "line": 2468,
           "name": "dashboard-architecture-restructure",
           "open": 4,
           "readiness": "ready"
@@ -3374,7 +3374,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2944,
+          "line": 2945,
           "name": "handoff-index-and-backlog-graph",
           "open": 0,
           "readiness": "no_open"
@@ -3391,7 +3391,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 3389,
+          "line": 3390,
           "name": "coordinator-role-failure-modes-and-refactor",
           "open": 1,
           "readiness": "blocked"
@@ -3410,7 +3410,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4904,
+          "line": 4905,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
@@ -3429,7 +3429,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5564,
+          "line": 5565,
           "name": "fleet-fanout-measurement",
           "open": 3,
           "readiness": "blocked"
@@ -3448,7 +3448,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5755,
+          "line": 5756,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3457,7 +3457,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6311,
+          "line": 6312,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
