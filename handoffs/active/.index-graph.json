@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-15T19:24:32Z",
+  "generated_at": "2026-11-15T19:37:16Z",
   "nodes": [
     {
       "age_days": 5,
@@ -1924,14 +1924,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 209,
-      "dispatchable": 44,
+      "dispatchable": 45,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-15",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 45,
+      "open": 46,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1965,7 +1965,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 38,
+          "dispatchable": 39,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1974,14 +1974,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 39,
+          "open": 40,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1719,
+          "line": 1723,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1843,
+          "line": 1847,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2173,
+          "line": 2177,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2312,
+          "line": 2316,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2868,
+          "line": 2872,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3008,
+          "line": 3012,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3015,
+          "line": 3019,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3218,14 +3218,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 308,
-      "dispatchable": 79,
+      "dispatchable": 80,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
       "last_advanced": "2026-11-13",
-      "next_action": "File v3d Q38 reword, land directive; TOOLPERM+AGENTFILE-INJECT after matrix refresh; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 80,
+      "next_action": "Operator signs AFC directive scope ratify; TOOLPERM+AGENTFILE-INJECT after matrix refresh; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
+      "open": 81,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3299,11 +3299,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [],
           "line": 2105,
           "name": "repo-readiness-scorer",
-          "open": 9,
+          "open": 10,
           "readiness": "ready"
         }
       ]

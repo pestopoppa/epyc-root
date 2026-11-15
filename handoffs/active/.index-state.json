@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 564
+      "open": 565
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 466
+      "open": 467
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -863,7 +863,7 @@
       "closed": 308,
       "guarded": 0,
       "last_advanced": "2026-11-13",
-      "open": 79,
+      "open": 80,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -872,7 +872,7 @@
       },
       "row_id": "RTG-22",
       "state": "active",
-      "total": 388,
+      "total": 389,
       "tracks": [
         {
           "blocked": 0,
@@ -942,7 +942,7 @@
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 8
+          "open": 9
         }
       ]
     },
@@ -1205,7 +1205,7 @@
       "closed": 209,
       "guarded": 0,
       "last_advanced": "2026-11-15",
-      "open": 44,
+      "open": 45,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1214,7 +1214,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 254,
+      "total": 255,
       "tracks": [
         {
           "blocked": 1,
@@ -1229,14 +1229,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 38
+          "open": 39
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1719,
+          "line": 1723,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1843,
+          "line": 1847,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2173,
+          "line": 2177,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2312,
+          "line": 2316,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2868,
+          "line": 2872,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3008,
+          "line": 3012,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3015,
+          "line": 3019,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2908,7 +2908,7 @@
       "id": "RTG-22",
       "index": "routing-and-optimization-index.md",
       "line": 16,
-      "next_action": "File v3d Q38 reword, land directive; TOOLPERM+AGENTFILE-INJECT after matrix refresh; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
+      "next_action": "Operator signs AFC directive scope ratify; TOOLPERM+AGENTFILE-INJECT after matrix refresh; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
       "track": "non inference backlog"
     },
     "RTG-34": {
