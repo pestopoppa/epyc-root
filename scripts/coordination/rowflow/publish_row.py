@@ -42,6 +42,7 @@ may set it): spec.smoke_predicate exits 0, or a NEW non-placeholder record appea
 then a clean stop -> dryrun/<id>/PASS.json: ready at once. FAIL writes the FAIL memo and prints ONE line (cause + fix +
 the log path); the allocator grants only PASSed rows."""
 import argparse
+import contextlib
 import datetime as dt
 import glob
 import hashlib
@@ -74,6 +75,65 @@ SMOKE_TIMEOUT_S = 300
 MIN_ESTIMATE_S = 300  # ws58 2026-11-02: a shorter job runs in the owner's turn, not as a row
 DERIVABLE = ("lane", "scratch_root", "kind")
 _UNIT_RE = re.compile(r"(?:no unit in|before writing a unit to) (\S+) \(")
+
+
+HUB_VIEW = "/mnt/raid0/llm/views/epyc-root-main"
+VIEW_REFRESH_TIMEOUT_S = 60
+
+
+def _refresh_script():
+    """refresh_hub_view.sh to run: $ROWFLOW_VIEW_REFRESH_SCRIPT, else this checkout's copy, else the view's own."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for c in (os.environ.get("ROWFLOW_VIEW_REFRESH_SCRIPT"),
+              os.path.join(here, "..", "..", "dashboard", "refresh_hub_view.sh"),
+              os.path.join(REPO, "scripts", "dashboard", "refresh_hub_view.sh")):
+        if c and os.path.isfile(c):
+            return os.path.abspath(c)
+    return None
+
+
+def refresh_view(repo=None, timeout=VIEW_REFRESH_TIMEOUT_S):
+    """Advance the hub view to origin/main ONCE before its boxes are read (publish refused "no checkbox" for boxes
+    already on origin/main whenever hub_supervisor.sh was down). Reuses refresh_hub_view.sh as is, including its own
+    flock. Only when REPO is the hub view; ROWFLOW_NO_VIEW_REFRESH=1 opts out. Best-effort: any failure is a WARN
+    and the existing view is used. Returns True only when the refresh ran and exited 0."""
+    repo = repo or REPO
+    if os.environ.get("ROWFLOW_NO_VIEW_REFRESH") == "1":
+        return False
+    view = os.environ.get("ROWFLOW_HUB_VIEW", HUB_VIEW)
+    if os.path.realpath(repo) != os.path.realpath(view):
+        return False
+    script = _refresh_script()
+    if not script:
+        print("WARN view refresh skipped: refresh_hub_view.sh not found; using the existing view", file=sys.stderr)
+        return False
+    # Run a private copy: the script force-checks-out the view, which may rewrite the very file bash is reading.
+    # Its gate/quiet-host helpers resolve from the script's dir, so pin them to the source copy's siblings.
+    sdir = os.path.dirname(script)
+    env = dict(os.environ)
+    env.setdefault("HUB_VIEW_REGEN_GATE", os.path.join(sdir, "..", "coordination", "index_regen.py"))
+    env.setdefault("HUB_VIEW_QUIET_HOST", os.path.join(sdir, "..", "coordination", "quiet_host.py"))
+    tmp = None
+    try:
+        import tempfile
+        fd, tmp = tempfile.mkstemp(prefix="refresh_hub_view.", suffix=".sh")
+        os.close(fd)
+        shutil.copyfile(script, tmp)
+        r = subprocess.run(["bash", tmp, repo], env=env, capture_output=True, text=True, timeout=timeout)
+        if r.returncode != 0:
+            print(f"WARN view refresh failed rc={r.returncode}: {(r.stderr or r.stdout).strip()[-800:]}; "
+                  "using the existing view", file=sys.stderr)
+            return False
+        return True
+    except subprocess.TimeoutExpired:
+        print(f"WARN view refresh timed out after {timeout}s; using the existing view", file=sys.stderr)
+    except Exception as e:  # never fail a publish because the view could not be refreshed
+        print(f"WARN view refresh error: {e}; using the existing view", file=sys.stderr)
+    finally:
+        if tmp:
+            with contextlib.suppress(OSError):
+                os.unlink(tmp)
+    return False
 
 
 def is_marker(p):
@@ -969,6 +1029,7 @@ def main(argv=None):
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
         rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
+        refresh_view()
         check_handoff(spec)
         check_task_lint(spec)
         for note in lint(spec):

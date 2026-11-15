@@ -19,5 +19,6 @@ def _no_real_tmux_or_engines(monkeypatch):
     monkeypatch.setenv("PATH", d + os.pathsep + os.environ.get("PATH", ""))
     monkeypatch.setenv("HS_TMUX_SOCKET", "hs-test-%d" % os.getpid())
     monkeypatch.setenv("TMUX_TMPDIR", d)
+    monkeypatch.setenv("ROWFLOW_NO_VIEW_REFRESH", "1")  # never force-checkout the real hub view from a test
     yield
     shutil.rmtree(d, ignore_errors=True)
