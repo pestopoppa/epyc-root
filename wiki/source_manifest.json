@@ -4,29 +4,27 @@
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1389,
+    "progress": 1390,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 1,
+      "added": 1,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-12T13:35:14Z",
+    "at": "2026-11-15T19:35:58Z",
     "scope_paths": [
-      "docs/design/integrated-document-aggregation-plan-20261110.md",
-      "handoffs/active/knowledge-pipelines.md",
-      "progress/2026-11/2026-11-12-autopilot-backlog-session.md"
+      "progress/2026-11/2026-11-15-workspace-f2.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-12T13:35:14Z",
+  "scan_time": "2026-11-15T19:35:58Z",
   "schema_version": 1,
-  "source_set_hash": "2457dddb9f15973a7cfc696c41e0e190768c79a4eeb09eb42749993f2b7f00dd",
+  "source_set_hash": "8e20aa32cf2b259065180a7a47d3f37919a928e990c20aafafab020a359cfbe5",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16829,6 +16827,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "c8ec59fd6ab67c80ba4d5429a133dce8c64cddbb977d4e16cd4f7473b1342936",
+      "modified": "2026-11-15T19:34:03Z",
+      "path": "progress/2026-11/2026-11-15-workspace-f2.md",
+      "size": 2736,
+      "title": "2026-11-15 \u2014 workspace-f2",
+      "type": "progress"
+    },
+    {
       "content_hash": "619ad894ef109967fac5529e928bae68dfcb6e202d968e05434bfebbe7ab6f3f",
       "modified": "2026-11-09T21:31:46Z",
       "path": "progress/evidence/kpf131-external-observer-20261104/PREDECLARATION.md",
@@ -20525,7 +20531,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2562,
+  "total_new": 2563,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
