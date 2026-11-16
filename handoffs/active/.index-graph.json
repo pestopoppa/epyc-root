@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T07:59:01Z",
+  "generated_at": "2026-11-16T08:16:28Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2510,7 +2510,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 130,
+      "closed": 131,
       "dispatchable": 14,
       "domain": "pipeline-integration",
       "guarded": 0,
