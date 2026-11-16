@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-16",
-      "open": 9
+      "open": 8
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1305,10 +1305,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 140,
+      "closed": 141,
       "guarded": 0,
       "last_advanced": "2026-11-16",
-      "open": 9,
+      "open": 8,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1331,13 +1331,13 @@
         },
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": [],
           "guarded": 0,
           "line": 1122,
           "markers": 1,
           "name": "colbert-reranker-web-research",
-          "open": 1
+          "open": 0
         },
         {
           "blocked": 0,
