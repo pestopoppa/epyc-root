@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T12:46:52Z",
+  "generated_at": "2026-11-16T12:47:56Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2486,15 +2486,15 @@
       "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 21,
-      "dispatchable": 3,
+      "closed": 22,
+      "dispatchable": 2,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "dispatch-placement-telemetry.md",
       "id": "INF-87",
       "last_advanced": "2026-11-10",
       "next_action": "After next stack start: confirm WP-15.2 live schema, capture WP-15.3 fit+holdout windows, run WP-15 replay",
-      "open": 3,
+      "open": 2,
       "priority": 0.0179,
       "priority_basis": {
         "campaign": 0,
@@ -2510,15 +2510,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 136,
-      "dispatchable": 13,
+      "closed": 140,
+      "dispatchable": 9,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-16",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt",
-      "open": 13,
+      "open": 9,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2538,11 +2538,11 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 2,
+          "dispatchable": 1,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 2,
+          "open": 1,
           "readiness": "ready"
         },
         {
@@ -2565,11 +2565,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 7,
+          "dispatchable": 4,
           "gates": [],
           "line": 2497,
           "name": "opendataloader-pipeline-integration",
-          "open": 7,
+          "open": 4,
           "readiness": "ready"
         },
         {

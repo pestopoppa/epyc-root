@@ -4,13 +4,13 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 563
+      "open": 562
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-16",
-      "open": 13
+      "open": 9
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -844,10 +844,10 @@
     },
     "dispatch-placement-telemetry.md": {
       "blocked": 0,
-      "closed": 21,
+      "closed": 22,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1305,10 +1305,10 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 136,
+      "closed": 140,
       "guarded": 0,
       "last_advanced": "2026-11-16",
-      "open": 13,
+      "open": 9,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1321,13 +1321,13 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 48,
+          "closed": 49,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 2
+          "open": 1
         },
         {
           "blocked": 0,
@@ -1351,13 +1351,13 @@
         },
         {
           "blocked": 0,
-          "closed": 12,
+          "closed": 15,
           "gates": [],
           "guarded": 0,
           "line": 2497,
           "markers": 1,
           "name": "opendataloader-pipeline-integration",
-          "open": 7
+          "open": 4
         },
         {
           "blocked": 0,
