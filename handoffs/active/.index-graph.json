@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T13:20:06Z",
+  "generated_at": "2026-11-16T13:21:29Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1661,14 +1661,14 @@
         "EVL-47"
       ],
       "closed": 358,
-      "dispatchable": 6,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-16",
       "next_action": "publish race-eqv r9 (no ready/ entry); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
-      "open": 6,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1703,13 +1703,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 6,
+          "dispatchable": 7,
           "gates": [
             "EVL-47"
           ],
           "line": 58,
           "name": "rocm-verify-profile-backend",
-          "open": 6,
+          "open": 7,
           "readiness": "blocked"
         },
         {
@@ -1722,7 +1722,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1565,
+          "line": 1566,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1737,7 +1737,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2722,
+          "line": 2723,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1746,7 +1746,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3094,
+          "line": 3095,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1755,7 +1755,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3607,
+          "line": 3608,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1764,7 +1764,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3702,
+          "line": 3703,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1981,7 +1981,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1728,
+          "line": 1729,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1990,7 +1990,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1852,
+          "line": 1853,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1999,7 +1999,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2182,
+          "line": 2183,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2321,
+          "line": 2322,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2877,
+          "line": 2878,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1,
           "readiness": "ready"
@@ -2029,7 +2029,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3017,
+          "line": 3018,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2041,7 +2041,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3024,
+          "line": 3025,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"

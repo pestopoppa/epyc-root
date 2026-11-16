@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 561
+      "open": 562
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1236,7 +1236,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1728,
+          "line": 1729,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1852,
+          "line": 1853,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2182,
+          "line": 2183,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2321,
+          "line": 2322,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2877,
+          "line": 2878,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3017,
+          "line": 3018,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3024,
+          "line": 3025,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2174,7 +2174,7 @@
       "closed": 358,
       "guarded": 0,
       "last_advanced": "2026-11-16",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2183,7 +2183,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 364,
+      "total": 365,
       "tracks": [
         {
           "blocked": 0,
@@ -2195,7 +2195,7 @@
           "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 6
+          "open": 7
         },
         {
           "blocked": 0,
@@ -2205,7 +2205,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1565,
+          "line": 1566,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2218,7 +2218,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2722,
+          "line": 2723,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2228,7 +2228,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3094,
+          "line": 3095,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2238,7 +2238,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3607,
+          "line": 3608,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2248,7 +2248,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3702,
+          "line": 3703,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
