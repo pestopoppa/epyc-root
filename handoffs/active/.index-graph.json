@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T15:15:06Z",
+  "generated_at": "2026-11-16T19:26:39Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2510,15 +2510,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 142,
-      "dispatchable": 7,
+      "closed": 144,
+      "dispatchable": 5,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-16",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt",
-      "open": 7,
+      "open": 5,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2538,12 +2538,12 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [],
@@ -2592,12 +2592,12 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": [],
           "line": 3121,
           "name": "integrated-aggregation",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
