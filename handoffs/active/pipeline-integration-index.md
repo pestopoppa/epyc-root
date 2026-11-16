@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.19 L3 fy_end lone-month-day + FY-1 caption synonyms | — |
+| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt | — |
 
 ## Cross-domain
 

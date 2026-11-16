@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.19 L3 fy_end lone-month-day + FY-1 caption synonyms",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt",
       "track": "internal kb rag"
     },
     "REV-02": {
