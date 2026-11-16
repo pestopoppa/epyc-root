@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T13:06:18Z",
+  "generated_at": "2026-11-16T13:06:59Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1660,15 +1660,15 @@
       "blocked_by": [
         "EVL-47"
       ],
-      "closed": 357,
-      "dispatchable": 7,
+      "closed": 358,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-12",
       "next_action": "publish race-eqv r9 (no ready/ entry); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
-      "open": 7,
+      "open": 6,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1703,13 +1703,13 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 7,
+          "dispatchable": 6,
           "gates": [
             "EVL-47"
           ],
           "line": 58,
           "name": "rocm-verify-profile-backend",
-          "open": 7,
+          "open": 6,
           "readiness": "blocked"
         },
         {
@@ -1722,7 +1722,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1563,
+          "line": 1565,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1737,7 +1737,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2720,
+          "line": 2722,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0,
           "readiness": "no_open"
@@ -1746,7 +1746,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3092,
+          "line": 3094,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1755,7 +1755,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3605,
+          "line": 3607,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1764,7 +1764,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3700,
+          "line": 3702,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
