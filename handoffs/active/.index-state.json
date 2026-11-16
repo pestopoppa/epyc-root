@@ -1202,7 +1202,7 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 211,
+      "closed": 212,
       "guarded": 0,
       "last_advanced": "2026-11-16",
       "open": 45,
@@ -1214,11 +1214,11 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 257,
+      "total": 258,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 170,
+          "closed": 171,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1236,7 +1236,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1725,
+          "line": 1728,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1849,
+          "line": 1852,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2179,
+          "line": 2182,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 2318,
+          "line": 2321,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2874,
+          "line": 2877,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 1
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3014,
+          "line": 3017,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3021,
+          "line": 3024,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0

@@ -15,3 +15,9 @@ All 11 earlier verdicts confirmed already FILED (NOOP); `up-farows-bound-gpu-202
 
 Handoff changes (`handoffs/active/kernel-champion-and-promotion.md`): UP-B12421-FAROWS-BOUND ticked; new open boxes UP-B12421-FAROWS-HIP-PORT and GPU-MTP-ACCEPTANCE-METRIC; status appended to CONVSNAP, BUNDLE1 (not ticked) and C11-GPUPROOF-ANSI-PARSE (not ticked).
 Lessons added to `docs/guides/agent-workflows/compute-fillers.md`.
+
+## C12 fold recorded (operator-approved 2026-11-16)
+
+Champion candidate C12 = `457d5fc523ba5cc687a333a588c1dc15db9346f4` (branch `llama.cpp-experimental-up-bundle1-20261115` = C11 fold `8b9bf3031` + upstream b12421 bundle1). Evidence: up-bundle1-cpu-20261115-r2 pass (geomean 1.015, 0 new fails, KLD 0); up-bundle1-gpu-20261115-r5 pass (per-step geomean 1.030, P2 1.064, P3 0.998; one unconfirmed TOPK_MOE flake).
+
+Handoff: UP-B12421-BUNDLE1 ticked; C12-CPU-FOLLOWON box added; FAROWS-HIP-PORT must rebase onto `457d5fc52` before any keep run. Manifest `docs/reference/kernel-manifests/llama-v11-manifest.md` gains V11-141 (C11 fold) and V11-142 (bundle1). No compiles or inference run.
