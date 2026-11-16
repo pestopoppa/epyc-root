@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T12:47:56Z",
+  "generated_at": "2026-11-16T12:48:16Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2483,7 +2483,7 @@
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     {
-      "age_days": 6,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 22,
@@ -2492,7 +2492,7 @@
       "guarded": 0,
       "handoff": "dispatch-placement-telemetry.md",
       "id": "INF-87",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-16",
       "next_action": "After next stack start: confirm WP-15.2 live schema, capture WP-15.3 fit+holdout windows, run WP-15 replay",
       "open": 2,
       "priority": 0.0179,
