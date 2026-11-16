@@ -695,10 +695,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-15T19:37:41Z",
+  "generated_at": "2026-11-16T07:39:20Z",
   "nodes": [
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 1,
       "blocked_by": [],
       "closed": 132,
@@ -1042,7 +1042,7 @@
       ]
     },
     {
-      "age_days": 11,
+      "age_days": 12,
       "blocked": 0,
       "blocked_by": [],
       "closed": 67,
@@ -1130,7 +1130,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 121,
@@ -1206,7 +1206,7 @@
       ]
     },
     {
-      "age_days": 12,
+      "age_days": 13,
       "blocked": 2,
       "blocked_by": [],
       "closed": 215,
@@ -1328,7 +1328,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 1,
       "blocked_by": [],
       "closed": 373,
@@ -1371,18 +1371,18 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 3,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 833,
-      "dispatchable": 137,
+      "closed": 834,
+      "dispatchable": 136,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-12",
+      "last_advanced": "2026-11-15",
       "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued, quiet-host); H13 r2 queued (1.010 bar confirmed); vLLM AITER r2 queued; GDN-SHARE-1",
-      "open": 138,
+      "open": 137,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1419,7 +1419,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 40,
+          "dispatchable": 39,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1428,7 +1428,7 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 41,
+          "open": 40,
           "readiness": "blocked"
         },
         {
@@ -1535,7 +1535,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 3,
       "blocked": 1,
       "blocked_by": [],
       "closed": 237,
@@ -1655,7 +1655,7 @@
       ]
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [
         "EVL-47"
@@ -1772,7 +1772,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 2,
       "blocked_by": [],
       "closed": 129,
@@ -1839,7 +1839,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 1,
       "blocked_by": [],
       "closed": 107,
@@ -1920,18 +1920,18 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 209,
-      "dispatchable": 45,
+      "closed": 210,
+      "dispatchable": 44,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-15",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 46,
+      "open": 45,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1965,7 +1965,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 39,
+          "dispatchable": 38,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1974,7 +1974,7 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 40,
+          "open": 39,
           "readiness": "blocked"
         },
         {
@@ -2049,7 +2049,7 @@
       ]
     },
     {
-      "age_days": 12,
+      "age_days": 13,
       "blocked": 0,
       "blocked_by": [],
       "closed": 146,
@@ -2140,7 +2140,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2181,7 +2181,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 12,
+      "age_days": 13,
       "blocked": 41,
       "blocked_by": [],
       "closed": 120,
@@ -2231,7 +2231,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2290,7 +2290,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 2,
       "blocked_by": [
         "INF-06",
@@ -2379,7 +2379,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2405,7 +2405,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2431,7 +2431,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 0,
       "blocked_by": [
         "INF-48"
@@ -2457,7 +2457,7 @@
       "track": "upstream publication"
     },
     {
-      "age_days": 3,
+      "age_days": 4,
       "blocked": 0,
       "blocked_by": [
         "INF-83"
@@ -2483,7 +2483,7 @@
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [],
       "closed": 21,
@@ -2507,7 +2507,7 @@
       "track": "dispatch placement telemetry"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 128,
@@ -2602,7 +2602,7 @@
       ]
     },
     {
-      "age_days": 12,
+      "age_days": 13,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2702,7 +2702,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 2,
       "blocked_by": [],
       "closed": 292,
@@ -2931,7 +2931,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 1,
       "blocked_by": [],
       "closed": 155,
@@ -3044,7 +3044,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 1,
       "blocked_by": [],
       "closed": 181,
@@ -3188,7 +3188,7 @@
       ]
     },
     {
-      "age_days": 5,
+      "age_days": 6,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3214,18 +3214,18 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 2,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 308,
-      "dispatchable": 80,
+      "closed": 309,
+      "dispatchable": 79,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
-      "last_advanced": "2026-11-13",
+      "last_advanced": "2026-11-15",
       "next_action": "Operator signs AFC directive scope ratify; TOOLPERM+AGENTFILE-INJECT after matrix refresh; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 81,
+      "open": 80,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3299,17 +3299,17 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": [],
           "line": 2105,
           "name": "repo-readiness-scorer",
-          "open": 10,
+          "open": 9,
           "readiness": "ready"
         }
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 343,
@@ -3465,7 +3465,7 @@
       ]
     },
     {
-      "age_days": 10,
+      "age_days": 11,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3581,7 +3581,7 @@
       ]
     },
     {
-      "age_days": 9,
+      "age_days": 10,
       "blocked": 9,
       "blocked_by": [],
       "closed": 414,
@@ -3656,7 +3656,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 18,
       "blocked_by": [],
       "closed": 238,
@@ -3811,7 +3811,7 @@
       ]
     },
     {
-      "age_days": 43,
+      "age_days": 44,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,

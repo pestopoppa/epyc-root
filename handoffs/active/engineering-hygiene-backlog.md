@@ -2617,6 +2617,7 @@ Validation:
   - *(workspace-f2 2026-11-11.)* Traced. Production enforces `model_registry.yaml` `roles.*.tool_permissions` through `src/registry/production.py:53`, then `load_permissions_from_registry` (`src/registry/tool_registry.py:370`), then the cascading policy. `executor.py` ROLE_PERMISSIONS is legacy, off the serving path; its only consumer is a `stack_commands.py:2853` print. worker_general resolves to 26 tools with no web.
   - Wider finding: a role with no `tool_permissions` gets an empty policy chain, so ALL 65 tools, including `run_shell`, `http_post` and `python_eval`. 13 of 15 roles are in that state; only frontdoor (36) and worker_general (26) are restricted. Operator decision 2026-11-11, after a corrected count: **deny unlisted roles plus explicit per-role allowlists**, via TOOLPERM-DENY-DEFAULT below. [no-belief: code trace, no measurement]
 - [ ] **TOOLPERM-DENY-DEFAULT — a role without `tool_permissions` gets no tools (startup warning), and every tool-using role gets an explicit allowlist.**
+  - **External gate:** production relaunch (Pipeline relaunch queue item 1) plus the `contention_matrix.yaml` refresh. Signed package backup: `/mnt/raid0/llm/tmp/toolperm-deny-default-signed-20261111.patch`.
   - Proposed: architect_general and architect_critic get web, data and llm (no shell, code or system). coder_escalation and toolrunner get all tools, explicitly. worker_math gets math and data. The rest come from a per-role use audit.
   - Prepare per-role lists plus a before/after resolution diff for all roles, through stack-change, for one operator signature.
   - The registry edit is held by the orchestrator pre-commit contention-matrix freshness check; that matrix is stale for unrelated reasons. Refresh it, or land within the sign-off.
@@ -2632,6 +2633,7 @@ Validation:
     - Sequence: matrix refresh → workspace-f2 commits and pushes this package → orchestrator API reload at the inference owner's boundary.
     - AFC-V3C-PROD-TOOLS already uses the signed architect set. [no-belief: operator decision + code change, no measurement]
 - [ ] **AGENTFILE-INJECT-DEPLOY — deliver the measured agent-file operating point to worker_general and architect_general in production.** Before this change, no production path gave a local model any agent file: `agent_file_compression_operating_point` was validated, never applied (trace 2026-11-12). Operator decision 2026-11-12: wire it for both roles.
+  - **External gate:** production relaunch (Pipeline relaunch queue item 1) plus the `contention_matrix.yaml` refresh; lands with TOOLPERM-DENY-DEFAULT. Signed package backup: `/mnt/raid0/llm/tmp/toolperm-deny-default-signed-20261111.patch`.
   - Code is landed on epyc-orchestrator 440ed243c, behind `agent_file_injection`, which defaults OFF (flag-off prompts are byte-identical; this is tested):
     - `src/config/agent_files.py` `resolve_agent_file`: an explicit per-role value only;
     - `src/prompt_builders/agent_file.py`;

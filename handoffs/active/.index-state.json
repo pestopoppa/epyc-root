@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 565
+      "open": 563
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 467
+      "open": 466
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 833,
+      "closed": 834,
       "guarded": 0,
-      "last_advanced": "2026-11-12",
-      "open": 137,
+      "last_advanced": "2026-11-15",
+      "open": 136,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -117,7 +117,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 379,
+          "closed": 380,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -128,7 +128,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-research-loop",
-          "open": 40
+          "open": 39
         },
         {
           "blocked": 0,
@@ -860,10 +860,10 @@
     },
     "engineering-hygiene-backlog.md": {
       "blocked": 1,
-      "closed": 308,
+      "closed": 309,
       "guarded": 0,
-      "last_advanced": "2026-11-13",
-      "open": 80,
+      "last_advanced": "2026-11-15",
+      "open": 79,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -936,13 +936,13 @@
         },
         {
           "blocked": 1,
-          "closed": 23,
+          "closed": 24,
           "gates": [],
           "guarded": 0,
           "line": 2105,
           "markers": 1,
           "name": "repo-readiness-scorer",
-          "open": 9
+          "open": 8
         }
       ]
     },
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 209,
+      "closed": 210,
       "guarded": 0,
       "last_advanced": "2026-11-15",
-      "open": 45,
+      "open": 44,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 168,
+          "closed": 169,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,7 +1229,7 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 39
+          "open": 38
         },
         {
           "blocked": 0,
