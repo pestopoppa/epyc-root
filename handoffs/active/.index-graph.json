@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T12:44:34Z",
+  "generated_at": "2026-11-16T12:46:45Z",
   "nodes": [
     {
       "age_days": 6,
@@ -3312,7 +3312,7 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 343,
+      "closed": 344,
       "dispatchable": 9,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3410,7 +3410,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 4905,
+          "line": 4906,
           "name": "loop-owned-fleet-implementation",
           "open": 0,
           "readiness": "no_open"
@@ -3429,7 +3429,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5565,
+          "line": 5566,
           "name": "fleet-fanout-measurement",
           "open": 3,
           "readiness": "blocked"
@@ -3448,7 +3448,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5756,
+          "line": 5760,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3457,7 +3457,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6312,
+          "line": 6316,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
