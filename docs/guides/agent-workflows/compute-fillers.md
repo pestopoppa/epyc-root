@@ -175,3 +175,12 @@ Throughput*.
 - **Validate a harness fix offline against every suite's stored logs before spending GPU on a rerun.** race-eqv r7 and r8 each burned ~40 min of MI210 on an instrument failure that a replay of stored baseline logs per suite would have caught (the r9 fix `4d441c131` ships an offline baseline replay test for this reason).
 - **Correctness-only GPU rows use shape `gpu`, not `gpu-q3`.** They need no q3 host threads, so as `gpu` they can backfill while q3 is busy (race-eqv, b3-gdn r3). Keep gpu-q3 for timing rows.
 - **Verify a row is published before reporting it queued.** Check `ready/<id>.json` exists (and the keeper lists it under GRANTABLE/QUEUED). race-eqv r9 was reported queued with no `ready/` entry.
+
+## Lessons from 2026-11-15/16 (AutoKernel, upstream b12421 rows)
+
+- **Parse `test-backend-ops` from the `Failing tests:` block after an ANSI strip, and fail closed.** Per-op `[OP] ... test failed FAIL` lines did not match the old `FAIL_RE`, giving vacuous `n_fail=0`; r2+ rows use `tbo_fail_names()`. rc!=0 with no parsed failures is a failure.
+- **Decode A/Bs must set `ignore_eos`.** Without it generations end early and the step-cost windows differ; the first GPU A/Bs were invalidated by it.
+- **GPU MTP A/Bs need an acceptance-normalized metric.** GPU greedy output is nondeterministic, so draft acceptance varies per visit (bisect `up-bundle1-gpu-bisect-20261116`: 25-197 of ~280). Gate on ms per verify step = predicted_ms/(n - draft_n_accepted), never tok/s.
+- **Run `refresh_hub_view.sh` before `publish_row`**, or the row is published against a stale hub view.
+- **Launch containers via `docker` on PATH**, not by an absolute path or wrapper that may be absent in the grant shell.
+
