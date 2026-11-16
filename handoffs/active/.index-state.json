@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 562
+      "open": 563
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2171,10 +2171,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 358,
+      "closed": 359,
       "guarded": 0,
       "last_advanced": "2026-11-16",
-      "open": 7,
+      "open": 8,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2183,11 +2183,11 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 365,
+      "total": 367,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 119,
+          "closed": 120,
           "gates": [
             "EVL-47"
           ],
@@ -2195,7 +2195,7 @@
           "line": 58,
           "markers": 1,
           "name": "rocm-verify-profile-backend",
-          "open": 7
+          "open": 8
         },
         {
           "blocked": 0,
@@ -2205,7 +2205,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1566,
+          "line": 1569,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2218,7 +2218,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2723,
+          "line": 2726,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 0
@@ -2228,7 +2228,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3095,
+          "line": 3098,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2238,7 +2238,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3608,
+          "line": 3611,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2248,7 +2248,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3703,
+          "line": 3706,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
