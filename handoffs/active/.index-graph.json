@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T10:49:32Z",
+  "generated_at": "2026-11-16T10:52:09Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2517,7 +2517,7 @@
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-16",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; agg_pipeline.v4 bundle (L3 textrow+quote round), held-out check",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.19 L3 fy_end lone-month-day + FY-1 caption synonyms",
       "open": 14,
       "priority": 0.6185,
       "priority_basis": {
