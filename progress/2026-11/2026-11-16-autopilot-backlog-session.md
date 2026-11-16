@@ -32,3 +32,9 @@
 - Research `a60561946` `agg118_pilot_diag.py` / `.json` (offline, copies only): the 12 raw misses are 8 Salesforce L3_PERIOD (a lone 'January 31,' over three year columns, which fy_end amendment 2 does not pair) and 4 Netflix/Boeing FY-1 L3_LABEL (captions missing from TEXTROW_SYNONYMS; L4 replies carry FY only). 0 gold errors. Canonical-only miss: Boeing net_income 2019 (-677).
 - knowledge-pipelines.md: AGG-1.18 RESULT added and box ticked (futility stop is a predeclared answer). AGG-1.19 opened (opt-in fy_end broadcast + 4 caption synonyms; step 1 offline, step 2 on the 7 unseen held-out docs, which stay reserved). [no-belief: row verdict filed by agent]
 
+
+## AGG-1.19 step 1: opt-in L3 components and offline replay (zero model calls, no compute row)
+- PREDECLARED_AGG119 committed before scoring (research `3bd3c8b24`, sha256 `d41a9d28`).
+- Orchestrator `e1ccd216`: opt-in `fy_end_lone_monthday` and `fy1_captions` plus opt-in `agg_pipeline.v5` = v4 + both. The default stays v3, and v1-v4 are unchanged. 265 aggregation unit tests pass.
+- Research `f8188fe13` `agg119.py` / `agg119_result.json` (PASS): the bundle fixes 12/12 AGG-1.18 pilot raw misses. 0 regressions (raw and canonical) on 211, 49x2, 76, 14 and 48, and v5 vs v4 is also 0. Boeing NI 2019 canonical moves from -677 to -636 with both components on v3, but reads 10460 under the v4/v5 L3 (wrong before and after).
+- Step 2 row prepared, not launched: `/mnt/raid0/llm/tmp/agg119-ingest-cpu-20261116` (7 unseen docs, pilot Verizon + Corning, est 2100 s ESTIMATE). precond rc 0 and dry run ok. The owner publishes it. [no-belief: offline replay filed by agent]
