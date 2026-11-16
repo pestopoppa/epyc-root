@@ -38,3 +38,8 @@
 - Orchestrator `e1ccd216`: opt-in `fy_end_lone_monthday` and `fy1_captions` plus opt-in `agg_pipeline.v5` = v4 + both. The default stays v3, and v1-v4 are unchanged. 265 aggregation unit tests pass.
 - Research `f8188fe13` `agg119.py` / `agg119_result.json` (PASS): the bundle fixes 12/12 AGG-1.18 pilot raw misses. 0 regressions (raw and canonical) on 211, 49x2, 76, 14 and 48, and v5 vs v4 is also 0. Boeing NI 2019 canonical moves from -677 to -636 with both components on v3, but reads 10460 under the v4/v5 L3 (wrong before and after).
 - Step 2 row prepared, not launched: `/mnt/raid0/llm/tmp/agg119-ingest-cpu-20261116` (7 unseen docs, pilot Verizon + Corning, est 2100 s ESTIMATE). precond rc 0 and dry run ok. The owner publishes it. [no-belief: offline replay filed by agent]
+
+## AGG-1.19 step 2 pilot result recorded (non-compute, autopilot-backlog-session)
+- Row `agg119-ingest-cpu-20261116` filed fail at pilot futility `v5_fixes_0_pilot_cells_vs_v3` (PREDECLARED_AGG119 d41a9d28; orchestrator e1ccd216; research f8188fe13). Pilot VERIZON_2019 + CORNING_2019, 36 cells: v3/v4/v5 all 34 raw / 34 canonical, LTD 4/4, 0 fixed, 0 regressed, 589 s.
+- Pilot docs have no January year end and none of the 4 FY-1 captions, so the stop is uninformative, not evidence against v5. v5/v4 stay opt-in, v3 default.
+- Ticked AGG-1.19 in knowledge-pipelines.md; lesson added there and to measurement-sufficiency.md (pilot docs must contain the targeted feature). [no-belief: row verdict filed by agent]

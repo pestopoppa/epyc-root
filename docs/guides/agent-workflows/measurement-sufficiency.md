@@ -26,6 +26,8 @@ Report the number and selection of units, dependence and relevant differences be
 
 Until the operator decides OP-ABSEQ / OP-PQP / OP-ALPHAWIN, a formal-gate cell (promotion or ratification evidence) may stop early **only for futility**. An interim look may never declare a gate pass; stop-on-answer applies to operational and diagnostic questions. Worked case: [RTG-58 case study](../../reference/measurement-sufficiency/rtg58-case-study-20261102.md) (two planned 4–5 h runs became one long and two short runs with an unambiguous answer).
 
+- **Pilot docs must contain the targeted feature:** a futility gate on a pilot that cannot exercise the change (no unit has the feature the fix targets) trips on ceiling, not on absence of effect, and is uninformative. Choose pilot units that contain the targeted feature, or declare the stop as uninformative. Worked cases: AGG-1.18 and AGG-1.19 in `handoffs/active/knowledge-pipelines.md`.
+
 ## Compact run declaration
 
 `Question/decision: … | evidence already usable: … | units/strata/control: … | minimum coverage: … | looks/method/threshold: … | stop/continue/inconclusive: … | cap: … | records and safe resume: … | gate or diagnostic: …`
