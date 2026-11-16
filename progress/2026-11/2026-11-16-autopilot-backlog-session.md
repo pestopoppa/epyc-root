@@ -16,3 +16,8 @@
   FOOTLOCKER FY21 PERIOD_LABEL is a tolerance artifact, not an fy_end error.
 - Orchestrator `f8748a08`: opt-in `facts_det.L3_TEXTROW_OPTIONAL` (ltd_qualifier, note_ref, tail_label, pipe_cells_ltd; pipe_cells rejected for a NIKE capex regression). The v3 default is unchanged.
 - Research `a40bfd3c2` (`agg117.py`, `agg117_result.json`): 4-component bundle 14-cell 6→14. 0 regressions over 76/211/49/14 (+4 incidental canonical fixes). Box ticked; no step-2 job (no cell needs a new call). Proposed v4 = v3 + this L3 bundle. [belief: cc]
+
+## AGG-1.17 follow-ups: quote-rounding rule, agg_pipeline.v4, AGG-1.18 held-out box (zero model calls, no compute row)
+- Orchestrator `88bba4fd`: opt-in `facts_typed.VALUE_IN_QUOTE_ROUNDED` (`value_in_quote.rounded.v1`: restatement rounded to the reply's decimals, 1..2 dropped, rel err <= 5e-4); `value_in_quote.v1` unchanged for v1/v2/v3. `agg_pipeline.v4` = v3 + `V4_L3_TEXTROW` (4 components) + the rounded rule, via `ORCHESTRATOR_AGG_PIPELINE`; default stays v3. 254 aggregation tests pass.
+- Research `7e7dd4339` `agg118.py` / `agg118_result.json` (offline replay of saved replies, parity 0 on 4 stores): rule alone restores 3 BLOCK rows, 14 LTD 6→7, 0 regressions on 76/211/49×2. v4: 14 LTD 6→14 raw+canonical, 76 canonical 67→69, 211 canonical 203→204, agg14 canonical 23→24, 0 regressions (same as the AGG-1.17 bundle alone; the rule adds no cell inside v4). IN-SAMPLE.
+- Held-out inventory: all 41 on-disk 10-K PDFs are already used; every FinanceBench FY2022 issuer is used. AGG-1.18 box added (download 10: FEDEX_2023, SALESFORCE_2023 + 8 FY2019 AGG-1.1-only issuers; ~180 golds; one v3 CPU ingest ~3300 s, v4 derived offline; no GPU).
