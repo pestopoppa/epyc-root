@@ -2850,7 +2850,7 @@
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.15 v2 long_term_debt regression (6 cells)",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; agg_pipeline.v3 default (H1+canonical.v3)",
       "track": "internal kb rag"
     },
     "REV-02": {
