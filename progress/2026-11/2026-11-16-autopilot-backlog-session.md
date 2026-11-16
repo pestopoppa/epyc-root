@@ -8,3 +8,11 @@
 - AGG-1.16b (operator "Bundle v3, verify", out-of-sample long_term_debt gain; zero model, offline): golds + PREDECLARED_AGG116B committed before scoring (research `4916f38bd`; 14 filled cells, 6 EXCLUDED: Intel, Oracle, Ulta). Result research `e010c6e80` (`agg116b_result.json`, fresh replay `/mnt/raid0/llm/tmp/agg116b-replay-20261116/`): raw and canonical v2 5/14 -> v3 6/14 (fix AMCOR FY2022), 0 regressions; 76-cell recheck unchanged 71/67, 0 regressions. Gain verified (+1 cell); v3 ready to become default; default NOT changed (operator's). Handoff sub-bullet under AGG-1.16 in knowledge-pipelines.md. [no-belief: zero-model offline replay]
 
 - AGG-1.16 follow-through (operator "Bundle v3, verify"): `agg_pipeline.v3` is now the default when `ORCHESTRATOR_AGG_PIPELINE` is unset (orchestrator `d7efa440` on `92139534`; `pipeline.DEFAULT = PIPELINE_V3`). v1/v2 pins reproduce unchanged; default tests updated and an explicit v1/v2 pin test added; 229 aggregation unit tests pass. Callers relying on the default: none outside `src/aggregation` and its tests (no API, autopilot or routing path). Sub-bullet added under AGG-1.16 in `knowledge-pipelines.md`. New open box AGG-1.17 (long_term_debt residual 8 of 14 misses: offline diagnosis then conditional bounded fix re-run), `[no-belief: prospective task]`, task_lint publish: PUBLISHABLE. Index row PIP-04 Next-action text proposed to the owner, not edited. index_state `--check` rc 0.
+
+## AGG-1.17 step 1 — residual long_term_debt misses (offline, 0 model calls)
+
+- PREDECLARED_AGG117 research `8455215d9` (pre-fix). Root cause filed for all 8 cells (detail: knowledge-pipelines.md AGG-1.17 note).
+  Six of the eight are L3 text-row label/tokeniser defects. BLOCK also has an L4 value-in-quote rounding drop. PG&E 4,588 is the parent-only Schedule I sheet.
+  FOOTLOCKER FY21 PERIOD_LABEL is a tolerance artifact, not an fy_end error.
+- Orchestrator `f8748a08`: opt-in `facts_det.L3_TEXTROW_OPTIONAL` (ltd_qualifier, note_ref, tail_label, pipe_cells_ltd; pipe_cells rejected for a NIKE capex regression). The v3 default is unchanged.
+- Research `a40bfd3c2` (`agg117.py`, `agg117_result.json`): 4-component bundle 14-cell 6→14. 0 regressions over 76/211/49/14 (+4 incidental canonical fixes). Box ticked; no step-2 job (no cell needs a new call). Proposed v4 = v3 + this L3 bundle. [belief: cc]
