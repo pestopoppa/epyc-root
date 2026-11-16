@@ -1305,7 +1305,7 @@
     },
     "knowledge-pipelines.md": {
       "blocked": 0,
-      "closed": 134,
+      "closed": 135,
       "guarded": 0,
       "last_advanced": "2026-11-16",
       "open": 14,
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 148,
+      "total": 149,
       "tracks": [
         {
           "blocked": 0,
@@ -1381,7 +1381,7 @@
         },
         {
           "blocked": 0,
-          "closed": 21,
+          "closed": 22,
           "gates": [],
           "guarded": 0,
           "line": 3121,
