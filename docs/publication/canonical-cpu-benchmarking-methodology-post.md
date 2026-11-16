@@ -32,7 +32,7 @@ Those standard deviations (against 0.01 to 0.10 for the plain runs) were the fir
 
 The reference was our long-standing "canonical" command: `taskset -c 0-95 -t 96 -fa 1`, with llama.cpp's default file mapping. That produced, for example, 14.63 +/- 0.01 t/s on the Q8_0 model [src: `progress/2026-04/2026-04-26.md` line 170 (Phase B baselines)]. The tiny standard deviation made it look trustworthy. It was reproducible, but reproducibility is not correctness.
 
-With the default mapping, which NUMA node each weight page lands on is decided by whichever thread first touches it. On a many-CCD part, that placement can concentrate or scatter pages in ways that have little to do with the code under test. The reference was a stable measurement of one accidental page layout.
+With the default mapping, which NUMA node each weight page lands on is plausibly decided by whichever thread first touches it. Our data are consistent with first-touch placement concentrating or scattering pages in ways that have little to do with the code under test, though we did not measure page placement directly in this run. On that reading, the reference was a stable measurement of one accidental page layout.
 
 On the evening of 2026-04-26 a user-requested "verify lever compounding" check re-ran the optimizations on five production models against a second configuration: `numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1 -p 0 -n 32 --mmap 0`, with the page cache dropped between runs [src: `progress/2026-04/2026-04-26.md`, "Compounding Verification Matrix"; raw logs in epyc-inference-research commit `42f1789ce`, `data/cpu_optimization/2026-04-26-compounding/`].
 
@@ -43,7 +43,7 @@ Against the interleaved baseline, the same EP change gives:
 > Qwen3.6-35B-A3B Q8_0 decode, baseline 20.81 +/- 0.02 t/s, EP arm 21.15 +/- 0.04 t/s, +1.6% [P-BENCH-1 (retro), n=3, 2026-04-26, attestation: pending]
 > [src: `progress/2026-04/2026-04-26.md` lines 912 and 923; `handoffs/completed/cpu-benchmark-rigor-and-revalidation.md` line 138]
 
-The `+/-` values are llama-bench's own standard deviation across repetitions. Taken at face value, 0.34 t/s on a base of 20.81 is a small effect, and at n=3 we cannot distinguish it from noise. We recorded it as "DOWNGRADE - noise" and the post's headline is deliberately phrased the same way.
+The `+/-` values are llama-bench's own standard deviation across repetitions. Taken at face value, 0.34 t/s on a base of 20.81 is a small effect, and at n=3 we cannot distinguish it from noise. The same configuration's first baseline run had read 21.07 +/- 0.02 t/s; against that run the EP delta is +0.4%, and we report 20.81 (the repeat run) as the baseline only because it is the one the original write-up used [src: `epyc-inference-research` commit `42f1789ce`, `data/cpu_optimization/2026-04-26-compounding/C_q8_canonical.log` (21.07) and `V2_q8_cold_canonical_repeat.log` (20.81)]. Both readings point the same way: no demonstrable effect. We recorded it as "DOWNGRADE - noise" and the post's headline is deliberately phrased the same way.
 
 The same re-measurement took apart the other wins [src: `progress/2026-04/2026-04-26.md` lines 921-928]:
 
@@ -125,4 +125,4 @@ The wrapper also drops the page cache per NUMA node before the run and rejects a
 
 If you benchmark LLM inference on a many-core NUMA machine, the first thing to check is not your kernel. It is whether your baseline's memory placement is something you chose or something that happened. Our old reference was reproducible to 0.01 t/s and still manufactured a +17% win, a -47% regression and a research item that had no problem to solve. The fix was a different command line, and it delivered more than the code it replaced.
 
-The caveats we owe you are the ones in the labels. The headline is an n=3 retro-certified comparison with attestation pending; it supports "no demonstrable effect" and nothing stronger. The +17% side is a pre-canonical observation. The kernel story is a paraphrase. And none of it is a statement about current performance. If any of this is wrong, the raw logs are in the repository named above, and we would rather be corrected than be quoted.
+The caveats we owe you are the ones in the labels. The headline is an n=3 retro-certified comparison with attestation pending; it supports "no demonstrable effect" and nothing stronger. The +17% side is a pre-canonical observation. The kernel story is a paraphrase. And none of it is a statement about current performance. If any of this is wrong, raw logs are available on request, and we would rather be corrected than be quoted.
