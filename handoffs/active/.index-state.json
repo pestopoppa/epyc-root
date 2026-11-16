@@ -10,7 +10,7 @@
       "blocked": 0,
       "handoffs": 1,
       "oldest_advance": "2026-11-16",
-      "open": 13
+      "open": 14
     },
     "research-evaluation-index.md": {
       "blocked": 4,
@@ -1308,7 +1308,7 @@
       "closed": 133,
       "guarded": 0,
       "last_advanced": "2026-11-16",
-      "open": 13,
+      "open": 14,
       "owner_index": "pipeline-integration-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1317,7 +1317,7 @@
       },
       "row_id": "PIP-04",
       "state": "active",
-      "total": 146,
+      "total": 147,
       "tracks": [
         {
           "blocked": 0,
@@ -1387,7 +1387,7 @@
           "line": 3121,
           "markers": 1,
           "name": "integrated-aggregation",
-          "open": 1
+          "open": 2
         }
       ]
     },
