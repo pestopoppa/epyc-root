@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 564
+      "open": 563
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2023,14 +2023,14 @@
     },
     "publication-upstream-program.md": {
       "blocked": 0,
-      "closed": 1,
+      "closed": 2,
       "guarded": 0,
       "last_advanced": "2026-11-11",
-      "open": 1,
+      "open": 0,
       "owner_index": "inference-research-index.md",
       "prune": {
-        "blocker": "open-tasks",
-        "candidate": false,
+        "blocker": null,
+        "candidate": true,
         "evidence": null
       },
       "row_id": "INF-85",

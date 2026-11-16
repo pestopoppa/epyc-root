@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T11:27:06Z",
+  "generated_at": "2026-11-16T12:42:18Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1349,7 +1349,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 13,
+        "unblocks": 12,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1678,7 +1678,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 12,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -2313,7 +2313,7 @@
       "last_advanced": "2026-11-11",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native DONE (both legs pass); fix W2 keeper residency bug, then run census",
       "open": 62,
-      "priority": 0.003,
+      "priority": 0.004,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2419,7 +2419,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.003,
+      "priority": 0.004,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2436,23 +2436,23 @@
       "blocked_by": [
         "INF-48"
       ],
-      "closed": 1,
-      "dispatchable": 1,
+      "closed": 2,
+      "dispatchable": 0,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "publication-upstream-program.md",
       "id": "INF-85",
       "last_advanced": "2026-11-11",
       "next_action": "W2 final scrub + host-attestation decision; W3 done (no public URL, WEB-2 hold); next WEB-2 launch decision",
-      "open": 1,
-      "priority": 0.003,
+      "open": 0,
+      "priority": 0.0,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
         "unblocks": 0
       },
-      "priority_rank": 30,
-      "readiness": "blocked",
+      "priority_rank": 33,
+      "readiness": "no_open",
       "state": "active",
       "track": "upstream publication"
     },
@@ -2471,7 +2471,7 @@
       "last_advanced": "2026-11-12",
       "next_action": "CMS512 reload HELD for live-probe row; TEMPLATE reload by owner, then cache_n probe; then G4, G5; v11 fold verdict",
       "open": 7,
-      "priority": 0.003,
+      "priority": 0.004,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -4000,7 +4000,6 @@
       "INF-82",
       "INF-83",
       "INF-84",
-      "INF-85",
       "INF-86",
       "INF-87",
       "RTG-100"
@@ -4024,8 +4023,8 @@
     }
   },
   "readiness_counts": {
-    "blocked": 8,
-    "no_open": 0,
+    "blocked": 7,
+    "no_open": 1,
     "ready": 25
   },
   "readiness_values": {

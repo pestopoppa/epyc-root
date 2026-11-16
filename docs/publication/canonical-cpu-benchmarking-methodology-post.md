@@ -53,13 +53,13 @@ The same re-measurement took apart the other wins [src: `progress/2026-04/2026-0
 | EP on REAP-246B Q4_K_M | -47% (6.85 -> 3.65) | 0% (5.94 -> 5.92) |
 | Auto-mbind, Q8_0 | +6% claimed | 0% (20.85 +/- 0.01 vs 20.81 +/- 0.02) |
 | Three-flag stack, Coder-30B Q4_K_M | +1.8% | +0.6% |
-| Three-flag stack on top of EP, Q8_0 | n/a | -0.9% vs EP alone (20.89 vs 21.15) |
+| Three-flag stack on top of EP, Q8_0 | n/a | -1.2% vs EP alone (20.89 vs 21.15) |
 
 All of these are `OBSERVATION (pre-canonical)` on the left and retro-certified-where-logged on the right; the table is a comparison across instruments and is analysis, not a claim. The REAP-246B row is worth a second look: the old reference had made EP look catastrophic (-47%) on a very large model, and an entire follow-on research item (a hierarchical all-to-all port) existed to fix that regression. Measured properly, there was no regression to fix, and that item was deprioritized [src: `progress/2026-04/2026-04-26.md`, "Strategic implications" items 3-4].
 
 ## The recipe was the win
 
-The most uncomfortable result was where the throughput had actually come from. Moving the Q8_0 model from the old reference to the interleaved configuration, with no code change at all, took it from 14.63 to 20.81 t/s [src: `progress/2026-04/2026-04-26.md` line 912]. That is +44%, three times the headline win we had been about to ship, delivered by a command-line change.
+The most uncomfortable result was where the throughput had actually come from. Moving the Q8_0 model from the old reference to the interleaved configuration, with no code change at all, took it from 14.63 to 20.81 t/s [src: `progress/2026-04/2026-04-26.md` line 912]. That is +44%, more than two and a half times the headline win we had been about to ship, delivered by a command-line change.
 
 `OBSERVATION`: this ratio compares a pre-canonical number with a retro-certified one, so it is an analysis across instruments, not a claim. It is also model-specific. Across five models, the interleaved configuration versus the old reference was [src: `progress/2026-04/2026-04-26.md`, baseline comparison table]:
 
