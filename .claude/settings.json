@@ -19,6 +19,11 @@
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/posttool_kb_rag_update.sh\"",
             "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/scripts/hooks/check_serial_collapse.py\"",
+            "timeout": 5
           }
         ]
       }
