@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; agg_pipeline.v3 default (H1+canonical.v3) | — |
+| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.17 ltd-recall diagnosis (v3 now default) | — |
 
 ## Cross-domain
 

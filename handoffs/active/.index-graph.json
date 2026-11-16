@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T09:27:39Z",
+  "generated_at": "2026-11-16T09:29:35Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2517,7 +2517,7 @@
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-16",
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; agg_pipeline.v3 default (H1+canonical.v3)",
+      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.17 ltd-recall diagnosis (v3 now default)",
       "open": 14,
       "priority": 0.6185,
       "priority_basis": {
