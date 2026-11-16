@@ -1,0 +1,4 @@
+# 2026-11-16 autopilot-backlog-session (non-compute)
+
+- AGG-1.9 DONE-WHEN 2 closed offline: the 14 saved store-gap SQLs on the corrected canonical.v2 store score 9/14 (AGG-1.1 0/14, upper bound 14/14). Store `/mnt/raid0/llm/tmp/agg112-arms-gpu-20261112-r2/out/store.sqlite` sha256 `59adb2a8…d93` (the `agg114-scratch` store is gone). Research `409a2b61d` `agg19_sql_rescore.{py,json}`. Box ticked, superseded by AGG-1.12/1.14 for DONE-WHEN 1 and 3. [no-belief: offline rescore, no new measurement run]
+- AGG-1.11 step 2 checked against AGG-1.12 evidence and NOT ticked: the 13 misses are in the AGG-1.3/1.4 stores with replacement filings for MICROSOFT, JOHNSON_JOHNSON and 3M, which the AGG-1.12 store does not hold; backfill cells hit 15/25 there vs 20/25 on AGG-1.4 r3. Remaining: bounded typed-L4 re-run on the 13 cells, CPU quarter, about 600 s ESTIMATE. [no-belief: offline check, no new measurement run]

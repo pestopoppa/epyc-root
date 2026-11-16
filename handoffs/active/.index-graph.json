@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T07:44:02Z",
+  "generated_at": "2026-11-16T07:45:37Z",
   "nodes": [
     {
       "age_days": 6,
@@ -2510,15 +2510,15 @@
       "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 128,
-      "dispatchable": 16,
+      "closed": 129,
+      "dispatchable": 15,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-15",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; AGG-1.7; AGG-1.9; AGG-1.11 step 2 (AGG-1.13 done)",
-      "open": 16,
+      "open": 15,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2592,11 +2592,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 3121,
           "name": "integrated-aggregation",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         }
       ]
