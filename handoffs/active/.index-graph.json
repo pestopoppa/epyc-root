@@ -695,7 +695,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-16T13:06:59Z",
+  "generated_at": "2026-11-16T13:16:08Z",
   "nodes": [
     {
       "age_days": 6,
@@ -1655,7 +1655,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "EVL-47"
@@ -1666,7 +1666,7 @@
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-12",
+      "last_advanced": "2026-11-16",
       "next_action": "publish race-eqv r9 (no ready/ entry); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
       "open": 6,
       "priority": 0.8728,
@@ -2510,15 +2510,15 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 140,
-      "dispatchable": 9,
+      "closed": 142,
+      "dispatchable": 7,
       "domain": "pipeline-integration",
       "guarded": 0,
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-16",
       "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt",
-      "open": 9,
+      "open": 7,
       "priority": 0.6185,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): G13 \u2014 doc-truncation recall sweep. recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
@@ -2565,11 +2565,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 5,
+          "dispatchable": 3,
           "gates": [],
           "line": 2497,
           "name": "opendataloader-pipeline-integration",
-          "open": 5,
+          "open": 3,
           "readiness": "ready"
         },
         {
