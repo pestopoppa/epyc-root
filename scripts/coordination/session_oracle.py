@@ -34,6 +34,19 @@ C = a commit landed, P = last push outcome):
   4. success  - C and G is pass (a later pass supersedes earlier failures),
                 and the last push (if any) was not rejected.
 ``pushed`` is true iff the last push outcome is ok.
+
+Completion refinement (Claude transcripts only; applied ONLY where rule 1 says
+unknown, so it never changes a success/failure/partial verdict and never asserts
+success): the session carries no outcome signal, but how it ended is observable.
+  no_work               zero tool calls of any kind and no assistant text.
+  delivered_no_outcome  ended cleanly: last assistant action is a
+                        ``SubagentHandback`` call or a final text block with
+                        no later tool call, and no API-error record after it.
+                        A report was returned; it is NOT a success label.
+  aborted               ended on a tool call/result or an API error with no
+                        final report.
+  unknown               none of the above (e.g. no assistant records at all).
+``signals.end`` records the observed ending (handback|text|tool|api_error|none).
 """
 import argparse
 import json
@@ -113,6 +126,35 @@ def _claude_events(records):
     for cmd, out, st in order:
         if out is not None:
             yield cmd, out, st
+
+
+def _completion(records):
+    """-> (refined verdict for an otherwise-unknown session, end kind)."""
+    any_tool = False
+    end = "none"
+    for r in records:
+        if r.get("isApiErrorMessage"):
+            end = "api_error"
+            continue
+        msg = r.get("message")
+        if not isinstance(msg, dict) or not isinstance(msg.get("content"), list):
+            continue
+        for b in msg["content"]:
+            if not isinstance(b, dict):
+                continue
+            if b.get("type") == "tool_use":
+                any_tool = True
+                end = "handback" if b.get("name") == "SubagentHandback" else "tool"
+            elif (b.get("type") == "text" and msg.get("role") == "assistant"
+                  and str(b.get("text", "")).strip()):
+                end = "text"
+    if not any_tool and end in ("none",):
+        return "no_work", end
+    if end in ("handback", "text"):
+        return "delivered_no_outcome", end
+    if end in ("tool", "api_error"):
+        return "aborted", end
+    return "unknown", end
 
 
 def _codex_events(records):
@@ -223,6 +265,10 @@ def assess(path):
         events = _codex_events(records)
     verdict, sig, sha, pushed = judge(events)
     sig["malformed_lines"] = stats["malformed_lines"]
+    if harness == "claude":
+        refined, sig["end"] = _completion(records)
+        if verdict == "unknown":
+            verdict = refined
     return {"session_id": sid or Path(path).stem, "path": str(path), "harness": harness,
             "verdict": verdict, "signals": sig, "last_commit_sha": sha,
             "pushed": pushed, "schema": SCHEMA}

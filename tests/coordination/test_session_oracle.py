@@ -32,7 +32,9 @@ def v(tmp_path, calls):
 
 
 def test_no_signals_unknown(tmp_path):
-    assert v(tmp_path, [("ls", "a", False)])["verdict"] == "unknown"
+    # no outcome signal; the transcript ends on a tool result with no final report
+    r = v(tmp_path, [("ls", "a", False)])
+    assert r["verdict"] == "aborted" and r["signals"]["commits"] == 0
 
 
 def test_success_and_pytest_mutation(tmp_path):
@@ -115,3 +117,44 @@ def test_cli(tmp_path, capsys):
     out = tmp_path / "o.jsonl"
     assert so.main(["--root", str(tmp_path), "--limit", "1", "--out", str(out)]) == 0
     assert len(out.read_text().splitlines()) == 1
+
+
+def _raw(tmp_path, lines):
+    p = tmp_path / "r.jsonl"
+    p.write_text("\n".join(json.dumps(x) for x in lines) + "\n")
+    return so.assess(p)
+
+
+def _asst(*blocks):
+    return {"sessionId": "s", "type": "assistant", "message": {"role": "assistant", "content": list(blocks)}}
+
+
+TU = {"type": "tool_use", "id": "a", "name": "Read", "input": {}}
+TR = {"type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "a", "content": "x"}]}}
+HB = {"type": "tool_use", "id": "h", "name": "SubagentHandback", "input": {"message": "r"}}
+
+
+def test_handback_is_delivered_not_success(tmp_path):
+    r = _raw(tmp_path, [_asst(TU), TR, _asst(HB)])
+    assert r["verdict"] == "delivered_no_outcome" and r["signals"]["end"] == "handback"
+
+
+def test_ending_on_tool_is_aborted(tmp_path):  # paired mutation: drop the handback
+    assert _raw(tmp_path, [_asst(TU), TR])["verdict"] == "aborted"
+
+
+def test_final_text_delivered_vs_api_error(tmp_path):
+    txt = _asst({"type": "text", "text": "done"})
+    assert _raw(tmp_path, [_asst(TU), TR, txt])["verdict"] == "delivered_no_outcome"
+    assert _raw(tmp_path, [_asst(TU), TR, txt, {"isApiErrorMessage": True}])["verdict"] == "aborted"
+
+
+def test_no_work_and_empty(tmp_path):
+    assert _raw(tmp_path, [{"type": "user", "message": {"role": "user", "content": [{"type": "text", "text": "hi"}]}}])["verdict"] == "no_work"
+
+
+def test_refinement_never_overrides_signal_verdicts(tmp_path):
+    p = _build(tmp_path, [PASS, COMMIT])
+    with p.open("a") as fh:
+        fh.write(json.dumps(_asst(HB)) + "\n")
+    assert so.assess(p)["verdict"] == "success"
