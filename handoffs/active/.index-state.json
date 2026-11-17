@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 557
+      "open": 551
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -756,10 +756,10 @@
     },
     "cpu-decode-roofline-program.md": {
       "blocked": 0,
-      "closed": 146,
+      "closed": 152,
       "guarded": 0,
       "last_advanced": "2026-11-03",
-      "open": 33,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -772,7 +772,7 @@
       "tracks": [
         {
           "blocked": 0,
-          "closed": 108,
+          "closed": 114,
           "gates": [
             "INF-65"
           ],
@@ -780,14 +780,14 @@
           "line": 98,
           "markers": 1,
           "name": "cpu-decode-roofline-program",
-          "open": 28
+          "open": 22
         },
         {
           "blocked": 0,
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 5061,
+          "line": 5071,
           "markers": 1,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0
@@ -797,7 +797,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 5214,
+          "line": 5224,
           "markers": 1,
           "name": "cpu-prefill-compute-large-models",
           "open": 1
@@ -807,7 +807,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 5704,
+          "line": 5714,
           "markers": 1,
           "name": "large-moe-expert-parallelism",
           "open": 0
@@ -819,7 +819,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 5818,
+          "line": 5828,
           "markers": 1,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4

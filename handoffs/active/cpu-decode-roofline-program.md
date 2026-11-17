@@ -491,6 +491,7 @@ Axis A's structural answer — fewer, fatter nodes — which this measurement no
       the graph barrier, so this only helps once D2 elides it); concatenate the per-stream lora weights
       at load into one `mul_mat` per hc site (fewer nodes, same math, bit-exact if accumulation order is
       preserved); quantize the F32 router (B4). Measure the dense-path in-function median before and after.
+      **Next (2026-11-17, hygiene): STILL LIVE, narrowed.** The sub-2 MB placement half is DONE (D6-PLACE + the adopted THP shim: residual 0.243 ms/token, 'nothing measurable remains'). What survives is the node-size bucketing and the three levers, which need a fresh C12 (`457d5fc523ba5cc687a333a588c1dc15db9346f4`) node profile; that profile is Q38P-1(c)'s window — bucket by weight bytes from it, do not take a separate window.
 - [x] **D7 — upstream CPU-side fusion sync.** ✅ 2026-09-02, research only (subagent report
       `/mnt/raid0/llm/tmp/inf70/agents/d7/REPORT.md`). Fork point: upstream `a8dc0e326` (**b10045**,
       2026-07-16, #25076); upstream HEAD `0f3a71be1` (b10760) — 715 commits of divergence, 28 touching
@@ -1231,12 +1232,13 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       GPU arms and CPU arms precisely so this is schedulable rather than first-come.** Their north star —
       "own both GPU and CPU and maximally use them" — is the same observation from the other direction.
 
-- [ ] **SYNC-21 — prove or kill the profiler-overhead hypothesis for SYNC-16's null.** Needs a
+- [x] **SYNC-21 — prove or kill the profiler-overhead hypothesis for SYNC-16's null.** Needs a
       profiled A/B on a NON-prof build in one window. If the nodes shrink while the token does not,
       the lever is dead for good. Also tests the wider risk SYNC-16 raised: **the per-node census may
       systematically overprice cheap single-threaded nodes** — SYNC-16 is the first lever to test a
       census line item end-to-end and find nothing there, and every lever sized off `*_pernode.tsv`
       inherits that risk.
+      retired 2026-11-17: folded into Q38P-1 (d). The profiled-vs-non-profiled step-wall A/B in one window is now Q38P-1's own instrument gate (node timings must reconcile to step wall within 2%), measured on C12 rather than the pre-fold SYNC-16 build; SYNC-16's lever read <= +0.04% served, so there is no standalone lever left to rescue. [no-belief: hygiene]
 
 **Superseded — the settled-serving-number block:**
 
@@ -1734,9 +1736,10 @@ affinity, no loader change.** That is the single arm worth running if anyone wan
       did, in BOTH directions in one session (MTP −4.9%, plain +11.3%), tracked by a lever-insensitive
       prefill probe. SYNC-17 applied the rule as written rather than revising it post-hoc, which is
       why its headline is NON-CLAIM. Adopt back-to-back A/A campaign-wide.
-- [ ] **SYNC-18 — re-test "small gathers should stay single-task."** D8's +0.97% was measured with both arms
+- [x] **SYNC-18 — re-test "small gathers should stay single-task."** D8's +0.97% was measured with both arms
       running the identical parallel kernel, so the hypothesis is **untested**, not refuted. Cheap now that
       `GGML_GET_ROWS_MIN_BYTES` is known inert at the kernel.
+      retired 2026-11-17: resolved UNTESTABLE AS BUILT in the RETEST-1 close-out (0 arms spent; see the 'SYNC-18 -> UNTESTABLE AS BUILT' line above): no kernel path distinguishes a single-task from a parallel get_rows on this tree, and `GGML_GET_ROWS_MIN_BYTES` is inert at the kernel. Re-testing needs a new kernel change on the C12 line, which is a new lever, not this box. [no-belief: hygiene]
 - [x] **UP-2 — upstream the two ggml contract bugs**: the `SET_ROWS` `wdata` overflow (size by `n_threads`)
       and the `MAP_CUSTOM*`/`CUSTOM` `n_tasks` violation. Issue text ready in `sync7-8-13/REPORT.md` §2.6.
       **✅ COMPLETE 2026-09-07 — folded into the same UP-1/UP-2 pass.** Both contract bugs confirmed still
@@ -2336,11 +2339,12 @@ most, so its weaker provenance should be stated wherever it is relied on.
       arm.** A pre-arm snapshot cannot see what happens after it; only in-window sampling can. Delete
       the gate rather than tuning its threshold.
       ✅ 2026-10-31 — ROOT `68a4d5e9f057d0d1d639f1a7318aa7eda1cbccc2` removes the wait and its log from the cold and hot harnesses while preserving in-window co-residency sampling. Both scripts pass syntax and source controls ([verification](../../artifacts/compute/codex3-loadavg-1-20261031/VERIFY.log)); no benchmark was run. [no-belief: harness source fix]
-- [ ] **BUILDVERIFY-1 — there is NO rebuild-and-compare-`.so` check in this harness.** Stated flatly
+- [x] **BUILDVERIFY-1 — there is NO rebuild-and-compare-`.so` check in this harness.** Stated flatly
       in `harness1/REPORT.md` §8 with no owner. This is the standing
       `feedback_stale_build_artifact_masquerades_as_kernel_bug` surface: without it, a stale artifact
       reads as a live kernel result. HARNESS-1 does carry a 291-object build identity digest
       (`a097dd3a9669adec…`), which is the raw material — the missing piece is the *check*.
+      ✅ 2026-11-17: the check now exists as `scripts/inf70/harness1/tools/buildverify.py` (`manifest` = sha256 per `.o` plus aggregate, refuses an empty manifest; `compare` = set+digest equality; `symbol` = fix-specific string present in a lib; `--selftest` passes). Digests OBJECTS, never the linked `.so` (linker not reproducible). The ABLATE-1 receipt (2026-10-27) is its first manual demonstration; `scripts/session/verify_kernel_store.sh` covers the production store. Wiring it into `arm_hot.sh`/`arm_cold.sh` as a pre-arm gate is a follow-up for whoever next edits those arms. [no-belief: tool]
 - [x] **ABLATE-1 — native build-only leave-one-out demonstration passed 2026-10-27.** Predeclared receipt `/mnt/raid0/llm/tmp/cal-1027/inf70-ablate-1/VERDICT.json`: exactly the lever TU changed and compiled; the restore build returned to the original object manifest, both binary markers matched, and the worktree was clean. Times are descriptive only. Exact-set enforcement and the restore rebuild were performed by the surrounding job. [belief: cc]
 - [ ] **REGIONLOCK-1 — BUILDS THAT SKIP `region-lock` RUN STRAIGHT THROUGH A HELD BENCH LOCK. This
       affects EVERY agent on this host, not just this campaign.** Evidence:
@@ -2493,17 +2497,19 @@ They are filed here rather than described in prose so the dashboard can see them
       remain in this file. The handoff already records both corrections in situ (`⚠ LANGUAGE CORRECTION
       REQUIRED ELSEWHERE`, `★ COROLLARY THAT SUPERSEDES THE ÷3 RULE`) — **this is the task that acts on
       them.** Anyone inheriting either phrasing hunts a step that is not there, or mis-scales a lever by ~2.7×.
-- [ ] **WRAP-2 — re-price SYNC-5's fusion ceiling at 3.1 µs/barrier.** SYNC-5 closed "don't pursue the
+- [x] **WRAP-2 — re-price SYNC-5's fusion ceiling at 3.1 µs/barrier.** SYNC-5 closed "don't pursue the
       megakernel" on a barrier model **SYNC-2 later reversed**: `TINY_SOLO` elided 915 graph barriers while
       removing zero nodes and zero arithmetic, recovering **3.14 µs/barrier**, and `EMPTY_SKIP` recovered
       3.09 µs over a disjoint population. The session's own text says *"SYNC-5's fusion pricing should be
       redone at 3.1 µs/barrier rather than written off"* and it never became a task. Zero compute — an
       arithmetic re-price of an existing report against the champion's node/barrier census.
-- [ ] **WRAP-3 — classify every node compute-bound vs memory-bound before any imbalance figure is treated as
+      retired 2026-11-17: the re-price targets SYNC-5's graph census (84.2 ms token, the pre-fold build); the C12 token is ~29 ms and the barrier axis was settled by direct measurement afterwards (SYNC-2 TINY_SOLO 3.14 us/barrier, SYNC-10, SYNC-17 TINY_SOLO-wins, SYNC-19 sign error), so a paper re-price of a retired graph adds nothing. A coarser-graph question reopens only from a fresh C12 node census (Q38P-1(c)). [no-belief: hygiene]
+- [x] **WRAP-3 — classify every node compute-bound vs memory-bound before any imbalance figure is treated as
       a lever pool.** SYNC-14's closing finding: `max − mean` on a *memory-bound* matmul is not recoverable
       capacity, so **SYNC-1's 10.66 ms MTP "imbalance" column cannot be read as available** until each node
       is classified. Until this exists, the ranked envelope's second-largest line is uninterpretable. Zero
       compute (the per-(node,thread) census already carries the inputs).
+      retired 2026-11-17: folded into Q38P-1 (d). The per-(node,thread) census it relies on is for the pre-fold champion; the classification must be redone on the C12 node profile, so it is now a required output of Q38P-1(c) rather than a standalone box. [no-belief: hygiene]
 - [x] ✅ 2026-10-31 **WRAP-4 — fix the co-residency sampler's "disjoint-from-0-95" label AND re-open every conclusion that** rested on it. Evidence: ROOT `6c7b2bf07e7d894f95b1ca5ab6cd2ec01de424ce`; `docs/reviews/inf70-wrap4-physical-cores-20261031.md`; corrected sampler `scripts/inf70/harness1/tools/cpuoverlap.py --selftest` (six cases pass). [belief: cc]
       Dated correction: the linked audit supersedes the affected clean-window and contention interpretations in speed-claim, champion1/3, B12, INSTR-B7 and SYNC16/17. Historical rates remain observations; 23.16 t/s / 1.876× claim-grade and +0.7% clean-window labels are withdrawn. GPU lock nonviolation does not establish absence of SMT contention. No replacement performance grade is asserted.
       Original scope:
@@ -2514,6 +2520,7 @@ They are filed here rather than described in prose so the dashboard can see them
 - [ ] **WRAP-5 — report the llama.cpp GGUF C reader segfault upstream (fold into UP-2).** B12 found
       llama.cpp's own C reader segfaults dumping these files — **on the pristine source too**, established
       only because it ran the control. A reproducible upstream crash with a control arm, filed nowhere.
+      **Next (2026-11-17, hygiene): upstream report DRAFTED, not posted.** Draft: `/mnt/raid0/llm/tmp/inf70-wrap5-upstream-issue.md`. Upstream check (`gh issue list -R ggml-org/llama.cpp`, 2026-11-17): no issue or fix matches (#18991/#19005/#19002 are different init-failure crashes; `examples/gguf/gguf.cpp` last touched 2026-03-04). The reproducer artifacts were deleted (2026-09-07 cleanup), so a minimal repro is the first step of the post. Operator decides whether to post.
 - [ ] **WRAP-6 — give two cross-campaign rules a durable home outside this handoff.** (a) *"digest the
       OBJECTS, never the linked `.so`"* — the compiler is byte-reproducible on this host (0 of 379 objects
       differed) and **the linker is not** (one commit, four `libggml-hip.so` digests). The session calls this
@@ -2536,6 +2543,7 @@ They are filed here rather than described in prose so the dashboard can see them
       `ops.cpp:9501` (FA_EXT prefill) and `:11256` (GATED_DELTA_NET), no affinity change, no loader change —
       the chunker subset of `ggml_is_numa()` without the affinity family that disqualifies `--numa`. Named in
       SYNC-13's result as *"the single arm worth running if anyone wants it"* and never filed. LOW priority.
+      **Next (2026-11-17, hygiene): STILL LIVE, LOW.** `GGML_STATIC_CHUNKS` does not exist on any current tree (grep of `ggml/src` on v10 is empty) — it is an unwritten two-line patch, so the work is: write it on a `llama.cpp-experimental` branch from C12 (`457d5fc523ba5cc687a333a588c1dc15db9346f4`), then queue one prefill (pp512, FA_EXT + GATED_DELTA_NET) A/B in the autokernel loop; decode is untouched by it.
 - [ ] **WRAP-9 — re-derive phase R WITHIN-ARM. ⚠ PART (b) IS ITSELF SUPERSEDED — do NOT restate the
       multiplier as `1.5149×`.**
       **★ CORRECTED 2026-09-08.** `1.5149×` was a `champion3` / shim-OFF / old-harness figure and is
@@ -3655,13 +3663,14 @@ hundred ns after heavy nodes confirms; ~2.2 µs uniformly refutes.
       the same ~11 ms.
       **Close INF-67 Axis A on its own §6b(b).** Evidence: `/mnt/raid0/llm/tmp/inf70/agents/sync5/REPORT.md`.
 
-- [ ] **SYNC-6 — THE DECIDER for the whole coordination axis: re-measure the existing D1 arms to ±0.2 ms.**
+- [x] **SYNC-6 — THE DECIDER for the whole coordination axis: re-measure the existing D1 arms to ±0.2 ms.**
       Filed 2026-09-05 from SYNC-5. Zero new code, one bench window: `/mnt/raid0/llm/worktrees/inf70/d1` vs
       `d1-base`, 940 barriers removed, bit-exact. **≥0.5 ms ⇒ the primitive model holds, green-light the
       HC_MIX op (expect 1.5–3 ms) and let it decide option 4. ≤0.2 ms ⇒ barrier count is NOT the cost on this
       box: stop D2/D3/SYNC-1/SYNC-2 and this axis, and spend the coordination budget on imbalance (the two
       systematic stragglers `ffn_moe_logits-11` at 1,087 µs dead and `node_872` at 13× its siblings are
       1.4 ms/token on their own) and on placement.** Routed to SYNC-1, which owns the barrier-cost baseline.
+      retired 2026-11-17: the D1 arms are on the pre-fold `inf70/d1` worktree (kernel `c51e4dabf` era) and the question it decided (is barrier count the cost?) was answered by later direct measurement: SYNC-2 recovered 3.14 us/barrier by eliding 915 barriers (TINY_SOLO) and the champion already carries it; the green-light/stop branches no longer apply to the C12 line. [no-belief: hygiene]
 
 - [x] ✅ **SYNC-5-ORIGINAL (superseded, retained for the record) — is there a COARSER graph?** Dispatched 2026-09-05.
       The structural question the four seams above cannot answer. **Must start from INF-67, which already
@@ -5033,7 +5042,8 @@ stack stated), n and reps, and — after C0 — achieved GB/s and % of the measu
 
 Verified outcome (dive-verified entries): two-Spark aggregate bandwidth (546 GB/s peak, not pooled) is within 2% of our 537.6 GB/s theoretical, and like-for-like (official 10-expert NVFP4, TP2) the independent median is 53.7 tok/s against our 52.66; the 93/177 tok/s headline is a 5-of-512-expert healed checkpoint with MTP up to K=7 and a best-window peak. The gap that remains is streaming efficiency (Sparks 80-87% of peak per kernel; ours ~31-39% of read-sum, derived). Draft-head vocab trim is NOT a CPU lever here (B10 above). Evidence: intake-1951#record (byte ledger), intake-1948#record, intake-1945#record.
 
-- [ ] **Q38P-1 — MEASURE our Q38FN MTP step: bytes, expert union, tokens/step and streaming GB/s (replaces the derived 9.1-11.6 GB and the 80-100 tok/s estimate).** For the served recipe (UD-IQ4_XS, `-t 48`, MTP d4; plain and MTP arms): (a) static bytes/step from the GGUF tensor table incl. the K+1 GDN state writes (no timing window); (b) distinct experts per layer vs verify rows R=1..6 and drafter rows from the router-id tap on a diagnostic/ID-tap build, plus tokens/step per prompt class on the held-out manifest (count measurement: CPU region lock, never overlaps a timed arm); (c) step ms and per-op-class achieved GB/s against C0 (446.8) from the node/PATHROW profiler in an AK CPU window, node-profile as a non-measured sibling build, knob proven compiled in (`strings`), residency proven (C1/C2/C4 apply). Controls: AK prompt manifests and GGUF/binary digests frozen; baseline = frozen v10 `ffc1bac82` champion recipe; per-call raw ids and per-step timings retained; held-out manifest; every call counted incl. logits=0 catch-up evals; accept only if the instrument reproduces the 4.16 GB plain table and ~53 tok/s within between-launch noise and node timings reconcile to step wall within 2%. Stop: if weight-path streaming is already >= 60% of read-sum (>=268 GB/s), close the streaming lever as no-headroom. (intake-1951#record) — Owner: workspace-ec (2026-10-07).
+- [ ] **Q38P-1 — MEASURE our Q38FN MTP step: bytes, expert union, tokens/step and streaming GB/s (replaces the derived 9.1-11.6 GB and the 80-100 tok/s estimate).** For the served recipe (UD-IQ4_XS, `-t 48`, MTP d4; plain and MTP arms): (a) static bytes/step from the GGUF tensor table incl. the K+1 GDN state writes (no timing window); (b) distinct experts per layer vs verify rows R=1..6 and drafter rows from the router-id tap on a diagnostic/ID-tap build, plus tokens/step per prompt class on the held-out manifest (count measurement: CPU region lock, never overlaps a timed arm); (c) step ms and per-op-class achieved GB/s against a read-sum re-measured IN THE SAME WINDOW (`bench_readbw`; the C0 446.8 GB/s is an old epoch and is NOT inherited) from the node/PATHROW profiler in an AK CPU window, node-profile as a non-measured sibling build, knob proven compiled in (`strings`), residency proven (C1/C2/C4 apply). Controls: AK prompt manifests and GGUF/binary digests frozen; baseline = champion C12 `457d5fc523ba5cc687a333a588c1dc15db9346f4` (branch `llama.cpp-experimental-up-bundle1-20261115`) recipe, plain arm run in the same window; per-call raw ids and per-step timings retained; held-out manifest; every call counted incl. logits=0 catch-up evals; accept only if the instrument reproduces the 4.16 GB plain table (static, kernel-independent) and the same-window C12 plain-arm tok/s within between-launch noise (the old ~53 tok/s is a pre-C12 figure, kept for reference only) and node timings reconcile to step wall within 2%. Stop: if weight-path streaming is already >= 60% of the re-measured read-sum (was >=268 GB/s on C0), close the streaming lever as no-headroom. (d) in the same window: a non-profiled build step-wall A/B against the profiled sibling (the profiler-overhead test; absorbs SYNC-21) and a compute- vs memory-bound classification of every node (absorbs WRAP-3), so no imbalance figure is read as recoverable capacity before it exists. (intake-1951#record) — Owner: workspace-ec (2026-10-07).
+      *Re-baselined 2026-11-17 (hygiene): the C0 and v10 baselines are replaced by C12 above; the only thing the measurement still needs is one AK CPU window (profiled and non-profiled builds, `buildverify.py symbol` to prove the knob), no other prerequisite.*
 - [ ] **Q38P-2 — After Q38P-1 lands, schedule or decline B10's no-code IQ4_XS draft-head requant probe.** Requantise the MTP head to IQ4_XS into `blk.48.nextn.shared_head_head` (521 -> 338 MB; B10 expected +1.4-1.8%). Schedule only if Q38P-1 measures the draft head at >= 5% of step time, otherwise decline and record it; gates if scheduled: greedy identity 100%, alpha change <= 0.01 absolute on the held-out manifest, aggregate >= +1.0% above the window floor over >= 5 interleaved pairs, complete denominator. The reduced-vocabulary slice stays declined (B10 NO-GO). (intake-1956#record) — Owner: workspace-ec (2026-10-07).
 
 Gated lever (durable prose, no checkbox): raise effective CPU streaming from ~140 toward 270 GB/s via the dispatch and barrier floor. Owned by the existing INF-70 axes above, CAFE-5/CAFE-6 and AKX-ALL-25 (autokernel-all-devices-all-dimensions.md); trigger = Q38P-1 shows weight-path streaming below 60% of read-sum (268 GB/s). Any lever under it keeps the CAFE-1 keep rule (>= +1.0% above the window floor, greedy identity 100%, matched-process A/B with >= 5 interleaved pairs) and reports per-op-class GB/s per row (C1).

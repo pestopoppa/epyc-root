@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T11:00:08Z",
+  "generated_at": "2026-11-17T11:00:51Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2069,15 +2069,15 @@
       "age_days": 14,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 146,
-      "dispatchable": 33,
+      "closed": 152,
+      "dispatchable": 27,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "last_advanced": "2026-11-03",
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
-      "open": 33,
+      "open": 27,
       "priority": 0.9191,
       "priority_basis": {
         "basis": "T4 inference-ready best open item (I): G2-CONC \u2014 BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an a",
@@ -2105,20 +2105,20 @@
           "blocked_by": [
             "INF-65"
           ],
-          "dispatchable": 28,
+          "dispatchable": 22,
           "gates": [
             "INF-65"
           ],
           "line": 98,
           "name": "cpu-decode-roofline-program",
-          "open": 28,
+          "open": 22,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5061,
+          "line": 5071,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2127,7 +2127,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5214,
+          "line": 5224,
           "name": "cpu-prefill-compute-large-models",
           "open": 1,
           "readiness": "ready"
@@ -2136,7 +2136,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5704,
+          "line": 5714,
           "name": "large-moe-expert-parallelism",
           "open": 0,
           "readiness": "no_open"
@@ -2149,7 +2149,7 @@
           "gates": [
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 5818,
+          "line": 5828,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4,
           "readiness": "blocked"
