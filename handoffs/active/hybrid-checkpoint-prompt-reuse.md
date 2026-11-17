@@ -260,6 +260,20 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       E2 50% divergence and E3 tools-block reuse 0 (full re-prefill) at both sizes. The upstream defect is real but our migration
       shape avoids it; E3 sits below its bounded-tail prediction (0 reuse, not a tail), so a tools-carrying session migrated across
       a restore re-prefills fully. Evidence /mnt/raid0/llm/tmp/inf86-g4-restore-reuse-20261117-r2/out/RESULT.json. [no-belief: row verdict filed by agent]
+  - [ ] **INF-86-G4-E3-TOOLS-REPREFILL** [inference] After a slot restore, a session whose tools block moved re-prefills in FULL
+    (reuse 0 at 16K and 64K, row `inf86-g4-restore-reuse-20261117-r2`, arm E3) instead of the bounded tail (`u_N` + `a_N` + tools +
+    `u_N+1`) G4 predicted. Find where the prefix match breaks: (1) template ordering of the tools block vs messages (does the
+    terse template / jinja render tools into the system turn, so the divergence lands at the top?), and (2) checkpoint position
+    (a restored slot carries no checkpoint at the end of `H_N-1`, so a hybrid model cannot roll back to the shared prefix).
+    Then decide whether the orchestrator can keep the tools block position-stable (pinned in the system turn, or always after
+    the latest user turn as in the saved request). model: Qwen3.6-35B-A3B-MTP-Q8_0 frontdoor recipe (terse template
+    1443ea9ab4bb). quant_build: Q8_0 on the production v10 CPU store `ffc1bac82`. region: CPU quarter, est 7200 s. Step 1 is zero
+    compute: render the E3 save and next requests with `/apply-template` or the jinja engine and record the first divergence
+    offset; the run (if needed) re-does E3 at 16K with tools pinned vs moved. metric: `cache_n` / `n_saved` of the first
+    post-restore completion (higher is better). rule: STABLE_FIX if pinned-tools reuse >= 90% of the shared prefix; NO_FIX if
+    < 10% with byte-identical shared prefix (checkpoint cause, upstream #26004 class). Stop-on-answer when the divergence offset
+    is located and the pinned arm gives a verdict; stop-on-futility on a failed precondition, server not ready or not our PID,
+    timings missing, STOP file or deadline; gate-class = futility-only. [no-belief: new box from G4 gate]
 - [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
       ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
       closed on **both** directions. `_slot_save` now *returns* `n_saved`

@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 526
+      "open": 527
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1189,7 +1189,7 @@
       "closed": 19,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 2,
+      "open": 3,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1198,7 +1198,7 @@
       },
       "row_id": "INF-86",
       "state": "active",
-      "total": 21
+      "total": 22
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
@@ -2805,7 +2805,7 @@
       "id": "INF-86",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "G4 restore-reuse r2 running; then v11 fold verdict (G5 null, template no-defect, #25592 no gain closed); CMS512 reload held",
+      "next_action": "G4/G5/TEMPLATE/B3 closed; open: E3-tools reprefill, DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     "INF-87": {
