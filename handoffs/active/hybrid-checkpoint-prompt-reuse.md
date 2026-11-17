@@ -2,7 +2,7 @@
 
 > **Split out of [`numa-placement-and-contention.md`](numa-placement-and-contention.md) on 2026-11-10 (INF-45 restructure, operator "yes, take both on").** The body below is the former `## Track: dynamic-stack-concurrency` lifted verbatim; box text is unchanged. Earlier fold history: [`../completed/dynamic-stack-concurrency.md`](../completed/dynamic-stack-concurrency.md).
 
-**Status**: ACTIVE
+**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed (G4, G5, INF-86-TEMPLATE, #25592 exposure and B3 evaluation). Two boxes remain open, both waiting on something outside this session: DS-F1 (the AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit).
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
 **Owner**: AutoKernel session (workspace-18)
@@ -187,7 +187,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       ✅ 2026-09-23 — epyc-orchestrator `3cb53971` + regenerated chain `3c6721ef`: manifest declares `default_ubatch_tokens: 2048` (the value llama.cpp was already clamping to — no effective change), `_warn_if_ubatch_exceeds_batch` on all three builders, 11 tests. `-b 8192` (a real change) stays a measurement question.
 - [x] **K4a — the research master still declares `server_defaults.ubatch_size: 8192`** (mirrored into orch `model_registry.yaml:46` / `_full.yaml:490`). No code reads it today, so it is informational drift, but it restates the inert value; set it to 2048 in the master and recompile (SSU owns the master registry). ✅ 2026-10-31 — Research `a164f0991655b9d899834eb4bfc782d5d32a6efe`; APP `da2fec3e155611118928d0e7b903428bdb6fd0d1`; 22 existing compiler/registry tests passed, [raw tests and compiler/source proof](../../artifacts/compute/codex3-k4a-20261031/REPORT.md). [no-belief: registry source consistency]
   - The original no-reader premise is historical: both script executors consume this default; explicit role constraints and overrides retain precedence. The master is 2048 and the lean registry was regenerated with 23 active roles unchanged plus six pre-existing inactive catalogue entries. Full mode retains its tracked symlink; its separate shared working-copy target was still 8192 at observation. This closes the source/master-and-compiler task; no running-service or shared-clone deployment is claimed.
-- [ ] **G4 (G) — measure our actual post-restore prompt-reuse rate.** We call
+- [x] **G4 (G) — measure our actual post-restore prompt-reuse rate.** We call
       `/slots/{id}?action=save|restore` for full↔quarter slot migration (`llama_server.py:1242,1268`;
       `concurrency_aware.py:126,148`). Upstream issue #25913 (open, verified on master) reports restore
       **silently delivering zero prompt reuse on hybrid/recurrent models**, and open PR #26004 reports
@@ -244,7 +244,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       than upstream describes and this row escalates to a v10 blocker**, because the code says it
       should have reused. E3 materially below its bounded prediction reopens the tools path
       separately. [intake-1292#record]
-      **Next action (2026-11-17, autokernel) [inference]:** row `inf86-g4-restore-reuse-20261117`. model: Qwen3.6-35B-A3B-MTP-Q8_0
+      **Next action (2026-11-17, autokernel) [inference]:** row `inf86-g4-restore-reuse-20261117-r2` (supersedes r1, which hit its window after c64k E2; r2 reused r1's units and ran c64k E3). model: Qwen3.6-35B-A3B-MTP-Q8_0
       frontdoor recipe (terse template 1443ea9ab4bb, thinking off, draft-mtp 4, q8_0 KV, ctx_checkpoints 32), `-np 1`, `--cache-ram 0`
       (mandatory), `--slot-save-path` in the row. quant_build: Q8_0 on the production v10 CPU store `ffc1bac82`. region: CPU quarter,
       est 10800 s. Per class (16K, 64K): cold prefill + save, then for each arm erase -> restore -> first completion: CTRL (erase,
@@ -254,6 +254,12 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       else DEGRADED; E3 reported against its bounded-tail prediction. Stop-on-answer when both classes complete and summarize.py
       gives the verdict; stop-on-futility on a failed precondition, save failure, server not ready or not our PID, timings missing,
       STOP file or deadline; gate-class = futility-only. [no-belief: row published, no result yet]
+      ✅ 2026-11-17 row `inf86-g4-restore-reuse-20261117-r2` filed pass, **EXPOSED_NOT_HIT**: E1 (strict extension, the production
+      migration shape) reuses 100% of the restored slot at both sizes (16K cache_n 15722/15722, prompt_n 1186, 19.2 s vs 181 s cold;
+      64K 63300/63300, prompt_n 1139, 70.7 s vs 1962 s cold); CTRL 0 (instrument clean, n_restored == n_saved), and E0 exact repeat,
+      E2 50% divergence and E3 tools-block reuse 0 (full re-prefill) at both sizes. The upstream defect is real but our migration
+      shape avoids it; E3 sits below its bounded-tail prediction (0 reuse, not a tail), so a tools-carrying session migrated across
+      a restore re-prefills fully. Evidence /mnt/raid0/llm/tmp/inf86-g4-restore-reuse-20261117-r2/out/RESULT.json. [no-belief: row verdict filed by agent]
 - [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
       ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
       closed on **both** directions. `_slot_save` now *returns* `n_saved`

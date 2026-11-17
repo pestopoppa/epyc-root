@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T20:50:59Z",
+  "generated_at": "2026-11-17T21:07:45Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2448,15 +2448,15 @@
       "blocked_by": [
         "INF-83"
       ],
-      "closed": 18,
-      "dispatchable": 3,
+      "closed": 19,
+      "dispatchable": 2,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-17",
       "next_action": "G4 restore-reuse r2 running; then v11 fold verdict (G5 null, template no-defect, #25592 no gain closed); CMS512 reload held",
-      "open": 3,
+      "open": 2,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
