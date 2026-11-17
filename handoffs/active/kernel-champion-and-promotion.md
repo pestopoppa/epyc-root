@@ -2852,14 +2852,16 @@ See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 
       qwen4exp + the champion binary** when a CPU window opens, not on the 122B, which is leaving the role.
       The E9 122B +10.7% stays on record as the motivating observation only. No stack, registry or
       launcher change is made by this ruling; the registry key waits for the promotion AND the confirm.
-- [ ] **INF-40 confirm run (operator Option A, retargeted 2026-09-17) — GATED: waits for the end of the
-      AutoKernel quiet window AND an explicit operator go.** On qwen4exp (Qwen3.8-Flash-Next) served by
-      champion `ef81196d5`, with MTP on at `--spec-draft-n-max` ≥ 3 so verification batches meet
-      `moe_spec_min_batch` = 4. Sweep `moe_spec_budget` for 512 experts × 10 used (e.g. {0, 64, 128, 256};
-      pre-register the grid and the pass rule before running). 5-rep alternating A/B/A/B per arm against 0,
-      same-window, with the champion's production recipe. Declare the noise floor in t/s and % of mean, keep the gate-skip
-      mechanism-fire control, re-measure α, and register a protocol-id so the result is a claim. Then
-      apply or retire `registry_patch_proposal.yaml` on the result.
+- [ ] **INF-40 confirm run (operator Option A, retargeted 2026-09-17; operator GO 2026-11-17 "confirm run on C12") — ROW
+      `inf40-moespec-confirm-c12-20261117`, owner autokernel.** Model: qwen4exp (Qwen3.8-Flash-Next UD-IQ4_XS + shared MTP Q8_0,
+      512 experts x 10 used; the August 122B is off disk) on the C12 CPU build `457d5fc523ba5cc687a333a588c1dc15db9346f4`
+      (MoE-Spec `c7c37a0d9` is an ancestor), MTP `--spec-draft-n-max` 4 so verification batches meet `moe_spec_min_batch` = 4.
+      Arms `moe_spec_budget` B = 256 (n_expert/2) vs B = 0, same binary, interleaved ABBA x2 (8 visits) plus the B = 512
+      gate-skip mechanism-fire control; the three August architect prompts, greedy, 256 tokens, half q1+q2, est ~1.5 h.
+      Rule (pre-registered): REPLICATES iff speed gain >= +5% (the August +10.7% record has no CI) with alpha drop <= 3pp, no
+      degenerate decodes and the controls passing; else DROP. STOP: on-answer all 9 visits valid; on-futility a visit that cannot
+      load or the binary proof fails. Registry integration (`registry_patch_proposal.yaml`) is a separate follow-up only on
+      REPLICATES. [no-belief: prepared row text]
   - *(2026-11-07, main-inf22, operator decision B: adopted as the C8 fold ledger owner; not ticked)* Owner: **main-inf22**. Triage: needs measurement. Blocked-on an explicit operator go (its own gate) and an AK quiet window; retarget it from `ef81196d5` to C7r. [no-belief: ownership/triage note]
   - *(2026-11-17, autokernel hygiene; not ticked)* Still live, needs an explicit operator go: MoE-Spec `c7c37a0d9` IS an ancestor of the current champion candidate C12 `457d5fc523ba5cc687a333a588c1dc15db9346f4` and of C10 `7f1bd044b`, the last promoted reference (git merge-base --is-ancestor rc 0 for both; `moe_spec_budget` present in common/ at C10), so the confirm run would target C12, not `ef81196d5`. [no-belief: ancestry check]
 - **(Folded 2026-09-17 into the retargeted confirm above; kept for the record.)** Former optional
