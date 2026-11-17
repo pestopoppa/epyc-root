@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T11:01:32Z",
+  "generated_at": "2026-11-17T11:02:01Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1673,12 +1673,12 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [
         "EVL-47"
       ],
       "closed": 362,
-      "dispatchable": 2,
+      "dispatchable": 3,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
@@ -1720,7 +1720,7 @@
           "blocked_by": [
             "EVL-47"
           ],
-          "dispatchable": 2,
+          "dispatchable": 3,
           "gates": [
             "EVL-47"
           ],
@@ -1940,15 +1940,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 215,
-      "dispatchable": 36,
+      "closed": 217,
+      "dispatchable": 34,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-17",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
-      "open": 37,
+      "open": 35,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1982,7 +1982,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 31,
+          "dispatchable": 29,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1991,14 +1991,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 32,
+          "open": 30,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1719,
+          "line": 1720,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2007,7 +2007,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1843,
+          "line": 1844,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2016,7 +2016,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2173,
+          "line": 2174,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2025,7 +2025,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 2312,
+          "line": 2313,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 3,
           "readiness": "ready"
@@ -2034,7 +2034,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2870,
+          "line": 2871,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2046,7 +2046,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3008,
+          "line": 3009,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2058,7 +2058,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3015,
+          "line": 3016,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2401,15 +2401,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 5,
-      "dispatchable": 17,
+      "closed": 6,
+      "dispatchable": 16,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-17",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
-      "open": 17,
+      "open": 16,
       "priority": 0.0318,
       "priority_basis": {
         "campaign": 0,
