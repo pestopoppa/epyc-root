@@ -31,3 +31,7 @@ Acknowledged duplicate run-end event for inf85-w3-q36-35b-a3b-q8-20261110 (rc=1)
 ## 23:03Z — Acknowledge duplicate Qwen3-VL Q4_K_M r3 completion event
 
 Acknowledged replay of the .complete event for inf85-w3-qwen3vl-30b-a3b-q4km-r3-20261111 using its existing 2026-11-11 workspace-f2 PASS verdict and FILED receipt. Preserve the authoritative result: 84.42 +/- 1.30 tok/s, median +/- MAD, n=10, P-BENCH-1, tg128 depth 0, single stream, 96 threads, v10 build 10303; bench-class rather than serving throughput. W3 is already completed and publication-upstream-program.md remains archived in handoffs/completed/ on origin/main. No open boxes or new rows.
+
+## 23:05Z — Acknowledge duplicate Qwen3.8-Flash-Next r3 completion event
+
+Acknowledged replay of the .complete event for inf85-w3-q38-flash-iq4xs-r3-20261111 using its existing 2026-11-11 workspace-f2 PASS verdict and FILED receipt. Authoritative result remains 25.59 +/- 0.16 tok/s, median +/- MAD, n=10, P-BENCH-1, attest hh-b758c7787cc5, v10 build 10303; bench-class rather than serving throughput. W2 and W3 are already ticked and publication-upstream-program.md is archived in handoffs/completed/. No open boxes or new rows.
