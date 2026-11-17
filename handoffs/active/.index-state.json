@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 531
+      "open": 536
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 196
+      "open": 198
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -104,7 +104,7 @@
       "closed": 847,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 126,
+      "open": 127,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 974,
+      "total": 975,
       "tracks": [
         {
           "blocked": 1,
@@ -213,7 +213,7 @@
           "line": 14207,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 15
+          "open": 16
         }
       ]
     },
@@ -2158,7 +2158,7 @@
       "closed": 362,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 4,
+      "open": 6,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2167,7 +2167,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 366,
+      "total": 368,
       "tracks": [
         {
           "blocked": 0,
@@ -2205,14 +2205,14 @@
           "line": 2726,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 1
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3103,
+          "line": 3108,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3616,
+          "line": 3621,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3711,
+          "line": 3716,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2564,10 +2564,10 @@
     },
     "v11-promotion-checklist.md": {
       "blocked": 0,
-      "closed": 11,
+      "closed": 13,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 14,
+      "open": 16,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2576,14 +2576,14 @@
       },
       "row_id": "INF-83",
       "state": "active",
-      "total": 25
+      "total": 29
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
       "closed": 385,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 93,
+      "open": 95,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 479
+      "total": 481
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

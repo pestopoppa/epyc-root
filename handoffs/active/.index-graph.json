@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T22:27:49Z",
+  "generated_at": "2026-11-17T22:45:38Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 385,
-      "dispatchable": 93,
+      "dispatchable": 95,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-17",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 94,
+      "open": 96,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1387,14 +1387,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 847,
-      "dispatchable": 126,
+      "dispatchable": 127,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-17",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense in-process defect; greedy A/A bisect r3 (smoke queued); GDN-SHARE-1",
-      "open": 127,
+      "open": 128,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1523,7 +1523,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#repl-turn-efficiency"
           ],
-          "dispatchable": 15,
+          "dispatchable": 16,
           "gates": [
             "INF-77",
             "INF-06#autokernel-rebuild-program",
@@ -1541,7 +1541,7 @@
           ],
           "line": 14207,
           "name": "autokernel-orchestrator-actor-backend",
-          "open": 15,
+          "open": 16,
           "readiness": "blocked"
         }
       ]
@@ -1674,14 +1674,14 @@
         "INF-48#rocm-verify-profile-backend"
       ],
       "closed": 362,
-      "dispatchable": 4,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-17",
       "next_action": "C6-CONTROLLER-PROOF (r7 smoke queued) then LIVE-1 wiring; publish race-eqv with 7/7 fixtures; FA-ALLMASK/HS256 follow-ups",
-      "open": 4,
+      "open": 6,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1745,21 +1745,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 1,
+          "dispatchable": 3,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2726,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 1,
+          "open": 3,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3103,
+          "line": 3108,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3616,
+          "line": 3621,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3711,
+          "line": 3716,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 11,
-      "dispatchable": 14,
+      "closed": 13,
+      "dispatchable": 16,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-17",
       "next_action": "Run V11-C13-BUILD-PREFLIGHT r2 (queued); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; D6/D7 open",
-      "open": 14,
+      "open": 16,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,

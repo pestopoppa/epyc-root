@@ -388189,7 +388189,13 @@
   - "Single author, single GPU, Windows; no independent reproduction found. Rebuilt executables were not GPU-run; numbers come from recorded binaries."
   - "V1.0.1 headline +10.20% compares two separately recorded releases with different attention arithmetic (approximate FP8); only the +0.891% Stage41 vs Stage44 delta is controlled."
   - "Inherited prefill race report unresolved."
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  - handoffs/active/autokernel-loop.md
+  - handoffs/active/autokernel-akx-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Operator-approved 2026-11-17: boxes INF48-FAVEC-TAIL and INF48-GATEUP-PROBE in rocm-kernel-authoring.md, INF06-EXACT-LANE in autokernel-loop.md, citation added to AKX-ALL-LB3 in autokernel-akx-program.md. NVFP4 weights excluded for the architect role (knowledge only)."
   handoffs_created: []
   recommended_actions:
   - "MI210: seed an exact-order split-KV / tail-widening candidate for flash_attn_ext_vec decode at 32k-128k on the 27B Q8_0 architect, gated by bitwise token identity."
