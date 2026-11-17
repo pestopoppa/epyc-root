@@ -31,12 +31,12 @@
   "postcapture_projection": "/usr/bin/python3 -I /mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/mi210_native_deploy.py project",
   "publish_command_from_lane": "ROWFLOW_REPO=\"$PWD\" python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/spec.json",
   "remaining": [
-    "Keeper GPU smoke is queued according to owner. Smoke PASS and genuine native Q38 capture are pending.",
-    "Canonical MI210 adapter registration and actual planning-context canary",
-    "Separate NPD1 successor row; original NPD1 source SHA matched its pinned manifest"
+    "Keeper smoke requalification after owner republished unchanged row; returned PASS retained separately in q38-smoke-event.json.",
+    "Genuine native Q38 capture, registered ingestion and real planning-context canary."
   ],
   "row_id": "vidya-mi210-q38-native-wire-20261117",
   "smoke_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/SMOKE.json",
+  "source_registration": "Canonical mi210-paired-raw reader and synthetic controls already landed; NPD1 private successor published with smoke PASS.",
   "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/spec.json",
   "spec_sha256": "44eecff4bba672492ed2916becee9fe9d601019c82cb607bb9cec953b3cbce92",
   "staged_input_sha256": {
@@ -53,5 +53,5 @@
     "scripts/vidya/producers/mi210_native_run.py": "bb6dd702ba9ea69a90d749670335cca0f14067b6b70e6357f5a6eff9d36f8a60",
     "scripts/vidya/producers/mi210_paired_capture.py": "55787a1ce44cb311bda6a7e6581a489eb8f20df22845cb8848be37ade1a70b56"
   },
-  "state": "published-smoke-queued-reported-by-owner"
+  "state": "republished-smoke-queued-after-returned-pass"
 }

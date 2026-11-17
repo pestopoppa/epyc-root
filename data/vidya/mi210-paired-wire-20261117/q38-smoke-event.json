@@ -1,0 +1,28 @@
+{
+  "returned_receipt": {
+    "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-mi210-q38-native-wire-20261117/launcher.out",
+    "elapsed_s": 11,
+    "ended": "rc=75 time=2026-11-17T20:36:12Z reason=partial-native-incomplete",
+    "engine_sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a",
+    "first_progress": "smoke_predicate exited 0",
+    "first_progress_s": 420,
+    "first_unit_at": "2026-11-17T20:36:13Z",
+    "id": "vidya-mi210-q38-native-wire-20261117",
+    "launcher_sha256": "67aa29f8ee1cf672bcb4406043f488ecb4fb84b2a7cd418bf30468c821a6fb92",
+    "measured_busy_fraction": 0.0,
+    "measured_claimed_cpus": 16,
+    "measured_threads": 0.002,
+    "passed_at": "2026-11-17T20:36:13Z",
+    "progress_rule": "smoke_predicate",
+    "regions": "mi210_0,88-95,184-191",
+    "residency_evidence": null,
+    "result_format": "json",
+    "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/RESULT.json",
+    "units": 0,
+    "vram_used_max_bytes": 30586339328,
+    "warning": null
+  },
+  "preserved_receipt_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-mi210-q38-native-wire-20261117/superseded/20261117T204115951936Z/PASS.json",
+  "scope": "Publisher readiness receipt only; no official measurement, native acceptance or planning-context canary.",
+  "current_publication": "Owner republished unchanged spec, retiring the returned PASS; GPU busy caused requalification smoke to queue. Do not infer present readiness from this archived receipt."
+}

@@ -430,6 +430,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "c6-q4-microbench",
         "inf66-r2364",  # sealed-sweep fixture, tamper and real-data controls: test_inf66_r2364.py
         "mi210-paired-raw",  # isolated CLI, refusals and synthetic context: test_mi210_paired_raw_ingest.py
+        "gpu-pool-native",  # sealed synthetic CLI and refusal controls: test_gpu_pool_native_ingest.py
     }
 
 

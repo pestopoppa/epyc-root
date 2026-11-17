@@ -617,6 +617,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="explicit original MI210 raw capture directory; completed measurement requests only; "
                 "diagnostic observations through the shared grade",
            task="VB-MI210-PAIRED-DIAG-WIRE"),
+    Source("gpu-pool-native", "gpu_pool_native", _files("belief.json"), frames="emit",
+           note="sealed prospective model-free native captures with explicit non-smoke grants; "
+                "raw case counts re-derived, with candidate-local scope",
+           task="SC18"),
     Source("ch18-merge-trial", "ch18_merge_trial",
            lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
            note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "

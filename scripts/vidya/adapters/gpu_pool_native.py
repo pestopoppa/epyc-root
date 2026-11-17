@@ -1,4 +1,4 @@
-"""Prospective GPU pool capture, deliberately unregistered; native history has no hook.
+"""Prospective GPU pool capture; native history has no hook.
 
 Call begin() before a future run and finish() only in the native result writer.
 No benchmark launch, ladder, protocol invention, or historical conversion here.
@@ -205,4 +205,23 @@ def read_capture(path):
 def frames_for_capture(path, *, as_of):
     from claim_tuple import to_frames
     return [frame for claim in read_capture(path)
+            for frame in to_frames(claim, as_of=as_of, adapter_id=ADAPTER_ID, authority=AUTHORITY)]
+
+
+def emit(path, *, as_of, limit=None):
+    """Ingest only sealed captures with an explicit native non-smoke grant."""
+    from claim_tuple import to_frames
+
+    try:
+        claims = read_capture(path)
+    except ProjectionError:
+        raise
+    except (OSError, TypeError, ValueError) as exc:
+        raise ProjectionError(f'cannot read native GPU pool capture: {exc}') from exc
+    if not claims:
+        return []
+    grant = claims[0].extra['native_context'].get('grant')
+    if not isinstance(grant, dict) or grant.get('smoke') is not False:
+        raise ProjectionError('native GPU pool ingestion requires grant.smoke to be false')
+    return [frame for claim in claims[:limit]
             for frame in to_frames(claim, as_of=as_of, adapter_id=ADAPTER_ID, authority=AUTHORITY)]
