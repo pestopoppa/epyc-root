@@ -131,7 +131,7 @@ APPLICABILITY_KEYS = frozenset({
     "run_expected_keys",
     # loop-belief redesign §4.1/§4.2 -- each only when the native record (or, for
     # `scope_basis="store_manifest"`, the store's pinned manifest) states it.
-    "model_sha256", "build_sha", "epoch", "recipe", "np", "surface", "symbol", "op", "shape",
+    "model_sha256", "build_sha", "candidate_sha256", "epoch", "recipe", "np", "surface", "symbol", "op", "shape",
     "scope_basis", "role", "stack_regime", "config_key",
     # §12.2/§12.3 (knob grain): the knob family a record bears on (one name or a list), the flag
     # set it held fixed (`knobs`), the knob(s) its arms change (`varied`), and an AutoPilot
@@ -355,7 +355,7 @@ class ClaimTuple:
                     isinstance(key, str) and key.strip() for key in value)
                 if valid:
                     valid = len(value) == len(set(value))
-            elif name == "model_sha256":
+            elif name in ("model_sha256", "candidate_sha256"):
                 valid = isinstance(value, str) and _HEX64.fullmatch(value) is not None
             elif name == "build_sha":
                 valid = isinstance(value, str) and _GIT_SHA.fullmatch(value) is not None

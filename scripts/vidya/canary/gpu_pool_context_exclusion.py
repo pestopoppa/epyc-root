@@ -1,4 +1,4 @@
-"""Check the GPU-pool capture boundary against the real AutoKernel planning reader."""
+"""Check exact GPU-pool candidate reads and exclusion from ordinary model planning."""
 from __future__ import annotations
 
 import argparse
@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 import tempfile
+from copy import deepcopy
 from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,6 +28,11 @@ def require(condition, detail):
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def identity_digest(identity):
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def ingest(capture, ledger):
@@ -72,6 +78,75 @@ def prepare(belief_context, ledger, out, *, pinned_snapshot=False):
     }
 
 
+def prepare_candidate(belief_context, ledger, out, selector, *, pinned_snapshot):
+    argv = [sys.executable, "-BI", str(VIDYA / "loop_beliefs.py"), "prepare",
+            "--consumer", "gpu-pool.candidate", "--target-json", json.dumps(selector),
+            "--ledger", str(ledger), "--index", str(out / "index.yaml"),
+            "--known-good", str(out / "candidate-known-good.json"),
+            "--alarm-config", str(out / "alarm.yaml"), "--alarm-state", str(out / "alarm-state.json")]
+    if pinned_snapshot:
+        argv.append("--allow-stale-reader")
+    done = subprocess.run(argv, cwd=ROOT, check=True, capture_output=True, text=True, timeout=20)
+    return belief_context.validate_ready(json.loads(done.stdout))
+
+
+def check_candidate_reads(belief_context, ledger, out, request, claims, reader_head, *, pinned_snapshot):
+    identity = request["identity"]
+    base = {"scope": "candidate", "build_sha": identity["source"]["commit"],
+            "candidate_sha256": identity_digest(identity), "run_id": request["row_id"]}
+    selectors = {op: ({**base, "op": op}, [c for c in claims if c["op"] == op], None)
+                 for op in dict.fromkeys(c["op"] for c in claims)}
+    first = next(iter(selectors.values()))[0]
+    foreign_artifact = deepcopy(identity)
+    foreign_artifact["artifacts"][0]["sha256"] = "0" * 64 if identity["artifacts"][0]["sha256"] != "0" * 64 else "1" * 64
+    foreign_shim = deepcopy(identity)
+    foreign_shim["shim"]["later_recreated_source_matches_receipt"] = not identity["shim"]["later_recreated_source_matches_receipt"]
+    wrong_source = "0" * 40 if base["build_sha"] != "0" * 40 else "1" * 40
+    prefix, version = base["run_id"].rsplit("-v", 1)
+    for name, mutation in {
+            "wrong_source": {"build_sha": wrong_source},
+            "wrong_artifact": {"candidate_sha256": identity_digest(foreign_artifact)},
+            "wrong_shim": {"candidate_sha256": identity_digest(foreign_shim)},
+            "wrong_operator": {"op": "NOT_A_GPU_POOL_OPERATOR"},
+            "wrong_run": {"run_id": f"{prefix}-v{int(version) + 1}"},
+    }.items():
+        selectors[name] = ({**first, **mutation}, [], "no_applicable_claims")
+    selectors["missing_operator"] = ({k: v for k, v in first.items() if k != "op"}, [], "inapplicable_target")
+
+    attempts = [c["claim_id"] for c in claims]
+    reads = {}
+    for name, (selector, expected, exclusion) in selectors.items():
+        ready = prepare_candidate(belief_context, ledger, out, selector, pinned_snapshot=pinned_snapshot)
+        state, evidence = ready["ledger_state"], ready["evidence"]
+        require(state["head_hash"] == reader_head and state["ledger_path"] == str(ledger),
+                "candidate reader checked another ledger")
+        ids = {c["claim_id"] for c in expected}
+        presented = evidence["claim_ids"]
+        require(set(presented) == ids and len(presented) == len(ids)
+                and set(belief_context.reliable_claim_ids(evidence)) == ids
+                and {c["claim_id"] for c in evidence["claims"]} == ids
+                and not (evidence["not_evidence_claim_ids"] or evidence["tried_index"]
+                         or any(evidence["flagged"].values())), f"incorrect candidate routing for {name}")
+        section = evidence["section"]
+        require(evidence["nonempty_target"] == bool(ids) and bool(section) == bool(ids)
+                and evidence["reasons"] == ([exclusion] if exclusion else []),
+                f"incorrect candidate decision for {name}")
+        if ids:
+            require(ready["targets"] == [selector] and all(
+                selector[key] in section for key in ("build_sha", "candidate_sha256", "op", "run_id"))
+                and "quant unstated" not in section and "own weights" not in section
+                and all(c["partition"] in section for c in expected), f"candidate text drifted for {name}")
+        reliance = belief_context.reliance(attempts, presented, evidence["not_evidence_claim_ids"])
+        require(reliance["accepted"] == [cid for cid in attempts if cid in ids]
+                and reliance["rejected"] == [{"claim_id": cid, "reason": "not_presented"}
+                                             for cid in attempts if cid not in ids],
+                f"incorrect candidate reliance for {name}")
+        reads[name] = {"selector": selector, "claims": evidence["claims"], "reliance": reliance,
+                       "reason": exclusion, "section_sha256": evidence["section_sha256"],
+                       "checkout_checked": ready["reader_checkout_check"]}
+    return reads
+
+
 def check_capture(capture, research, out, *, pinned_snapshot=False):
     """Verify strict intake and preserve the candidate facts in an isolated result receipt."""
     capture = capture.resolve(strict=True)
@@ -107,15 +182,20 @@ def check_capture(capture, research, out, *, pinned_snapshot=False):
         source = sources[claim["source_id"]]
         require(source["source_kind"] == SOURCE and source["title"] == "native_supported_pass_count"
                 and source["applicability"] == {"op": run["op"], "run_id": request["row_id"],
+                                                "build_sha": request["identity"]["source"]["commit"],
+                                                "candidate_sha256": identity_digest(request["identity"]),
                                                 "scope_basis": "native"},
                 "GPU-pool observation was assigned extra applicability")
         partition = f"{run['passed']} native supported passes, {run['unsupported']} unsupported and {len(run['failed'])} failures"
-        require(partition in claim["display_text"] and support["grade"] == {"Q": "Judged", "T": "T0"}
-                and support["protocol_id"] == "" and support["source_id"] == claim["source_id"],
+        require(partition in claim["display_text"] and support["grade"] == {"Q": "Judged", "T": "Located"}
+                and source["locator"] == f"{run['log']}#sha256={run['log_sha256']}"
+                and support["protocol_id"] == "" and support["reps"] is None
+                and support["source_id"] == claim["source_id"],
                 "candidate-local result or existing shared grade drifted")
         claims_summary.append({"claim_id": claim_id, "op": run["op"], "observed": run["observed"],
                                "passed": run["passed"], "unsupported": run["unsupported"],
-                               "failed": len(run["failed"]), "seed": run["seed"], "rc": run["rc"]})
+                               "failed": len(run["failed"]), "seed": run["seed"], "rc": run["rc"],
+                               "partition": partition})
 
     belief_context = consumer_for(research)
     readers = {}
@@ -135,17 +215,25 @@ def check_capture(capture, research, out, *, pinned_snapshot=False):
         readers[consumer] = {"ledger_head": state["head_hash"], "model_target": MODEL,
                              "visible_claims": [], "reliance": reliance,
                              "checkout_checked": ready.answer["reader_checkout_check"]}
+    candidate_reads = check_candidate_reads(belief_context, ledger, out, request, claims_summary,
+                                            readers[belief_context.CONSUMER]["ledger_head"],
+                                            pinned_snapshot=pinned_snapshot)
     return {
-        "schema": "epyc.vidya.gpu_pool_scope_exclusion.v1", "status": "passed",
-        "scope": "candidate-local native observations excluded from ordinary model planning context",
+        "schema": "epyc.vidya.gpu_pool_candidate_scope.v1", "status": "passed",
+        "scope": "candidate-local observations in the shared planning reader",
         "synthetic_control": record["native"].get("synthetic_control") is True,
-        "official_native_acceptance": False, "positive_planning_context": False,
+        "official_native_acceptance": False, "positive_planning_context": True,
+        "production_consumer_adoption": False, "native_planning_context": False,
         "capture_path": str(capture), "capture_sha256": capture_sha, "row_id": request["row_id"],
         "candidate_identity": request["identity"], "native_grant": record["native"]["grant"],
         "claims": claims_summary, "ingest": report, "retry": retry, "readers": readers,
+        "candidate_reads": candidate_reads,
         "sources_sha256": {
             "adapter": sha(VIDYA / "adapters/gpu_pool_native.py"),
             "reader": sha(VIDYA / "loop_beliefs.py"),
+            "carrier": sha(VIDYA / "claim_tuple.py"),
+            "read_counter": sha(VIDYA / "read_counter.py"),
+            "canary": sha(Path(__file__)),
             "consumer": sha(research / CONSUMER_RELPATH),
         },
     }

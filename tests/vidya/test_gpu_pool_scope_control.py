@@ -1,4 +1,5 @@
-"""Synthetic controls for GPU-pool scope at the real AutoKernel planning reader."""
+"""Synthetic controls for exact GPU-pool requests and ordinary planner exclusion."""
+from dataclasses import replace
 import json
 import os
 import sys
@@ -14,6 +15,7 @@ import gpu_pool_context_exclusion as control
 from adapters import gpu_pool_native as native_adapter
 from claim_tuple import ClaimTuple, to_frames
 from ledger import Ledger
+from loop_beliefs import Target
 
 
 class ScopeControls(unittest.TestCase):
@@ -60,6 +62,36 @@ class ScopeControls(unittest.TestCase):
         self.assertEqual(report["candidate_identity"]["source"]["removed_worktree_dirty_state"], "UNKNOWN")
         self.assertIs(report["candidate_identity"]["shim"]["later_recreated_source_matches_receipt"], False)
         self.assertEqual(set(report["readers"]), {"autokernel.planner", "autopilot.planner"})
+        self.assertTrue(report["positive_planning_context"])
+        self.assertFalse(report["official_native_acceptance"])
+        self.assertFalse(report["production_consumer_adoption"])
+        self.assertFalse(report["native_planning_context"])
+        for claim in report["claims"]:
+            read = report["candidate_reads"][claim["op"]]
+            native_claim, = read["claims"]
+            self.assertEqual(native_claim["op"], claim["op"])
+            self.assertEqual(native_claim["candidate_sha256"], control.identity_digest(report["candidate_identity"]))
+            self.assertEqual(read["reliance"]["accepted"], [claim["claim_id"]])
+        for wrong in ("wrong_source", "wrong_artifact", "wrong_shim", "wrong_operator", "wrong_run", "missing_operator"):
+            self.assertEqual(report["candidate_reads"][wrong]["claims"], [])
+        records = [json.loads(line) for line in (self.out / "reads.jsonl").read_text().splitlines()]
+        self.assertTrue(any(r["target_key"].startswith("candidate:") and r["nonempty_target"] for r in records))
+
+    def test_partial_malformed_and_hybrid_candidate_requests_are_invalid(self):
+        self.make_capture()
+        request = json.loads(self.capture.read_text())["capture"]
+        selector = {"scope": "candidate", "build_sha": request["identity"]["source"]["commit"],
+                    "candidate_sha256": control.identity_digest(request["identity"]),
+                    "op": "ROPE", "run_id": request["row_id"]}
+        self.assertEqual(Target.from_mapping(selector).as_dict(), selector)
+        for key in selector:
+            with self.subTest(missing=key), self.assertRaises(ValueError):
+                Target.from_mapping({k: v for k, v in selector.items() if k != key})
+        for key, value in (("build_sha", "a" * 8), ("candidate_sha256", "b" * 63),
+                           ("op", "rope"), ("run_id", "unsealed"), ("model_file", control.MODEL),
+                           ("device", "gfx90a"), ("consumer", "autokernel.planner")):
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                Target.from_mapping({**selector, key: value})
 
     def test_native_scope_metadata_cannot_route_to_model_device_or_consumer(self):
         self.make_capture(spoof_scope=True)
@@ -67,7 +99,7 @@ class ScopeControls(unittest.TestCase):
 
     def test_reader_can_present_a_real_scope_match_from_a_synthetic_triplet(self):
         self.make_capture()
-        self.check_capture()
+        report = self.check_capture()
         claim = ClaimTuple(measurement_id="synthetic-gpu-pool-scope-positive-control",
                            metric="synthetic_control", value=1, date="2000-01-01T00:00:00Z",
                            category="CANDIDATE", claim="Independent model match control",
@@ -83,6 +115,41 @@ class ScopeControls(unittest.TestCase):
         self.assertEqual(consumer.reliable_claim_ids(reader.evidence), [f"clm_{claim.measurement_id}"])
         self.assertEqual(len(reader.evidence["claims"]), 1)
         self.assertIn("Independent model match control", reader.section)
+
+        selector = report["candidate_reads"]["ROPE"]["selector"]
+        harness = replace(claim, measurement_id="synthetic-harness",
+                          applicability={"consumer": "gpu-pool.candidate"})
+        foreign = replace(claim, measurement_id="synthetic-foreign-candidate",
+                          applicability={**{k: v for k, v in selector.items() if k != "scope"},
+                                         "scope_basis": "native"})
+        for other in (harness, foreign):
+            for frame in to_frames(other, as_of="2000-01-01T00:00:00Z", adapter_id="synthetic-control/v1"):
+                ledger.append(frame)
+        answer = control.prepare_candidate(consumer, path, self.out, selector, pinned_snapshot=True)
+        visible = answer["evidence"]["claims"]
+        self.assertEqual([c["claim_id"] for c in visible], report["candidate_reads"]["ROPE"]["reliance"]["accepted"])
+
+    def test_same_source_candidate_hybrid_cannot_enter_ordinary_harness(self):
+        consumer = control.consumer_for(self.research)
+        hybrid = ClaimTuple(
+            measurement_id="synthetic-gpu-pool-candidate-harness-hybrid",
+            source_kind=native_adapter.SOURCE_KIND, metric="synthetic_control", value=1,
+            date="2000-01-01T00:00:00Z", category="CANDIDATE",
+            claim="Injected same-source candidate and harness scope", unit="cases",
+            attestation_locator="synthetic:gpu-pool-candidate-harness-hybrid",
+            applicability={"build_sha": "a" * 40, "candidate_sha256": "b" * 64,
+                           "op": "ROPE", "run_id": "ni-gpu-pool-attention-20990101-v1",
+                           "scope_basis": "native", "consumer": consumer.CONSUMER})
+        ledger = Ledger(self.out / "ledger.jsonl")
+        for frame in to_frames(hybrid, as_of="2000-01-01T00:00:00Z", adapter_id="synthetic-control/v1"):
+            ledger.append(frame)
+        answers = control.prepare(consumer, ledger.path, self.out, pinned_snapshot=True)
+        for ready in answers.values():
+            self.assertEqual(ready.ledger_state["frame_count"], 3)
+            self.assertEqual(ready.evidence["reasons"], ["no_applicable_claims"])
+            self.assertEqual(ready.evidence["claims"], [])
+            self.assertEqual(ready.evidence["not_evidence_claim_ids"], [])
+            self.assertEqual(ready.section, "")
 
     def test_smoke_capture_is_refused_before_planner_read(self):
         self.make_capture(smoke=True)

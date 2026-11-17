@@ -142,6 +142,8 @@ def project(record):
     selected = request.get('selected_ops')
     if not isinstance(selected,list) or not selected or len(selected) != len(set(selected)) or not set(selected) <= FAMILIES[family]:
         raise ProjectionError('invalid declared selection')
+    identity = request['identity']
+    candidate_sha256 = digest(identity)
     tuples = []
     for i, run in enumerate(runs):
         if not isinstance(run, dict) or run.get('op') not in selected:
@@ -171,7 +173,10 @@ def project(record):
             metric='native_supported_pass_count', value=run['passed'],
             date=record['ended_utc'], category='CANDIDATE', claim=claim,
             unit='cases', source_kind=SOURCE_KIND,
-            applicability={'op':run['op'], 'run_id':request['row_id'], 'scope_basis':'native'},
+            attestation_locator=f"{run['log']}#sha256={run['log_sha256']}",
+            applicability={'op':run['op'], 'run_id':request['row_id'], 'scope_basis':'native',
+                           'build_sha':identity['source']['commit'],
+                           'candidate_sha256':candidate_sha256},
             extra={'native_run':copy.deepcopy(run), 'candidate_identity':copy.deepcopy(request['identity']),
                    'native_context':copy.deepcopy({k:v for k,v in native.items() if k != 'runs'}),
                    'native_scope':native.get('scope'), 'native_proposition':native.get('proposition'),
