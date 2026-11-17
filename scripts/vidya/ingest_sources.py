@@ -607,6 +607,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "self-hash + re-derived escapes) and the pre-hook diag/probe task dumps "
                 "(retrofit, no binary sha256); a reading with no readable task declines",
            task="VB-LAUNCH-AFFINITY-WIRE"),
+    Source("exp01-proxy-capture", "exp01_proxy_capture",
+           lambda p: importlib.import_module("adapters.exp01_proxy_capture").units(p),
+           note="filed original EXP01 source-capture controls only; archived launch and paired-item "
+                "outputs re-derived; no pilot performance comparison or protocol",
+           task="VB-EXP01-PROXY-WIRE"),
     Source("ch18-merge-trial", "ch18_merge_trial",
            lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
            note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "

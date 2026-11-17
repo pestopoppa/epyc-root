@@ -1,0 +1,137 @@
+{
+  "adapter_commit_base": "f4ecf3c80742803dc4ba59de983889844fc467d0",
+  "adapter_sha256": "ac6e3658fb353e4d7843b557d46b5551d650191e5005f6b57b418f48b640789a",
+  "as_of": "2026-11-17T19:57:09.890809+00:00",
+  "consumer": "autokernel.planner",
+  "consumer_sources_sha256": {
+    "scripts/kernel_rnd/autokernel/loop/actors.py": "4ee12bf63f60697286193bea4c59c2102bd0baa38dffa731eec3364c346faf5b",
+    "scripts/kernel_rnd/autokernel/loop/belief_context.py": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f"
+  },
+  "filing": "data/vidya/run-filings/2026-11-04/vidya-exp01-proxy-wire-20261104",
+  "ingest": {
+    "frames": 12,
+    "refused": 0,
+    "rows": 4
+  },
+  "ledger": {
+    "frames": 12,
+    "fresh": true,
+    "head_hash": "sha256:084745106eb385a935d728db7e33cdc72745fecf7087303b7a1bfb8ede8d9082",
+    "intake_index": "empty explicit index for source isolation",
+    "scratch": true
+  },
+  "limitations": {
+    "autokernel_campaign_history_in_canary": false,
+    "canonical_ledger_write": false,
+    "measurement": false,
+    "new_inference": false,
+    "official_pilot_producer_registration": "pending",
+    "paired_item": [
+      {
+        "control": false,
+        "intervention": false,
+        "item": "cruxeval_output_0360"
+      }
+    ],
+    "protocol_id": ""
+  },
+  "matching_cpu_targets": [
+    {
+      "claim_id": "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-Q4KM-1",
+      "grade": "Judged/Located",
+      "locator": "data/vidya/run-filings/2026-11-04/vidya-exp01-proxy-wire-20261104/results.jsonl",
+      "model_file": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reps": 1,
+      "tier": "target",
+      "unit": "tokens/s",
+      "value": 21.784791
+    },
+    {
+      "claim_id": "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ4KT-1",
+      "grade": "Judged/Located",
+      "locator": "data/vidya/run-filings/2026-11-04/vidya-exp01-proxy-wire-20261104/results.jsonl",
+      "model_file": "Qwen3.6-35B-A3B-IQ4_KT.gguf",
+      "reps": 1,
+      "tier": "target",
+      "unit": "tokens/s",
+      "value": 13.397366
+    },
+    {
+      "claim_id": "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2XXS-1",
+      "grade": "Judged/Located",
+      "locator": "data/vidya/run-filings/2026-11-04/vidya-exp01-proxy-wire-20261104/results.jsonl",
+      "model_file": "Qwen3.6-35B-A3B-IQ2_XXS.gguf",
+      "reps": 1,
+      "tier": "target",
+      "unit": "tokens/s",
+      "value": 23.131994
+    },
+    {
+      "claim_id": "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2KT-1",
+      "grade": "Judged/Located",
+      "locator": "data/vidya/run-filings/2026-11-04/vidya-exp01-proxy-wire-20261104/results.jsonl",
+      "model_file": "Qwen3.6-35B-A3B-IQ2_KT.gguf",
+      "reps": 1,
+      "tier": "target",
+      "unit": "tokens/s",
+      "value": 19.441594
+    }
+  ],
+  "native_archive_sha256": "8d1f09dbe507459fffc31c4d3e31f2a51c1ccd61bfb3e605e06339b6c20dd107",
+  "native_results_sha256": "932167c2afe3a134383b459a4afd010eee43ed962201e1483d67d105e32d3af3",
+  "negative_targets": [
+    {
+      "claim_ids": [],
+      "target": {
+        "backend": "gpu",
+        "context_tokens": null,
+        "device": "gfx90a",
+        "focus_symbols": [],
+        "knob_families": [],
+        "label": "",
+        "model_file": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "model_sha256": "",
+        "quant": "",
+        "recipe": "",
+        "role": "",
+        "scope": "model",
+        "stack_regime": ""
+      }
+    },
+    {
+      "claim_ids": [],
+      "target": {
+        "backend": "cpu",
+        "context_tokens": null,
+        "device": "epyc-9655",
+        "focus_symbols": [],
+        "knob_families": [],
+        "label": "",
+        "model_file": "unrelated-model.gguf",
+        "model_sha256": "",
+        "quant": "",
+        "recipe": "",
+        "role": "",
+        "scope": "model",
+        "stack_regime": ""
+      }
+    }
+  ],
+  "original_first_item_matched": true,
+  "original_item_set_sha256": "96dc98cf6b2cfdd65897f1deaf2b6f8481225d013851262cf08d6171f150fdbc",
+  "original_source_packet_verified": true,
+  "planner_entry_points": "belief_context.prepare -> loop_beliefs.py prepare -> actors.render_context",
+  "reader_checkout": {
+    "current": true,
+    "head": "aeb373e6454406d0fd821f8ac99c16b480295840",
+    "origin_main": "aeb373e6454406d0fd821f8ac99c16b480295840"
+  },
+  "rendered_excerpt": "planner-context.txt",
+  "rendered_excerpt_sha256": "5726b3c743fc1dc215c45276ccf8b2004404530496d027a7ae9568968f974910",
+  "research_head": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+  "schema": "epyc.vidya.exp01_control_planning_canary.v1",
+  "scope": "Source-control observations visible in AutoKernel planning context. The original control completed inside rowflow smoke and the original official r3 pilot is outside this adapter.",
+  "source_packet": "data/vidya/row-preparation/2026-11-04/vb-exp01-wire-20261104/source-packet.tar.gz",
+  "source_packet_sha256": "0e0a0b4d8feefd0ca81a7db8828b23ecd2bd6c4062a847be5c4a0137dd204c11",
+  "status": "passed"
+}

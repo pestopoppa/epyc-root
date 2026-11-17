@@ -45,3 +45,18 @@ python3 -m pytest -q tests/vidya/test_mi210_paired_capture.py tests/vidya/test_m
 The source is not yet wired: application by the producer-owning session and a
 planning-context canary remain necessary. This packet provides no historical
 backfill and grants no permission to launch inference or modify production.
+
+The private Q38 successor is now staged by
+`scripts/vidya/producers/mi210_native_deploy.py`; `deployment.json` records
+source, prepared model/build and deployed helper digests. It uses the restored
+C5 image rather than the historical objcopy-rewritten image, with both identities
+kept distinct. Model hashes are prepared before publication; execution checks
+the prepared metadata and source seals without rehashing weights. The staged
+helper bundle survives lane retirement and changes no canonical producer.
+
+Row `vidya-mi210-q38-native-wire-20261117` was published on 2026-11-17;
+`publish_row.py --smoke-now` reported **GPU busy, smoke queued**. No smoke
+PASS, native capture or planner acceptance follows from publication. The
+offline control `tests/vidya/mi210_native_deploy_control.py` verifies isolated
+Python imports, wrong-width and altered-grant refusals and 20 synthetic
+`Judged/Located` projections. Its fixtures are not native measurements.

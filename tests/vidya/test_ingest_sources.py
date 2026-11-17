@@ -327,6 +327,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "ak-r18d-aa",  # Needs the research repo bench parser (patched): positive, refusal and tamper controls in test_autokernel_r18d_aa.py.
         "kvu16a-sampled-load",  # Original-run synthetic ingest and planning canary: test_kvu16a_native.py.
         "kvu19a2-native",  # Dedicated positive ingest and tamper/pre-hook controls: test_kvu19a2_native.py.
+        "exp01-proxy-capture",  # Real filed control, CLI and refusal tests: test_exp01_proxy_capture.py.
         "kvu19b-gap",  # Synthetic producer fixture, tamper controls, real-record ingest, planning canary: test_kvu19b_gap.py.
         "dev-harness-aggregate",  # Actual miners, publisher, CLI and planning: test_dev_harness_aggregate.py.
         "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
