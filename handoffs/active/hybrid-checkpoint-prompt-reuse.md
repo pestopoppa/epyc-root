@@ -2,7 +2,7 @@
 
 > **Split out of [`numa-placement-and-contention.md`](numa-placement-and-contention.md) on 2026-11-10 (INF-45 restructure, operator "yes, take both on").** The body below is the former `## Track: dynamic-stack-concurrency` lifted verbatim; box text is unchanged. Earlier fold history: [`../completed/dynamic-stack-concurrency.md`](../completed/dynamic-stack-concurrency.md).
 
-**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed (G4, G5, INF-86-TEMPLATE, #25592 exposure and B3 evaluation). Two boxes remain open, both waiting on something outside this session: DS-F1 (the AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit).
+**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed (G4, G5, INF-86-TEMPLATE, #25592 exposure and B3 evaluation). Open: INF-86-G4-E3-TOOLS-REPREFILL (row inf86-g4-e3-tools-20261117), DS-F1 (waits on the AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit).
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
 **Owner**: AutoKernel session (workspace-18)
@@ -274,6 +274,13 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
     < 10% with byte-identical shared prefix (checkpoint cause, upstream #26004 class). Stop-on-answer when the divergence offset
     is located and the pinned arm gives a verdict; stop-on-futility on a failed precondition, server not ready or not our PID,
     timings missing, STOP file or deadline; gate-class = futility-only. [no-belief: new box from G4 gate]
+    - *(2026-11-17, step 1, zero compute)* Offline jinja render of the frontdoor template 1443ea9ab4bb (saved E3 request vs next):
+      first divergence at char 54946 of 55306, **99.35% depth**, at the end of `u1` where the tools text began; tools are NOT in
+      the system turn. So the top is byte-identical and the full re-prefill is the **checkpoint cause** (no restorable recurrent
+      state at the divergence point), not a template-ordering defect; the shared prefix is ~99% of the save. Evidence
+      `/mnt/raid0/llm/tmp/inf86-e3-render-20261117/result.json`. Row `inf86-g4-e3-tools-20261117` (16K: CTRL, MOVED = G4 E3, PINNED =
+      tools in the system message so the next request is a strict extension, MOVED_LIVE = no restore) decides whether pinning the
+      tools block is the orchestrator fix. [no-belief: offline render, no inference]
 - [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
       ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
       closed on **both** directions. `_slot_save` now *returns* `n_saved`
