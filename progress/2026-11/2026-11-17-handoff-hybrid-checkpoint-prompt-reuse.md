@@ -55,3 +55,7 @@ Duplicate run-end for inf86-g4-restore-reuse-20261117-r2: file_result.py returne
 ## 22:47Z — Consume already-filed G4 complete-file notification
 
 G4 complete-file notification is a duplicate of its previously consumed ended event: file_result.py returned NOOP, already FILED. Existing EXPOSED_NOT_HIT verdict and ticks unchanged. No new inference task; pending C13 checkpoint validation remains the next action.
+
+## 22:48Z — Consume duplicate E3 run-end dispatch; the result is already filed and its handoff box already completed.
+
+Duplicate run-end delivery for inf86-g4-e3-tools-20261117: existing verdict and FILED receipt already record NO_FIX, and INF-86-G4-E3-TOOLS-REPREFILL is ticked. No second filing, tick, or compute run. INF-86-SLOT-RESTORE-CHECKPOINTS remains dependent on already-qualified/armed row inf86-slot-restore-ckpt-c13-20261117. DS-F1 awaits external AM-DECISIVE-1; earlyoom remains a host-side operator choice.
