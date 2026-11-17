@@ -34,7 +34,7 @@
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 93
+      "open": 98
     }
   },
   "duplicates": {},
@@ -1069,7 +1069,7 @@
       "closed": 238,
       "guarded": 0,
       "last_advanced": "2026-11-07",
-      "open": 86,
+      "open": 91,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1078,7 +1078,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 342,
+      "total": 347,
       "tracks": [
         {
           "blocked": 12,
@@ -1107,14 +1107,14 @@
           "line": 391,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 6
+          "open": 11
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 761,
+          "line": 775,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1527,
+          "line": 1541,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 14
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2203,
+          "line": 2217,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2286,
+          "line": 2300,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 18
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2734,
+          "line": 2748,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3602,
+          "line": 3616,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1557,7 +1557,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1381,
+          "line": 1383,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1842,
+          "line": 1844,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7

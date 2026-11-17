@@ -674,7 +674,7 @@
       "from": "UFH-01",
       "kind": "ref",
       "to": "EVL-10",
-      "weight": 7
+      "weight": 9
     },
     {
       "from": "UFH-01",
@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T22:13:55Z",
+  "generated_at": "2026-11-17T22:19:08Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1193,7 +1193,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1381,
+          "line": 1383,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1210,7 +1210,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1842,
+          "line": 1844,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -3649,14 +3649,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 238,
-      "dispatchable": 86,
+      "dispatchable": 91,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-07",
       "next_action": "Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel",
-      "open": 104,
+      "open": 109,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3708,18 +3708,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 6,
+          "dispatchable": 11,
           "gates": [],
           "line": 391,
           "name": "repl-turn-efficiency",
-          "open": 6,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 761,
+          "line": 775,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3732,7 +3732,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1527,
+          "line": 1541,
           "name": "harness-improvement-loop",
           "open": 18,
           "readiness": "blocked"
@@ -3745,7 +3745,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2203,
+          "line": 2217,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3766,7 +3766,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2286,
+          "line": 2300,
           "name": "repl-embedding-retrieval",
           "open": 20,
           "readiness": "blocked"
@@ -3781,7 +3781,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2734,
+          "line": 2748,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3792,7 +3792,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3602,
+          "line": 3616,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
