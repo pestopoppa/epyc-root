@@ -67,6 +67,29 @@ def test_incomplete_trial_projects_nothing(tmp_path):
     assert m.native_rows(_write(tmp_path, _rec(state="incomplete"))) == ()
 
 
+@pytest.mark.parametrize("changes", [
+    {"state": "incomplete"},
+    {"state": "failed"},
+    {"cleanup": {"worktree_removed": False, "merge_aborted": True}},
+    {"cleanup": {"worktree_removed": True, "merge_aborted": False}},
+])
+def test_noneligible_outcomes_cannot_bypass_native_reader(tmp_path, changes):
+    rec = _rec(**changes)
+    path = _write(tmp_path, rec)
+    assert m._validate(rec, str(path)) is rec  # Preserve sealed outcomes, no rewriting.
+    assert m.native_rows(path) == ()
+    with pytest.raises(ct.ProjectionError, match="complete with successful cleanup"):
+        m.project({"path": str(path), "record": rec})
+    assert json.loads(path.read_text()) == rec
+
+
+def test_clean_up_to_date_trial_does_not_require_abort(tmp_path):
+    rec = _rec(conflict_count=0, conflicting_paths=[], conflicts_by_root={},
+               cleanup={"worktree_removed": True, "merge_aborted": False})
+    (row,) = m.native_rows(_write(tmp_path, rec))
+    assert m.project(row).value == 0
+
+
 def test_real_prehook_record_refused():
     if not LEGACY.is_file():
         pytest.skip("legacy conflicts.json absent")

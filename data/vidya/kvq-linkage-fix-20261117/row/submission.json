@@ -3,5 +3,7 @@
   "state": "prepared-unpublished",
   "publisher_refusal": "--precond-cmd exits 5 now: process blocker: llama-server",
   "preflight": "valid identities and repeated real linkage witness PASS",
-  "next_action": "Wait for owning session quiet-host release; run job.py --guard, then publish the existing spec without changing eligibility or old results."
+  "next_action": "Wait for owning session quiet-host release; run job.py --guard, then publish the existing spec without changing eligibility or old results.",
+  "blocking_row": "c12-cpu-validate-20261116-r5",
+  "release_event": "/mnt/raid0/llm/tmp/compute-flags/grants/c12-cpu-validate-20261116-r5.ended"
 }

@@ -1,0 +1,15 @@
+{
+  "schema": "epyc.mi210.prospective.patch.v1",
+  "sources": {
+    "npd1": {
+      "path": "/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/npd1-step3/job.py",
+      "sha256": "651effb20a51a451866cc700dcd924bdd5b625835fe4fa4584f429efd0d8e530",
+      "patched_sha256": "59a5fbd707cb19fe1fa447f462de67fd430696e2668b1ed3b674dd47948b1738"
+    },
+    "q38p3a": {
+      "path": "/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/q38p3a/job.py",
+      "sha256": "6cbc915f7453af915b2d72ef2eb737e3115d27dac8a5351ce828361a4a36c415",
+      "patched_sha256": "ef93d6be3ebad09d2eef7052feb36cfd10c19e1cd4cf26350b196f48501ef497"
+    }
+  }
+}

@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""NPD1 step 3: CPU-only idle decode, matched CPU vs GPU-store backends."""
+import json, os, signal, socket, subprocess, time, urllib.request
+from pathlib import Path
+D = Path('/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/npd1-step3')
+OUT = D / ('smoke-out' if os.environ.get('FILLER_SMOKE') == '1' else 'out')
+CPU = '/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt'
+GPU = '/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt'
+MODEL = '/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf'
+MTP = '/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf'
+PORT = 18933
+PROMPT = 'Write a detailed, step-by-step technical explanation of how a B-tree handles insertion, deletion and node splitting, with a worked example. '
+ORDER = [('p1','cpu'), ('p1','gpu_cpu'), ('p2','gpu_cpu'), ('p2','cpu')]
+SMOKE = os.environ.get('FILLER_SMOKE') == '1'
+cpus = sorted(os.sched_getaffinity(0))
+if SMOKE:
+    cpus = cpus[:4]
+    os.sched_setaffinity(0, cpus)
+threads = 4 if SMOKE else 48
+load_threads = 4 if SMOKE else 96
+COMMON = ['-m', MODEL, '-md', MTP, '--spec-type', 'draft-mtp', '--spec-draft-n-max', '4', '--spec-draft-p-min', '0.5', '-np', '2', '-c', '69632', '-t', str(threads), '--no-mmap', '-fa', 'on', '-ctk', 'f16', '-ctv', 'f16', '--load-threads', str(load_threads), '--no-webui', '--host', '127.0.0.1', '--port', str(PORT), '-dev', 'none', '-ngl', '0', '--no-op-offload', '-b', '2048', '-ub', '2048']
+ENV = {'GGML_FUSED_DECODE_OFF':'1', 'GGML_NOHUGEPAGE_PROCESS':'1', 'GGML_FA_SPLIT_KV':'0'}
+
+def interrupted(sig, frame):
+    raise KeyboardInterrupt(f'signal {sig}')
+signal.signal(signal.SIGTERM, interrupted)
+signal.signal(signal.SIGINT, interrupted)
+
+def log(rec):
+    rec['time'] = time.time()
+    with (OUT / 'results.jsonl').open('a') as f:
+        f.write(json.dumps(rec) + '\n')
+        f.flush()
+
+def request(path, data=None, timeout=3600):
+    req = urllib.request.Request(f'http://127.0.0.1:{PORT}{path}', data=None if data is None else json.dumps(data).encode(), headers={'Content-Type':'application/json'})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.load(resp)
+
+def run_completion():
+    result = request('/completion', {'prompt':PROMPT, 'n_predict':8 if SMOKE else 512, 'temperature':0, 'top_k':1, 'ignore_eos':True, 'stream':False, 'cache_prompt':False, 'id_slot':0})
+    t = result['timings']
+    count = t['predicted_n']
+    ms = t['predicted_ms']
+    if not isinstance(count, int) or count < 2 or not isinstance(ms, (int, float)) or ms <= 0:
+        raise RuntimeError(f'invalid server timings: {t}')
+    return {'predicted_n':count, 'predicted_ms':ms, 'tpot_ms':ms/count, 'timings':t}
+
+def cleanup(p):
+    if p.poll() is None:
+        p.terminate()
+        try: p.wait(timeout=60)
+        except subprocess.TimeoutExpired:
+            p.kill(); p.wait(timeout=30)
+    if p.poll() is None: raise RuntimeError('server survived cleanup')
+
+def stopped():
+    return Path(os.environ.get('FILLER_STOPFILE', str(D / 'STOP'))).exists()
+
+OUT.mkdir(exist_ok=True)
+for pair, arm in ORDER:
+    if stopped(): raise SystemExit(0 if SMOKE else 'STOP')
+    with socket.socket() as probe:
+        probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        probe.bind(('127.0.0.1', PORT))
+    store = CPU if arm == 'cpu' else GPU
+    env = dict(os.environ, LD_LIBRARY_PATH=f'{store}/bin', **ENV)
+    with (OUT / f'server-{pair}-{arm}.log').open('w') as logf:
+        p = subprocess.Popen(['numactl', '--interleave=all', f'{store}/bin/llama-server'] + COMMON, stdout=logf, stderr=subprocess.STDOUT, env=env)
+        try:
+            start = time.monotonic()
+            while time.monotonic() - start < 1500:
+                if stopped(): raise SystemExit(0 if SMOKE else 'STOP while loading')
+                if p.poll() is not None: raise RuntimeError(f'{arm} exited {p.returncode}')
+                try:
+                    if request('/health', timeout=5).get('status') == 'ok': break
+                except (OSError, ValueError): pass
+                time.sleep(2)
+            else: raise RuntimeError(f'{arm} load timeout')
+            run_completion()  # warmup
+            measure = run_completion()
+            log({'phase':'idle', 'pair':pair, 'arm':arm, 'load_s':time.monotonic()-start, 'cpus':cpus, 'threads':threads, 'load_threads':load_threads, **measure})
+        finally:
+            cleanup(p)
+(D / 'out' / 'COMPLETE.json').write_text(json.dumps({'order':ORDER, 'complete':True})+'\n')

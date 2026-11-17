@@ -89,6 +89,12 @@ def _validate(rec: Any, where: str) -> dict:
     return rec
 
 
+def _eligible(rec: dict) -> bool:
+    """Outcome records survive; only completed, cleaned trials warrant counts."""
+    return (rec["state"] == "complete" and rec["cleanup"]["worktree_removed"]
+            and (rec["conflict_count"] == 0 or rec["cleanup"]["merge_aborted"]))
+
+
 def native_rows(path: str | Path) -> tuple[dict, ...]:
     p = Path(path)
     if not p.is_file():
@@ -98,8 +104,8 @@ def native_rows(path: str | Path) -> tuple[dict, ...]:
     except (OSError, ValueError) as exc:
         raise ProjectionError(f"ch18-merge-trial {p}: unreadable JSON") from exc
     rec = _validate(rec, str(p))
-    if rec["state"] != "complete":
-        return ()                                    # incomplete/failed: no count claim, never a zero
+    if not _eligible(rec):
+        return ()                                    # no completed cleanup: no count claim, never a zero
     return ({"path": str(p), "record": rec},)
 
 
@@ -115,6 +121,8 @@ def project(native: Any) -> ClaimTuple:
     if not isinstance(native, dict) or set(native) != {"path", "record"}:
         raise ProjectionError("ch18-merge-trial native row missing")
     rec = _validate(native["record"], native["path"])
+    if not _eligible(rec):
+        _bad(native["path"], "trial is not complete with successful cleanup")
     k = rec["conflict_count"]
     claim = (f"Unresolved merge trial of upstream {rec['upstream_tip'][:12]} into production base "
              f"{rec['production_base'][:12]} ({rec['merge_strategy']}; {rec['tool']['name']} "
