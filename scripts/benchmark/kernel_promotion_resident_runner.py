@@ -13,6 +13,7 @@ import re
 import signal
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from dataclasses import dataclass, replace
@@ -27,6 +28,7 @@ CLAIM_ROOT = Path("/mnt/raid0/llm/tmp")
 REGIONS = ("q0", "q1", "q2", "q3")
 CPUS = set(range(96))
 FRESH_REQUIRED = 78
+AFFINITY_SAMPLE_INTERVAL = 0.1
 SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
 sys.path[:0] = [
     str(ROOT / ".claude/skills/kernel-promotion/scripts"),
@@ -151,11 +153,22 @@ class Server:
     cpus: set[int]
 
 
+class SpawnCleanupUnproved(RuntimeError):
+    """A launch failed before the caller could account for the process."""
+
+
+class RequestAffinityError(RuntimeError):
+    def __init__(self, failure, response):
+        super().__init__(f"during-request affinity check failed: {failure!r}")
+        self.response = response
+
+
 class Runtime:
     def __init__(self, k35, args):
         self.k35 = k35
         self.args = args
         self.interrupted_by = None
+        self.request_affinity_witness = None
         self.env = {"PATH": "/usr/bin:/bin", "LANG": "C"}
         for key in ("FILLER_ID", "FILLER_STOPFILE", "FILLER_GPU_FENCE",
                     "GPU_DEVICE_ORDINAL", "GGML_VK_VISIBLE_DEVICES", "HSA_ENABLE_SDMA"):
@@ -242,12 +255,28 @@ class Runtime:
         argv = self.command(cohort, arm, port)
         _, cpus = scenario_affinity(self.k35.scenario_by_name(cohort["scenario"]))
         self.k35.write_json(directory / f"{arm}-argv.json", argv)
-        with (directory / f"{arm}-server.log").open("x") as log:
-            proc, fd, birth = owned.spawn(
-                argv, env=self.env, stdout=log, stderr=subprocess.STDOUT,
-                registry=directory / "owned-pids.txt",
-            )
-        return Server(proc, fd, birth, port, cpus)
+        server = None
+        try:
+            with (directory / f"{arm}-server.log").open("x") as log:
+                try:
+                    proc, fd, birth = owned.spawn(
+                        argv, env=self.env, stdout=log, stderr=subprocess.STDOUT,
+                        registry=directory / "owned-pids.txt",
+                    )
+                except Exception as exc:
+                    raise SpawnCleanupUnproved(f"{arm} launch cleanup is unproved: {exc!r}") from exc
+                server = Server(proc, fd, birth, port, cpus)
+        except Exception as exc:
+            if server is not None and not cleanup_proved(stop_server(self, server)):
+                raise SpawnCleanupUnproved(f"{arm} launch cleanup is unproved: {exc!r}") from exc
+            raise
+        return server
+
+    def verify_fresh_ready(self):
+        self.timeout(1, verify_claim(self.args.claim_open))
+        for port in (self.args.base_port, self.args.base_port + 1):
+            if port_listeners(port):
+                raise RuntimeError(f"cannot begin fresh execution while port {port} is listening")
 
     def ready(self, server, arm, directory):
         pidfile = os.environ.get("FILLER_PIDFILE")
@@ -310,10 +339,52 @@ class Runtime:
         }
 
     def request(self, server, arm, body):
+        self.request_affinity_witness = None
         timeout = self.timeout(self.args.request_timeout, verify_claim(self.args.claim_open))
         self.verify_server(server, arm)
         endpoint = "completion" if token_limit_field(body) == "n_predict" else "chat"
-        return self.k35.query_chat(server.port, body, timeout_s=timeout, endpoint=endpoint)
+        active = threading.Event()
+        done = threading.Event()
+        sample_ends = []
+        first_sample = None
+        failure = None
+
+        def monitor():
+            nonlocal first_sample, failure
+            active.wait()
+            while not done.wait(AFFINITY_SAMPLE_INTERVAL):
+                try:
+                    affinity = self.affinity(server)
+                except Exception as exc:
+                    failure = exc
+                    return
+                sampled_at = time.monotonic()
+                if first_sample is None:
+                    first_sample = affinity
+                sample_ends.append(sampled_at)
+
+        worker = threading.Thread(target=monitor)
+        worker.start()
+        started = time.monotonic()
+        try:
+            active.set()
+            response = self.k35.query_chat(server.port, body, timeout_s=timeout, endpoint=endpoint)
+        finally:
+            finished = time.monotonic()
+            done.set()
+            active.set()
+            worker.join()
+            offsets = [sampled_at - started for sampled_at in sample_ends if sampled_at <= finished]
+            if failure is None and not offsets:
+                failure = RuntimeError("no affinity scan completed during the query")
+            self.request_affinity_witness = {
+                "sample_interval_s": AFFINITY_SAMPLE_INTERVAL, "query_elapsed_s": finished - started,
+                "sample_offsets_s": offsets, "first_sample_affinity": first_sample if offsets else None,
+                "failure": repr(failure) if failure is not None else None,
+            }
+        if failure is not None:
+            raise RequestAffinityError(failure, response) from failure
+        return response
 
     def stop(self, server):
         try:
@@ -329,42 +400,140 @@ def token_limit_field(body):
     return "n_predict" if "n_predict" in body else "max_tokens"
 
 
-def run_request(runtime, servers, cohort, row, directory):
-    directory.mkdir()
-    arm = row["arm"]
-    peer_arm = next(name for name in resident_plan.ARMS if name != arm)
-    server, peer = servers[arm], servers[peer_arm]
-    body = cohort["request_body"] | row.get("request_overrides", {})
-    runtime.k35.write_json(directory / "request.json", body)
-    before = runtime.sample(peer)
-    affinity_before = runtime.affinity(server)
+def request_body(cohort, row):
+    body = json.loads(resident_plan._canonical_json(cohort["request_body"] | row.get("request_overrides", {})))
+    if not row.get("excluded") and resident_plan._sha256(body) != row["request_sha256"]:
+        raise ValueError("measured request body differs from the canonical schedule")
+    return body
+
+
+def request_with_capture(runtime, server, arm, body, directory):
     started = time.monotonic()
-    response = runtime.request(server, arm, body)
-    elapsed = time.monotonic() - started
-    after = runtime.sample(peer)
-    runtime.k35.write_json(directory / "response.json", response)
-    affinity_after = runtime.affinity(server)
+    try:
+        response = runtime.request(server, arm, copy.deepcopy(body))
+        elapsed = time.monotonic() - started
+    except RequestAffinityError as exc:
+        runtime.k35.write_json(directory / "response.json", exc.response)
+        raise
+    finally:
+        witness = getattr(runtime, "request_affinity_witness", None)
+        if witness is not None:
+            runtime.k35.write_json(directory / "request-affinity.json", witness)
+    return response, elapsed
+
+
+def capture_row(runtime, cohort, row, directory, body, response, elapsed, **observations):
     limit = body[token_limit_field(body)]
     summary = runtime.k35.summarize_response(
         runtime.k35.scenario_by_name(cohort["scenario"]), cohort["nominal_context"],
         limit, response, elapsed, limit,
     )
-    idle_cpu_s = after["cpu_s"] - before["cpu_s"]
     runtime.k35.write_json(directory / "row.json", {
-        **row, "summary": summary, "idle_peer_before": before, "idle_peer_after": after,
-        "idle_peer_cpu_s": idle_cpu_s, "active_affinity_before": affinity_before,
-        "active_affinity_after": affinity_after,
+        **row, "summary": summary, **observations,
         "request_file_sha256": sha256_file(directory / "request.json"),
         "response_file_sha256": sha256_file(directory / "response.json"),
     })
     if summary["completion_tokens"] != limit:
-        raise RuntimeError(f"{arm} returned {summary['completion_tokens']} of {limit} planned tokens")
+        raise RuntimeError(f"{row['arm']} returned {summary['completion_tokens']} of {limit} planned tokens")
+
+
+def run_request(runtime, servers, cohort, row, directory):
+    directory.mkdir()
+    arm = row["arm"]
+    peer_arm = next(name for name in resident_plan.ARMS if name != arm)
+    server, peer = servers[arm], servers[peer_arm]
+    body = request_body(cohort, row)
+    runtime.k35.write_json(directory / "request.json", body)
+    before = runtime.sample(peer)
+    affinity_before = runtime.affinity(server)
+    response, elapsed = request_with_capture(runtime, server, arm, body, directory)
+    after = runtime.sample(peer)
+    runtime.k35.write_json(directory / "response.json", response)
+    affinity_after = runtime.affinity(server)
+    idle_cpu_s = after["cpu_s"] - before["cpu_s"]
+    capture_row(runtime, cohort, row, directory, body, response, elapsed,
+                idle_peer_before=before, idle_peer_after=after, idle_peer_cpu_s=idle_cpu_s,
+                active_affinity_before=affinity_before, active_affinity_after=affinity_after)
     if not row.get("excluded") and not 0 <= idle_cpu_s <= max(0.25, 0.01 * elapsed):
         raise RuntimeError(f"{peer_arm} idle CPU activity exceeded the resident threshold")
 
 
+def run_fresh_request(runtime, server, cohort, row, directory):
+    arm = row["arm"]
+    body = request_body(cohort, row)
+    runtime.k35.write_json(directory / "request.json", body)
+    affinity_before = runtime.affinity(server)
+    response, elapsed = request_with_capture(runtime, server, arm, body, directory)
+    runtime.k35.write_json(directory / "response.json", response)
+    affinity_after = runtime.affinity(server)
+    capture_row(runtime, cohort, row, directory, body, response, elapsed,
+                active_affinity_before=affinity_before, active_affinity_after=affinity_after)
+
+
+def stop_server(runtime, server):
+    try:
+        return runtime.stop(server)
+    except Exception as exc:
+        return {"pid": server.proc.pid, "dead": False, "error": repr(exc)}
+
+
+def cleanup_proved(result):
+    return result.get("dead") is True and result.get("port_closed") is True
+
+
+def execute_fresh_plan(plan, output, runtime, *, provenance=None):
+    """Capture the unchanged schedule with one freshly started server per measured row."""
+    resident_plan.validate_plan(plan)
+    plan = copy.deepcopy(plan)
+    output.mkdir()
+    runtime.k35.write_json(output / "plan.json", plan)
+    report = {
+        "schema": "epyc.kernel_promotion_fresh_capture.v1", "status": "observation_only",
+        "lifecycle_mode": "fresh_server", "schedule_sha256": plan["schedule_sha256"],
+        "attempted": False, "complete": False, "cleanup_proved": True, "cohorts": [], "provenance": provenance,
+    }
+    try:
+        runtime.preflight(output)
+        runtime.verify_fresh_ready()
+        report["attempted"] = True
+        for index, cohort in enumerate(plan["cohorts"]):
+            directory = output / f"cohort-{index:03}"
+            directory.mkdir()
+            info = {"scenario": cohort["scenario"], "nominal_context": cohort["nominal_context"], "requests": []}
+            report["cohorts"].append(info)
+            warmups = {row["arm"]: row for row in cohort["warmups"]}
+            for row in cohort["requests"]:
+                request_dir = directory / f"request-{row['schedule_position']:03}"
+                request_dir.mkdir()
+                arm = row["arm"]
+                fresh_row = {**row, "complete": False}
+                info["requests"].append(fresh_row)
+                server = runtime.start(cohort, arm, request_dir)
+                try:
+                    fresh_row["server"] = runtime.ready(server, arm, request_dir)
+                    warmup_dir = request_dir / "warmup"
+                    warmup_dir.mkdir()
+                    run_fresh_request(runtime, server, cohort, warmups[arm], warmup_dir)
+                    run_fresh_request(runtime, server, cohort, row, request_dir)
+                finally:
+                    result = stop_server(runtime, server)
+                    fresh_row["cleanup"] = result
+                    report["cleanup_proved"] = cleanup_proved(result)
+                if not report["cleanup_proved"]:
+                    raise RuntimeError("fresh process death and port closure were not both proved")
+                fresh_row["complete"] = True
+        report["complete"] = True
+    except Exception as exc:
+        if isinstance(exc, SpawnCleanupUnproved):
+            report["cleanup_proved"] = False
+        report["failure"] = repr(exc)
+    finally:
+        runtime.k35.write_json(output / "capture.json", report)
+    return report
+
+
 def execute_plan(plan, output, runtime, *, provenance=None):
-    """Own two processes per cohort, stopping both before continuing or signaling fallback."""
+    """Own two processes per cohort and replay fresh only after verified cleanup."""
     resident_plan.validate_plan(plan)
     plan = copy.deepcopy(plan)
     output.mkdir()
@@ -374,9 +543,11 @@ def execute_plan(plan, output, runtime, *, provenance=None):
         "lifecycle_mode": "paired_resident", "schedule_sha256": plan["schedule_sha256"],
         "complete": False, "cohorts": [], "provenance": provenance,
     }
-    cleanup_proved = True
+    clean = True
+    preflight_passed = False
     try:
         runtime.preflight(output)
+        preflight_passed = True
         for index, cohort in enumerate(plan["cohorts"]):
             directory = output / f"cohort-{index:03}"
             directory.mkdir()
@@ -394,27 +565,37 @@ def execute_plan(plan, output, runtime, *, provenance=None):
                     run_request(runtime, servers, cohort, row, directory / f"request-{row['schedule_position']:03}")
             finally:
                 for arm, server in reversed(list(servers.items())):
-                    try:
-                        result = runtime.stop(server)
-                    except Exception as exc:
-                        result = {"pid": server.proc.pid, "dead": False, "error": repr(exc)}
+                    result = stop_server(runtime, server)
                     info["cleanup"][arm] = result
-                    cleanup_proved &= result.get("dead") is True and result.get("port_closed") is True
-            if not cleanup_proved:
+                    clean &= cleanup_proved(result)
+            if not clean:
                 raise RuntimeError("resident process death and port closure were not both proved")
         report["complete"] = True
     except Exception as exc:
+        if isinstance(exc, SpawnCleanupUnproved):
+            clean = False
         report["failure"] = repr(exc)
-        runtime.k35.write_json(output / "fresh-fallback.json", {
-            "schema": "epyc.kernel_promotion_fresh_fallback.v1", "status": "observation_only",
-            "lifecycle_mode": "fresh_server", "plan": plan, "reason": repr(exc),
-            "cleanup_proved": cleanup_proved, "resident_rows_valid": False,
-            "requires_fresh_execution": True,
-        })
     finally:
-        report["cleanup_proved"] = cleanup_proved
+        report["cleanup_proved"] = clean
         runtime.k35.write_json(output / "capture.json", report)
-    return 0 if report["complete"] else FRESH_REQUIRED
+    if report["complete"]:
+        return 0
+
+    fallback = {
+        "schema": "epyc.kernel_promotion_fresh_fallback.v1", "status": "observation_only",
+        "lifecycle_mode": "fresh_server", "plan": plan, "reason": report["failure"],
+        "cleanup_proved": clean, "resident_rows_valid": False, "requires_fresh_execution": True,
+        "fresh_attempted": False, "fresh_complete": False,
+    }
+    if clean and preflight_passed:
+        fallback["fresh_capture"] = "fresh-replay/capture.json"
+        runtime.k35.write_json(output / "fresh-fallback.json", fallback)
+        replay = execute_fresh_plan(plan, output / "fresh-replay", runtime, provenance=provenance)
+        fallback["fresh_attempted"] = replay["attempted"]
+        fallback["fresh_complete"] = replay["complete"]
+        fallback["requires_fresh_execution"] = not replay["complete"]
+    runtime.k35.write_json(output / "fresh-fallback.json", fallback)
+    return FRESH_REQUIRED
 
 
 def validate_inputs(plan, args, runtime):
@@ -457,6 +638,7 @@ def main(argv=None):
     parser.add_argument("--base-port", type=int, default=19100)
     parser.add_argument("--startup-timeout", type=int, default=300)
     parser.add_argument("--request-timeout", type=int, default=120)
+    parser.add_argument("--fresh-only", action="store_true", help="capture the canonical schedule using fresh servers")
     parser.add_argument("--apply", action="store_true", help="launch only under a verified provider receipt")
     args = parser.parse_args(argv)
     if not 1024 <= args.base_port < 65535 or min(args.startup_timeout, args.request_timeout) <= 0:
@@ -476,6 +658,9 @@ def main(argv=None):
         }}
         for sig in SIGNALS:
             signal.signal(sig, lambda signum, _frame: setattr(runtime, "interrupted_by", signum))
+        if args.fresh_only:
+            report = execute_fresh_plan(plan, args.output, runtime, provenance=provenance)
+            return 0 if report["complete"] else FRESH_REQUIRED
         return execute_plan(plan, args.output, runtime, provenance=provenance)
     except (OSError, ValueError, KeyError) as exc:
         parser.error(str(exc))

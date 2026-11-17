@@ -177,12 +177,18 @@ canonical plan, pinned binaries and K35 recipe without launching a server. Live
 execution requires a provider-authored `region-lock` open receipt for CPUs 0-95,
 matching live parent flocks, isolated ports and an explicit split/unified KV mode.
 It loads the arms sequentially, records excluded warmups and each scheduled request,
-and verifies captured-PID cleanup. On failure it exits 78 and writes the unchanged
-plan to `fresh-fallback.json` with `requires_fresh_execution: true`: this is a replay
-request, not an automatic fresh run. Its capture schema is deliberately distinct
-from sealed promotion evidence. Fixture tests live in
-`tests/test_kernel_promotion_resident_runner.py`; run these and the plan tests under
-an available region claim before using the instrument for any decision.
+and verifies captured-PID cleanup. Resident failure exits 78 and preserves the
+unchanged plan in `fresh-fallback.json`. Automatic fresh replay requires proved
+resident cleanup and renewed live admission; it captures its results separately
+and preserves the resident failure verdict. Each fresh measured request gets a new
+server and an excluded warmup, retaining its original body and schedule key.
+`--fresh-only` exercises this observation-only path directly. Capture schemas are
+deliberately distinct from sealed promotion evidence. Fixture tests live in
+`tests/test_kernel_promotion_resident_runner.py` and
+`tests/test_kernel_promotion_fresh_replay.py`; run these and the plan tests under
+an available region claim or the diagnostic row's reserved publisher smoke before
+using the instrument for any decision. Sealing, the parity/comparison pack and
+prospective human ratification remain required.
 
 Speed per derived model, candidate vs incumbent, **each at its own best recipe** (recipe-to-recipe;
 never force one kernel through the other's configuration). Quality per the incumbent's recorded
