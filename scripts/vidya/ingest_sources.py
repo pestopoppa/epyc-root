@@ -8,9 +8,10 @@ every adapter whose native input is a file or a run directory.
 It is a DISPATCHER, not a grader. Each source names its adapter's own reader
 (``native_rows``) and its registered projection (``project``); frames go out through
 ``claim_tuple.to_frames``, so ``claim_tuple.grade()`` decides every tuple. No source here
-carries a ladder, a grade or a fallback value. (``autopilot-journal`` and
-``sealed-manifest`` predate the shared carrier and emit through their own frame builders,
-which also delegate grading; they are dispatched at frame level for that reason only.)
+carries a ladder, a grade or a fallback value. ``autopilot-journal`` and
+``sealed-manifest`` predate the shared carrier and delegate grading from their frame builders.
+``mi210-paired-raw`` validates the whole run once and delegates its per-request frames to
+``claim_tuple.to_frames``.
 
 Every matched unit ends in exactly one of four outcomes, counted separately because a
 single reassuring number hides the one that needs a fix:
@@ -612,6 +613,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="filed original EXP01 source-capture controls only; archived launch and paired-item "
                 "outputs re-derived; no pilot performance comparison or protocol",
            task="VB-EXP01-PROXY-WIRE"),
+    Source("mi210-paired-raw", "mi210_paired_raw", lambda p: [p], frames="emit",
+           note="explicit original MI210 raw capture directory; completed measurement requests only; "
+                "diagnostic observations through the shared grade",
+           task="VB-MI210-PAIRED-DIAG-WIRE"),
     Source("ch18-merge-trial", "ch18_merge_trial",
            lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
            note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "

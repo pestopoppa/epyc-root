@@ -60,3 +60,29 @@ PASS, native capture or planner acceptance follows from publication. The
 offline control `tests/vidya/mi210_native_deploy_control.py` verifies isolated
 Python imports, wrong-width and altered-grant refusals and 20 synthetic
 `Judged/Located` projections. Its fixtures are not native measurements.
+
+The canonical CLI now accepts an explicit sealed capture directory with
+`ingest mi210-paired-raw --path <capture>`. It refuses smoke, incomplete and
+malformed captures. Synthetic controls prove retry deduplication and planning
+visibility for Q38's exact single-file model digest and declared GPU recipe;
+CPU targets, ambiguous/split identities and conflicting device flags do not
+acquire that scope. NPD1's main-model shards plus MTP remain unscoped. These
+controls do not establish native planning acceptance.
+
+`scripts/vidya/producers/mi210_npd1_native_deploy.py` stages the private NPD1
+successor. Both arms run on the CPU (`-dev none -ngl 0`), using their respective
+manifest-verified CPU and GPU-store images. Prepared hashes cover all three
+main-model shards and MTP before publication. The original 0–95 CPU placement,
+48 decode threads and 96 loader threads are retained for the official row;
+its smoke uses four threads and one short launch. The sealed runtime binds
+the quiet-host grant, mapped CPU libraries sampled during requests, timing,
+placement, process release and early-failure custody. Native TPOT is
+lower-better; no paired effect or serving decision follows from projection.
+
+Row `vidya-mi210-npd1-native-wire-20261117` passed the publisher's four-CPU
+smoke on CPUs 116–119 and was published for its official 1800-second CPU
+window. The publisher reported the first-progress predicate exited 0 and
+`rc=75 ... reason=partial-native-incomplete`; that smoke qualification provides
+no official measurement. `npd1-deployment.json` retains the prepared identities
+and publication receipt; `reader-control.json` retains the 154-test synthetic
+reader verification. The NPD1 launcher controls passed 32 tests.

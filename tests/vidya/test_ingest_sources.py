@@ -428,7 +428,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # Full original C6 R2 native run and tamper/missing/qualification/case mismatch controls:
         # test_c6_q4_microbench_adapter.py (component observations only; no historical backfill).
         "c6-q4-microbench",
-        "inf66-r2364"}  # sealed-sweep fixture, tamper and real-data controls: test_inf66_r2364.py
+        "inf66-r2364",  # sealed-sweep fixture, tamper and real-data controls: test_inf66_r2364.py
+        "mi210-paired-raw",  # isolated CLI, refusals and synthetic context: test_mi210_paired_raw_ingest.py
+    }
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():
