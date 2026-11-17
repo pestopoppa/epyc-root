@@ -4,28 +4,27 @@
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
-    "progress": 1405,
+    "progress": 1406,
     "research": 320
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 15,
-      "changed": 1,
+      "added": 1,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-17T10:52:47Z",
+    "at": "2026-11-17T20:20:26Z",
     "scope_paths": [
-      "handoffs/active/knowledge-pipelines.md",
-      "progress/2026-11"
+      "progress/2026-11/2026-11-17-autokernel.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-17T10:52:47Z",
+  "scan_time": "2026-11-17T20:20:26Z",
   "schema_version": 1,
-  "source_set_hash": "70ad1642c9f5fb6f1a4e71fa4b46ec728b460ba899208f111ac49a6d8310fe6b",
+  "source_set_hash": "c60e788d202a12a73f7046528925ed6b2f7682f1391c3de99ca1b4d2ac1aea15",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -16948,6 +16947,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "1e18cf482b2e67881697b1354e69c95581dc85877f774530f99f2ffc52eda55b",
+      "modified": "2026-11-17T20:19:28Z",
+      "path": "progress/2026-11/2026-11-17-autokernel.md",
+      "size": 5743,
+      "title": "2026-11-17 autokernel",
+      "type": "progress"
+    },
+    {
       "content_hash": "14aadaf1cdb983bc1efef6166a6667afdf28ce1df9787cee7bb29a6829e757d7",
       "modified": "2026-11-17T10:45:06Z",
       "path": "progress/2026-11/2026-11-17-autopilot-backlog-session.md",
@@ -20652,7 +20659,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2578,
+  "total_new": 2579,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

@@ -1,5 +1,7 @@
 # Upstream and Publication Program (F6 methodology post and public results page)
 
+> **COMPLETED 2026-11-17 (operator-invoked wrap-up, autokernel).** All boxes ticked (W2, W3). Historical ledger only; the open WEB-2 launch gate lives in `../active/engineering-hygiene-backlog.md`.
+
 **Status**: ACTIVE, drafted 2026-11-10 by the INF-48 restructure (operator decision 2026-11-10). No publication handoff existed in handoffs/active: `amd-ai-lab-website-publication.md` and `frontier-f6-upstream-publication.md` are both in `handoffs/completed/` (the latter folded into INF-48's file as `## Track: frontier-f6-upstream-publication` on 2026-11-02).
 **Owner**: AutoKernel (workspace-18) — re-pointed 2026-11-11 (operator decision relayed by AutoKernel); previously workspace-f2 (Assorted), operator decision 2026-11-10, relayed by Pipeline Management.
 **Scratch**: none (documentation and drafting only; no run directories)

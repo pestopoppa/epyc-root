@@ -4,7 +4,7 @@
 
 For a while we believed we had a set of CPU inference optimizations that worked. On one afternoon in April 2026 we re-measured them against a stricter baseline, and most of them disappeared. This post is about that afternoon: what we measured, why the numbers moved, and the rules we adopted so it does not happen again. It is a story about measurement discipline. It is not a performance claim about any current build.
 
-Scope, stated up front: one host (a single AMD EPYC 9655, 96 cores, NPS4), one llama.cpp development branch (build 8931), one day (2026-04-26), llama-bench decode throughput on MoE models. Nothing here describes current production. The expert-parallel (EP) flags discussed below no longer exist in our current production kernel, so the collapse cannot be reproduced today [src: `handoffs/active/publication-upstream-program.md`, W2 note of 2026-11-10].
+Scope, stated up front: one host (a single AMD EPYC 9655, 96 cores, NPS4), one llama.cpp development branch (build 8931), one day (2026-04-26), llama-bench decode throughput on MoE models. Nothing here describes current production. The expert-parallel (EP) flags discussed below no longer exist in our current production kernel, so the collapse cannot be reproduced today [src: `handoffs/completed/publication-upstream-program.md`, W2 note of 2026-11-10].
 
 ## How we label numbers
 
@@ -89,7 +89,7 @@ Both are `OBSERVATION`-grade as quoted here (sweep summaries, not per-rep logs w
 
 ## A separate lesson: the kernel that looked bigger than it was
 
-We want to keep one other lesson distinct, because it has a different cause. A Q8_0 AVX-512BW repack kernel showed a large decode gain at a single thread, tens of percent. At production thread counts the decode converged to the same memory-bandwidth ceiling and the gain shrank to a few percent at most. `PARAPHRASE`: we do not quote exact rows because the per-repetition logs for that test were not retained and the surviving sources disagree [src: `handoffs/active/publication-upstream-program.md`, W2 note of 2026-11-10]. The kernel was real. The deployment story was narrower than the single-thread number suggested, because token generation on these models is bandwidth-bound once all the cores are working. We mention it as the counterpart to the EP story: there the baseline was the artifact, here the operating point was.
+We want to keep one other lesson distinct, because it has a different cause. A Q8_0 AVX-512BW repack kernel showed a large decode gain at a single thread, tens of percent. At production thread counts the decode converged to the same memory-bandwidth ceiling and the gain shrank to a few percent at most. `PARAPHRASE`: we do not quote exact rows because the per-repetition logs for that test were not retained and the surviving sources disagree [src: `handoffs/completed/publication-upstream-program.md`, W2 note of 2026-11-10]. The kernel was real. The deployment story was narrower than the single-thread number suggested, because token generation on these models is bandwidth-bound once all the cores are working. We mention it as the counterpart to the EP story: there the baseline was the artifact, here the operating point was.
 
 ## What changed in how we work
 

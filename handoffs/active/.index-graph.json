@@ -78,11 +78,6 @@
       "to": "INF-65"
     },
     {
-      "from": "INF-85",
-      "kind": "dep",
-      "to": "INF-48"
-    },
-    {
       "from": "INF-86",
       "kind": "dep",
       "to": "INF-83"
@@ -712,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T20:13:35Z",
+  "generated_at": "2026-11-17T20:19:42Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1348,7 +1343,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 378,
+      "closed": 380,
       "dispatchable": 91,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1398,7 +1393,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-17",
-      "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued, quiet-host); H13 r2 queued (1.010 bar confirmed); vLLM AITER r2 queued; GDN-SHARE-1",
+      "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense in-process defect; greedy A/A bisect r3 (smoke queued); GDN-SHARE-1",
       "open": 126,
       "priority": 0.896,
       "priority_basis": {
@@ -1684,7 +1679,7 @@
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-17",
-      "next_action": "publish race-eqv r9 (no ready/ entry); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
+      "next_action": "C6-CONTROLLER-PROOF (r7 smoke queued) then LIVE-1 wiring; publish race-eqv with 7/7 fixtures; FA-ALLMASK/HS256 follow-ups",
       "open": 3,
       "priority": 0.8728,
       "priority_basis": {
@@ -1947,7 +1942,7 @@
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-17",
-      "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
+      "next_action": "C13 champion; c12-cpu-validate r5 running; HIP FA side-channel port (cap 10 runs, last); FA-ALLMASK fix r3 running; q81 overflow row",
       "open": 33,
       "priority": 0.9075,
       "priority_basis": {
@@ -2076,7 +2071,7 @@
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
       "last_advanced": "2026-11-17",
-      "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
+      "next_action": "Q38P-1 r2 on C13 queued; XFER-4b prefill A/B + task eval; G2-CONC on candidate binary; WRAP-8 static-chunks noise rerun",
       "open": 26,
       "priority": 0.9191,
       "priority_basis": {
@@ -2328,9 +2323,9 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-17",
-      "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native DONE (both legs pass); fix W2 keeper residency bug, then run census",
+      "next_action": "W5s census r3 queued (whole host); QDEC r3 on C12 (smoke queued); file EDGE-HIP-NONFINITE fix; LB4.9 per-route bar",
       "open": 62,
-      "priority": 0.004,
+      "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2408,9 +2403,9 @@
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-17",
-      "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
+      "next_action": "Run V11-C13-BUILD-PREFLIGHT r2 (queued); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; D6/D7 open",
       "open": 14,
-      "priority": 0.0318,
+      "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2436,7 +2431,7 @@
       "last_advanced": "2026-11-07",
       "next_action": "Q38FN floor moved to AK-C9-Q38FN-FLOOR (INF-82); revisit CH-27 boxes after it lands",
       "open": 6,
-      "priority": 0.004,
+      "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2446,32 +2441,6 @@
       "readiness": "blocked",
       "state": "active",
       "track": "workspace-58 champion calibration"
-    },
-    {
-      "age_days": 1,
-      "blocked": 0,
-      "blocked_by": [
-        "INF-48"
-      ],
-      "closed": 2,
-      "dispatchable": 0,
-      "domain": "inference-research",
-      "guarded": 0,
-      "handoff": "publication-upstream-program.md",
-      "id": "INF-85",
-      "last_advanced": "2026-11-16",
-      "next_action": "W2 final scrub + host-attestation decision; W3 done (no public URL, WEB-2 hold); next WEB-2 launch decision",
-      "open": 0,
-      "priority": 0.0,
-      "priority_basis": {
-        "campaign": 0,
-        "source": "heuristic",
-        "unblocks": 0
-      },
-      "priority_rank": 33,
-      "readiness": "no_open",
-      "state": "active",
-      "track": "upstream publication"
     },
     {
       "age_days": 0,
@@ -2486,9 +2455,9 @@
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-17",
-      "next_action": "CMS512 reload HELD for live-probe row; TEMPLATE reload by owner, then cache_n probe; then G4, G5; v11 fold verdict",
+      "next_action": "G4 restore-reuse r2 running; then v11 fold verdict (G5 null, template no-defect, #25592 no gain closed); CMS512 reload held",
       "open": 3,
-      "priority": 0.004,
+      "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -2512,7 +2481,7 @@
       "last_advanced": "2026-11-16",
       "next_action": "After next stack start: confirm WP-15.2 live schema, capture WP-15.3 fit+holdout windows, run WP-15 replay",
       "open": 2,
-      "priority": 0.0179,
+      "priority": 0.0164,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
@@ -3221,7 +3190,7 @@
       "last_advanced": "2026-11-17",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
       "open": 18,
-      "priority": 0.0417,
+      "priority": 0.041,
       "priority_basis": {
         "campaign": 1,
         "source": "heuristic",
@@ -4027,7 +3996,7 @@
     "priority": "0.0 lowest .. 1.0 highest, mid-rank percentile; priority_rank 1 = highest",
     "sources": {
       "file": 26,
-      "heuristic": 7,
+      "heuristic": 6,
       "override": 0
     },
     "tiers": {
@@ -4043,7 +4012,7 @@
   },
   "readiness_counts": {
     "blocked": 7,
-    "no_open": 1,
+    "no_open": 0,
     "ready": 25
   },
   "readiness_values": {

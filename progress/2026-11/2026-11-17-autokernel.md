@@ -5,3 +5,48 @@
 Champion candidate C13 = `bda43aa17c11b671e0e203e7eb7bf4f1303bc273` (branch `llama.cpp-experimental-c12-lb49-sinks-20261117` = C12 `457d5fc52` + 4 LB4.9 sinks commits; default-off, compiled out when GGML_IQK_FLASH_ATTENTION=OFF as in the C12 recipe). Evidence: ak-lb49-sinks-gate-c12-20261117 PASS (80 cases, max NMSE 1.75e-9, mutant red on all 4 routes); lb49-sinks-identity-c12-20261117 PASS (default-off greedy identical).
 
 Records: champion headline now C13 (C12 predecessor, C10 last promoted); AKX-ALL-LB4.9 ticked in autokernel-akx-program.md (AKX-ALL-LB4 left open, it names the iqk FA fold decision); manifest row V11-143. Open fold work now rebases on C13. No compiles or inference run.
+
+## Operator-invoked wrap-up, 2026-11-17 (autokernel, ad hoc, no lane)
+
+### Champion and decisions
+
+- **Champion headline: C13 = `bda43aa17`** (C12 `457d5fc52` + LB4.9 sinks, default-off, compiled out); **C12 = C11 + bundle1**. Recorded in `fda6fd8a7`.
+- **Operator decisions today (v11 checklist, recorded in `2f5b17729`):** D2 keep turn-1 grammar OFF and flip llguidance; D3 quality cap 4096 with truncation counts; D4 promote C13 and move CH-18 to v12; D8 build-preflight row only (`V11-C13-BUILD-PREFLIGHT`). D1 ratified `1fb5f4474` (V6R-4b forward-port rule). **D6 / D7 remain open** (operator decision queue).
+- **Other closures:** INF-40 confirm run (operator go) -> result DROP; WRAP-5 build-repro -> not reproducible (tool misuse, no upstream post); Python 3.13 re-pin research `043120e83` (C6 controller-proof bundle). HIP port policy: run last, cap 10 more runs.
+
+### Results filed today (`compute-flags/filing-done/*20261117*`, `*20261116*` verdicts, autokernel rows)
+
+| Row | Verdict | What it means |
+|---|---|---|
+| `ak-asm-aiter-vs-c12-timing-20261117-r2` | science | AITER port candidates: topksoftmax **8.39x** (A3B), i8gemm **1.49x**; no port fmoe-g1u1 0.86x, bf16gemm 1.07x. Indicative (kernel-only vs graph time, no quiet q3). 2 port boxes filed |
+| `ak-mmq-h10b-c12-census-20261117-r3` | MOE_RUN_INVARIANT | H10b: MoE path run-invariant on C12; dense 27B in-process defect persists at about the C10 rate (1/15) |
+| `ak-lb49-sinks-gate-c12-20261117`, `lb49-sinks-identity-c12-20261117` | PASS | LB4.9 gates pass on C12; default-off greedy identity holds -> C13 fold |
+| `akx31-edge-q38fn-{cpu,gpu}-20261117` | EDGE_PASS both | C12 clears the edge gates. Finding: **v10 production HIP iq4_nl MUL_MAT_ID overflows to non-finite on near-f16-max activations** (half-precision sum), filed as EDGE-HIP-NONFINITE; `akx31-qdec-c12-gpu` r1 QDEC_FAIL as recorded, r2 FUTILITY_NO_RESIDENCY (instrument) |
+| `inf48-race2-fixtures-20261116-r2` | FIXTURES_READY 7/7 | race mutants all have a changed kernel; r1 was 0/7 |
+| `rvp-att-canary-r4g-20261116` | PASS | ATT canary plumbing closed (r4f FAIL_PARTIAL_PATH preceded it) |
+| `ak-gpu-signals-ctr-20261116-r2` | PASS 10/10 | all counter passes both surfaces, ISA witness no contradiction (r1 PARTIAL 0/10) |
+| `inf48-eqv-fa-rescale` | rescale bug CAUGHT (by rescore); r2 FUTILITY_INSTRUMENT | spawned FA-ALLMASK-NAN and FA-HS256-MMA-PRECISION boxes |
+| `fa-bugfix-gpu-20261117-r2` | FAIL_ALLMASK with progress | fix `c5babe0fd` passes 228/240; 12 hsk=128 decode cases remain; hs256 precision loss localised to CDNA D256 tune; r3 running |
+| `inf86-g5-nsession-20261117` | BOUNDED_NULL_1 | **G5: no cross-session eviction** up to 8 sessions at 16K/56K, 0 wasted re-prefill |
+| `inf86-template-preserve-20261117-r2` | NO_DEFECT | production template renders prior turns byte-stable |
+| `inf86-pr25592-c12-ab-20261117-r2` | NO_GAIN | PR #25592 does not cut our waste (older-turn suffix); not a fold candidate |
+| `inf40-moespec-confirm-c12-20261117` | DROP | MoE-Spec -4.30% decode geomean vs +5% bar; registry integration does not proceed |
+| `wrap8-static-chunks-ab-20261117` | INCONCLUSIVE_NOISE | identity holds (ppl byte-equal); speed inside noise |
+| `up-farows-hip-gpu-20261116` r2..r13 | diagnostics | **src[7] graph presence corrupts** the FA node even when ignored (r10 GRAPH_PRESENCE; NR 0/32 garbage vs NA/NB coherent) -> side-channel redesign `c32f096a9`; r13 and c13/c12 builds died on the llama-ui-assets network download |
+| `up-convsnap-*` (11-15/16) | DROP | convsnap no gain |
+| `c12-cpu-validate-20261116` r1..r4 | r2 DROP at old KLD bar; r3 INVALID_UNITS under amended bar (gates passed); r1/r4 build/proof futility | r5 running |
+
+Row-hygiene fixes: controller-in-GPU-grant flock self-deadlock fixed `e8d969919` (Pipeline); keeper builds from git archive need a seeded offline UI dist (lesson filed below).
+
+### Rows live or queued at wrap-up (queue_status 20:14Z)
+
+- RUNNING: `c12-cpu-validate-20261116-r5` (q0+q1, to 04:03Z 11-18), `fa-bugfix-gpu-20261117-r3` (MI210, to 23:18Z), `inf86-g4-restore-reuse-20261117-r2` (q2, to 23:03Z).
+- GRANTABLE/QUEUED: `inf75-c12-w5s-census-20261117-r3` (host), `v11-c13-build-preflight-20261117-r2` (quarter), `q38p1-c13-20261117-r2` (2 quarters).
+- SMOKE-QUEUED (GPU, dryrun/*/GPU-SMOKE-QUEUED.json): `ak-c12-greedy-aa-bisect-20261117-r3`, `akx31-qdec-c12-gpu-20261117-r3`, `c13-farows-sidechannel-gpu-20261117-r2`, `c13-q81-sum-overflow-gpu-20261117`, `c6-admission-live-proof-r7`, `up-farows-hip-gpu-20261116-r14`.
+- UNFILED-ENDED: 0.
+
+### Wrap-up bookkeeping
+
+- Handoff checklists were synced per verdict in `7eb59441d`, `487484074`, `2f5b17729` and siblings; this wrap-up adds no new box flips.
+- Lessons (9) appended to `docs/guides/agent-workflows/compute-fillers.md`.
+- Index `Next action` cells refreshed for INF-06, INF-48, INF-65, INF-70, INF-82, INF-83, INF-85, INF-86; pruning outcome in the wrap-up commit message and the session report.

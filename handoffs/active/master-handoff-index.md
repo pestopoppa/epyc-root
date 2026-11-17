@@ -49,7 +49,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | OP-LR8 | Choose A retain daemon/inactive duty, or B coordinated owner-boundary handover (recommended). [Exact candidate, cron delta and rollback](../../artifacts/operator/decisions/LR8-event-duty-handover-20261006/README.md). Earlier OP73 approval does not select this change. | [non-inference-backlog.md](engineering-hygiene-backlog.md) LR-8 | 2026-10-06 |
 | OP-NIB2-71 | Choose archival retention (recommended) or deletion after independent durable custody; useful CH-8 guidance is already on main. [Concrete package](../../artifacts/operator/decisions/NIB2-71-rescue-disposition-20261006/README.md). | [non-inference-backlog.md](engineering-hygiene-backlog.md) NIB2-71 | 2026-10-06 |
 | OP-72 | Sign STACKCHG-HYGIENE-20261003 (KVU-16a measured 38.03 GiB; SCG-PRIORS-WARM seeding scope; DRAFT-SEL-2 drafters form). `--validate-only` VALID, 68 pins; argv 11/11 unchanged, no relaunch. Command: `RATIFY_OPERATOR="<name>" bash /mnt/raid0/llm/tmp/stack-change-hygiene-20261003/ratify_stackchg_hygiene_20261003.sh --attest RATIFY-STACKCHG-HYGIENE-20261003` (operator terminal) Note: 38.03 GiB is the LOAD-time non-KV; :8083 grows +7.2 GiB while serving (KVU-16h/16i), which this package does not change. | [stack-change-governance-pipeline.md](stack-lifecycle-program.md) → SCG-PRIORS-WARM, DRAFT-SEL-2; [kv-unified-stack-rollout.md](kv-cache-program.md#track-kv-unified-stack-rollout) → KVU-16a | 2026-10-04 |
-| OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [v11-promotion-checklist.md](v11-promotion-checklist.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-loop.md#track-autokernel-orchestrator-actor-backend) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose the actual contact address/URL and confirm launch readiness; dedicated existing email recommended. [Options, tradeoffs, copy and retained screenshots](../../artifacts/operator/decisions/WEB1-contact-publication-20261007/README.md). Default remains unpublished. | [amd-ai-lab-website-publication.md](engineering-hygiene-backlog.md#track-amd-ai-lab-website-publication) WEB-1 | 2026-09-25 |
 | OP-1 | P0.1–P0.3 sign-off bundle | [autopilot-program.md](autopilot-program.md#track-orchestration-robustness-audit-2026-07-11) | 2026-07-11 |
@@ -124,7 +123,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 16 | 527 | 49 | 2026-11-03 |
+| inference-research | 15 | 527 | 49 | 2026-11-03 |
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
 | research-evaluation | 4 | 194 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
