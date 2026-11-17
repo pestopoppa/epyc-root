@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T10:57:52Z",
+  "generated_at": "2026-11-17T10:59:02Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2307,7 +2307,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [
         "INF-06",
@@ -2327,7 +2327,7 @@
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-11",
+      "last_advanced": "2026-11-17",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native DONE (both legs pass); fix W2 keeper residency bug, then run census",
       "open": 65,
       "priority": 0.004,
@@ -3212,15 +3212,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 52,
-      "dispatchable": 18,
+      "closed": 57,
+      "dispatchable": 13,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-10",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
-      "open": 18,
+      "open": 13,
       "priority": 0.0417,
       "priority_basis": {
         "campaign": 1,
