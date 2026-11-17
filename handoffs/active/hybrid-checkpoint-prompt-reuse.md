@@ -2,7 +2,7 @@
 
 > **Split out of [`numa-placement-and-contention.md`](numa-placement-and-contention.md) on 2026-11-10 (INF-45 restructure, operator "yes, take both on").** The body below is the former `## Track: dynamic-stack-concurrency` lifted verbatim; box text is unchanged. Earlier fold history: [`../completed/dynamic-stack-concurrency.md`](../completed/dynamic-stack-concurrency.md).
 
-**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed (G4, G5, INF-86-TEMPLATE, #25592 exposure and B3 evaluation). Open: INF-86-G4-E3-TOOLS-REPREFILL (row inf86-g4-e3-tools-20261117), DS-F1 (waits on the AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit).
+**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed (G4, G5, INF-86-TEMPLATE, #25592 exposure and B3 evaluation). Open: INF-86-SLOT-RESTORE-CHECKPOINTS (validation row inf86-slot-restore-ckpt-c13-20261117; #26004 already in C13), DS-F1 (waits on the AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit).
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
 **Owner**: AutoKernel session (workspace-18)
@@ -260,7 +260,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       E2 50% divergence and E3 tools-block reuse 0 (full re-prefill) at both sizes. The upstream defect is real but our migration
       shape avoids it; E3 sits below its bounded-tail prediction (0 reuse, not a tail), so a tools-carrying session migrated across
       a restore re-prefills fully. Evidence /mnt/raid0/llm/tmp/inf86-g4-restore-reuse-20261117-r2/out/RESULT.json. [no-belief: row verdict filed by agent]
-  - [ ] **INF-86-G4-E3-TOOLS-REPREFILL** [inference] After a slot restore, a session whose tools block moved re-prefills in FULL
+  - [x] **INF-86-G4-E3-TOOLS-REPREFILL** [inference] After a slot restore, a session whose tools block moved re-prefills in FULL
     (reuse 0 at 16K and 64K, row `inf86-g4-restore-reuse-20261117-r2`, arm E3) instead of the bounded tail (`u_N` + `a_N` + tools +
     `u_N+1`) G4 predicted. Find where the prefix match breaks: (1) template ordering of the tools block vs messages (does the
     terse template / jinja render tools into the system turn, so the divergence lands at the top?), and (2) checkpoint position
@@ -281,6 +281,22 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       `/mnt/raid0/llm/tmp/inf86-e3-render-20261117/result.json`. Row `inf86-g4-e3-tools-20261117` (16K: CTRL, MOVED = G4 E3, PINNED =
       tools in the system message so the next request is a strict extension, MOVED_LIVE = no restore) decides whether pinning the
       tools block is the orchestrator fix. [no-belief: offline render, no inference]
+    - ✅ 2026-11-17 row `inf86-g4-e3-tools-20261117` filed pass, **NO_FIX**: after a restore both MOVED and PINNED re-prefill fully
+      (reuse 0, forced line) on v10 `ffc1bac82`, while MOVED_LIVE (no restore, the live slot's own checkpoints) reuses 86.9%. Pinning
+      the tools block does not help: the v10 restore path carries no hybrid checkpoints. Follow-up: INF-86-SLOT-RESTORE-CHECKPOINTS.
+      [no-belief: row verdict filed by agent]
+  - [ ] **INF-86-SLOT-RESTORE-CHECKPOINTS** [inference] Save and restore hybrid/recurrent context checkpoints with `/slots`
+    save/restore (or create a checkpoint at the restore point) so a restored slot can roll back to a shared prefix. Upstream first:
+    **#26004 is MERGED** (2026-10-08, head `9223fb431`, "server : preserve context checkpoints across slot save/restore") and is
+    **already in C12/C13** as `1c999e15b` (port of `033df86b`; `SLOT_CKPT_MAGIC` "SCKP" appended to the slot file), absent from v10
+    `ffc1bac82`. So no new server code: the fix ships with the v11 fold of C13 `bda43aa17`, and this box is a validation. model:
+    Qwen3.6-35B-A3B-MTP-Q8_0 frontdoor recipe. quant_build: Q8_0 on the prebuilt C13 CPU store `cpu-20261117-bda43aa17-c13`.
+    region: CPU quarter, est 5400 s. Row `inf86-slot-restore-ckpt-c13-20261117`: 16K, arms CTRL / MOVED (G4 E3 shape after restore)
+    / MOVED_LIVE (no restore). metric: MOVED cache_n vs MOVED_LIVE cache_n (higher is better) + greedy reply equality vs a fresh
+    full prefill. rule: PASS iff MOVED cache_n >= 80% of the shared prefix (MOVED_LIVE cache_n) with greedy identity; else FAIL
+    (then port/patch on `llama.cpp-experimental-c13-slot-ckpt-20261117` off C13). Stop-on-answer when the 3 arms are recorded and
+    summarize.py gives PASS/FAIL; stop-on-futility on a failed precondition, save failure, server not ready or not our PID,
+    timings missing, STOP file or deadline; gate-class = futility-only. [no-belief: new box]
 - [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
       ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
       closed on **both** directions. `_slot_save` now *returns* `n_saved`

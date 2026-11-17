@@ -1186,7 +1186,7 @@
     },
     "hybrid-checkpoint-prompt-reuse.md": {
       "blocked": 0,
-      "closed": 19,
+      "closed": 20,
       "guarded": 0,
       "last_advanced": "2026-11-17",
       "open": 3,
@@ -1198,7 +1198,7 @@
       },
       "row_id": "INF-86",
       "state": "active",
-      "total": 22
+      "total": 23
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
