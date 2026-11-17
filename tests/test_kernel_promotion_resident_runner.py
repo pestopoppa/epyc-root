@@ -86,7 +86,7 @@ class FakeRuntime:
             raise TimeoutError("measured request timed out")
         if self.failure == "short" and body["n_predict"] != 64:
             return {"completion_tokens": 1}
-        return {"completion_tokens": body["n_predict"]}
+        return response_fixture(body["n_predict"])
 
     def stop(self, server):
         self.events.append(("stop", server.arm))
@@ -95,6 +95,44 @@ class FakeRuntime:
         self.live.remove(server.arm)
         return {"pid": server.proc.pid, "dead": True,
                 "port_closed": self.failure != "port_leak"}
+
+
+def response_fixture(limit):
+    return {
+        "completion_tokens": limit,
+        "content": "full output " * 25,
+        "tokens": list(range(limit)),
+        "timings": {"predicted_per_second": 100.0},
+    }
+
+
+class ValidityRuntime(FakeRuntime):
+    def __init__(self, change, *, cleanup_failure=None):
+        super().__init__(cleanup_failure)
+        self.change = change
+        self.fresh = False
+        self.measured = 0
+
+    def verify_fresh_ready(self):
+        assert not self.live
+        self.events.append(("fresh_guard",))
+        self.fresh = True
+
+    def request(self, server, arm, body):
+        assert server.arm == arm
+        assert self.live == ({arm} if self.fresh else set(runner.resident_plan.ARMS))
+        self.events.append(("request", arm, body))
+        limit = body["n_predict"]
+        response = response_fixture(limit)
+        if not self.fresh and limit != runner.resident_plan.WARMUP_TOKENS:
+            self.change(response, arm, self.measured)
+            self.measured += 1
+        return response
+
+
+def arm_pins():
+    pin = {"binary_sha256": "a" * 64, "commit": "b" * 40, "libraries": {"libggml.so": "c" * 64}}
+    return {"arms": {arm: pin.copy() for arm in runner.resident_plan.ARMS}}
 
 
 def test_validated_plan_runs_sequential_loads_warmups_and_abba(tmp_path):
@@ -117,6 +155,10 @@ def test_validated_plan_runs_sequential_loads_warmups_and_abba(tmp_path):
     report = runner.read_json(output / "capture.json")
     assert report["status"] == "observation_only"
     assert report["complete"] is True
+    assert report["resident_validity"]["status"] == "pass"
+    assert report["cohorts"][0]["validity"]["calibration_ratio_pass"] is None
+    assert report["cohorts"][0]["validity"]["arm_order_bias"]["production"]["quartet_positions"] == [0, 3]
+    assert report["cohorts"][1]["validity"]["arm_order_bias"]["production"]["quartet_positions"] == [1, 2]
     assert not runtime.live
     assert not (output / "fresh-fallback.json").exists()
 
@@ -153,6 +195,124 @@ def test_failure_cleans_captured_servers_and_reemits_plan(tmp_path, failure, sto
     assert report["complete"] is False
     assert report["cleanup_proved"] is cleanup_proved
     assert len(report["cohorts"]) <= 1
+
+
+def change_candidate_tps(response, arm, _, tps):
+    if arm == "candidate":
+        response["timings"]["predicted_per_second"] = tps
+
+
+@pytest.mark.parametrize(
+    ("defect", "failure", "field"),
+    [
+        ("content", "exact parity mismatch", "content"),
+        ("token", "exact parity mismatch", "token_ids"),
+        ("drift", "incumbent throughput drift", "calibration_ratio_pass"),
+        ("order", "ABBA schedule-position bias", "order_effect_pass"),
+        ("missing_timing", "invalid decode timing or ratio", "invalid_timing_positions"),
+        ("infinite_timing", "invalid decode timing or ratio", "invalid_timing_positions"),
+        ("zero_timing", "invalid decode timing or ratio", "invalid_timing_positions"),
+    ],
+)
+def test_validity_failure_replays_unchanged_plan_after_cleanup(tmp_path, defect, failure, field):
+    def change(response, arm, position):
+        if defect == "content" and position == 1:
+            response["content"] += "changed after K35 preview"
+        elif defect == "token" and position == 1:
+            response["tokens"][-1] += 1
+        elif defect == "drift":
+            change_candidate_tps(response, arm, position, 102.0)
+        elif defect == "order" and position % 4 in (0, 1):
+            response["timings"]["predicted_per_second"] = 103.0
+        elif defect == "missing_timing" and position == 1:
+            del response["timings"]
+        elif defect == "infinite_timing" and position == 1:
+            response["timings"]["predicted_per_second"] = float("inf")
+        elif defect == "zero_timing" and position == 1:
+            response["timings"]["predicted_per_second"] = 0
+
+    schedule = plan()
+    output = tmp_path / "capture"
+    runtime = ValidityRuntime(change)
+    assert runner.execute_plan(schedule, output, runtime, provenance=arm_pins()) == runner.FRESH_REQUIRED
+    fresh_guard = runtime.events.index(("fresh_guard",))
+    assert runtime.events[fresh_guard - 3:fresh_guard] == [
+        ("stop", "candidate"), ("stop", "production"), ("preflight",),
+    ]
+    report = runner.read_json(output / "capture.json")
+    assert report["resident_validity"]["status"] == "failed"
+    assert report["cleanup_proved"] and not report["complete"]
+    validity = report["cohorts"][0]["validity"]
+    assert validity["violations"] == [failure]
+    if defect in {"content", "token"}:
+        assert validity["comparisons"][0][field] == "different"
+        assert validity["parity"] == "different"
+    elif defect in {"drift", "order"}:
+        assert validity[field] is False
+        if defect == "order":
+            assert validity["calibration_ratio_pass"] is True
+            assert validity["arm_order_bias"]["production"]["relative_effect"] == pytest.approx(0.03)
+    else:
+        assert validity["invalid_timing_positions"] == [1]
+        assert validity["median_paired_ratio"] is None
+        assert validity["comparisons"][0]["candidate_over_production"] is None
+    fallback = runner.read_json(output / "fresh-fallback.json")
+    assert fallback["plan"] == schedule == runner.read_json(output / "fresh-replay/plan.json")
+    assert fallback["fresh_complete"] and not fallback["resident_rows_valid"]
+    assert failure in fallback["reason"]
+
+
+def test_validity_violation_with_unproved_cleanup_cannot_replay(tmp_path):
+    runtime = ValidityRuntime(lambda response, arm, pos: change_candidate_tps(response, arm, pos, 102.0),
+                              cleanup_failure="port_leak")
+    output = tmp_path / "capture"
+    assert runner.execute_plan(plan(), output, runtime, provenance=arm_pins()) == runner.FRESH_REQUIRED
+    report = runner.read_json(output / "capture.json")
+    assert report["cohorts"][0]["validity"]["violations"] == ["incumbent throughput drift"]
+    assert not report["cleanup_proved"]
+    assert ("fresh_guard",) not in runtime.events
+    assert not (output / "fresh-replay").exists()
+
+
+@pytest.mark.parametrize(("tps", "is_calibration"), [(99.0, True), (101.0, True), (140.0, False)])
+def test_calibration_ratio_is_inclusive_and_requires_identical_runtime_images(tmp_path, tps, is_calibration):
+    runtime = ValidityRuntime(lambda response, arm, pos: change_candidate_tps(response, arm, pos, tps))
+    pins = arm_pins()
+    if not is_calibration:
+        pins["arms"]["candidate"]["libraries"] = {"libggml.so": "d" * 64}
+    output = tmp_path / "capture"
+    assert runner.execute_plan(plan(), output, runtime, provenance=pins) == 0
+    report = runner.read_json(output / "capture.json")
+    assert report["resident_validity"]["same_runtime_calibration"] is is_calibration
+    for cohort in report["cohorts"]:
+        validity = cohort["validity"]
+        assert validity["calibration_ratio_pass"] is (True if is_calibration else None)
+        assert validity["median_paired_ratio"] == pytest.approx(tps / 100)
+        assert validity["median_by_arm"] == {"production": 100.0, "candidate": tps}
+        assert validity["mad_by_arm"] == {"production": 0.0, "candidate": 0.0}
+        assert validity["mad_paired_ratio"] == 0
+
+
+def test_unsealed_calibration_requires_same_resolved_path_and_sha():
+    production = {"path": "/pinned/llama-server", "sha256": "a" * 64}
+    candidate = production.copy()
+    pins = {"arms": {"production": production, "candidate": candidate}}
+    assert runner.same_runtime_image(pins)
+    candidate["path"] = "/other/llama-server"
+    assert not runner.same_runtime_image(pins)
+
+
+def test_missing_token_ids_preserve_diagnostic_capture(tmp_path):
+    runtime = ValidityRuntime(lambda response, *_: response.pop("tokens"))
+    output = tmp_path / "capture"
+    assert runner.execute_plan(plan(), output, runtime, provenance=arm_pins()) == 0
+    report = runner.read_json(output / "capture.json")
+    assert report["complete"] and report["resident_validity"]["status"] == "incomplete"
+    for cohort in report["cohorts"]:
+        assert cohort["validity"]["parity"] == "incomplete"
+        assert cohort["validity"]["comparisons"][0]["token_ids"] == "incomplete"
+        assert cohort["validity"]["comparisons"][0]["content"] == "exact"
+    assert not (output / "fresh-fallback.json").exists()
 
 
 def test_mutated_plan_does_not_enter_preflight_or_create_capture(tmp_path):

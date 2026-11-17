@@ -235,10 +235,14 @@ def collect_request(directory, cohort, scheduled, server):
         require(0 <= cpu_s <= max(0.25, 0.01 * elapsed)
                 and cpu_s == row["idle_peer_after"]["cpu_s"] - row["idle_peer_before"]["cpu_s"],
                 f"invalid idle-peer witness: {directory}")
+    return parity_values(body, response, limit)
+
+
+def parity_values(body, response, limit):
     ids = response.get("tokens")
     if not (isinstance(ids, list) and len(ids) == limit and all(type(token) is int and token >= 0 for token in ids)):
         ids = None
-    if "n_predict" in expected:
+    if "n_predict" in body:
         content = response.get("content")
     else:
         choices = response.get("choices")

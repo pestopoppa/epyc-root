@@ -30,14 +30,19 @@ REGIONS = ("q0", "q1", "q2", "q3")
 CPUS = set(range(96))
 FRESH_REQUIRED = 78
 AFFINITY_SAMPLE_INTERVAL = 0.1
+CALIBRATION_RATIO = (0.99, 1.01)
+ORDER_EFFECT_LIMIT = 0.01
+ABBA_QUARTET_SIZE = 4
 SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
 sys.path[:0] = [
+    str(Path(__file__).resolve().parent),
     str(ROOT / ".claude/skills/kernel-promotion/scripts"),
     str(ROOT / "scripts/benchmark/m4_cpu_ownership"),
     str(ROOT / "scripts/benchmark/jetlong_cpu"),
 ]
 
 import affinity_guard
+import kernel_promotion_evidence as evidence
 import owned
 import resident_plan
 
@@ -533,6 +538,114 @@ def capture_host_after(runtime, output):
         runtime.k35.write_json(output / "host-after.json", evidence.host_snapshot())
 
 
+def same_runtime_image(provenance):
+    arms = (provenance or {}).get("arms", {})
+    production, candidate = (arms.get(arm, {}) for arm in resident_plan.ARMS)
+    if "binary_sha256" in production or "binary_sha256" in candidate:
+        libraries = production.get("libraries")
+        commit = production.get("commit")
+        binary_sha = production.get("binary_sha256")
+        return bool(
+            evidence.sha(binary_sha) and binary_sha == candidate.get("binary_sha256")
+            and isinstance(libraries, dict) and libraries and libraries == candidate.get("libraries")
+            and all(evidence.sha(digest) for digest in libraries.values())
+            and isinstance(commit, str) and re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", commit)
+            and commit == candidate.get("commit")
+        )
+    path, binary_sha = production.get("path"), production.get("sha256")
+    return (isinstance(path, str) and Path(path).is_absolute() and path == candidate.get("path")
+            and evidence.sha(binary_sha) and binary_sha == candidate.get("sha256"))
+
+
+def positive_finite(value):
+    return type(value) in (int, float) and 0 < value <= sys.float_info.max
+
+
+def median(values):
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    # Adding half the difference keeps the midpoint within the input range.
+    if len(ordered) % 2 == 0:
+        lower = ordered[middle - 1]
+        return lower + (ordered[middle] - lower) / 2
+    return ordered[middle]
+
+
+def median_and_mad(values):
+    center = median(values)
+    return center, median(abs(value - center) for value in values)
+
+
+def summarize_resident_validity(cohort, directory, calibration):
+    comparisons, invalid_timing_positions = [], []
+    by_arm = {arm: {} for arm in resident_plan.ARMS}
+    measured = cohort["requests"]
+    for left, right in zip(measured[::2], measured[1::2], strict=True):
+        parity_by_arm, tps_by_arm = {}, {}
+        for row in (left, right):
+            arm, position = row["arm"], row["schedule_position"]
+            request_dir = directory / f"request-{position:03}"
+            body = read_json(request_dir / "request.json")
+            response = read_json(request_dir / "response.json")
+            parity_by_arm[arm] = evidence.parity_values(body, response, body[token_limit_field(body)])
+            timings = response.get("timings")
+            tps = timings.get("predicted_per_second") if isinstance(timings, dict) else None
+            if not positive_finite(tps):
+                invalid_timing_positions.append(position)
+                tps = None
+            by_arm[arm].setdefault(position % ABBA_QUARTET_SIZE, []).append(tps)
+            tps_by_arm[arm] = tps
+        production_tps, candidate_tps = (tps_by_arm[arm] for arm in resident_plan.ARMS)
+        ratio = candidate_tps / production_tps if production_tps is not None and candidate_tps is not None else None
+        comparisons.append({
+            "pair_index": left["pair_index"],
+            "positions_by_arm": {row["arm"]: row["schedule_position"] for row in (left, right)},
+            **evidence.compare(*(parity_by_arm[arm] for arm in resident_plan.ARMS)),
+            "production_tps": production_tps, "candidate_tps": candidate_tps,
+            "candidate_over_production": ratio if positive_finite(ratio) else None,
+        })
+    outcomes = {pair[field] for pair in comparisons for field in ("content", "token_ids")}
+    parity = "different" if "different" in outcomes else "incomplete" if "incomplete" in outcomes else "exact"
+    ratios = [pair["candidate_over_production"] for pair in comparisons]
+    summary = {
+        "parity": parity, "median_by_arm": {}, "mad_by_arm": {},
+        "median_paired_ratio": None, "mad_paired_ratio": None, "arm_order_bias": {},
+        "idle_peer_pass": True, "calibration_ratio_pass": None, "order_effect_pass": None,
+        "invalid_timing_positions": invalid_timing_positions, "comparisons": comparisons,
+        "violations": [],
+    }
+    violations = summary["violations"]
+    if parity == "different":
+        violations.append("exact parity mismatch")
+    if None in ratios:
+        violations.append("invalid decode timing or ratio")
+        return summary
+    median_ratio, mad_ratio = median_and_mad(ratios)
+    summary["median_paired_ratio"], summary["mad_paired_ratio"] = median_ratio, mad_ratio
+    if calibration:
+        summary["calibration_ratio_pass"] = CALIBRATION_RATIO[0] <= median_ratio <= CALIBRATION_RATIO[1]
+        if not summary["calibration_ratio_pass"]:
+            violations.append("incumbent throughput drift")
+    summary["order_effect_pass"] = True
+    for arm, position_samples in by_arm.items():
+        first, second = sorted(position_samples)
+        earlier, later = (median(position_samples[position]) for position in (first, second))
+        low, high = sorted((earlier, later))
+        effect = (high - low) / low
+        summary["arm_order_bias"][arm] = {
+            "quartet_positions": [first, second],
+            "median_tps": [earlier, later],
+            "relative_effect": effect if effect <= sys.float_info.max else None,
+        }
+        if effect > ORDER_EFFECT_LIMIT:
+            summary["order_effect_pass"] = False
+        values = position_samples[first] + position_samples[second]
+        summary["median_by_arm"][arm], summary["mad_by_arm"][arm] = median_and_mad(values)
+    if not summary["order_effect_pass"]:
+        violations.append("ABBA schedule-position bias")
+    return summary
+
+
 def execute_fresh_plan(plan, output, runtime, *, provenance=None):
     """Capture the unchanged schedule with one freshly started server per measured row."""
     resident_plan.validate_plan(plan)
@@ -591,10 +704,16 @@ def execute_plan(plan, output, runtime, *, provenance=None):
     plan = copy.deepcopy(plan)
     output.mkdir()
     runtime.k35.write_json(output / "plan.json", plan)
+    calibration = same_runtime_image(provenance)
     report = {
         "schema": "epyc.kernel_promotion_resident_capture.v1", "status": "observation_only",
         "lifecycle_mode": "paired_resident", "schedule_sha256": plan["schedule_sha256"],
         "complete": False, "cohorts": [], "provenance": provenance,
+        "resident_validity": {
+            "status": "incomplete", "same_runtime_calibration": calibration,
+            "calibration_ratio_bounds": list(CALIBRATION_RATIO), "order_effect_limit": ORDER_EFFECT_LIMIT,
+            "order_effect_estimator": "per-arm quartet-position medians, abs(earlier-later)/min(earlier,later)",
+        },
     }
     clean = True
     preflight_passed = False
@@ -621,10 +740,18 @@ def execute_plan(plan, output, runtime, *, provenance=None):
                     result = stop_server(runtime, server)
                     info["cleanup"][arm] = result
                     clean &= cleanup_proved(result)
+            validity = summarize_resident_validity(cohort, directory, calibration)
+            info["validity"] = validity
+            if validity["violations"]:
+                report["resident_validity"]["status"] = "failed"
             if not clean:
                 raise RuntimeError("resident process death and port closure were not both proved")
+            if validity["violations"]:
+                raise RuntimeError("; ".join(validity["violations"]))
         capture_host_after(runtime, output)
         report["complete"] = True
+        if all(info["validity"]["parity"] == "exact" for info in report["cohorts"]):
+            report["resident_validity"]["status"] = "pass"
     except Exception as exc:
         if isinstance(exc, SpawnCleanupUnproved):
             clean = False
@@ -653,9 +780,6 @@ def execute_plan(plan, output, runtime, *, provenance=None):
 
 
 def validate_evidence_inputs(plan, args, runtime):
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    import kernel_promotion_evidence as evidence
-
     pins = read_json(args.evidence_pins)
     evidence.require(pins["plan_sha256"] == sha256_file(args.plan)
                      and pins["k35_sha256"] == args.k35_sha256 and pins["kv_mode"] == args.kv_mode

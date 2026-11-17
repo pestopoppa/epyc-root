@@ -15,6 +15,30 @@ resident capture. A failed resident capture retains its failure status and
 uses the existing cleanup-gated fresh fallback. `--fresh-only` remains a
 separate diagnostic mode.
 
+The runner records `resident_validity` in `capture.json` and a `validity`
+summary for each fully sampled cohort. Each summary reports full content and
+token-ID comparisons at the scheduled pair positions, native decode
+tokens per second, candidate-to-production ratios, and their median and median
+absolute deviation (MAD). It reports the median and MAD for each arm separately.
+
+The resident fast-path design sets the same-runtime calibration median ratio
+band at [0.99, 1.01], inclusive. With prepared evidence pins, calibration
+requires matching executable digests, source commits and library digest maps.
+Without evidence pins, it requires both arms to use the same resolved
+executable path and digest. The diagnostic checks the 1% schedule-position
+limit by comparing an arm's median decode throughput at its earlier and later
+position in the ABBA quartet. The effect is the absolute difference divided by
+the smaller median. The runner calculates this for both arms within each cohort.
+
+A known parity mismatch, invalid decode timing, calibration ratio outside the
+band or schedule-position effect above the limit invalidates the resident
+capture. The runner keeps the raw responses and failure summary, and replays
+the entire unchanged schedule with a fresh server per measured request only
+after proving process death and port closure and passing fresh preflight.
+Missing token IDs retain an `incomplete` resident validity status when the
+other checks pass, so `--compare-fresh` can still collect the second lifecycle.
+A `pass` status records the outcome of these diagnostic checks.
+
 Prepare model digests before publication. Live validation checks the prepared
 model's device, inode, size, mtime and ctime without hashing weights in the
 grant. Mapped model files also require matching device/inode witnesses;
@@ -39,6 +63,8 @@ finalizer validates the captures, writes `comparison.json`, hashes the artifact
 inventory into `MANIFEST.json`, writes a manifest-bound `COMPLETE`, verifies
 the result and renames the directory. Verification reproduces comparisons
 from the raw artifacts and rejects changed or incomplete inventories.
+The seal binds the runner's diagnostic report. Its comparison verdict covers
+exact parity.
 
 Scheduled opposite-arm pairs compare full request bodies, full output content
 and integer token IDs. When both lifecycles completed, the comparator also
