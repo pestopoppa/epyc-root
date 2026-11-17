@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 537
+      "open": 536
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 201
+      "open": 203
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 465
+      "open": 464
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 1,
-      "closed": 155,
+      "closed": 156,
       "guarded": 0,
-      "last_advanced": "2026-11-09",
-      "open": 41,
+      "last_advanced": "2026-11-17",
+      "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -546,7 +546,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 290,
+          "line": 297,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 7
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 488,
+          "line": 496,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 754,
+          "line": 762,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1249,
+          "line": 1257,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1786,
+          "line": 1794,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2548,
+          "line": 2556,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,20 +606,20 @@
           "closed": 56,
           "gates": [],
           "guarded": 0,
-          "line": 2975,
+          "line": 2983,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 4
         },
         {
           "blocked": 0,
-          "closed": 1,
+          "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3626,
+          "line": 3634,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 1
+          "open": 0
         }
       ]
     },
@@ -1186,10 +1186,10 @@
     },
     "hybrid-checkpoint-prompt-reuse.md": {
       "blocked": 0,
-      "closed": 20,
+      "closed": 21,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 3,
+      "open": 2,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2580,10 +2580,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 387,
+      "closed": 388,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 98,
+      "open": 100,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 486
+      "total": 489
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

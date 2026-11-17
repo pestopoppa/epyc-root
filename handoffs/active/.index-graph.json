@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T23:24:43Z",
+  "generated_at": "2026-11-17T23:41:21Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1343,15 +1343,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 387,
-      "dispatchable": 98,
+      "closed": 388,
+      "dispatchable": 100,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-17",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 99,
+      "open": 101,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2449,15 +2449,15 @@
       "blocked_by": [
         "INF-83"
       ],
-      "closed": 20,
-      "dispatchable": 3,
+      "closed": 21,
+      "dispatchable": 2,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-17",
       "next_action": "open: slot-restore-checkpoints validation (C13 has #26004), DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
-      "open": 3,
+      "open": 2,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2920,18 +2920,18 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 155,
-      "dispatchable": 41,
+      "closed": 156,
+      "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-17",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 42,
+      "open": 41,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2962,7 +2962,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 290,
+          "line": 297,
           "name": "delegation-context-preassembly",
           "open": 7,
           "readiness": "ready"
@@ -2971,7 +2971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 488,
+          "line": 496,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2980,7 +2980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 754,
+          "line": 762,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -2989,7 +2989,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1249,
+          "line": 1257,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2998,7 +2998,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1786,
+          "line": 1794,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3007,7 +3007,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2548,
+          "line": 2556,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3016,19 +3016,19 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 2975,
+          "line": 2983,
           "name": "tool-output-compression",
           "open": 4,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": null,
-          "line": 3626,
+          "line": 3634,
           "name": "research-intake-harness-inference-2026-11-06",
-          "open": 1,
-          "readiness": "ready"
+          "open": 0,
+          "readiness": "no_open"
         }
       ]
     },
