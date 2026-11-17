@@ -35,3 +35,7 @@ Duplicate dispatcher event for inf86-ckpt-spacing-20261111: verdict already file
 ## 22:34Z — Consume already-filed INF-86-TEMPLATE completion without repeating completed work
 
 Duplicate run-end notification for inf86-template-preserve-20261117-r2. Existing verdict filed 2026-11-17T13:42Z is pass / NO_DEFECT; INF-86-TEMPLATE is already checked with evidence and FILED receipt exists. No new finding or measurement. Next actionable INF-86 work remains the readied C13 slot-restore validation; DS-F1 waits on AM-DECISIVE-1 and earlyoom needs the host operator.
+
+## 22:39Z — Consume duplicate completed B3 A/B event; retain filed NO_GAIN verdict
+
+Duplicate run-end notification for inf86-pr25592-c12-ab-20261117-r2: B3 was already checked and its pass/fail filing receipt exists (filed 2026-11-17T19:34:15Z, fail / NO_GAIN). No new measurement or verdict. Remaining INF-86 work is INF-86-SLOT-RESTORE-CHECKPOINTS, waiting on the already-readied inf86-slot-restore-ckpt-c13-20261117. DS-F1 remains dependent on AM-DECISIVE-1; earlyoom remains the host operator decision. No compute repeated.
