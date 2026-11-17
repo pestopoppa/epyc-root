@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-11-17T23:18:37.353023+00:00",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/spec.json",
+  "ready_path": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-kvq-v10-sweep-20261117-r2.json",
+  "guard": {
+    "command": [
+      "/usr/bin/python3",
+      "-I",
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/job.py",
+      "--guard"
+    ],
+    "exit_code": 5,
+    "stdout": "process blocker: llama-server",
+    "stderr": ""
+  },
+  "publication": "guard-refused",
+  "blocker_pids": [
+    "471728",
+    "565465",
+    "569749",
+    "3223248"
+  ],
+  "blocker_ps": {
+    "command": [
+      "ps",
+      "-p",
+      "471728,565465,569749,3223248",
+      "-o",
+      "pid=,ppid=,lstart=,comm=,args="
+    ],
+    "exit_code": 0,
+    "stdout": "471728 3806082 Tue Nov 17 23:09:23 2026 llama-server    /mnt/raid0/llm/tmp/c13-farows-sidechannel-gpu-20261117-r2/build-hip/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18433 -np 4 -c 393216 -t 8 -ub 2048 --flash-attn on -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 0 -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --device-draft ROCm0\n 565465  565463 Tue Nov 17 23:16:42 2026 llama-server    /mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf -t 24 -np 1 -c 24576 -b 2048 -ub 2048 -ctk q8_0 -ctv q8_0 -fa on -ngl 0 --no-mmap --jinja --chat-template-file /mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja --reasoning off --spec-type draft-mtp --spec-draft-n-max 4 --ctx-checkpoints 32 --cache-ram 0 --slot-save-path /mnt/raid0/llm/tmp/inf86-slot-restore-ckpt-c13-20261117/out/slots --host 127.0.0.1 --port 18729 --no-webui -lv 4\n 569749  565151 Tue Nov 17 23:17:19 2026 llama-server    /mnt/raid0/llm/tmp/q38p1-c13-20261117-r2/build/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf -np 4 -c 262144 -t 48 -tb 48 -b 2048 -ub 512 -ctk f16 -ctv f16 --device none -ngl 0 -fa on --host 127.0.0.1 --port 18347 --metrics --slots --load-threads 48 --no-mmap --no-webui -md /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf -ngld 0 --spec-type draft-mtp --spec-draft-n-max 4 --device-draft none --draft-p-min 0.5 --no-kv-unified\n3223248   50687 Tue Nov 17 21:00:14 2026 llama-server    /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server --alias lightonocr-2-1b -m /mnt/raid0/llm/models/LightOnOCR-2-1B-bbox-F16.gguf --mmproj /mnt/raid0/llm/models/LightOnOCR-2-1B-bbox-mmproj-F16.gguf --host 127.0.0.1 --port 9003 -np 4 -c 32768 -t 24 --flash-attn on --device none -ngl 0",
+    "stderr": ""
+  },
+  "ready_exists": false
+}
