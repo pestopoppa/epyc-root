@@ -15,3 +15,7 @@ Duplicate dispatcher event: inf86-ckpt-spacing-20261111 completed rc=0 and is al
 ## 22:24Z — Acknowledge duplicate already-filed inf86-reprefill-rate-20261110-r2 end event; preserve pending C13 validation.
 
 Duplicate dispatcher event for inf86-reprefill-rate-20261110-r2 (rc=0). file_result.py returned NOOP: already FILED. The exposure box already records NONE_OBSERVED (0/35 forced re-prefills; bounded descriptive evidence); spacing, live probe and B3 follow-ups are also closed. No checkbox change or repeated measurement. INF-86-SLOT-RESTORE-CHECKPOINTS still awaits qualified-armed inf86-slot-restore-ckpt-c13-20261117; DS-F1 retains the external AM-DECISIVE-1 dependency and earlyoom the host/operator dependency. [no-belief: duplicate event acknowledgement, no new finding]
+
+## 22:26Z — Consume duplicate INF-86-CMS512 completion; retain pending C13 validation checkpoint
+
+Duplicate dispatcher event for inf86-cms512-live-probe-20261111-r2 (rc=0): file_result.py returned NOOP, already FILED. The live-probe and launch-recipe boxes already record ALL_HOLD: 0% re-prefill reduction for all three roles, extra checkpoint memory 5.845/1.278/6.520 GiB (critic/general/frontdoor); the values were reverted previously. No new result or checkbox completion is claimed. INF-86-SLOT-RESTORE-CHECKPOINTS remains pending qualified-armed row inf86-slot-restore-ckpt-c13-20261117. DS-F1 remains dependent on the open AM-DECISIVE-1 verdict; the optional earlyoom edit remains operator-only. [no-belief: duplicate event acknowledgement, no new finding]
