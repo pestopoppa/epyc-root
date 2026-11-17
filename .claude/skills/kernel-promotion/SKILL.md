@@ -155,6 +155,22 @@ flags let the audits project SC84 claims, and an audit without them projects non
 
 ## Step 4 — gates
 
+### Resident CPU request-plan preparation (V9-8)
+
+`scripts/resident_plan.py --cohorts <cohorts.json> --out <plan.json>` prepares a
+deterministic schedule; it does not launch servers or produce gate evidence. The input
+is an ordered JSON array of `{scenario, nominal_context, request_body}` objects. Each
+request body explicitly sets `cache_prompt: false`, `temperature: 0`, and a fixed `seed`,
+with either native completion or chat-completion prompt and token-limit fields.
+
+The plan contains five ABBA quartets (ten measured requests per arm), alternates the
+first arm across cohorts, and declares one excluded 64-token warmup per arm. Request
+keys, bodies, and the schedule are hashed and validated before output. Its
+`observation_only` status grants no measurement authority. V9-8 still requires the
+resident lifecycle runner, sealed evidence and comparator, incumbent-vs-itself
+calibration with fresh-server fallback, isolated hot stack, parity pack, and prospective
+human ratification before resident results can replace existing promotion gates.
+
 Speed per derived model, candidate vs incumbent, **each at its own best recipe** (recipe-to-recipe;
 never force one kernel through the other's configuration). Quality per the incumbent's recorded
 suites, same pinned questions and seed.
