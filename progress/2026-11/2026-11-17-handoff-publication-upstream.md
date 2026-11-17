@@ -23,3 +23,7 @@ Acknowledged duplicate run-end event for inf85-w3-q38-flash-iq4xs-20261110 (rc=1
 ## 23:01Z — Acknowledge duplicate Qwen3.6 Q8 r3 W3 run-end event
 
 Acknowledged replay of inf85-w3-q36-35b-a3b-q8-r3-20261111 using the existing 2026-11-11 workspace-f2 PASS verdict and FILED receipt. Preserve that verdict: 57.01 +/- 0.64 tok/s, median +/- MAD, n=10, P-BENCH-1, v10 build 10303; already recorded in completed W3. Publication handoff remains archived at handoffs/completed/publication-upstream-program.md on origin/main. No open boxes or new rows.
+
+## 23:02Z — Acknowledge replay of superseded Qwen3.6 Q8 initial W3 failure
+
+Acknowledged duplicate run-end event for inf85-w3-q36-35b-a3b-q8-20261110 (rc=1). Existing 2026-11-11 filing.supersede verdict is SUPERSEDED by inf85-w3-q36-35b-a3b-q8-r2-20261111; refreshed the existing FILED receipt to acknowledge this event. Preserve the authoritative verdict. The later r3 PASS result already completed W3; publication-upstream-program.md remains archived in handoffs/completed/ on origin/main. No open boxes or new rows.
