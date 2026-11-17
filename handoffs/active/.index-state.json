@@ -2805,7 +2805,7 @@
       "id": "INF-86",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "G4/G5/TEMPLATE/B3 closed; open: E3-tools reprefill, DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
+      "next_action": "open: slot-restore-checkpoints validation (C13 has #26004), DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     "INF-87": {

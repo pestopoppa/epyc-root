@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T21:45:04Z",
+  "generated_at": "2026-11-17T21:46:55Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2456,7 +2456,7 @@
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-17",
-      "next_action": "G4/G5/TEMPLATE/B3 closed; open: E3-tools reprefill, DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
+      "next_action": "open: slot-restore-checkpoints validation (C13 has #26004), DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
       "open": 3,
       "priority": 0.0021,
       "priority_basis": {
