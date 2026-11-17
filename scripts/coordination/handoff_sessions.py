@@ -1481,10 +1481,12 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             ev, e["pid"], e["last_end"], e["last_rc"] = e.get("pending_event"), None, now_iso(), last_rc(e)
             e["pending_event"] = None
             wrapped_now = bool(e.get("last_wrapup")) and (bool(m) or bool(rep and rep.get("wrapped_sha")))
+            requeued = False
             if ev and not filed(flags, ev["rid"]):  # DSH-2: a run-end is acked by the FILED receipt, not by the turn ending
                 n = int(ev.get("redelivered", 0)) + 1
                 if n <= MAX_REQUEUE:
                     st.setdefault("queue", []).insert(0, dict(ev, redelivered=n))
+                    requeued = True
                     log(flags, f"REQUEUE {ev['rid']} -> {slug}: turn ended without filing-done/{ev['rid']}.FILED (redelivery {n}/{MAX_REQUEUE})")
                 else:
                     log(flags, f"ESCALATE {ev['rid']} -> {slug}: no FILED receipt after {MAX_REQUEUE} redeliveries; "
@@ -1495,6 +1497,11 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             else:
                 e["status"], e["push_retries"], e["transient_retries"] = "suspended", 0, 0
             log(flags, f"TURN-END {slug} session={e.get('session_id')} rc={e.get('last_rc')} wrapup={e.get('last_wrapup')}")
+            if e.get("status") != "live" and e.get("status") != "unpushed" and not requeued:
+                # operator 2026-11-17: no lingering pane-status window for a session that is not running a turn; the
+                # next START/RESUME recreates it by name (launch_in_tmux new-window). kill_window skips PROTECTED_WINDOWS.
+                kill_window(slug)
+                log(flags, f"WINDOW-CLOSED {slug}: turn ended, no immediate restart")
     # 2. new run ends owned by a pilot
     for rid, p, kind in end_events(flags):
         key = os.path.basename(p)

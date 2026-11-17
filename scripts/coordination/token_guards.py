@@ -41,6 +41,7 @@ DEFAULTS = {
     "claude_weekly_tokens": None,          # operator-stated weekly Claude allowance (tokens); None = meter without alarms
     "reserve_fraction": 0.05,              # CHURN-CONT-RESERVE: weekly-budget tranche held back for janitor/filing/teardown
     "per_session_frac_per_h": 0.012,       # fallback weekly-fraction burn per live session (audit W2: ~1.2 %/h)
+    "pace_multiplier": 1.0,                # operator scales the budget-paced allowed rate (2026-11-17: 2.5 so that width 2 fits)
 }
 EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
 CODEX_SESSIONS = os.path.expanduser("~/.codex/sessions")
@@ -267,11 +268,13 @@ def width_cap(conf: dict, budget: dict | None, now: float, live: int = 0) -> tup
     if rem is not None and rem <= float(conf.get("reserve_fraction", DEFAULTS["reserve_fraction"])):
         return 0, f"reserve reached: remaining {rem:.4f} <= reserve {conf.get('reserve_fraction', DEFAULTS['reserve_fraction'])}"
     hours = max((float(budget["resets_at"]) - now) / 3600.0, 0.25)
-    allowed = max(0.0, 1.0 - float(budget["weekly_fraction"])) / hours
+    mult = float(conf.get("pace_multiplier", 1.0))
+    allowed = max(0.0, 1.0 - float(budget["weekly_fraction"])) / hours * mult
     burn = float(budget.get("burn_frac_per_h") or 0)
     per = burn / live if live and burn > 0 else float(conf["per_session_frac_per_h"])
     derived = int(math.floor(allowed / per + 1e-9)) if per > 0 else cap
-    return min(cap, derived), f"min(cap {cap}, derived {derived} = {allowed:.4f}/h allowed / {per:.4f}/h per session)"
+    m = f" (x{mult:g} pace)" if mult != 1.0 else ""
+    return min(cap, derived), f"min(cap {cap}, derived {derived} = {allowed:.4f}/h allowed{m} / {per:.4f}/h per session)"
 
 
 # ---------------------------------------------------------------- reserve tranche (CHURN-CONT-RESERVE)

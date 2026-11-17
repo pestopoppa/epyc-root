@@ -145,3 +145,46 @@ def test_event_resume_honours_fresh_next(tmp_path):
     assert "resume" not in cmd and "sid0" not in cmd, cmd
     assert "h0-row-v3" in prompt
     assert not reg["sessions"]["h0"].get("fresh_next")
+
+
+def _ended_turn(tmp_path, F):
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    out = tmp_path / "o.jsonl"
+    out.write_text('{"text":"done WRAPPED abc1230"}\n')
+    reg["sessions"]["h0"].update(pid=999999999, last_output=str(out), status="live")
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+
+
+def test_turn_end_closes_window_when_not_restarting(tmp_path, monkeypatch):
+    """2026-11-17: no lingering pane-status window after a turn that is not followed by an immediate restart."""
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    killed = []
+    monkeypatch.setattr(hs, "kill_window", lambda slug: killed.append(slug))
+    _ended_turn(tmp_path, F)
+    reg, _ = hs.dispatch_once(str(F), runner, seed=True)
+    assert reg["sessions"]["h0"]["status"] == "suspended" and killed == ["h0"] and not calls
+
+
+def test_turn_end_keeps_window_when_unpushed_restart_follows(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    killed = []
+    monkeypatch.setattr(hs, "kill_window", lambda slug: killed.append(slug))
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: False)
+    _ended_turn(tmp_path, F)
+    hs.dispatch_once(str(F), runner, seed=True)
+    assert killed == [] and len(calls) == 1
+
+
+def test_kill_window_respects_protected_and_start_recreates(monkeypatch):
+    seen = []
+    monkeypatch.setattr(hs, "tmux_has_window", lambda slug: False)
+    monkeypatch.setattr(hs, "tmux", lambda *a, **k: (seen.append(a), (1, ""))[1])
+    hs.launch_in_tmux("h0", ["true"], "/dev/null", "/nonexistent/o.jsonl", "/")
+    assert seen and seen[0][0] == "new-window"  # START after a close recreates the window by name
+    seen.clear()
+    monkeypatch.setattr(hs, "tmux_has_window", lambda slug: True)
+    monkeypatch.setattr(hs, "window_name", lambda slug: slug)
+    hs.kill_window("codex-gen")
+    assert seen == []
+    hs.kill_window("h0")
+    assert seen and seen[0][0] == "kill-window"

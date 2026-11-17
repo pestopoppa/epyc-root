@@ -182,6 +182,19 @@ class G5Width(unittest.TestCase):
         self.assertEqual(tg.width_cap(tg.cfg({"max_live": 5}), ample, now, live=1)[0], 3)  # derived 3.75 -> 3
         self.assertEqual(tg.width_cap(tg.cfg({}), ample, now, live=1)[0], 2)
 
+    def test_pace_multiplier_scales_allowed_rate(self):
+        now = 1_800_000_000.0
+        b = {"weekly_fraction": 0.5, "resets_at": now + 50 * 3600, "burn_frac_per_h": 0.024}  # 0.01/h allowed
+        cap, why = tg.width_cap(tg.cfg({}), b, now, live=2)  # 0.012/h per session -> derived 0
+        self.assertEqual(cap, 0)
+        self.assertNotIn("pace", why)
+        conf = tg.cfg({"token_guards": {"pace_multiplier": 2.5}})
+        cap, why = tg.width_cap(conf, b, now, live=2)
+        self.assertEqual(cap, 2)  # 0.025/h / 0.012 = 2.08
+        self.assertIn("x2.5 pace", why)
+        self.assertEqual(tg.width_cap(conf, dict(b, paused_until=now + 5), now)[0], 0)  # pause still applies
+        self.assertEqual(tg.width_cap(conf, dict(b, weekly_fraction=0.96), now)[0], 0)  # reserve still applies
+
     def test_fanout_line_says_at_most_two(self):
         self.assertIn("at most 2 concurrent subagents", hs.FANOUT_LINE)
         self.assertNotIn("3-5", hs.FANOUT_LINE)
