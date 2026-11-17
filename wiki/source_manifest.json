@@ -5,27 +5,27 @@
     "handoff-blocked": 1,
     "handoff-completed": 375,
     "progress": 1406,
-    "research": 322
+    "research": 325
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 0,
+      "added": 1,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-17T22:13:48Z",
+    "at": "2026-11-17T22:23:52Z",
     "scope_paths": [
-      "research/deep-dives/exstill-2611.18859-20261117.md",
-      "research/deep-dives/intake-digests/2026-11-17-ids-2670-2673.md"
+      "research/deep-dives/codemode-20261117/dive-summary.md",
+      "research/deep-dives/intake-digests/2026-11-17-ids-2675-2693.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-17T22:13:48Z",
+  "scan_time": "2026-11-17T22:23:52Z",
   "schema_version": 1,
-  "source_set_hash": "ea00269f0905ad1a6e90e30d537f49de8b396907bc61538d8bcbf43edbb21a35",
+  "source_set_hash": "ce854335402d0e2bc9c86d3af7b1334339f086a94f2ca7e8c5813d31271a2ead",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -3716,6 +3716,14 @@
       "type": "research"
     },
     {
+      "content_hash": "b8447ea1b273c2ff44357da1857bdd444adf8050608b651012d0569beafce52c",
+      "modified": "2026-11-17T22:23:17Z",
+      "path": "research/deep-dives/codemode-20261117/dive-summary.md",
+      "size": 6512,
+      "title": "Codemode intake (2026-11-17): Ronacher \"What is Codemode\" and its evidence base",
+      "type": "research"
+    },
+    {
       "content_hash": "4c3432bf4590c47df317a0118393024a8d0cb733cc25fccbe38b6565e01b01ec",
       "modified": "2026-11-09T21:31:46Z",
       "path": "research/deep-dives/colar-latent-compression.md",
@@ -4857,6 +4865,14 @@
       "path": "research/deep-dives/intake-digests/2026-11-17-ids-2670-2673.md",
       "size": 5086,
       "title": "Intake dive digest \u2014 2026-11-17, intake-2670#record .. intake-2673#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "af09c300bd921dd84b9e975640a9959697b02a6f8ba82d00272204ae47a8b457",
+      "modified": "2026-11-17T22:23:17Z",
+      "path": "research/deep-dives/intake-digests/2026-11-17-ids-2675-2693.md",
+      "size": 42136,
+      "title": "Intake dive digest \u2014 2026-11-17, intake-2675#record .. intake-2693#record",
       "type": "research"
     },
     {
@@ -20668,6 +20684,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "f316a0980b9b0fdcbaa64083f24d8d6e010644a6f60ba61ef1dc607a1e1627d8",
+      "modified": "2026-11-17T22:18:18Z",
+      "path": "research/deep-dives/intake-digests/2026-11-17-ids-2674-2692.md",
+      "size": 42136,
+      "title": "Intake dive digest \u2014 2026-11-17, intake-2674#record .. intake-2692#record",
+      "type": "research"
+    },
+    {
       "content_hash": "493cca083733faaabfb56873f7b63390d6e03dcd7cb6fd6216f787e97a62778e",
       "modified": "2026-11-09T21:31:46Z",
       "path": "handoffs/active/frontier-lab-automation.md",
@@ -20676,7 +20700,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2581,
+  "total_new": 2584,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

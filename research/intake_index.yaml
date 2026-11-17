@@ -66764,6 +66764,8 @@
       ARC chart (Opus 95.5, Sol 78.3, Terra 25.7, GLM-5.2 8.6) is confirmed as a vendor REPORT, not an independent
       result, and claim 2 already records the open-weight gap. The Factorio section is PARTIAL: it reports
       both a 100K+ run and an RCON/heartbeat exploit without establishing the former, which claim 3 states.'
+  re_encounters:
+  - '2026-11-17 re-encountered: the Pydantic code-mode benchmark post (intake-2686) cites Prime Agent; the wave-2 read of the Prime Intellect post (design: persistent IPython kernel as the only tool; ARC-AGI-3 and OOLONG numbers are self-reported; GLM-5.2 open-weight rows compare against a weaker open harness) did not change this entry. Context: research-intake codemode run, intake-2675..2692.'
 - id: intake-1011
   arxiv_id: null
   url: https://github.com/alexisfox7/PRO-LONG
@@ -83345,6 +83347,8 @@
   - 'Retained as a hypothesis worth a cheap first-party replication on open weights, which is the test the paper never ran.'
   handoffs_updated: []
   handoffs_created: []
+  re_encounters:
+  - '2026-11-17 re-encountered via the sPTC and Conveyor reads (intake-2693): AsyncFC dispatches calls after they are decoded and needs no engine change, but its evaluation uses API models only and partly injected delays; verdict unchanged (monitor). Client-side streaming execution during decode is recorded as a trigger in harness-program.md, not a task.'
 - id: intake-1120
   arxiv_id: '2407.01502'
   url: https://arxiv.org/abs/2407.01502
@@ -126241,6 +126245,8 @@
     measurement source -> belief-kernel adapter row. Expansion candidates: alexzhang13/spec-ptc
     (companion), 2605.13360, 2406.00059, joelvarun/toolspec, 2603.18897, 2606.07846, 2606.02483,
     2402.01030, 2511.02817.
+  re_encounters:
+  - '2026-11-17 re-encountered in the research-intake codemode run; the Zhang sPTC post was read from disk (sha256 8cc416f9...) with its code repo cloned at 9b78b7d6ceeaf8afd1557c4e3a999ce653fc0e17: reported speedups are about 1-1.2x on Qwen3-30B-A3B (OOLONG, 8xH100, vLLM, 5 runs), harness-side and needing no engine support but spare slots; most useful when tools are sub-LLM calls. Not promoted: this entry stays stage1-unverified, awaiting its own dive with anchors.'
 - id: intake-1313
   arxiv_id: '2608.23552'
   url: https://arxiv.org/abs/2608.23552
@@ -152022,6 +152028,8 @@
   integration_disposition: integrated
   disposition_evidence:
   - '2026-09-14 research-intake Stage-4 (approved plan): task lines / corrections appended to harness-selection-and-integration.md'
+  re_encounters:
+  - '2026-11-17 re-encountered: the Pi codemode implementation was read at cead615b48b80d1c61eecab2f0b576d16eeaf4c5 (packages/coding-agent/docs/codemode.md, src/extensions/codemode/execute.ts): quickjs-wasi sandbox with 256 MB limit; the 4 is a cap on model calls per script, not tool calls; store/load is a bounded JSON key-value replayed from session entries. Recorded as intake-2680; this entry''s cooperation findings are unchanged.'
 - id: intake-1361
   arxiv_id: null
   url: https://huggingface.co/datasets/ByteDance-Seed/EdgeBench
@@ -240097,6 +240105,8 @@
     human_verification: false
     empirical_reproduction: false
     qualifications_preserved_in: claim_corrections, claim_anchors and dive_corrections
+  re_encounters:
+  - '2026-11-17 re-encountered: Monty repo re-read at pinned SHA 86fb685c533f8de8e321190dc02315ffb612b975 (docs/security.md, resource-limits.md, snapshots.md, limitations). Facts relevant to the EPYC REPL: no numpy/scipy, subprocess pool only, limits opt-in, language-level sandbox (no seccomp/VM), no published escape suite beyond intake-1870. Recorded in memory-program.md D-RI-MONTY-SLICE; no change to this entry''s disposition.'
 - id: intake-1865
   arxiv_id: null
   url: https://huggingface.co/Cloudflare/clef-flash
@@ -240978,6 +240988,8 @@
   contradicting_evidence: []
   source_fetch_gaps: []
   dive_wave: 2
+  re_encounters:
+  - '2026-11-17 re-encountered in the research-intake codemode run: the Monty repo docs at 86fb685c read by that run list a bounty and parser fuzz targets but no escape suite and no known-escape section, which is consistent with this entry being the only public escape write-up; Pydantic''s own post (intake-2689) says its exposed tools keep full agent authority.'
 - id: intake-1871
   arxiv_id: null
   url: https://pydantic.dev/articles/hack-monty-postmortem
@@ -388357,3 +388369,2089 @@
       relative_path: "sha256/d6/d6fee2c29aa52dec402a702d80080e9a850cb5103de8630833f655aac0869df9.raw"
       raw_sha256: "d6fee2c29aa52dec402a702d80080e9a850cb5103de8630833f655aac0869df9"
       byte_length: 6135
+
+- id: intake-2675
+  arxiv_id: null
+  url: https://lucumr.pocoo.org/2026/10/6/codemode/
+  source_type: blog
+  title: 'What is Codemode (Armin Ronacher, 2026-10-06)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Codemode lets the agent compose tool calls in a harness-side sandbox (QuickJS in WASM: no network, no file system, no timers, limited RAM) instead of routing every call and result through the LLM context.'
+  - 'MCP tools are not exposed to the model; the agent runs a tool search inside Codemode (progressive discovery) and Pi injects only the list of available servers.'
+  - 'Non-tool model APIs (image generation, one-shot classifier Jev) are exposed only through Codemode so they never cost prompt tokens.'
+  - 'Caveats the author states: durability is unsolved (Starlark or workflow-engine snapshots floated), images and binary data are weak, and the pattern does not work well for smaller models.'
+  - 'The post contains no measured result of any kind (no tokens, success rate or latency).'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Primary post read in full from disk (curl, sha256 d0660c8bea72..., 2026-11-17). Dive (sonnet) verified every quoted claim as stated. Source-code check of Pi @ cead615b (see intake-2680) overturns the blog''s ''four concurrent tool executions'' sentence: 4 is the cap on model calls (classify/generateImages) per script, not on tool executions; store() is a bounded JSON KV replayed from session log entries, not a dump into model context. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section Orchestrating The Harness
+    quote: 'QuickJS within a WASM runtime with intentional limitations: no network, no file system, no timers, limited RAM.'
+    quote_sha256: 8ac9fc5f1069fc3a34bf643cd970a8d9141e4432fd9b0d700b7fe1289ec23bdf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/10/6/codemode/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      requested_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      effective_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      retrieved_at_utc: '2026-11-17T21:58:40.615798Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      relative_path: sha256/d0/d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021.raw
+      raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      byte_length: 72346
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section Calling MCP Servers
+    quote: we do not actually expose any of the MCP tools to the LLM, the agent first uses provided APIs to issue a tool search within Codemode
+    quote_sha256: 52bce8c7cf937d5cab9ffff041b3c17253d620ebc51faf694ec93d139412b5aa
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/10/6/codemode/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      requested_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      effective_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      retrieved_at_utc: '2026-11-17T21:58:40.615798Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      relative_path: sha256/d0/d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021.raw
+      raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      byte_length: 72346
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section Orchestrating The Harness
+    quote: those Pi APIs are exposed via Codemode, but not via regular tools where they would just waste context.
+    quote_sha256: 985a84ee6f49445535cf231704081b0c089c28e6ba06a14327d772effeab71d3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/10/6/codemode/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      requested_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      effective_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      retrieved_at_utc: '2026-11-17T21:58:40.615798Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      relative_path: sha256/d0/d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021.raw
+      raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      byte_length: 72346
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section Future of Codemode
+    quote: durability with Codemode is trickier.
+    quote_sha256: e3a82d3a4ec1d8daba38bc91c02bb95889461ba0ea478954ee625f05bb29c542
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/10/6/codemode/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      requested_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      effective_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      retrieved_at_utc: '2026-11-17T21:58:40.615798Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      relative_path: sha256/d0/d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021.raw
+      raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      byte_length: 72346
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section Future of Codemode
+    quote: the inability of this pattern to work with smaller models is also something that needs to be fleshed out.
+    quote_sha256: fef25c2372ffa4be2ad6ba20fddbf95fb084cb5982d5af8b868a5f3717bb2eeb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/10/6/codemode/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      requested_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      effective_url: https://lucumr.pocoo.org/2026/10/6/codemode/
+      retrieved_at_utc: '2026-11-17T21:58:40.615798Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      relative_path: sha256/d0/d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021.raw
+      raw_sha256: d0660c8bea725ae7600b6c7235dd0573e18d9e75a9dea15c49823cb17a968021
+      byte_length: 72346
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry. The post''s sentence that Pi limits concurrent tool executions to four is OVERTURNED by Pi source and docs: the 4 caps model calls (classify, generateImages) per script (see intake-2680). The post''s store() description is NARROWED: a small JSON key-value store replayed from session entries, not a dump into model context.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2676
+  arxiv_id: null
+  url: https://lucumr.pocoo.org/2025/7/3/tools/
+  source_type: blog
+  title: 'Tools: Code Is All You Need (Armin Ronacher, 2025-07)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'MCP is not truly composable (composition happens through inference) and demands too much context.'
+  - 'Tool-count scaling proposals add an LLM filtering layer; code gives reviewable, verifiable procedures (review the formula, not the result).'
+  - 'His data claim (GitHub MCP vs gh CLI context use) is unquantified.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk. Predecessor of intake-2675; its ''bypass MCP'' stance is refined, not reversed, in 2026. No numbers anywhere in the post. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Intro, two major flaws
+    quote: truly composable. Most composition happens through inference.
+    quote_sha256: ce8bcebaa3e5c8735d6d81748bc2f084de16f5fd40117c1011e0432b2224f14e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/7/3/tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      requested_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      effective_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      retrieved_at_utc: '2026-11-17T21:58:40.663719Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      relative_path: sha256/bb/bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796.raw
+      raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      byte_length: 24189
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section on tool counts
+    quote: the proposals all include a layer of filtering. You pass all your tools to an LLM and ask it to filter it down based on the task at hand.
+    quote_sha256: 08d153f7877993ba521e2ce6d9e0e8eb9d0124e12d88d83dd1ec3b50facc7602
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/7/3/tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      requested_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      effective_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      retrieved_at_utc: '2026-11-17T21:58:40.663719Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      relative_path: sha256/bb/bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796.raw
+      raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      byte_length: 24189
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section on code reviewability
+    quote: you can review the formula, not the calculated result.
+    quote_sha256: b13015f7081aaaa7967dc3214b74c3c5e6dd4e3be4af35e43fa60a1f5450a894
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/7/3/tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      requested_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      effective_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      retrieved_at_utc: '2026-11-17T21:58:40.663719Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      relative_path: sha256/bb/bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796.raw
+      raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      byte_length: 24189
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Intro, GitHub MCP versus gh CLI
+    quote: the latter uses context far more efficiently and you get to your intended results quicker.
+    quote_sha256: a66d48fbac21d5fa79f7e0a625e08de3080d3bbb1f26cdd86ddd9cbaa6fb41de
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/7/3/tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      requested_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      effective_url: https://lucumr.pocoo.org/2025/7/3/tools/
+      retrieved_at_utc: '2026-11-17T21:58:40.663719Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      relative_path: sha256/bb/bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796.raw
+      raw_sha256: bb3fadd4c7b321be4c0f76b0863bd27ea09ac8c9aafe2f45339d208bd7caf796
+      byte_length: 24189
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2677
+  arxiv_id: null
+  url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+  source_type: blog
+  title: 'Your MCP Doesn''t Need 30 Tools: It Needs Code (Armin Ronacher, 2025-08)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Proposal: one code-accepting ubertool over a stateful interpreter (pexpect-mcp, Playwrightess) replaces about 30 tool definitions.'
+  - 'Single anecdote: replayed debug session one tool call under 5 seconds versus about 7 calls and 45 seconds.'
+  - 'He states Playwrightess does not perform better than Playwright MCP in its current form, and that code-execution security is a sham.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk. Only quantitative content is the n=1 anecdote. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Playwrightess section
+    quote: it gets down from ~30 tool definitions to 1
+    quote_sha256: 3dcd87581b0fe8180c19bf6668e4ecf71d2e138acc8a5632ddaa0000e7adee6f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      requested_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      effective_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      retrieved_at_utc: '2026-11-17T21:58:40.701212Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367
+      relative_path: sha256/44/4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367.raw
+      raw_sha256: 4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367
+      byte_length: 39248
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: pexpect-mcp section
+    quote: The re-run with the dumped playbook takes one tool call and finishes in less than 5 seconds.
+    quote_sha256: 4df24692567c14557fd51060a9eeae385e33ae84b43ced835526940eaefa1136
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      requested_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      effective_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      retrieved_at_utc: '2026-11-17T21:58:40.701212Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367
+      relative_path: sha256/44/4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367.raw
+      raw_sha256: 4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367
+      byte_length: 39248
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Playwrightess section
+    quote: Does it perform better than Playwright MCP? Not in the current form
+    quote_sha256: b80ff53a1cefe945506643daae30ab413259011b25df7a97df2143bf6dcf97d8
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367, found: true}
+    source_revision: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      requested_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      effective_url: https://lucumr.pocoo.org/2025/8/18/code-mcps/
+      retrieved_at_utc: '2026-11-17T21:58:40.701212Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367
+      relative_path: sha256/44/4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367.raw
+      raw_sha256: 4479c115e0ab04823f8d402897f983e9012db54e303b88175d659ba5f7c1a367
+      byte_length: 39248
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2678
+  arxiv_id: null
+  url: https://blog.cloudflare.com/code-mode/
+  source_type: blog
+  title: 'Code Mode: the better way to use MCP (Cloudflare)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'MCP schemas are converted to a TypeScript API with doc comments and the model writes code against it in a V8-isolate sandbox whose only egress is RPC bindings to MCP servers.'
+  - 'The claim that LLMs write code better than they call tools is asserted with no benchmark; the training-data explanation is hedged with ''Perhaps''.'
+  - 'The full API is loaded into context; progressive search is listed as future work.'
+  - 'Credentials stay in the supervisor so generated code cannot leak keys (overclaimed: exfiltration through allowed tools is not covered).'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk. The article text carries no quantitative result (a results list did not survive HTML stripping, probably an image; not verified). Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Converting MCP to TypeScript
+    quote: the Agents SDK will fetch the MCP server's schema, and then convert it into a TypeScript API, complete with doc comments based on the schema.
+    quote_sha256: 04b92a9792a390d28f0acb39f1b192c2dbce438a207e65524a47922ba4dfc6d5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221, found: true}
+    source_revision: https://blog.cloudflare.com/code-mode/
+    source_artifact:
+      entry_url: https://blog.cloudflare.com/code-mode/
+      requested_url: https://blog.cloudflare.com/code-mode/
+      effective_url: https://blog.cloudflare.com/code-mode/
+      retrieved_at_utc: '2026-11-17T21:58:40.794303Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      relative_path: sha256/3f/3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221.raw
+      raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      byte_length: 327730
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Intro
+    quote: LLMs are better at writing code to call MCP, than at calling MCP directly.
+    quote_sha256: 89f5e84f8f904176e69bf9335dd8d2cb36d3080dd52ae25a495e9d9ef3e238a6
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221, found: true}
+    source_revision: https://blog.cloudflare.com/code-mode/
+    source_artifact:
+      entry_url: https://blog.cloudflare.com/code-mode/
+      requested_url: https://blog.cloudflare.com/code-mode/
+      effective_url: https://blog.cloudflare.com/code-mode/
+      retrieved_at_utc: '2026-11-17T21:58:40.794303Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      relative_path: sha256/3f/3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221.raw
+      raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      byte_length: 327730
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Intro
+    quote: Perhaps this is because LLMs have an enormous amount of real-world TypeScript in their training set, but only a small set of contrived examples of tool calls.
+    quote_sha256: 8f85cfc084e3589208f753cd1da8ee9448986a67a4d577e178adcabdcb03e816
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221, found: true}
+    source_revision: https://blog.cloudflare.com/code-mode/
+    source_artifact:
+      entry_url: https://blog.cloudflare.com/code-mode/
+      requested_url: https://blog.cloudflare.com/code-mode/
+      effective_url: https://blog.cloudflare.com/code-mode/
+      retrieved_at_utc: '2026-11-17T21:58:40.794303Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      relative_path: sha256/3f/3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221.raw
+      raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      byte_length: 327730
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Running code in a sandbox
+    quote: Currently, the entire API is loaded, but future improvements could allow an agent to search and browse the API more dynamically
+    quote_sha256: 8d5e1195001e57ab496b2d7f1f82a61cf6b7bd4c9a57f9c4f61f06e751a07c62
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221, found: true}
+    source_revision: https://blog.cloudflare.com/code-mode/
+    source_artifact:
+      entry_url: https://blog.cloudflare.com/code-mode/
+      requested_url: https://blog.cloudflare.com/code-mode/
+      effective_url: https://blog.cloudflare.com/code-mode/
+      retrieved_at_utc: '2026-11-17T21:58:40.794303Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      relative_path: sha256/3f/3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221.raw
+      raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      byte_length: 327730
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: No API keys to leak
+    quote: This means that the AI cannot possibly write code that leaks any keys
+    quote_sha256: 55b94ab31f76be24371f5d3be48ee439a46726aa78f3e1052cafa151acb390b2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221, found: true}
+    source_revision: https://blog.cloudflare.com/code-mode/
+    source_artifact:
+      entry_url: https://blog.cloudflare.com/code-mode/
+      requested_url: https://blog.cloudflare.com/code-mode/
+      effective_url: https://blog.cloudflare.com/code-mode/
+      retrieved_at_utc: '2026-11-17T21:58:40.794303Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      relative_path: sha256/3f/3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221.raw
+      raw_sha256: 3f27c62e060f43d850a3f3d937e5b04a208b61396d8bcde44793c01f90ec1221
+      byte_length: 327730
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2679
+  arxiv_id: null
+  url: https://www.anthropic.com/research/code-execution-with-mcp
+  source_type: blog
+  title: 'Code execution with MCP: building more efficient agents (Anthropic)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - context_management
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Filesystem-of-tools (one .ts file per tool) gives progressive disclosure; a search_tools with a detail-level parameter is the alternative.'
+  - 'The 150,000 to 2,000 token (98.7%) figure is a worked example for one hypothetical task, not a measurement.'
+  - 'Design features: filter data before it reaches context, loops and conditionals in code, PII tokenization at the client, state persistence and a skills directory.'
+  - 'The post states the cost: secure execution, resource limits and monitoring add operational overhead.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk (final URL /research/code-execution-with-mcp). Vendor assertion plus illustrative examples; no independent measurement. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Progressive disclosure
+    quote: One approach is to generate a file tree of all available tools from connected MCP servers.
+    quote_sha256: 5ba902c9c26d9c8434c55433ebcfaf0866b62bd1fdefa742a8e7cdd6fe3e4c2e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325, found: true}
+    source_revision: https://www.anthropic.com/research/code-execution-with-mcp
+    source_artifact:
+      entry_url: https://www.anthropic.com/research/code-execution-with-mcp
+      requested_url: https://www.anthropic.com/research/code-execution-with-mcp
+      effective_url: https://www.anthropic.com/research/code-execution-with-mcp
+      retrieved_at_utc: '2026-11-17T21:58:41.064393Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      relative_path: sha256/fb/fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325.raw
+      raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      byte_length: 207174
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Code execution with MCP improves context efficiency
+    quote: This reduces the token usage from 150,000 tokens to 2,000 tokens—a time and cost saving of 98.7%
+    quote_sha256: cb3cd7f679745128b7744a7dfe0d7c93aeffa4ba66ed7881ed371aac416fbf26
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325, found: true}
+    source_revision: https://www.anthropic.com/research/code-execution-with-mcp
+    source_artifact:
+      entry_url: https://www.anthropic.com/research/code-execution-with-mcp
+      requested_url: https://www.anthropic.com/research/code-execution-with-mcp
+      effective_url: https://www.anthropic.com/research/code-execution-with-mcp
+      retrieved_at_utc: '2026-11-17T21:58:41.064393Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      relative_path: sha256/fb/fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325.raw
+      raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      byte_length: 207174
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Privacy-preserving operations
+    quote: The MCP client intercepts the data and tokenizes PII before it reaches the model
+    quote_sha256: 9f67732e7a655cbbfdfbf04e524c90c9bb6a39c407411acdbb80a1065f645e39
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325, found: true}
+    source_revision: https://www.anthropic.com/research/code-execution-with-mcp
+    source_artifact:
+      entry_url: https://www.anthropic.com/research/code-execution-with-mcp
+      requested_url: https://www.anthropic.com/research/code-execution-with-mcp
+      effective_url: https://www.anthropic.com/research/code-execution-with-mcp
+      retrieved_at_utc: '2026-11-17T21:58:41.064393Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      relative_path: sha256/fb/fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325.raw
+      raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      byte_length: 207174
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Benefits section, final paragraph
+    quote: Running agent-generated code requires a secure execution environment with appropriate sandboxing , resource limits, and monitoring.
+    quote_sha256: c12ee2500fbd41210ab547799d88e0ccbcd402103d8c9bfab3eb9828f8345ca1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325, found: true}
+    source_revision: https://www.anthropic.com/research/code-execution-with-mcp
+    source_artifact:
+      entry_url: https://www.anthropic.com/research/code-execution-with-mcp
+      requested_url: https://www.anthropic.com/research/code-execution-with-mcp
+      effective_url: https://www.anthropic.com/research/code-execution-with-mcp
+      retrieved_at_utc: '2026-11-17T21:58:41.064393Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      relative_path: sha256/fb/fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325.raw
+      raw_sha256: fb3ec88005d6db1701feb8cc0a20e22e6299bfe5ea9db483abc2175d94cf8325
+      byte_length: 207174
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2680
+  arxiv_id: null
+  url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+  source_type: repo
+  title: 'Pi codemode implementation (earendil-works/pi @ cead615b)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Sandbox is quickjs-wasi with a 256 MiB memory cap (a fixed constant, library default is no limit), a wall-clock deadline plus abort signal, and tests asserting process, require, setTimeout and fetch are undefined.'
+  - 'The ''four'' is MAX_CONCURRENT_MODEL_CALLS=4 for classify/generateImages per script; script tool calls are not capped at 4; at most 2 codemode workers per process with a 60 s admission wait.'
+  - 'store(key,value)/load(key) is a small JSON KV (256 KiB per value, 1 MiB total) persisted as codemode-store session entries only on successful scripts and replayed branch-aware.'
+  - 'Discovery API: searchTools (BM25, default limit 8), describeTool, describeNamespace, inline declaration budget of 3000 tokens; bash returns {output, truncated, full_output_path, exit_code}; final output to the model capped at 10000 tokens, head+tail, full text spilled to a temp file.'
+  - 'The sandbox restricts the script, not the tools: bash and MCP tools called from inside run with full host power.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Repo cloned depth 1, SHA cead615b48b80d1c61eecab2f0b576d16eeaf4c5, read 2026-11-17. Paths under packages/codemode/src and packages/coding-agent/src/extensions/codemode. Subagent dive; locators file:line @ cead615 in deep-dives/codemode-20261117/dive-summary.md. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: docs/codemode.md Limits
+    quote: 'A script''s VM has 256 MB of memory. Running out throws `InternalError: out of memory`'
+    quote_sha256: acd35ebb06173d28cfbd745ca4d939fc58ae2f33d15aca5759beae5740b417b3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a, found: true}
+    source_revision: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      requested_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      effective_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      retrieved_at_utc: '2026-11-17T21:58:41.292298Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      relative_path: sha256/3a/3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a.raw
+      raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      byte_length: 14585
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: docs/codemode.md models section
+    quote: At most four such calls run at once per script; more calls wait for a free slot, so `Promise.all()` over many items is fine.
+    quote_sha256: 34950d131eb988078afad0e9437e31c0083b13633176d00645fc87afa1ed43d9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a, found: true}
+    source_revision: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      requested_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      effective_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      retrieved_at_utc: '2026-11-17T21:58:41.292298Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      relative_path: sha256/3a/3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a.raw
+      raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      byte_length: 14585
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: docs/codemode.md Limits
+    quote: At most two codemode workers may be alive across all sessions in one pi process
+    quote_sha256: f0cb059bbb86c8013dd406c716a3889ae838521742b7349c33196b363c75981c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a, found: true}
+    source_revision: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      requested_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      effective_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      retrieved_at_utc: '2026-11-17T21:58:41.292298Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      relative_path: sha256/3a/3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a.raw
+      raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      byte_length: 14585
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: docs/codemode.md Store values
+    quote: '`store(key, value)` keeps a JSON value under a string key for later `codemode` calls; storing `undefined` deletes the key.'
+    quote_sha256: ae30540f88d29dd289afdb3df476ae74ae4ffe43095273fcf36716e889789fee
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a, found: true}
+    source_revision: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      requested_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      effective_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      retrieved_at_utc: '2026-11-17T21:58:41.292298Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      relative_path: sha256/3a/3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a.raw
+      raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      byte_length: 14585
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: docs/codemode.md API table
+    quote: '`searchTools(query, { limit?, namespace? })` | Rank callable tools by relevance (BM25, default limit 8).'
+    quote_sha256: 9bb9870469d5ffda733028411f9541650c849c275eba143eb36e3a000285bd1b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a, found: true}
+    source_revision: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      requested_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      effective_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      retrieved_at_utc: '2026-11-17T21:58:41.292298Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      relative_path: sha256/3a/3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a.raw
+      raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      byte_length: 14585
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: docs/codemode.md options
+    quote: '`max_output_tokens` (default 10000) limits the output. Longer output keeps its start and end, and the full text is written to a temp file'
+    quote_sha256: 296963690fe90b82c29315bcc5f3c4cff44a2c4e02965eb511266d32ccc948bf
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a, found: true}
+    source_revision: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      requested_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      effective_url: https://raw.githubusercontent.com/earendil-works/pi/cead615b48b80d1c61eecab2f0b576d16eeaf4c5/packages/coding-agent/docs/codemode.md
+      retrieved_at_utc: '2026-11-17T21:58:41.292298Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      relative_path: sha256/3a/3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a.raw
+      raw_sha256: 3a96ee10da36395bbd22beb60ac029f8ca8a859f2fd3c3104cfc38f9d5a1f95a
+      byte_length: 14585
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2681
+  arxiv_id: null
+  url: https://earendil-works.github.io/gondolin/
+  source_type: repo
+  title: 'Gondolin sandbox (earendil-works)'
+  categories:
+  - agent_architecture
+  - inference_serving
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Micro-VM sandbox (libkrun or QEMU, sub-second boot) with host-side network stack, egress allowlist and placeholder-based secret injection bound to hosts.'
+  - 'Stated thesis: sandboxing compute is not enough, control egress and protect secrets. Page labels itself an early project; the security design page was not read.'
+  verification: dive-verified
+  read_depth: PARTIAL
+  notes: 'Docs home page read from disk only (PARTIAL). Execution-side wall, complementary to codemode''s language-level jail. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Gondolin home page
+    quote: Lightweight micro-VMs (libkrun where available, QEMU otherwise) boot in under a second on your Mac or Linux machine.
+    quote_sha256: 3602bed20a61adb2c58f82336de60cf5b13d061cdb3697c0d876d66f4ce44fb7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b, found: true}
+    source_revision: https://earendil-works.github.io/gondolin/
+    source_artifact:
+      entry_url: https://earendil-works.github.io/gondolin/
+      requested_url: https://earendil-works.github.io/gondolin/
+      effective_url: https://earendil-works.github.io/gondolin/
+      retrieved_at_utc: '2026-11-17T21:58:41.329150Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b
+      relative_path: sha256/36/365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b.raw
+      raw_sha256: 365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b
+      byte_length: 17363
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Gondolin home page
+    quote: Sandboxing the compute isn't enough as you need to control network egress and protect secrets from exfiltration.
+    quote_sha256: 9fda989b2e3dbe6c85ff574357d32cccd4f0d3ff5c92bc4972b56aff2f56efed
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b, found: true}
+    source_revision: https://earendil-works.github.io/gondolin/
+    source_artifact:
+      entry_url: https://earendil-works.github.io/gondolin/
+      requested_url: https://earendil-works.github.io/gondolin/
+      effective_url: https://earendil-works.github.io/gondolin/
+      retrieved_at_utc: '2026-11-17T21:58:41.329150Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b
+      relative_path: sha256/36/365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b.raw
+      raw_sha256: 365867d83de8b2eb9459f84f170f177ce2f4753b8e0256c3d9f9a8911de3db8b
+      byte_length: 17363
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2682
+  arxiv_id: '2603.06713'
+  url: https://arxiv.org/abs/2603.06713v1
+  source_type: paper
+  title: 'Scaling Agentic Capabilities, Not Context: Efficient Reinforcement Finetuning for Large Toolspaces (ATLAS)'
+  categories:
+  - agent_architecture
+  - training_distillation
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Persistent Python code orchestration (PTC) is tested only on Qwen3-4B (plus a 30B appendix row); its headline gain is 2.36 to 2.94 task fulfillment on MCPBench and reverses on the paper''s own ATLAS-Test (2.96 to 2.76).'
+  - 'The text''s ''ITL yields modest gains'' contradicts its own Table 1 (4B 2.73 to 2.36, Kimi 4.11 to 3.62).'
+  - 'PTC raised tokens on the 4B (9045 to 13462) and cut turns only 20 to 18; no seeds or variance, o4-mini judge, author-run.'
+  - 'Robust gains come from reinforcement finetuning, not from the code-vs-JSON change.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'arXiv v1 HTML read from disk 2026-11-17, id verified by abs-page title. Appendix tables read. No quantization; no 7B PTC arm. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 5.2 takeaway
+    quote: while PTC delivers stronger improvements ( ∼ \sim 25%) by stabilizing execution
+    quote_sha256: 8a93790cf7597bcd95f1507df7eb333e4c749ebf24410d0f2863a901492e6fea
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e, found: true}
+    source_revision: https://arxiv.org/html/2603.06713v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2603.06713v1
+      requested_url: https://arxiv.org/html/2603.06713v1
+      effective_url: https://arxiv.org/html/2603.06713v1
+      retrieved_at_utc: '2026-11-17T21:58:41.435550Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      relative_path: sha256/40/40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e.raw
+      raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      byte_length: 375402
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Table 1 rows 14-15
+    quote: 14 Iterative Tool Loading 2.36 20 9045 15 + PTC 2.94 18 13462
+    quote_sha256: 50e5694c3d26323a8329d44708c76bb67d585d95ad4f0974e0b2eecf21d69efc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e, found: true}
+    source_revision: https://arxiv.org/html/2603.06713v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2603.06713v1
+      requested_url: https://arxiv.org/html/2603.06713v1
+      effective_url: https://arxiv.org/html/2603.06713v1
+      retrieved_at_utc: '2026-11-17T21:58:41.435550Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      relative_path: sha256/40/40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e.raw
+      raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      byte_length: 375402
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Table 1 rows 14-15
+    quote: 15 + PTC 2.94 18 13462
+    quote_sha256: 9df9cae55f6b9cbbf7ed3384c303b0e4daeadd1cdb3ca2f93657806925664b04
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e, found: true}
+    source_revision: https://arxiv.org/html/2603.06713v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2603.06713v1
+      requested_url: https://arxiv.org/html/2603.06713v1
+      effective_url: https://arxiv.org/html/2603.06713v1
+      retrieved_at_utc: '2026-11-17T21:58:41.435550Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      relative_path: sha256/40/40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e.raw
+      raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      byte_length: 375402
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 5.2 takeaway
+    quote: ITL yields modest gains ( ∼ \sim 10%)
+    quote_sha256: 197e7265d1bc4550fd9105bda07267d069449f184b417f1dfe7fa085db1ed848
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e, found: true}
+    source_revision: https://arxiv.org/html/2603.06713v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2603.06713v1
+      requested_url: https://arxiv.org/html/2603.06713v1
+      effective_url: https://arxiv.org/html/2603.06713v1
+      retrieved_at_utc: '2026-11-17T21:58:41.435550Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      relative_path: sha256/40/40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e.raw
+      raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      byte_length: 375402
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Section 5.3 takeaway
+    quote: RFT delivers the largest gains ( +35–65% ), with ITL+PTC providing the strongest execution substrate for learning.
+    quote_sha256: e8adab90e5d00a06c17743333c663d01f8cf8168853b6c14ab4c8542d8844ec0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e, found: true}
+    source_revision: https://arxiv.org/html/2603.06713v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2603.06713v1
+      requested_url: https://arxiv.org/html/2603.06713v1
+      effective_url: https://arxiv.org/html/2603.06713v1
+      retrieved_at_utc: '2026-11-17T21:58:41.435550Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      relative_path: sha256/40/40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e.raw
+      raw_sha256: 40136b6f059bc08583e3a0031ab480ca6e7da62f459ec37db50ce569a09da24e
+      byte_length: 375402
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry. The text claim that iterative tool loading yields modest gains is contradicted by the paper''s own Table 1 (4B 2.73 to 2.36); the PTC reversal on ATLAS-Test is dive-reported from Table 4 and carries no anchor.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2683
+  arxiv_id: '2607.10569'
+  url: https://arxiv.org/abs/2607.10569v1
+  source_type: paper
+  title: 'When Does Restricting a Coding Agent to execute_code Help? A Regime x Agent-Design Ablation'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: worth_investigating
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Single execute_code tool versus rich native tools on frontier agents (Claude Code sonnet-4-6, Codex gpt-5.5): pass rates tied within 3 points in all four cells, cost deltas -24.6%/-19.9% where significant and +14.4% (not significant) on one cell.'
+  - 'Cheapest tool surface depends jointly on task regime and agent design; Claude edit friction shows code-only costs on edit-heavy repo tasks.'
+  - 'Open-weight and small models are explicitly out of scope; the Codex restriction is soft (prompt-level).'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'arXiv v1 HTML read from disk, id verified. Author-run, own 93-task suite, 3 seeds, paired Wilcoxon. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract or Section 1
+    quote: is cheaper than — or statistically tied with — its cheapest tool-rich rival in three cells
+    quote_sha256: f1d627f3ec87fbbfe97d2142aa62ea0f99ffc04eda47bf1a2ee4991134de1e2c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca, found: true}
+    source_revision: https://arxiv.org/html/2607.10569v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2607.10569v1
+      requested_url: https://arxiv.org/html/2607.10569v1
+      effective_url: https://arxiv.org/html/2607.10569v1
+      retrieved_at_utc: '2026-11-17T21:58:41.530572Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      relative_path: sha256/e2/e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca.raw
+      raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      byte_length: 315644
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Abstract or Section 1
+    quote: with pass rates statistically tied within each cell.
+    quote_sha256: 99ec6ba1cbf8bd115b67e37d8d3277df015eda38f11d4ca46e71f7d66cf7fc9a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca, found: true}
+    source_revision: https://arxiv.org/html/2607.10569v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2607.10569v1
+      requested_url: https://arxiv.org/html/2607.10569v1
+      effective_url: https://arxiv.org/html/2607.10569v1
+      retrieved_at_utc: '2026-11-17T21:58:41.530572Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      relative_path: sha256/e2/e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca.raw
+      raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      byte_length: 315644
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Limitations
+    quote: GPT-5, Gemini 2.5, and open-weight scaffolds are out of scope.
+    quote_sha256: 86f2580b4972e475938176fb3787ff9bdac6b682cac53dee21ce5362d92b291d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca, found: true}
+    source_revision: https://arxiv.org/html/2607.10569v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2607.10569v1
+      requested_url: https://arxiv.org/html/2607.10569v1
+      effective_url: https://arxiv.org/html/2607.10569v1
+      retrieved_at_utc: '2026-11-17T21:58:41.530572Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      relative_path: sha256/e2/e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca.raw
+      raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      byte_length: 315644
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 3.1 / Limitations
+    quote: this is soft enforcement and model compliance is not guaranteed.
+    quote_sha256: 08a6a192d0efb82058ebfe2f21ac45f771effacf52fc56f32af15e524f454f81
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca, found: true}
+    source_revision: https://arxiv.org/html/2607.10569v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2607.10569v1
+      requested_url: https://arxiv.org/html/2607.10569v1
+      effective_url: https://arxiv.org/html/2607.10569v1
+      retrieved_at_utc: '2026-11-17T21:58:41.530572Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      relative_path: sha256/e2/e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca.raw
+      raw_sha256: e27ae8db007f864e185d9d4daed47ac29769e93fc0da348c653761b3478371ca
+      byte_length: 315644
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2684
+  arxiv_id: '2602.15945'
+  url: https://arxiv.org/abs/2602.15945v1
+  source_type: paper
+  title: 'From Tool Orchestration to Code Execution: A Study of MCP Design Choices'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Defines 16 attack classes in 5 phases for code-execution MCP, with four demonstrated attacks (P1.1, P2.1, P3.2, P4.3), two of them CE-MCP-specific; the P4.3 exception-injection attack succeeded without any sandbox escape.'
+  - 'Mitigations: pre-execution semantic gate, post-execution semantic gate, static code validation, isolation, runtime monitoring; L4 classes were not empirically tested and defenses were not tested against adaptive attackers.'
+  - 'The paper reports no numeric results (figures only); about 34 tasks, GPT-4o/4.1/4.1-mini only.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'arXiv v1 HTML read from disk, id verified. Table 2/4 mitigation mapping taken from the dive; P5.6 mapping is an inference. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 8.2
+    quote: As a result, sandboxing alone as a defense is insufficient.
+    quote_sha256: e06d1cd05f7bfb80d44d1e4e7d178d499ff8f618061606634bb88f21e345c90e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba, found: true}
+    source_revision: https://arxiv.org/html/2602.15945v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2602.15945v1
+      requested_url: https://arxiv.org/html/2602.15945v1
+      effective_url: https://arxiv.org/html/2602.15945v1
+      retrieved_at_utc: '2026-11-17T21:58:41.615034Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba
+      relative_path: sha256/0e/0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba.raw
+      raw_sha256: 0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba
+      byte_length: 231883
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 6.3 attack summary
+    quote: induces unauthorized privilege escalation without sandbox escape.
+    quote_sha256: 848b12a9492791b88b97c7f608a69e9b3f9c4040aceb1af020664d1738b1c494
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba, found: true}
+    source_revision: https://arxiv.org/html/2602.15945v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2602.15945v1
+      requested_url: https://arxiv.org/html/2602.15945v1
+      effective_url: https://arxiv.org/html/2602.15945v1
+      retrieved_at_utc: '2026-11-17T21:58:41.615034Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba
+      relative_path: sha256/0e/0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba.raw
+      raw_sha256: 0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba
+      byte_length: 231883
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 8.3
+    quote: However, we did not stress-test these mitigations against adaptive adversaries who are aware of the defenses.
+    quote_sha256: cf637208ea070fdf9b4ce99294aadcce917222bf591e5feed15d18d7be01eb17
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba, found: true}
+    source_revision: https://arxiv.org/html/2602.15945v1
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2602.15945v1
+      requested_url: https://arxiv.org/html/2602.15945v1
+      effective_url: https://arxiv.org/html/2602.15945v1
+      retrieved_at_utc: '2026-11-17T21:58:41.615034Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba
+      relative_path: sha256/0e/0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba.raw
+      raw_sha256: 0e3c017944f1a6627522c5e4a4bce29f08368c2885ba37dc50418d419a4f5dba
+      byte_length: 231883
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2685
+  arxiv_id: '2402.01030'
+  url: https://arxiv.org/abs/2402.01030v4
+  source_type: paper
+  title: 'Executable Code Actions Elicit Better LLM Agents (CodeAct)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Up to 20.7 points higher success comes from one strong model (gpt-4-1106-preview 74.4 vs 53.7 text on M3ToolEval); open 2023-era models score 0 to 13.4 under any format and show no gain.'
+  - 'On atomic API-Bank calls code beats JSON by a large margin for Llama-2-7B/13B (28.8 vs 11.3, 38.1 vs 8.5) but is roughly tied with text format; the finding is that JSON is poor for open models.'
+  - 'Fine-tuning on code-action trajectories lifted Mistral-7B from 0.0 to 12.2 on M3ToolEval but gave no lift for Llama-2-7B.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'arXiv v4 HTML read from disk (main text, Tables 2/3/5, Appendix H), id verified. No modern 7-35B or quantized models. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: CodeAct outperforms widely used alternatives (up to 20% higher success rate)
+    quote_sha256: d4a301ca7e762cdaac14bf190cfa21711749fc6d8cb54af63f9b8fb3621b21a7
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318, found: true}
+    source_revision: https://arxiv.org/html/2402.01030v4
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2402.01030v4
+      requested_url: https://arxiv.org/html/2402.01030v4
+      effective_url: https://arxiv.org/html/2402.01030v4
+      retrieved_at_utc: '2026-11-17T21:58:41.852177Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      relative_path: sha256/68/682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318.raw
+      raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      byte_length: 1185686
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 2.3
+    quote: the best open-source model achieving 13.4% while the best closed-source model gpt-4-1106-preview 74.4%
+    quote_sha256: 7d9345861003e2f9fab863d2b1d17e744a72e773afe1eb8427d597527cd1ae5c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318, found: true}
+    source_revision: https://arxiv.org/html/2402.01030v4
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2402.01030v4
+      requested_url: https://arxiv.org/html/2402.01030v4
+      effective_url: https://arxiv.org/html/2402.01030v4
+      retrieved_at_utc: '2026-11-17T21:58:41.852177Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      relative_path: sha256/68/682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318.raw
+      raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      byte_length: 1185686
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Table 2 API-Bank atomic calls
+    quote: Llama-2-7b-chat-hf 28.8 \mathbf{28.8} 11.3 11.3 25.8 25.8 Llama-2-13b-chat-hf 38.1 \mathbf{38.1} 8.5 8.5 37.3 37.3
+    quote_sha256: 421a5922e1b9908f43e2ccfdf02d528daf76c0618a57b72cbf2b57911bc5792f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318, found: true}
+    source_revision: https://arxiv.org/html/2402.01030v4
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2402.01030v4
+      requested_url: https://arxiv.org/html/2402.01030v4
+      effective_url: https://arxiv.org/html/2402.01030v4
+      retrieved_at_utc: '2026-11-17T21:58:41.852177Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      relative_path: sha256/68/682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318.raw
+      raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      byte_length: 1185686
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Section 3.2
+    quote: On M 3 ToolEval, we find CodeActAgent (Mistral) outperforms open-source LLMs of similar size (7B and 13B) and even reaches similar performance to those 70B models (Tab. 3 ). Surprisingly, no improvement is observed for the Llama-2 variant.
+    quote_sha256: 6a7b493232a88c3a452c1f00334615eb955d12acb4186140314b5b1f225ae18a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318, found: true}
+    source_revision: https://arxiv.org/html/2402.01030v4
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2402.01030v4
+      requested_url: https://arxiv.org/html/2402.01030v4
+      effective_url: https://arxiv.org/html/2402.01030v4
+      retrieved_at_utc: '2026-11-17T21:58:41.852177Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      relative_path: sha256/68/682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318.raw
+      raw_sha256: 682a6278f847924da9f778077f8f342dc7d7d01df947b82c64e77a9025802318
+      byte_length: 1185686
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2686
+  arxiv_id: null
+  url: https://pydantic.dev/articles/why-code-mode-is-the-future
+  source_type: blog
+  title: 'Code mode: make your agents 2x faster and 2x cheaper on long tasks (Pydantic AI, 2026-10-28)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Same tools and agent with code mode off versus on, 8 models, 5,276 graded runs (3500+576+1200), deterministic end-state oracle; long-task tier cost -58%, wall time -51%, success +16.0 points (67 of 288 failed vs 21).'
+  - 'Savings are not from fewer round trips (models already batch; one response carried 200 calls) but from fewer output (-66%) and input (-53%) tokens.'
+  - 'Small jobs pay a tax: at 5 items cost +21% to +38% on three of five tasks; crossover between 20 and 50 items; a guidance prompt of about 2,600 characters per request.'
+  - 'Hazards: retried snippets duplicated writes, and one model (muse-spark-1.3) was worse with code mode (92% vs 98%); benchmark code is private and the vendor sells the product; no 7B-35B local model tested.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk, sha256 51e599e4... ; internal arithmetic of run counts verified. Headline title overstates the all-task average (everyday -16% cost, -11% time). Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: TL;DR
+    quote: 'On long tasks, code mode roughly halved cost and wall time. Across all eight models: cost -58% , wall time -51% , success +16.0 points .'
+    quote_sha256: 2fe51f8d8275bacc1d4f27266f79561d959fbf182ba78692a7468e99334b8c2a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: TL;DR
+    quote: Without code mode 67 of 288 runs failed; with it, 21.
+    quote_sha256: 75bc52d7fefb0edc32a366b6a05fc4b33188ed244be226b35187b279d85518ed
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Small-jobs section
+    quote: that point was somewhere between 20 and 50 items.
+    quote_sha256: 12bdcde2424d577eb11db29ed92799a3ebfb8dffe9aadbed762fe1e9060c9087
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Where code mode costs
+    quote: adds about 2,600 characters to every request, a flat fee you pay per request no matter how small the job.
+    quote_sha256: ddf31d41581ad15089a5adf0a49bad9c65d0ef8cf8325f85026a2a507dfb6adb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Where code mode costs
+    quote: Retries can repeat writes. A snippet that fails halfway and gets rerun can do its first half twice.
+    quote_sha256: 1163d984f66049483ab4536e0e059f3bc32f8df0fc6b2248993b712a14991624
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: TL;DR
+    quote: 'It isn''t about round trips. Models already batch: one response carried 200 tool calls.'
+    quote_sha256: 8e5f57573a6051d03209548b028945cd0cb8930e87577aeb289a371d68d2a971
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Where the tokens go
+    quote: Output tokens fell 66% across the eight models, from -43% on gpt-6-luna to -80% on claude-sonnet-5-5.
+    quote_sha256: af9d450e83fa949456fa8d11a11dc8b1ac56a4028c0d5aefba03fb2891627c0c
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae, found: true}
+    source_revision: https://pydantic.dev/articles/why-code-mode-is-the-future
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      requested_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      effective_url: https://pydantic.dev/articles/why-code-mode-is-the-future
+      retrieved_at_utc: '2026-11-17T21:58:41.942426Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      relative_path: sha256/51/51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae.raw
+      raw_sha256: 51e599e483df2e8f4f81cf1a2e350b2ba9449c76fb5660e69f12d48829ca4fae
+      byte_length: 172046
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry. The headline title overstates the all-task average; the TL;DR cost -58% and time -51% are the long-task tier only.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2687
+  arxiv_id: null
+  url: https://aimultiple.com/code-execution-with-mcp
+  source_type: blog
+  title: 'Code execution with MCP benchmark (AIMultiple)'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: low
+  relevance: low
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: superseded
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'One model (GPT-4.1), two scraping queries, 63-tool Bright Data MCP: 78.5% fewer input tokens (165K vs 771K), 100% success both arms, latency +7% with no variance reported.'
+  - 'The saving is mostly tool-definition tokens (about 15,400 per call), i.e. progressive disclosure, not code execution per se; the 98% figure on the page is Anthropic''s, and the 70% cost figure is an estimate.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk, sha256 6d930430...; redirected from research.aimultiple.com. Sponsor relationship disclosed; ceiling success, so no power. Superseded as evidence by intake-2686 (named successor). Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md. Anchors recorded and script-marked 2026-11-17.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Results table
+    quote: Success Rate 100% 100% Same Avg Latency 9.66s 10.37s +7% Avg Input Tokens 15,417 3,310 -78.5%
+    quote_sha256: ea4a99997c36e03508e80097a5e89c17d1a17153aeef683ea00b55f3803145ac
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928, found: true}
+    source_revision: https://aimultiple.com/code-execution-with-mcp
+    source_artifact:
+      entry_url: https://aimultiple.com/code-execution-with-mcp
+      requested_url: https://aimultiple.com/code-execution-with-mcp
+      effective_url: https://aimultiple.com/code-execution-with-mcp
+      retrieved_at_utc: '2026-11-17T21:58:42.084547Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928
+      relative_path: sha256/69/693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928.raw
+      raw_sha256: 693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928
+      byte_length: 277035
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Results table
+    quote: Total All Tokens 775,197 175,081 -77.4%
+    quote_sha256: a9687b681c2f30e85300c78ec76d21f5f869138268db30732a0f64f013866364
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928, found: true}
+    source_revision: https://aimultiple.com/code-execution-with-mcp
+    source_artifact:
+      entry_url: https://aimultiple.com/code-execution-with-mcp
+      requested_url: https://aimultiple.com/code-execution-with-mcp
+      effective_url: https://aimultiple.com/code-execution-with-mcp
+      retrieved_at_utc: '2026-11-17T21:58:42.084547Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928
+      relative_path: sha256/69/693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928.raw
+      raw_sha256: 693486020c377b4bdd00a8cca26d4cfc0bb63a1e15d814a484062ef6f0700928
+      byte_length: 277035
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry. Superseded as evidence by intake-2686 (same question, better design).'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2688
+  arxiv_id: null
+  url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+  source_type: blog
+  title: 'Better Models: Worse Tools (Armin Ronacher, 2026-07-04)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Opus 4.8 and Sonnet 5 invent keys inside Pi''s nested edits[] tool schema while older Anthropic models do not; the one number is about 20% of the time for Opus 4.8 on one user''s transcripts.'
+  - 'The author''s strongest hypothesis is a training artifact from reinforcement learning inside a forgiving closed harness; this is a hypothesis, not a result.'
+  - 'Turning on strict tool invocation eliminated the malformed calls in his runs (n unstated); tool schemas are not neutral on Anthropic models.'
+  - 'No local or small-model data and nothing about models writing code; the narrow bearing is that nested JSON tool arguments are a failure point and constrained decoding is the remedy.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk (sha256 884909a4...). Single-harness debugging anecdote, no sizes or seeds. The post is NOT about bash-trained models versus tool schemas, contrary to the coordinator''s one-line gloss. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md (wave 2/3).'
+  claim_anchors:
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Why It's Getting Worse
+    quote: My strongest hypothesis is that this is not random deterioration but a training artifact.
+    quote_sha256: 7b84a5c54e953ef00256765e654440f56e9c48cad881b6ff6be5b5b059b3752e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      requested_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      effective_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      retrieved_at_utc: '2026-11-17T22:03:28.980415Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      relative_path: sha256/88/884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0.raw
+      raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      byte_length: 30490
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Failure analysis
+    quote: Turning on strict tool invocation eliminated it in my runs.
+    quote_sha256: 4180b17e57127e054d0507b50f49869638002900747df8f155da463247c910aa
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      requested_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      effective_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      retrieved_at_utc: '2026-11-17T22:03:28.980415Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      relative_path: sha256/88/884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0.raw
+      raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      byte_length: 30490
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Weaknesses
+    quote: tool schemas are not neutral, at least not on Anthropic models.
+    quote_sha256: a58f45f29cf7cf7d83131ae4883ef9a43e026427e5df2d39faa1491468b1072d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      requested_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      effective_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      retrieved_at_utc: '2026-11-17T22:03:28.980415Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      relative_path: sha256/88/884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0.raw
+      raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      byte_length: 30490
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Failure analysis
+    quote: caused Opus 4.8 to fail around 20% of the time.
+    quote_sha256: 7a88c188a33c195ebcfcfb9e4f8dd48d3f7a97b04cec06293f1ec06ea5791028
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0, found: true}
+    source_revision: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+    source_artifact:
+      entry_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      requested_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      effective_url: https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/
+      retrieved_at_utc: '2026-11-17T22:03:28.980415Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      relative_path: sha256/88/884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0.raw
+      raw_sha256: 884909a4f5607fffa2b6ce0ed59472325d40d1b2d9e5cd62d670567f4ab49fb0
+      byte_length: 30490
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2689
+  arxiv_id: null
+  url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+  source_type: blog
+  title: 'Code mode is not a sandbox (Pydantic, M. Trylesinski, 2026-11-10; page title ''Code mode vs sandboxes for AI agents'')'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Code mode is about how the model calls tools; a sandbox is about where code runs and what it can touch: the two are orthogonal and can be composed.'
+  - 'Inside Monty''s run_code there is no filesystem, network, environment variables or clock unless granted; defaults are 30 s, 256 MiB and 100 nested tool calls per call.'
+  - 'The exposed tools are not isolated: they run with the agent process''s full authority, so the security boundary is the list of exposed functions and each tool needs its own validation.'
+  - 'The post is candid that a local workspace is not a sandbox and bubblewrap stops accidents, not a hostile agent; the 0.8 ms versus 1.5 s sandbox startup comparison is one vendor measurement.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk, sha256 f26b8412.... Vendor-authored (Pydantic sells Monty and Logfire). The slug is code-mode-vs-sandboxes; the guessed slug code-mode-is-not-a-sandbox returns 404. Existing intake-1870 records a language-level escape in an earlier Monty version, so the ''no ambient authority'' claim is design, not demonstrated. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md (wave 2/3).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Intro
+    quote: A sandbox is about where code runs and what it can touch. You can have either one without the other
+    quote_sha256: a45b918056286f24a0f283ae5d2f7ed8cd0fb2fd74b66f1cecd05213bfe54f6b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef, found: true}
+    source_revision: https://pydantic.dev/articles/code-mode-vs-sandboxes
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      requested_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      effective_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      retrieved_at_utc: '2026-11-17T22:03:29.092832Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      relative_path: sha256/f2/f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef.raw
+      raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      byte_length: 148618
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Code mode runs next to your agent
+    quote: By default, each run_code call gets 30 seconds, 256 MiB, and 100 nested tool calls.
+    quote_sha256: 86b1ce9555f4fe000b8f787ab23b29897caaebc02d0fdf548f9900165f142985
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef, found: true}
+    source_revision: https://pydantic.dev/articles/code-mode-vs-sandboxes
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      requested_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      effective_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      retrieved_at_utc: '2026-11-17T22:03:29.092832Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      relative_path: sha256/f2/f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef.raw
+      raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      byte_length: 148618
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Code mode runs next to your agent
+    quote: 'get_order runs with whatever access your agent process has: database credentials, API keys, the host filesystem. In code mode, the security boundary is the list of functions you expose.'
+    quote_sha256: f1bff5f18c901c69683a3a10d2b307d7d392bb0b4657bcab4716297126eca694
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef, found: true}
+    source_revision: https://pydantic.dev/articles/code-mode-vs-sandboxes
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      requested_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      effective_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      retrieved_at_utc: '2026-11-17T22:03:29.092832Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      relative_path: sha256/f2/f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef.raw
+      raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      byte_length: 148618
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Workspaces
+    quote: LocalWorkspace is not a sandbox. Commands run on your machine, as you
+    quote_sha256: 8582142632bbc8ef8bf258aed127791a976c77a413809cc0b6a93811e59f66a5
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef, found: true}
+    source_revision: https://pydantic.dev/articles/code-mode-vs-sandboxes
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      requested_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      effective_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      retrieved_at_utc: '2026-11-17T22:03:29.092832Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      relative_path: sha256/f2/f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef.raw
+      raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      byte_length: 148618
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Comparison table
+    quote: Stops accidents, not a hostile agent
+    quote_sha256: 37e631c07bed12c841886490380a6af7e34b2f9c1f9e77d260f77f9d6a358cf9
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef, found: true}
+    source_revision: https://pydantic.dev/articles/code-mode-vs-sandboxes
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      requested_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      effective_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      retrieved_at_utc: '2026-11-17T22:03:29.092832Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      relative_path: sha256/f2/f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef.raw
+      raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      byte_length: 148618
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Comparison table
+    quote: New session in 0.8 ms from a warm pool About 1.5 s for a new Daytona sandbox, in one measurement
+    quote_sha256: 4c94de58964c5e456650f70144122971d7b22786f357ad70f73b219ea685f5ce
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef, found: true}
+    source_revision: https://pydantic.dev/articles/code-mode-vs-sandboxes
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      requested_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      effective_url: https://pydantic.dev/articles/code-mode-vs-sandboxes
+      retrieved_at_utc: '2026-11-17T22:03:29.092832Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      relative_path: sha256/f2/f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef.raw
+      raw_sha256: f26b841266732ca5a464b79d990a272d9c870faf7f840f51e399505dc207deef
+      byte_length: 148618
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2690
+  arxiv_id: null
+  url: https://pydantic.dev/articles/the-code-is-the-graph
+  source_type: blog
+  title: 'The code is the graph (Samuel Colvin, Pydantic, 2026-10-13)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Argues graph-orchestration libraries are a mistake: model-written code in a sandbox whose only exit is a registered host function can be the graph and be rewritten every turn.'
+  - 'Interpreter state (heap and call stack) is a few kilobytes and can be snapshotted at each external call and resumed in another process.'
+  - 'The host function remains where one decides whether running it twice is safe: the idempotency caveat for resume and replay.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Read from disk, sha256 e9a29a70...; about 5.5k characters of the middle (graph-library critique, durability) were lost in extraction. Opinion and design advocacy from the author of a competing graph library; no sandbox security evidence of its own. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md (wave 2/3).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Long live graphs
+    quote: the only way out of the sandbox is a function the host registered. There is no container to start and no network call, so the graph can be rewritten on every turn.
+    quote_sha256: 4310a12aaa230924a8c4c92e9db45a74243dc457590609e963c68a92ae6a9a91
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418, found: true}
+    source_revision: https://pydantic.dev/articles/the-code-is-the-graph
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/the-code-is-the-graph
+      requested_url: https://pydantic.dev/articles/the-code-is-the-graph
+      effective_url: https://pydantic.dev/articles/the-code-is-the-graph
+      retrieved_at_utc: '2026-11-17T22:03:29.194438Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418
+      relative_path: sha256/e9/e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418.raw
+      raw_sha256: e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418
+      byte_length: 136646
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Durability section
+    quote: whether running it twice is safe
+    quote_sha256: c92c52fe93a5ffc07bed007287b3191f2140faec9338ce33af5f4b8b0eeb4ec1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418, found: true}
+    source_revision: https://pydantic.dev/articles/the-code-is-the-graph
+    source_artifact:
+      entry_url: https://pydantic.dev/articles/the-code-is-the-graph
+      requested_url: https://pydantic.dev/articles/the-code-is-the-graph
+      effective_url: https://pydantic.dev/articles/the-code-is-the-graph
+      retrieved_at_utc: '2026-11-17T22:03:29.194438Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418
+      relative_path: sha256/e9/e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418.raw
+      raw_sha256: e9a29a7017aaecc627903d60aa1a70ba2d049cdc44b26b5ceaf752e12e20d418
+      byte_length: 136646
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2691
+  arxiv_id: null
+  url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+  source_type: repo
+  title: 'code-puppy-speculation-ab: speculative code mode A/B (maverick-jackson)'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - '540 paired runs (20 tasks x 3 setups off/on/plain x 3 models x 3 repeats), shuffled, analysis plan frozen before the main run: code mode made all three models slower on short tasks (wall clock about +33%, plain code mode versus off +38%).'
+  - 'Cost rose about 44% and input tokens about 89% per task with success unchanged (531 of 540 correct).'
+  - 'Models ignored a ''go big'' prompt: about 61% of snippets wrapped exactly one tool call, so speculation saved about 0.2% of run time.'
+  - 'Independent individual author, API models only (DeepSeek flash and V4 Pro, GLM-4.7), tasks of 10-90 s on one WSL2 machine; no local or small models.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Repo cloned depth 1 at SHA 6efc6417d24f5f6c33107ceecea3e9a0bca07c3b; README is the study. Cited by the Pydantic benchmark post (intake-2686), which it contradicts on short tasks. AI-audited by the author (11 fixes found). Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md (wave 2/3).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: README summary
+    quote: It made all three models I tried slower, and the slowdown comes from code mode itself, not from speculation.
+    quote_sha256: 6535baced481c92a7c18777f6dfa3ac5f215bf60128581c4b860e6027d8f989f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d, found: true}
+    source_revision: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      requested_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      effective_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      retrieved_at_utc: '2026-11-17T22:03:29.508248Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      relative_path: sha256/70/701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d.raw
+      raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      byte_length: 5714
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Results
+    quote: '**Cost:** about 44% more per task with it on (89% more input tokens).'
+    quote_sha256: 7aa086cfce1bd716a75b493a9f72f9d9130cb5a9fc641f3755dad05022e48e90
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d, found: true}
+    source_revision: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      requested_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      effective_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      retrieved_at_utc: '2026-11-17T22:03:29.508248Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      relative_path: sha256/70/701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d.raw
+      raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      byte_length: 5714
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Results
+    quote: 531 of 540 runs were correct
+    quote_sha256: 1779dcb13a179b2eb2cc6402f1412ffa3229db5459b8c0e1dad03dc6c867fa54
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d, found: true}
+    source_revision: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      requested_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      effective_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      retrieved_at_utc: '2026-11-17T22:03:29.508248Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      relative_path: sha256/70/701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d.raw
+      raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      byte_length: 5714
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Results
+    quote: About 61% of snippets wrapped exactly one tool call, and about a quarter wrapped none.
+    quote_sha256: f4d83fa5a677ac30b5565a4d936559845b2fa730ba17fc7d3ec6bbdc98fe2def
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d, found: true}
+    source_revision: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+    source_artifact:
+      entry_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      requested_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      effective_url: https://raw.githubusercontent.com/maverick-jackson/code-puppy-speculation-ab/6efc6417d24f5f6c33107ceecea3e9a0bca07c3b/README.md
+      retrieved_at_utc: '2026-11-17T22:03:29.508248Z'
+      media_type: text/plain
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      relative_path: sha256/70/701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d.raw
+      raw_sha256: 701b596c7297041f0afa26cf820abc69715eba73dd5f520b4692fb89ab18ab0d
+      byte_length: 5714
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2692
+  arxiv_id: '2605.13360'
+  url: https://arxiv.org/abs/2605.13360v2
+  source_type: paper
+  title: 'Speculative Interaction Agents (arXiv 2605.13360)'
+  categories:
+  - agent_architecture
+  - speculative_decoding
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: worth_investigating
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Launches tool calls on partial user input while the user is still speaking; only read-only tools run speculatively; reported 1.3-1.7x speedups on cloud realtime APIs and 1.6-2.2x on fine-tuned 3B models (relative to a strong SFT baseline, 100 samples, one A100).'
+  - 'Partly simulated (fake streaming STT, simulated environment for one benchmark); needs interruptible streaming input in the serving engine plus finetuning for small models.'
+  - 'No 7B-35B model is evaluated; the gain hides tool and reasoning latency behind streaming speech, not behind a single model''s decode loop.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Version v2 HTML read from disk, id verified by abstract page. Independent academic (Berkeley). Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md (wave 2/3).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Section 1
+    quote: only read-only tools can be executed before receiving a final confirmation signal to avoid irreversibly modifying system state.
+    quote_sha256: 2522cbe740b5b682403ecc82c5a5461bcb2cfecc96058d8981b35e1b55cc7770
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac, found: true}
+    source_revision: https://arxiv.org/html/2605.13360v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2605.13360v2
+      requested_url: https://arxiv.org/html/2605.13360v2
+      effective_url: https://arxiv.org/html/2605.13360v2
+      retrieved_at_utc: '2026-11-17T22:03:29.592682Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac
+      relative_path: sha256/0b/0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac.raw
+      raw_sha256: 0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac
+      byte_length: 192959
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: this approach provides 1.6-2.2
+    quote_sha256: 20987c1b71d6bcb372ccf3e1d71eebbd92c22e8381e0c5ffca45d9e191f62eb3
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac, found: true}
+    source_revision: https://arxiv.org/html/2605.13360v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2605.13360v2
+      requested_url: https://arxiv.org/html/2605.13360v2
+      effective_url: https://arxiv.org/html/2605.13360v2
+      retrieved_at_utc: '2026-11-17T22:03:29.592682Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac
+      relative_path: sha256/0b/0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac.raw
+      raw_sha256: 0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac
+      byte_length: 192959
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Related work
+    quote: open-source serving frameworks like vLLM have recently added support for efficient streaming input processing
+    quote_sha256: c40e6e8c9e79bf0d10ed385c498bd06a1c806f8131c90be1a5fb1ed68282303a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac, found: true}
+    source_revision: https://arxiv.org/html/2605.13360v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2605.13360v2
+      requested_url: https://arxiv.org/html/2605.13360v2
+      effective_url: https://arxiv.org/html/2605.13360v2
+      retrieved_at_utc: '2026-11-17T22:03:29.592682Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac
+      relative_path: sha256/0b/0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac.raw
+      raw_sha256: 0b0ddc8738b33dfd5538fa8614d7299d5d2491096b949b78b777370bcd7e58ac
+      byte_length: 192959
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-2693
+  arxiv_id: '2406.00059'
+  url: https://arxiv.org/abs/2406.00059v2
+  source_type: paper
+  title: 'Conveyor: Efficient Tool-aware LLM Serving with Tool Partial Execution (arXiv 2406.00059)'
+  categories:
+  - inference_serving
+  - tool_implementation
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-2675
+  verdict: worth_investigating
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Executes tool calls on completed pieces of the token stream while the model is still decoding; reported up to 38.8% lower request latency (100 runs per workload, synthetic prompts).'
+  - 'Code-generation case (execute each completed line of generated Python as decoded) gained 26.3% with Mistral-7B on RTX 3090; database and calculator tools gained nothing because tool time is tiny versus decode.'
+  - 'Implementation is a serving-system change (about 1.9K lines, token-stream parser) but the idea can be done client-side on an SSE token stream; spawns the tool in a separate process to avoid GIL contention.'
+  verification: dive-verified
+  read_depth: FULL
+  notes: 'Version v2 HTML read from disk, id verified by abstract page. 2024-era, small synthetic testbed, independent academic. Dive artifacts: research/deep-dives/codemode-20261117/dive-summary.md (wave 2/3).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: tool partial execution can improve request completion latency by up to 38.8%.
+    quote_sha256: 50f94349c3fa2e8fb92edc61f2e84f44b9a2839bc180b0daab553351a36e3f84
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491, found: true}
+    source_revision: https://arxiv.org/html/2406.00059v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2406.00059v2
+      requested_url: https://arxiv.org/html/2406.00059v2
+      effective_url: https://arxiv.org/html/2406.00059v2
+      retrieved_at_utc: '2026-11-17T22:03:29.665439Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491
+      relative_path: sha256/99/9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491.raw
+      raw_sha256: 9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491
+      byte_length: 109347
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Section 4 CodeGen
+    quote: The average latency improvement is 26.3%.
+    quote_sha256: 4036095f37769bd9d04191563acbde05e095a16c6d04e471b0f2d2e4724e45cc
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491, found: true}
+    source_revision: https://arxiv.org/html/2406.00059v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2406.00059v2
+      requested_url: https://arxiv.org/html/2406.00059v2
+      effective_url: https://arxiv.org/html/2406.00059v2
+      retrieved_at_utc: '2026-11-17T22:03:29.665439Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491
+      relative_path: sha256/99/9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491.raw
+      raw_sha256: 9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491
+      byte_length: 109347
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Implementation
+    quote: we choose to spawn tool execution on a separate dedicated process to avoid unnecessary contention or interference with the LLM decoding procedure.
+    quote_sha256: eff22d851e765975499d90bfbefd69d557d9af53ddf2a46abc89aafe62b8b09a
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491, found: true}
+    source_revision: https://arxiv.org/html/2406.00059v2
+    source_artifact:
+      entry_url: https://arxiv.org/abs/2406.00059v2
+      requested_url: https://arxiv.org/html/2406.00059v2
+      effective_url: https://arxiv.org/html/2406.00059v2
+      retrieved_at_utc: '2026-11-17T22:03:29.665439Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491
+      relative_path: sha256/99/9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491.raw
+      raw_sha256: 9915c61bef760ac8be5b63c274a837f39c62d86d502f31875c5b73ed47bd7491
+      byte_length: 109347
+    verified_by: research-intake/stage2 (quote chosen by integrator from the retained extract)
+  dive_corrections: '2026-11-17 Stage-2 dive: source read from disk, quotes recorded as claim_anchors and script-marked (found: true). Second reader (haiku) judged most anchors PARTIAL because the claims are composite; three mis-assigned anchors on intake-2682 and intake-2685 were corrected and reassigned. Claims without an anchor (absence of a measured result, derived arithmetic, repo-line facts) are not quotable from this entry.'
+  handoffs_updated: []
+  handoffs_created: []
