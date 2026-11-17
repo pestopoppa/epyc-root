@@ -39,3 +39,7 @@ Duplicate run-end notification for inf86-template-preserve-20261117-r2. Existing
 ## 22:39Z — Consume duplicate completed B3 A/B event; retain filed NO_GAIN verdict
 
 Duplicate run-end notification for inf86-pr25592-c12-ab-20261117-r2: B3 was already checked and its pass/fail filing receipt exists (filed 2026-11-17T19:34:15Z, fail / NO_GAIN). No new measurement or verdict. Remaining INF-86 work is INF-86-SLOT-RESTORE-CHECKPOINTS, waiting on the already-readied inf86-slot-restore-ckpt-c13-20261117. DS-F1 remains dependent on AM-DECISIVE-1; earlyoom remains the host operator decision. No compute repeated.
+
+## 22:41Z — Acknowledge duplicate G5 run-end through idempotent filing tool
+
+Duplicate run-end notification for inf86-g5-nsession-20261117. file_result.py returned NOOP: already FILED. G5 remains closed with BOUNDED_NULL_1 (zero measured cross-session eviction waste across six cells); no new finding or compute. Remaining INF-86 work waits on the already-readied C13 slot-restore validation. DS-F1 still depends on AM-DECISIVE-1, and earlyoom requires the host operator action.
