@@ -8,6 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "vidya"))
 
 import claim_tuple as ct  # noqa: E402
+import loop_beliefs as lb  # noqa: E402
 from adapters import ch18_merge_trial as m  # noqa: E402
 
 LEGACY = Path(__file__).resolve().parents[2] / "docs/reports/kv-cache/kpf191a-ch18-pull-trial-20261105/conflicts.json"
@@ -42,6 +43,27 @@ def test_sealed_record_projects_and_grades(tmp_path):
     assert tup.value == 4 and tup.metric == "ch18_merge_conflicted_paths" and tup.protocol_id == ""
     frames = m.frames_for_path(_write(tmp_path, _rec()), as_of="2026-11-08T00:00:00Z")
     assert frames
+
+
+def test_inventory_is_visible_as_consumer_context_only(tmp_path):
+    record = _rec()
+    as_of = record["completed_at"]
+    frames = m.frames_for_path(_write(tmp_path, record), as_of=as_of)
+    target = lb.Target.from_mapping({"model_file": "test-model.gguf", "backend": "cpu"})
+    planner = lb.evaluate_frames(frames, [target], as_of=as_of, consumer="autokernel.planner")
+    (claim,) = planner["claims"]
+    assert (claim["tier"], claim["grade"], claim["value"], claim["unit"]) == (
+        "harness", "Judged/Located", 4, "paths")
+    assert claim["not_evidence"] and not claim["model_file"]
+    assert planner["not_evidence_claim_ids"] == [claim["claim_id"]]
+    assert not planner["claim_ids"] and not planner["tried_index"]
+    assert not planner["nonempty_target"]
+    for expected in (record["production_base"], record["upstream_tip"], "4 conflicted paths",
+                     "worktree_removed=True", "conflict inventory only", "promotion"):
+        assert expected in planner["section"]
+
+    other = lb.evaluate_frames(frames, [target], as_of=as_of, consumer="autopilot.planner")
+    assert not other["claims"] and not other["section"]
 
 
 @pytest.mark.parametrize("mut", [

@@ -1,0 +1,94 @@
+{
+  "actor_receipt_id": "sha256:9ae8b22f8e3e1cd7cc40a1a11e70233b2b396323e579fd175fb07c730f95fe00",
+  "as_of": "2026-11-17T20:21:40.678876+00:00",
+  "claim": {
+    "anchor_value": null,
+    "claim_id": "clm_ch18-merge-trial:ffc1bac82eec:4e201388c319:f51819c730a97508",
+    "effect_rel": null,
+    "grade": "Judged/Located",
+    "knob_family": "",
+    "knobs": {},
+    "linked_claim_ids": [],
+    "locator": "ch18-merge-trial:data/vidya/ch18-trial-20261117/merge_trial.json",
+    "mechanism_id": "",
+    "model_file": "",
+    "n_pairs": null,
+    "noise_floor_rel": null,
+    "not_evidence": true,
+    "outcome": "",
+    "recipe": "",
+    "reps": 1,
+    "retrofit": false,
+    "role": "",
+    "run": null,
+    "source_kind": "ch18-merge-trial",
+    "stack_regime": "",
+    "stale_epoch": false,
+    "status": "verified",
+    "tier": "harness",
+    "unit": "paths",
+    "value": 98.0,
+    "varied": []
+  },
+  "commit_pair": {
+    "production_base": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "upstream_tip": "4e201388c319fc9f747fbe6a666793e2dc2a6d8e"
+  },
+  "consumer": "autokernel.planner",
+  "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "ingest": {
+    "frames": 3,
+    "refused": 0,
+    "rows": 1
+  },
+  "ledger": {
+    "frame_count": 3,
+    "head_hash": "sha256:67a7b1c8e318c2d93f3642cbe93a7f71c62a083e5ded6711f5cfe5b6ee0ac91e",
+    "intake_index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "scratch": true,
+    "verified_ready": true
+  },
+  "original_native_record": "data/vidya/ch18-trial-20261117/merge_trial.json",
+  "original_native_record_sha256": "62ef9e0f2ddec3ef31c9dbf9c70a01add60c0b14273b806e82cf269fdb017f79",
+  "other_consumer_control": {
+    "claims": [],
+    "consumer": "autopilot.planner"
+  },
+  "protocol_id": "",
+  "reader_checkout": {
+    "behind": 1,
+    "current": true,
+    "error": null,
+    "head": "a3ff1429d9707da0994df603ac760bea97c8c8d6",
+    "oldest_missing_age_s": 66.7,
+    "origin_main": "633b2ce6ba1991f9fec352a8505044ee7d887f58",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
+    "within_grace": true
+  },
+  "reliance_control": {
+    "accepted": [],
+    "declared": [
+      "clm_ch18-merge-trial:ffc1bac82eec:4e201388c319:f51819c730a97508"
+    ],
+    "rejected": [
+      {
+        "claim_id": "clm_ch18-merge-trial:ffc1bac82eec:4e201388c319:f51819c730a97508",
+        "reason": "host_tier"
+      }
+    ]
+  },
+  "rendered_excerpt": "planner-context.txt",
+  "rendered_excerpt_sha256": "5fe0851a5d9464d370619712ae2133d98b2f2c0f32b8709a05a200e671f3537e",
+  "research_sources_sha256": {
+    "scripts/kernel_rnd/autokernel/loop/actors.py": "4ee12bf63f60697286193bea4c59c2102bd0baa38dffa731eec3364c346faf5b",
+    "scripts/kernel_rnd/autokernel/loop/belief_context.py": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f"
+  },
+  "root_sources_sha256": {
+    "scripts/vidya/adapters/ch18_merge_trial.py": "282bb0dc262be927a37f2302e6ef34e7324f1f2d43a2a9bfdff3d92111bb5a3c",
+    "scripts/vidya/loop_beliefs.py": "f23dd550eb679511ad2fa435d71268399c6094b3a431732fa32d28ace2712dc2"
+  },
+  "schema": "epyc.vidya.ch18_merge_trial_planning_canary.v1",
+  "scope": "Scratch ledger and empty explicit intake index. Diagnostic conflict inventory for the original pinned pair. No canonical write, trial rerun, inference or promotion.",
+  "status": "passed",
+  "stop_boundary": "AgentPlanner._proposal_from_agent intercepted before any backend call"
+}

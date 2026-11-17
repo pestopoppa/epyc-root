@@ -23,6 +23,7 @@ from claim_tuple import ClaimTuple, ProjectionError, register, to_frames  # noqa
 ADAPTER_ID = "vidya.adapters.ch18_merge_trial/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "ch18-merge-trial"
+PLANNER_CONSUMER = "autokernel.planner"
 SCHEMA = "epyc.ch18_merge_trial.v1"
 FIELDS = frozenset({
     "schema", "kind", "production_base", "upstream_tip", "merge_strategy", "tool", "completed_at",
@@ -124,11 +125,11 @@ def project(native: Any) -> ClaimTuple:
     if not _eligible(rec):
         _bad(native["path"], "trial is not complete with successful cleanup")
     k = rec["conflict_count"]
-    claim = (f"Unresolved merge trial of upstream {rec['upstream_tip'][:12]} into production base "
-             f"{rec['production_base'][:12]} ({rec['merge_strategy']}; {rec['tool']['name']} "
+    claim = (f"Trial merge of pinned upstream {rec['upstream_tip']} into pinned production base "
+             f"{rec['production_base']} ({rec['merge_strategy']}; tool {rec['tool']['name']}, "
              f"{rec['tool']['version']}) left {k} conflicted paths; cleanup worktree_removed="
              f"{rec['cleanup']['worktree_removed']}, merge_aborted={rec['cleanup']['merge_aborted']}. "
-             "A conflict inventory only: contents not reconciled, built, tested or promoted.")
+             "Scope: conflict inventory only. Reconciliation, build, testing and promotion are outside this trial.")
     return ClaimTuple(
         measurement_id=(f"ch18-merge-trial:{rec['production_base'][:12]}:{rec['upstream_tip'][:12]}:"
                         f"{rec['content_sha256'][:16]}"),
@@ -138,6 +139,8 @@ def project(native: Any) -> ClaimTuple:
         attestation_path=native["path"], attestation_sha256=rec["content_sha256"],
         attestation_locator=f"ch18-merge-trial:{native['path']}", attestation_present=True,
         attestation_verified=True, source_kind=SOURCE_KIND,
+        # Routing policy for planning context. The native record declares no model or device.
+        applicability={"consumer": PLANNER_CONSUMER},
         observation={"outcome_native": f"{k} conflicted paths"},
         extra={"adapter": ADAPTER_ID, "production_base": rec["production_base"],
                "upstream_tip": rec["upstream_tip"], "merge_strategy": rec["merge_strategy"],

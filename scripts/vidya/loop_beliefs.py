@@ -117,7 +117,7 @@ DEFAULT_MAX_BYTES = 14000
 #: `knob_family` is one the target can change; it shares the target budget and ranks above plain
 #: target lines. `lineup` matches a lineup target by `stack_regime` (AutoPilot's own trials).
 #: `harness` (VB-AK-WIRE-PLANNER-TIER) is consumer-scoped, not model- or device-scoped: a
-#: loop-infrastructure verifier finding (e.g. the actor-wire matrix) whose source frame declares
+#: loop-infrastructure finding or source dependency whose source frame declares
 #: `applicability.consumer`. It reaches only the consumer it names, is never evidence about a
 #: model, and is excluded from reliance-eligible `claim_ids` exactly like the host tier.
 TIERS = ("knob", "target", "lineup", "sibling", "host", "harness")
@@ -1418,9 +1418,8 @@ TIER_TITLES = {
                "(lineup-wide knobs)"),
     "sibling": ("### Usable, sibling tier -- measured on a sibling file of the same lineage "
                 "(other weights, quant or recipe); transfer unproven, never target evidence"),
-    "harness": ("### Loop-infrastructure facts (harness tier) -- verifier findings about this "
-                "consumer's own tooling, not evidence about any model; not evidence for a "
-                "proposal"),
+    "harness": ("### Loop-infrastructure facts (harness tier) -- tooling and source-dependency "
+                "context for this consumer; not evidence about any model or for a proposal"),
     "host": ("### Device-scope claims (host tier) -- scoped by device only, no model: host "
              "ceiling, not about this model; not evidence for a proposal"),
 }
@@ -1585,6 +1584,8 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
     if what:
         lines.append(head)
         lines.append(f"  {what}{_earlier_text(row)}")
+        if tier == "harness" and row["text"]:
+            lines.append(f"  {row['locator']}: {_cap(row['text'], CLAIM_TEXT_CAP)}")
         if tier in _MODEL_TIERS and row["statement"]:
             falsifier = (f"; falsifier: {_cap(row['falsifier'], STATEMENT_CAP // 2)}"
                          if row["falsifier"] else "")
