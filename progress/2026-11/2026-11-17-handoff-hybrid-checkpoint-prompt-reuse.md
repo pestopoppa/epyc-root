@@ -1,0 +1,5 @@
+# 2026-11-17 — handoff hybrid-checkpoint-prompt-reuse
+
+## 22:19Z — Consume 20 INF-86 run alerts and checkpoint pending C13 slot-restore validation
+
+Handled and acknowledged all 20 outstanding INF-86 alerts. Completed run verdicts already have filing-done receipts; failed template-preserve and pr25592 v1 smokes are unpublished and superseded by their completed, filed r2 successors. No completed result was left unfiled and no failure was treated as a pass. Resolution record: /mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/alert-resolution/20261117.json. INF-86-SLOT-RESTORE-CHECKPOINTS remains open: inf86-slot-restore-ckpt-c13-20261117 is published with smoke PASS and awaits keeper allocation. The 3K qualification restored three checkpoints, reused 1128 tokens against CTRL zero and matched the fresh greedy reply; this is not the full 16K verdict. No republish or additional compute needed. DS-F1 depends on the external AM-DECISIVE-1 verdict; earlyoom requires the operator host-side edit already specified in the handoff. No checkbox ticked without its scoped result.
