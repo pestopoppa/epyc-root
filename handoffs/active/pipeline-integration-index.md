@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | Only PIP02-PADDLE-STACK-ENTRY remains (PaddleOCR-VL stack entry, after v11 promotion, before Autopilot relaunch; fold LightOnOCR stack entry into the same stack-change package) | v11 promotion |
+| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | Only PIP02-PADDLE-STACK-ENTRY remains (after v11 promotion, before Autopilot relaunch; bundle LightOnOCR entry) | INF-83 |
 
 ## Cross-domain
 

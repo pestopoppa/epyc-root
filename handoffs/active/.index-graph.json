@@ -90,7 +90,7 @@
     {
       "from": "PIP-04",
       "kind": "dep",
-      "to": "v11 promotion"
+      "to": "INF-83"
     },
     {
       "from": "REV-02",
@@ -700,7 +700,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T10:43:17Z",
+  "generated_at": "2026-11-17T10:47:22Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1354,7 +1354,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 12,
+        "unblocks": 13,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1397,7 +1397,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 10,
+        "unblocks": 11,
         "unblocks_rows": [
           "EVL-49",
           "INF-62",
@@ -1683,7 +1683,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 11,
+        "unblocks": 12,
         "unblocks_rows": [
           "EVL-49",
           "INF-03",
@@ -1798,7 +1798,7 @@
         "source": "file",
         "tier": 0,
         "tier_name": "T0 inference-prep",
-        "unblocks": 10,
+        "unblocks": 11,
         "unblocks_rows": [
           "INF-62",
           "INF-65",
@@ -1946,7 +1946,7 @@
         "source": "file",
         "tier": 5,
         "tier_name": "T5 inference ready",
-        "unblocks": 9,
+        "unblocks": 10,
         "unblocks_rows": [
           "INF-66",
           "INF-73",
@@ -2398,11 +2398,11 @@
       "last_advanced": "2026-11-07",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "open": 11,
-      "priority": 0.0298,
+      "priority": 0.0318,
       "priority_basis": {
         "campaign": 0,
         "source": "heuristic",
-        "unblocks": 1
+        "unblocks": 2
       },
       "priority_rank": 28,
       "readiness": "blocked",
@@ -2522,7 +2522,7 @@
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "last_advanced": "2026-11-17",
-      "next_action": "Only PIP02-PADDLE-STACK-ENTRY remains (PaddleOCR-VL stack entry, after v11 promotion, before Autopilot relaunch; fold LightOnOCR stack entry into the same stack-change package)",
+      "next_action": "Only PIP02-PADDLE-STACK-ENTRY remains (after v11 promotion, before Autopilot relaunch; bundle LightOnOCR entry)",
       "open": 1,
       "priority": 0.6185,
       "priority_basis": {
@@ -2542,7 +2542,9 @@
       "track": "internal kb rag",
       "tracks": [
         {
-          "blocked_by": [],
+          "blocked_by": [
+            "INF-83"
+          ],
           "dispatchable": 0,
           "gates": null,
           "line": 0,
