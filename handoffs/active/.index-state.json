@@ -42,7 +42,7 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 123,
+      "closed": 124,
       "guarded": 0,
       "last_advanced": "2026-11-17",
       "open": 62,
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 186,
+      "total": 187,
       "tracks": [
         {
           "blocked": 0,
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 76,
+          "closed": 77,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 947,
+          "line": 948,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 51

@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T13:44:59Z",
+  "generated_at": "2026-11-17T13:55:03Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2321,7 +2321,7 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 123,
+      "closed": 124,
       "dispatchable": 62,
       "domain": "inference-research",
       "guarded": 0,
@@ -2388,7 +2388,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 947,
+          "line": 948,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 52,
           "readiness": "blocked"
