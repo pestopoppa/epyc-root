@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 536
+      "open": 537
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 199
+      "open": 201
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2158,7 +2158,7 @@
       "closed": 362,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2167,7 +2167,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 368,
+      "total": 369,
       "tracks": [
         {
           "blocked": 0,
@@ -2205,14 +2205,14 @@
           "line": 2726,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3109,
+          "line": 3111,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3622,
+          "line": 3624,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3717,
+          "line": 3719,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2580,10 +2580,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 385,
+      "closed": 387,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 96,
+      "open": 98,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 482
+      "total": 486
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

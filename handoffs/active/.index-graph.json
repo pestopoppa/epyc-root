@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T23:10:45Z",
+  "generated_at": "2026-11-17T23:17:58Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1343,15 +1343,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 385,
-      "dispatchable": 96,
+      "closed": 387,
+      "dispatchable": 98,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-17",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 97,
+      "open": 99,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1674,14 +1674,14 @@
         "INF-48#rocm-verify-profile-backend"
       ],
       "closed": 362,
-      "dispatchable": 6,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-17",
       "next_action": "C6-CONTROLLER-PROOF (r7 smoke queued) then LIVE-1 wiring; publish race-eqv with 7/7 fixtures; FA-ALLMASK/HS256 follow-ups",
-      "open": 6,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1745,21 +1745,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2726,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3,
+          "open": 4,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3109,
+          "line": 3111,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3622,
+          "line": 3624,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3717,
+          "line": 3719,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
