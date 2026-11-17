@@ -235,6 +235,7 @@ want="$(printf '%s\n' "${COMMIT_PATHS[@]}" | sort)"
 g "$WT" commit -q \
   -m "RATIFIED $GATE_ID: V6R-4b/OP-58 kernel forward-port rule in CLAUDE.md (signed by $RATIFY_OPERATOR)" \
   -m "CLAUDE.md: Experimental Kernel Workflow gains the forward-port rule (one feature per commit; split before revert; tests travel). Receipts: $RECEIPT_REL, $CONSOLIDATED_REL, $INDEX_REL. No process touched." \
+  -m "Operator-Ratified: yes" \
   || die "commit failed (a hook refused it?). Nothing pushed; re-run to retry."
 COMMIT_SHA="$(g "$WT" rev-parse HEAD)"
 ok "committed ${COMMIT_SHA:0:12}"
