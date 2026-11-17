@@ -48,6 +48,11 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
   - `QuarterScheduler` state machine with `HEALTHY/SUSPECT/DEAD/DRAINING/LAUNCHING/AVAILABLE`.
   - Quarter-fixed ports, liveness checks, drain protocol, idle-time tracking, and retry-compatible degradation.
 - [ ] **DS-F1 — KVCOMM feasibility fork**: after [`attention-matching-kv-compaction.md`](long-context-program.md#track-attention-matching-kv-compaction) P2 validates coding-context compaction, prototype q4_0 offset estimation. Proceed only if shared-codebase task quality remains >95%; otherwise defer KVCOMM until f16 KV or a different sharing primitive is practical.
+  - *(2026-11-17, autokernel)* Dependency re-pointed; nothing runnable from this box yet. Attention-matching P2 was superseded on
+    2026-11-07 by **AM-DECISIVE-1** (long-context-program.md, open, autokernel GPU window), and AM + q4_0 stacking (P4) is declined
+    until AM beats the deployed Expected Attention path. The q4_0 premise is also stale: production KV is q8_0 (frontdoor) and f16
+    (architect_general), so if AM-DECISIVE-1 returns its keep branch the offset-estimation prototype targets q8_0 KV. Waiting on:
+    the AM-DECISIVE-1 verdict. [no-belief: dependency note]
 - **[declined: ws58 2026-11-03 content-review: merged into DS-F1 as its conditional follow-on]** **DS-F2/F3/F4 — Cache-aware routing fork**: if DS-F1 passes, design the anchor pool, wire `ConcurrencyAwareBackend` cache-aware routing, and add `prefill_speedup_coder_pool` metrics.
 
 ##### Inherited from earlyoom-oom-protection closure (2026-06-12)
@@ -73,6 +78,13 @@ earlyoom is deployed and verified live ([`../completed/earlyoom-oom-protection.m
   without relieving the pressure.** That, not "agents are victims", is the argument for the tweak.
   *Not applied: host-side, operator-owned, and a restart briefly leaves the host unprotected.*
   - **Operator status 2026-11-10:** not chosen in the 2026-11-10 package; stays an open operator decision (host-side edit).
+  - *(2026-11-17, autokernel)* Re-read live at 2026-11-17T11:04Z: earlyoom pid 4210 (started 2026-11-08 09:16Z), argv
+    `-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore ^(llama-server|sd-server)$ --prefer ^llama-bench$ -N
+    /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh` — unchanged, `claude|codex` still not ignored. Exact host-side change
+    (run on the HOST, not in a container; dry-tested against a copy of the file):
+    `sudo sed -i.bak-20261117 "s#^EARLYOOM_ARGS=.*#EARLYOOM_ARGS=\"-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore '^(llama-server|sd-server|claude|codex)\$' --prefer '^llama-bench\$' -N /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh\"#" /etc/default/earlyoom && sudo systemctl restart earlyoom && ps -o pid,lstart,args -C earlyoom`.
+    Waiting on: the operator running that host command (agents have no host shell). Tick when the live argv shows the new
+    `--ignore`.
 - **[declined: ws58 2026-11-03 content-review: an open question, not a task]** **Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #309); mlock'd pages free slowly, so it can kill several processes in ~100 ms succession before headroom is reflected. Is a pause-new-model-loads hook (triggered by the `-N` audit hook's sentinel, or by the autopilot) worth wiring into `orchestrator_stack.py`?
 - **[declined: ws58 2026-11-03 content-review: an open question, not a task]** **Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_caches/throttle-check) *before* a kill? Risk: a pre-kill script that itself allocates under memory pressure is dangerous — must be allocation-free if used.
 
@@ -232,6 +244,16 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       than upstream describes and this row escalates to a v10 blocker**, because the code says it
       should have reused. E3 materially below its bounded prediction reopens the tools path
       separately. [intake-1292#record]
+      **Next action (2026-11-17, autokernel) [inference]:** row `inf86-g4-restore-reuse-20261117`. model: Qwen3.6-35B-A3B-MTP-Q8_0
+      frontdoor recipe (terse template 1443ea9ab4bb, thinking off, draft-mtp 4, q8_0 KV, ctx_checkpoints 32), `-np 1`, `--cache-ram 0`
+      (mandatory), `--slot-save-path` in the row. quant_build: Q8_0 on the production v10 CPU store `ffc1bac82`. region: CPU quarter,
+      est 10800 s. Per class (16K, 64K): cold prefill + save, then for each arm erase -> restore -> first completion: CTRL (erase,
+      no restore: instrument check), E1 strict extension, E0 exact repeat, E2 divergence at 50%, E3 tools block moved past a_N.
+      metric: `cache_n` / `n_saved` of the first post-restore completion (higher is better for E1). rule: INSTRUMENT_FAIL if CTRL >
+      5% or `n_restored != n_saved`; V10_BLOCKER if E1 < 10% in any class; EXPOSED_NOT_HIT if E1 >= 90% and E2 < 10% in both;
+      else DEGRADED; E3 reported against its bounded-tail prediction. Stop-on-answer when both classes complete and summarize.py
+      gives the verdict; stop-on-futility on a failed precondition, save failure, server not ready or not our PID, timings missing,
+      STOP file or deadline; gate-class = futility-only. [no-belief: row published, no result yet]
 - [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
       ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
       closed on **both** directions. `_slot_save` now *returns* `n_saved`
@@ -265,7 +287,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       chat-template byte change, reasoning-block stripping between turns (mitigated today by
       `--reasoning off`), and any injected timestamp or preamble. Add a static check that
       post-migration request construction cannot alter bytes at or before the restored prefix boundary.
-- [ ] **(G) #25592 is the LARGER exposure and should be measured first.** It fixes the **live
+- [x] **(G) #25592 is the LARGER exposure and should be measured first.** It fixes the **live
       in-memory** checkpoint path for hybrid/recurrent — it runs on **every request**, not only on
       migrations. It is open upstream, **absent from our tree** (`server-context.cpp:2332-2337` still
       carries the unfixed `[TAG_CHECKPOINTS_FIX_POS_MIN]` TODO verbatim), and has four independent
@@ -278,6 +300,12 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       **Do not conflate** with the adjacent checkpoint cluster (#24055, #25472 merged, #25592 open,
       #26004): that cluster is entirely **performance** — full re-prefill, lost reuse — and produces
       no wrong output. This row is about reuse rate, not correctness.
+      ✅ 2026-11-17 (autokernel) — the measurement this box asks for exists and is filed: row `inf86-reprefill-rate-20261110-r2`
+      (C10 CPU 7f1bd044b, Qwen3.6-35B-A3B-MTP-Q8_0, -lv 4, 3x16K + 2x64K sessions x 8 turns) = **0 forced re-prefills in 35 reuse
+      attempts** (16K 0/21, Wilson95 upper 15.5%; 64K 0/14, upper 21.5%). Gate: the forced rate is not non-trivial, so the forced path
+      does not make #25592 a candidate by itself. The waste that does exist (checkpoint spacing / first-only restores, RESULT below)
+      is what #25592's current head also changes, so its candidacy is decided by the measured A/B in B3 below, not by this box.
+      [no-belief: re-reads the filed r2 row verdict]
   - RESULT 2026-11-10 row `inf86-reprefill-rate-20261110-r2` (C10 CPU 7f1bd044b, synthetic trimmed-reply turns): **NONE_OBSERVED**, 0 forced re-prefills in 35 reuse attempts (16K 0/21, Wilson95 upper 15.5%; 64K 0/14, upper 21.5%), every attempt restored a checkpoint. BUT when an older turn is re-rendered, 10/15 turns restored only to the first checkpoint (cache_n 106) and reprocessed ~the full prompt (234k of 321k reprocessed tokens) while logging a restore: the real exposure is checkpoint SPACING (min spacing 8192 erases near ones), not the forced path. Box left open: next step decides whether checkpoint spacing / #25592 matters for the v11 fold. [no-belief: row verdict filed by agent]
   - [x] **INF-86 follow-up - older-turn re-render restores only the first checkpoint (min spacing 8192)** [inference] A/B `--checkpoint-min-step` 8192 vs 2048 vs 512 (`--ctx-checkpoints 32`) on C10 CPU, metric wasted re-prefill tokens on older-turn edits; row `inf86-ckpt-spacing-20261111`. Production frontdoor and architect_general run the 8192 default (model_registry.yaml ctx_checkpoints 32, no min step). A win is a launch-recipe change via stack-change, not a v11 kernel fold. Stop-on-answer when all 9 sessions (3 arms x 2x16K+1x64K) complete and summarize.py gives DENSER_HELPS (>=50% wasted-token cut in both classes) or NO_EFFECT (<20%); stop-on-futility on INSTRUMENT_FAIL, failed precondition or deadline; gate-class = futility-only. (2026-11-11) ✅ 2026-11-11 rc=0 pass, row inf86-ckpt-spacing-20261111: **PARTIAL**. Mean wasted tokens on last+older turns, cms8192/2048/512: 16K 6637/5596/4715 (-29%), 64K 11015/9733/7689 (-30%); too-close erasures 21->11 and 7->1; first-only restores 3->0. A ~30% cut, short of the 50% bar: spacing is not the main source of waste, so no launch-recipe change on this evidence alone. Evidence /mnt/raid0/llm/tmp/inf86-ckpt-spacing-20261111/out/RESULT.json. [no-belief: row verdict filed by agent]
     - Residual analysis 2026-11-11 (`/mnt/raid0/llm/tmp/inf86-ckpt-spacing-20261111/ANALYSIS.md`, no new runs): the PARTIAL is a metric-baseline artifact. wasted_tokens only subtracts the new turn, so the SSM suffix after an edited older turn (T-D, unavoidable) is counted as waste: ~75% of the measured waste. Only the spacing term (D-R) is avoidable: cms8192 30% (16K) / 17% (64K) of prompt_n; cms512 removes 71% (16K) / 99% (64K) of it and is within 16% / 0.5% of the floor. Residual at cms512 is one session (16K-s1, 4.6K tok): checkpoints are cut only at user-message starts, never assistant starts. Operator chose BOTH the cms512 stack-change and the template/byte-identical fix (subagents in flight). [no-belief: analysis of an already-filed row]
@@ -286,7 +314,31 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
     *(2026-11-11)* Code landed (research e3aac480b, orchestrator 9690f455). RELOAD HELD by operator decision: reload a role only after row inf86-cms512-live-probe-20261111 shows real-traffic re-prefill savings and checkpoint memory fits. Stack owner: do not reconcile this drift by reloading.
     - [x] **INF-86-CMS512 live probe (row inf86-cms512-live-probe-20261111)** [inference] quant_build: Q8_0 (frontdoor Qwen3.6-35B-A3B, architect_critic Qwen3.8-27B), UD-IQ4_XS (architect_general Qwen3.8 Flash-Next), v10 production CPU kernel store. region: CPU quarter, sequential. est 10800 s. Question: on real logged multi-turn orchestrator traffic (no trimming), does cms512 vs cms8192 cut mean re-prefilled tokens per turn by >=20% per model (frontdoor, architect_critic, architect_general) with checkpoint memory inside role headroom? Stop-on-answer: all 3 models x 2 arms complete, verdict RELOAD_OK/HOLD per model. Stop-on-futility: precondition failure, server not ready/not our PID, fewer than 5 usable multi-turn histories, STOP file or deadline. gate-class = futility-only. [no-belief: new box] ✅ 2026-11-12 answered by r2 (filed pass, ALL_HOLD: 0% re-prefill cut on real traffic for all 3 roles, +1.3..6.5 GiB checkpoint memory); r1 budget-exhausted, superseded. [no-belief: row verdict filed by agent]
   - [ ] **INF-86-TEMPLATE - keep older assistant turns byte-identical between requests (template/client fix)** [inference] the only option that also removes the unavoidable suffix floor (23.7K / 22.9K tokens in the A/B, ~3.9-7.6K per turn). Find which renderer rewrites older assistant turns (thinking strip, whitespace, tool-call reformat) in the orchestrator request path, make the re-render byte-identical, and prove with tokenizer-level prefix tests plus a replay showing D moves to the new-turn boundary. Stop-on-answer: re-render byte-identical on the captured-client fixtures and wasted-vs-floor harness metric ~0 for older-turn edits. [no-belief: new box] *(2026-11-11)* Landed in orchestrator origin/main: 301cfb21 (client-mode replay keeps assistant reasoning_content) + 8dbc2ffa (preserve_thinking=true for thinking roles without a pinned chat_template_file; only architect_general). Pending: API reload by the owner (`orchestrator_stack.py reload orchestrator`), then the live cache_n probe; follow-up: client-mode responses do not return reasoning_content yet.
+    - **Next action (2026-11-17, autokernel) [inference]:** the "API reload by the owner" step is moot: at 2026-11-17T10:53Z no
+      orchestrator API (uvicorn :8000) and no production llama-server is running, and the orchestrator checkout's HEAD already
+      contains 8dbc2ffa and 301cfb21, so the next stack start serves the fix. No live traffic exists to probe, so the proof is a
+      row on a private server: `inf86-template-preserve-20261117`. model: Qwen3.8-Flash-Next (architect_general, GGUF-embedded
+      template, f16 KV, draft-mtp 4). quant_build: UD-IQ4_XS on the production v10 CPU store `ffc1bac82`. region: CPU quarter, est
+      10800 s. Arms strip (pre-fix request) vs preserve (`preserve_thinking=true`), thinking off (production) x2 sessions + on x1, 6
+      turns to ~12K. metric: (1) byte test via `/apply-template`: render(turn k) is a byte prefix of render(turn k+1); (2) mean
+      re-prefilled tokens beyond the new suffix (lower is better). rule: BYTE_IDENTICAL_OK if the preserve arm is byte-prefix on every
+      thinking-off turn and its waste <= max(128, 5% of strip); NO_DEFECT if strip is already byte-prefix with waste < 256;
+      FIX_NO_EFFECT if preserve >= 50% of strip; else PARTIAL. Stop-on-answer when both arms complete and summarize.py gives the
+      verdict; stop-on-futility on a failed precondition, server not ready or not our PID, timings missing, STOP file or deadline;
+      gate-class = futility-only. [no-belief: row published, no result yet]
   - [ ] **G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-level scheduler work** (2026-09-26, intake-1816#1, intake-1816#7). Same instrument (dedicated `-lv 4` instance on the served artifact and production recipe, never a production server), on the kv-unified shape (`--kv-unified --cache-ram`, kv-unified-stack-rollout.md) and on the frontdoor. N ∈ {1, np, 2·np}; gap lengths = HSF-3's harness-class p50/p90 (heterogeneous-slot-fabric-residency.md). Per turn, keyed by `x_session_id`: `cache_n` vs `prompt_n`, with each forced re-prefill attributed to one cause — (a) hybrid checkpoint (`forcing full prompt re-processing`, the #25592 class above), (b) prefix rewrite (request bytes differ at or before the cached prefix), (c) cross-session eviction during the gap (neither a nor b). Only (c) is what session-keyed admission (kv-unified-stack-rollout.md KVU-14) fixes; ThunderAgent matched vLLM within noise when the working set fit (intake-1816#7). Decision rule: KVU-14 opens only if cause-(c) re-prefilled tokens are ≥10% of all prompt tokens at some N ≤ 2·np in BOTH windows; otherwise BOUNDED-NULL-1 with the N and gap range covered. Belief kernel: VB-MT-REPLAY.
+    - **Next action (2026-11-17, autokernel) [inference]:** row `inf86-g5-nsession-20261117`. model: Qwen3.6-35B-A3B-MTP-Q8_0 frontdoor
+      recipe (terse template 1443ea9ab4bb, thinking off, draft-mtp 4, q8_0 KV). quant_build: Q8_0 on the production v10 CPU store
+      `ffc1bac82`. Shape: `-np 4 -c 262144 --kv-unified --cache-ram 32768 --ctx-checkpoints 32`. region: CPU quarter, est 21600 s.
+      Cells: windows 16K and 56K (4 active slots x 56K stays inside the 262144 pool) x N in {1, 4, 8}, 6 turns of strict extension
+      each, turn k of all N sessions fired concurrently. **Gap substitution, stated:** llama-server has no time-based eviction, so
+      a tool gap is modelled by what runs during it (the other N-1 sessions' turns), not by seconds; HSF-3's gap distribution
+      (still unmeasured) cannot change a no-TTL cache. Attribution: N=1 at the same window/turn is the no-contention floor (causes
+      a/b only); cause (c) per request = max(0, wasted - floor); forced lines counted per round. metric: cause-(c) re-prefilled
+      tokens as a share of all prompt tokens (lower is better). rule: KVU14_OPEN if >= 10% at some N in {4, 8} in BOTH windows, else
+      BOUNDED_NULL_1. Stop-on-answer when all 6 cells complete and summarize.py gives the verdict; stop-on-futility on a failed
+      precondition, server not ready or not our PID, > 10% request errors, STOP file or deadline; gate-class = futility-only.
+      [no-belief: row published, no result yet]
 
 #### Research Intake Update — 2026-08-23 (Stage-2b, intake-1292 — slot save/restore)
 
@@ -372,6 +424,19 @@ the completions route, or any non-OpenAI ingress.
       regressions on **GPU and CPU**, deploy as a **new** production version with the full candidate
       benched as a whole. **Never a patch to frozen v9, and never reconciled by cherry-pick at
       promotion time.** [intake-1292#record] Era correction: v10 is frozen; evaluate it as a v11 fold candidate through the CH-32 upstream-delta census (kernel-champion-and-promotion).
+      **Next action (2026-11-17, autokernel) [inference]:** the upstream gate above is met (r2: 0/35 forced re-prefills, so the
+      forced path is NOT the exposure) but #25592 head `4ac1aeab1` (open, updated 2026-11-15) also changes what the r2/ckpt-spacing
+      rows found IS the exposure: hybrid checkpoints now record `pos_min = pos_max` and are usable iff `pos_max < pos_eval`, and an
+      equivalent just-restored checkpoint is not re-created. Ported onto C12 `457d5fc52` (upstream moved the search into
+      `server-slot-sched.cpp`; ours is inline in `server-context.cpp`): branch `llama.cpp-experimental-pr25592-c12-20261117` @
+      `053630887bf8` on `fork`. model: Qwen3.6-35B-A3B-MTP-Q8_0 (frontdoor recipe, `--cache-ram 0`). quant_build: Q8_0 on C12
+      `457d5fc52` vs C12+#25592 `053630887`, CPU builds from git objects in the row. region: CPU quarter, est 14400 s. metric: mean
+      re-prefilled tokens beyond the new suffix per turn (lower is better) on the r2 trimmed-reply instrument, 2x16K + 1x64K x 8 turns
+      per arm, plus greedy restored-vs-fresh reply equality. rule: FOLD_CANDIDATE if the port cuts mean waste >= 20% in both classes
+      with correctness not worse; NO_GAIN if < 20% in both (no v11 fold; the CH-32 upstream-delta census picks it up when merged);
+      REGRESSION if waste +10% or fewer fresh-reply matches. Stop-on-answer when all 6 sessions complete and summarize.py gives a
+      verdict; stop-on-futility on a build/proof failure, server not ready or not our PID, STOP file or deadline; gate-class =
+      futility-only. Row `inf86-pr25592-c12-ab-20261117`. [no-belief: row published, no result yet]
 
 #### Research Intake Update — 2026-09-26 (orchestration prior art; intake-1783, intake-1816)
 

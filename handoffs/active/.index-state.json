@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 549
+      "open": 548
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1186,10 +1186,10 @@
     },
     "hybrid-checkpoint-prompt-reuse.md": {
       "blocked": 0,
-      "closed": 14,
+      "closed": 15,
       "guarded": 0,
       "last_advanced": "2026-11-12",
-      "open": 7,
+      "open": 6,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",

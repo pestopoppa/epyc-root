@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T11:03:46Z",
+  "generated_at": "2026-11-17T11:07:51Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2479,15 +2479,15 @@
       "blocked_by": [
         "INF-83"
       ],
-      "closed": 14,
-      "dispatchable": 7,
+      "closed": 15,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "hybrid-checkpoint-prompt-reuse.md",
       "id": "INF-86",
       "last_advanced": "2026-11-12",
       "next_action": "CMS512 reload HELD for live-probe row; TEMPLATE reload by owner, then cache_n probe; then G4, G5; v11 fold verdict",
-      "open": 7,
+      "open": 6,
       "priority": 0.004,
       "priority_basis": {
         "campaign": 0,
