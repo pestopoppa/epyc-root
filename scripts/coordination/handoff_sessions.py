@@ -1959,6 +1959,9 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if alerts:  # every launch/resume carries the owner's unhandled row alerts; acked only by the owner's own ack line
         prompt = rf_notify.alerts_block(alerts, flags) + prompt
         e["alerts_injected"] = [a["key"] for a in alerts]
+    if not fresh and e.get("fresh_next"):  # event/push resumes must honour a pending rotation too (2026-11-17:
+        fresh = True                        # they replayed a 115M-token thread straight into the G2 ceiling kill)
+        prompt = brief_text(slug, e, flags) + "\n" + tg.checkpoint_block(e.pop("checkpoint", None)) + prompt
     if fresh:
         e["session_id"], e["fresh_next"] = None, False
     try:
