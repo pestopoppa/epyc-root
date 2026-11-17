@@ -388135,3 +388135,225 @@
       relative_path: sha256/72/724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1.raw
       raw_sha256: 724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1
       byte_length: 81816
+- id: intake-2674
+  arxiv_id: null
+  url: https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold
+  source_type: repo
+  title: "BLACKFURY Exact: Qwen3.8-27B NVFP4 + DFlash2 single-stream engine on one RTX 5090 (TensorFold patches, exact-order kernel changes)"
+  categories:
+  - quantization
+  - hardware_optimization
+  - speculative_decoding
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  authors:
+  - Maharajahu
+  key_claims:
+  - "V1.0.1 (Stage44) runs the FP4 gate and up projections in one two-dimensional CUDA grid, separate CTAs reusing the existing FP4 arithmetic body, so summation order per projection is unchanged."
+  - "The paired gate/up launch gives +0.891% warm decode with DFlash2 (306.80 to 309.53 tok/s) and +1.835% without a drafter, in a 32-request A1-B1-B2-A2 run on RTX 5090; no prefill gain."
+  - "The paired kernel is qualified by 35 bitwise correctness cases plus memcheck/synccheck/racecheck, and end to end by identical 2,048 token IDs across all 32 requests including drafted vs plain."
+  - "An inherited prefill kernel has an unresolved shared-memory race report; the author does not claim comprehensive safety qualification."
+  - "BLACKFURY Exact splits long-context decode attention into fixed prefix, growing causal tail and ordered merge, and widens the tail grid from 8 to 40 blocks across four warps while keeping the original reduction and rounding order."
+  - "The widened exact tail kernel halved its mean time, 94.59 to 47.90 us, in a native full-model profile."
+  - "At 129,024 input + 2,048 output the exact variant's warm decode median is 4.58% above the preserved original (280.88 vs 268.57 tok/s), with byte-identical output."
+  - "Twelve-branch synchronized decoding with a shared cached prefix gained 34.21% aggregate throughput over its control on a byte-identical replay (570.78 to 766.07 tok/s)."
+  techniques:
+  - "Paired gate+up FP4 GEMV in one 2D launch (separate CTAs, unchanged per-projection summation order)"
+  - "Long-context decode attention split into fixed prefix / growing causal tail / ordered merge"
+  - "Exact-order grid widening of the tail kernel (8 to 40 blocks, output dims across 4 warps)"
+  - "Bitwise token-ID equivalence as the qualification gate for exact kernel changes (drafted vs plain, candidate vs control)"
+  - "A1-B1-B2-A2 fresh-process interleaving with offline hash-bound receipt verifier"
+  - "Synchronized multi-branch decode over a shared cached prefix"
+  reported_results:
+  - "RTX 5090, 129,024+2,048 tokens, greedy: Stage44 309.53 tok/s vs Stage41 306.80 (DFlash2), 55.61 vs 54.61 (no drafter); pair microkernel 68.88 to 65.78 us"
+  - "BLACKFURY Exact 280.88 vs preserved original 268.57 tok/s warm decode median (+4.58%); tail kernel 94.59 to 47.90 us; prefix 186.08 us, merge 5.18 us"
+  - "experimental12 controlled replay 570.78 to 766.07 tok/s aggregate (+34.21%), identical 42,816 token IDs"
+  credibility_score: null
+  contradicting_evidence:
+  - "Single author, single GPU, Windows; no independent reproduction found. Rebuilt executables were not GPU-run; numbers come from recorded binaries."
+  - "V1.0.1 headline +10.20% compares two separately recorded releases with different attention arithmetic (approximate FP8); only the +0.891% Stage41 vs Stage44 delta is controlled."
+  - "Inherited prefill race report unresolved."
+  handoffs_updated: []
+  handoffs_created: []
+  recommended_actions:
+  - "MI210: seed an exact-order split-KV / tail-widening candidate for flash_attn_ext_vec decode at 32k-128k on the 27B Q8_0 architect, gated by bitwise token identity."
+  - "MI210 + CPU: profile whether a merged gate+up launch matters in our decode graph before any port (expected small: launch-overhead class, ~1-2%)."
+  - "AutoKernel: add an exact-order lane whose gate is bitwise token-ID identity vs the incumbent, skipping the quality eval."
+  read_depth: PARTIAL
+  verification: dive-verified
+  reader_should_conclude: "Cite only the controlled deltas: +0.891% (pair launch, DFlash2), +4.58% (exact tail at 128K), +34.21% (12-branch replay). NVFP4 itself brings no CPU or gfx90a technique: our tree already has GGML_TYPE_NVFP4 with CPU and mmvq paths. The portable ideas are exact-order kernel restructuring and its qualification method."
+  dive_corrections: "2026-11-17 Stage-2 (single sweep): README +10.20% is a cross-release comparison, not a controlled delta; the controlled paired-projection gain is +0.891%. Dive-surfaced sources declined as already dived or indexed: ashhart/TensorFold (intake-1924), inco.ai DFlash2 blog (indexed), z-lab/dflash (indexed). nvidia/Qwen3.8-27B-NVFP4 model card declined: format already in our tree, sibling card intake-756."
+  notes: "Repo read at 2790f0472767beb6952ee90de4db6901a97163bb (cloned to /mnt/raid0/llm/tmp/dive-blackfury/src). Read: README, docs/*.md, CREDITS.md, tf_qmmf_fp4_pair in patches/blackfury-stage44-native.patch. Not read: attention-source generator, most of the 1.27 MB patch, result SSE files. Upstream TensorFold pin 6e9af930261a88bb28ac0bfb157ce8e57e9eea07. Our production tree ffc1bac82 has GGML_TYPE_NVFP4 (ggml.h L430) with x86 and mmvq vec_dot paths."
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "docs/blackfury-stage44.md Paired-projection intro"
+    quote: "It runs the gate and up projections in one two-dimensional CUDA grid."
+    quote_sha256: 207555322946173d07093244b2f940a413f81f3a69b1f0cd00411083d8d52eee
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.095926Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      relative_path: "sha256/e3/e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242.raw"
+      raw_sha256: "e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      byte_length: 7803
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "docs/blackfury-stage44.md Controlled full-context result table"
+    quote: "| DFlash2 | 306.80080 tok/s | **309.53399 tok/s** | **+0.891%** |"
+    quote_sha256: 9f06686eef413d5cc31d576d7311790b9123aec1a171f1f7fa50c4d1d5813573
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.095926Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      relative_path: "sha256/e3/e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242.raw"
+      raw_sha256: "e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      byte_length: 7803
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "docs/blackfury-stage44.md Paired-projection qualification"
+    quote: "35 bitwise correctness cases, input preservation and output guards"
+    quote_sha256: eeca7690557c6726bca87a78ef513d07a48c4ee5454bbf8baf0226457956139f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.095926Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      relative_path: "sha256/e3/e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242.raw"
+      raw_sha256: "e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      byte_length: 7803
+  - claim_index: 3
+    kind: page-and-quote
+    locator: "docs/blackfury-stage44.md Source, build and limitations"
+    quote: "The investigation did not establish whether this is a kernel defect or a tooling/interpretation issue."
+    quote_sha256: 6075e49af5f4661a4c08535ab7cda8273ab88f8b0764c0085c2759bdfd485168
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-stage44.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.095926Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      relative_path: "sha256/e3/e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242.raw"
+      raw_sha256: "e32668902ec4042a60e9a96123f7a64e32a626fb64d4895c195bca3a0e8e9242"
+      byte_length: 7803
+  - claim_index: 4
+    kind: page-and-quote
+    locator: "docs/blackfury-exact.md Implementation and validation"
+    quote: "The exact tail uses 40 blocks in the profiled shape instead of eight, distributing output dimensions across four warps while retaining original reduction and rounding order."
+    quote_sha256: a32ca28c1cef75e919b523da08eb611bfcb176bdb11cae1feffc393f11e202e1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.417936Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57"
+      relative_path: "sha256/99/99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57.raw"
+      raw_sha256: "99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57"
+      byte_length: 9064
+  - claim_index: 5
+    kind: page-and-quote
+    locator: "docs/blackfury-exact.md Implementation and validation"
+    quote: "The full-model tail kernel mean fell from 94.59 µs to 47.90 µs"
+    quote_sha256: 6638a23e4c66afecf477ee34239b67b9322fbba243872608f12b3f8d93efec97
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.417936Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57"
+      relative_path: "sha256/99/99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57.raw"
+      raw_sha256: "99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57"
+      byte_length: 9064
+  - claim_index: 6
+    kind: page-and-quote
+    locator: "docs/blackfury-exact.md Controlled 128K single-stream test"
+    quote: "The warm median is **4.58% above the preserved original** in this test."
+    quote_sha256: 98592fc021ec0141f65525fc2aa47b228454e88accf565bb4d4587c1745bd508
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/blackfury-exact.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.417936Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57"
+      relative_path: "sha256/99/99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57.raw"
+      raw_sha256: "99a34633f80707034b396e2223ba2496ab824648a0b4db997ad03fc679b92e57"
+      byte_length: 9064
+  - claim_index: 7
+    kind: page-and-quote
+    locator: "docs/experimental12.md Controlled replay comparison"
+    quote: "The throughput gain is **34.21%**."
+    quote_sha256: b6882e92af78aa950a93a50d2e5c7b6e8d50ea458f4dcbc61acd8f172334f047
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d6fee2c29aa52dec402a702d80080e9a850cb5103de8630833f655aac0869df9, found: true}
+    source_revision: https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/experimental12.md
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: "https://github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold"
+      requested_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/experimental12.md"
+      effective_url: "https://raw.githubusercontent.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold/2790f0472767beb6952ee90de4db6901a97163bb/docs/experimental12.md"
+      retrieved_at_utc: "2026-11-17T22:14:14.710767Z"
+      media_type: "text/plain"
+      extractor_id: "vidya/machine_anchor-html-text/v1"
+      extractor_sha256: "f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92"
+      schema_version: 1
+      snapshot_id: "sha256:d6fee2c29aa52dec402a702d80080e9a850cb5103de8630833f655aac0869df9"
+      relative_path: "sha256/d6/d6fee2c29aa52dec402a702d80080e9a850cb5103de8630833f655aac0869df9.raw"
+      raw_sha256: "d6fee2c29aa52dec402a702d80080e9a850cb5103de8630833f655aac0869df9"
+      byte_length: 6135
