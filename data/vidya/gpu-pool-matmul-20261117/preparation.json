@@ -1,0 +1,68 @@
+{
+  "archive_inputs": {
+    "dso_directory": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b-hip/bin",
+    "executable": "/mnt/raid0/llm/tmp/glm53-validation-20260908/champion-candidate-c463f601b-hip-tools/bin/test-backend-ops",
+    "linkage_verifier": "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+    "python_module_closure": [
+      "scripts/vidya/adapters/gpu_pool_native.py",
+      "scripts/vidya/claim_tuple.py",
+      "scripts/vidya/canonical.py"
+    ],
+    "shim": "/mnt/raid0/llm/cache/shims/nprocs_shim.so"
+  },
+  "checks": {
+    "canonical_launcher_parse": "pass (default build role, exclusive GPU-only claim and 184-191 job CPUs)",
+    "existing_adapter": "14 passed, 0 carrier-invariance violations",
+    "gitnexus": "unindexed lane; impact unavailable; index wrapper refused CPU admission",
+    "historical_artifact_identity": "binary, four DSOs, source snapshot and shim hashes agree",
+    "historical_native_selection": "exact regex, seed and selected denominator agree",
+    "manual_dry_run": "pass (artifact hashes, aliases, ggml linkage, graph knob, isolated shim cap)",
+    "owner_roundtrip_synthetic": "8 passed under fresh /usr/bin/python3 -B",
+    "shell_syntax": "pass"
+  },
+  "deploy_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/spec.json",
+  "deployed_preflight": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/run_matmul.py",
+  "durable_directory": "data/vidya/gpu-pool-matmul-20261117",
+  "handoff_child": "SC18-GPU-POOL-MATMUL-LIVE",
+  "native_capture": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/belief.json",
+  "native_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gpu-pool/native/RESULT.json",
+  "packet_sha256": {
+    "PINNED.sha256": "389e4642fb19eb073c5253454ab9361e9f34b206d986566daffa5226ac72ac48",
+    "launch.sh": "c69b0a808161e5eac4e0471ff36a22fc149ef85e0929c06a8c4b7eec508ca948",
+    "run_matmul.py": "486c659dcceca26dfeb0e845ab9285b001a6b7fa73a38d25c0dd0197fae0f9ab",
+    "spec.json": "ede5492fb8ceab80d4cb8061b8d52945a1007e90ad39760b64d2d64ebfeb2f99",
+    "test_run_matmul.py": "b776688ba216541e8fc6350940072a5b099c7128f7960e5f382ad3124338449e"
+  },
+  "recorded_utc": "2026-11-17T20:37:31.000966+00:00",
+  "row_id": "ni-gpu-pool-matmul-20261117-v1",
+  "scheduling": "300 s estimate and minimum are publisher floors, not a fresh measured runtime",
+  "schema": "epyc.vidya.sc18_gpu_pool_matmul_preparation.v1",
+  "scope": {
+    "compute_started_by_preparation": false,
+    "live_invocations": 1,
+    "model_free": true,
+    "old_measurements_projected": 0,
+    "op": "MUL_MAT",
+    "regions": "mi210_0,184-191",
+    "registered_source": false,
+    "selected_cases": 201,
+    "smoke_invocations": 1,
+    "suite_seed": 20261026
+  },
+  "source": {
+    "candidate_commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "candidate_source_file": "tests/test-backend-ops.cpp",
+    "dirty_state": "UNKNOWN",
+    "historical_research_commit": "9cf3c860a",
+    "historical_writer": "data/gpu-pool/matmul-20261026/run-v1.py",
+    "historical_writer_sha256": "c7dd8496a9073c15f679ce7a20eae9a0fe9ffdf180f97357608701293ea4b41e",
+    "prior_patched_candidates": {
+      "attention": "attention-run-v3.py",
+      "elementwise": "elementwise-run-v3.py",
+      "matmul": "matmul-run-v1.py"
+    },
+    "prior_patched_source_pins": "data/vidya/gpu-pool-capture-20261104/source-pins.json",
+    "shim_recreated_source_matches_receipt": false
+  },
+  "status": "prepared_for_owner_publication"
+}
