@@ -11059,15 +11059,17 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
 - [ ] Per-surface fire decision; dashboard accumulator card per surface (product-of-solos labelled ESTIMATE)
 - [x] ✅ 2026-11-01 — Research `2f047a7b1a1a47f30d97e27ddd4c4153d11f911f`; [354-test committed-source suite](https://github.com/pestopoppa/epyc-inference-research/blob/f7061c0cecfc279cf1a1436227ef00285fd2c306/artifacts/engineering/aku-stale-baseline-20261101/README.md). [belief: cc] **Re-baseline on cor advance**: `stale_baseline` set on every non-promoting surface at PROMOTE, cleared only by
       a tip-vs-new-cor measurement on that surface's own harness; test that a quote while flagged is refused
-- [ ] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and
+- [x] **S3-AKU-07 — promotion evidence from held-out launches.** The promotion record's compounded gain, and
       any headline, is computed ONLY from fresh launches disjoint from every A/B pair that decided a keep,
       against the frozen production binary pinned by commit + recipe hash. Record pair ids on both sides so
       disjointness is checkable. A computation that reuses keep-deciding pairs REFUSES. S3-AKU-03 sets how
       MANY launches; this sets WHICH. intake-1370#record (ERA separates selection from report).
+      ✅ 2026-11-17 (autokernel, code-only): `epyc-inference-research` `f6e09036a` `promotion_evidence.compound_from_heldout` computes the compounded gain only from launches pinned to a 40-hex production commit + 64-hex recipe hash, records both `heldout_pair_ids` and `deciding_pair_ids`, and REFUSES (`PromotionEvidenceRefusal`) on any overlap with a keep-deciding pair, duplicate/blank pair id, unpinned or mismatched binary/recipe, invalid effect or too few launches. `test_promotion_goodhart.py` 11 passed (disjoint compounding 0.10x2 -> 0.21; each refusal). Launch COUNT remains S3-AKU-03. [no-belief: tooling landing, no measurement]
 - [ ] **S3-AKU-13 — Goodharted-keep count at PROMOTE.** Beside each LOO arm (R23-48) record that keep's
       bench effect at keep time. Count keeps whose LOO arm is at least as fast as the full bundle on the
       serving surface or any re-baselined surface, and report the count on the promotion record.
       intake-1378#record. Consumed by INF-75 AKX-P3b.
+      - 2026-11-17 PARTIAL (autokernel, code-only; box stays OPEN): `epyc-inference-research` `f6e09036a` `goodhart_count.count_goodharted` takes the R23-48 LOO arms (keep-time effect + per-surface leave-one-out throughput) against full-bundle throughput per surface, counts keeps whose LOO arm is >= the full bundle on any surface (tie counts), records the keep-time effect beside each arm, and refuses malformed input or a surface with no full-bundle value. Tests in `test_promotion_goodhart.py` (5 cases). Remaining: feed it the real LOO arms and put `goodharted_count` on the promotion record (needs a promotion run). [no-belief: tooling landing]
 - [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
   - 2026-11-01 codex3 acceptance: Staleness is derived from the existing shared-COR authority and checked by already-loaded readers, status/quotes and decision entry points. The explicit own-surface rebaseline runs the existing native CPU/GPU harness after resource admission, binds intent before measurement, retains native failure/aborted raw records, then checks COR, tip and the original surface-journal snapshot under the existing authority lock before saving a current measurement. Only a complete typed native comparison clears the stale state. Late initialization and seed cannot erase existing state or bypass recovery; incompatible recovery flags refuse. The final frozen eight-file suite passed 354 with original source hashes and drained processes. No actual COR promotion, model execution, deployment, threshold/grade change or planning-canary claim. [belief: cc]
@@ -13653,6 +13655,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       variance" (§3.3), but retention is governed by one scalar. Make the keep record carry both coordinates
       and retain non-dominated candidates. Reuse autopilot's pareto_math.dominates; do not write a second
       one. intake-1367#record (remedy R2).
+      - 2026-11-17 PARTIAL (autokernel, code-only; box stays OPEN): `epyc-inference-research` `f6e09036a` `keep_frontier.py` carries (effect, spread) per keep (`KeepPoint.record()`, schema `epyc.autokernel.keep_frontier.v1`; missing/NaN/negative coordinate refuses) and `frontier`/`retain` keep every non-dominated candidate using the orchestrator's `pareto_math.dominates` loaded by path (asserted not a copy). `test_keep_frontier.py` 11 passed incl. a slower-but-tighter keep surviving a faster noisy one. Remaining: write the spread coordinate onto the live keep record in `loop/run.py` and apply `retain` at keep time. [no-belief: tooling landing]
 - [x] **S3-AKU-05 — validator provenance on every critic verdict and every keep.** Record per decision:
       validator identity and kind (script / oracle / LLM critic), its independence relation to the producer
       (same fleet / same family / different family / non-model), the evidence it inspected, and whether its

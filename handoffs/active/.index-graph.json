@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T14:06:30Z",
+  "generated_at": "2026-11-17T14:18:03Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1391,15 +1391,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 845,
-      "dispatchable": 125,
+      "closed": 846,
+      "dispatchable": 124,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-17",
       "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued, quiet-host); H13 r2 queued (1.010 bar confirmed); vLLM AITER r2 queued; GDN-SHARE-1",
-      "open": 126,
+      "open": 125,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1491,7 +1491,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 56,
+          "dispatchable": 55,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1499,7 +1499,7 @@
           ],
           "line": 9636,
           "name": "autokernel-unified-surface-program",
-          "open": 56,
+          "open": 55,
           "readiness": "blocked"
         },
         {
@@ -1510,7 +1510,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13986,
+          "line": 13989,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1544,7 +1544,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14198,
+          "line": 14201,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
