@@ -171,6 +171,19 @@ resident lifecycle runner, sealed evidence and comparator, incumbent-vs-itself
 calibration with fresh-server fallback, isolated hot stack, parity pack, and prospective
 human ratification before resident results can replace existing promotion gates.
 
+`scripts/benchmark/kernel_promotion_resident_runner.py` (from the root repository)
+implements the observation-only CPU lifecycle. Without `--apply` it validates the
+canonical plan, pinned binaries and K35 recipe without launching a server. Live
+execution requires a provider-authored `region-lock` open receipt for CPUs 0-95,
+matching live parent flocks, isolated ports and an explicit split/unified KV mode.
+It loads the arms sequentially, records excluded warmups and each scheduled request,
+and verifies captured-PID cleanup. On failure it exits 78 and writes the unchanged
+plan to `fresh-fallback.json` with `requires_fresh_execution: true`: this is a replay
+request, not an automatic fresh run. Its capture schema is deliberately distinct
+from sealed promotion evidence. Fixture tests live in
+`tests/test_kernel_promotion_resident_runner.py`; run these and the plan tests under
+an available region claim before using the instrument for any decision.
+
 Speed per derived model, candidate vs incumbent, **each at its own best recipe** (recipe-to-recipe;
 never force one kernel through the other's configuration). Quality per the incumbent's recorded
 suites, same pinned questions and seed.
