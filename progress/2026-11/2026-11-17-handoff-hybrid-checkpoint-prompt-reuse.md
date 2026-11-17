@@ -43,3 +43,7 @@ Duplicate run-end notification for inf86-pr25592-c12-ab-20261117-r2: B3 was alre
 ## 22:41Z — Acknowledge duplicate G5 run-end through idempotent filing tool
 
 Duplicate run-end notification for inf86-g5-nsession-20261117. file_result.py returned NOOP: already FILED. G5 remains closed with BOUNDED_NULL_1 (zero measured cross-session eviction waste across six cells); no new finding or compute. Remaining INF-86 work waits on the already-readied C13 slot-restore validation. DS-F1 still depends on AM-DECISIVE-1, and earlyoom requires the host operator action.
+
+## 22:42Z — Consume duplicate G5 completion; preserve pending C13 validation boundary
+
+Duplicate G5 completion consumed idempotently; existing verdict BOUNDED_NULL_1 remains unchanged (all six cells complete, zero cause-(c) tokens). No new result or box to tick. INF-86-SLOT-RESTORE-CHECKPOINTS remains blocked on inf86-slot-restore-ckpt-c13-20261117, whose publication smoke passed and state is grantable. DS-F1 awaits AM-DECISIVE-1; earlyoom remains a host-only operator action.
