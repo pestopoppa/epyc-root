@@ -2102,3 +2102,12 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 
 - [ ] **AKX-W5s-RETENTION-METACAP — fix the W5s retention RAID-metadata cap and relaunch** (w5s-retention-r3 filed FAIL on the metadata cap, cfac40240).
   - *(2026-11-07, main-inf22, operator decision B: adopted as the C8 fold ledger owner; not ticked)* Owner: **main-inf22**. Triage: dispatchable now: fix the metadata cap, then relaunch (needs measurement). [no-belief: ownership/triage note]
+
+##### Moved from rocm-kernel-authoring.md (INF-48) — 2026-11-17 (INF48-LIVE-6 open children, INF48-FOLD-PLAN)
+
+Full original texts: `b3bd883d3` rocm-kernel-authoring.md (RVP-CTR-1 :1730, C5-ISA-1 :2998, C5-ISA-2 :2999). Moved from INF-48 2026-11-17.
+
+- [ ] **RVP-CTR-1 — counter-grounded planner signals for the GPU AK lane (intake-2556#record).** Code research 5335238fd. Capture half PASS: row ak-gpu-signals-ctr-20261116-r2, 10/10 metrics. Remaining: the planner A/B (counter signals on vs off) — not run. (moved from INF-48 2026-11-17) [no-belief: hygiene move]
+- [ ] **C5-ISA-1 — archive the AMDGCN ISA of every AK GPU candidate and check the claimed instruction mix.** isa_claims.py gate exists; call-site wiring into the AK GPU candidate path is open (est 1-2 d). (moved from INF-48 2026-11-17) [no-belief: hygiene move]
+- [ ] **C5-ISA-2 — GCN-Gym: LLM-edited AMDGCN for a compute-bound gfx90a kernel.** Host half gcn_gym.py done; GPU half waits on the RACE-2 launch-capture shim. (moved from INF-48 2026-11-17) [no-belief: hygiene move]
+- [ ] **RVP-RACE-2 — gfx90a race/deadlock executor verdict on the race fixtures.** Fixtures ready (INF48-RACE-2-FIXTURES ✅ 2026-11-16, row inf48-race2-fixtures-20261116-r2, FIXTURES_READY 7/7, bundle sha 3b4e309f); the executor verdict over them is the remaining measurement. (moved from INF-48 2026-11-17) [no-belief: hygiene move]
