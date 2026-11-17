@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2871,
+          "line": 2873,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3009,
+          "line": 3011,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3016,
+          "line": 3018,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2596,9 +2596,9 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 373,
+      "closed": 374,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-17",
       "open": 91,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -2608,7 +2608,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 465
+      "total": 466
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
