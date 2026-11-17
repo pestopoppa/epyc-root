@@ -1,0 +1,68 @@
+{
+  "recorded_at": "2026-11-17T23:49:05.036389+00:00",
+  "row_id": "handoff-vidya-kvu19a2-wire-20261117-r2",
+  "status": "prospective build resumed under CPU region claim; awaiting terminal event",
+  "readiness": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-readiness.json",
+  "commands": [
+    {
+      "command": "cat data/vidya/gpu-pool-candidate-scope-20261117/kvu19-readiness.json",
+      "exit_code": 0
+    },
+    {
+      "command": "cat /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-terminal.json",
+      "exit_code": 1,
+      "stderr": "No such file or directory"
+    }
+  ],
+  "terminal_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-terminal.json",
+  "terminal_link_target": "terminal/kvu19-build-20261117.json",
+  "build_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-receipt.json",
+  "finalization_command": "/usr/bin/python3 /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/finalize.py",
+  "finalization_rc": null,
+  "publication_command": null,
+  "publication_rc": null,
+  "prior_smoke": {
+    "status": "residency refused",
+    "artifact": "FAIL-1.json",
+    "max_vram_bytes": 13094912,
+    "floor_bytes": 67108864,
+    "row_id": "handoff-vidya-kvu19a2-wire-20261104"
+  },
+  "limitations": [
+    "Build completion has not been observed after the restart. The dispatcher is registered for the terminal file.",
+    "No preflight, smoke, benchmark, grant, or arm was run."
+  ],
+  "next_action": "On the registered terminal event, require success and run the finalizer, then publish with --smoke-now. On failure, diagnose the recorded exit/log before a further build attempt. Preserve genuine residency enforcement.",
+  "publication_receipt": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/gpu-pool-candidate-scope-20261117/kvu19-publication.json",
+  "agent_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-ready-agent.json",
+  "recovery": {
+    "started_at": "2026-11-17T23:48:41Z",
+    "wrapper_pid": 1356571,
+    "region_lock_pid": 1356574,
+    "notifier_pid": 1356572,
+    "launch_exit_code": 0,
+    "working_directory": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor",
+    "commands": [
+      "/usr/bin/setsid /bin/bash ./build-wrapper.sh </dev/null >>resume-wrapper.log 2>&1 &",
+      "/usr/bin/setsid /usr/bin/python3 ./terminal-notifier.py 1356571 </dev/null >>terminal-notifier-resume.log 2>&1 &",
+      "/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock run --cpu-list 48-51 --role build --timeout-s 1 --tag vidya-kvu19-successor -- /usr/bin/taskset -c 48-51 /bin/bash /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build.sh"
+    ],
+    "verified_at_launch": "Wrapper and fallback notifier each detached into a distinct session. Region lock acquired q2 CPUs 48-51; all five preliminary source and patch checks passed.",
+    "build_directories": "reused existing partial CMake builds for base and candidate",
+    "terminal_writer": "removed the dangling attempt-owned symlink after validating target and absence; wrapper writes a regular external terminal JSON atomically with build exit and PIDs, independent pidfd watcher writes fallback after wrapper exits only if no receipt exists",
+    "region_build_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/region-build.log",
+    "awaiting_registration": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/kvu19-build-20261117.json",
+    "durable_wrapper": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-build/build-wrapper.sh",
+    "terminal_exit_code": null,
+    "in_flight_wrapper_sha256": "892bbbc7d45325d77d3cc72bc8f9ec5cebee1e5376de91bebe5a7fa46c2aae14",
+    "durable_wrapper_sha256": "3eb120ac03bdf102eb359d346af0b909efd2c50125dd9b36b7a271000450eb85",
+    "durable_wrapper_revision": "Future-copy strict shell mode with lock failure captured for the terminal receipt. The in-flight wrapper was left untouched."
+  },
+  "conditional_publication_command": "python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/spec.json --smoke-now",
+  "pre_recovery_observations": [
+    "The terminal receipt is a dangling symlink and its terminal directory has no receipt.",
+    "The build receipt does not exist.",
+    "Candidate build log ends at 41% while compiling HIP objects. Targeted checks found no explicit compiler or wrapper error in the inspected logs.",
+    "Captured wrapper PID 1175960, region-lock PID 1175975 and notifier PID 1245878 were absent at inspection. The notifier log was empty. The build exit code and termination cause are unknown."
+  ]
+}

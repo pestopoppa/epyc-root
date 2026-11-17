@@ -404,3 +404,148 @@ def test_cli_rejects_ambiguous_or_nonfinite_input(tmp_path, invalid):
     with pytest.raises(SystemExit, match="2"):
         parity.main(["build", "--source", str(source_file), "--output", str(output)])
     assert not output.exists()
+
+
+@pytest.fixture
+def comparison_reader(monkeypatch):
+    monkeypatch.syspath_prepend(str(SCRIPT.parents[4] / "scripts/vidya"))
+    from adapters import quality_pack_comparison
+
+    return quality_pack_comparison
+
+
+@pytest.mark.parametrize(
+    ("change", "status", "exit_code", "mismatches"),
+    [
+        ("none", "pass", 0, 0),
+        ("tokens", "fail", 1, 1),
+        ("tokens_and_gap", "fail", 1, None),
+        ("missing", "incomplete", 2, None),
+        ("drift", "identity_drift", 2, None),
+        ("bad_candidate", "invalid_input", 2, None),
+        ("bad_pin", "invalid_input", 2, None),
+    ],
+)
+def test_cli_captures_native_comparison_dispositions(
+    source, tmp_path, capsys, comparison_reader, change, status, exit_code, mismatches,
+):
+    from claim_tuple import grade
+
+    pack = parity.build_pack(source)
+    candidate = _candidate(pack)
+    first, second = candidate["items"][:2]
+    if change in {"tokens", "tokens_and_gap"}:
+        response = _response(first["capture"])
+        response["tokens"][0] = 900
+        _set_response(first["capture"], response)
+        if change == "tokens_and_gap":
+            response = _response(second["capture"])
+            del response["tokens"]
+            _set_response(second["capture"], response)
+    elif change == "missing":
+        candidate["items"].pop()
+    elif change == "drift":
+        candidate["shapes"][0]["model_sha256"] = "0" * 64
+    pack_file, candidate_file, capture = (tmp_path / name for name in ("pack", "candidate", "comparison"))
+    pack_file.write_bytes(parity.pack_bytes(pack))
+    raw_candidate = json.dumps(candidate, indent=2).encode() + b"\n\n"
+    candidate_file.write_bytes(b'{"schema":' if change == "bad_candidate" else raw_candidate)
+    pin = "0" * 64 if change == "bad_pin" else candidate["pack_sha256"]
+    args = ["compare", "--pack", str(pack_file), "--pack-sha256", pin, "--candidate",
+            str(candidate_file), "--capture", str(capture)]
+    if status == "invalid_input":
+        with pytest.raises(SystemExit, match="2"):
+            parity.main(args)
+    else:
+        assert parity.main(args) == exit_code
+    output = capsys.readouterr()
+    payload = capture.read_bytes()
+    record = json.loads(payload)
+    assert record["validator_source_sha256"] == _digest(SCRIPT.read_bytes())
+    for key, path in (("pack", pack_file), ("candidate", candidate_file)):
+        assert base64.b64decode(record[key]["bytes_b64"]) == path.read_bytes()
+        assert record[key]["sha256"] == _digest(path.read_bytes())
+    if status == "invalid_input":
+        assert record["report"] is None and record["error"]["status"] == status
+    else:
+        assert record["error"] is None and record["report"] == json.loads(output.out)
+        assert record["report"]["status"] == status
+        assert record["coverage"] == pack["coverage_matrix"]
+    if status in {"incomplete", "identity_drift", "invalid_input"}:
+        assert record["checks"] == {}
+    if change in {"tokens", "tokens_and_gap"}:
+        assert record["checks"][first["id"]]["tokens_match"] is False
+        expected = None if change == "tokens_and_gap" else True
+        assert record["checks"][second["id"]]["tokens_match"] is expected
+    rows = comparison_reader.native_rows(capture)
+    if mismatches is None:
+        assert rows == ()
+    else:
+        row, = rows
+        claim = comparison_reader.project(row)
+        assert grade(claim)[:2] == ("Judged", "Located")
+        assert claim.value == mismatches and claim.extra["checked_items"] == 32
+        assert claim.observation["outcome_native"] == status
+        assert "Supplied runtime and model identities are declarations." in claim.claim
+    with pytest.raises(SystemExit, match="2"):
+        parity.main(args)
+    assert "File exists" in capsys.readouterr().err
+    assert capture.read_bytes() == payload
+
+
+@pytest.mark.parametrize(
+    ("change", "error"),
+    [
+        ("legacy_report", "sealed comparison requires fields"),
+        ("broken_seal", "comparison content seal differs"),
+        ("candidate_hash", "original input byte hash"),
+        ("validator_hash", "validator source differs"),
+        ("checks", "outcome or coverage does not re-derive"),
+        ("coverage", "outcome or coverage does not re-derive"),
+        ("report", "outcome or coverage does not re-derive"),
+    ],
+)
+def test_comparison_reader_refuses_legacy_or_tampered_native_capture(
+    source, tmp_path, comparison_reader, change, error,
+):
+    from claim_tuple import ProjectionError
+
+    pack = parity.build_pack(source)
+    candidate = _candidate(pack)
+    capture = tmp_path / "comparison.json"
+    parity.capture_comparison(parity.pack_bytes(pack), candidate["pack_sha256"],
+                              parity.canonical_json(candidate), capture)
+    record = json.loads(capture.read_bytes())
+    if change == "legacy_report":
+        record = record["report"]
+    elif change == "broken_seal":
+        record["content_sha256"] = "0" * 64
+    else:
+        if change == "candidate_hash":
+            record["candidate"]["sha256"] = "0" * 64
+        elif change == "validator_hash":
+            record["validator_source_sha256"] = "0" * 64
+        elif change == "checks":
+            record["checks"][pack["items"][0]["id"]]["tokens_match"] = False
+        elif change == "coverage":
+            record["coverage"]["dflash_pairs"].pop()
+        else:
+            record["report"]["promotion_authorized"] = True
+        record.pop("content_sha256")
+        record["content_sha256"] = _digest(parity.canonical_json(record))
+    capture.write_bytes(parity.pack_bytes(record))
+    with pytest.raises(ProjectionError, match=error):
+        comparison_reader.native_rows(capture)
+
+
+def test_capture_keeps_pack_validator_source_pin(source, tmp_path, comparison_reader):
+    pack = parity.build_pack(source)
+    pack["tool_source_sha256"] = "0" * 64
+    candidate = _candidate(pack)
+    output = tmp_path / "comparison.json"
+    with pytest.raises(ValueError, match="canonical build or tool source"):
+        parity.capture_comparison(parity.pack_bytes(pack), candidate["pack_sha256"],
+                                  parity.canonical_json(candidate), output)
+    record = json.loads(output.read_bytes())
+    assert record["report"] is None and record["error"]["status"] == "invalid_input"
+    assert comparison_reader.native_rows(output) == ()

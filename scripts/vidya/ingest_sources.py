@@ -621,6 +621,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="sealed prospective model-free native captures with explicit non-smoke grants; "
                 "raw case counts re-derived, with candidate-local scope",
            task="SC18"),
+    Source("quality-pack-comparison", "quality_pack_comparison",
+           lambda p: importlib.import_module("adapters.quality_pack_comparison").units(p),
+           note="V9-8 native sealed original-byte comparisons; coverage and outcomes replayed "
+                "under the bound validator source; complete comparisons are diagnostic observations",
+           task="VB-V9-8-QUALITY-PACK-WIRE"),
     Source("ch18-merge-trial", "ch18_merge_trial",
            lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
            note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "

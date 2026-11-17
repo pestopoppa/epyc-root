@@ -13,6 +13,7 @@ import argparse
 import base64
 import binascii
 from collections import Counter
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -25,6 +26,8 @@ SOURCE_SCHEMA = "epyc.kernel_quality_parity_source.v1"
 PACK_SCHEMA = "epyc.kernel_quality_parity_pack.v1"
 CANDIDATE_SCHEMA = "epyc.kernel_quality_parity_candidate.v1"
 REPORT_SCHEMA = "epyc.kernel_quality_parity_report.v1"
+CAPTURE_SCHEMA = "epyc.kernel_quality_parity_comparison.v1"
+VALIDATOR_SOURCE_SHA256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 MANDATORY_SHAPES = {
     "frontdoor-cpu-moe-mtp",
     "worker-general-cpu-moe-mtp",
@@ -394,7 +397,7 @@ def build_pack(source):
     return {
         "schema": PACK_SCHEMA,
         "observation_only": True,
-        "tool_source_sha256": _sha256(Path(__file__).read_bytes()),
+        "tool_source_sha256": VALIDATOR_SOURCE_SHA256,
         "capture_source": source["capture_source"],
         "runtime": source["runtime"],
         "shapes": [shapes[key] for key in sorted(shapes)],
@@ -420,7 +423,7 @@ def pack_bytes(pack):
     return canonical_json(pack) + b"\n"
 
 
-def compare_pack(pack, expected_sha256, candidate):
+def compare_pack(pack, expected_sha256, candidate, *, audit=None):
     """Compare prospective captures. Only the observation status selects the next investigation."""
     _digest(expected_sha256, "expected pack SHA-256")
     if _sha256(pack_bytes(pack)) != expected_sha256:
@@ -431,6 +434,8 @@ def compare_pack(pack, expected_sha256, candidate):
         raise ValueError("invalid pack structure") from exc
     if pack_bytes(rebuilt) != pack_bytes(pack):
         raise ValueError("pack differs from its canonical build or tool source")
+    if audit is not None:
+        audit["coverage"] = pack["coverage_matrix"]
 
     if not isinstance(candidate, dict) or candidate.get("schema") != CANDIDATE_SCHEMA:
         raise ValueError("unsupported parity candidate schema")
@@ -480,23 +485,38 @@ def compare_pack(pack, expected_sha256, candidate):
         if cap is not None:
             pairs.setdefault(item["dflash_pair"], []).append(_pair_row(item, capture, cap))
         reasons = []
-        if finish != item["expected_finish"]:
+        finish_matches = finish == item["expected_finish"]
+        if not finish_matches:
             reasons.append("finish_mismatch")
-        if not _semantic_matches(item["validator"], content):
+        semantic_matches = _semantic_matches(item["validator"], content)
+        if not semantic_matches:
             reasons.append("semantic_validation_failed")
         banked = _response(base64.b64decode(item["production"]["response_b64"]), shape["endpoint"], cap, limit)
-        if (content, reasoning) != banked[:2]:
+        content_matches = (content, reasoning) == banked[:2]
+        if not content_matches:
             reasons.append("content_mismatch")
+        tokens_match = None
         if tokens is None or item["output_token_ids"] is None:
             token_gaps.append(item_id)
-        elif tokens != item["output_token_ids"]:
-            reasons.append("token_ids_mismatch")
-        if count is None or item["completion_count"] is None:
+        else:
+            tokens_match = tokens == item["output_token_ids"]
+            if not tokens_match:
+                reasons.append("token_ids_mismatch")
+        counts_exposed = count is not None and item["completion_count"] is not None
+        if not counts_exposed:
             count_gaps.append(item_id)
         if item["output_token_ids"] is None or item["completion_count"] is None:
             banked_gap = True
         if reasons:
             failures[item_id] = reasons
+        if audit is not None:
+            audit["checks"][item_id] = {
+                "finish_matches": finish_matches,
+                "semantic_matches": semantic_matches,
+                "content_matches": content_matches,
+                "tokens_match": tokens_match,
+                "counts_exposed": counts_exposed,
+            }
 
     _pair_check(pairs, "candidate")
     if failures:
@@ -508,6 +528,49 @@ def compare_pack(pack, expected_sha256, candidate):
         return {**report, "status": "incomplete", "next_action": next_action,
                 "missing_token_ids": token_gaps, "missing_completion_counts": count_gaps}
     return {**report, "status": "pass", "next_action": "record_observation", "matched_items": len(items)}
+
+
+def _compare_bytes(pack, pin, candidate, *, audit=None):
+    if _sha256(pack) != pin:
+        raise ValueError("pack file SHA-256 does not match the prospective pin")
+    return compare_pack(_parse(pack), pin, _parse(candidate), audit=audit)
+
+
+def _input_snapshot(raw):
+    return {"bytes_b64": base64.b64encode(raw).decode("ascii"), "sha256": _sha256(raw)}
+
+
+def _capture_outcome(pack, pin, candidate):
+    audit = {"coverage": None, "checks": {}}
+    try:
+        report = _compare_bytes(pack, pin, candidate, audit=audit)
+    except (KeyError, ValueError, TypeError, RecursionError) as exc:
+        return {"report": None, "error": {
+            "status": "incomplete" if isinstance(exc, Incomplete) else "invalid_input",
+            "message": str(exc),
+        }, **audit}
+    return {"report": report, "error": None, **audit}
+
+
+def capture_comparison(pack, pin, candidate, output):
+    """Publish the original inputs and observed result at the comparison boundary."""
+    outcome = _capture_outcome(pack, pin, candidate)
+    if VALIDATOR_SOURCE_SHA256 != _sha256(Path(__file__).read_bytes()):
+        raise ValueError("validator source changed during comparison")
+    record = {
+        "schema": CAPTURE_SCHEMA,
+        "completed_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "validator_source_sha256": VALIDATOR_SOURCE_SHA256,
+        "prospective_pack_sha256": pin,
+        "pack": _input_snapshot(pack),
+        "candidate": _input_snapshot(candidate),
+        **outcome,
+    }
+    record["content_sha256"] = _json_hash(record)
+    _publish(output, pack_bytes(record))
+    if outcome["error"] is not None:
+        raise ValueError(outcome["error"]["message"])
+    return outcome["report"]
 
 
 def _publish(output, payload):
@@ -532,6 +595,7 @@ def main(argv=None):
     compare.add_argument("--pack", required=True, type=Path)
     compare.add_argument("--pack-sha256", required=True)
     compare.add_argument("--candidate", required=True, type=Path)
+    compare.add_argument("--capture", type=Path, help="exclusively publish a sealed Vidya comparison record")
     args = parser.parse_args(argv)
     try:
         if args.command == "build":
@@ -540,9 +604,11 @@ def main(argv=None):
             print(_sha256(payload))
             return 0
         payload = args.pack.read_bytes()
-        if _sha256(payload) != args.pack_sha256:
-            raise ValueError("pack file SHA-256 does not match the prospective pin")
-        report = compare_pack(_parse(payload), args.pack_sha256, _parse(args.candidate.read_bytes()))
+        candidate = args.candidate.read_bytes()
+        if args.capture is None:
+            report = _compare_bytes(payload, args.pack_sha256, candidate)
+        else:
+            report = capture_comparison(payload, args.pack_sha256, candidate, args.capture)
         print(canonical_json(report).decode("utf-8"))
         return {"pass": 0, "fail": 1, "incomplete": 2, "identity_drift": 2}[report["status"]]
     except (OSError, ValueError, TypeError, RecursionError) as exc:

@@ -42,3 +42,17 @@ The minimum is 32 distinct requests, with at least four per declared shape and f
 The tool rejects malformed, duplicate, incomplete-coverage, or hash-invalid inputs with exit 2. Completion counts must agree with returned IDs when exposed and with the request limit for a length finish.
 
 Every report carries `observation_only: true`, `quality_transfer_authorized: false`, and `promotion_authorized: false`. An operator attestation covers the pack, banked captures, coverage, stopping rule, and exact tool sources before a future protocol can use these observations for quality transfer.
+
+## Prospective comparison records
+
+Pass `--capture comparison.json` to `compare` to retain a sealed record at the comparison boundary. The destination must not exist. The record retains the exact pack and candidate bytes, their hashes, the prospective pack pin, comparator source hash, coverage, individual checks and the native report or input failure. An unsuccessful comparison remains unsuccessful after capture; a capture does not authorize quality transfer or promotion.
+
+The reader replays the original comparison with the hash-matching comparator. A changed report or input, a pre-hook report, or an incompatible comparator is refused. Runtime and serving identities remain declarations from the supplied captures; this offline record cannot establish that a declared binary served a request. Software fixtures establish reader behavior only. The first genuine prospective comparison and its planning-context canary remain required by `VB-V9-8-QUALITY-PACK-WIRE`.
+
+Inspect projection without writing a ledger:
+
+```bash
+python3 scripts/vidya/cli.py ingest quality-pack-comparison --path comparison.json --dry-run
+```
+
+Only complete pass/fail observations project. Invalid, incomplete and identity-drift records retain their original outcomes without producing a numeric claim. The shared grader determines the observation's warrant; no comparison outcome supplies promotion authority.

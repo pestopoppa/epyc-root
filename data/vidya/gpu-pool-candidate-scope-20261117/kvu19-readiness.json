@@ -1,6 +1,6 @@
 {
   "row_id": "handoff-vidya-kvu19a2-wire-20261104",
-  "status": "prospective build started under CPU region lock; publication pending",
+  "status": "original build interrupted without terminal; prospective build resumed; publication pending",
   "rowflow_status_rc": 2,
   "rowflow_status": "unknown - no epyc.row.v3 row in ready/",
   "backlog": "VB-KVU19A2-WIRE listed; no inference row entry for this id",
@@ -27,26 +27,23 @@
   "prior_smoke": "FAIL-1.json: 2026-11-04 first native progress passed but rowflow VRAM residency threshold failed; sampled max 13094912 bytes",
   "publication_command": null,
   "publication_rc": null,
-  "next_action": "On build success, run finalization command once, then publish successor spec with --smoke-now; preserve actual native residency refusal. On build failure inspect terminal and build logs and repair before finalization.",
+  "next_action": "Consume registered external build-terminal.json; require successful actual build receipt before packet/finalize.py and publish spec.json --smoke-now. Preserve genuine residency refusal. See recovery_receipt for interrupted original attempt and exact successor identity.",
   "root_code_restored": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-root-code",
   "root_code_restored_head": "1ea56a495413be89ea9bcc89407f547a47f3e9f2",
   "build_script": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build.sh",
   "build_command": "/bin/bash /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-wrapper.sh",
-  "region_lock_pid": 1175975,
   "region_lock_started": "2026-11-17 23:36:37 UTC",
   "region_lock_session_id": 95692,
   "build_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/region-build.log",
   "future_build_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-receipt.json",
   "claim_state": "q2 acquired; 48-51 role build; fail-fast 1 second",
   "publisher_residency_policy": "rowflow.py RESIDENCY_FLOOR_B = 64 MiB; no model-free override; quiet-only is exclusively for CPU work holding GPU idle and cannot apply here",
-  "wrapper_pid": 1175960,
   "terminal_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-terminal.json",
   "source_identity": "commit a0d0ae238e714aaab04e973ef4b5a4b7c9917744 tree 507ee1a6b1c5f09d56a337232f99eb82c1aeea55; git archive and preserved source archive: all 3291 non-directory entries match bytes, modes and links; detached external worktrees, candidate patch applied",
   "actual_affinity_recorded": "build receipt derives os.sched_getaffinity(0)",
   "dispatcher_registration": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/kvu19-build-20261117.json",
   "terminal_redirection": "Wrapper post-build writer now names external build-terminal.json literally; preexisting lane awaiting-directory symlink and external terminal-file symlink remain fallback because live Bash may have buffered script content. Clean lane symlink and empty parent directories only after terminal completion.",
   "durable_build_scripts": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-build/",
-  "notifier_pid": 1245878,
   "notifier_script": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/terminal-notifier.py",
   "notifier_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/terminal-notifier.log",
   "notifier_method": "pidfd_open and one select wait on captured wrapper PID 1175960; if receipt absent, validate nine artifact digests and create event with exit_code unknown; no overwrite",
@@ -58,5 +55,16 @@
   "finalization_precondition": "build terminal receipt state success; verifies nine artifact digests, source pins, original root-code closure, emits harness attestation and pins then runs preflight",
   "source_manifest_sha256": "26d72341d3a6d73458350a8559b340b357c6a469e60ab02deb3c3165c65b303f",
   "finalizer_sha256": "56329c906b159dcf2c640f9be6aad2945f524de761001ccf16c67400874f1570",
-  "smoke": "one original case80/base native process on four granted CPUs; larger genuine tensor footprint than case78, no guarantee of 64 MiB residency"
+  "smoke": "one original case80/base native process on four granted CPUs; larger genuine tensor footprint than case78, no guarantee of 64 MiB residency",
+  "recovery_receipt": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-publication.json",
+  "original_attempt_pids": {
+    "region_lock_pid": 1175975,
+    "wrapper_pid": 1175960,
+    "notifier_pid": 1245878
+  },
+  "recovery_pids": {
+    "wrapper_pid": 1356571,
+    "region_lock_pid": 1356574,
+    "notifier_pid": 1356572
+  }
 }
