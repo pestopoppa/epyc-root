@@ -55,6 +55,8 @@ Coupling edges: `.claude/dependency-map.json`.
 
 Champion contents and promotion presence gates: [`docs/reference/kernel-manifests/`](docs/reference/kernel-manifests/README.md).
 
+**Forward-port rule (V6R-4b / OP-58).** Forward-port one feature per commit. Before reverting a bundled commit, split it and revert only the gated-out parts. A feature's test travels with it through every consolidation (enforced in code by the DS41-C116 kernel-preservation gate, `kernel_coverage.py`). Origin: INC-20260925, our own OpenMP parallel repack (`52ddd3200`) lost in the bundled v6 Stage 1a revert (`docs/reference/agent-config/INCIDENT_LOG.md`).
+
 ## Working-tree identity
 
 **Single source of truth**: `/workspace/repos/<name>` is a symlink to `/mnt/raid0/llm/<name>` (`/mnt/raid0/llm/llama.cpp` for `epyc-llama`) — parallel sessions on either path share one clone, branch, and staging area. Identity check: `stat -c %i /workspace/repos/<name>/.git` equals the target's. `scripts/clone-repos.sh` (idempotent, `DRY_RUN=1` to preview) creates/repairs the symlinks and backs up divergent clones — if the two paths ever show divergent commits, push unique commits from both sides first, then re-run it.
