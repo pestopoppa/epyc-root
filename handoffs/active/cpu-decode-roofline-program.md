@@ -5071,6 +5071,10 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
 - *Intake knowledge note, K1, row TCAP-2 (intake-2572#record):* Record that INF-70 Axis-E "MTP needs FP8 re-download" is obsolete: head already on disk (mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf, 2.79 GB, 2026-09-02); no ThinkingCap download is needed for MTP
 - *Intake knowledge note, K2, row W2LOOP-3 (intake-2587#record):* Knowledge-only: record that our GDN graph hard-caps beta at 1 (src/models/qwen3next.cpp:417 ggml_sigmoid) matching the Qwen3.5 control that failed to generalise hidden tracking; no probe.
 
+#### Research Intake Update — 2026-11-17 (Exstill 2611.18859 + NVIDIA/Gimlet blogs, intake-2669..2673; operator-approved 2026-11-17)
+
+- [ ] **INF70-TWOLINE** [non-inference first] Fit decode ms/token = a + b·weight_bytes (model sweep at fixed ctx) and = a' + c·KV_bytes (ctx sweep) on CPU from existing C13 llama-bench/served rows; report intercept a (fixed per-step charge: barriers, sync, threadpool) and slopes vs the measured STREAM ceiling. Source: intake-2669 §2.4–2.6 method (slope matches bytes/bandwidth; intercept = per-step charge). Decision: if a > 15% of token time on the serving models, prioritize barrier/threadpool candidates over byte-reduction candidates in AK seeds; else confirm bytes-first. Reuse existing rows first; new runs only for missing points (≥3 models, ≥3 ctx). Stop-on-answer when the fit residual is ≤5% on all points; stop-on-futility if residual >15% (model not linear, record and close). [no-belief: new box]
+
 ## Track: sarathi-serve-cpu-evaluation
 <!-- gate: none -->
 

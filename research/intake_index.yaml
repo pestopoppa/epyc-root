@@ -387794,3 +387794,343 @@
     effect: unaffected
     note: jetspecpp.md claim table confirms the matching row; the correction items (1.54x = 8B + 2 GPUs,
       J3-R3 vs J1-R1 pairing, anchor replacement, chain not tree) are already carried by claims 2-4.
+- id: intake-2669
+  arxiv_id: '2611.18859'
+  url: https://arxiv.org/abs/2611.18859
+  source_type: paper
+  title: The Most Efficient Single-Chip Processor for the Next Token (Exstill technical report)
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  authors:
+  - Valavan Manohararajah
+  - Vithursan Thangarasa
+  key_claims:
+  - 'Per-token decode time on a B300 fits two straight lines: vs weight bytes (slope near bytes/bandwidth, intercept ~1.1
+    ms) and vs concurrent users (slope near one user KV read); the intercept is attributed to a fixed per-step charge from
+    the shape of the fit, not a profile.'
+  - Pre-silicon costing has four levels (paper, architecture, cycle, gate); scaling one kernel up to the whole model misstates
+    whole-model cost.
+  - Design search selects the Pareto front of quality vs energy-delay first, then the lowest energy-delay point clearing a
+    bits-per-byte quality bar.
+  - Speculative decoding speedup modeled as S = tau/(d+v); a standalone drafter sharing the target GPU in vLLM was measured
+    several times slower than the target alone.
+  techniques:
+  - two-line decode-time decomposition
+  - Pareto-then-quality-bar selection
+  - energy-delay at fixed bits-per-byte quality
+  - draft on a separate device
+  reported_results:
+  - Pre-silicon 5 nm chip figures vs B300+vLLM as shipped; authors estimate a tuned stack halves each ratio. Not evidence
+    about our hardware.
+  credibility_score: 1
+  contradicting_evidence:
+  - All chip figures are pre-silicon; GPU baseline is untuned vLLM; fixed-charge attribution is inferred from curve shape,
+    not profiled.
+  handoffs_updated:
+  - handoffs/active/cpu-decode-roofline-program.md
+  - handoffs/active/autokernel-loop.md
+  - handoffs/active/autokernel-akx-program.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Boxes INF70-TWOLINE, AK-AMDAHL-PRUNE, AKX-PARETO-RETAIN (operator-approved 2026-11-17).
+  handoffs_created: []
+  read_depth: PARTIAL
+  verification: stage1-unverified
+  notes: 'Option (a), operator-approved 2026-11-17: no arXiv HTML rendering exists (v1 /html returns a stub); read from PDF
+    v1 sha256 f8ab27d083a6dde70872c186366678e1e222dd175453b83c446938c58e20cb56 via pypdf text extraction. PDF quotes were
+    checked BY HAND (Sec 2.4-2.6, 3.3 Table 3, 3.5, 3.10, 5.1-5.4); the anchor extractor does not support PDF so no anchor_mark
+    is possible and the entry stays stage1-unverified. Not read: Sec 4, 5.5-8 (guard/agent/finance). Dive: research/deep-dives/exstill-2611.18859-20261117.md.
+    Wave cap reached; declined dive-surfaced: Ranjan et al. 2026 (spec-dec on sparse MoE, recommended next), NVIDIA co-design
+    Part 1, MoESD, arXiv 2605.09992, Jouppi 2021.'
+- id: intake-2670
+  arxiv_id: null
+  url: https://gimletlabs.ai/blog/draft-model-disaggregation
+  source_type: blog
+  title: Disaggregating the Disaggregated Model (Gimlet, draft-model disaggregation)
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2669
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - Moving draft decode to a faster device raises modeled peak interactivity and moves the optimal draft length later (8 to
+    15 in their model).
+  - In the field, accelerator draft prefill varied, so draft prefill was moved back to GPU while draft decode stayed on the
+    accelerator.
+  credibility_score: null
+  handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - K3 re-sweep-D trigger routed to the speculative-decoding owning session via coordinator (not filed by this lane).
+  handoffs_created: []
+  read_depth: FULL
+  verification: dive-verified
+  notes: 'lane_head: 07f8ca92d. Speedups are modeled except the prefill field observation.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Moving the draft model to faster hardware
+    quote: the optimal draft length moves from 8 to 15
+    quote_sha256: 7ec66f81fd17a227f4af910150ec47205a716bd7f59ac4cef02cbd3c200beb05
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46, found: true}
+    source_revision: https://gimletlabs.ai/blog/draft-model-disaggregation
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://gimletlabs.ai/blog/draft-model-disaggregation
+      requested_url: https://gimletlabs.ai/blog/draft-model-disaggregation
+      effective_url: https://gimletlabs.ai/blog/draft-model-disaggregation
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46
+      relative_path: sha256/8a/8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46.raw
+      raw_sha256: 8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46
+      byte_length: 129754
+  - claim_index: 1
+    kind: page-and-quote
+    locator: How we have leveraged draft disaggregation
+    quote: disaggregating the draft model by moving draft prefill back to a GPU
+    quote_sha256: 1e6767d6477c63ebf5ffa5595527aeb697c1fddd6242e62501e73d0ad20136e0
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46, found: true}
+    source_revision: https://gimletlabs.ai/blog/draft-model-disaggregation
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://gimletlabs.ai/blog/draft-model-disaggregation
+      requested_url: https://gimletlabs.ai/blog/draft-model-disaggregation
+      effective_url: https://gimletlabs.ai/blog/draft-model-disaggregation
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46
+      relative_path: sha256/8a/8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46.raw
+      raw_sha256: 8a6d485d7b3e209fc70fb4afdf1b71c2df9409811bfb818560e0f4c53c338d46
+      byte_length: 129754
+- id: intake-2671
+  arxiv_id: null
+  url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+  source_type: blog
+  title: Co-Designing AI Models Using Speculative Decoding for Faster LLM Inference (NVIDIA, Mitra et al. 2026)
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2669
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - When attention dominates, choose draft length D = 128/G - 1 for NVIDIA kernels; attention runtime increases in steps as
+    G(1+D) crosses the kernel tile size.
+  - At very low latency, speedup is approximately AL/(1+rho D) with rho the draft/target layer ratio.
+  credibility_score: null
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Box RKA-VERIFY-TILE (operator-approved 2026-11-17).
+  handoffs_created: []
+  read_depth: FULL
+  verification: dive-verified
+  notes: 'lane_head: 07f8ca92d. The tile constant 128 is NVIDIA-specific; our constant is the gfx90a FA/MMQ and CPU iqk tile
+    M.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Guideline 3
+    quote: runtime increases in steps as
+    quote_sha256: 8d829bee49e89812a050847f83624df5d6637a4ba47ee521118c487c5cd6283b
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d, found: true}
+    source_revision: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+      requested_url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+      effective_url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d
+      relative_path: sha256/6b/6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d.raw
+      raw_sha256: 6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d
+      byte_length: 310145
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Guideline 4
+    quote: increasing \(D\) helps only while the gain in \(AL\) is large enough to offset the draft overhead
+    quote_sha256: 7b75d74595d5092aab9859e0030213bc738fe57eadfe9dc6412bbf40ced2f983
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d, found: true}
+    source_revision: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+      requested_url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+      effective_url: https://developer.nvidia.com/blog/co-designing-ai-models-using-speculative-decoding-for-faster-llm-inference/
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d
+      relative_path: sha256/6b/6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d.raw
+      raw_sha256: 6b2a97385513c991374b56c673285fbef093700b1316f535fd04265fe16d1d8d
+      byte_length: 310145
+- id: intake-2672
+  arxiv_id: null
+  url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+  source_type: blog
+  title: Co-Designing AI Model Attention for Fast, Interactive Long-Context Inference (NVIDIA)
+  categories:
+  - kv_cache
+  - hardware_optimization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-2669
+  verdict: adopt_patterns
+  ingested_date: '2026-11-17'
+  key_claims:
+  - Decode attention GEMM-M equals G (typically 8-16), far below GPU tile-M of 64 or 128; speculative decoding raises it to
+    (1+D)G.
+  - At short KV length, fixed setup/post-processing and the flash-decoding split reduction dominate the decode attention kernel.
+  credibility_score: null
+  handoffs_updated:
+  - handoffs/active/rocm-kernel-authoring.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - Box RKA-VERIFY-TILE (tile boundary + reduction-share column).
+  handoffs_created: []
+  read_depth: FULL
+  verification: dive-verified
+  notes: 'lane_head: 07f8ca92d. Measured on NVIDIA FP8 kernels; transfer to gfx90a is a hypothesis RKA-VERIFY-TILE tests.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Attention GEMM shapes
+    quote: far below a GPU tile-M of 64 or 128
+    quote_sha256: c5a0dc6e6287ef51a3ccbfca93f2b5db7b2ca8bcee67044c24a668e203da6eb1
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0, found: true}
+    source_revision: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+      requested_url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+      effective_url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0
+      relative_path: sha256/c3/c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0.raw
+      raw_sha256: c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0
+      byte_length: 314153
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Group size
+    quote: the flash-decoding reduction from splitting KV across SMs
+    quote_sha256: 1eb102561fc6c8b501c87692253305be7951c3102fbb619ccd698663c183d90e
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0, found: true}
+    source_revision: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+      requested_url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+      effective_url: https://developer.nvidia.com/blog/co-designing-ai-model-attention-for-fast-interactive-long-context-inference/
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0
+      relative_path: sha256/c3/c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0.raw
+      raw_sha256: c309a69d07d3967443a2d2bfbb011c10ac69dda0fd3e6ad1d69d9995a459dea0
+      byte_length: 314153
+- id: intake-2673
+  arxiv_id: null
+  url: https://gimletlabs.ai/blog/recursive-self-optimization
+  source_type: blog
+  title: Recursive Self-Optimization at Gimlet
+  categories:
+  - autonomous_research
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-2669
+  verdict: worth_investigating
+  ingested_date: '2026-11-17'
+  key_claims:
+  - 'Vision: continuously profile running models and feed telemetry to agents that regenerate specialized kernels and stack
+    components.'
+  - Effective agentic kernel generation rests on specification, instruction, abstraction and verification, with simple performance
+    models narrowing the search.
+  credibility_score: null
+  handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Already covered by AK served-shape seeding (calibrate_served_shapes.py, AKX-ALL-16); no new box.
+  handoffs_created: []
+  read_depth: FULL
+  verification: dive-verified
+  notes: 'lane_head: 07f8ca92d. Vision post, no measurements.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Vision
+    quote: continuously profile running models and collect runtime telemetry
+    quote_sha256: 2db6e23e7e43e68d94bfba4a37a46bc52e37c00c85888ab8a34ce42954927e73
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1, found: true}
+    source_revision: https://gimletlabs.ai/blog/recursive-self-optimization
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://gimletlabs.ai/blog/recursive-self-optimization
+      requested_url: https://gimletlabs.ai/blog/recursive-self-optimization
+      effective_url: https://gimletlabs.ai/blog/recursive-self-optimization
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1
+      relative_path: sha256/72/724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1.raw
+      raw_sha256: 724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1
+      byte_length: 81816
+  - claim_index: 1
+    kind: page-and-quote
+    locator: KForge
+    quote: The key to effective agentic kernel generation is specification, instruction, abstraction, and verification
+    quote_sha256: b2f54915aa8ff2cef5d95be956d5c7093755398b618399855728de92ec27b74f
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1, found: true}
+    source_revision: https://gimletlabs.ai/blog/recursive-self-optimization
+    verified_by: research-intake/stage2
+    source_artifact:
+      entry_url: https://gimletlabs.ai/blog/recursive-self-optimization
+      requested_url: https://gimletlabs.ai/blog/recursive-self-optimization
+      effective_url: https://gimletlabs.ai/blog/recursive-self-optimization
+      retrieved_at_utc: '2026-11-17T21:20:00Z'
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: sha256:724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1
+      relative_path: sha256/72/724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1.raw
+      raw_sha256: 724736dfc0c036e8d2b02eac665b3153e5894afa9bc3ced407b0216ace267bd1
+      byte_length: 81816
