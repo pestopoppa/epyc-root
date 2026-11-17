@@ -51,3 +51,7 @@ Duplicate G5 completion consumed idempotently; existing verdict BOUNDED_NULL_1 r
 ## 22:44Z — Consume duplicate G4 completion through idempotent filing
 
 Duplicate run-end for inf86-g4-restore-reuse-20261117-r2: file_result.py returned NOOP, already FILED. G4 remains closed as EXPOSED_NOT_HIT; its tools-path follow-up is already represented by the readied C13 checkpoint validation. No new measurement or tick. Next action remains filing inf86-slot-restore-ckpt-c13-20261117 when its run ends.
+
+## 22:47Z — Consume already-filed G4 complete-file notification
+
+G4 complete-file notification is a duplicate of its previously consumed ended event: file_result.py returned NOOP, already FILED. Existing EXPOSED_NOT_HIT verdict and ticks unchanged. No new inference task; pending C13 checkpoint validation remains the next action.
