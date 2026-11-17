@@ -603,6 +603,8 @@ Operator-approved 2026-10-20 via research intake (plan sha256 recorded in the se
 - DI-110 (intake-2132): TRIGGERED 2026-10-22 → XGRAMMAR-A2 task. monitor: SPEC-GRAM.1 shows grammar time >= 5% of decode step at the frontdoor or >= 2 ms/step on any lineup model
 - DI-132 (intake-2137): monitor: trigger = intake-2132 XGRAMMAR-A1 measurement reports grammar compile+mask above 5% of tool-turn wall time, or a request carries more than 100 tools
 
+Trigger (intake-2670, intake-2669; no checkbox): when any drafter's device or per-token draft speed changes by more than 1.5x (e.g. draft decode moved to the MI210 while the target verifies on CPU, or draft prefill moved to the CPU), re-sweep the draft length D for that role before trusting the old setting. The optimal D shifts with draft cost: in Gimlet's model a 5x faster drafter moved the optimum from 8 to 15 (modeled, not measured), consistent with the speedup model S = tau/(d+v) (intake-2669 Eq. 2; stage1-unverified, so cite the form, not its numbers). When re-sweeping, pick D values that also respect the verify-cost tile boundaries measured by RKA-VERIFY-TILE.
+
 **Retained knowledge (no task):**
 
 - DI-059 (intake-2116#record): knowledge-only: retained as a design note for CAFE-2 / the cost-aware truncation trigger step (a); add one line to CAFE-2 at apply time.
