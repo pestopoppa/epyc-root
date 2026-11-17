@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T14:18:03Z",
+  "generated_at": "2026-11-17T14:22:24Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2401,15 +2401,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 6,
-      "dispatchable": 16,
+      "closed": 8,
+      "dispatchable": 14,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-17",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
-      "open": 16,
+      "open": 14,
       "priority": 0.0318,
       "priority_basis": {
         "campaign": 0,
