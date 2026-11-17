@@ -7283,3 +7283,21 @@ Sources: [autokernel progress 2026-11-17](../progress/2026-11/2026-11-17-autoker
 - **Negative results.** MoE-Spec confirm on C12 is -4.3% decode (does not replicate August's +10.7%); upstream PR #25592 gives no waste reduction; G5 shows no cross-session cache eviction to 8 sessions; the production template renders prior turns byte-stable.
 - **HIP gather port.** The FA row-list tensor being present as `src[7]` corrupts output even when the dispatch ignores it (graph presence, not reuse), so the port moves to a side-channel design.
 - **Row lessons.** Offline UI dist for archive builds, no cross-row build dirs, scan ended-vs-filed, and ratify scripts apply-tested through the real hooks are filed in the compute-fillers guide.
+
+## Compiled Update - 2026-11-17 (research intake): Exstill decode-cost decomposition, verify-tile alignment
+
+Sources: `research/deep-dives/exstill-2611.18859-20261117.md` and `research/deep-dives/intake-digests/2026-11-17-ids-2670-2673.md` (intake-2669..2673).
+
+- **Two-line decomposition.**
+  - Exstill fits decode time per token as two straight lines: against weight bytes and against concurrent KV bytes.
+  - The slope tracks bytes over bandwidth. The intercept is a fixed per-step charge, and they attribute it from the shape of the fit, not from a profile.
+  - intake-2669 is stage1-unverified (PDF-only), so cite the method, not its numbers.
+  - Our application is INF70-TWOLINE on CPU, and on MI210 small drafters through the same fit.
+- **Verify cost steps at tile boundaries.**
+  - Decode attention GEMM-M is G, and becomes G(1+D) under speculation.
+  - A partly filled tile costs as much as a full one, so verify cost should rise in steps where G(1+D) crosses the kernel tile M (intake-2671, intake-2672).
+  - NVIDIA's tile is 128; ours is the gfx90a FA/MMQ tile and the CPU iqk tile. Tested by RKA-VERIFY-TILE.
+- **Draft placement.** When a drafter's device or speed changes, the optimal D moves. Gimlet's model went from 8 to 15 for a 5x faster drafter (modeled, intake-2670). The re-sweep trigger is filed under INF-50.
+- **Loop methodology.**
+  - Scaling one kernel up to the whole model misstates whole-model cost. AK-AMDAHL-PRUNE uses this as a ranking-only ceiling prune.
+  - Pareto-then-quality-bar selection motivates AKX-PARETO-RETAIN.

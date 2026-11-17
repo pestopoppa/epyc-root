@@ -5,26 +5,27 @@
     "handoff-blocked": 1,
     "handoff-completed": 375,
     "progress": 1406,
-    "research": 320
+    "research": 322
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
+      "added": 2,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-17T20:20:26Z",
+    "at": "2026-11-17T22:13:48Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-17-autokernel.md"
+      "research/deep-dives/exstill-2611.18859-20261117.md",
+      "research/deep-dives/intake-digests/2026-11-17-ids-2670-2673.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-17T20:20:26Z",
+  "scan_time": "2026-11-17T22:13:48Z",
   "schema_version": 1,
-  "source_set_hash": "c60e788d202a12a73f7046528925ed6b2f7682f1391c3de99ca1b4d2ac1aea15",
+  "source_set_hash": "ea00269f0905ad1a6e90e30d537f49de8b396907bc61538d8bcbf43edbb21a35",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -3843,6 +3844,14 @@
       "type": "research"
     },
     {
+      "content_hash": "af5edd0ee2247fc5cea0671e16b896f123a088b5aa0e01bf928537a69d48a1f1",
+      "modified": "2026-11-17T22:12:45Z",
+      "path": "research/deep-dives/exstill-2611.18859-20261117.md",
+      "size": 14376,
+      "title": "Exstill 2611.18859 + NVIDIA/Gimlet spec-dec and attention blogs \u2014 deep dive (intake-2669..2673, 2026-11-17)",
+      "type": "research"
+    },
+    {
       "content_hash": "5da2f66132f6b4fec561c136e92ab8f104b6bb3db859d2a3f0e7219be45f6f4e",
       "modified": "2026-11-09T21:31:46Z",
       "path": "research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md",
@@ -4840,6 +4849,14 @@
       "path": "research/deep-dives/intake-digests/2026-11-09-ids-2664-2668.md",
       "size": 21488,
       "title": "Intake dive digest \u2014 2026-11-09, intake-2664#record .. intake-2668#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "41b845175decb7d5d26e3a83f245538361117bbb011e94a4be3831dbd5557423",
+      "modified": "2026-11-17T22:12:45Z",
+      "path": "research/deep-dives/intake-digests/2026-11-17-ids-2670-2673.md",
+      "size": 5086,
+      "title": "Intake dive digest \u2014 2026-11-17, intake-2670#record .. intake-2673#record",
       "type": "research"
     },
     {
@@ -20659,7 +20676,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2579,
+  "total_new": 2581,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

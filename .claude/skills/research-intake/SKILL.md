@@ -209,6 +209,14 @@ For each URL:
    - **Not every paper has an HTML rendering** (older papers, and submissions whose LaTeX fails to
      convert). Fall through to ar5iv, then the abs page, then the PDF. Record which route was used in
      `source_revision`, because it bounds what a later reader may trust.
+   - **A PDF-only paper cannot be `dive-verified` today.** `machine_anchor._extract_text` accepts text
+     media only, so a PDF snapshot gets no `anchor_mark`. Without a mark, the anchor gate fails any
+     entry ingested on or after 2026-11-08. File the entry as `stage1-unverified` with
+     `read_depth: PARTIAL`, add a note saying the PDF quotes were checked by hand, and keep its numbers
+     out of plans. Anchor HTML companions (blogs, project pages) normally. For HTML anchors, store the raw
+     source with `raw_anchor_store.store_raw_bytes` under a root owned by the current user with mode 700
+     (`/mnt/raid0/llm/state/vidya/raw-anchors` since 2026-11-17). Set `source_revision` to exactly the
+     artifact's `effective_url`: any suffix makes the check report `source_unavailable`. (intake-2669#record)
 
 5. **Extract**: title, authors, 3–5 key claims, named techniques, reported results, referenced arXiv IDs.
 

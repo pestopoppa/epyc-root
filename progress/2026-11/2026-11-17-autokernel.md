@@ -50,3 +50,45 @@ Row-hygiene fixes: controller-in-GPU-grant flock self-deadlock fixed `e8d969919`
 - Handoff checklists were synced per verdict in `7eb59441d`, `487484074`, `2f5b17729` and siblings; this wrap-up adds no new box flips.
 - Lessons (9) appended to `docs/guides/agent-workflows/compute-fillers.md`.
 - Index `Next action` cells refreshed for INF-06, INF-48, INF-65, INF-70, INF-82, INF-83, INF-85, INF-86; pruning outcome in the wrap-up commit message and the session report.
+
+## Research intake: Exstill arXiv 2611.18859 (intake-2669..2673)
+
+**Source.** Exstill, "The Most Efficient Single-Chip Processor for the Next Token" (arXiv 2611.18859v1, 2026-11-13). It describes a chip that has not been fabricated yet: one model architecture is fixed in the datapath, and the weights plus all KV caches stay on the die. All chip figures are pre-silicon estimates, compared against a B300 running vLLM as shipped. Credibility 1. Filed `stage1-unverified` / `read_depth: PARTIAL`. The operator chose option (a): no arXiv HTML rendering exists, the PDF quotes were checked by hand, and no anchor mark is possible.
+
+**Deep dives (two sweeps, the operator's cap).**
+- Sweep 1: the paper, Gimlet's draft-model disaggregation blog (intake-2670), and NVIDIA's spec-decoding co-design blog (Mitra et al., intake-2671).
+- Sweep 2: NVIDIA's attention co-design blog (intake-2672) and Gimlet's recursive self-optimization post (intake-2673, knowledge-only).
+- The four blogs are `dive-verified`, with anchor marks written by the script.
+- Declined at the cap: Ranjan 2026 (recommended for the next intake), NVIDIA co-design Part 1, MoESD, 2605.09992, Jouppi 2021.
+
+**Ranked techniques.**
+1. Verify-batch tile alignment: choose the draft length D so that G(1+D) lands on our FA/MMQ tile boundaries.
+2. Two-line decode decomposition: the intercept is the fixed per-step charge, the slope is bytes over bandwidth.
+3. AK planner Amdahl-ceiling prune (loop efficiency).
+4. Keep the Pareto front of near-miss candidates per workload (loop reuse).
+5. Re-sweep D whenever a drafter changes device or speed.
+6. Split-K reduction share at short KV (folded into item 1).
+
+Energy-delay scoring, bits-per-byte quality and model/silicon co-design are knowledge-only.
+
+**Boxes (operator-approved, commit `acf9c6b6b`).**
+
+| Box | Handoff |
+|---|---|
+| RKA-VERIFY-TILE | `rocm-kernel-authoring.md` (INF-48) |
+| INF70-TWOLINE | `cpu-decode-roofline-program.md` (INF-70) |
+| AK-AMDAHL-PRUNE | `autokernel-loop.md` (INF-06) |
+| AKX-PARETO-RETAIN | `autokernel-akx-program.md` (INF-82) |
+
+The K3 D re-sweep trigger landed in `speculative-decoding.md` (INF-50) through Pipeline in `dc07bb9f4`. Commit `06200fcf1` then set intake-2670's `handoffs_updated` to point at it.
+
+**PDF-anchor gap.**
+- The anchor extractor accepts text media only, so a PDF-only arXiv paper cannot be `dive-verified`.
+- New raw-anchor root: `/mnt/raid0/llm/state/vidya/raw-anchors` (owned by the current user, mode 700). It holds the four blog HTML snapshots.
+- `source_revision` must equal the artifact's `effective_url` exactly.
+- Lesson added to `.claude/skills/research-intake/SKILL.md` (fetch-route notes).
+
+**Validation.**
+- `validate_intake.sh`: 218 errors, the same count as clean origin/main; none are on intake-2669..2673.
+- `index_state.py --check`: 0 problems.
+- `vidya sync`: exit 0.
