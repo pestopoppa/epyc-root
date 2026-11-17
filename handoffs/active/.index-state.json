@@ -219,7 +219,7 @@
     },
     "autopilot-program.md": {
       "blocked": 2,
-      "closed": 292,
+      "closed": 293,
       "guarded": 0,
       "last_advanced": "2026-11-09",
       "open": 83,
@@ -231,7 +231,7 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 377,
+      "total": 378,
       "tracks": [
         {
           "blocked": 1,
@@ -365,7 +365,7 @@
         },
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": [
             "RTG-02#autopilot-program",
             "RTG-02#autopilot-dashboard-fidelity-audit-2026-07-22",
@@ -404,7 +404,7 @@
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
           "guarded": 0,
-          "line": 4792,
+          "line": 4793,
           "markers": 1,
           "name": "promptforge-mutation-safety-contract",
           "open": 1
@@ -414,7 +414,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 5068,
+          "line": 5069,
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
@@ -1204,7 +1204,7 @@
       "blocked": 1,
       "closed": 215,
       "guarded": 0,
-      "last_advanced": "2026-11-16",
+      "last_advanced": "2026-11-17",
       "open": 36,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2173,7 +2173,7 @@
       "blocked": 1,
       "closed": 362,
       "guarded": 0,
-      "last_advanced": "2026-11-16",
+      "last_advanced": "2026-11-17",
       "open": 2,
       "owner_index": "inference-research-index.md",
       "prune": {
@@ -2582,7 +2582,7 @@
       "blocked": 0,
       "closed": 5,
       "guarded": 0,
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-17",
       "open": 17,
       "owner_index": "inference-research-index.md",
       "prune": {

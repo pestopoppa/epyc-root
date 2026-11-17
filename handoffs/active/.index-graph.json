@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T10:53:19Z",
+  "generated_at": "2026-11-17T10:55:06Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1672,7 +1672,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "EVL-47"
@@ -1683,7 +1683,7 @@
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-16",
+      "last_advanced": "2026-11-17",
       "next_action": "publish race-eqv r9 (no ready/ entry); ATT canary rc75 row (inf48-triage); C6 controller port open; LIVE-3 C4-9 wiring",
       "open": 3,
       "priority": 0.8728,
@@ -1937,7 +1937,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 215,
@@ -1946,7 +1946,7 @@
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-16",
+      "last_advanced": "2026-11-17",
       "next_action": "C10 floor ratified; C11 skinny-det closed; iqk FA dropped, Q8_0 prefill ON in C11; C6 port35186 re-measure r2 + B3 gdn r3 queued; v10",
       "open": 37,
       "priority": 0.9075,
@@ -2396,7 +2396,7 @@
       ]
     },
     {
-      "age_days": 10,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2407,7 +2407,7 @@
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-17",
       "next_action": "Keep the v11 runbook current: log each champion CAS carry-in (through C9 `d210f85c2`: V11-125..135); boxes close only at promotion",
       "open": 17,
       "priority": 0.0318,
@@ -2724,7 +2724,7 @@
       "age_days": 8,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 292,
+      "closed": 293,
       "dispatchable": 83,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -2933,7 +2933,7 @@
             "RTG-02#orchestration-robustness-audit-2026-07-11",
             "RTG-02#scaffold-autopilot-cost-lever-deployment"
           ],
-          "line": 4792,
+          "line": 4793,
           "name": "promptforge-mutation-safety-contract",
           "open": 1,
           "readiness": "blocked"
@@ -2942,7 +2942,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": null,
-          "line": 5068,
+          "line": 5069,
           "name": "lab-reliability-ladder",
           "open": 1,
           "readiness": "ready"
