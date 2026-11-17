@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 544
+      "open": 543
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 121,
+      "closed": 122,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 64,
+      "open": 63,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -68,7 +68,7 @@
         },
         {
           "blocked": 0,
-          "closed": 42,
+          "closed": 43,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -78,7 +78,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 1,
@@ -92,7 +92,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 944,
+          "line": 947,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 52

@@ -475,7 +475,7 @@
       "from": "INF-82",
       "kind": "ref",
       "to": "INF-70",
-      "weight": 9
+      "weight": 10
     },
     {
       "from": "INF-82",
@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T12:02:14Z",
+  "generated_at": "2026-11-17T12:16:29Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2321,15 +2321,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 121,
-      "dispatchable": 64,
+      "closed": 122,
+      "dispatchable": 63,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-17",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native DONE (both legs pass); fix W2 keeper residency bug, then run census",
-      "open": 65,
+      "open": 64,
       "priority": 0.004,
       "priority_basis": {
         "campaign": 0,
@@ -2359,7 +2359,7 @@
             "INF-06#autokernel-unified-surface-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -2367,7 +2367,7 @@
           ],
           "line": 27,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 11,
+          "open": 10,
           "readiness": "blocked"
         },
         {
@@ -2388,7 +2388,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 944,
+          "line": 947,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53,
           "readiness": "blocked"
