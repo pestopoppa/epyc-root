@@ -1,0 +1,136 @@
+{
+  "schema": "epyc.vidya.sc18_gpu_pool_elementwise_preparation.v1",
+  "recorded_utc": "2026-11-17T23:14:05Z",
+  "status": "staged_static_validation_pass_controls_pending_smoke_grant",
+  "row_id": "ni-gpu-pool-elementwise-20261117-v1",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-ELEMENTWISE-LIVE",
+  "spec_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/spec.json",
+  "tracked_path": "data/vidya/gpu-pool-elementwise-20261117",
+  "selection": [
+    {
+      "op": "ADD",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[10,5,4,3\\],nr=\\[[12],[12],[12],[12]\\],nf=1,perm1=[01],src_overlap=0$",
+      "expected_generated": 16,
+      "expected_supported_passes": 16,
+      "expected_unsupported": 0
+    },
+    {
+      "op": "MUL",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[10,5,4,3\\],nr=\\[[12],[12],[12],[12]\\],nf=1,perm1=[01],src_overlap=0$",
+      "expected_generated": 16,
+      "expected_supported_passes": 16,
+      "expected_unsupported": 0
+    },
+    {
+      "op": "SCALE",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[(10|100),10,10,10\\],",
+      "expected_generated": 4,
+      "expected_supported_passes": 4,
+      "expected_unsupported": 0
+    },
+    {
+      "op": "NORM",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[(64|1025),5,4,3\\],",
+      "expected_generated": 30,
+      "expected_supported_passes": 20,
+      "expected_unsupported": 10
+    },
+    {
+      "op": "RMS_NORM",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[(64|1025),5,4,3\\],",
+      "expected_generated": 21,
+      "expected_supported_passes": 21,
+      "expected_unsupported": 0
+    },
+    {
+      "op": "SUM",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[(10,5,4,3|11,5,6,3|33,(1|256|1024),1,1)\\]",
+      "expected_generated": 8,
+      "expected_supported_passes": 7,
+      "expected_unsupported": 1
+    },
+    {
+      "op": "SUM_ROWS",
+      "seed": 2026102603,
+      "regex": "^type=f32,ne=\\[(10,5,4,3|11,5,6,3|16,5,6,3|33,(1|256|1024),1,1)\\]",
+      "expected_generated": 10,
+      "expected_supported_passes": 4,
+      "expected_unsupported": 6
+    }
+  ],
+  "source": {
+    "research_commit": "ceb08a491abe3ff023a4740f654341e2127fba6b",
+    "historical_writer": "data/gpu-pool/elementwise-20261026/run-v3.py",
+    "historical_seed_count": 32,
+    "candidate_commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "candidate_artifact_input": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/candidate",
+    "candidate_reuse": "hard links to the pinned candidate files; packet-local relative DSO loader aliases",
+    "source_dirty_state": "UNKNOWN",
+    "shim_recreated_source_matches_receipt": false,
+    "shared_adapter_sha256": "e3efc68563c1131fe8b2e680fc60e807729a1d4cb0e909110e5b1edb808df90f"
+  },
+  "scope": {
+    "prospective_only": true,
+    "model_free": true,
+    "sequential_invocations": 7,
+    "expected_tuples": 7,
+    "expected_observed": 105,
+    "expected_supported_passes": 88,
+    "expected_unsupported": 17,
+    "expected_failed": 0,
+    "grading": "shared claim_tuple.grade",
+    "applicability_keys": [
+      "op",
+      "run_id",
+      "scope_basis"
+    ],
+    "regions": "mi210_0,184-191",
+    "estimate_seconds": 300,
+    "gate_class": "futility-only",
+    "rows_published_by_preparation": 0,
+    "gpu_runs_by_preparation": 0,
+    "old_outputs_ingested": 0
+  },
+  "validation": {
+    "shell_syntax": "PASS",
+    "input_pins": "PASS (16 files)",
+    "historical_artifact_digest_match": "PASS (executable and four DSOs)",
+    "historical_same_seed_support_partition": "PASS (each operator)",
+    "spec_shape": "PASS",
+    "gitnexus_impact": "unavailable; this worktree has no GitNexus index and has no changed registered adapter",
+    "focused_controls_status": "pending actual publisher smoke grant; standalone CPU lock acquisition exited 75",
+    "focused_controls_count": 13,
+    "smoke_controls_artifacts": [
+      "controls.log",
+      "controls.json",
+      "SMOKE.json"
+    ],
+    "publisher_smoke": "pending",
+    "official_native_capture": "pending",
+    "log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/validation.log",
+    "synthetic_fixture_revision": "The synthetic grant ends 120 seconds after its deadline, leaving 30 seconds of margin beyond the 90-second reserve and avoiding ISO timestamp rounding at the exact boundary."
+  },
+  "packet_sha256": {
+    "PINNED.sha256": "83e75ff2f80289530556a60d1fac4f85e9659e1f9cabad0e19b64b774abed614",
+    "README.md": "211eb03b5423d2323d2cdd2f064c9308f893cc2a0e857275638220a82cdf417a",
+    "launch.sh": "fc22aab9fd6c8beffafc0ad038cd675b7339d2a0c324549c9cff39e3440bb9ed",
+    "spec.json": "7b709ef373fda7178011c323f63e1cdb662f0e5c534043b97b6a828364e1a7c4",
+    "run_elementwise.py": "cbfc495ef097cacbe5f447df3925a08c5133bf68b19c70528382b89b849867fc",
+    "test_run_elementwise.py": "c6608b600b54b3978cf21ed40b944a5d33417db77fac4a8904ca507e3e46e04d",
+    "case-plan.tsv": "b3e666d4d0cc5e4f8ae79dc0d513c4bf663f85153628f6451a1ab9e088b28a28",
+    "validation.log": "00eb163a259264f177f57b956ef66501f6c6f2260cd4aa4e3fe84adfb6417d20",
+    "source/run-v3.py": "16082d51ccd85332f5711b09ff7def5bc5b646827674ea9f10a2aa68dca5b115",
+    "source/ACTUAL-ARTIFACT-PINS.sha256": "2dfa85d649930f84b04576360a5694cce10ca566a3dd71832a52414c41150cf8"
+  },
+  "runtime_paths": {
+    "capture": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/belief.json",
+    "result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/native/RESULT.json",
+    "completeness_rederived_by": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/elementwise-ready/run_elementwise.py complete"
+  }
+}
