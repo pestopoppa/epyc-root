@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 533
+      "open": 534
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2583,7 +2583,7 @@
       "closed": 8,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 14,
+      "open": 15,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "INF-83",
       "state": "active",
-      "total": 22
+      "total": 23
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
