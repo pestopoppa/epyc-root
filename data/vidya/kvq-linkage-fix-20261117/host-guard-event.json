@@ -1,0 +1,39 @@
+{
+  "observed_at_utc": "2026-11-17T21:23:40.256504+00:00",
+  "row_id": "vidya-kvq-v10-sweep-20261117-r2",
+  "trigger": "c12-cpu-validate-20261116-r5.ended",
+  "spec_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/spec.json",
+  "spec_sha256": "6321cddcfa09cb67ac9ca6ae563b38a342e65a9bd8054ed3b63733278de5fcf9",
+  "guard_command": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/job.py",
+    "--guard"
+  ],
+  "guard_cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2",
+  "guard_exit_code": 5,
+  "guard_stdout": "process blocker: llama-server",
+  "guard_stderr": "",
+  "publisher_receipt": null,
+  "next_action": "Owner needs a quiet-host window with both llama-server processes absent. Rerun the original guard in that window and publish the same spec with --smoke-now only if it passes.",
+  "matching_processes": [
+    {
+      "pid": 1436307,
+      "ppid": 1434190,
+      "started_utc": "2026-11-17T21:22:33Z",
+      "model": "Qwen3.6-35B-A3B-MTP-Q8_0",
+      "port": 18728,
+      "slot_save_path": "/mnt/raid0/llm/tmp/inf86-g4-e3-tools-20261117/out/slots"
+    },
+    {
+      "pid": 3223248,
+      "ppid": 50687,
+      "started_utc": "2026-11-17T21:00:14Z",
+      "model": "LightOnOCR-2-1B-bbox-F16",
+      "port": 9003,
+      "alias": "lightonocr-2-1b"
+    }
+  ],
+  "publication_attempted": false
+}

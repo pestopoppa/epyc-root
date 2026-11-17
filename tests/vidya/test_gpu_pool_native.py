@@ -7,14 +7,14 @@ from adapters import gpu_pool_native as g
 from claim_tuple import grade
 
 
-def fixture(tmp_path, family='matmul'):
+def fixture(tmp_path, family='matmul', row_version=1):
     identity = {'source': {'commit': 'a' * 40, 'removed_worktree_dirty_state': 'UNKNOWN'},
                 'artifacts': [{'path': '/synthetic/test', 'sha256': 'b' * 64}],
                 'shim': {'path': '/synthetic/shim', 'sha256': 'c' * 64,
                          'original_source_digest_receipt': 'd' * 64,
                          'later_recreated_source_matches_receipt': False}}
     op = sorted(g.FAMILIES[family])[0]
-    request = g.begin(family, f'ni-gpu-pool-{family}-20990101-v1', identity, [op], producer=__file__)
+    request = g.begin(family, f'ni-gpu-pool-{family}-20990101-v{row_version}', identity, [op], producer=__file__)
     argv = ['synthetic', '-o', op, '--suite-seed', '7']
     log = tmp_path / f'{family}.log'
     failed = f'  {op}(case=3) FAIL'
@@ -61,6 +61,29 @@ def test_binding_and_log_controls(tmp_path, mutation):
     if mutation == 'log': run['log_sha256'] = 'f' * 64
     if mutation == 'count': run.update(passed=2, unsupported=0)
     with pytest.raises(g.ProjectionError): g.finish(request, native)
+
+
+@pytest.mark.parametrize('row_version', [2, 12])
+def test_attention_capture_accepts_positive_row_version(tmp_path, row_version):
+    request, native = fixture(tmp_path, 'attention', row_version)
+    claim, = g.project(g.finish(request, native))
+    assert request['schema'] == g.SCHEMA
+    assert request['row_id'] in claim.claim
+
+
+@pytest.mark.parametrize('row_id', [
+    'ni-gpu-pool-attention-20990101-v0',
+    'ni-gpu-pool-attention-20990101-v-2',
+    'ni-gpu-pool-attention-20990101-v02',
+    'ni-gpu-pool-attention-20990101-v2-extra',
+    'ni-gpu-pool-attention-209901-v2',
+    'ni-gpu-pool-matmul-20990101-v2',
+])
+def test_attention_capture_rejects_foreign_row_id(tmp_path, row_id):
+    request, _ = fixture(tmp_path, 'attention')
+    request['row_id'] = row_id
+    with pytest.raises(g.ProjectionError, match='foreign family/row binding'):
+        g.validate_request(request)
 
 
 def test_pre_hook_attention_list_and_native_objects_have_no_projection():

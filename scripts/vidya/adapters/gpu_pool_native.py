@@ -57,7 +57,7 @@ def validate_request(request):
         raise ProjectionError('unknown operator family')
     if not isinstance(selected, list) or not selected or any(not isinstance(x, str) for x in selected) or len(selected) != len(set(selected)) or not set(selected) <= FAMILIES[family]:
         raise ProjectionError('unknown or duplicate native operator selection')
-    if not isinstance(request['row_id'], str) or not re.fullmatch(r'ni-gpu-pool-' + family + r'-[0-9]{8}-v1', request['row_id']):
+    if not isinstance(request['row_id'], str) or not re.fullmatch(r'ni-gpu-pool-' + family + r'-[0-9]{8}-v[1-9][0-9]*', request['row_id']):
         raise ProjectionError('foreign family/row binding')
     if not isinstance(request['invocation_token'], str) or not re.fullmatch(r'[a-f0-9]{32}', request['invocation_token']):
         raise ProjectionError('missing prospective invocation identity')

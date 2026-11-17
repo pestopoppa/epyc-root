@@ -1,0 +1,93 @@
+{
+  "schema": "epyc.vidya.sc18_gpu_pool_attention_rest_preparation.v1",
+  "recorded_utc": "2026-11-17T21:31:36.048109+00:00",
+  "status": "owner_published_gpu_smoke_queued",
+  "row_id": "ni-gpu-pool-attention-20261117-v2",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:SC18-GPU-POOL-ATTENTION-REST-LIVE",
+  "handoff_proposal": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/handoff-task.md",
+  "selection": [
+    {
+      "op": "SOFT_MAX",
+      "regex": "^type=f32,ne=\\[(16|15|32|1024|1023),(2|15|16|1023|1024),",
+      "expected_generated": 207,
+      "seed": 2026102603
+    },
+    {
+      "op": "FLASH_ATTN_EXT",
+      "regex": "^hsk=(64|128),hsv=(64|128),nh=4,nr23=\\[(1|4),1\\],kv=(113|512|1024),nb=(1|3|32|75),.*type_K=f16,type_V=f16,",
+      "expected_generated": 528,
+      "seed": 2026102603
+    }
+  ],
+  "source": {
+    "research_commit": "ceb08a491abe3ff023a4740f654341e2127fba6b",
+    "historical_writer": "data/gpu-pool/attention-20261026/run-v3.py",
+    "candidate_commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+    "candidate_artifact_input": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-ready/candidate",
+    "source_dirty_state": "UNKNOWN",
+    "shim_recreated_source_matches_receipt": false,
+    "shared_adapter_sha256": "e3efc68563c1131fe8b2e680fc60e807729a1d4cb0e909110e5b1edb808df90f"
+  },
+  "scope": {
+    "prospective_only": true,
+    "model_free": true,
+    "sequential_invocations": 2,
+    "expected_tuples": 2,
+    "grading": "shared claim_tuple.grade",
+    "applicability_keys": [
+      "op",
+      "run_id",
+      "scope_basis"
+    ],
+    "rows_published_by_preparation": 0,
+    "gpu_runs_by_preparation": 0,
+    "old_outputs_ingested": 0,
+    "regions": "mi210_0,184-191",
+    "estimate_seconds": 300
+  },
+  "validation": {
+    "status": "PASS",
+    "log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/validation.log",
+    "shell_syntax": "PASS",
+    "publisher_preflight": "PASS (advisory task lint on prose stop-on-answer)",
+    "historical_selector_identity": "both ordered regexes and generated counts match exact pinned historical writer",
+    "expected_grade_in_synthetic_control": [
+      "Judged",
+      "T0"
+    ],
+    "focused_model_free_controls_passed": 10
+  },
+  "packet_sha256": {
+    "PINNED.sha256": "8b0be91d162ae8a8c45bee3a709837acdceb220137b5448c7a151166ef73b8b4",
+    "launch.sh": "cd10fe1a1555aa62d4dbb730f677f64b35794931abb291b8b5888fe45e8f1989",
+    "spec.json": "6d22e5e3655031cb48a14e4392fc3bf80f1b1c61a7af4066ac388b29ec7eafdf",
+    "run_attention_rest.py": "58b616b749f570b361b8784fb237a8f0757d13dc91e9833887336f680237f633",
+    "test_run_attention_rest.py": "15e5c95845a973caa86b9c854df4380f2417b0af9e3513e5e945bed02a999063",
+    "handoff-task.md": "ef02cddf285dedbc6af297589f69516af20a59ce75280c6ac5a7560993044282",
+    "source/original-run-v3.py": "41d4bc5a6faf46e7568e12566b43508b604954dc50b82a8b8d04b11f0988fb53",
+    "source/capture-patched-run-v3.py": "a9bb296e029ec6fb44cc36de01b143445804bc869c19d191593f655560e9a2e7",
+    "source/attention.patch": "fa9e9aa6f1424d14685011a46fc6700f62db196a6221a9e5d07b2ddf9f22236c",
+    "source/ACTUAL-ARTIFACT-PINS.sha256": "2dfa85d649930f84b04576360a5694cce10ca566a3dd71832a52414c41150cf8",
+    "validation.log": "db8f61a9dffef33dafc61755e8c67cd521ea097f141e78fb3c39d04f90ae684d"
+  },
+  "runtime_paths": {
+    "result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/native/RESULT.json",
+    "capture": "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/native/belief.json",
+    "partial": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/native/SOFT_MAX.terminal.json",
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/native/FLASH_ATTN_EXT.terminal.json"
+    ]
+  },
+  "commands": {
+    "test": "/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 88-91 --role build --tag vidya-attention-rest-model-free --timeout-s 2 -- /usr/bin/taskset -c 88-91 /usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/test_run_attention_rest.py",
+    "verify": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/run_attention_rest.py verify",
+    "publish": "ROWFLOW_REPO=/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate /usr/bin/python3 -B /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/spec.json --smoke-now",
+    "complete": "/usr/bin/python3 -BI /mnt/raid0/llm/tmp/vidya-belief-substrate/attention-rest-ready/run_attention_rest.py complete"
+  },
+  "publication": {
+    "actor": "owning session",
+    "publisher_rc": 0,
+    "reported_state": "GPU busy; smoke queued",
+    "smoke_pass_verified": false
+  }
+}

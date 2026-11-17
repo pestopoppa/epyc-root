@@ -1,0 +1,9 @@
+{
+  "row_id": "ni-gpu-pool-attention-20261117-v2",
+  "publisher": "scripts/coordination/rowflow/publish_row.py",
+  "publisher_exit_code": 0,
+  "status": "GPU busy; smoke queued",
+  "smoke": "PENDING",
+  "official_acceptance": "PENDING",
+  "scope": "Original 207 SOFT_MAX and 528 FLASH_ATTN_EXT selections; readiness and official acceptance require their own events."
+}
