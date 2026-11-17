@@ -5,27 +5,27 @@
     "handoff-blocked": 1,
     "handoff-completed": 375,
     "progress": 1406,
-    "research": 325
+    "research": 327
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 1,
-      "changed": 1,
+      "added": 2,
+      "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-17T22:23:52Z",
+    "at": "2026-11-17T22:49:28Z",
     "scope_paths": [
-      "research/deep-dives/codemode-20261117/dive-summary.md",
-      "research/deep-dives/intake-digests/2026-11-17-ids-2675-2693.md"
+      "research/deep-dives/blackfury-tensorfold-20261117.md",
+      "research/deep-dives/intake-digests/2026-11-17-ids-2674-2693.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-17T22:23:52Z",
+  "scan_time": "2026-11-17T22:49:28Z",
   "schema_version": 1,
-  "source_set_hash": "ce854335402d0e2bc9c86d3af7b1334339f086a94f2ca7e8c5813d31271a2ead",
+  "source_set_hash": "4cbd2ee7aab348c80b14a57f6aa9deb84600b3dfa633f5f87045c1bedafd2060",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -3644,6 +3644,14 @@
       "type": "research"
     },
     {
+      "content_hash": "9f65f3ef08dcc4dd9f80fb9383ca584f2cb0f61dd28b0735b7d3b293f6114e29",
+      "modified": "2026-11-17T22:47:31Z",
+      "path": "research/deep-dives/blackfury-tensorfold-20261117.md",
+      "size": 3229,
+      "title": "BLACKFURY Exact (TensorFold patches, Qwen3.8-27B NVFP4 + DFlash2) \u2014 deep dive",
+      "type": "research"
+    },
+    {
       "content_hash": "9686e699ffaac8181d9617947eb61232f39f6b888d6594674fb06f059c088ba6",
       "modified": "2026-11-09T21:31:46Z",
       "path": "research/deep-dives/c10-intake-20261109/ddtree.md",
@@ -4865,6 +4873,14 @@
       "path": "research/deep-dives/intake-digests/2026-11-17-ids-2670-2673.md",
       "size": 5086,
       "title": "Intake dive digest \u2014 2026-11-17, intake-2670#record .. intake-2673#record",
+      "type": "research"
+    },
+    {
+      "content_hash": "58e3523497617cb7a33562a888d0529a0e8a6ea0612d978e8d6d65ec60e7848f",
+      "modified": "2026-11-17T22:47:31Z",
+      "path": "research/deep-dives/intake-digests/2026-11-17-ids-2674-2693.md",
+      "size": 48100,
+      "title": "Intake dive digest \u2014 2026-11-17, intake-2674#record .. intake-2693#record",
       "type": "research"
     },
     {
@@ -20700,7 +20716,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2584,
+  "total_new": 2586,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

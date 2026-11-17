@@ -92,3 +92,15 @@ The K3 D re-sweep trigger landed in `speculative-decoding.md` (INF-50) through P
 - `validate_intake.sh`: 218 errors, the same count as clean origin/main; none are on intake-2669..2673.
 - `index_state.py --check`: 0 problems.
 - `vidya sync`: exit 0.
+
+## Research intake: BLACKFURY Exact (intake-2674), Stages 1-4
+
+- **Source:** github.com/Maharajahu/qwen3.8-27b-nvfp4-blackfury-exact-tensorfold @ 2790f0472. A single author's Apache-2.0 patches on TensorFold 6e9af93 (TensorFold is intake-1924), serving Qwen3.8-27B NVFP4 + DFlash2 on one RTX 5090 under Windows. Credibility: null (repo). Receipts are careful (hash-bound, offline verifier, identical token IDs), but there is no independent reproduction and rebuilt binaries were not GPU-run.
+- **Controlled results:** paired gate+up FP4 launch +0.891% decode with DFlash2 and +1.835% without drafter, no prefill gain. Exact long-context attention tail (grid 8 to 40 blocks, same reduction order): kernel 94.59 to 47.90 us, +4.58% warm decode at 129k+2k. 12-branch shared-prefix replay +34.21% aggregate. The README's +10.20% is cross-release, not controlled.
+- **Deep dives:** one sweep of the two allowed. Four dive-surfaced sources were all declined as already indexed or dived: TensorFold (intake-1924), DFlash2 blog, z-lab/dflash, and the NVIDIA Qwen3.8-27B-NVFP4 card (sibling intake-756).
+- **Ranked techniques:** (1) exact-order split-KV / tail widening for MI210 long-context decode FA (high; any weight quant); (2) bitwise token-ID gate for exact-order kernels (loop principle); (3) paired gate+up launch (low, about 1-2%, mostly absorbed by the HIP graph); (4) synchronized branches (serving, knowledge only); (5) NVFP4 (already in tree; gfx90a emulation costs the same as IQ4_NL).
+- **Boxes landed (operator-approved 2026-11-17):** INF48-FAVEC-TAIL and INF48-GATEUP-PROBE in handoffs/active/rocm-kernel-authoring.md; INF06-EXACT-LANE in handoffs/active/autokernel-loop.md. intake-2674 citation added to AKX-ALL-LB3 in handoffs/active/autokernel-akx-program.md.
+- **Decision:** NVFP4 stays excluded for the architect role (knowledge only).
+- **Loop-efficiency principles:** exact-order lane gated by token-ID identity, skipping the quality eval; A-B-B-A ordering with a fresh process per cell; a same-binary microbenchmark is not an end-to-end gain; a control that produces different text cannot isolate a kernel effect.
+- **Commits:** intake entry 5fdde0371; Stage 4 9bcbeb92a (boxes, deep-dive Markdown, digest, disposition, index regen). Validator: 218 errors, all older entries, none on intake-2674. index_state --check: 0 problems.
+- **Lessons:** (a) for a repo intake, the `source_artifact.entry_url` of a claim anchor must equal the entry's `url` (the repo URL), not the raw-file URL, or `--check-anchors` reports `source_unavailable` and writes no mark. (b) `intake_dive_digests.py --ids N-N` emits the whole same-day run that overlaps N (here 2674-2693), not only N. (c) `discovered_via` takes only seed, input, expansion or search, and repo entries need an explicit `arxiv_id: null`.

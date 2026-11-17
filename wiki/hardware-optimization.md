@@ -7301,3 +7301,12 @@ Sources: `research/deep-dives/exstill-2611.18859-20261117.md` and `research/deep
 - **Loop methodology.**
   - Scaling one kernel up to the whole model misstates whole-model cost. AK-AMDAHL-PRUNE uses this as a ranking-only ceiling prune.
   - Pareto-then-quality-bar selection motivates AKX-PARETO-RETAIN.
+
+## Compiled Update - 2026-11-17 (research intake): BLACKFURY Exact, exact-order kernel changes
+
+Source: [blackfury-tensorfold-20261117](../research/deep-dives/blackfury-tensorfold-20261117.md), digest [2026-11-17-ids-2674-2693](../research/deep-dives/intake-digests/2026-11-17-ids-2674-2693.md) (intake-2674#record).
+
+- **Exact-order restructuring gives measurable gains with bitwise-identical output.** On an RTX 5090 with Qwen3.8-27B NVFP4: splitting long-context decode attention into prefix, causal tail and ordered merge, and widening the tail grid from 8 to 40 blocks with the same reduction order, gave +4.58% warm decode at 129k input. A paired gate+up FP4 launch gave +0.891% with DFlash2. The README's +10.20% is a cross-release comparison, not a controlled delta.
+- **MI210 transfer.** Our decode FA is `flash_attn_ext_vec` with no tile dispatch, so long-context single-stream may be occupancy-bound. Probe filed as INF48-FAVEC-TAIL; gate+up overhead check as INF48-GATEUP-PROBE. The CPU analogue is already AKX-ALL-LB3.
+- **NVFP4 is not a new technique for us.** `GGML_TYPE_NVFP4` is in production ffc1bac82. FP4 emulation on gfx90a has the same cost shape as IQ4_NL, and NVFP4 stays excluded for the architect role.
+- **Loop principle.** Exact-order candidates can be gated by bitwise token-ID identity instead of a quality eval (INF06-EXACT-LANE), using A-B-B-A fresh-process ordering. A control that produces different text cannot isolate a kernel effect.
