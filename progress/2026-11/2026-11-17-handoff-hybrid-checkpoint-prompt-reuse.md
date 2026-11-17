@@ -27,3 +27,7 @@ Dispatcher replayed inf86-reprefill-rate-20261110-r2 (rc=0). Result NONE_OBSERVE
 ## 22:30Z — Consume duplicate CMS512 run-end event; preserve existing ALL_HOLD verdict and completed boxes.
 
 Duplicate run-end delivery for `inf86-cms512-live-probe-20261111-r2`: result is complete, ALL_HOLD (0% re-prefill cut for all three roles; extra checkpoint memory critic/general/frontdoor 5.845/1.278/6.520 GiB). `file_result.py` returned NOOP: already FILED. Existing completed CMS512 boxes and operator-directed reverts remain authoritative; no new measurement or re-tick. Remaining inference box INF-86-SLOT-RESTORE-CHECKPOINTS awaits its already qualified-armed C13 row.
+
+## 22:32Z — Consume duplicate checkpoint-spacing completion; preserve pending C13 slot-restore validation
+
+Duplicate dispatcher event for inf86-ckpt-spacing-20261111: verdict already filed on 2026-11-11 (PARTIAL), handoff box already completed, and FILED receipt present. No repeated analysis, measurement, or checkbox change. INF-86-SLOT-RESTORE-CHECKPOINTS remains pending on readied row inf86-slot-restore-ckpt-c13-20261117. DS-F1 retains its external AM-DECISIVE-1 dependency; earlyoom remains a host-side operator action.
