@@ -7,3 +7,7 @@ Handled and acknowledged all 12 INF-85 W3 alerts (three failed initial runs, thr
 ## 22:54Z — Acknowledge duplicate W3 Qwen3-VL r3 completion
 
 Duplicate completion event for inf85-w3-qwen3vl-30b-a3b-q4km-r3-20261111 acknowledged through its existing FILED receipt. Prior PASS verdict and W3 completion remain authoritative; no new measurement or rerun. Handoff already archived at handoffs/completed/publication-upstream-program.md on origin/main (633b2ce6b); prior alert-consumption wrap-up c99102f79.
+
+## 22:55Z — Acknowledge replay of superseded W3 Qwen3-VL initial failure
+
+Acknowledged duplicate run-end event for inf85-w3-qwen3vl-30b-a3b-q4km-20261110 through its existing FILED receipt. Initial rc=1 failed host-health attestation; successful r3 superseded it and W3 was completed. Existing verdict remains authoritative. Publication handoff is already archived on origin/main at handoffs/completed/publication-upstream-program.md; no open boxes or new rows.
