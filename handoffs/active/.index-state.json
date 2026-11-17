@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 16,
       "oldest_advance": "2026-11-03",
-      "open": 537
+      "open": 536
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 122,
+      "closed": 123,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 63,
+      "open": 62,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 75,
+          "closed": 76,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,7 +95,7 @@
           "line": 947,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 52
+          "open": 51
         }
       ]
     },
