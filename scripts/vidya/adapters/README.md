@@ -28,6 +28,7 @@ The carrier is shared. The grading rule is **not**, and pretending otherwise is 
 
 | class | graded by | ceiling | ladder lives in |
 |---|---|---|---|
+| V9-8 prospective quality parity pack (`.claude/skills/kernel-promotion/scripts/quality_parity.py`) | diagnostic observation; prospective existing shared carrier | Bind pack/schema/coverage, original banked response and request identities, candidate response identities, validator policy and incomplete/mismatch/input-drift dispositions at comparison write. Software fixtures create no banked evidence or quality-transfer authority. | `VB-V9-8-QUALITY-PACK-WIRE`; native projection through `claim_tuple.grade()` and planning-context canary pending |
 | `measurement` | the claim rule: protocol / n / date / attestation | `Witnessed` | `claim_tuple.py` |
 | `literature` | verification status (anchored, dive-verified, dive-overturned) | `Verified` | `research_intake.py` |
 | `verifier` | **projection precondition, not a ladder** — see below | (graded by `claim_tuple.grade()`) | *none, deliberately* |

@@ -10,6 +10,7 @@ import importlib.util
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -151,16 +152,22 @@ class Server:
     birth: int
     port: int
     cpus: set[int]
+    image: dict | None = None
 
 
 class SpawnCleanupUnproved(RuntimeError):
     """A launch failed before the caller could account for the process."""
 
 
-class RequestAffinityError(RuntimeError):
-    def __init__(self, failure, response):
-        super().__init__(f"during-request affinity check failed: {failure!r}")
+class CapturedResponseError(RuntimeError):
+    def __init__(self, message, response):
+        super().__init__(message)
         self.response = response
+
+
+class RequestAffinityError(CapturedResponseError):
+    def __init__(self, failure, response):
+        super().__init__(f"during-request affinity check failed: {failure!r}", response)
 
 
 class Runtime:
@@ -169,6 +176,8 @@ class Runtime:
         self.args = args
         self.interrupted_by = None
         self.request_affinity_witness = None
+        self.evidence = None
+        self.pins = None
         self.env = {"PATH": "/usr/bin:/bin", "LANG": "C"}
         for key in ("FILLER_ID", "FILLER_STOPFILE", "FILLER_GPU_FENCE",
                     "GPU_DEVICE_ORDINAL", "GGML_VK_VISIBLE_DEVICES", "HSA_ENABLE_SDMA"):
@@ -205,10 +214,17 @@ class Runtime:
         self.k35.write_json(output / "claim.open.json", receipt)
         if urllib.request.getproxies().get("http") and not urllib.request.proxy_bypass("127.0.0.1"):
             raise ValueError("health and request traffic must reach loopback directly")
-        check = subprocess.run([
+        command = [
             str(ORCHESTRATOR / ".venv/bin/python"),
             str(ORCHESTRATOR / "scripts/validate/check_contention_matrix_fresh.py"),
-        ], env=self.env, capture_output=True, text=True, timeout=30)
+        ]
+        if self.evidence is not None:
+            self.evidence.verify_models(self.pins["models"])
+            self.k35.write_json(output / "host.json", self.evidence.host_snapshot())
+            matrix = output / "contention-matrix.yaml"
+            shutil.copy2(ORCHESTRATOR / "orchestration/contention_matrix.yaml", matrix)
+            command.extend(("--matrix-path", str(matrix.resolve())))
+        check = subprocess.run(command, env=self.env, capture_output=True, text=True, timeout=30)
         (output / "contention-matrix.txt").write_text(check.stdout + check.stderr)
         check.check_returncode()
         blockers = self.k35.collect_process_blockers()
@@ -249,6 +265,8 @@ class Runtime:
 
     def start(self, cohort, arm, directory):
         self.timeout(1, verify_claim(self.args.claim_open))
+        if self.evidence is not None:
+            self.evidence.verify_models(self.pins["models"])
         port = self.args.base_port + resident_plan.ARMS.index(arm)
         if port_listeners(port):
             raise RuntimeError(f"declared {arm} port {port} is already listening")
@@ -310,11 +328,31 @@ class Runtime:
             not path.resolve().is_relative_to(prefix) or not path.is_file() for path in ggml
         ):
             raise RuntimeError(f"{arm} ggml maps differ from the bound image")
-        return {
+        result = {
             "pid": server.proc.pid, "pgid": os.getpgid(server.proc.pid),
             "birth": server.birth, "port": server.port,
             "ggml_maps": sorted({str(path) for path in ggml}), "affinity": self.affinity(server),
         }
+        if self.evidence is not None:
+            proc = Path(f"/proc/{server.proc.pid}")
+            server.image = self.evidence.live_image(proc, self.binary(arm), self.pins["arms"][arm])
+            result.update(image=server.image, allowed_cpus=sorted(server.cpus))
+            maps = (proc / "maps").read_text()
+            argv = read_json(directory / f"{arm}-argv.json")
+            models = {argv[argv.index(flag) + 1] for flag in ("-m", "-md") if flag in argv}
+            result["models"] = self.evidence.model_mappings(
+                maps, models, self.pins["models"], no_mmap="--no-mmap" in argv,
+            )
+            (directory / f"{arm}-maps.txt").write_text(maps)
+            numa = (proc / "numa_maps").read_text()
+            nodes = Path("/sys/devices/system/node/online").read_text().strip()
+            self.evidence.require(any(line.split()[1:2] == [f"interleave:{nodes}"] for line in numa.splitlines()),
+                                  f"{arm} has no live NUMA interleave witness")
+            (directory / f"{arm}-numa-maps.txt").write_text(numa)
+            env = dict(item.split("=", 1) for item in (proc / "environ").read_text().split("\0") if item)
+            self.k35.write_json(directory / f"{arm}-env.json", env)
+            self.verify_server(server, arm)
+        return result
 
     def verify_server(self, server, arm):
         pid = server.proc.pid
@@ -324,6 +362,8 @@ class Runtime:
             or not owns_listener(pid, server.port)
         ):
             raise RuntimeError(f"{arm} local listener differs from the owned server")
+        if server.image is not None:
+            self.evidence.verify_live_image(Path(f"/proc/{pid}"), server.image)
 
     def affinity(self, server):
         return affinity_guard.verify_threads(server.proc.pid, server.birth, server.cpus)
@@ -384,6 +424,11 @@ class Runtime:
             }
         if failure is not None:
             raise RequestAffinityError(failure, response) from failure
+        if self.evidence is not None:
+            try:
+                self.verify_server(server, arm)
+            except (OSError, RuntimeError, ValueError) as exc:
+                raise CapturedResponseError(f"post-request image witness failed: {exc}", response) from exc
         return response
 
     def stop(self, server):
@@ -412,7 +457,7 @@ def request_with_capture(runtime, server, arm, body, directory):
     try:
         response = runtime.request(server, arm, copy.deepcopy(body))
         elapsed = time.monotonic() - started
-    except RequestAffinityError as exc:
+    except CapturedResponseError as exc:
         runtime.k35.write_json(directory / "response.json", exc.response)
         raise
     finally:
@@ -481,6 +526,13 @@ def cleanup_proved(result):
     return result.get("dead") is True and result.get("port_closed") is True
 
 
+def capture_host_after(runtime, output):
+    evidence = getattr(runtime, "evidence", None)
+    if evidence is not None:
+        evidence.verify_models(runtime.pins["models"])
+        runtime.k35.write_json(output / "host-after.json", evidence.host_snapshot())
+
+
 def execute_fresh_plan(plan, output, runtime, *, provenance=None):
     """Capture the unchanged schedule with one freshly started server per measured row."""
     resident_plan.validate_plan(plan)
@@ -522,6 +574,7 @@ def execute_fresh_plan(plan, output, runtime, *, provenance=None):
                 if not report["cleanup_proved"]:
                     raise RuntimeError("fresh process death and port closure were not both proved")
                 fresh_row["complete"] = True
+        capture_host_after(runtime, output)
         report["complete"] = True
     except Exception as exc:
         if isinstance(exc, SpawnCleanupUnproved):
@@ -570,6 +623,7 @@ def execute_plan(plan, output, runtime, *, provenance=None):
                     clean &= cleanup_proved(result)
             if not clean:
                 raise RuntimeError("resident process death and port closure were not both proved")
+        capture_host_after(runtime, output)
         report["complete"] = True
     except Exception as exc:
         if isinstance(exc, SpawnCleanupUnproved):
@@ -596,6 +650,29 @@ def execute_plan(plan, output, runtime, *, provenance=None):
         fallback["requires_fresh_execution"] = not replay["complete"]
     runtime.k35.write_json(output / "fresh-fallback.json", fallback)
     return FRESH_REQUIRED
+
+
+def validate_evidence_inputs(plan, args, runtime):
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import kernel_promotion_evidence as evidence
+
+    pins = read_json(args.evidence_pins)
+    evidence.require(pins["plan_sha256"] == sha256_file(args.plan)
+                     and pins["k35_sha256"] == args.k35_sha256 and pins["kv_mode"] == args.kv_mode
+                     and evidence.sha(pins["source_manifest_sha256"]), "evidence inputs differ from run pins")
+    expected_models = set()
+    for cohort in plan["cohorts"]:
+        scenario = runtime.k35.scenario_by_name(cohort["scenario"])
+        expected_models.add(str(scenario.model))
+        if scenario.draft_model is not None:
+            expected_models.add(str(scenario.draft_model))
+    evidence.require(expected_models == pins["models"].keys(), "evidence models differ from the K35 plan")
+    evidence.verify_models(pins["models"])
+    for arm in resident_plan.ARMS:
+        evidence.verify_image_pins(pins, arm, runtime.binary(arm))
+        evidence.require(pins["arms"][arm]["binary_sha256"] == getattr(args, f"{arm}_sha256"),
+                         f"{arm} executable pins differ")
+    runtime.evidence, runtime.pins = evidence, pins
 
 
 def validate_inputs(plan, args, runtime):
@@ -639,20 +716,26 @@ def main(argv=None):
     parser.add_argument("--startup-timeout", type=int, default=300)
     parser.add_argument("--request-timeout", type=int, default=120)
     parser.add_argument("--fresh-only", action="store_true", help="capture the canonical schedule using fresh servers")
+    parser.add_argument("--evidence-pins", type=Path, help="validate prepared pins and record sealed-capture witnesses")
+    parser.add_argument("--compare-fresh", action="store_true", help="replay the schedule after a complete resident run")
     parser.add_argument("--apply", action="store_true", help="launch only under a verified provider receipt")
     args = parser.parse_args(argv)
     if not 1024 <= args.base_port < 65535 or min(args.startup_timeout, args.request_timeout) <= 0:
         parser.error("invalid base port or timeout")
     if args.apply and (args.claim_open is None or not args.claim_open.is_absolute()):
         parser.error("--apply requires an absolute --claim-open path")
+    if args.compare_fresh and (args.fresh_only or args.evidence_pins is None):
+        parser.error("--compare-fresh requires evidence pins and the paired resident lifecycle")
     try:
         plan = read_json(args.plan)
         runtime = Runtime(load_k35(args.k35_sha256), args)
         validate_inputs(plan, args, runtime)
+        if args.evidence_pins is not None:
+            validate_evidence_inputs(plan, args, runtime)
         if not args.apply:
             print(f"validated observation-only plan {plan['schedule_sha256']}")
             return 0
-        provenance = {"k35_sha256": args.k35_sha256, "kv_mode": args.kv_mode, "arms": {
+        provenance = runtime.pins or {"k35_sha256": args.k35_sha256, "kv_mode": args.kv_mode, "arms": {
             arm: {"path": str(runtime.binary(arm)), "sha256": getattr(args, f"{arm}_sha256")}
             for arm in resident_plan.ARMS
         }}
@@ -661,8 +744,12 @@ def main(argv=None):
         if args.fresh_only:
             report = execute_fresh_plan(plan, args.output, runtime, provenance=provenance)
             return 0 if report["complete"] else FRESH_REQUIRED
-        return execute_plan(plan, args.output, runtime, provenance=provenance)
-    except (OSError, ValueError, KeyError) as exc:
+        status = execute_plan(plan, args.output, runtime, provenance=provenance)
+        if status == 0 and args.compare_fresh:
+            report = execute_fresh_plan(plan, args.output / "fresh-replay", runtime, provenance=provenance)
+            return 0 if report["complete"] else FRESH_REQUIRED
+        return status
+    except (OSError, ValueError, KeyError, TypeError, IndexError) as exc:
         parser.error(str(exc))
 
 

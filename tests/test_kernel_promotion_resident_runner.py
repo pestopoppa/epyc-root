@@ -209,3 +209,39 @@ def test_command_preserves_explicit_narrow_k35_placement():
     scenario.cpu_affinity = "96-119"
     with pytest.raises(ValueError, match="exceeds"):
         runtime.command(plan()["cohorts"][0], "production", 19100)
+
+
+def test_post_request_image_failure_preserves_response(tmp_path, monkeypatch):
+    args = SimpleNamespace(request_timeout=1, claim_open=tmp_path / "claim")
+    response = {"content": "raw response", "tokens": [1]}
+    k35 = SimpleNamespace(write_json=write_json, query_chat=lambda *args, **kwargs: response)
+    runtime = runner.Runtime(k35, args)
+    runtime.evidence = object()
+
+    def verify_server(*_):
+        if checks:
+            raise ValueError("changed mapped inode")
+        checks.append(True)
+
+    checks = []
+    monkeypatch.setattr(runner, "verify_claim", lambda path: {})
+    monkeypatch.setattr(runner, "AFFINITY_SAMPLE_INTERVAL", 0.001)
+    monkeypatch.setattr(runtime, "timeout", lambda *args: 1)
+    monkeypatch.setattr(runtime, "verify_server", verify_server)
+    sampled = runner.threading.Event()
+
+    def affinity(_):
+        sampled.set()
+        return {10: [0]}
+
+    def query(*args, **kwargs):
+        assert sampled.wait(1)
+        runner.time.sleep(0.01)
+        return response
+
+    monkeypatch.setattr(runtime, "affinity", affinity)
+    k35.query_chat = query
+    with pytest.raises(runner.CapturedResponseError, match="post-request image witness failed"):
+        runner.request_with_capture(runtime, SimpleNamespace(port=19100), "production", {"n_predict": 1}, tmp_path)
+    assert runner.read_json(tmp_path / "response.json") == response
+    assert not (tmp_path / "row.json").exists()

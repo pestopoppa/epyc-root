@@ -1,0 +1,48 @@
+# Promotion lifecycle diagnostic evidence
+
+V9-8's CPU runner can bind a resident capture and its identical fresh replay to
+prepared inputs. These artifacts remain observations. The diagnostic seal is
+`epyc.kernel_promotion_lifecycle_evidence.v1`; it is not the prospectively
+ratified `epyc.kernel_promotion_resident_window.v1` instrument and supplies no
+promotion authority or timing acceptance.
+
+Use `scripts/benchmark/kernel_promotion_resident_runner.py` with its existing
+required plan, executable, K35 and resource-claim arguments. Add
+`--evidence-pins <prepared.json>` to validate the prepared model stat/digest
+record and hot-library identities and capture live witnesses. Add
+`--compare-fresh` to run the identical fresh schedule after a successful
+resident capture. A failed resident capture retains its failure status and
+uses the existing cleanup-gated fresh fallback. `--fresh-only` remains a
+separate diagnostic mode.
+
+Prepare model digests before publication. Live validation checks the prepared
+model's device, inode, size, mtime and ctime without hashing weights in the
+grant. Mapped model files also require matching device/inode witnesses;
+`--no-mmap` records that this mapping witness is unavailable. The executable
+is hashed through `/proc/<pid>/exe`; mapped hot libraries must match the
+prepared paths, digests and mapping device/inode identities. During-request
+affinity, topology, NUMA, linkage, excluded warmups and captured-process
+cleanup remain part of the capture.
+
+The row packet assembles `input-plan.json`, `pins.json`, `SOURCE.sha256`, the
+provider grant/open/close receipts and `resident/` beneath a staging directory.
+The fresh comparison or fallback lives at `resident/fresh-replay/`. Finalize
+with:
+
+```bash
+python3 scripts/benchmark/kernel_promotion_evidence.py /path/to/staging --seal-to /path/to/sealed
+python3 scripts/benchmark/kernel_promotion_evidence.py /path/to/sealed
+```
+
+Staging and destination must be siblings; the destination must be new. The
+finalizer validates the captures, writes `comparison.json`, hashes the artifact
+inventory into `MANIFEST.json`, writes a manifest-bound `COMPLETE`, verifies
+the result and renames the directory. Verification reproduces comparisons
+from the raw artifacts and rejects changed or incomplete inventories.
+
+Scheduled opposite-arm pairs compare full request bodies, full output content
+and integer token IDs. When both lifecycles completed, the comparator also
+compares each resident request with the same fresh request. Missing IDs remain
+`incomplete`; a content or token mismatch is `different`. A successful fresh
+fallback cannot turn a failed resident capture into an accepted resident run.
+This lifecycle comparison does not replace the broad quality-parity pack.
