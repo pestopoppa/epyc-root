@@ -59,7 +59,7 @@ From V11-122 (llguidance fold, in the champion since C6): the promotion box and 
         2026-10-01 (V6R-4d): the GPU half of champion `90c12df42` is validated no-regression vs v10, with SW-9
         exercised on GPU (pp +0.39%, tg -0.46%, floor 2%; identity and residency PASS). A v11 candidate built from a
         descendant tip, such as the DS41-C68 fold, still reruns that A/B (`gpu-champion-ab`) on its own full GPU build.
-  - [ ] **V6R-4b — operator ratification of the forward-port rule** (OP-58 when the index row lands). Proposed
+  - [x] **V6R-4b — operator ratification of the forward-port rule** (OP-58 when the index row lands). Proposed
         text for `CLAUDE.md` § *Experimental Kernel Workflow*: forward-port one feature per commit; before
         reverting a bundled commit, split it and revert only the gated-out parts; a feature's test travels with it
         through every consolidation. Origin: INC-20260925. The operator ratifies; no session edits `CLAUDE.md` for
@@ -73,6 +73,7 @@ From V11-122 (llguidance fold, in the champion since C6): the promotion box and 
         feature" half in code, without the rule being ratified.
     - 2026-11-02 operator decision: Ratify the proposed text as written [approved, pending ratify script] (decisions-batch2-4-20261102.json)
     - *(2026-11-17, INF-83 prep.)* Ratify script written and dry-run clean (receipt checker exit 0 before and after, additions only, CLAUDE.md +2/-0): `scripts/operator/ratify_v6r4b_forward_port_rule_20261117.sh`. Operator signs with ONE command: `RATIFY_OPERATOR='<name>' bash scripts/operator/ratify_v6r4b_forward_port_rule_20261117.sh --apply --attest RATIFY-V6R4B-FORWARD-PORT-20261117`. Pinned to CLAUDE.md pre-state `9984c4f3b06b`; if CLAUDE.md moves first, the script refuses and must be re-pinned. [no-belief: tooling]
+    - ✅ 2026-11-17 ratified by operator, commit 1fb5f4474 [belief: cc]
 
 ## From the cpu-fused-decoder-blocks track
 

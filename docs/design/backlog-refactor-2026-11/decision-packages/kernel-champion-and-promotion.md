@@ -35,6 +35,8 @@ Choices: 3 · excluded: 4. Context lines are `file:line@7eb7a4a3c911` (origin/ma
 
 **Recommendation: A.** The text is drafted, narrow, and traces to a real incident; only the operator may edit CLAUDE.md.
 
+**Status: DONE.** ✅ 2026-11-17 ratified by operator (Option A), commit 1fb5f4474.
+
 ## Excluded (not delivered)
 
 - `AKX-ALL-15c` (handoffs/active/autokernel-all-devices-all-dimensions.md:382): **decided**. AKX-ALL-15c was filed as the operator decision of 2026-10-04 (first AK GPU-lane job = dequant-GEMV); remaining work is execution.
