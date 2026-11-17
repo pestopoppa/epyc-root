@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T11:00:51Z",
+  "generated_at": "2026-11-17T11:01:32Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1452,7 +1452,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6026,
+          "line": 6027,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1461,7 +1461,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6106,
+          "line": 6107,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1480,7 +1480,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6403,
+          "line": 6404,
           "name": "autokernel-rebuild-program",
           "open": 18,
           "readiness": "blocked"
@@ -1497,7 +1497,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9620,
+          "line": 9621,
           "name": "autokernel-unified-surface-program",
           "open": 58,
           "readiness": "blocked"
@@ -1510,7 +1510,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13970,
+          "line": 13971,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1544,7 +1544,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14182,
+          "line": 14183,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2066,7 +2066,7 @@
       ]
     },
     {
-      "age_days": 14,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
       "closed": 152,
@@ -2075,7 +2075,7 @@
       "guarded": 0,
       "handoff": "cpu-decode-roofline-program.md",
       "id": "INF-70",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-17",
       "next_action": "CLS-RECT-1, then G2-CONC on coherence_gate; XFER-3 paired task eval (uniform IQ4_XS); XFER-4b allowlist prefill A/B + task eval",
       "open": 27,
       "priority": 0.9191,
