@@ -53,3 +53,18 @@ Bring-up found three deployment gaps that no preflight covered, all fixed:
 Serving proof: llama-server argv[0] and libggml-cpu map into kernels/builds/cpu-20260921-ffc1bac82; linkage PASS; /health OK; real page completion returned a table. API pid 1979574 env carries ROUTE_LIGHTON=1, LIGHTON_URL=:9003, L3_TEXTROW=1. `extract_pdf` under the live API env over 6 smoke PDFs + 1 scan: 0 failures, routing equals the held-out legacy_router needs_ocr flags 6/6. API health "degraded" only because the main model servers are intentionally down. stack-change-pending marker cleared. Rollback: `ORCHESTRATOR_PDF_ROUTE_LIGHTON=0` + `reload orchestrator`. [no-belief: deployment proof, the measurement is the already-filed held-out PASS]
 
 Lesson: stack-change preflight validates registry/topology, not the consuming code path's runtime deps. Bring-up must exercise the feature through the live process env, not only the new server.
+
+## PDF route made reachable and shaped like the sidecar (20:10–21:35Z)
+
+| Orchestrator commit | What |
+|---|---|
+| c9e3001a | `process_document` routes API PDFs through pdf_router when ROUTE_LIGHTON=1. Before this, the route had no API caller: PDFs went to the :9001 document_formalizer |
+| 68c6e43a, 0bd06614 | page-parallel OCR: server -np 4 -c 32768, client concurrency 4 (research eb00e8996 recipe line) |
+| 66554d0b, c64026a9 | per-page text kept (LightOnOCR pages, LiteParse ParsedPage) + LightOnOCR-bbox markup parsed into figure boxes; corrects the -np 4 note |
+| 12afe285 (push pending) | honour `max_pages` on the routed path |
+
+Measured: OCR ~20–50 s/page on 24 threads. The -np 4 gain is 1.24x with cache_prompt off (147.6 s → 119.0 s for 3 pages, byte-identical). An earlier 1.93x reading reused the serial pass's prompt cache and is VOID.
+
+Live under the API env: 3-page papers return total_pages 3; a scan returns its figure box (210,81,807,565); max_pages=1 gives 1 page on both routes. The routed path has no fixed whole-document timeout: per-page 300 s × pages, bounded by max_pages. LiteParse docs carry no figure boxes because PyMuPDF is absent. [no-belief: deployment wiring; the quality measurement is the filed held-out PASS]
+
+Pipeline quirk, to report to the pipeline owner: `stack_change_pipeline check` flags model_descriptors.yaml stale immediately after the derived files are committed, because they embed repo_commit. origin/main shows the same.
