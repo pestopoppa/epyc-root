@@ -47,3 +47,7 @@ Duplicate run-end notification for inf86-g5-nsession-20261117. file_result.py re
 ## 22:42Z — Consume duplicate G5 completion; preserve pending C13 validation boundary
 
 Duplicate G5 completion consumed idempotently; existing verdict BOUNDED_NULL_1 remains unchanged (all six cells complete, zero cause-(c) tokens). No new result or box to tick. INF-86-SLOT-RESTORE-CHECKPOINTS remains blocked on inf86-slot-restore-ckpt-c13-20261117, whose publication smoke passed and state is grantable. DS-F1 awaits AM-DECISIVE-1; earlyoom remains a host-only operator action.
+
+## 22:44Z — Consume duplicate G4 completion through idempotent filing
+
+Duplicate run-end for inf86-g4-restore-reuse-20261117-r2: file_result.py returned NOOP, already FILED. G4 remains closed as EXPOSED_NOT_HIT; its tools-path follow-up is already represented by the readied C13 checkpoint validation. No new measurement or tick. Next action remains filing inf86-slot-restore-ckpt-c13-20261117 when its run ends.
