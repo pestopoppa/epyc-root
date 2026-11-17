@@ -31,3 +31,7 @@ Duplicate run-end delivery for `inf86-cms512-live-probe-20261111-r2`: result is 
 ## 22:32Z — Consume duplicate checkpoint-spacing completion; preserve pending C13 slot-restore validation
 
 Duplicate dispatcher event for inf86-ckpt-spacing-20261111: verdict already filed on 2026-11-11 (PARTIAL), handoff box already completed, and FILED receipt present. No repeated analysis, measurement, or checkbox change. INF-86-SLOT-RESTORE-CHECKPOINTS remains pending on readied row inf86-slot-restore-ckpt-c13-20261117. DS-F1 retains its external AM-DECISIVE-1 dependency; earlyoom remains a host-side operator action.
+
+## 22:34Z — Consume already-filed INF-86-TEMPLATE completion without repeating completed work
+
+Duplicate run-end notification for inf86-template-preserve-20261117-r2. Existing verdict filed 2026-11-17T13:42Z is pass / NO_DEFECT; INF-86-TEMPLATE is already checked with evidence and FILED receipt exists. No new finding or measurement. Next actionable INF-86 work remains the readied C13 slot-restore validation; DS-F1 waits on AM-DECISIVE-1 and earlyoom needs the host operator.
