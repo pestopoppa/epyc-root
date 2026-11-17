@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T10:59:02Z",
+  "generated_at": "2026-11-17T11:00:08Z",
   "nodes": [
     {
       "age_days": 7,
@@ -3207,7 +3207,7 @@
       ]
     },
     {
-      "age_days": 7,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3218,7 +3218,7 @@
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-17",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
       "open": 13,
       "priority": 0.0417,
