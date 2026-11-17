@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T11:08:57Z",
+  "generated_at": "2026-11-17T11:11:52Z",
   "nodes": [
     {
       "age_days": 7,
@@ -1388,7 +1388,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 839,
@@ -1397,7 +1397,7 @@
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-15",
+      "last_advanced": "2026-11-17",
       "next_action": "H10b same-seed rerun on C10; reliance proof r5 (queued, quiet-host); H13 r2 queued (1.010 bar confirmed); vLLM AITER r2 queued; GDN-SHARE-1",
       "open": 132,
       "priority": 0.896,
