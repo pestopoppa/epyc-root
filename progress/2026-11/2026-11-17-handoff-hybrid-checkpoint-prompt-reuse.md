@@ -23,3 +23,7 @@ Duplicate dispatcher event for inf86-cms512-live-probe-20261111-r2 (rc=0): file_
 ## 22:28Z — Consume duplicate INF-86 re-prefill completion; retain pending C13 validation
 
 Dispatcher replayed inf86-reprefill-rate-20261110-r2 (rc=0). Result NONE_OBSERVED: 0/21 forced at 16K and 0/14 at 64K; Wilson95 upper bounds 15.46% and 21.53%. Existing handoff already records the result and completed box. file_result.py returned NOOP: already FILED. No new completion or measurement is claimed. The remaining INF-86-SLOT-RESTORE-CHECKPOINTS validation awaits qualified-armed row inf86-slot-restore-ckpt-c13-20261117; preserve its declared cache_n and greedy-identity rule. DS-F1 remains dependent on AM-DECISIVE-1; optional earlyoom edit remains operator-only. [no-belief: duplicate event acknowledgement, no new finding]
+
+## 22:30Z — Consume duplicate CMS512 run-end event; preserve existing ALL_HOLD verdict and completed boxes.
+
+Duplicate run-end delivery for `inf86-cms512-live-probe-20261111-r2`: result is complete, ALL_HOLD (0% re-prefill cut for all three roles; extra checkpoint memory critic/general/frontdoor 5.845/1.278/6.520 GiB). `file_result.py` returned NOOP: already FILED. Existing completed CMS512 boxes and operator-directed reverts remain authoritative; no new measurement or re-tick. Remaining inference box INF-86-SLOT-RESTORE-CHECKPOINTS awaits its already qualified-armed C13 row.
