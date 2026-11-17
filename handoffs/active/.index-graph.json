@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T11:42:00Z",
+  "generated_at": "2026-11-17T11:51:22Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2308,7 +2308,7 @@
     },
     {
       "age_days": 0,
-      "blocked": 2,
+      "blocked": 1,
       "blocked_by": [
         "INF-06",
         "INF-06#autokernel-rebuild-program",
@@ -2322,7 +2322,7 @@
         "RTG-58#kv-unified-stack-rollout"
       ],
       "closed": 121,
-      "dispatchable": 63,
+      "dispatchable": 64,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
@@ -2379,7 +2379,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 51,
+          "dispatchable": 52,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2388,7 +2388,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 943,
+          "line": 944,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53,
           "readiness": "blocked"
