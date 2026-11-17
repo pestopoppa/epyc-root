@@ -2,7 +2,7 @@
 
 > **Split out of [`numa-placement-and-contention.md`](numa-placement-and-contention.md) on 2026-11-10 (INF-45 restructure, operator "yes, take both on").** The body below is the former `## Track: dynamic-stack-concurrency` lifted verbatim; box text is unchanged. Earlier fold history: [`../completed/dynamic-stack-concurrency.md`](../completed/dynamic-stack-concurrency.md).
 
-**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed (G4, G5, INF-86-TEMPLATE, #25592 exposure and B3 evaluation). Open: INF-86-SLOT-RESTORE-CHECKPOINTS (validation row inf86-slot-restore-ckpt-c13-20261117; #26004 already in C13), DS-F1 (waits on the AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit).
+**Status**: ACTIVE — 2026-11-17: every INF-86 measurement box is closed, including INF-86-SLOT-RESTORE-CHECKPOINTS (C13 validation PASS: restored/live cache_n both 13754 and greedy identity). Remaining: DS-F1 (waits on the external AM-DECISIVE-1 verdict) and the earlyoom `--ignore` tweak (the operator's host edit). C13 validation is not production deployment.
 **Created**: 2026-11-10 (split)
 **Scratch**: `/mnt/raid0/llm/tmp/hybrid-checkpoint-prompt-reuse/`
 **Owner**: AutoKernel session (workspace-18)
@@ -285,7 +285,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
       (reuse 0, forced line) on v10 `ffc1bac82`, while MOVED_LIVE (no restore, the live slot's own checkpoints) reuses 86.9%. Pinning
       the tools block does not help: the v10 restore path carries no hybrid checkpoints. Follow-up: INF-86-SLOT-RESTORE-CHECKPOINTS.
       [no-belief: row verdict filed by agent]
-  - [ ] **INF-86-SLOT-RESTORE-CHECKPOINTS** [inference] Save and restore hybrid/recurrent context checkpoints with `/slots`
+  - [x] **INF-86-SLOT-RESTORE-CHECKPOINTS** [inference] Save and restore hybrid/recurrent context checkpoints with `/slots` ✅ 2026-11-17 (rc=0 pass; **INF-86-SLOT-RESTORE-CHECKPOINTS** [inference] Save and restore hybrid/recurrent context checkpoints with `/slots`)
     save/restore (or create a checkpoint at the restore point) so a restored slot can roll back to a shared prefix. Upstream first:
     **#26004 is MERGED** (2026-10-08, head `9223fb431`, "server : preserve context checkpoints across slot save/restore") and is
     **already in C12/C13** as `1c999e15b` (port of `033df86b`; `SLOT_CKPT_MAGIC` "SCKP" appended to the slot file), absent from v10
@@ -297,6 +297,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
     (then port/patch on `llama.cpp-experimental-c13-slot-ckpt-20261117` off C13). Stop-on-answer when the 3 arms are recorded and
     summarize.py gives PASS/FAIL; stop-on-futility on a failed precondition, save failure, server not ready or not our PID,
     timings missing, STOP file or deadline; gate-class = futility-only. [no-belief: new box]
+    - ✅ 2026-11-17 row `inf86-slot-restore-ckpt-c13-20261117`, rc=0, **PASS**: MOVED and MOVED_LIVE both cache_n=13754 (100% of the reachable live prefix; 86.88% of n_saved), prompt_n=3260. Fresh greedy reply matches; CTRL cache_n=0; n_restored=n_saved=15831; restored_ckpt=1. No patch needed. Evidence: `/mnt/raid0/llm/tmp/inf86-slot-restore-ckpt-c13-20261117/out/results.jsonl`; durable [validation record](../../docs/reference/inf86-slot-checkpoint-validation-20261117.md). Scope: this 16K CPU fixture on C13 bda43aa17; production v10 is unchanged. [belief: cc]
 - [x] **(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**
       ✅ **2026-08-22, `epyc-orchestrator` `98061c6b`** — the destructive silent-success edge is
       closed on **both** directions. `_slot_save` now *returns* `n_saved`
