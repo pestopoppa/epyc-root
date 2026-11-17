@@ -387869,10 +387869,11 @@
   - In the field, accelerator draft prefill varied, so draft prefill was moved back to GPU while draft decode stayed on the
     accelerator.
   credibility_score: null
-  handoffs_updated: []
-  integration_disposition: knowledge_only
+  handoffs_updated:
+  - handoffs/active/speculative-decoding.md
+  integration_disposition: integrated
   disposition_evidence:
-  - K3 re-sweep-D trigger routed to the speculative-decoding owning session via coordinator (not filed by this lane).
+  - K3 draft-length re-sweep trigger landed in handoffs/active/speculative-decoding.md (INF-50) in dc07bb9f4 via Pipeline.
   handoffs_created: []
   read_depth: FULL
   verification: dive-verified
