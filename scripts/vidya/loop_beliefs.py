@@ -447,6 +447,9 @@ class Target:
     build_sha: str = ""
     build_surface: str = ""
     kernel_only: bool = False
+    candidate_sha256: str = ""
+    op: str = ""
+    run_id: str = ""
 
     @property
     def is_lineup(self) -> bool:
@@ -457,6 +460,8 @@ class Target:
         """Identity of this target inside one answer (several roles may share one model)."""
         if self.scope == "build":
             return ("build", self.build_sha, self.build_surface)
+        if self.scope == "candidate":
+            return ("candidate", self.build_sha, self.candidate_sha256, self.op, self.run_id)
         if self.is_lineup:
             return ("lineup", self.stack_regime)
         return (self.model_file, self.backend, self.role)
@@ -469,6 +474,18 @@ class Target:
         families = _target_families(raw)
         role = str(raw.get("role") or "").strip()
         regime = str(raw.get("stack_regime") or "").strip()
+        if str(raw.get("scope") or "").strip().lower() == "candidate" or "candidate_sha256" in raw:
+            head, candidate, op, run = (raw.get(key) for key in ("build_sha", "candidate_sha256", "op", "run_id"))
+            if (set(raw) != {"scope", "build_sha", "candidate_sha256", "op", "run_id"}
+                    or raw["scope"] != "candidate"
+                    or not isinstance(head, str) or not re.fullmatch(r"[0-9a-f]{40}", head)
+                    or not isinstance(candidate, str) or not _SHA256_RE.fullmatch(candidate)
+                    or not isinstance(op, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", op)
+                    or not isinstance(run, str)
+                    or not re.fullmatch(r"ni-gpu-pool-(matmul|attention|elementwise)-[0-9]{8}-v[1-9][0-9]*", run)):
+                raise ValueError("candidate target requires exact source commit, candidate digest, native operator and run id")
+            return cls(model_file="", quant="", backend="", device="", scope="candidate",
+                       build_sha=head, candidate_sha256=candidate, op=op, run_id=run)
         if str(raw.get("scope") or "").strip().lower() == "build":
             head = str(raw.get("build_sha") or "").strip().lower()
             surface = str(raw.get("surface") or "").strip()
@@ -519,6 +536,9 @@ class Target:
     def as_dict(self) -> dict[str, Any]:
         if self.scope == "build":
             return {"scope": "build", "build_sha": self.build_sha, "surface": self.build_surface, "label": self.label}
+        if self.scope == "candidate":
+            return {"scope": "candidate", "build_sha": self.build_sha,
+                    "candidate_sha256": self.candidate_sha256, "op": self.op, "run_id": self.run_id}
         return {"model_file": self.model_file, "quant": self.quant, "backend": self.backend,
                 "device": self.device, "context_tokens": self.context_tokens,
                 "label": self.label, "model_sha256": self.model_sha256, "recipe": self.recipe,
@@ -671,6 +691,16 @@ def lineup_matches(scope: Mapping[str, Any], target: Target) -> bool:
 
 
 def tier_of(scope: Mapping[str, Any], target: Target) -> str | None:
+    if target.scope == "candidate":
+        exact = (isinstance(scope, Mapping)
+                 and set(scope) == {"build_sha", "candidate_sha256", "op", "run_id", "scope_basis"}
+                 and scope["scope_basis"] == "native"
+                 and bool(target.candidate_sha256) and bool(target.run_id)
+                 and (scope["build_sha"], scope["candidate_sha256"], scope["op"], scope["run_id"])
+                 == (target.build_sha, target.candidate_sha256, target.op, target.run_id))
+        return "target" if exact else None
+    if isinstance(scope, Mapping) and "candidate_sha256" in scope:
+        return None
     if target.scope == "build":
         return "target" if (isinstance(scope, Mapping) and scope.get("surface") == target.build_surface
                             and scope.get("build_sha") == target.build_sha
@@ -881,9 +911,15 @@ def _tier(scope: Mapping[str, Any], targets: list[Target],
     targets it reaches it for. A claim lands in exactly one tier. A scope that names a
     `consumer` is a harness fact: it reaches the harness tier for that consumer and nothing
     else (never a model tier, whatever else the scope says)."""
+    if "candidate_sha256" in scope:
+        if len(targets) == 1 and tier_of(scope, targets[0]) == "target":
+            return "target", targets
+        return None, []
     if isinstance(scope, Mapping) and scope.get("consumer"):
-        if consumer and str(scope["consumer"]) == consumer and targets:
-            return "harness", list(targets)
+        if consumer and str(scope["consumer"]) == consumer:
+            hits = [target for target in targets if target.scope != "candidate"]
+            if hits:
+                return "harness", hits
         return None, []
     hits: dict[str, list[Target]] = {}
     for target in targets:
@@ -1032,6 +1068,8 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
             scope = _table_scope(table)
         else:
             continue
+        if "candidate_sha256" in scope and kind != "gpu-pool-native":
+            continue
         tier, hits = _tier(scope, targets, consumer)
         if tier is None:
             continue
@@ -1076,7 +1114,7 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "reps": evidence.get("reps"),
                "text": str(claim.get("display_text", "")),
                "grade_reasons": reasons.get(raw_id, ()),
-               "targets": sorted({t.model_file for t in hits}),
+               "targets": sorted({_target_label(t) if t.scope == "candidate" else t.model_file for t in hits}),
                "target_keys": sorted({t.key for t in hits}),
                "knob_family": ",".join(claim_families(scope)),
                "knobs": dict(scope["knobs"]) if isinstance(scope.get("knobs"), Mapping) else {},
@@ -1088,6 +1126,7 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "backend": str(scope.get("backend") or hits[0].backend).strip().lower(),
                "recipe": _str(scope.get("recipe")), "epoch": _str(scope.get("epoch")),
                "build_sha": _str(scope.get("build_sha")),
+               "candidate_sha256": _str(scope.get("candidate_sha256")),
                "np": np_value if isinstance(np_value, int) and not isinstance(np_value, bool)
                else None,
                "symbol": _str(scope.get("symbol")), "op": _str(scope.get("op")),
@@ -1464,6 +1503,8 @@ def _value_text(value: float | None, unit: str) -> str:
 
 
 def _where(row: Mapping[str, Any], tier: str) -> str:
+    if row.get("candidate_sha256"):
+        return f"candidate {row['candidate_sha256'][:12]} / {row['op']}"
     extras = []
     if row["build_sha"]:
         extras.append(f"build {row['build_sha'][:8]}")
@@ -1614,11 +1655,16 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
 
 
 def _target_label(target: Target) -> str:
+    if target.scope == "candidate":
+        return ":".join(target.key)
     return f"lineup:{target.stack_regime or 'unrecorded'}" if target.is_lineup \
         else target.model_file
 
 
 def _target_name(target: Target) -> str:
+    if target.scope == "candidate":
+        return (f"source {target.build_sha} / candidate {target.candidate_sha256} / "
+                f"{target.op} / {target.run_id}")
     role = f", role {target.role}" if target.role else ""
     return f"{target.model_file} ({target.backend}{role})"
 
@@ -1637,7 +1683,7 @@ def banner_text(targets: list[Target], empty: list[Target]) -> str | None:
         regimes = ", ".join(t.stack_regime or "regime unrecorded" for t in lineups)
         parts.append(f"No beliefs at this regime ({regimes}).")
     text = " ".join(parts)
-    if len(empty) == len(targets):
+    if len(empty) == len(targets) and any(t.scope != "candidate" for t in targets):
         text += " The lines below are sibling/host context only."
     return text
 
@@ -1679,21 +1725,27 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
             model_budget -= used
     entries = list((tried or [])[:INDEX_CAP])
     names = "; ".join(
-        (f"lineup / regime {t.stack_regime or 'unrecorded'}" if t.is_lineup else
+        (_target_name(t) if t.scope == "candidate" else
+         f"lineup / regime {t.stack_regime or 'unrecorded'}" if t.is_lineup else
          f"{t.model_file} / {t.quant or 'quant unstated'} / {t.backend} / {t.device}")
         + (f" / context {t.context_tokens}" if t.context_tokens else "")
         + (f" / recipe {t.recipe}" if t.recipe else "")
         + (f" / role {t.role}" if t.role else "")
         + (f" / knob families {','.join(t.knob_families)}" if t.knob_families else "")
         for t in targets)
-    head = [SECTION_HEADER] + ([banner] if banner else []) + [
-        f"Target(s): {names}.",
+    has_candidate = any(t.scope == "candidate" for t in targets)
+    model_context = any(t.scope != "candidate" for t in targets)
+    applicability = (
         "Claims are tiered by declared applicability: knob (the target's own weights and a "
         "knob family it can change), target (the target's own weights), lineup (this stack "
-        "regime), "
-        "sibling (same declared lineage, other weights or recipe; transfer unproven), then a "
-        "separate device-scope group (host tier: device-only scope, no model; a ceiling, not "
-        "about this model, never target evidence). Grade is the folded "
+        "regime), sibling (same declared lineage, other weights or recipe; transfer unproven), "
+        "then a separate device-scope group (host tier: device-only scope, no model; a ceiling, "
+        "not about this model, never target evidence). " if model_context else "")
+    if has_candidate:
+        applicability += "Candidate claims apply to the exact captured source, artifacts, shim and operator. "
+    head = [SECTION_HEADER] + ([banner] if banner else []) + [
+        f"Target(s): {names}.",
+        f"{applicability}Grade is the folded "
         f"claim_tuple.grade() Q/T at ledger frontier {frontier}, as of {as_of}."]
     tail = [f"Optional reply field {reply_field}: a list of the knob-, target-, lineup- or "
             "sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) "
@@ -1714,7 +1766,10 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
             usable = [row for row in chosen[tier] if row["status"] == "verified"]
             if not usable:
                 continue
-            body.append(TIER_TITLES[tier])
+            title = TIER_TITLES[tier]
+            if tier == "target" and has_candidate:
+                title = "### Usable, target tier -- claims scoped to the requested target"
+            body.append(title)
             described: set[tuple[str, str | None]] = set()
             stale_noted = False
             for row in usable:
@@ -1831,6 +1886,7 @@ def _claim_view(row: Mapping[str, Any]) -> dict[str, Any]:
             "knob_family": row["knob_family"], "role": row["role"],
             "varied": list(row["varied"]), "knobs": dict(row["knobs"]),
             "stack_regime": row["stack_regime"],
+            **({k: row[k] for k in ("build_sha", "candidate_sha256", "op")} if row["candidate_sha256"] else {}),
             "not_evidence": row["tier"] in NOT_EVIDENCE_TIERS}
 
 

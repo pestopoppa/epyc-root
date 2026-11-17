@@ -35,8 +35,10 @@ def test_write_read_shared_grade_and_exact_limits(tmp_path, family):
     g.write_capture(path, request, native)
     claim, = g.read_capture(path)
     assert claim.value == 1 and claim.metric_direction == 'higher_better'
-    assert grade(claim)[:2] == ('Judged', 'T0')
+    assert grade(claim)[:2] == ('Judged', 'Located')
     assert claim.protocol_id == '' and claim.reps is None
+    run = native['runs'][0]
+    assert claim.attestation_locator == f"{run['log']}#sha256={run['log_sha256']}"
     assert claim.extra['candidate_identity'] == request['identity']
     assert claim.extra['native_context']['environment'] == native['environment']
     assert claim.extra['native_run']['unsupported'] == 1

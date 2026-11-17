@@ -40,11 +40,13 @@ def test_registered_ingest_preserves_candidate_local_counts(tmp_path, capsys):
     support, = (frame["assertion"] for frame in frames
                 if frame["frame_type"].endswith("evidence_supports_claim/v1"))
     assert source["applicability"] == {"op": native["runs"][0]["op"],
+                                       "build_sha": request["identity"]["source"]["commit"],
+                                       "candidate_sha256": gpu_pool_native.digest(request["identity"]),
                                        "run_id": request["row_id"], "scope_basis": "native"}
     assert source["title"] == "native_supported_pass_count"
     assert "records 1 native supported passes, 1 unsupported and 1 failures" in claim["display_text"]
     assert support["metric_direction"] == "higher_better" and support["protocol_id"] == ""
-    assert support["grade"] == {"Q": "Judged", "T": "T0"}
+    assert support["grade"] == {"Q": "Judged", "T": "Located"}
     assert cli.main(argv) == 0
     assert json.loads(capsys.readouterr().out)["frames_skipped"] == 3
     assert ledger.verify() == [] and len(ledger.read_all()) == 3
