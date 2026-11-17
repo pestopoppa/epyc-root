@@ -1,0 +1,50 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "pipeline-mgmt",
+  "rationale": "rc=1 2026-11-08T17:57Z: all 30 launches ran but the post-execution identity witness is invalid (binary/linkage_receipt/ldd/stdout differs only by ASLR load addresses); the summary voided both depths and the sidecar has 0 rows. Producer bug in kv_quant_27b_v10_sweep.py linkage_receipt(). Note: epyc-root dda834b43 under VB-KVQ-V10-INGEST. Scratch kept.",
+  "verdict": "fail"
+ },
+ "answer": null,
+ "at": "2026-11-11T14:07:10+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-08T17:57:40Z reason=job-rc-1:exited",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vidya-kvq-v10-sweep-20261107.ended",
+ "filed_at": "2026-11-11T14:07:10+00:00",
+ "filed_by": "pipeline-mgmt",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-KVQ-V10-INGEST",
+ "id": "vidya-kvq-v10-sweep-20261107",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-kvq-v10-sweep-20261107.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-runs-20261107/vidya-kvq-v10-sweep-20261107/out/run-*/belief_measurements.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "operator-adhoc-ops-20261105",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1 2026-11-08T17:57Z: all 30 launches ran but the post-execution identity witness is invalid (binary/linkage_receipt/ldd/stdout differs only by ASLR load addresses); the summary voided both depths and the sidecar has 0 rows. Producer bug in kv_quant_27b_v10_sweep.py linkage_receipt(). Note: epyc-root dda834b43 under VB-KVQ-V10-INGEST. Scratch kept.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/vb-runs-20261107/vidya-kvq-v10-sweep-20261107/out/run-*/belief_measurements.jsonl",
+ "root_cause_family": null,
+ "row": "vidya-kvq-v10-sweep-20261107",
+ "row_verdict": "fail",
+ "rule": "QUESTION: does KV-cache quantization (homogeneous f16/q8_0/q4_0, -fa on) cost decode throughput on the MI210 at the v10 production kernel, at ~2k and ~32k prefill, Qwen3.8-27B-Q8_0? STOP RULE (measurement-sufficiency): the matrix is fixed by the producer (3 arms x 5 reps x 2 depths = 30 fresh llama-server launches); no interim efficacy peeking, interim looks are futility-only. Stop-on-answer when all 30 launches complete and the sidecar carries 12 rows; stop-on-futility on STOP/deadline, launch failure, missing residency or identity mismatch (producer fails closed and keeps partial evidence; an incomplete matrix voids the whole sidecar by design). RESULT FORMAT: out/run-<ts>/belief_measurements.jsonl, schema epyc.vidya.kv_quant_27b_v10_capture.v1, ingested by `cli.py ingest kv-quant-27b-v10-measurement` with refused=0. Binary: kernels/production/gpu (store; producer pins llama-server sha 2b49713f, hip f26a166b). Scope: bench-only; mixed K/V and -fa variation out of scope.",
+ "source": "grant",
+ "tokens": {
+  "available": false,
+  "owner_slug": "operator-adhoc-ops-20261105",
+  "reason": "no rollout tokens attributed to the owner session today"
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "fail",
+  "status": "filed"
+ }
+}

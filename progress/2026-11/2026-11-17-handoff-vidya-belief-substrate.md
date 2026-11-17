@@ -1,0 +1,5 @@
+# 2026-11-17 — handoff vidya-belief-substrate
+
+## 11:13Z — Handle and acknowledge 15 stale alerts; prepare/test prospective KVQ ASLR witness repair and successor inputs
+
+Handled and acknowledged all 15 matching owned inference alerts. Existing verdicts/FILED receipts were preserved: Canary B r2 and R234 h PASS; c/d superseded; R18D r3 inconclusive and r4 FAIL on one 1575 MHz request-phase dip (135/136 in-band), no floor; KVQ FAIL from ASLR-only raw ldd identity mismatch, zero valid sidecar rows. Added a comparison-only KVQ repair that retains raw receipts and ignores only trailing load addresses, with seven focused tests and successful two-witness/model/kernel preflight. Prepared fresh original 30-launch/12-row successor with pinned 1,689-file source closure and ports. Publication refused before smoke because the original host-clean guard reports an active llama-server; no gate bypass, no new row is published and no old measurement is salvaged. The source patch/test component is complete; parent full-run acceptance remains open. Restored and locked the missing lane worktree; no commits were made in /workspace or external research/production trees.
