@@ -712,7 +712,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T10:55:06Z",
+  "generated_at": "2026-11-17T10:57:52Z",
   "nodes": [
     {
       "age_days": 7,
@@ -2321,15 +2321,15 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 120,
-      "dispatchable": 64,
+      "closed": 121,
+      "dispatchable": 63,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-11",
       "next_action": "Await LB4.9 r2 (per-route/nth bar); AKX-ALL-31 native DONE (both legs pass); fix W2 keeper residency bug, then run census",
-      "open": 66,
+      "open": 65,
       "priority": 0.004,
       "priority_basis": {
         "campaign": 0,
@@ -2379,7 +2379,7 @@
             "RTG-58#kv-prefix-fork-and-paged-attention",
             "RTG-58#kv-unified-stack-rollout"
           ],
-          "dispatchable": 52,
+          "dispatchable": 51,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -2388,9 +2388,9 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 941,
+          "line": 942,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 54,
+          "open": 53,
           "readiness": "blocked"
         }
       ]
@@ -2721,7 +2721,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 293,
@@ -2730,7 +2730,7 @@
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-17",
       "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
       "open": 85,
       "priority": 0.6763,
@@ -3233,18 +3233,18 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 309,
-      "dispatchable": 79,
+      "closed": 310,
+      "dispatchable": 78,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "engineering-hygiene-backlog.md",
       "id": "RTG-22",
-      "last_advanced": "2026-11-15",
+      "last_advanced": "2026-11-17",
       "next_action": "TOOLPERM+AGENTFILE-INJECT after prod relaunch+matrix refresh; CTX-DEPTH after v11; NIB2-102.b; NIB2-77 11-16; LOOP-54 CI; refactor",
-      "open": 80,
+      "open": 79,
       "priority": 0.8844,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): LOOP-25 \u2014 disk forecast in the depth alarm. Project free space from the ARMED and READY `e",
@@ -3264,18 +3264,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 33,
+          "dispatchable": 32,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 33,
+          "open": 32,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1233,
+          "line": 1234,
           "name": "amd-ai-lab-website-publication",
           "open": 3,
           "readiness": "ready"
@@ -3284,7 +3284,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1273,
+          "line": 1274,
           "name": "frontier-f4-continuity-backup",
           "open": 0,
           "readiness": "no_open"
@@ -3293,7 +3293,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1380,
+          "line": 1381,
           "name": "integration-test-coverage",
           "open": 0,
           "readiness": "no_open"
@@ -3302,7 +3302,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1480,
+          "line": 1481,
           "name": "loop-state-offraid-backup",
           "open": 1,
           "readiness": "ready"
@@ -3311,7 +3311,7 @@
           "blocked_by": [],
           "dispatchable": 34,
           "gates": [],
-          "line": 1529,
+          "line": 1530,
           "name": "refactoring-multirepo-2026-10",
           "open": 34,
           "readiness": "ready"
@@ -3320,7 +3320,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 2105,
+          "line": 2106,
           "name": "repo-readiness-scorer",
           "open": 9,
           "readiness": "ready"
