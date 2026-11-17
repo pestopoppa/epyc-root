@@ -2596,7 +2596,7 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 374,
+      "closed": 376,
       "guarded": 0,
       "last_advanced": "2026-11-17",
       "open": 91,
@@ -2608,7 +2608,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 466
+      "total": 468
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
