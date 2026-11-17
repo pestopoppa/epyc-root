@@ -10,7 +10,7 @@
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt | — |
+| PIP-04 | internal kb rag | [knowledge-pipelines.md](knowledge-pipelines.md) | Only PIP02-PADDLE-STACK-ENTRY remains (PaddleOCR-VL stack entry, after v11 promotion, before Autopilot relaunch; fold LightOnOCR stack entry into the same stack-change package) | v11 promotion |
 
 ## Cross-domain
 

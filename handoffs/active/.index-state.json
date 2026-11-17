@@ -2845,12 +2845,14 @@
       "track": "dispatch placement telemetry"
     },
     "PIP-04": {
-      "deps": [],
+      "deps": [
+        "v11 promotion"
+      ],
       "handoff": "knowledge-pipelines.md",
       "id": "PIP-04",
       "index": "pipeline-integration-index.md",
       "line": 13,
-      "next_action": "PIP04-KB-INDEX-BREAK rebuild; G14 install; 65-page table-path ruling; v4/v5 opt-in, need Jan-FY held-out corpus to adopt",
+      "next_action": "Only PIP02-PADDLE-STACK-ENTRY remains (PaddleOCR-VL stack entry, after v11 promotion, before Autopilot relaunch; fold LightOnOCR stack entry into the same stack-change package)",
       "track": "internal kb rag"
     },
     "REV-02": {
