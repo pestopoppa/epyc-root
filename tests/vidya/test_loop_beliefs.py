@@ -1493,6 +1493,23 @@ def _selection_row(claim_id, **kw):
     return {**row, **kw}
 
 
+def test_target_observation_coverage_only_trades_equal_grade_unkeyed_duplicates():
+    common = {"grade": "Judged/Located", "protocol_id": "", "target_keys": [("m", "gpu", "")]}
+    protected = [
+        _selection_row("floor", **common, outcome="floor"),
+        _selection_row("correctness", **common, outcome="refused_correctness"),
+        _selection_row("focus", **common, symbol="s", hit_focus=("s",)),
+        _selection_row("strong", grade="Witnessed/Attested", protocol_id="p", target_keys=common["target_keys"]),
+    ]
+    repeated = [_selection_row(f"duplicate-{i}", **common, source_kind="campaign") for i in range(3)]
+    sampled = _selection_row("sampled", **common, outcome="", source_kind="sample")
+    scope_other = _selection_row("other-scope", grade=common["grade"], protocol_id="",
+                                 target_keys=[("m", "cpu", "")], source_kind="other")
+    units = [[row] for row in [*protected, *repeated, scope_other, sampled]]
+    selected = units[:7]
+    assert lb._spread_target_observations(units, selected) == selected[:-1] + [[sampled]]
+
+
 def test_what_names_the_metric_and_earlier_names_a_different_one():
     base = {"outcome": "improved", "unit": "x", "value": 3.71, "anchor_value": None,
             "noise_floor_rel": None, "decisive": None, "effect_rel": None, "outcome_native": "",

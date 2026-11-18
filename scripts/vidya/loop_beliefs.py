@@ -79,6 +79,7 @@ import os
 import re
 import subprocess
 import sys
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path, PurePath
@@ -1397,6 +1398,39 @@ def _select(units: list[list[dict[str, Any]]], cap: int, *, force: bool,
     return [units[i] for i in sorted(chosen)]
 
 
+def _spread_target_observations(units: list[list[dict[str, Any]]],
+                                selected: list[list[dict[str, Any]]]) -> list[list[dict[str, Any]]]:
+    """Give a missing source a slot held by a repeat of an equally graded advisory source."""
+    def cohort(unit):
+        row = unit[0]
+        if (len(unit) != 1 or row["tier"] != "target" or row["status"] != "verified"
+                or row["grade"] != "Judged/Located" or row["protocol_id"] or row["value"] is None
+                or row["stale_epoch"] or _knob_row(row) or _forced(unit) or _reserved(unit)
+                or _group(row) == 2 or _rank_key(row)[2:4] != (1, 1)):
+            return None
+        return tuple(row["target_keys"])
+
+    selected_ids = {id(unit) for unit in selected}
+    comparable = [(i, unit, key) for i, unit in enumerate(units) if (key := cohort(unit))]
+    chosen = {i for i, unit in enumerate(units) if id(unit) in selected_ids}
+    incumbents = [(i, unit, key) for i, unit, key in comparable if i in chosen]
+    covered = Counter((key, unit[0]["source_kind"]) for _, unit, key in incumbents)
+    for i, unit, key in comparable:
+        source = (key, unit[0]["source_kind"])
+        if i in chosen or covered[source]:
+            continue
+        # `comparable` is in ordinary rank order. Trade the weakest duplicate first.
+        for j, incumbent, incumbent_key in reversed(incumbents):
+            incumbent_source = (incumbent_key, incumbent[0]["source_kind"])
+            if j in chosen and incumbent_key == key and covered[incumbent_source] > 1:
+                chosen.remove(j)
+                chosen.add(i)
+                covered[incumbent_source] -= 1
+                covered[source] += 1
+                break
+    return [units[i] for i in sorted(chosen)]
+
+
 # ---- tried-mechanisms index
 
 _INDEX_CODE = {"improved": "improved", "regressed": "regressed", "null": "null",
@@ -1594,8 +1628,9 @@ def _what(row: Mapping[str, Any]) -> str:
         return (f"{_subject(row)}: ANCHOR {_value_text(value, unit)} "
                 f"({named}{_n_text(row, pairs_first=False)})").replace("  ", " ")
     if value is not None:
+        limits = f". {_cap(row['outcome_reason'], REASON_CAP)}" if row["outcome_reason"] else ""
         return (f"{_subject(row)}: {_value_text(value, unit)} "
-                f"({named}{_n_text(row, pairs_first=False)})")
+                f"({named}{_n_text(row, pairs_first=False)}){limits}")
     return ""
 
 
@@ -1726,7 +1761,10 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                     else TIER_CAPS[tier])
         cap = max(0, min(tier_cap, remaining,
                          model_budget if tier in _MODEL_TIERS else TIER_CAPS[tier]))
-        selected[tier] = _select(_units(ranked, whole), cap, force=(tier in _MODEL_TIERS))
+        units = _units(ranked, whole)
+        selected[tier] = _select(units, cap, force=(tier in _MODEL_TIERS))
+        if tier == "target":
+            selected[tier] = _spread_target_observations(units, selected[tier])
         used = sum(len(unit) for unit in selected[tier])
         remaining -= used
         if tier in _MODEL_TIERS:

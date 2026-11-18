@@ -54,6 +54,8 @@ class KVU16aBeliefTests(unittest.TestCase):
         (self.root/'server.log').write_text('changed')
         with self.assertRaises(ProjectionError): adapter.native_rows(path)
     def test_registered_ingest_reaches_planning_context(self):
+        self.result['startup_unknown_samples'] = 1
+        self.write()
         sidecar = adapter.record_run(self.root)
         ledger = Ledger(self.root / 'ledger.jsonl')
         now = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -67,16 +69,31 @@ class KVU16aBeliefTests(unittest.TestCase):
                 return {'fresh': True, 'lag_entries': 0, 'index_max_id': 0, 'synced_max_id': 0, 'last_sync': now}
         config = self.root / 'alarm.yaml'
         config.write_text('backend: file\nfile:\n  path: ' + str(self.root / 'alarms.jsonl') + '\n')
-        def context(model, name):
-            return loop_beliefs.prepare('kvu16a.synthetic.' + name, {'model_file': model, 'backend': 'gpu'},
+        def context(model, name, **scope):
+            target = {'model_file': model, 'backend': 'gpu', **scope}
+            return loop_beliefs.prepare('kvu16a.synthetic.' + name, target,
                 ledger=ledger.path, index_path=self.root / 'index', as_of=now, sync_module=Sync(),
                 known_good=self.root / (name + '-known.json'), alarm_state=self.root / (name + '-alarm.json'),
                 alarm_config=config, read_log=self.root / (name + '-reads.jsonl'))
         found = context('model.gguf', 'target')
         self.assertEqual(found['status'], 'ready')
-        self.assertEqual(len(found['evidence']['claim_ids']), 1)
-        other = context('unrelated.gguf', 'other')
-        self.assertFalse(other.get('evidence', {}).get('claim_ids', []))
+        evidence = found['evidence']
+        claim, = evidence['claims']
+        self.assertEqual((claim['value'], claim['unit'], claim['grade'], claim['reps']),
+                         (1025, 'bytes', 'Judged/Located', 2))
+        self.assertIn('Startup coverage UNKNOWN (unknown sample count: 1)', evidence['section'])
+        self.assertIn('not a lifetime peak or bound', evidence['section'])
+        self.assertFalse(context('unrelated.gguf', 'other')['evidence']['claims'])
+        self.assertFalse(context('model.gguf', 'cpu', backend='cpu')['evidence']['claims'])
+        self.assertFalse(context('model.gguf', 'different-digest', model_sha256='c'*64)['evidence']['claims'])
+        original = sidecar.read_text()
+        altered = json.loads(original)
+        altered['value'] += 1
+        sidecar.write_text(json.dumps(ns.seal(altered)) + '\n')
+        refused = ingest_sources.ingest(None, 'kvu16a-sampled-load', [sidecar], as_of=now, dry_run=True)
+        self.assertTrue(refused['refused'])
+        self.assertEqual(refused['frames_emitted'], 0)
+        sidecar.write_text(original)
         (self.root / 'samples.jsonl').write_text('corrupt')
         refused = ingest_sources.ingest(None, 'kvu16a-sampled-load', [sidecar], as_of=now, dry_run=True)
         self.assertTrue(refused['refused'])

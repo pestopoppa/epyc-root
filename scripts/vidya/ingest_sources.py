@@ -459,8 +459,8 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V11-086 FP32-oracle rerun pass fraction per arm (value = passed/total of the same row), scorer "
                 "clause verdicts verbatim, OBSERVATION only",
            task="VB-V11-ORACLE-WRITE"),
-    Source("kvu16a-sampled-load", "kvu16a_native",
-           _files("kvu16a_sampled_load.beliefs.jsonl", "*/kvu16a_sampled_load.beliefs.jsonl"),
+    Source("kvu16a-sampled-load", "kvu16a_projection",
+           _files("kvu16a_sampled_load.beliefs.jsonl", "*/kvu16a_sampled_load.beliefs.jsonl"), frames="emit",
            note="Prospective original-run sampled healthy load, not a peak; unknown coverage does not project",
            task="VB-KVU-16A-LOAD"),
     Source("kvu19b-gap", "kvu19b_gap",
