@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T07:10:13Z",
+  "generated_at": "2026-11-18T07:15:15Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1447,7 +1447,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6048,
+          "line": 6049,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1456,7 +1456,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6128,
+          "line": 6129,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1475,7 +1475,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6425,
+          "line": 6426,
           "name": "autokernel-rebuild-program",
           "open": 16,
           "readiness": "blocked"
@@ -1492,7 +1492,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9642,
+          "line": 9643,
           "name": "autokernel-unified-surface-program",
           "open": 55,
           "readiness": "blocked"
@@ -1505,7 +1505,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13995,
+          "line": 13996,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1539,7 +1539,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14207,
+          "line": 14208,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 16,
           "readiness": "blocked"
@@ -2114,7 +2114,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5078,
+          "line": 5079,
           "name": "sarathi-serve-cpu-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -2123,7 +2123,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5231,
+          "line": 5232,
           "name": "cpu-prefill-compute-large-models",
           "open": 1,
           "readiness": "ready"
@@ -2132,7 +2132,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 5721,
+          "line": 5722,
           "name": "large-moe-expert-parallelism",
           "open": 0,
           "readiness": "no_open"
@@ -2145,7 +2145,7 @@
           "gates": [
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 5835,
+          "line": 5836,
           "name": "moe-routing-tap-and-locality-measurement",
           "open": 4,
           "readiness": "blocked"
@@ -2397,7 +2397,7 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 30,
+      "closed": 31,
       "dispatchable": 16,
       "domain": "inference-research",
       "guarded": 0,
@@ -3645,18 +3645,18 @@
       ]
     },
     {
-      "age_days": 11,
+      "age_days": 0,
       "blocked": 18,
       "blocked_by": [],
-      "closed": 238,
-      "dispatchable": 91,
+      "closed": 239,
+      "dispatchable": 90,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
-      "last_advanced": "2026-11-07",
+      "last_advanced": "2026-11-18",
       "next_action": "Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel",
-      "open": 109,
+      "open": 108,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3708,11 +3708,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": [],
           "line": 391,
           "name": "repl-turn-efficiency",
-          "open": 11,
+          "open": 10,
           "readiness": "ready"
         },
         {
