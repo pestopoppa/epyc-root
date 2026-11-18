@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T17:22:52Z",
+  "generated_at": "2026-11-18T17:33:43Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1349,7 +1349,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 432,
+      "closed": 435,
       "dispatchable": 117,
       "domain": "research-evaluation",
       "guarded": 0,
