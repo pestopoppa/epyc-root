@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from observation import *  # noqa: F403
 
 FLAGS = Path("/mnt/raid0/llm/tmp/compute-flags")
+KFD = Path("/sys/class/kfd/kfd/proc")
 CLIENT = build_opener(ProxyHandler({}))
 ENV = {"GGML_IQK": "1", "LD_LIBRARY_PATH": f"{IMAGE}:/opt/rocm/lib:/usr/lib/llvm-20/lib",
        "OMP_NUM_THREADS": "4", "HIP_VISIBLE_DEVICES": "0", "ROCR_VISIBLE_DEVICES": "0"}
@@ -122,7 +123,7 @@ def own_listener(pid):
 
 def witness(pid):
     proc = Path(f"/proc/{pid}")
-    kfd = Path(f"/sys/class/kfd/kfd/proc/{pid}")
+    kfd = KFD / str(pid)
     rows = [fields for line in (proc / "maps").read_text().splitlines()
             if (fields := line.split(maxsplit=5))[-1].endswith(HIP.name)]
     require(rows and all(row[5] == str(HIP) and int(row[4]) == HIP.stat().st_ino
@@ -138,6 +139,18 @@ def witness(pid):
     return {"pid": pid, "birth": birth(pid)[1], "bound_loopback_inode": listener,
             "exe": str(SERVER), "argv": argv(), "kfd_vram_bytes": vram,
             "hip_mapping": {str(HIP): HIP_SHA}, "at_ns": time.monotonic_ns()}
+
+
+def wait_for_kfd_release(pid, remaining):
+    # The driver can retain the sysfs entry briefly after wait() reaps the child.
+    kfd = KFD / str(pid)
+    until = time.monotonic() + 3
+    while kfd.exists():
+        delay = min(remaining(), until - time.monotonic())
+        if delay <= 0:
+            return False
+        time.sleep(min(0.05, delay))
+    return True
 
 
 def http(parts, remaining, data=None):
@@ -245,11 +258,14 @@ def run(out):
                 tcp = Path("/proc/net/tcp").read_text().splitlines()[1:]
                 listener_gone = bool(expected_listener) and all(
                     cols[3] != "0A" or cols[9] != expected_listener for line in tcp if (cols := line.split()))
-                kfd_gone = not Path(f"/sys/class/kfd/kfd/proc/{process.pid}").exists()
-                report["server_cleanup"] = {"returncode": process.returncode,
-                                            "verified_gone": not Path(f"/proc/{process.pid}").exists(),
-                                            "verified_kfd_gone": kfd_gone,
-                                            "verified_listener_released": listener_gone}
+                cleanup = report["server_cleanup"] = {
+                    "returncode": process.returncode,
+                    "verified_gone": not Path(f"/proc/{process.pid}").exists(),
+                    "verified_kfd_gone": False,
+                    "verified_listener_released": listener_gone,
+                }
+                if cleanup["verified_gone"] and listener_gone:
+                    cleanup["verified_kfd_gone"] = wait_for_kfd_release(process.pid, remaining)
         report["lock_end"] = lock_owner()
         require(report["lock_begin"] == report["lock_end"] and grant_text == grant.read_text(),
                 "GPU ownership or calendar grant changed")

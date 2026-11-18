@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
 import native
 import reader
@@ -105,6 +106,33 @@ class Controls(unittest.TestCase):
     def test_valid_zero(self):
         path = write(self.root, fixture(self.root, delta=0))
         self.assertEqual(project(path).extra[METRIC], 0)
+
+    def test_delayed_kfd_release(self):
+        kfd = self.root.parent / "13"
+        kfd.mkdir()
+        other = self.root.parent / "14"
+        other.mkdir()
+        with patch.object(native, "KFD", kfd.parent), patch.object(native, "time") as clock:
+            clock.monotonic.return_value = 0
+            clock.sleep.side_effect = lambda _: kfd.rmdir()
+            self.assertTrue(native.wait_for_kfd_release(13, lambda: 10))
+            clock.sleep.assert_called_once_with(0.05)
+        self.assertTrue(other.is_dir())
+
+    def test_persistent_kfd_release_and_stop(self):
+        kfd = self.root.parent / "13"
+        kfd.mkdir()
+        with patch.object(native, "KFD", kfd.parent), patch.object(native, "time") as clock:
+            clock.monotonic.side_effect = [0, 0, 3]
+            self.assertFalse(native.wait_for_kfd_release(13, lambda: 10))
+            clock.sleep.assert_called_once_with(0.05)
+
+            clock.monotonic.side_effect = None
+            clock.monotonic.return_value = 0
+            clock.sleep.reset_mock()
+            with self.assertRaisesRegex(ValueError, "STOP"):
+                native.wait_for_kfd_release(13, Mock(side_effect=ValueError("STOP")))
+            clock.sleep.assert_not_called()
 
     def test_refusals(self):
         report = fixture(self.root, delta=1)

@@ -2,10 +2,10 @@
 set -euo pipefail
 D=/mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118
 /usr/bin/sha256sum --check --status <<'SEAL'
-0e443c31c6f9c08592a2b9b7dca009d3de88db7db5cac65dbae8b4191c2d37f6  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/source-manifest.json
+ee22008823dfa16280e607c353ec7ddb7ece205350f064d02337fecc333aecb0  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/source-manifest.json
 755b5fe72fa5bc257e00e880bb0df1bcca8e56b5b3f704fb2d083ff1663dc634  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/reader-manifest.json
 1f34fb48243a26f8e51d0f9c9c361f295a406d5b31532ce29e6270e68d760b07  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/gpu_counter.py
-cab477455c466ade81cbef80b68d422623d14d773b7815810fdfdb3ff49e5b69  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/native.py
+6f1502f6796169fcd4bf2cc217fa866922117ae343fc79265f40ee2fcbc69989  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/native.py
 01d47dbcae99f1708b4cd7f87a99ff4272860c77a54a59568d92e2e63c65a48d  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/observation.py
 e13c7e300b4fc1034d941b6847daa6e0f68a34380311c65e49384a3a4ae565aa  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/reader.py
 57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33  /mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/verify_ggml_linkage.sh

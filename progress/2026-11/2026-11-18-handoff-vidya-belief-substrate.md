@@ -357,3 +357,7 @@ Advanced VB-AK-R18-GFX-CODE: implemented the original measurement-declaring writ
 ## 22:21Z — Implement prospective source-pinned GFX capture and registered strict reader, and publish its original GPU observation packet.
 
 Same GFX implementation boundary, commit-guard recovery: reference the canonical producer source manifest by repo path and SHA-256 instead of duplicating its bytes under the evidence packet. The source-code checkbox and substantive progress entry were already applied; no additional qualification or native acceptance is claimed. [no-belief: persistence correction for prospective source implementation]
+
+## 22:27Z — Repair the native GFX KFD teardown race and qualify the prospective observation row.
+
+VB-AK-R18-GFX-PREP: repaired the original native qualification failure without relaxing cleanup: wait at most3 seconds for the captured child KFD entry, bounded by STOP/allocator deadline. Mocked transient/persistent/STOP regression controls, syntax and ten seals pass. Preserved the original UNKNOWN capture and FAIL memo; same-id source-resealed publication returned exit0 with GPU busy/smoke queued. Readiness and official acceptance remain unproved; PASS/FAIL event paths registered. NeMo dispatch event is already owner-filed PASS and both boxes already ticked; corrected its stale adapter-source description. [no-belief: prospective software repair and queued qualification]

@@ -38,4 +38,13 @@ supply software evidence only. Native smoke and official observation acceptance
 are separate and must be filed from their original publisher/allocator receipts.
 
 The committed source closure is [source-manifest.json](../../../scripts/vidya/producers/gfx_observation/source-manifest.json)
-(SHA-256 `0e443c31c6f9c08592a2b9b7dca009d3de88db7db5cac65dbae8b4191c2d37f6`); it is referenced here without a duplicate evidence blob.
+(SHA-256 `ee22008823dfa16280e607c353ec7ddb7ece205350f064d02337fecc333aecb0`); it is referenced here without a duplicate evidence blob.
+
+The first native publisher attempt completed the fixed 32-token request and
+reaped its child, but remained UNKNOWN because the KFD sysfs entry had not yet
+disappeared at the immediate cleanup check. The [original failure](qualification-failures/FAIL-1.json)
+and [sealed UNKNOWN capture](qualification-failures/observation-1.json) remain
+separate from any later capture. The writer now allows up to three seconds for
+that captured child's KFD entry to disappear, bounded by STOP and the original
+allocator deadline. Persistent entries still fail strict cleanup validation.
+The reader, carrier and grading rules are unchanged.

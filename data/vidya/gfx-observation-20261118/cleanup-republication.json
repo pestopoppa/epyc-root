@@ -1,0 +1,17 @@
+{
+  "schema": "epyc.vidya.gfx_cleanup_republication.v1",
+  "at": "2026-11-18T22:27:49.339577+00:00",
+  "row": "vb-ak-r18-gfx-observation-20261118",
+  "source_manifest_sha256": "ee22008823dfa16280e607c353ec7ddb7ece205350f064d02337fecc333aecb0",
+  "launcher_sha256": "d07c8632e99bed0d36d6b24c486ea8d378bf91e530cfb0eed825a0da013242a1",
+  "publication_exit": 0,
+  "publication_disposition": "GPU busy: smoke queued; it runs in the next GPU gap; your row becomes ready on PASS",
+  "controls": {
+    "delayed_kfd_release": "PASS (mock clock)",
+    "persistent_kfd_release_and_stop": "PASS (mock clock)",
+    "launcher_syntax": "PASS",
+    "launcher_seals": 10
+  },
+  "native_smoke": "PENDING",
+  "official_acceptance": "PENDING"
+}
