@@ -25,3 +25,7 @@ GitNexus had no index; static callsite review covered runner/finalizer/adapter a
 ## 00:29Z — Implement source-bound lifecycle capture, publish its native successor, and file the full frontdoor input slice.
 
 Commit retry for the same completed boundary: preserve original nanosecond preparation-pin bytes in a SHA-256/base64 envelope, leaving the published packet unchanged. Explicitly acknowledge the receipt-classifier false positive: FILED records pass rc=0, but its quoted stop rule contains failed. The two task ticks and detailed evidence above were applied by the first wrapup.py attempt before its commit hook refused the raw timestamp. No native verdict or acceptance scope changed.
+
+## 00:37Z — Prepare and publish isolated worker-general CPU/MTP native capture; preserve filed frontdoor mismatch.
+
+Advanced VB-V9-8-QUALITY-PACK-WORKER-PREP: pinned the required worker-general model/template and immutable v10/C13 runtime identities; prepared independent worker requests and published handoff-vidya-quality-pack-worker-general-20261118 after native publisher smoke PASS. The isolated MTP recipe differs from deployed worker_general (no declared spec_type). The original frontdoor native result remains pass for capture custody, with JSON mismatch; broad seven-profile parity and promotion authority remain unestablished. See data/vidya/quality-pack-worker-general-20261118/receipt.json.
