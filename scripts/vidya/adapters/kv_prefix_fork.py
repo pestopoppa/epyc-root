@@ -50,12 +50,15 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from adapters._argv_scope import flag as _flag, scope_from_argv  # noqa: E402
 from claim_tuple import ClaimTuple, ProjectionError, register, to_frames  # noqa: E402
+from producers import kpf17_map_revalidation as kpf17_maps  # noqa: E402
 
 SCHEMA = "epyc.kpf.run.v1"
 SIDECAR_NAME = "belief_measurements.jsonl"
 ADAPTER_ID = "vidya.adapters.kv_prefix_fork/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "kv-prefix-fork-measurement"
+# Reviewed prospective writer for the KPF-17 map-revalidation capture.
+_KPF17_MAP_WRITER_SHA256 = "08b4b8d48ec1bd5477ca596345f25a0134333351e1cf487e4bfacd0403fde9de"
 ARMS = frozenset({"fork_off", "fork_on", "fork_on_dflash2_off", "champion"})
 KNOB_FAMILY = "slot_serving"
 # Per-arm knob the arm changes against its comparison arm (DESIGN 12.2 `varied`).
@@ -333,6 +336,13 @@ def _validate_kpf26_api(row: dict) -> list[str]:
 
 
 def validate_row(row: Any) -> list[str]:
+    if isinstance(row, dict) and row.get("schema") == kpf17_maps.CAPTURE:
+        try:
+            if row.get("record_sha256") == kpf17_maps.digest({k: v for k, v in row.items() if k != "record_sha256"}):
+                return []
+        except (TypeError, ValueError):
+            pass
+        return ["KPF-17 map-revalidation sidecar digest does not re-derive"]
     if isinstance(row, dict) and row.get("schema") == "epyc.kpf30.phase_observation.v1":
         return _validate_kpf30_phase(row)
     if isinstance(row, dict) and row.get("schema") == "epyc.kpf26.api-observation.v1":
@@ -569,6 +579,26 @@ def project(native: Any) -> ClaimTuple:
     if problems:
         raise ProjectionError("KPF row is not a runner-authored record: " + "; ".join(problems))
     sidecar = Path(native.get("sidecar_path") or ".")
+    if row["schema"] == kpf17_maps.CAPTURE:
+        try:
+            context_bytes = (sidecar.parent / "attempt.json").read_bytes()
+            if (kpf17_maps.sha(context_bytes) != row["context_sha256"]
+                    or json.loads(context_bytes)["producer_sha256"] != _KPF17_MAP_WRITER_SHA256):
+                raise ValueError("attempt context does not bind the reviewed writer")
+            capture = kpf17_maps.check_sidecar(row, sidecar)
+        except (OSError, TypeError, KeyError, ValueError) as exc:
+            raise ProjectionError(f"KPF-17 map-revalidation refused: {exc}") from exc
+        return ClaimTuple(
+            measurement_id=f"kpf17-map-{row['record_sha256']}",
+            metric="kpf17_map_revalidation_fixture_refused", value=1, unit="fixture",
+            category="CANDIDATE", source_kind=SOURCE_KIND,
+            date=kpf17_maps.ended_utc(capture["ended_epoch"]),
+            claim=("KPF-17 custody.validate_maps accepted the five-file private baseline and refused "
+                   f"the second call after the synchronized in-place overwrite. {kpf17_maps.LIMIT}"),
+            attestation_locator=f"{sidecar.parent / 'native.json'}#sha256={row['native_sha256']}",
+            extra={"native_schema": capture["schema"], "row_id": capture["row_id"],
+                   "attempt_nonce": capture["attempt_nonce"], "limits": kpf17_maps.LIMIT},
+        )
     present = _rows_present(row, sidecar)
     if row["schema"] == "epyc.kpf30.phase_observation.v1":
         return _project_kpf30_phase(row, sidecar, present)
