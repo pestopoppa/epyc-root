@@ -1,31 +1,38 @@
 {
   "by_type": {
-    "docs": 444,
+    "docs": 456,
     "handoff-active": 33,
     "handoff-blocked": 1,
     "handoff-completed": 375,
     "progress": 1406,
-    "research": 327
+    "research": 331
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-09T21:39:25Z",
   "last_touch": {
     "advanced": {
-      "added": 2,
-      "changed": 0,
+      "added": 16,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-11-17T22:49:28Z",
+    "at": "2026-11-18T14:46:09Z",
     "scope_paths": [
-      "research/deep-dives/blackfury-tensorfold-20261117.md",
-      "research/deep-dives/intake-digests/2026-11-17-ids-2674-2693.md"
+      "docs/guides/agent-workflows/measurement-sufficiency.md",
+      "docs/publication/public-results-adjudication-20261110.md",
+      "docs/reference/inf86-slot-checkpoint-validation-20261117.md",
+      "docs/reports/kernel-promotion/ch17-c13-20261118/NATIVE-FINDINGS.md",
+      "docs/research",
+      "research/deep-dives/a3b-cpu-d-depth-inversion-20261118.md",
+      "research/deep-dives/c15-epilogue-q8-feasibility-20261118.md",
+      "research/deep-dives/c15-mmvq-fused-q8-feasibility-20261118.md",
+      "research/deep-dives/inf48-gateup-probe-20261118.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-17T22:49:28Z",
+  "scan_time": "2026-11-18T14:46:09Z",
   "schema_version": 1,
-  "source_set_hash": "4cbd2ee7aab348c80b14a57f6aa9deb84600b3dfa633f5f87045c1bedafd2060",
+  "source_set_hash": "c32a8e5426b54859d3ab545d7db4f9b9d8a6fa59958f1471ab362550d06b82cc",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -3580,6 +3587,14 @@
       "type": "research"
     },
     {
+      "content_hash": "b7d9fcd8b87eb687e8f1ee32567ae75790001b0131ffb1c5e210f50e00d8c144",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "research/deep-dives/a3b-cpu-d-depth-inversion-20261118.md",
+      "size": 7581,
+      "title": "A3B CPU 48t MTP depth inversion (D=2 vs D=4, 4k vs 32k) \u2014 offline analysis, 2026-11-18",
+      "type": "research"
+    },
+    {
       "content_hash": "c40d99e6140e7471c3cd267035a77f30908e83e119f1ba31a8b9b4c2b67b9c31",
       "modified": "2026-11-09T21:31:46Z",
       "path": "research/deep-dives/agent-architectures-paperclip-agentrxiv.md",
@@ -3689,6 +3704,22 @@
       "path": "research/deep-dives/c10-intake-20261109/xpress.md",
       "size": 17859,
       "title": "XPress (arXiv 2608.02438v2) Stage-2 dive, intake-2665",
+      "type": "research"
+    },
+    {
+      "content_hash": "265ab8fa54ebf4edad04694dc2ffdc9f07e8be31e6ab5d90e0d6c0c8a6feb28c",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "research/deep-dives/c15-epilogue-q8-feasibility-20261118.md",
+      "size": 6852,
+      "title": "C15-EPI-Q8 feasibility: producers write q8_1 in their epilogue (2026-11-18)",
+      "type": "research"
+    },
+    {
+      "content_hash": "71808651100fce0b2a6244d38222d1d2c2a23905e4969461ec9207285e3dec08",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "research/deep-dives/c15-mmvq-fused-q8-feasibility-20261118.md",
+      "size": 3326,
+      "title": "C15-MMVQ-FUSED-Q8 feasibility: fold activation quantize into MMVQ (2026-11-18)",
       "type": "research"
     },
     {
@@ -4073,6 +4104,14 @@
       "path": "research/deep-dives/hume-tada-text-acoustic-alignment.md",
       "size": 25673,
       "title": "Hume AI TADA \u2014 Text-Acoustic Dual Alignment Deep-Dive",
+      "type": "research"
+    },
+    {
+      "content_hash": "d75c05aa3a348992c02595f3ebad951d52e30594076fe8d48e031307316a5131",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "research/deep-dives/inf48-gateup-probe-20261118.md",
+      "size": 3114,
+      "title": "INF48-GATEUP-PROBE: gate/up launch and activation-quantize share of 27B decode (2026-11-18)",
       "type": "research"
     },
     {
@@ -18332,10 +18371,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "bf913e6aa239ffd9594cfbc1c5c9d4efa8ac9fe03c64473e87d45e308f6bd7ef",
-      "modified": "2026-11-09T21:31:45Z",
+      "content_hash": "f3592d1dd34ec035b47616620dda2b958284d9d3e9534e12d48fac14556f7f37",
+      "modified": "2026-11-18T14:41:50Z",
       "path": "docs/guides/agent-workflows/measurement-sufficiency.md",
-      "size": 4663,
+      "size": 5056,
       "title": "Measurement sufficiency and early stopping",
       "type": "docs"
     },
@@ -18449,6 +18488,14 @@
       "path": "docs/publication/canonical-cpu-benchmarking-methodology-draft.md",
       "size": 11554,
       "title": "How We Collapsed Our Own CPU Wins: Canonical Benchmarking On EPYC",
+      "type": "docs"
+    },
+    {
+      "content_hash": "c9d07bb1d9605bff4cf39ffd3fde3b20606c9fecf280e23357784afc15fc537e",
+      "modified": "2026-11-18T14:41:50Z",
+      "path": "docs/publication/public-results-adjudication-20261110.md",
+      "size": 10076,
+      "title": "Public Results Adjudication - 18 Retained Protocol-Tag Rows (INF-85 W3)",
       "type": "docs"
     },
     {
@@ -18953,6 +19000,14 @@
       "path": "docs/reference/host-supervision-activation-receipts.md",
       "size": 2688,
       "title": "Prospective host supervision activation receipts",
+      "type": "docs"
+    },
+    {
+      "content_hash": "827e8fe75056a0d982865a505929259c2b65e5a1d0c76a2a5f143c535b04cb9e",
+      "modified": "2026-11-18T14:41:50Z",
+      "path": "docs/reference/inf86-slot-checkpoint-validation-20261117.md",
+      "size": 4680,
+      "title": "INF-86 slot checkpoint validation on C13",
       "type": "docs"
     },
     {
@@ -19868,6 +19923,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "5dbd36016fcaf6262bfa7959135251361093bb0480606f0de27052d01e9b1053",
+      "modified": "2026-11-18T14:41:50Z",
+      "path": "docs/reports/kernel-promotion/ch17-c13-20261118/NATIVE-FINDINGS.md",
+      "size": 1683,
+      "title": "CH-17 frontdoor CPU diagnostic",
+      "type": "docs"
+    },
+    {
       "content_hash": "f865ba5cac2963441dfb4be225049ad82f07191f0581235b370360ee77d067e1",
       "modified": "2026-11-09T21:31:45Z",
       "path": "docs/reports/kv-cache/file-result-path-20261104.md",
@@ -20412,6 +20475,78 @@
       "type": "docs"
     },
     {
+      "content_hash": "1e3c23b3dcef32e6a8e17e3e6f675ac869e948ca8c54dcd9753b2e9597da4398",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/cf3c-active-and-task-results-20261118.md",
+      "size": 9455,
+      "title": "CF-3c active-evidence and task-level continuation results",
+      "type": "docs"
+    },
+    {
+      "content_hash": "658158cbeefe6944752536e0372328e60862203e41d89eafc9d124ae3d7797a5",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/cf3c-pilot-results-20261118.md",
+      "size": 6435,
+      "title": "CF-3c paired continuation pilot results",
+      "type": "docs"
+    },
+    {
+      "content_hash": "04f525c5300ef0c254f8dbdd26c7f8de3e38232fa7924f7540167105a315ff1b",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-cmp-2-governance-results-20261118.md",
+      "size": 5405,
+      "title": "TOC-CMP-2 governance replay findings \u00b7 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "a84cbb9cb61cb48f011f37c5956928ca3beab367a99685a5370be7e133d63671",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-cmp-3-contract-results-20261118.md",
+      "size": 5173,
+      "title": "TOC-CMP-3 fixed-summary contract findings \u00b7 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "21357c699c375c840757c99ec9207cb690e5f1b1149d79d6b1c30e0ad6727c4a",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-cmp-3-live-results-20261118.md",
+      "size": 3971,
+      "title": "TOC-CMP-3 isolated REPL integration results \u00b7 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "0387aef870f615fcdc8efe1f0b301e0679841eeec6c149ec4395175ded02e4de",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-cmp-3-runtime-semantic-results-20261118.md",
+      "size": 11076,
+      "title": "CMP-3 runtime, final-request and isolated semantic screen results",
+      "type": "docs"
+    },
+    {
+      "content_hash": "f53dbc421b2374fcfc9abd22ebbc653d31d4202b4c6d8844517af856eccceacb",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-cmp-4-incomplete-pilot-20261118.md",
+      "size": 2131,
+      "title": "CMP-4 r3 incomplete pilot, 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "e86229824eaf889127880d62f67d3061106803cdb97a80e363ca8b23df1115f0",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-mp-4-results-20261118.md",
+      "size": 2617,
+      "title": "TOC-MP-4 exact-value recall screen, 2026-11-18",
+      "type": "docs"
+    },
+    {
+      "content_hash": "93f0b9aa452ae165c15765e2f0ad2e558b7df66d0a79a854760e91adbfe91b70",
+      "modified": "2026-11-18T14:41:51Z",
+      "path": "docs/research/toc-sp-5-corpus-gates-20261118.md",
+      "size": 5472,
+      "title": "TOC-SP-5 standing corpus gates \u2014 2026-11-18",
+      "type": "docs"
+    },
+    {
       "content_hash": "6f4ba0f2317e5feac3071f1e4f4a427f9882adcdd411b7dbb05995757fd74afa",
       "modified": "2026-11-09T21:31:46Z",
       "path": "docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md",
@@ -20716,7 +20851,7 @@
       "type": "handoff-active"
     }
   ],
-  "total_new": 2586,
+  "total_new": 2602,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
