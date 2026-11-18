@@ -1,0 +1,87 @@
+{
+  "archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-dspark-dflash-20261118",
+  "completed_box_draft": "VB-V9-8-QUALITY-PACK-DFLASH-PREP \u2014 pinned Qwen3.8-27B-Q8_0 and matching Q8_0 DFlash2 sidecar, v10/C13 CPU DSOs and build manifests, registered template identity, and four original K35-shaped cap-0/7 request pairs. Published the isolated single-slot 24-CPU source row after original native v10 small-model smoke PASS on CPUs 116\u2013119 at 2026-11-18T01:41:34Z. Full exact-image CPU DFlash2 capture remains in the inference box. [no-belief: source preparation and publisher readiness]",
+  "controls": [
+    "/usr/bin/sha256sum --check --status SOURCE.sha256 in scratch",
+    "python3 -B capture.py --preflight in scratch",
+    "bash -n row-launch.sh in scratch",
+    "python3 -B inline controls: four cap pairs, global canonical-request uniqueness against other source packets, exact request bytes, existing comparator pair admission, original v10 smoke replay, valid and invalid draft-counter checks, cap-free-body tamper refusal",
+    "git diff --check in lane"
+  ],
+  "follow_up": "At scheduler terminal, verify original full result and sixteen responses plus cap telemetry, CPU custody, separate runtime PIDs and v10-bank-before-C13 ordering. File the finite input-capture disposition. Existing full capture and broad pack remain distinct.",
+  "full_attempt": {
+    "archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-dspark-dflash-20261118/first-full-attempt",
+    "native_server_launched": false,
+    "rc": 1,
+    "reason": "byte-identical scratch witness inode changed at full sandbox staging",
+    "regions": "72-95",
+    "status": "prelaunch-refusal",
+    "time": "2026-11-18T01:42:10Z"
+  },
+  "full_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/out/RESULT.json",
+  "gitnexus": "status: Repository not indexed; impact: No indexed repositories found. Packet adds independent files without editing active producers.",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/row-launch.sh",
+  "metadata_correction": {
+    "isolated_successor": "handoff-vidya-quality-pack-dspark-dflash-20261118-r2",
+    "reason": "copying the initial base spec inherited unrelated architect-general supersedes",
+    "terminal_manifest": "original metadata conserved; rowflow refused terminal ID reuse",
+    "unrelated_row": "queued-only, with no ready/grant/withdrawn record and no publisher withdrawal"
+  },
+  "original_pass": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-dspark-dflash-20261118/PASS.json",
+  "original_smoke_result": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-dspark-dflash-20261118/native-attempts/attempt-akdj0sum/native-result.json",
+  "published_stdout": "WARN task_lint vidya-belief-substrate-program.md:146: untestable prose prerequisite: 'after sixteen captures and cleanup; stop-on-futility on STOP, deadline or first custody/startup/response/telemetry/affin'\nDECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run\nSMOKE PASS handoff-vidya-quality-pack-dspark-dflash-20261118 on 116-119: first progress: smoke_predicate exited 0; rc=0 time=2026-11-18T01:41:34Z reason=complete\nPUBLISHED handoff-vidya-quality-pack-dspark-dflash-20261118 lane=cpu regions=any-cpu-quarter window_s=2580 min_window_s=2250 book_s=2250 resumable=false gib=64 ports=[19480] result=/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/out/RESULT.json (json) -> /mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-dspark-dflash-20261118.json\n",
+  "ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-dspark-dflash-20261118.json",
+  "row_id": "handoff-vidya-quality-pack-dspark-dflash-20261118",
+  "scheduler": {
+    "booked_window_s": 2250,
+    "estimate_s": 1700,
+    "minimum_window_s": 2250,
+    "port": 19480,
+    "published_window_s": 2580,
+    "ram_gib": 64,
+    "regions": "any-cpu-quarter",
+    "requested_window_s": 2700
+  },
+  "schema": "epyc.quality_pack_dflash2_preparation.v1",
+  "scope": "CPU source preparation and v10 small-model native smoke. Full exact-build CPU DFlash2 capture and seven-profile pack comparison/canary remain open. Historical 0731 DSpark remains retired. No changes to production v10.",
+  "smoke": {
+    "cleanup": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 169565,
+      "port_closed": true
+    },
+    "cpus": [
+      116,
+      117,
+      118,
+      119
+    ],
+    "rc": 0,
+    "request_sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "response_sha256": "5eb473b63eaca1a0ad187018624e10849547028b3d2d28962c50a7bc03634676",
+    "status": "PASS",
+    "time": "2026-11-18T01:41:34Z",
+    "tokens": [
+      220,
+      19,
+      13,
+      576,
+      1156,
+      3040,
+      6785,
+      25780
+    ]
+  },
+  "source_changes": [
+    "capture.py",
+    "pair.py",
+    "make_plan.py",
+    "smoke_predicate.py",
+    "row-launch.sh",
+    "row.spec.json"
+  ],
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-20261118/row.spec.json",
+  "status": "superseded-after-full-prelaunch-refusal",
+  "terminal_event": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-dspark-dflash-20261118.ended"
+}
