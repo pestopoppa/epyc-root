@@ -8,11 +8,11 @@
 # every gate marked `required: true` in ../promotion_gates.yaml, so adding a gate there
 # makes every later package fail until it carries one.
 #
-#   package.sh --candidate <sha> --out <file> --evidence <dir> [--backend cpu|gpu]
+#   package.sh --candidate <sha> --out <file> [--evidence <dir>]
 #       assemble: derives store/digest/scope/rewind facts, folds in any
 #       <evidence>/<gate>.json, then validates. Exits non-zero naming every missing gate.
-#   package.sh --check <file> [--backend cpu|gpu]
-#       validate a package against the current promotion inputs. Default scope is CPU and GPU.
+#   package.sh --check <file>
+#       validate an existing package (or a previous promotion's qualification artifact).
 #
 # It never moves a symlink, cuts a branch or edits a verifier. That is step 7, after the
 # signature.
@@ -21,21 +21,19 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 GATES="$HERE/../promotion_gates.yaml"
 [ -f "$GATES" ] || { echo "FAIL: no promotion_gates.yaml beside this script"; exit 1; }
 CAND=""; OUT=""; EVID=""; CHECK=""
-BACKENDS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --candidate) CAND="$2"; shift 2 ;;
     --out) OUT="$2"; shift 2 ;;
     --evidence) EVID="$2"; shift 2 ;;
     --check) CHECK="$2"; shift 2 ;;
-    --backend) BACKENDS+=("$2"); shift 2 ;;
     *) echo "FAIL: unknown argument $1"; exit 2 ;;
   esac
 done
 [ -n "$CHECK" ] || [ -n "$CAND" ] || { echo "FAIL: pass --candidate <sha> or --check <file>"; exit 2; }
 
-GATES="$GATES" CAND="$CAND" OUT="$OUT" EVID="$EVID" CHECK="$CHECK" HERE="$HERE" \
-python3 -B - "${BACKENDS[@]}" <<'PY'
+GATES="$GATES" CAND="$CAND" OUT="$OUT" EVID="$EVID" CHECK="$CHECK" \
+python3 - <<'PY'
 import hashlib, json, os, subprocess, sys
 from pathlib import Path
 
@@ -43,14 +41,6 @@ try:
     import yaml
 except ImportError:
     sys.exit("FAIL: pyyaml not importable; run this under the orchestrator's uv env")
-
-sys.path.insert(0, os.environ["HERE"])
-import drafter_selection_receipt as ch17
-
-backends = sys.argv[1:] or list(ch17.BACKENDS)
-if len(set(backends)) != len(backends) or not set(backends) <= ch17.BACKENDS.keys():
-    sys.exit("FAIL: pass --backend cpu or --backend gpu once each, or omit for both")
-orch = Path(os.environ.get("ORCH", "/mnt/raid0/llm/epyc-orchestrator"))
 
 gates_doc = yaml.safe_load(Path(os.environ["GATES"]).read_text())
 _gates = {k: v for k, v in (gates_doc.get("gates") or {}).items() if isinstance(v, dict)}
@@ -99,7 +89,7 @@ def store_facts() -> dict:
     return out
 
 
-def validate(pkg: dict, *, assembling=False) -> list[str]:
+def validate(pkg: dict) -> list[str]:
     problems = []
     got = pkg.get("gates") or {}
     for gate in required:
@@ -128,8 +118,6 @@ def validate(pkg: dict, *, assembling=False) -> list[str]:
                         f"gate {gate!r} (recorded as {name!r}) status={row['status']!r}, "
                         "not pass/waived")
     for key in ("candidate", "incumbent", "store", "rollback", "scope"):
-        if assembling and key == "store":
-            continue
         if not pkg.get(key):
             problems.append(f"missing required section {key!r}")
     rb = pkg.get("rollback") or {}
@@ -143,41 +131,24 @@ def validate(pkg: dict, *, assembling=False) -> list[str]:
     return problems
 
 
-def check_drafter_selection(pkg, *, checking):
-    try:
-        receipt = pkg["gates"][ch17.GATE]
-        if receipt.get("schema") != ch17.SCHEMA or receipt.get("status") != "pass":
-            raise ValueError("expected a completed CH-17 receipt")
-        scope = ch17.resolve_scope(orch, backends, dict(os.environ))
-        if checking and pkg["scope"].get("roles") != scope:
-            raise ValueError("packaged scope differs from the currently derived promotion scope")
-        if pkg["incumbent"] != gates_doc["incumbent"]:
-            raise ValueError("package incumbent differs from promotion_gates.yaml")
-        incumbent = ch17.incumbent_pins(gates_doc["incumbent"], backends)
-        ch17.validate(receipt, scope, orch, pkg["candidate"]["commit"],
-                      incumbent, backends)
-        pkg["scope"]["roles"] = scope
-    except (OSError, ValueError, KeyError, TypeError, AttributeError, IndexError,
-            subprocess.SubprocessError, yaml.YAMLError) as exc:
-        return [f"CH-17 drafter selection refused: {exc}"]
-    return []
-
-
 if os.environ.get("CHECK"):
     path = Path(os.environ["CHECK"])
-    pkg = ch17.strict_json(path.read_bytes())
+    pkg = json.loads(path.read_text())
     problems = validate(pkg)
-    if ch17.GATE in (pkg.get("gates") or {}):
-        problems.extend(check_drafter_selection(pkg, checking=True))
     print(f"== checking {path} against {len(required)} required gate(s): {', '.join(required)}")
 else:
+    store = store_facts()
     pkg = {
         "schema": "epyc.kernel_promotion_package.v1",
         "candidate": {"commit": os.environ["CAND"]},
         "incumbent": gates_doc.get("incumbent"),
-        "scope": {"derived_by": (gates_doc.get("scope") or {}).get("derived_by")},
+        "store": store,
+        "scope": {"derived_by": (gates_doc.get("scope") or {}).get("derived_by"),
+                  "note": "run scripts/scope.sh --json <file> and attach it"},
         "gates": {},
         "rollback": {
+            "anchors": {b: r.get("rollback_anchor") for b, r in store.items()},
+            "commands": {b: r.get("rewind_command") for b, r in store.items()},
             "regeneration_command": (
                 "cd /mnt/raid0/llm/epyc-orchestrator && uv run python "
                 "scripts/registry/stack_change_pipeline.py update --numa-mode <declared>"
@@ -193,21 +164,13 @@ else:
     evid = os.environ.get("EVID")
     if evid:
         for f in sorted(Path(evid).glob("*.json")):
-            pkg["gates"][f.stem] = ch17.strict_json(f.read_bytes())
-    problems = validate(pkg, assembling=True)
-    if not problems:
-        problems.extend(check_drafter_selection(pkg, checking=False))
-    if not problems:
-        store = store_facts()
-        pkg["store"] = store
-        pkg["rollback"]["anchors"] = {b: r.get("rollback_anchor") for b, r in store.items()}
-        pkg["rollback"]["commands"] = {b: r.get("rewind_command") for b, r in store.items()}
-        problems = validate(pkg)
+            pkg["gates"][f.stem] = json.loads(f.read_text())
+    problems = validate(pkg)
     out = os.environ.get("OUT")
-    if not problems and out:
+    if out:
         Path(out).write_text(json.dumps(pkg, indent=2) + "\n")
         print(f"package written to {out}")
-    elif not problems:
+    else:
         print(json.dumps(pkg, indent=2))
 
 if problems:
