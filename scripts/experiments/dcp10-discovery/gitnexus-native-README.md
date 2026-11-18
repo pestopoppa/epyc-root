@@ -69,3 +69,44 @@ failure is `error` and never supplies edges. Mount and source identity failures
 stop the caller. The helper rechecks base, index and source identities after
 query success or failure. Subsequent comparison, actual rendered capture,
 trusted score admission and the existing verifier remain separate prerequisites.
+
+## Private index producer
+
+`gitnexus_build.prepare(assets)` seals a new request in an empty owned 0700
+asset directory and returns its hash. It binds the original three base/query
+identities, builder/capture sources, pinned runtime and a full inventory of the
+installed GitNexus package including transitive modules and native parsers.
+External package symlinks and special files are refused. This preparation does
+not build an index. An admitted row caller then invokes
+`build_private_index(assets, request_sha, task_id, remaining)` for each original
+task, with its allocator STOP/deadline callback. Never call the builder outside
+an admitted row or its publisher smoke.
+
+The builder uses the pinned ingestion pipeline and database writer directly.
+It bypasses stock analyze's registry, `.gitignore` and AI-file writes. The
+original base, installed package, Node and worker are mounted read-only in the
+pinned image with no network; only the new task output directory and bounded
+scratch/home tmpfs mounts are writable. It inherits assigned CPU affinity and
+caps the build at four CPUs, 8 GiB and 256 PIDs. A named container is removed on
+success, error, timeout and termination; source and all original bases are
+rechecked before any receipt is returned. A failed attempt cannot be reused.
+
+The worker requires exact parsed-graph/database node and relation counts, zero
+embeddings, an explicit checkpoint and close. Any stderr diagnostic, nonzero
+exit or leftover CSV/WAL/lock/other sidecar refuses admission. It does not delete
+sidecars to make admission pass. Successful output is placed directly under
+`assets/indexes/<language>`; matching manifests and receipts under
+`assets/index-builds/` are accepted by the existing capture reader. The
+manifest records the prospective request hash, exact launch, source/base pins,
+return code and output stream hashes. It contains no copied source or binary.
+
+Offline controls exercise this orchestration with synthetic database markers;
+they do not prove native database compatibility or runtime resource sufficiency.
+The original shared RAID ancestry still fails the existing custody policy.
+A row must arrange admitted private mount ancestry before qualification; do not
+weaken that check. The installed adapter attempts VECTOR extension loading,
+which may emit a diagnostic in the offline image and fail admission. Native
+qualification must resolve that explicitly rather than suppressing diagnostics.
+No private index has been built by these controls, and no graph score or
+retrieval-quality result is claimed. The existing
+`VB-CONTEXTBENCH-DISCOVERY-WIRE` source covers this producer.

@@ -1,0 +1,34 @@
+{
+  "schema": "epyc.dcp10.gitnexus-builder-controls.v1",
+  "status": "offline_code_controls_passed",
+  "base_commit": "7906dde4f8e112edd5119454970135d6d63fd8e0",
+  "files_sha256": {
+    "scripts/experiments/dcp10-discovery/gitnexus_build.py": "9752ebb63b256cc15342b993510c13f629909413753694a955c8eaa7f6bba0e8",
+    "scripts/experiments/dcp10-discovery/gitnexus_build_worker.mjs": "d7de1247f9f327106c56a3469df9b0482f23252f0e105bc9ca775f11a866ae7f",
+    "scripts/experiments/dcp10-discovery/test_gitnexus_build.py": "443630e5db549ffaaa2fdb2f1bd269f10016082ccb499d08f0829cff7a2e19b6",
+    "scripts/experiments/dcp10-discovery/gitnexus-native-README.md": "f13fbad67c61fddafd09c9ec780311e4bc8a57aec98fa4641a9c896e36180633"
+  },
+  "validation": {
+    "command": "python3 -m unittest discover -s scripts/experiments/dcp10-discovery -p 'test_gitnexus*.py' -q",
+    "passed": 29,
+    "new_builder_tests": 8,
+    "ruff": "passed",
+    "native_index_builds": 0,
+    "native_graph_queries": 0
+  },
+  "controls": [
+    "prospective request, original task/base/query and complete installed-source inventory",
+    "read-only source/base/runtime mounts, isolated private output, bounded tmpfs and no network",
+    "receipt consumed by existing native index reader without schema changes",
+    "source drift before launch and after timeout is refused",
+    "failed native process, unexpected diagnostics and WAL sidecars cannot admit an index",
+    "named container teardown and SIGTERM handler restoration; no retry or failed-output deletion"
+  ],
+  "limitations": [
+    "No native build or runtime qualification performed.",
+    "Original shared RAID mount ancestry still refuses custody; caller must supply safe private ancestry.",
+    "Pinned database adapter attempts VECTOR extension loading; any emitted diagnostic fails this builder.",
+    "Graph count equality does not establish semantic correctness of stored edges.",
+    "Native capture/scoring remains gated on admitted official ColGREP seeds. Existing VB-CONTEXTBENCH-DISCOVERY-WIRE and score-custody/source-admission limitations persist."
+  ]
+}

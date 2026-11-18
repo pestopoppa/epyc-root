@@ -1,0 +1,164 @@
+"""Prospectively seal and build private DCP-10 indexes under allocator admission.
+
+No build is run by importing this module or preparing its request. The caller
+must provide allocator STOP/deadline enforcement via remaining(cap).
+"""
+from __future__ import annotations
+
+import os
+import shutil
+import signal
+import stat
+from pathlib import Path
+from uuid import uuid4
+
+import gitnexus_native as native
+
+SCHEMA = 'epyc.dcp10.gitnexus-build-request.v1'
+WORKER = Path(__file__).with_name('gitnexus_build_worker.mjs').resolve()
+TIMEOUT = 1800
+
+
+def inventory(root):
+    """Bind all installed transitive modules/native parsers, including internal links."""
+    entries = {}
+    for path in sorted(root.rglob('*')):
+        name = path.relative_to(root).as_posix()
+        if path.is_symlink():
+            if not path.resolve(strict=True).is_relative_to(root):
+                raise ValueError('package link escapes the mounted source')
+            entries[name] = {'link': os.readlink(path)}
+        elif path.is_file():
+            entries[name] = {'sha256': native.common.hash_file(path)}
+        elif not path.is_dir():
+            raise ValueError('package contains a special file')
+    if not entries:
+        raise ValueError('empty installed source')
+    return entries
+
+
+def producer_identity():
+    return {**native.producer_identity(), Path(__file__).name: native.common.hash_file(Path(__file__)),
+            WORKER.name: native.common.hash_file(WORKER)}
+
+
+def write_new(path, value):
+    with path.open('x') as stream:
+        stream.write(native.pilot.encode(value) + '\n')
+    return native.common.hash_file(path)
+
+
+def task_binding(task):
+    root = native.WORK / 'bases' / task['language']
+    binding = {'root': str(root), 'base_commit': task['base_commit'],
+               'base_tree': native.pilot.git(root, 'rev-parse', 'HEAD^{tree}'),
+               'query_sha256': native.sha256(task['query'].encode()).hexdigest()}
+    native.graph.bind_task(native.WORK, task, binding)
+    return binding
+
+
+def prepare(assets):
+    """Write a fresh prospective request; caller retains its returned SHA-256."""
+    native.check_custody(assets)
+    if assets.stat().st_mode & 0o077 or list(assets.iterdir()):
+        raise ValueError('build assets must be empty and private')
+    native.seal_file(native.NODE, native.NODE_SHA)
+    request = {'schema': SCHEMA, 'producer_sha256': producer_identity(),
+               'gitnexus_source': native.writer_identity(), 'runtime': native.runtime_identity(),
+               'source_inventory': inventory(native.graph.SOURCE_ROOT),
+               'tasks': {key: task_binding(task) for key, task in native.original_tasks().items()}}
+    return write_new(assets / 'build-request.json', request)
+
+
+def launch_config(docker, name, output, base, timeout):
+    mounts = [(native.graph.SOURCE_ROOT, str(native.graph.SOURCE_ROOT)),
+              (Path(base['root']), base['root']), (native.NODE, '/dcp10/node'), (WORKER, '/dcp10/worker.mjs')]
+    command = native.launch_config(docker, name, mounts, timeout)
+    for old, new in (('--cpus=1', '--cpus=4'), ('--memory=2g', '--memory=8g'),
+                     ('--memory-swap=2g', '--memory-swap=8g'), ('--pids-limit=64', '--pids-limit=256')):
+        command[command.index(old)] = new
+    if any(char in str(output) for char in ',\n\r"'):
+        raise native.IsolationError('unsupported build output path')
+    command[-6:-6] = ['--mount', f'type=bind,src={output},dst=/dcp10/output',
+                      '--tmpfs', '/tmp:rw,nosuid,nodev,size=1g',
+                      '--tmpfs', '/dcp10/empty-home:rw,nosuid,nodev,size=64m']
+    return command
+
+
+def build_private_index(assets, request_sha, task_id, remaining):
+    """One admitted build. No retries, fallback, source copying or shared writes."""
+    remaining(TIMEOUT)
+    native.check_custody(assets / 'build-request.json')
+    request = native.read_record(assets / 'build-request.json', request_sha, max_bytes=32 * 1024**2)
+    tasks = native.original_tasks()
+    if task_id not in tasks or set(request.get('tasks', {})) != set(tasks):
+        raise ValueError('build task outside original cohort')
+
+    def snapshot():
+        writer = native.writer_identity()
+        expected = {'schema': SCHEMA, 'producer_sha256': producer_identity(), 'gitnexus_source': writer,
+                    'runtime': native.runtime_identity(), 'source_inventory': inventory(native.graph.SOURCE_ROOT),
+                    'tasks': {key: task_binding(task) for key, task in tasks.items()}}
+        if request != expected:
+            raise ValueError('prospective build source/base/request drift')
+        for path in (native.graph.SOURCE_ROOT, native.NODE, WORKER):
+            native.check_custody(path)
+        native.seal_file(native.NODE, native.NODE_SHA)
+        return writer
+
+    writer = snapshot()
+    language = tasks[task_id]['language']
+    output = assets / f'work-{language}'
+    output.mkdir(mode=0o700)  # existing/failed attempts cannot be overwritten
+    native.check_custody(output)
+    base = request['tasks'][task_id]
+    name = f'dcp10-gitnexus-build-{uuid4().hex}'
+    docker = shutil.which('docker')
+    if docker is None or os.geteuid() == 0:
+        raise native.IsolationError('build requires Docker and a non-root caller')
+    timeout = remaining(TIMEOUT)
+    if type(timeout) not in (int, float) or not 0.001 <= timeout <= TIMEOUT:
+        raise ValueError('invalid build time budget')
+    env = {'PATH': '/usr/bin:/bin', 'HOME': '/nonexistent', 'LANG': 'C.UTF-8',
+           'DOCKER_HOST': 'unix:///var/run/docker.sock', 'DOCKER_CONFIG': '/run/dcp10-no-docker-config'}
+    command = launch_config(docker, name, output, base, timeout)
+    previous = signal.signal(signal.SIGTERM, native._stop_on_term)
+    try:
+        result = native.read_bounded(command, env, native.pilot.encode(
+            {'source': str(native.graph.SOURCE_ROOT), 'base': base}).encode(), timeout + 5)
+        if result.returncode or result.stderr:
+            raise native.QueryError('private build failed or emitted diagnostics; no receipt admitted')
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+        try:
+            native.remove_container(docker, name, env)
+        finally:
+            snapshot()
+            remaining(TIMEOUT)
+    index = output / 'index'
+    if {path.name for path in output.iterdir()} != {'index'}:
+        raise ValueError('unexpected build output')
+    if {path.name for path in index.iterdir()} != {'lbug', 'meta.json'}:
+        raise ValueError('private build has uncheckpointed sidecars')
+    for path in index.iterdir():
+        native.check_custody(path)
+        if not stat.S_ISREG(path.lstat().st_mode):
+            raise ValueError('nonregular build output')
+    receipts = assets / 'index-builds'
+    receipts.mkdir(exist_ok=True, mode=0o700)
+    receipt = receipts / f'{language}.json'
+    manifest_sha = write_new(receipt.with_suffix('.manifest.json'), {
+        'schema': SCHEMA, 'request_sha256': request_sha, 'task_id': task_id,
+        'command': command, 'stdout_sha256': native.sha256(result.stdout).hexdigest(),
+        'stderr_sha256': native.sha256(result.stderr).hexdigest(), 'returncode': result.returncode,
+        'base': base, 'producer_sha256': request['producer_sha256']})
+    record = {'schema': native.INDEX_BUILD_SCHEMA, 'task_id': task_id, 'base': base,
+              'gitnexus_source': writer, 'build_manifest_sha256': manifest_sha,
+              'files': {path.name: native.common.hash_file(path) for path in index.iterdir()}}
+    receipt_sha = write_new(receipt, record)
+    native.index_identity(index, receipt, receipt_sha, task_id=task_id, base=base, writer=writer)
+    indexes = assets / 'indexes'
+    indexes.mkdir(exist_ok=True, mode=0o700)
+    index.rename(indexes / language)
+    output.rmdir()
+    return receipt_sha
