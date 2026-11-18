@@ -2,7 +2,8 @@
   "admission_task": "VB-V9-8-QUALITY-PACK-LOADER-HIP-BANK",
   "archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-loader-hip-bank-20261118",
   "archive_files_sha256": {
-    "README.md": "6f51eef5657cc961ec53e3c52792f362273f25b7747de4c879ed0a8e1cbf03ad",
+    "ARCHIVE.md": "7a86a75a9492b0e4b0a23ecde2e0ee8559522da250a28a3868631e733aa2aca9",
+    "README.md": "5a78fca71d6211321e7a59ef784d5279a5b49296d40ad2c6387944c26adb4393",
     "SOURCE.sha256": "8ba186faf5fe6ab6034bb569693dd80c1469c394931f14483e56a474cb5d8bb4",
     "base-plan.json.original-bytes.json": "23422b7b13888d4f7e19bd9f59e62c06a8ef9662aded767a24933c54b13c79dd",
     "capture.py": "4e0174491d2a6ee06d060e7a04e40142622c28acf3b83eb2e926051f934a00db",

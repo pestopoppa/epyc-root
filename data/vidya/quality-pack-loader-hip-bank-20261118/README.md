@@ -27,5 +27,3 @@ The scratch path and limits are pinned in `row.spec.json`. Exact archive
 files can be restored under their original names and verified with
 `sha256sum -c SOURCE.sha256`. The pregrant receipts pin model weights
 and runtimes without reading weight bytes during a grant.
-
-Restore base-plan.json, hip-plan.original.json and plan.json from their original-bytes envelopes by base64-decoding bytes_b64 and checking sha256. Numeric native stat/timing fields trigger the account-number heuristic; decoded original hashes and the published scratch packet are unchanged. receipt.json maps original names to envelopes. Restore these names before checking SOURCE.sha256; that manifest pins original source bytes.
