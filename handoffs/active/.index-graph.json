@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T04:52:22Z",
+  "generated_at": "2026-11-18T05:02:40Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2923,15 +2923,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 168,
-      "dispatchable": 37,
+      "closed": 169,
+      "dispatchable": 36,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-18",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 39,
+      "open": 38,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -3014,18 +3014,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [],
           "line": 3010,
           "name": "tool-output-compression",
-          "open": 4,
+          "open": 3,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3661,
+          "line": 3662,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"

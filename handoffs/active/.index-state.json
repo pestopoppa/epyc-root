@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 461
+      "open": 460
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 168,
+      "closed": 169,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 37,
+      "open": 36,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -603,20 +603,20 @@
         },
         {
           "blocked": 0,
-          "closed": 56,
+          "closed": 57,
           "gates": [],
           "guarded": 0,
           "line": 3010,
           "markers": 1,
           "name": "tool-output-compression",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3661,
+          "line": 3662,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
