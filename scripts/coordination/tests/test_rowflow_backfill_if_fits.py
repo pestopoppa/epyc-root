@@ -37,6 +37,13 @@ def ids(assigned):
 
 
 class BackfillIfFits(unittest.TestCase):
+    def setUp(self):   # D9 2026-11-18: these fixtures put T beyond DRAIN_RESERVE_HORIZON_S; pin it wide to test the cap/backfill itself
+        self._hz = rf.DRAIN_RESERVE_HORIZON_S
+        rf.DRAIN_RESERVE_HORIZON_S = 24 * 3600
+
+    def tearDown(self):
+        rf.DRAIN_RESERVE_HORIZON_S = self._hz
+
     def run_plan(self, rows, region_ends, grant_ends, drain_prev=None):
         return rf.plan(FREE, rows, 1000, now=NOW, grant_ends=grant_ends, drain_prev=drain_prev, region_ends=region_ends)
 

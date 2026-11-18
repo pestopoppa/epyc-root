@@ -2027,6 +2027,9 @@ def grant_regions(d, option):
 
 DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long drains the host (age boost; never preempts)
 DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
+# D9 2026-11-18 (KEEPER-DRAIN-HOLDS-GPU): a drain target whose earliest start lies beyond this horizon gets NO reservation
+# (nothing is drained for it); the DRAIN_AFTER_S age boost still ranks it first when its regions free.
+DRAIN_RESERVE_HORIZON_S = 7200
 URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
                           # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
 
@@ -2478,6 +2481,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.drain_held = []
     plan.drain_lowbusy = []
     plan.no_reserve = []
+    plan.drain_deferred = []   # [(row, S)]: earliest start S beyond DRAIN_RESERVE_HORIZON_S -> no reservation
     plan.rank_holds = []   # [(lower row, better row, T)]: the lower row was kept off the better row's regions
     plan.rank_skips = []   # [(lower row, better row, reason)]: a lower row took regions a better row wants (own block)
     plan.caps = []         # [(row id, regions, T)]: admitted by estimate ahead of T on these regions -> grant end capped at T
@@ -2498,6 +2502,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 prev = (drain_prev or {}).get(c["id"])
                 if S is not None and prev and now < float(prev) < S:   # T only moves earlier; an EXPIRED T never blocks
                     S = float(prev)
+                if S is not None and S - now > DRAIN_RESERVE_HORIZON_S:   # D9 2026-11-18: no reservation hours ahead
+                    plan.drain_deferred.append((c, S))
+                    S, why = None, (f"earliest start {dt.datetime.fromtimestamp(S, dt.timezone.utc):%Y-%m-%dT%H:%MZ} "
+                                    f"beyond reserve horizon {DRAIN_RESERVE_HORIZON_S}s")
                 if S is None:
                     plan.no_reserve.append((c, why))
                 else:
@@ -2565,7 +2573,7 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             idle[r] = "no runnable row needs it (every grantable/dry-runnable row is placed, running, failed or parked)"
             continue
         c = want[0]; why = []
-        if drain is not None:
+        if drain is not None and r in need_r:   # D9 2026-11-18: only a region the drain reserves is "draining"
             why.append(f"draining for {drain.get('shape', 'host')} {drain['id']} until {dt.datetime.fromtimestamp(T, dt.timezone.utc):%H:%MZ}")
         clash = ports & {int(x) for x in (c.get("ports") or [])}
         if clash:
@@ -2649,6 +2657,8 @@ plan.last_drain = None
 plan.drain_held = []
 plan.drain_lowbusy = []
 plan.no_reserve = []
+plan.drain_deferred = []
+_DRAIN_DEFERRED_LOGGED = {}   # {row id: S} last logged DRAIN-DEFERRED state (keeper process lifetime)
 plan.caps = []
 plan.hard_end = {}
 plan.idle_entries = {}
@@ -5162,7 +5172,15 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
         for lc, hc, why in plan.rank_skips:
             log(f"RANK-SKIP {hc['id']} (rank {hc['rank']:g}) blocked by its own constraint: {why}; lower-ranked {lc['id']} "
                 f"(rank {lc['rank']:g}) may take its regions")
+        deferred = {dc["id"]: S for dc, S in plan.drain_deferred}
+        for did, S in deferred.items():   # once per state change, not every tick
+            if _DRAIN_DEFERRED_LOGGED.get(did) != S:
+                log(f"DRAIN-DEFERRED {did}: earliest start {dt.datetime.fromtimestamp(S, dt.timezone.utc):%Y-%m-%dT%H:%MZ} "
+                    f"beyond {DRAIN_RESERVE_HORIZON_S // 3600}h horizon; no reservation, its regions are backfilled by any row")
+        _DRAIN_DEFERRED_LOGGED.clear(); _DRAIN_DEFERRED_LOGGED.update(deferred)
         for nc, why in plan.no_reserve:
+            if nc["id"] in deferred:
+                continue
             log(f"NO-RESERVE {nc['id']} ({nc.get('shape')}): earliest start unknown - {why}; its free regions are backfilled by any row")
         if plan.last_drain:
             dc, T = plan.last_drain

@@ -170,6 +170,13 @@ class GpuHostThreads(unittest.TestCase):
         self.assertFalse(rf.expand(c["options"][0]) & rf.GPU_TIMING_NEVER_HELD)
 
 class FarDrain(unittest.TestCase):
+    def setUp(self):   # D9 2026-11-18: these fixtures put T beyond DRAIN_RESERVE_HORIZON_S; pin it wide to test the cap/backfill itself
+        self._hz = rf.DRAIN_RESERVE_HORIZON_S
+        rf.DRAIN_RESERVE_HORIZON_S = 24 * 3600
+
+    def tearDown(self):
+        rf.DRAIN_RESERVE_HORIZON_S = self._hz
+
     def test_far_T_still_drains_and_backfills(self):
         now = 1_000_000.0
         host = dict(cand("h", [frozenset(rf.REGIONS)], rank=0), shape="quiet-host")

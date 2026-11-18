@@ -37,6 +37,13 @@ def run(rows):
 
 
 class CapGpuLaneAtT(unittest.TestCase):
+    def setUp(self):   # D9 2026-11-18: these fixtures put T beyond DRAIN_RESERVE_HORIZON_S; pin it wide to test the cap/backfill itself
+        self._hz = rf.DRAIN_RESERVE_HORIZON_S
+        rf.DRAIN_RESERVE_HORIZON_S = 24 * 3600
+
+    def tearDown(self):
+        rf.DRAIN_RESERVE_HORIZON_S = self._hz
+
     def test_gpu_row_capped_at_T_during_quiet_host_drain(self):
         a, idle, _ = run([quiet_host(), cand("gpu-long", [GPU_TOK])])   # window 25500 s > 4 h to T, min 3600 s fits
         self.assertEqual(rf.plan.last_drain[0]["id"], "qh-drain")
