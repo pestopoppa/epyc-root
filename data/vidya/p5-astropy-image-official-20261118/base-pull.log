@@ -1,0 +1,45 @@
+docker.io/swebench/sweb.eval.x86_64.astropy_1776_astropy-12907@sha256:7485c1e3c8861efd0c6a4a78b952857592e541031039000d25e9481f045dc4a3: Pulling from swebench/sweb.eval.x86_64.astropy_1776_astropy-12907
+39a945af8df2: Already exists
+a4d326e88417: Pulling fs layer
+fd7a87c0b95b: Pulling fs layer
+d07e7f5cb3eb: Pulling fs layer
+3d473160e8e5: Pulling fs layer
+6a99d82d9a89: Pulling fs layer
+e224261309e8: Pulling fs layer
+0d5a0b21a0f0: Pulling fs layer
+20cd02a52216: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+0d5a0b21a0f0: Waiting
+20cd02a52216: Waiting
+4f4fb700ef54: Waiting
+e224261309e8: Waiting
+6a99d82d9a89: Waiting
+3d473160e8e5: Waiting
+d07e7f5cb3eb: Verifying Checksum
+d07e7f5cb3eb: Download complete
+6a99d82d9a89: Verifying Checksum
+6a99d82d9a89: Download complete
+a4d326e88417: Verifying Checksum
+a4d326e88417: Download complete
+0d5a0b21a0f0: Verifying Checksum
+0d5a0b21a0f0: Download complete
+a4d326e88417: Pull complete
+20cd02a52216: Verifying Checksum
+20cd02a52216: Download complete
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+e224261309e8: Verifying Checksum
+e224261309e8: Download complete
+fd7a87c0b95b: Verifying Checksum
+fd7a87c0b95b: Download complete
+fd7a87c0b95b: Pull complete
+d07e7f5cb3eb: Pull complete
+3d473160e8e5: Pull complete
+6a99d82d9a89: Pull complete
+e224261309e8: Pull complete
+0d5a0b21a0f0: Pull complete
+20cd02a52216: Pull complete
+4f4fb700ef54: Pull complete
+Digest: sha256:7485c1e3c8861efd0c6a4a78b952857592e541031039000d25e9481f045dc4a3
+Status: Downloaded newer image for swebench/sweb.eval.x86_64.astropy_1776_astropy-12907@sha256:7485c1e3c8861efd0c6a4a78b952857592e541031039000d25e9481f045dc4a3
+docker.io/swebench/sweb.eval.x86_64.astropy_1776_astropy-12907@sha256:7485c1e3c8861efd0c6a4a78b952857592e541031039000d25e9481f045dc4a3
