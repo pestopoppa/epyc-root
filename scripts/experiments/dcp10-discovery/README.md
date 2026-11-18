@@ -193,3 +193,43 @@ The three tasks provide diagnostic evidence under the existing writable-ancestor
 packer identity limits. Accepted score receipts for this shard number zero. Raw evidence is at
 `/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3`.
 [Retained shard metadata](../../../docs/research/dcp10-lexical-shard3-results-20261118.json)
+
+## Cost provenance across the three retained shards
+
+The offline replay reproduced 72 candidate records and 216 pack/render entries across all 27
+plans using the pinned app, exact task bases, and the pilot's Python interpreter (3.11.17).
+All 72 candidates carried hit ranges and had equal FULL and SLICES estimates. The 54 non-Python
+candidates took the whole-file fallback. All 18 Python files parsed successfully, but each padded
+lexical window contained at least one line with no enclosing selectable AST statement. The slicer
+rejects the whole window at that line. For example, the retained window for `xarray/core/dataset.py`
+covers lines 1–21, and line 2 is blank. No candidate produced an AST slice, and the equal estimates
+all came from explicitly assigning the FULL estimate to SLICES. The replay confirmed that every
+costed FULL or codemap block matched the individual render byte-for-byte after accounting for the
+estimator's two trailing newlines. [Lexical windows](https://github.com/pestopoppa/epyc-orchestrator/blob/072d1583b3ead7456731946cd4e4595da6a9877f/src/repl_environment/code_search.py#L155-L217)
+[AST selection, costing and rendering](https://github.com/pestopoppa/epyc-orchestrator/blob/072d1583b3ead7456731946cd4e4595da6a9877f/src/context_discovery.py#L178-L480)
+[Pinned xarray example](https://github.com/pydata/xarray/blob/51d37d1be95547059251076b3fadaa317750aab3/xarray/core/dataset.py#L1-L21)
+
+All nine discovered gold-file candidates exceeded the entire 8,000-token estimate in their
+permitted modes. Earlier greedy placements excluded zero otherwise eligible candidates. The
+range-bearing evidence rule blocked fitting codemap estimates for 7, 12 and 18 excluded candidates
+at the three budgets. The packer admitted 0, 1 and 4 files at 2,000, 4,000 and 8,000 estimated tokens
+respectively across the nine tasks, with zero gold-file inclusions. [Packer policy](https://github.com/pestopoppa/epyc-orchestrator/blob/072d1583b3ead7456731946cd4e4595da6a9877f/src/context_assembly.py#L325-L416)
+[Retained cost report](../../../docs/research/dcp10-cost-diagnostic-20261118.json)
+
+The diagnosed interface issue is that Python lexical preview padding is passed as required AST hit
+lines. A focused follow-up would carry matched source lines separately from preview windows and
+use the matched lines as the lexical slice anchors. If any required anchor lacks an AST statement,
+keep the whole-file fallback and explicitly exclude the candidate when it exceeds the budget.
+Keep the existing codemap restriction so included spans still locate actual source evidence.
+The original capture refusal and trusted packer identity mismatch still apply.
+[Custody source review](../../../docs/research/dcp10-packer-custody-review-20261118.json)
+
+To replay locally against the retained directories, choose a new output path outside the three
+shards.
+
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -B \
+  scripts/experiments/dcp10-discovery/diagnose_costs.py \
+  /mnt/raid0/llm/tmp/delegation-context-preassembly \
+  --output /mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-cost/replay.json
+```

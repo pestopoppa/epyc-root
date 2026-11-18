@@ -1,0 +1,288 @@
+diff --git a/src/context_discovery.py b/src/context_discovery.py
+index 923e748929bb163f2c45446b75a24e2528b9c7af..06853c206fa3ed3a1de56c4ede2bf5bcc69e12b0 100644
+--- a/src/context_discovery.py
++++ b/src/context_discovery.py
+@@ -47,6 +47,14 @@ class DiscoveredHit:
+     path: str
+     line_ranges: list[LineRange] = field(default_factory=list)
+     score: float = 0.0
++    lexical_match_ranges: list[LineRange] | None = None
++
++    @property
++    def required_ranges(self) -> list[LineRange]:
++        """Use explicit lexical matches in place of preview padding for AST slicing."""
++        if self.lexical_match_ranges is None:
++            return self.line_ranges
++        return self.lexical_match_ranges
+ 
+ 
+ def _finite_score_or_zero(value) -> float:
+@@ -86,9 +94,30 @@ def parse_colgrep_json(payload: str | list) -> list[DiscoveredHit]:
+         ranges: list[LineRange] = []
+         if isinstance(start, int) and isinstance(end, int) and start >= 1 and end >= start:
+             ranges = [LineRange(start, end)]
++        lexical_ranges = None
++        if "lexical_match_lines" in item:
++            preview_start, preview_end = item.get("start_line"), item.get("end_line")
++            matches = item["lexical_match_lines"]
++            if (
++                type(preview_start) is not int
++                or type(preview_end) is not int
++                or not 1 <= preview_start <= preview_end
++                or not isinstance(matches, list)
++                or any(
++                    type(line) is not int or not preview_start <= line <= preview_end
++                    for line in matches
++                )
++            ):
++                continue
++            lexical_ranges = [LineRange(line, line) for line in matches]
+         score = item.get("score", item.get("relevance", item.get("rank_score", 0.0)))
+         hits.append(
+-            DiscoveredHit(path=path, line_ranges=ranges, score=_finite_score_or_zero(score))
++            DiscoveredHit(
++                path=path,
++                line_ranges=ranges,
++                score=_finite_score_or_zero(score),
++                lexical_match_ranges=lexical_ranges,
++            )
+         )
+     return hits
+ 
+@@ -118,13 +147,22 @@ def discover_candidates(
+         cur = by_path.get(h.path)
+         if cur is None:
+             by_path[h.path] = DiscoveredHit(
+-                path=h.path, line_ranges=list(h.line_ranges), score=score
++                path=h.path,
++                line_ranges=list(h.line_ranges),
++                score=score,
++                lexical_match_ranges=(
++                    None if h.lexical_match_ranges is None else list(h.lexical_match_ranges)
++                ),
+             )
+         else:
++            if cur.lexical_match_ranges is not None or h.lexical_match_ranges is not None:
++                cur.lexical_match_ranges = cur.required_ranges + h.required_ranges
+             cur.line_ranges.extend(h.line_ranges)
+             cur.score = max(cur.score, score)
+     for h in by_path.values():
+         h.line_ranges = merge_line_ranges(h.line_ranges)
++        if h.lexical_match_ranges is not None:
++            h.lexical_match_ranges = merge_line_ranges(h.lexical_match_ranges)
+     ranked = sorted(by_path.values(), key=lambda h: (-h.score, h.path))
+     return ranked[:max_files]
+ 
+@@ -326,26 +364,24 @@ def cost_candidates(
+         )
+         render_ranges_verbatim = False
+ 
+-        if h.line_ranges:
+-            edit_segments = (
+-                _python_edit_segments(body, h.line_ranges) if h.path.endswith(".py") else None
++        required_ranges = h.required_ranges
++        edit_segments = (
++            _python_edit_segments(body, required_ranges)
++            if required_ranges and h.path.endswith(".py")
++            else None
++        )
++        if edit_segments is not None:
++            sliced, ranges = edit_segments
++            cost_slices = token_estimator(
++                _rendered_block(h.path, InclusionMode.SLICES, sliced) + "\n\n"
+             )
+-            if edit_segments is not None:
+-                sliced, planned_ranges = edit_segments
+-                cost_slices = token_estimator(
+-                    _rendered_block(h.path, InclusionMode.SLICES, sliced) + "\n\n"
+-                )
+-                ranges = planned_ranges
+-                render_ranges_verbatim = True
+-                desired = InclusionMode.SLICES
+-            else:
+-                # Non-Python and unparseable files may enter only as a complete file.
+-                cost_slices = cost_full
+-                ranges = list(h.line_ranges)
+-                desired = InclusionMode.FULL
++            render_ranges_verbatim = True
++            desired = InclusionMode.SLICES
+         else:
++            # Keep the existing codemap restriction for range-bearing hits, including
++            # lexical path-only results with a preview but no usable body match.
+             cost_slices = cost_full
+-            ranges = []
++            ranges = list(h.line_ranges)
+             desired = InclusionMode.FULL
+ 
+         codemap = codemap_fn(body) if h.path.endswith(".py") else None
+diff --git a/src/repl_environment/code_search.py b/src/repl_environment/code_search.py
+index bdf825bed30db1756c33526e9289510a0013680b..74f1af7cce08084ace364006644e1fdf83d0a5f7 100644
+--- a/src/repl_environment/code_search.py
++++ b/src/repl_environment/code_search.py
+@@ -153,8 +153,9 @@ class _CodeSearchMixin:
+         return self._nextplaid_search(query, index="code", limit=limit)
+ 
+     def _task_root_code_search(self, query: str, limit: int) -> str:
+-        """Index-free code search over the scratch task-root (#7). Returns a ColGREP-JSON-shaped
+-        string (path/score/start_line/end_line) so `parse_colgrep_json` consumes it unchanged.
++        """Index-free code search over the scratch task-root (#7).
++
++        Keep the ColGREP-shaped preview and report its first actual body match separately.
+         Used only when ORCHESTRATOR_EDIT_ROOT is active (small scratch repos)."""
+         import json
+         import re
+@@ -172,19 +173,15 @@ class _CodeSearchMixin:
+         context_padding = 20
+         hits: list[dict] = []
+ 
+-        def _matched_window(lines: list[str]) -> tuple[int, int]:
+-            if not lines:
++        def _preview_window(line_count: int, match_line: int | None) -> tuple[int, int]:
++            if not line_count:
+                 return (1, 1)
+-            if len(lines) <= full_file_line_limit:
+-                return (1, len(lines))
+-            first_ln = 1
+-            for i, line in enumerate(lines, 1):
+-                if any(t in line.lower() for t in terms):
+-                    first_ln = i
+-                    break
++            if line_count <= full_file_line_limit:
++                return (1, line_count)
++            center = match_line or 1
+             return (
+-                max(1, first_ln - context_padding),
+-                min(len(lines), first_ln + context_padding),
++                max(1, center - context_padding),
++                min(line_count, center + context_padding),
+             )
+ 
+         for p in sorted(root.rglob("*")):
+@@ -204,13 +201,23 @@ class _CodeSearchMixin:
+             score = name_score * 5 + body_score
+             if score <= 0:
+                 continue
+-            start_ln, end_ln = _matched_window(text.splitlines())
++            lines = text.splitlines()
++            match_line = next(
++                (
++                    i
++                    for i, line in enumerate((line.lower() for line in lines), 1)
++                    if any(term in line for term in terms)
++                ),
++                None,
++            )
++            start_ln, end_ln = _preview_window(len(lines), match_line)
+             hits.append(
+                 {
+                     "path": rel_s,
+                     "score": float(score),
+                     "start_line": start_ln,
+                     "end_line": end_ln,
++                    "lexical_match_lines": [match_line] if match_line is not None else [],
+                 }
+             )
+         hits.sort(key=lambda h: -h["score"])
+diff --git a/tests/unit/test_context_discovery.py b/tests/unit/test_context_discovery.py
+index 919b87ab808f1c3f60a24440758d121a9b796e6b..adf574033f4adcce81c545e7f68097ee86cf5111 100644
+--- a/tests/unit/test_context_discovery.py
++++ b/tests/unit/test_context_discovery.py
+@@ -36,6 +36,69 @@ def test_parse_colgrep_json_variants() -> None:
+     assert [h.path for h in hits] == ["a.py", "b.py"]
+     assert hits[0].line_ranges[0].start == 10 and hits[0].score == 0.9
+     assert hits[1].line_ranges[0].end == 5
++    assert all(hit.required_ranges == hit.line_ranges for hit in hits)
++
++
++@pytest.mark.parametrize("anchors", [None, "3", [True], [0], [4], [3, "2"]])
++def test_parse_rejects_malformed_lexical_anchors(anchors) -> None:
++    assert parse_colgrep_json(
++        [{"path": "a.py", "start_line": 1, "end_line": 3, "lexical_match_lines": anchors}]
++    ) == []
++
++
++def test_parse_requires_explicit_valid_lexical_preview_bounds() -> None:
++    assert parse_colgrep_json(
++        [{"path": "a.py", "start_line": False, "start": 1, "end_line": 3,
++          "lexical_match_lines": [2]}]
++    ) == []
++
++
++def test_discovery_merges_required_ranges_and_keeps_previews() -> None:
++    rows = [
++        {"path": "a.py", "start_line": 1, "end_line": 10, "lexical_match_lines": [3]},
++        {"path": "a.py", "start_line": 9, "end_line": 20, "lexical_match_lines": [15]},
++        {"path": "a.py", "start_line": 21, "end_line": 23},
++    ]
++    for hits in (rows, list(reversed(rows))):
++        (hit,) = discover_candidates("q", code_search_fn=lambda _q, _limit: hits)
++        assert hit.line_ranges == [LineRange(1, 23)]
++        assert hit.required_ranges == [LineRange(3, 3), LineRange(15, 15), LineRange(21, 23)]
++
++
++def test_lexical_slice_uses_body_match_without_preview_padding() -> None:
++    source = "# header\n\ndef f():\n    return 'target_marker'\n" + "# padding\n" * 100
++    payload = [{"path": "a.py", "start_line": 1, "end_line": 24, "lexical_match_lines": [4]}]
++    (candidate,) = cost_candidates(parse_colgrep_json(payload), file_reader_fn=lambda _path: source)
++    assert candidate.desired_mode == InclusionMode.SLICES
++    assert candidate.line_ranges == [LineRange(3, 4)]
++    assert candidate.cost_slices < candidate.cost_full
++    bundle = assemble_delegation_bundle(
++        "target_marker", candidate.cost_slices, code_search_fn=lambda _q, _limit: payload,
++        file_reader_fn=lambda _path: source,
++    )
++    rendered = render_bundle(bundle, file_reader_fn=lambda _path: source)
++    (entry,) = bundle.entries
++    assert entry.mode == InclusionMode.SLICES
++    assert entry.content_sha256 == hashlib.sha256(source.encode()).hexdigest()
++    assert "return 'target_marker'" in rendered and "# header" not in rendered
++    assert conservative_char_estimator(rendered + "\n\n") == candidate.cost_slices
++
++
++@pytest.mark.parametrize("anchors", [[1], [1, 4], [], [105]])
++def test_unresolved_or_absent_lexical_match_requires_full_file(anchors) -> None:
++    source = "# target header\n\ndef f():\n    return 'target'\n" + "# padding\n" * 100
++    payload = [{"path": "a.py", "start_line": 1, "end_line": 105, "lexical_match_lines": anchors}]
++    (candidate,) = cost_candidates(parse_colgrep_json(payload), file_reader_fn=lambda _path: source)
++    assert candidate.desired_mode == InclusionMode.FULL
++    assert candidate.cost_slices == candidate.cost_full
++    assert candidate.cost_codemap < candidate.cost_full
++    for budget, mode in ((candidate.cost_codemap, InclusionMode.EXCLUDED),
++                         (candidate.cost_full, InclusionMode.FULL)):
++        bundle = assemble_delegation_bundle(
++            "target", budget, code_search_fn=lambda _q, _limit: payload,
++            file_reader_fn=lambda _path: source,
++        )
++        assert bundle.entries[0].mode == mode
+ 
+ 
+ def test_parse_colgrep_json_string_and_garbage() -> None:
+diff --git a/tests/unit/test_task_root_surfaces.py b/tests/unit/test_task_root_surfaces.py
+index 995153df2198da9419fac06312d55bf0ccbcc033..ff2bddde7acc98b1ec8227c34e6ae255f6278993 100644
+--- a/tests/unit/test_task_root_surfaces.py
++++ b/tests/unit/test_task_root_surfaces.py
+@@ -134,6 +134,16 @@ def test_code_search_returns_scratch_files(monkeypatch, tmp_path):
+     by_path = {h["path"]: h for h in hits}
+     assert by_path["cart.py"]["start_line"] == 1
+     assert by_path["cart.py"]["end_line"] == 2
++    assert by_path["cart.py"]["lexical_match_lines"] == [1]
++
++
++def test_code_search_name_only_hit_has_no_body_anchor(monkeypatch, tmp_path):
++    (tmp_path / "namedtarget.py").write_text("x = 1\n")
++    monkeypatch.setenv("ORCHESTRATOR_EDIT_ROOT", str(tmp_path))
++    (hit,) = json.loads(_env()._code_search("namedtarget", limit=5))
++    assert hit["path"] == "namedtarget.py"
++    assert (hit["start_line"], hit["end_line"]) == (1, 1)
++    assert hit["lexical_match_lines"] == []
+ 
+ 
+ def test_code_search_pads_large_scratch_file_match(monkeypatch, tmp_path):
+@@ -146,6 +156,7 @@ def test_code_search_pads_large_scratch_file_match(monkeypatch, tmp_path):
+     hit = next(h for h in hits if h["path"] == "large.py")
+     assert hit["start_line"] == 30
+     assert hit["end_line"] == 70
++    assert hit["lexical_match_lines"] == [50]
+ 
+ 
+ def test_code_search_discovers_cpp_and_systems_language_files(monkeypatch, tmp_path):

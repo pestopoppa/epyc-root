@@ -1,0 +1,29 @@
+{
+  "id": "prb-t4-cpu-pilot-20261118",
+  "owner": "h-delegation-context-preassembly",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "0-3",
+  "priority_rank": 57,
+  "admission_class": "diagnostic",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/tale-pilot/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/tale-pilot",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/tale-pilot/native/RESULT.json",
+  "result_format": "json",
+  "ram_gib": 52,
+  "budget_gib": 2,
+  "estimate_s": 2400,
+  "min_window_s": 2200,
+  "max_window_s": 2500,
+  "resumable": false,
+  "first_progress_s": 360,
+  "unit_key": "unit",
+  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B /mnt/raid0/llm/tmp/delegation-context-preassembly/tale-pilot/packet/runner.py smoke",
+  "decision_rule": "completed >= 16",
+  "handoff_task": "context-and-token-economy.md:PRB-T4-CPU-P1",
+  "keep": [
+    "native/**",
+    "packet/**"
+  ],
+  "notes": "Instrument pilot on the first sealed PRB-T4 task per suite. Smoke runs the first baseline control; this row qualifies bounded CPU capture and costing."
+}
