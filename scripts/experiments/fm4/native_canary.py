@@ -21,6 +21,7 @@ import loop_beliefs  # noqa: E402
 from adapters import fm4_gate_acceptance as adapter  # noqa: E402
 from ledger import Ledger  # noqa: E402
 from scripts.coordination import alarm_channel, session_oracle  # noqa: E402
+from scripts.experiments.fm4 import codex_dispatch  # noqa: E402
 
 
 def _sha256(path):
@@ -116,9 +117,7 @@ def _coordinator_context(state_dir, ledger, index):
     return answer
 
 
-def _selected_claim(state_dir, native):
-    ledger, index = _ingest(state_dir, Path(native["path"]), 1)
-    answer = _planning_context(state_dir, ledger, index, adapter.PLANNER_CONSUMER)
+def _selected_claim(answer, native):
     evidence = answer["evidence"]
     claims = [row for row in evidence["claims"] if row.get("source_kind") == adapter.SOURCE_KIND]
     digest = native["sha256"]
@@ -130,7 +129,7 @@ def _selected_claim(state_dir, native):
     if (len(claims) != 1 or any(claims[0].get(key) != value for key, value in expected.items())
             or claim_id not in evidence["section"] or claim_id in evidence["claim_ids"]):
         raise ValueError("Vidya planning context did not select the exact gate observation")
-    return claims[0], answer["ledger_state"], answer["ledger_state_digest"]
+    return claims[0]
 
 
 def run(child, parent, task_id, acceptance, state_dir):
@@ -152,7 +151,10 @@ def run(child, parent, task_id, acceptance, state_dir):
         raise ValueError("a transcript changed during oracle assessment")
 
     state_dir.mkdir(mode=0o700)
-    claim, ledger_state, state_digest = _selected_claim(state_dir.resolve(), native)
+    state_dir = state_dir.resolve()
+    ledger, index = _ingest(state_dir, Path(native["path"]), 1)
+    answer = _planning_context(state_dir, ledger, index, adapter.PLANNER_CONSUMER)
+    claim = _selected_claim(answer, native)
     if adapter.native_rows(acceptance) != (native,):
         raise ValueError("the acceptance bundle changed during Vidya ingest or retrieval")
     if any(_sha256(Path(item["path"])) != item["sha256"] for item in inputs.values()):
@@ -162,7 +164,58 @@ def run(child, parent, task_id, acceptance, state_dir):
     return {"schema": "fm4.native_canary.v1", "inputs": inputs, "identity": identity,
             "gate_result": native["acceptance"]["gate_result"], "oracle_verdict": verdict,
             "oracle_disposition": "applied", "consumer": adapter.PLANNER_CONSUMER,
-            "selected_claim": claim, "ledger_state": ledger_state, "ledger_state_digest": state_digest}
+            "selected_claim": claim, "ledger_state": answer["ledger_state"],
+            "ledger_state_digest": answer["ledger_state_digest"]}
+
+
+def run_codex_gate(child, parent, task_id, acceptance, state_dir):
+    """Bind an executed selected gate to a completed native Codex dispatch."""
+    if not isinstance(task_id, str) or not task_id.strip():
+        raise ValueError("an independent task ID is required for Codex gate acceptance")
+    state_dir = state_dir.absolute()
+    if state_dir.exists() or state_dir.is_symlink():
+        raise ValueError(f"state directory must be new: {state_dir}")
+
+    dispatch = codex_dispatch.collect(parent, child)
+    if dispatch["disposition"] != "terminal_child":
+        raise ValueError(f"Codex dispatch did not bind a terminal child: {dispatch['disposition']}")
+    if dispatch["child_turn"]["state"] != "completed":
+        raise ValueError(f"Codex child did not complete its first turn: {dispatch['child_turn']['state']}")
+    natives = adapter.native_rows(acceptance)
+    if len(natives) != 1 or "acceptance" not in natives[0]:
+        raise ValueError("an executed selected-gate acceptance bundle is required")
+    (native,) = natives
+    record = native["acceptance"]
+    identity = dict(dispatch["identity"], task_id=task_id)
+    mismatches = [key for key, value in identity.items() if record[key] != value]
+    if mismatches:
+        raise ValueError(f"selected gate identity mismatch: {', '.join(mismatches)}")
+
+    state_dir.mkdir(mode=0o700)
+    state_dir = state_dir.resolve()
+    ledger, index = _ingest(state_dir, Path(native["path"]), 1)
+    answer = _planning_context(state_dir, ledger, index, adapter.PLANNER_CONSUMER)
+    claim = _selected_claim(answer, native)
+    evidence = answer["evidence"]
+    if claim.get("grade") != "Judged/Located" or evidence["claims"] != [claim] or evidence["claim_ids"]:
+        raise ValueError("Vidya did not preserve the selected gate as a diagnostic observation")
+    other = _planning_context(state_dir, ledger, index, "autokernel.planner")
+    if (other["evidence"]["claims"] or other["evidence"]["claim_ids"]
+            or other["ledger_state_digest"] != answer["ledger_state_digest"]):
+        raise ValueError("Vidya planning context leaked the gate observation to an unrelated consumer")
+    if any(read.get("read_log_error") or read.get("known_good_error") for read in (answer, other)):
+        raise ValueError("Vidya planning context did not retain its read or freshness record")
+    if adapter.native_rows(acceptance) != natives:
+        raise ValueError("the acceptance bundle changed during Vidya ingest or retrieval")
+    if any(_sha256(Path(item["path"])) != item["sha256"] for item in dispatch["inputs"].values()):
+        raise ValueError("a Codex rollout changed during the canary")
+    inputs = dict(dispatch["inputs"], acceptance={"path": native["path"], "sha256": native["sha256"],
+                                                   "execution_sha256": record["evidence"]["sha256"]})
+    return {"schema": "fm4.codex_gate.native_canary.v1", "consumer": adapter.PLANNER_CONSUMER,
+            "task_id": task_id, "identity": identity, "inputs": inputs, "dispatch": dispatch,
+            "gate_result": record["gate_result"], "task_outcome": None, "claim": claim,
+            "excluded_consumer": other["consumer"], "ledger_state": answer["ledger_state"],
+            "ledger_state_digest": answer["ledger_state_digest"]}
 
 
 def run_codex_dispatch(replay, state_dir, *, coordinator_review=False):
@@ -226,6 +279,7 @@ def main(argv=None):
     parser.add_argument("--parent", type=Path)
     parser.add_argument("--task-id", help="task identity obtained from the dispatch")
     parser.add_argument("--acceptance", type=Path, help="record emitted by run_gate.py")
+    parser.add_argument("--codex-gate", action="store_true", help="bind the selected gate to a native Codex dispatch")
     parser.add_argument("--dispatch-replay", type=Path, help="read-only native Codex census replay bundle")
     parser.add_argument("--coordinator-review", action="store_true",
                         help="exercise the exact interactive coordinator entry point in isolated replay")
@@ -235,14 +289,17 @@ def main(argv=None):
     if args.coordinator_review and not args.dispatch_replay:
         parser.error("--coordinator-review requires --dispatch-replay")
     if args.dispatch_replay:
-        if any(arg is not None for arg in gate_args):
+        if args.codex_gate or any(arg is not None for arg in gate_args):
             parser.error("--dispatch-replay is exclusive with the selected-gate arguments")
     elif any(arg is None for arg in gate_args):
         parser.error("use --dispatch-replay or supply --child, --parent, --task-id and --acceptance")
     try:
-        receipt = (run_codex_dispatch(args.dispatch_replay, args.state_dir,
-                                      coordinator_review=args.coordinator_review) if args.dispatch_replay
-                   else run(*gate_args, args.state_dir))
+        if args.dispatch_replay:
+            receipt = run_codex_dispatch(args.dispatch_replay, args.state_dir,
+                                         coordinator_review=args.coordinator_review)
+        else:
+            gate_canary = run_codex_gate if args.codex_gate else run
+            receipt = gate_canary(*gate_args, args.state_dir)
     except (OSError, ValueError, RuntimeError) as exc:
         print(f"FM-4 canary refused: {exc}", file=sys.stderr)
         return 1

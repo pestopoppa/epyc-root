@@ -165,3 +165,29 @@ from `autokernel.planner`. The metric records a bound first-turn terminal
 event, including interruption. Every selected receipt carries a null task
 outcome. The same replay descriptor is accepted by Vidya's explicit
 `ingest fm4-gate-acceptance --path` entry point.
+
+### Bind a prospective executed gate to a Codex dispatch
+
+After the actual child completes, retain its original rollout and the parent
+dispatch rollout. Obtain the task ID independently from the assignment, select
+a gate appropriate to that task, and execute it with `run_gate.py` using the
+three exact native dispatch identities and that task ID. Then run:
+
+```bash
+python3 -B scripts/experiments/fm4/native_canary.py --codex-gate \
+  --parent /private/fm4/parent-rollout.jsonl \
+  --child /private/fm4/child-rollout.jsonl \
+  --task-id <independently-assigned-task-id> \
+  --acceptance /private/fm4/task-acceptance.json \
+  --state-dir /private/fm4/codex-gate-state-new
+```
+
+The canary requires a uniquely bound completed first child turn, exact agreement
+between all four acceptance identities and the native dispatch, and verified
+execution evidence. Both passing and failing gate observations may reach the
+shared `coordination.fm4` reader. The receipt retains input digests, the exact
+`Judged/Located` diagnostic claim and isolated ledger state, while checking
+reliance and unrelated-consumer exclusion. Its task outcome stays null. This
+path records the selected gate's exit; gate suitability and assignment provenance
+remain the caller's responsibility. It supplies no historical task-accuracy
+label and does not apply the pending Claude D9 oracle integration.
