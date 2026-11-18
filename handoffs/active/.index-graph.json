@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T10:44:22Z",
+  "generated_at": "2026-11-18T10:55:23Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 416,
-      "dispatchable": 112,
+      "dispatchable": 113,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 113,
+      "open": 114,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2397,7 +2397,7 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 46,
+      "closed": 48,
       "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
