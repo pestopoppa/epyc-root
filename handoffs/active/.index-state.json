@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 535
+      "open": 534
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 213
+      "open": 214
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -517,7 +517,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 197,
+      "closed": 198,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 39,
@@ -529,7 +529,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 238,
+      "total": 239,
       "tracks": [
         {
           "blocked": 1,
@@ -543,7 +543,7 @@
         },
         {
           "blocked": 0,
-          "closed": 29,
+          "closed": 30,
           "gates": [],
           "guarded": 0,
           "line": 365,
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 589,
+          "line": 591,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 855,
+          "line": 857,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 4
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1360,
+          "line": 1362,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1897,
+          "line": 1899,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2659,
+          "line": 2661,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3086,
+          "line": 3088,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3743,
+          "line": 3745,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 223,
+      "closed": 224,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 30,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 180,
+          "closed": 181,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1226,17 +1226,17 @@
             "INF-06#autokernel-restart-and-strip"
           ],
           "guarded": 0,
-          "line": 18,
+          "line": 20,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 27
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1751,
+          "line": 1756,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1875,
+          "line": 1880,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2207,
+          "line": 2212,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2346,
+          "line": 2351,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2908,
+          "line": 2913,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3046,
+          "line": 3051,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3053,
+          "line": 3058,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2580,10 +2580,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 474,
+      "closed": 475,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 110,
+      "open": 111,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 585
+      "total": 587
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

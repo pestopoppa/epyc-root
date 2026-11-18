@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T22:02:59Z",
+  "generated_at": "2026-11-18T22:41:40Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1349,15 +1349,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 474,
-      "dispatchable": 110,
+      "closed": 475,
+      "dispatchable": 111,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 111,
+      "open": 112,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1942,15 +1942,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 223,
-      "dispatchable": 30,
+      "closed": 224,
+      "dispatchable": 29,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-18",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 31,
+      "open": 30,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1984,23 +1984,23 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 27,
+          "dispatchable": 26,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
             "INF-06#agent-collab-rnd-harness",
             "INF-06#autokernel-restart-and-strip"
           ],
-          "line": 18,
+          "line": 20,
           "name": "autokernel-champion-aggregate",
-          "open": 28,
+          "open": 27,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1751,
+          "line": 1756,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1875,
+          "line": 1880,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2018,7 +2018,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2207,
+          "line": 2212,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2027,7 +2027,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2346,
+          "line": 2351,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2036,7 +2036,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2908,
+          "line": 2913,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2048,7 +2048,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3046,
+          "line": 3051,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2060,7 +2060,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3053,
+          "line": 3058,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2929,7 +2929,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 197,
+      "closed": 198,
       "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -2977,7 +2977,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 589,
+          "line": 591,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2986,7 +2986,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 855,
+          "line": 857,
           "name": "per-request-reasoning-budget",
           "open": 4,
           "readiness": "ready"
@@ -2995,7 +2995,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1360,
+          "line": 1362,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -3004,7 +3004,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1897,
+          "line": 1899,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3013,7 +3013,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2659,
+          "line": 2661,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3022,7 +3022,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3086,
+          "line": 3088,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3031,7 +3031,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3743,
+          "line": 3745,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
