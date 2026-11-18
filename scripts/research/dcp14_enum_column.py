@@ -60,6 +60,8 @@ def build_pairs(events):
             elif p.get("prompt_truncated") or d.get("prompt_truncated"):
                 row["status"] = "truncated"
             else:
+                row["parent_prompt_chars"] = len(p["prompt"])
+                row["worker_prompt_chars"] = len(d["prompt"])
                 row["parent_enum"] = enum_count(p["prompt"])
                 row["worker_input_enum"] = enum_count(d["prompt"])
                 row["worker_response_enum"] = enum_count(resp.get(d.get("request_id"), "")) if d.get("request_id") in resp else None

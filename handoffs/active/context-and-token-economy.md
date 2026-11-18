@@ -330,7 +330,7 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
 
 ## 2026-08-09 — per-operator context budgets (research-intake Stage-2b)
 
-- [ ] **Port per-operator context budgets to the delegation path.** Our delegation/tool-output context
+- [x] **Port per-operator context budgets to the delegation path.** Our delegation/tool-output context ✅ 2026-11-18 [belief: cc]
   is assembled against a single budget; OpenMLE-Evo budgets **per operator**, which is the mechanism
   behind the prompt-tail reduction the intake-940#record dive rated as one of only two citable claims from that
   source. Shipped constants, read from `OpenMLE-Evo/tts_search/configs/search/airaevo.yaml`
@@ -341,7 +341,9 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
   half of the same idea. Offline-first: measure current per-operator context size before changing it.
   - **Specification added 2026-11-09 (audit):** cross-link target is `autopilot-program.md` AP-ME-1 (file exists; the link text still says autopilot-continuous-optimization). The offline measurement uses the existing inference-tap events (`/mnt/raid0/llm/tmp/inference_tap_events.jsonl`, the DCP-14 source): per delegated sub-call, parent vs child prompt chars grouped by role. Whether `_maybe_dcp_seed_context` (`chat_delegation.py:253`) applies a per-operator budget today was not verified. Zero inference.
 
+**2026-11-18 per-operator budget source verdict:** the offline-first audit retains **61** complete earlier-parent pairs out of **347**, excluding **230** later-parent fallbacks and **56** truncated pairs; **172** worker calls have no parent prompt. The trace has no reliable mode label and cannot calibrate operator budgets. The [source-pinned opt-in role/mode candidate](../../scripts/experiments/delegation-context-budgets/README.md), against orchestrator `de0f114415be7d5ffb5cb6cbd9a40032329c54ef`, selects context-character and discovery-estimate caps at the actual specialist call site, preserves legacy defaults, rejects invalid/excess policy before execution, and supports zero discovery without a search. **88 application tests and six root controls pass; Ruff and patch applicability pass.** Full `make gates` stops at missing `shellcheck`. This closes the offline-first source port as a reviewable candidate; no application integration, production allocation, inference, quality or savings claim. [Candidate identities](../../docs/research/delegation-context-budgets-candidate-20261118.json) and [historical character baseline](../../docs/research/delegation-context-sizes-20261118.json) preserve exact source/input hashes. `VB-DELEGATION-CONTEXT-SIZES-WIRE` is registered; no reconstructed measurement warrant. [belief: cc]
 ## Research Intake Update — 2026-09-14 (intake-1346…1366)
+
 _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: intake-1350 SoL-Pi, intake-1359 compression interaction costs — dive-verified._
 
 - [ ] **CF-PB-1 — Plan-boundary compaction trigger priced by local break-even.** Price a rewrite as re-prefill tokens (llama.cpp prefix-cache invalidation) vs per-request savings; SoL-Pi's formula structure ports, its 12.5 cache ratio does not. Note the `len(state.context) > 12000` OR-trigger (`graph/compaction.py:223`) dominates the 0.75 ratio today. If adopted, pass step progress INTO the summary request (SoL-Pi's own open #42 defect is exactly dropping it). Inference-gated. `intake-1350#04`. *(Anchor fixed 2026-11-09: the `len(state.context) > 12000` OR-trigger is now `src/graph/compaction.py:223`, not `:130`.)*

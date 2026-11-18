@@ -10,6 +10,10 @@ Canonical spec: [`docs/design/vidya-pilot-spec.md` §4.7](../../../docs/design/v
 
 ## The one rule
 
+| Source | Native record | Projection / remaining work |
+|---|---|---|
+| Delegation per-role/mode context-budget offline audit | `epyc.delegation.context_sizes.v1`; pinned tap hash, source commit, pairing rule, complete/truncated/unparsable/orphan strata and character counts | `VB-DELEGATION-CONTEXT-SIZES-WIRE`: project committed conclusions through the existing observation carrier; historical prompts supply descriptive character counts only, with no reconstructed token, causal, performance or measurement warrant. Require a planning-context canary before calling the loop wired. |
+
 > **An adapter PROJECTS. It never grades.**
 
 ```

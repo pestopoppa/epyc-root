@@ -155,6 +155,8 @@ Nothing was deleted: the siblings are the evidence record for every gate this pr
 
 ## Task list
 
+- [ ] **VB-DELEGATION-CONTEXT-SIZES-WIRE — Project committed per-role/mode delegation context-budget audit conclusions through the existing observation carrier.** Source: `scripts/research/delegation_context_sizes.py`, schema `epyc.delegation.context_sizes.v1`. Bind tap/source hashes, pairing rule, complete/truncated/unparsable/orphan strata and original aggregate character counts; historical traces establish no mode-specific allocation, token count, causal quality, performance benefit or reconstructed measurement warrant. Use `ClaimTuple.grade()` without a new ladder and require a planning-context canary before declaring the loop wired.
+
 ### Open work — start here
 
 - [ ] **VB-V9-8-QUALITY-PACK-WIRE — prospectively capture broad quality-parity pack comparisons.** Producer: `.claude/skills/kernel-promotion/scripts/quality_parity.py`; owner workflow: `v11-promotion-checklist.md` V9-8. Bind original pack/schema/coverage and source pins, banked response/request/model/recipe identities, candidate response identities, validator policy, exact token/content comparisons and incomplete/mismatch/input-drift dispositions at native comparison write. Project through the existing diagnostic observation carrier and shared `claim_tuple.grade()` and prove a planning-context canary. No new grading ladder, retrospective warrant or quality-transfer authority. [no-belief: prospective source-wiring task]
