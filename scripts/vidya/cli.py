@@ -634,19 +634,21 @@ def _ingest_autokernel(args) -> int:
         print(f"no such AutoKernel corpus root: {root}", file=sys.stderr)
         return 2
     led = _ledger(args)
+    property_only = args.adapter == "autokernel-property"
     if getattr(args, "only_new", False):
         # VB-LOOP-SCOPE: project into a collector, then append only what the ledger lacks
         # (new claims, plus one scope re-observation per already-live unscoped claim).
         from scoped_ingest import Collector, append_scoped  # noqa: PLC0415
         sink = Collector()
-        report = ingest_corpus(sink, root=root, as_of=args.as_of, limit=args.limit)
+        report = ingest_corpus(sink, root=root, as_of=args.as_of, limit=args.limit,
+                               property_only=property_only)
         report["only_new"] = append_scoped(led, sink.frames, as_of=args.as_of,
                                            dry_run=args.dry_run)
         report["frames_emitted"] = 0 if args.dry_run else report["only_new"]["frames"]
         report["dry_run"] = args.dry_run
     else:
         report = ingest_corpus(led, root=root, as_of=args.as_of, limit=args.limit,
-                               dry_run=args.dry_run)
+                               dry_run=args.dry_run, property_only=property_only)
     human = [
         f"documents matched={report['documents_matched']}  "
         f"rows projected={report['rows_projected']}  "
@@ -810,12 +812,12 @@ def _ingest_file_source(args) -> int:
 def cmd_ingest(args) -> int:
     # Reject absent directory corpora before creating the ledger or writer lock.
     # Keep the existing adapter-local validation for direct internal callers.
-    if args.adapter in ("autokernel", "inf70"):
-        default = (AUTOKERNEL_CORPUS_ROOT if args.adapter == "autokernel"
+    if args.adapter in ("autokernel", "autokernel-property", "inf70"):
+        default = (AUTOKERNEL_CORPUS_ROOT if args.adapter != "inf70"
                    else INF70_CORPUS_ROOT)
         root = Path(args.root) if args.root else default
         if not root.is_dir():
-            label = "AutoKernel" if args.adapter == "autokernel" else "INF-70"
+            label = "AutoKernel" if args.adapter != "inf70" else "INF-70"
             print(f"no such {label} corpus root: {root}", file=sys.stderr)
             return 2
     # one host-wide critical section per ingest: dedup-read and append must not interleave with
@@ -826,7 +828,8 @@ def cmd_ingest(args) -> int:
     # dedup-read + append (scoped_ingest.append_scoped), so a slow corpus read never blocks
     # every other writer of the shared ledger.
     if args.adapter in ("autokernel-serving", "autokernel-experiments") or (
-            getattr(args, "only_new", False) and args.adapter in ("autokernel", "inf70")):
+            getattr(args, "only_new", False) and args.adapter in (
+                "autokernel", "autokernel-property", "inf70")):
         return _cmd_ingest(args)
     with _ledger(args).write_lock():
         return _cmd_ingest(args)
@@ -837,8 +840,8 @@ def _cmd_ingest(args) -> int:
         print(f"ingest {args.adapter} needs --as-of <explicit ingest timestamp>", file=sys.stderr)
         return 2
     if getattr(args, "only_new", False) and args.adapter not in (
-            *_FILE_SOURCES, "autokernel", "inf70", "autokernel-serving"):
-        print("--only-new is supported only for file-shaped sources, autokernel and inf70",
+            *_FILE_SOURCES, "autokernel", "autokernel-property", "inf70", "autokernel-serving"):
+        print("--only-new is supported for file-shaped, AutoKernel and INF-70 sources",
               file=sys.stderr)
         return 2
     if args.adapter in _FILE_SOURCES:
@@ -847,7 +850,7 @@ def _cmd_ingest(args) -> int:
         return _ingest_autokernel_serving(args)
     if args.adapter == "autokernel-experiments":
         return _ingest_autokernel_experiments(args)
-    if args.adapter == "autokernel":
+    if args.adapter in ("autokernel", "autokernel-property"):
         return _ingest_autokernel(args)
     if args.adapter == "inf70":
         return _ingest_inf70(args)
@@ -1082,7 +1085,7 @@ def build_parser() -> argparse.ArgumentParser:
     be.set_defaults(func=cmd_binding_emit)
 
     i = sub.add_parser("ingest", help="run a source adapter")
-    i.add_argument("adapter", choices=["intake", "autokernel", "inf70", "autokernel-serving",
+    i.add_argument("adapter", choices=["intake", "autokernel", "autokernel-property", "inf70", "autokernel-serving",
                                        "autokernel-experiments", *_FILE_SOURCES])
     i.add_argument("--path", action="append",
                    help="file or directory for a file-shaped source (repeatable)")

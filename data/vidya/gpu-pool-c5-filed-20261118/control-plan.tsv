@@ -1,0 +1,3 @@
+NORM	PASS	type=f32,ne=[1025,5,4,3],v=0,eps=0.000000,noncontig_rows=0
+SUM	PASS	type=f32,ne=[10,5,4,3]
+SUM_ROWS	PASS	type=f32,ne=[10,5,4,3],permute=0,slice=0
