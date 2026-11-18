@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 221
+      "open": 220
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -2212,7 +2212,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3125,
+          "line": 3126,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3638,
+          "line": 3639,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3733,
+          "line": 3734,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2580,10 +2580,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 421,
+      "closed": 422,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 118,
+      "open": 117,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
