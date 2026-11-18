@@ -11,6 +11,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from binding import install_archive
 from cmp4_graph_trial import wire_hooks
 from prepare import ARMS, CONTEXT_TOKENS, MAX_COMPLETION_TOKENS, MAX_TURNS, PORT, SOURCE
 
@@ -450,6 +451,11 @@ def run_trial(attempt):
                 task_id="trial",
                 tool_context={"no_web": True},
             )
+            archive_receipt = None
+            if "initial_history" in config:
+                archive_receipt = install_archive(
+                    state, repl, config["initial_history"]
+                )
             with patch.object(context_arm_ab, "render", renderer):
                 result = asyncio.run(
                     run_task(
@@ -522,6 +528,7 @@ def run_trial(attempt):
             ),
             "pre_generation_budget_exhausted": bool(pregen),
             "policy_receipts": receipts,
+            "initial_history_receipt": archive_receipt,
             "tool_calls": final["tool_calls"],
             "native_usage": usage,
             "context_counter": tokenizer.get_stats(),

@@ -1,5 +1,14 @@
 # CF-3c native task-suite coverage shard
 
+The source-backed shard's no-intervention result stops its frozen extension.
+The separate [binding-continuation protocol](../../../docs/design/cf3c-binding-continuation-protocol-20261119.md)
+defines a four-task scripted archive diagnostic. `binding.py` compiles that
+cohort without model calls; `graph_trial.py` accepts its `initial_history` and
+persists it through the source writer with real log-recovery offsets. The
+existing `prepare.py` still prepares the original source-pool profile; publishing
+the binding cohort requires a separate sealed profile and native publisher smoke.
+Do not rerun the original extension to exercise this new seam.
+
 This packet runs the pinned orchestrator's REPL graph from the original
 benchmark prompt and context to its terminal or budget outcome. It compares
 A0, A1 at k=4, 8 and 12, A2 observation truncation, and A3 removal of older

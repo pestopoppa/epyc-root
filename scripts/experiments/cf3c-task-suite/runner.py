@@ -203,6 +203,11 @@ def run_trial(folder, row, case, inventory, score, key, deadline):
             "row": row,
             "prompt": case["prompt"],
             "context": case.get("context"),
+            **(
+                {"initial_history": case["initial_history"]}
+                if "initial_history" in case
+                else {}
+            ),
         },
     )
     started = time.monotonic()

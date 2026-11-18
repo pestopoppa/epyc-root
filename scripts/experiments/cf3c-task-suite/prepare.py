@@ -25,6 +25,8 @@ POOL_SHA = "a59be17ef3c39390fb0043cff5731e087f7e280c9eaaa113c969ff594851a502"
 DRAW_SHA = "fb0656b26b372a36533686ebef0f91116fd9ed88e35521b0e043222d64ebe6c5"
 PROTOCOL = HERE.parents[2] / "docs/design/cf3c-task-suite-protocol-20261118.md"
 FILES = (
+    "binding.py",
+    "test_binding.py",
     "prepare.py",
     "runner.py",
     "graph_trial.py",
