@@ -7,10 +7,11 @@ import json
 import os
 import sys
 import threading
+from contextvars import ContextVar
 from pathlib import Path
 
 
-def wire_hooks(attempt, seed, failures, wire):
+def wire_hooks(attempt, seed, failures, wire, *, request_context=None):
     import httpx
 
     record_lock = threading.Lock()
@@ -88,6 +89,8 @@ def wire_hooks(attempt, seed, failures, wire):
         if request.method != "POST" or request.url.path not in {"/completion", "/v1/chat/completions"}:
             return
         record = {"endpoint": request.url.path, "http_status": None}
+        if request_context is not None:
+            record.update(request_context.get() or {})
         with record_lock:
             index = len(wire)
             wire.append(record)
@@ -150,7 +153,7 @@ def wire_hooks(attempt, seed, failures, wire):
     return note_request, note_response
 
 
-def main() -> None:
+def main(*, feature_overrides=None, configure_state=None) -> None:
     attempt = Path(sys.argv[1])
     config = json.loads((attempt / "INPUT.json").read_text())
     source = Path(config["source"])
@@ -159,7 +162,7 @@ def main() -> None:
 
     set_features(Features(context_arm_ab=True, session_log=True, session_log_verbatim=True,
                           output_spill_to_file=True, trajectory_artifact=True,
-                          accurate_token_counting=True))
+                          accurate_token_counting=True, **(feature_overrides or {})))
     from scripts.benchmark.seeding_scoring import score_answer_or_error
     from src.autopilot_core.measurement_guards import infra_failure_reason
     from src.graph.context_arm_ab import settings
@@ -185,6 +188,17 @@ def main() -> None:
     key = os.environ["TOC_CMP4_API_KEY"]
     summary_role = _session_summary_worker_role()
     roles = {"frontdoor", summary_role, "worker", "worker_summarize", "worker_general"}
+    state = None
+    request_context = ContextVar("graph_request_context", default=None) if configure_state else None
+
+    def begin_call(kind):
+        if request_context is not None and state is not None:
+            return request_context.set({"call_kind": kind, "graph_turn": state.turns,
+                                        "history_boundaries": list(state.history_boundaries)})
+
+    def end_call(token):
+        if token is not None:
+            request_context.reset(token)
 
     class SeededPrimitives(LLMPrimitives):
         def llm_call(self, prompt, context_slice="", role="worker", **kwargs):
@@ -192,21 +206,28 @@ def main() -> None:
                 raise RuntimeError(f"unbound graph role: {role}")
             kwargs["seed"] = seed
             kwargs["temperature"] = config["temperature"]
+            token = begin_call("generation")
             try:
                 return super().llm_call(prompt, context_slice, role=role, **kwargs)
             except Exception as exc:
                 failures.append(f"primitive: {type(exc).__name__}")
                 raise
+            finally:
+                end_call(token)
 
         def chat_completion_call(self, messages, *, role, **kwargs):
             if str(role) not in roles:
                 raise RuntimeError(f"unbound summary role: {role}")
             kwargs["seed"] = seed
-            return super().chat_completion_call(messages, role=role, **kwargs)
+            token = begin_call("summary")
+            try:
+                return super().chat_completion_call(messages, role=role, **kwargs)
+            finally:
+                end_call(token)
 
     failures = []
     wire = []
-    note_request, note_response = wire_hooks(attempt, seed, failures, wire)
+    note_request, note_response = wire_hooks(attempt, seed, failures, wire, request_context=request_context)
 
     primitives = SeededPrimitives(
         mock_mode=False, registry=RegistryLoader(
@@ -233,6 +254,8 @@ def main() -> None:
         context = case["prompt"] + ("\n\nContext:\n" + case["context"] if case.get("context") else "")
         repl = REPLEnvironment(context, llm_primitives=primitives, role="frontdoor", task_id=task_id)
         state = TaskState(task_id=task_id, prompt=case["prompt"], context=context)
+        if configure_state is not None:
+            configure_state(state, config, attempt)
         deps = TaskDeps(primitives=primitives, repl=repl, config=GraphConfig(max_escalations=0))
         result = asyncio.run(run_task(state, deps))
         if failures or not wire or any("response_sha256" not in record for record in wire) or tokenizer.fallback_count:

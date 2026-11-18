@@ -140,18 +140,18 @@ def check_window(deadline):
         raise WindowEnded("keeper STOP or deadline")
 
 
-def file_port_available():
+def file_port_available(port=PORT):
     try:
         with socket.socket() as listener:
             listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            listener.bind(("127.0.0.1", PORT))
+            listener.bind(("127.0.0.1", port))
     except OSError:
         return False
     return True
 
 
-def request(path, key, timeout=3):
-    req = urllib.request.Request(ENDPOINT + path, headers={"Authorization": f"Bearer {key}"})
+def request(path, key, timeout=3, *, endpoint=ENDPOINT):
+    req = urllib.request.Request(endpoint + path, headers={"Authorization": f"Bearer {key}"})
     with urllib.request.urlopen(req, timeout=timeout) as response:
         return json.load(response)
 
@@ -160,21 +160,32 @@ def split_kv_observed(log):
     return bool(re.search(r"""kv_unified\s*=\s*(?:'false'|"false"|false|0)(?=\s|,|$)""", log))
 
 
-def server_ready(proc, port_proof, key, deadline, log_path):
+def server_argv(threads, port=PORT):
+    return [str(BIN / "llama-server"), "--model", str(MODEL), "--alias", MODEL.name, "--host", "127.0.0.1",
+            "--port", str(port), "--threads", str(threads), "--threads-batch", str(threads),
+            "--ctx-size", str(NSLOTS * SLOT_CTX), "--parallel", str(NSLOTS), "--slots",
+            "--no-kv-unified", "-ctk", "q8_0", "-ctv", "q8_0", "-b", "2048", "-ub", "2048",
+            "--n-gpu-layers", "0", "--jinja", "--reasoning", "off", "--chat-template-file", str(TEMPLATE),
+            "--flash-attn", "on", "--spec-type", "draft-mtp", "--spec-draft-n-max", "4",
+            "--cache-ram", "0", "--ctx-checkpoints", "32"]
+
+
+def server_ready(proc, port_proof, key, deadline, log_path, *, port=PORT):
+    endpoint = f"http://127.0.0.1:{port}"
     while True:
         check_window(deadline)
         if proc.poll() is not None:
             raise ValueError(f"private server exited with status {proc.returncode}; see {log_path}")
-        if port_proof.listen_inodes(PORT) & port_proof.pid_socket_inodes(proc.pid):
+        if port_proof.listen_inodes(port) & port_proof.pid_socket_inodes(proc.pid):
             try:
-                if request("/health", key)["status"] == "ok":
+                if request("/health", key, endpoint=endpoint)["status"] == "ok":
                     break
             except OSError:
                 pass
         time.sleep(0.25)
     evidence = {}
     for name, path in (("props", "/props"), ("models", "/v1/models"), ("slots", "/slots")):
-        evidence[name] = request(path, key)
+        evidence[name] = request(path, key, endpoint=endpoint)
         atomic_json(log_path.parent / f"SERVER-{name.upper()}.json", evidence[name])
     props, models, slots = (evidence[key] for key in ("props", "models", "slots"))
     actual_slots = [slot.get("n_ctx") for slot in slots]
@@ -195,7 +206,7 @@ def server_ready(proc, port_proof, key, deadline, log_path):
             or not any(path.name.startswith("libllama.so") for path in mapped)):
         raise ValueError("private server binary, affinity or mapped-library mismatch")
     return {"pid": proc.pid, "affinity": affinity, "model": models["data"][0],
-            "n_ctx_per_slot": actual_slots, "kv_unified": False, "endpoint": ENDPOINT,
+            "n_ctx_per_slot": actual_slots, "kv_unified": False, "endpoint": endpoint,
             "mapped_libraries": sorted(map(str, mapped))}
 
 
@@ -312,13 +323,7 @@ def run():
     if threads != 4 or len(cpus) != 4 or not file_port_available() or port_proof.listen_inodes(PORT):
         raise ValueError("expected four allocated threads and an unused private frontdoor port")
     deadline = int(os.environ["FILLER_DEADLINE"])
-    argv = [str(BIN / "llama-server"), "--model", str(MODEL), "--alias", MODEL.name, "--host", "127.0.0.1",
-            "--port", str(PORT), "--threads", str(threads), "--threads-batch", str(threads),
-            "--ctx-size", str(NSLOTS * SLOT_CTX), "--parallel", str(NSLOTS), "--slots",
-            "--no-kv-unified", "-ctk", "q8_0", "-ctv", "q8_0", "-b", "2048", "-ub", "2048",
-            "--n-gpu-layers", "0", "--jinja", "--reasoning", "off", "--chat-template-file", str(TEMPLATE),
-            "--flash-attn", "on", "--spec-type", "draft-mtp", "--spec-draft-n-max", "4",
-            "--cache-ram", "0", "--ctx-checkpoints", "32"]
+    argv = server_argv(threads)
     receipt = {"mode": "isolated_frontdoor_pilot", "registered_endpoint": "http://127.0.0.1:8070",
                "actual_endpoint": ENDPOINT, "source": SOURCE_SHA, "input_sha256": digest(HERE / "inputs.json"),
                "frozen_points_sha256": draw["points_sha256"], "reserves": draw["reserves"],
