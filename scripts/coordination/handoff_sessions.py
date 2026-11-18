@@ -76,6 +76,8 @@ ROOT = "/workspace"
 USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit|limit reached", re.I)
 ADV_RX = re.compile(r"^- \[(blocked|needs-launcher|needs-qualification)\] ", re.M)  # JEV-3 deferred: used only by work_state()
 PAUSE_S = 30 * 60
+RATIFY_DIR = tg.ratify_dir(FLAGS)  # operator gate: <flags>/operator-ratify/<slug>.json lifts a gate (tests: tg.ratify_dir(tmp))
+GATE_PARK_PREFIX = "operator-gate:"
 AUTONOMY_DIGEST_NAME = "autonomy-digest.jsonl"  # one JSON line per auto-action (AUTO-UNPARK, spawn-config-invalid park), under flags
 BACKOFF_S = (6 * 3600, 12 * 3600, 24 * 3600)  # unknown reset AND no budget.json resets_at: 6 h -> 12 h -> 24 h (never 30 min; audit rec 2)
 _MONTHS = {m: i + 1 for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
@@ -1192,6 +1194,8 @@ def start_handoff(flags, reg, h, runner, st, live, cap):
         return None
     S = reg.setdefault("sessions", {})
     slug = h.get("slug") or slug_for(h["handoff"], S)
+    if gate_held(flags, slug, S.get(slug)):  # operator gate: never auto-started
+        return None
     e = S.get(slug) or new_entry(reg, h["handoff"], h.get("row_id"))
     if e.get("status") in ("done", "retired"):  # the handoff grew open tasks again: fresh session, same slug
         e.update(new_entry(reg, h["handoff"], h.get("row_id")), restarted_from_done=e.get("session_id"))
@@ -1506,6 +1510,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         maybe_regen_index(flags, now)
         meter.update(flags, now=now, claude_root=meter.CLAUDE_ROOT,  # G3: zero-token budget meter (codex + claude), once per pass
                      claude_weekly_tokens=int(tg.cfg(reg).get("claude_weekly_tokens") or 0) or None)
+    for slug, e in S.items():  # operator gate: logged once per state change; gate_held marks it
+        gate_held(flags, slug, e)
     gc, budget = tg.cfg(reg), tg.load_budget(flags)
     bp = tg.budget_paused_until(budget, now)
     if bp:  # G3: an exhausted budget pauses codex until resets_at (honoured by every engine_paused() gate)
@@ -2096,7 +2102,45 @@ def alert_wake(flags, slug, e, now) -> bool:
     return any(a.get("severity") == "critical" for a in session_alerts(flags, slug, e))
 
 
+def gate_held(flags, slug, e) -> bool:
+    """True when an operator gate holds this session; logs GATE-HELD once per gate (state change), not every pass."""
+    if not tg.is_gated(e):
+        return False
+    g = e["operator_gate"]
+    if not g.get("held_logged"):
+        log(flags, f"GATE-HELD {slug}: {g.get('reason')} (since {g.get('since')}); lift only with "
+                   f"{os.path.join(tg.ratify_dir(flags), slug + '.json')} + handoff_sessions.py unpark {slug}")
+        g["held_logged"] = True
+    return True
+
+
+def set_gate(flags, reg, slug, reason):
+    e = reg["sessions"][slug]
+    e["operator_gate"] = {"reason": reason, "since": now_iso()}
+    tg.park(e, f"{GATE_PARK_PREFIX} {reason}", now_iso())
+    log(flags, f"GATE-SET {slug}: {reason}")
+    gate_held(flags, slug, e)
+
+
+def unpark_cmd(flags, reg, slug) -> int:
+    """Operator unpark. A gated slug needs a valid ratification file (exit 3 otherwise)."""
+    e = reg["sessions"][slug]
+    if tg.is_gated(e):
+        ok, why = tg.ratification(flags, slug)
+        if not ok:
+            log(flags, f"UNPARK-REFUSED {slug}: operator gate ({e['operator_gate'].get('reason')}); {why}")
+            print(f"REFUSED: {slug} is operator-gated ({e['operator_gate'].get('reason')}); {why}", file=sys.stderr)
+            return 3
+        e.pop("operator_gate", None)
+        log(flags, f"GATE-LIFTED {slug}: {why}")
+    tg.unpark(e)
+    log(flags, f"UNPARK {slug} (operator)")
+    return 0
+
+
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
+    if gate_held(flags, slug, e):  # operator gate: never spawned or resumed, whatever path got here
+        return False
     alerts = session_alerts(flags, slug, e)
     if alerts:  # every launch/resume carries the owner's unhandled row alerts; acked only by the owner's own ack line
         prompt = rf_notify.alerts_block(alerts, flags) + prompt
@@ -2183,7 +2227,7 @@ def guard_plan(flags, reg, now=None, repo=None, catalog=None, budget=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark", "preflight-restart"])
+    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark", "gate", "preflight-restart"])
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
@@ -2193,6 +2237,7 @@ def main(argv=None):
     ap.add_argument("--force", action="store_true", help="transfer: even while the previous session is live")
     ap.add_argument("--priority", default=None, help="backlog-priority.json for the auto-start ranking (default: backlog_gen's)")
     ap.add_argument("--keeper-log", default=None)
+    ap.add_argument("--reason", help="gate: why this session is operator-only")
     ap.add_argument("--dry-run", action="store_true", help="dispatch: print what the guards would spawn/park; mutate nothing")
     a = ap.parse_args(argv)
     if a.cmd == "compile-check":  # churn_up.sh: `handoff_sessions.py compile-check <installed copy>` before exec
@@ -2217,9 +2262,15 @@ def main(argv=None):
     if a.cmd == "unpark":
         if not a.slug or a.slug not in reg.get("sessions", {}):
             ap.error("unpark needs a registered <slug>")
-        tg.unpark(reg["sessions"][a.slug])
+        rc = unpark_cmd(a.flags, reg, a.slug)
+        if rc == 0:
+            save(reg_path(a.flags), reg)
+        return rc
+    if a.cmd == "gate":
+        if not a.slug or a.slug not in reg.get("sessions", {}) or not (a.reason or "").strip():
+            ap.error("gate needs a registered <slug> and --reason TEXT")
+        set_gate(a.flags, reg, a.slug, a.reason.strip())
         save(reg_path(a.flags), reg)
-        log(a.flags, f"UNPARK {a.slug} (operator)")
         return 0
     if a.cmd == "dispatch" and a.dry_run:
         for ln in guard_plan(a.flags, reg):

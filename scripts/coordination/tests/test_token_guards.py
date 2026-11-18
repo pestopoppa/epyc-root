@@ -283,3 +283,11 @@ class ReserveTranche(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_operator_gate_blocks_resume_and_auto_unpark():
+    e = {"operator_gate": {"reason": "v11", "since": "x"}, "parked": {"reason": "no progress evidence: x", "at": "x"}}
+    assert tg.is_gated(e) and tg.is_parked({"operator_gate": {"reason": "v11"}})
+    assert not tg.auto_unpark_eligible(e, 0)
+    ok, why = tg.resume_verdict(e, 0)
+    assert not ok and why.startswith("operator-gate:")

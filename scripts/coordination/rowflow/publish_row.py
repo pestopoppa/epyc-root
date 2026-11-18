@@ -284,6 +284,53 @@ def lint(spec):
     return notes
 
 
+SESSIONS_NAME = "handoff-sessions.json"  # same registry the dispatcher reads, under the rowflow flags dir
+RATIFY_SUBDIR = "operator-ratify"         # mirrors token_guards.RATIFY_SUBDIR (publish_row is installed without it)
+# PRODUCTION kernel promotion only (operator 2026-11-18): champion work (C13/C14/... fold/build/gate/keep rows,
+# kernel-champion-and-promotion.md, llama.cpp-experimental) is never gated. Used when the registry has no
+# operator_gated_row_prefixes key; the registry key, when present, replaces it.
+DEFAULT_GATED_ROW_PREFIXES = ("v11-", "v12-", "v13-", "v14-")
+PROMOTION_HANDOFF_RX = re.compile(r"^(v1\d+-)promotion[^/]*\.md$")  # handoffs/active/v1N-promotion*.md
+
+
+def ratified(flags, name):
+    """(ok, why) for <flags>/operator-ratify/<name>.json: slug/by/at/reason present and slug == name."""
+    p = os.path.join(flags, RATIFY_SUBDIR, f"{name}.json")
+    d = rf.load_json(p)
+    if d is None:
+        return False, f"no valid ratification file {p}"
+    missing = [k for k in ("slug", "by", "at", "reason") if not str(d.get(k) or "").strip()]
+    if missing:
+        return False, f"ratification file {p} lacks {', '.join(missing)}"
+    if d["slug"] != name:
+        return False, f"ratification file {p} names slug {d['slug']!r}, not {name!r}"
+    return True, f"ratified by {d['by']} at {d['at']}"
+
+
+def check_operator_gate(spec, flags):
+    """Operator gate (2026-11-18): refuse a row owned by an operator-gated session's handoff, or whose id starts with a
+    registry operator_gated_row_prefixes entry, unless operator-ratify/<slug>.json (rowprefix-<prefix>.json) exists."""
+    reg = rf.load_json(os.path.join(flags, SESSIONS_NAME)) or {}
+    rid = str(spec.get("id") or "")
+    prefixes = reg["operator_gated_row_prefixes"] if "operator_gated_row_prefixes" in reg else DEFAULT_GATED_ROW_PREFIXES
+    for pre in prefixes or []:
+        if pre and rid.startswith(pre):
+            ok, why = ratified(flags, f"rowprefix-{pre}")
+            rf.need(ok, f"OPERATOR-GATED: row {rid!r} matches gated prefix {pre!r}; only the operator may release it ({why})")
+    f = os.path.basename(handoff_ref.file_of(str(spec.get("handoff_task") or "").strip()) or "")
+    if not f:
+        return
+    m = PROMOTION_HANDOFF_RX.match(f)
+    if m:  # a production promotion handoff: released by the same version-prefix ratification
+        ok, why = ratified(flags, f"rowprefix-{m.group(1)}")
+        rf.need(ok, f"OPERATOR-GATED: handoff {f} is production kernel promotion; only the operator may release it ({why})")
+    for slug, e in (reg.get("sessions") or {}).items():
+        if isinstance(e, dict) and e.get("operator_gate") and os.path.basename(str(e.get("handoff") or "")) == f:
+            ok, why = ratified(flags, slug)
+            rf.need(ok, f"OPERATOR-GATED: handoff {f} is owned by operator-gated session {slug!r} "
+                        f"({e['operator_gate'].get('reason')}); only the operator may release it ({why})")
+
+
 def check_handoff(spec, repo=None):
     """The row belongs to a handoff: handoff_task must name an existing handoffs/active/<file>.md."""
     ht = str(spec.get("handoff_task") or "").strip()
@@ -1037,6 +1084,7 @@ def main(argv=None):
         if a.migrate:
             spec = rf.spec_from_legacy(spec, a.flags)
         rf.need(spec.get("estimate_s") is None or int(spec["estimate_s"]) >= MIN_ESTIMATE_S, "under 5 min: run it in your turn, not as a row")
+        check_operator_gate(spec, a.flags)
         refresh_view()
         check_handoff(spec)
         check_task_lint(spec)

@@ -176,7 +176,43 @@ def park(e: dict, reason: str, now_iso: str) -> None:
 
 
 def is_parked(e: dict) -> bool:
-    return bool(e.get("parked"))
+    """An operator gate is a park that only a ratification lifts (it also holds events queued)."""
+    return bool(e.get("parked")) or is_gated(e)
+
+
+# ---------------------------------------------------------------- operator gate (2026-11-18)
+# Operator-only work (e.g. kernel promotion v11): a session carrying operator_gate {"reason", "since"} is never spawned,
+# resumed, auto-unparked or auto-started; only `handoff_sessions.py unpark` with a valid ratification file lifts it.
+RATIFY_SUBDIR = "operator-ratify"
+RATIFY_KEYS = ("slug", "by", "at", "reason")
+
+
+def is_gated(e: dict) -> bool:
+    return isinstance(e, dict) and bool(e.get("operator_gate"))
+
+
+def ratify_dir(flags: str) -> str:
+    return os.path.join(flags, RATIFY_SUBDIR)
+
+
+def ratification(flags: str, slug: str) -> tuple[bool, str]:
+    """(ok, why) for <flags>/operator-ratify/<slug>.json: a JSON object with slug/by/at/reason, slug matching."""
+    p = os.path.join(ratify_dir(flags), f"{slug}.json")
+    try:
+        with open(p) as f:
+            d = json.load(f)
+    except FileNotFoundError:
+        return False, f"no ratification file {p}"
+    except (OSError, ValueError) as ex:
+        return False, f"unreadable ratification file {p}: {ex}"
+    if not isinstance(d, dict):
+        return False, f"ratification file {p} is not a JSON object"
+    missing = [k for k in RATIFY_KEYS if not str(d.get(k) or "").strip()]
+    if missing:
+        return False, f"ratification file {p} lacks {', '.join(missing)}"
+    if d["slug"] != slug:
+        return False, f"ratification file {p} names slug {d['slug']!r}, not {slug!r}"
+    return True, f"ratified by {d['by']} at {d['at']}: {d['reason']}"
 
 
 def unpark(e: dict) -> None:
@@ -197,6 +233,8 @@ def lease_verdict(e: dict, usage: dict | None, now: float, last_resume_ts: float
 def resume_verdict(e: dict, now: float, conf=None) -> tuple[bool, str]:
     """May a continue-driven resume happen? (ok, why). Not ok => the caller hard-parks with `why`."""
     conf = conf or DEFAULTS
+    if is_gated(e):
+        return False, f"operator-gate: {e['operator_gate'].get('reason')}"
     if is_parked(e):
         return False, f"parked: {e['parked'].get('reason')}"
     if int(e.get("noop_turns") or 0) >= int(conf.get("noop_park_turns", DEFAULTS["noop_park_turns"])):
@@ -219,6 +257,8 @@ def auto_unpark_eligible(e: dict, now: float, conf=None) -> bool:
     """R2/R5 guardrails: a GUARD park whose wait can end, never an operator or spawn-config-invalid park, and under
     auto_unpark_max_per_day in a rolling 24 h."""
     conf = conf or DEFAULTS
+    if is_gated(e):
+        return False
     reason = str((e.get("parked") or {}).get("reason") or "")
     if not reason or "operator" in reason or reason.startswith("spawn-config-invalid"):
         return False

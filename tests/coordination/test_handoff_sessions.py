@@ -455,3 +455,71 @@ def test_r5_no_effect_when_unparked_candidate_has_work(tmp_path, monkeypatch):
     monkeypatch.setattr(hs, "_go", lambda *a, **k: True)
     reg, _ = hs.dispatch_once(str(F), runner)
     assert hs.tg.is_parked(reg["sessions"]["h0"]) and not _digest(F)
+
+
+# ---- operator gate (operator-approved 2026-11-18): operator-only work is never started by automation ----
+def _gate(F, slug="h0", reason="kernel promotion v11"):
+    assert hs.main(["gate", slug, "--reason", reason, "--flags", str(F)]) == 0
+    return json.loads((F / "handoff-sessions.json").read_text())
+
+
+def _ratify(F, name, **kw):
+    d = F / "operator-ratify"
+    d.mkdir(exist_ok=True)
+    (d / f"{name}.json").write_text(json.dumps({"slug": name, "by": "operator", "at": "2026-11-18T00:00:00Z", "reason": "ok", **kw}))
+
+
+def test_gate_subcommand_sets_gate_and_parks(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1)
+    e = _gate(F)["sessions"]["h0"]
+    assert e["operator_gate"]["reason"] == "kernel promotion v11" and e["operator_gate"]["since"]
+    assert e["parked"]["reason"].startswith("operator-gate:")
+    assert hs.tg.is_parked(e) and hs.tg.is_gated(e)
+    with pytest.raises(SystemExit):
+        hs.main(["gate", "h0", "--flags", str(F)])
+
+
+def test_gated_session_never_spawned_nor_auto_unparked_and_events_kept(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1)
+    _lanes(monkeypatch, tmp_path)
+    _continue(monkeypatch)
+    reg = _gate(F)
+    e = reg["sessions"]["h0"]
+    e["parked"]["reason"] = "no progress evidence: x"  # even an auto-unpark-eligible park reason stays held
+    e["parked"]["at"] = "2000-01-01T00:00:00Z"
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    assert not hs.tg.auto_unpark_eligible(e, 0)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    for _ in range(3):
+        reg, st = hs.dispatch_once(str(F), runner)
+    assert calls == [] and hs.tg.is_gated(reg["sessions"]["h0"]) and not reg["sessions"]["h0"].get("auto_unparks")
+    assert any(ev["slug"] == "h0" for ev in st["queue"]), "gated events stay queued, never dropped"
+    log = (F / "handoff-sessions.log").read_text()
+    assert log.count("GATE-HELD h0") == 1 and "AUTO-UNPARK h0" not in log
+
+
+def test_gated_session_never_auto_started(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1)
+    reg = _gate(F)
+    assert hs.start_handoff(str(F), reg, {"handoff": "handoffs/active/h0.md", "slug": "h0"}, runner, {}, 0, 2) is None
+    assert calls == []
+    assert hs._go(str(F), "h0", reg["sessions"]["h0"], "p", runner, None, fresh=True) is False and calls == []
+
+
+def test_unpark_refused_then_lifted_with_ratification(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=2)
+    _gate(F)
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    assert hs.tg.is_gated(json.loads((F / "handoff-sessions.json").read_text())["sessions"]["h0"])
+    _ratify(F, "h0", slug="h1")  # names the wrong slug: rejected
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    _ratify(F, "h0", by="")  # missing key: rejected
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    _ratify(F, "h0")
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 0
+    e = json.loads((F / "handoff-sessions.json").read_text())["sessions"]["h0"]
+    assert not hs.tg.is_gated(e) and not hs.tg.is_parked(e)
+    log = (F / "handoff-sessions.log").read_text()
+    assert "GATE-LIFTED h0" in log and "UNPARK h0 (operator)" in log
+    assert hs.main(["unpark", "h1", "--flags", str(F)]) == 0  # ungated unpark unchanged
