@@ -5711,7 +5711,8 @@ arms beat 1 worker on **both** wall-clock and token cost at matched completion, 
 coordination tier was only ~11% of compute. The cost driver these sources identify is discarded
 work, not width — which is what FM-5 measures.
 
-- [ ] **FM-2 — AdaMAST fixed-catalog grading pilot.** [inference] Stage 1 (now): `adamast judge --taxonomy
+- [x] **FM-2 — AdaMAST fixed-catalog grading pilot.** ✅ 2026-11-18 (rc=0 pass; **FM-2 — AdaMAST fixed-catalog grading pilot.** Stage 1 filed for fm2-adamast-20261118: 23/23 valid, 8 strata, 0 failures/refusals; MAST-12 14/23, MAST-11 6/23, MAST-13 5/23. Evidence data/fanout_timing/fm2_adamast_summary.v1.json and docs/reference/fm2-adamast-pilot.md. Stage 2 separately scoped and FM-4-gated; crosswalk remains proposed, no faithfulness/accuracy acceptance. [belief: cc])
+  [inference] Stage 1 (now): `adamast judge --taxonomy
   adamast/core/mast.json` over a stratified sample of Codex rollouts and Claude transcripts, one LLM
   call per trace, no oracle required — the pipeline is deliberately outcome-blind
   (`outcome_blind_trace()` strips `outcome`/`final_gate_status` before the judge ever sees a trace).

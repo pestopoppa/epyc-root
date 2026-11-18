@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-78247efbef69e5b9",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent's final report claims to have found 'every inference row that was QUALIFIED... and then FAILED' and provides a table, but the trace is truncated before showing the full verification of the 22 owner-receipt rows mentioned in the scope section. The agent asserts 'I include them as the \"qualified by someone\" population' without showing the specific evidence for each of those 22 rows in the visible trace, relying on the assumption that the methodology applied to the 4 keeper-QUAL rows applies equally to the owner-receipt rows without explicit per-row verification shown in the trace.",
+          "confidence": "medium",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-13",
+          "name": "Weak verification",
+          "evidence": "The agent states 'grants/*.grant is deleted at end; start time taken from started= in grants/<id>.ended, end from time=.' This is a weak verification method for determining 'minutes-to-fail' because it relies on parsing fields from the .ended file rather than cross-referencing with the .grant file (which is deleted) or other independent timestamps. The agent does not verify that the 'started=' field in .ended accurately reflects the grant start time, nor does it check for discrepancies between the .ended mtime and the 'time=' field, which could lead to inaccurate 'minutes-to-fail' calculations.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795004965,
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-64e4cf7b3bdc645a",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The trace ends with a tool_use for `git diff --stat` and `rg` searches, but the trajectory is truncated before any verification results are shown or confirmed. The agent appears to be concluding the task based on the existence of the refactored code (\"The 1,091-line monolith is now ~80 lines of orchestration\") without demonstrating that the new pipeline actually works or that the specific task requirements (likely related to request usage tracking given the worktree name `codex-ni-20261024-request-usage-orch`) are met.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795007365,
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-87faa93cd45cea8d",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent performed a series of grep and sed commands to locate code and then immediately called SubagentHandback with a detailed report. There is no evidence of running the code, testing the logic, or verifying that the cited lines actually implement the described behavior in the current runtime context (e.g., checking if the env vars are actually set in the running environment or if the code paths are active). The task was a 'read-only code scan', but the verification of the *logic* described in the report (e.g., 'BURST_PREFER_SPLIT reorder') relies solely on static reading without confirming the state of the system or the actual execution flow.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795005426,
+        "warnings": []
+      }
+    }
+  ]
+}

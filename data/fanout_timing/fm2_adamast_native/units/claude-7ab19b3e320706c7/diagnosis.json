@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-7ab19b3e320706c7",
+      "failure_modes": [
+        {
+          "code": "MAST-1",
+          "name": "Disobedient to task specification",
+          "evidence": "The task asked for an 'overview of the current state... its tasks, their recommended order, and which are (non-)inference'. The agent instead performed extensive file editing, git operations, and state updates (e.g., 'Add live recipe and YARN state to the handoff', 'Refresh progress shard, stage both files'), which are maintenance actions, not the requested overview.",
+          "confidence": "high",
+          "severity": "major"
+        },
+        {
+          "code": "MAST-8",
+          "name": "Task derailment",
+          "evidence": "The agent drifted from the information retrieval task into operational maintenance, executing commands like 'git add handoffs/active/mi210-serving-program.md && git diff --cached --stat' and updating progress shards, which are tangential to providing the requested overview.",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795005253,
+        "warnings": []
+      }
+    }
+  ]
+}

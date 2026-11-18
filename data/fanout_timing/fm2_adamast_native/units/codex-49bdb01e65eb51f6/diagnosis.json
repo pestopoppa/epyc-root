@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "codex-49bdb01e65eb51f6",
+      "failure_modes": [
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "The agent runs a search command `rg -n 'exe_is_server|own_pid_vram|hip_library_maps|kfd_present' ...` which returns empty output (`Output:`), and immediately proceeds to inspect the `rocprofv3` source code without acknowledging the empty result or verifying if the expected fields are actually present in the logs. It assumes the investigation path is valid despite the lack of evidence from the search.",
+          "confidence": "medium",
+          "severity": "moderate"
+        },
+        {
+          "code": "MAST-10",
+          "name": "Ignored other agent's input",
+          "evidence": "The tool result for the command `rg -n 'exe_is_server|own_pid_vram|hip_library_maps|kfd_present' ...` is empty (`Output:`), indicating the terms were not found in the specified log files. The agent ignores this negative result and proceeds to inspect the `rocprofv3` binary source code, failing to update its plan based on the evidence that the expected markers are missing from the logs.",
+          "confidence": "medium",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795006864,
+        "warnings": []
+      }
+    }
+  ]
+}
