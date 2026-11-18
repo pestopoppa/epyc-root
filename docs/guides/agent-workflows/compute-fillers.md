@@ -212,3 +212,4 @@ Throughput*.
 - **`test-backend-ops` MUL_MAT with n>128 q8_0 on CDNA goes to hipBLAS, not MMQ.** Capture, trace and replay rows must use n<=128 or they profile the wrong kernel.
 - **rocprofv3 is at `/opt/rocm/bin/rocprofv3`** (not on PATH).
 - **The commit hook misreads `git commit -qF <file>` as a pathspec.** Use separate flags: `git commit -q -F <file>`.
+- **CPU speed rows on this host need a quiet-host booking (2026-11-18).** Co-tenants keep foreign busy at 25-50%; the 25% foreign filter voided every c15-fold-cpu-r2 visit. Book shape quiet-host, regions 0-95, still pin the servers to q1+q2 (24-71) with a literal `--threads 48`, and keep the foreign-load sampler informational (see c15-cpu-fa-splitkv-speed-20261118).
