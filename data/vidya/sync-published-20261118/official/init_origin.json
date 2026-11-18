@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "git",
+    "init",
+    "--bare",
+    "-b",
+    "main",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/origin.git"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run",
+  "exit": 0
+}

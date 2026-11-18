@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "git",
+    "config",
+    "core.hooksPath",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary/.git/hooks"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary",
+  "exit": 0
+}

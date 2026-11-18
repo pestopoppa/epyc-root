@@ -1,0 +1,8 @@
+{
+  "argv": [
+    "bash",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary/scripts/vidya/install_sync_hook.sh"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb/native-run/primary",
+  "exit": 0
+}
