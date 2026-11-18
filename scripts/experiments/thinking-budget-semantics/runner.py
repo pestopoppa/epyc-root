@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -19,10 +20,11 @@ sys.path.insert(0, str(HERE))
 from prepare import (ARMS, BUILD, BUILD_PINS, COMMIT, MAX_TOKENS, PORT, REQUEST_S,
                      ROW, SCRATCH, STARTUP_S, WINDOW_S, check_digest, digest,
                      read_json, verify_packet)
+from native_contract import read_terminal
 
 RESULT = SCRATCH / "native/RESULT.json"
 SMOKE_DIR = f"{ROW.rsplit('-', 1)[0]}-native"
-SCHEMA = "epyc.thinking-budget-semantics.native.v1"
+SCHEMA = "epyc.thinking-budget-semantics.native.v2"
 CHAT_PATH = "/v1/chat/completions"
 RESPONSE_LIMIT = 1024 * 1024
 
@@ -46,46 +48,6 @@ def verify():
         check_digest(BUILD / name, sha)
     live.verify_inputs({**inputs, "packet_sha256": read_json(HERE / "sha256.json")})
     return inputs, live, owner
-
-
-def read_terminal(payload, request):
-    body = json.loads(payload)
-    if body["object"] != "chat.completion" or body["model"] != request["model"]:
-        raise ValueError("native response object or served model differs")
-    choice, = body["choices"]
-    reason = choice["finish_reason"]
-    message = choice["message"]
-    if reason not in {"stop", "length"} or message["role"] != "assistant":
-        raise ValueError("native response lacks an ordinary final chat choice")
-    reasoning, content = message.get("reasoning_content"), message.get("content")
-    if any(value is not None and not isinstance(value, str) for value in (reasoning, content)):
-        raise ValueError("native response chat text has an invalid type")
-    usage = body["usage"]
-    prompt, completion, total = (usage[name] for name in (
-        "prompt_tokens", "completion_tokens", "total_tokens",
-    ))
-    if (any(type(count) is not int for count in (prompt, completion, total))
-            or prompt <= 0 or not 0 < completion <= request["max_tokens"]
-            or total != prompt + completion):
-        raise ValueError("native usage is missing, inconsistent or outside the token cap")
-    verbose = body["__verbose"]
-    tokens = verbose["tokens"]
-    if not isinstance(tokens, list) or not tokens or any(type(token) is not int for token in tokens):
-        raise ValueError("native response lacks decoded token IDs")
-    return {
-        "finish_reason": reason,
-        "usage": usage,
-        "reasoning_field_present": "reasoning_content" in message,
-        "reasoning_content": reasoning,
-        "content": content,
-        "reasoning_nonempty": bool(reasoning and reasoning.strip()),
-        "token_ids": tokens,
-        "n_token_ids": len(tokens),
-        "raw_content": verbose.get("content"),
-        "rendered_prompt": verbose.get("prompt"),
-        "generation_settings": verbose.get("generation_settings"),
-        "system_fingerprint": body.get("system_fingerprint"),
-    }
 
 
 def request_timed_out(_signum, _frame):
@@ -170,6 +132,7 @@ def run_attempts(window, cells, process, owner, key, deadline, live, inputs, res
 def run_window(window, dry):
     results, error, exited = [], None, False
     manifest_sha = None
+    started = datetime.now(timezone.utc).isoformat()
     window_errors = (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, http.client.HTTPException)
     planned = ARMS[:1] if dry else ARMS
     try:
@@ -195,6 +158,10 @@ def run_window(window, dry):
             "source_commit": COMMIT, "argv": argv, "affinity": cpus,
             "library_path": env["LD_LIBRARY_PATH"], "effective_deadline": deadline,
             "request_wall_s": REQUEST_S, "max_tokens": MAX_TOKENS, "planned": planned,
+            "started_at": started,
+            "allocator": {name: os.environ[name] for name in (
+                "FILLER_ID", "FILLER_CPUS", "FILLER_THREADS", "FILLER_DEADLINE",
+            )},
         })
         live.check_window(deadline)
         linkage = subprocess.run(
@@ -215,7 +182,12 @@ def run_window(window, dry):
                 run_attempts(window, cells, process, owner, key, deadline, live, inputs, results)
             finally:
                 stop_process(process)
-                exited = process.poll() is not None and not owner.listen_inodes(PORT)
+                listeners = sorted(owner.listen_inodes(PORT))
+                exited = process.returncode is not None and not listeners
+                atomic_json(window / "CLEANUP.json", {
+                    "pid": process.pid, "returncode": process.returncode,
+                    "remaining_listener_inodes": listeners,
+                })
     except window_errors as exc:
         error = f"{type(exc).__name__}: {exc}"
     completed = sum(item["status"] == "captured" for item in results)
@@ -227,6 +199,7 @@ def run_window(window, dry):
         "unattempted_unknown": list(planned[len(results):]),
         "unit": results[-1]["unit"] if results else None,
         "packet_manifest_sha256": manifest_sha,
+        "started_at": started, "finished_at": datetime.now(timezone.utc).isoformat(),
         "files_sha256": {str(path.relative_to(window)): digest(path)
                          for path in sorted(window.rglob("*")) if path.is_file()},
     }

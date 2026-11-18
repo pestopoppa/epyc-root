@@ -449,6 +449,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            _files("beliefs.jsonl", "*/beliefs.jsonl"),
            note="Prospective LB4.9 native diagnostic OBSERVATION only; strict process/output custody; no historical warrant",
            task="VB-LB49-COMBINED-DIAGNOSTIC-WRITE"),
+    Source("thinking-budget-semantics", "thinking_budget_semantics", _files("RESULT.json"),
+           note="One observation per complete native request; original official results require their published digests; "
+                "partial/UNKNOWN, smoke, and custody mismatches refuse",
+           task="VB-TB-SEMANTICS-WIRE"),
     Source("gpu-leak-probe", "gpu_leak_probe",
            _files("gpu_leak_probe.beliefs.jsonl", "*/gpu_leak_probe.beliefs.jsonl"),
            note="GPU-LEAK-1/1d own-PID VRAM slope per arm (slopes re-derived from the recorded series), "

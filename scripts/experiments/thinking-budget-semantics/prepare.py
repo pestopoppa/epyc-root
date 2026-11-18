@@ -11,6 +11,8 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+from native_contract import ARMS, request_cells
+
 HERE = Path(__file__).resolve().parent
 ROOT = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly")
 DCP12 = ROOT / "dcp12"
@@ -37,14 +39,9 @@ PROFILE = HEADROOM if (HERE / PROFILE_FILE).exists() else ORIGINAL
 ROW, SCRATCH, PORT = PROFILE.row, PROFILE.scratch, PROFILE.port
 REQUEST_S, MAX_TOKENS = PROFILE.request_s, PROFILE.max_tokens
 ORIGINAL_MANIFEST_SHA256 = "7ec7fcfdef02afdda226a50ee04f71c5d6cd985cb2d9d20fea92de5b7da9fb55"
-BUDGET = 8
-PROMPT = (
-    "A bus has 42 passengers. At the first stop one third leave and 9 board. "
-    "At the next stop 5 leave and twice that many board. How many passengers "
-    "are on the bus now? Give the final number."
-)
-ARMS = ("budget-omitted", "budget-8", "thinking-disabled")
-LOCAL_FILES = ("prepare.py", "runner.py", "launcher.sh", "spec.json", "README.md", "test_protocol.py")
+HEADROOM_MANIFEST_SHA256 = "b49d69a7b5978ad039b00118f094669daa94e30295ea5d9ff0f74fd82c3908c7"
+LOCAL_FILES = ("prepare.py", "runner.py", "native_contract.py", "launcher.sh", "spec.json",
+               "README.md", "test_protocol.py")
 DCP_PINS = {
     "inputs.json": "b8a03a2f9895acb9b16e7fe83590ef686458c1b982e89bbed51380091f534b83",
     "prior-model-receipt.json": "3fcd6c2d01901a2a7266367b01179613ee9dd24109f6689d53e1dc183a8daaff",
@@ -82,26 +79,7 @@ def check_digest(path, expected):
 
 
 def requests(model, profile=PROFILE):
-    registered = []
-    for arm in ARMS:
-        body = {
-            "model": model,
-            "messages": [{"role": "user", "content": PROMPT}],
-            "stream": False,
-            "max_tokens": profile.max_tokens,
-            "temperature": 0.0,
-            "top_k": 1,
-            "seed": 20261118,
-            "cache_prompt": False,
-            "verbose": True,
-            "return_tokens": True,
-            "reasoning_format": "deepseek",
-            "chat_template_kwargs": {"enable_thinking": arm != "thinking-disabled"},
-        }
-        if arm == "budget-8":
-            body["thinking_budget_tokens"] = BUDGET
-        registered.append({"unit": arm, "body": body})
-    return registered
+    return request_cells(model, profile.max_tokens)
 
 
 def retain_v10_source(staged):
@@ -123,6 +101,9 @@ def verify_packet(packet, profile=PROFILE):
         raise ValueError("packet manifest must be a regular file")
     hashes = read_json(pins)
     expected_files = set((*LOCAL_FILES, *DCP_PINS, *BUILD_PINS, "requests.json", "v10-source.json"))
+    historical_pin = ORIGINAL_MANIFEST_SHA256 if profile == ORIGINAL else HEADROOM_MANIFEST_SHA256
+    if digest(pins) == historical_pin:
+        expected_files.remove("native_contract.py")
     if profile == HEADROOM:
         expected_files.add(PROFILE_FILE)
     if set(hashes) != expected_files:
@@ -172,10 +153,10 @@ def prepare(profile=PROFILE):
         fcntl.flock(lock, fcntl.LOCK_EX)
         if packet.exists():
             verify_packet(packet, profile)
-            # The original packet was registered before the headroom profile existed.
+            # Keep both official packets registered under their original producer code.
             pins = packet / "sha256.json"
-            if not (profile == ORIGINAL and not pins.is_symlink()
-                    and digest(pins) == ORIGINAL_MANIFEST_SHA256):
+            historical_pin = ORIGINAL_MANIFEST_SHA256 if profile == ORIGINAL else HEADROOM_MANIFEST_SHA256
+            if digest(pins) != historical_pin:
                 for name in set(LOCAL_FILES) | generated.keys():
                     expected = (hashlib.sha256(generated[name].encode()).hexdigest()
                                 if name in generated else digest(HERE / name))
