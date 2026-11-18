@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "authority": "software-control-only",
+  "control_count": 2,
+  "baseline_visible": 0,
+  "candidate_visible": 16,
+  "excluded_count": 4,
+  "refusal_control_count": 3,
+  "native_q38_acceptance_count": 0,
+  "cpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "source_commit": "d9f7a53db8e6fb0ba51d5b0cc597011da12e4338",
+  "research_baseline_commit": "6decaeda4481a841b3a85b55b0be87a6963b3042",
+  "source_pins_sha256": "0f04f9bb15f0740ddd4de848c964964f5dca539fd1153db0ae8b76ba70de2128",
+  "control_receipts_sha256": {
+    "baseline": "a4d821ddb0b600d5f3636800047bcba1906c1dc4ad62d92d36c4074ad297e418",
+    "candidate": "6fd09f0615263909f34099b1dff000a4ccad1fca3e863b93b3a423dabc38b076"
+  }
+}

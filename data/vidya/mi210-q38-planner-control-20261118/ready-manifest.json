@@ -1,0 +1,66 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "control_count == 2 and baseline_visible == 0 and candidate_visible > 0 and excluded_count == 4 and refusal_control_count == 3 and native_q38_acceptance_count == 0 and refusal_count == 0",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-MI210-PAIRED-DIAG-WIRE",
+ "id": "vb-mi210-q38-planner-control-20261118",
+ "keep": [
+  "reader/**",
+  "research-base/**",
+  "research-candidate/**",
+  "launcher/**",
+  "*.py",
+  "*.json",
+  "*.patch",
+  "official/**",
+  "official-*/**",
+  "publisher-smoke-*/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/launcher/launch.sh",
+  "sha256": "243c40b21e6d621246495bccf3d6271cff43600089635f536eff4dc207023cea"
+ },
+ "lineage": "vidya-mi210-q38-planner-control",
+ "min_window_s": 120,
+ "notes": "Software-only finite structural control on two pinned Research planner variants, four actual granted CPUs, no model/server/inference. Higher passing control count is better within this two-case schedule. Checkpoint the original omission, exact authored GPU weight digest visibility and wrong/missing/invalid digest and CPU exclusions. Stop on answer once both controls and three synthetic reader refusal controls pass. Stop on drift, refusal, STOP, or the earlier of grant deadline and 300 seconds, retaining UNKNOWN. Independent smoke and official results. Supplies zero native Q38 observations or paired effect verdicts.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:48: untestable prose prerequisite: 'after four sealed valid launches; stop-on-futility on STOP/deadline, load/request failure, invalid in-request residency/'"
+ ],
+ "published_at": "2026-11-18T17:45:26Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T17:45:26Z",
+  "session": "01a1efba-a0dd-7b01-a940-cda202bdcb07",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/STOP",
+ "total_units": 2,
+ "unit_key": "control_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/engine-work"
+}
