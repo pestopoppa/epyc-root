@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "push",
+    "-u",
+    "origin",
+    "main"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed",
+  "exit": 0
+}
