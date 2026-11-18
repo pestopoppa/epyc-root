@@ -1,0 +1,68 @@
+{
+  "certificate": {
+    "_type": "epyc.vidya/certificate/v1",
+    "as_of": "2026-11-18T19:09:41Z",
+    "certificate_hash": "sha256:1526993d728e28d86f5c1506a2a6d9e0da9b53484c693a0ede8b0a981aa2fec3",
+    "disjoint_supports": 1,
+    "disjoint_supports_is_under_approximation": false,
+    "frontier": 3,
+    "input_attestations": [
+      "sha256:95f50521e97cd157f425803ef44a8b73ee29a6191cdb932f18e42060dc336c4c"
+    ],
+    "inputs": [
+      {
+        "Q": "Judged",
+        "T": "Located",
+        "label": "evd_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+        "side": "pro"
+      }
+    ],
+    "policy": {
+      "digest": "sha256:af001d84636cedae767d7bedd2d0952c655c0983b9975ca83ddc1a726d88aa54",
+      "fields": {
+        "allow_conflicted": false,
+        "allow_labelled_stale": false,
+        "allow_review_required": false,
+        "conjunctive": true,
+        "floor": {
+          "Q": "Judged",
+          "T": "Located"
+        },
+        "min_disjoint_supports": 1,
+        "standard": "DV",
+        "use": "observation"
+      },
+      "standard": "DV"
+    },
+    "proves": "that this derivation followed the registered evidence and rules at the stated frontier -- NOT that the underlying proposition is true",
+    "resource": {
+      "claim_id": "clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+      "question": "observation"
+    },
+    "result": "PASSED",
+    "satisfying_paths": [
+      "evd_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6"
+    ],
+    "verified_levels": {
+      "con": {
+        "Q": "Q0",
+        "T": "T0"
+      },
+      "pro": {
+        "Q": "Judged",
+        "T": "Located"
+      },
+      "standard_met": "DV"
+    },
+    "verifier": {
+      "fold_version": "fold",
+      "id": "vidya.gate"
+    }
+  },
+  "claim_id": "clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+  "reasons": [
+    "DV met at Judged/Located"
+  ],
+  "required_next_actions": [],
+  "result": "allow"
+}

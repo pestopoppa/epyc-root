@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "git",
+    "config",
+    "core.hooksPath",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed/.git/hooks"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed",
+  "exit": 0
+}
