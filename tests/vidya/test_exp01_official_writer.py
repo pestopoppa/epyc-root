@@ -5,6 +5,7 @@ import importlib.util
 import json
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,9 @@ SOURCE = ROOT / "scripts/experiments/exp01-pilot/capture.py"
 SPEC = importlib.util.spec_from_file_location("exp01_official_capture", SOURCE)
 capture = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(capture)
+GRANT_START = "2026-11-18T15:00Z"
+GRANT_END = "2026-11-18T16:30Z"
+NOW = datetime(2026, 11, 18, 15, 10, 30, tzinfo=timezone.utc).timestamp()
 
 
 @pytest.fixture
@@ -29,11 +33,13 @@ def packet(tmp_path, monkeypatch):
     modelset.write_text("# synthetic fixture\n")
     (packet / "look.py").write_text("# synthetic fixture\n")
     (packet / "SOURCE.json").write_text("{}\n")
-    (packet / "fixture.grant").write_text("id=fixture regions=100-103\n")
-    date = time.time()
+    (packet / "fixture.grant").write_text(
+        f"id=fixture regions=100-103 start={GRANT_START} end={GRANT_END}\n"
+    )
+    monkeypatch.setattr(time, "time", lambda: NOW)
     for key, value in dict(FILLER_ID="fixture", FILLER_CPUS="100-103", FILLER_THREADS="4",
-                           FILLER_GRANTS_DIR=str(packet), FILLER_DEADLINE=str(date + 60),
-                           EXP01_CONTROL_END=str(date + 30), FILLER_STOPFILE=str(packet / "STOP"),
+                           FILLER_GRANTS_DIR=str(packet), FILLER_DEADLINE=str(NOW + 60),
+                           EXP01_CONTROL_END=str(NOW + 30), FILLER_STOPFILE=str(packet / "STOP"),
                            MODELSET=str(modelset), IK="fixture-instrument", LAUNCHES="2",
                            PP="512", TG="128", CAP_S="30", EXP01_JOB_SOURCE=str(SOURCE)).items():
         monkeypatch.setenv(key, value)
@@ -44,6 +50,42 @@ def packet(tmp_path, monkeypatch):
         "trees": {"fixture-instrument": "a" * 40},
     })
     return packet
+
+
+def test_official_writer_preserves_original_allocator_grant_without_id(packet, monkeypatch):
+    source = ROOT / "data/vidya/exp01-input-recovery-20261118/continuation/full-complete/grant.original"
+    raw = source.read_bytes()
+    grant = packet / "fixture.grant"
+    grant.write_bytes(raw)
+    monkeypatch.setenv("FILLER_CPUS", "0-23")
+    monkeypatch.setenv("FILLER_THREADS", "24")
+    monkeypatch.setattr(os, "sched_getaffinity", lambda _: set(range(24)))
+
+    run = capture.begin(packet / "official", mode="official")
+
+    assert run["grant"] == {"raw": raw.decode("utf-8"), "identity": capture.artifact(grant)}
+    assert run["allocation"]["FILLER_ID"] == "fixture"
+
+
+@pytest.mark.parametrize(
+    ("row_id", "start", "end", "reason"),
+    [
+        ("other", GRANT_START, GRANT_END, "grant source differs"),
+        ("other id=fixture", GRANT_START, GRANT_END, "grant source differs"),
+        ("fixture", "2026-11-18T15:11Z", GRANT_END, "outside grant window"),
+        ("fixture", GRANT_START, "2026-11-18T15:09Z", "outside grant window"),
+        ("fixture", GRANT_START, "2026-11-18T15:11Z", "outside grant window"),
+        ("fixture", GRANT_START, "invalid", "invalid grant window"),
+    ],
+)
+def test_official_writer_rejects_wrong_grant_identity_or_window(packet, row_id, start, end, reason):
+    (packet / "fixture.grant").write_text(
+        f"id={row_id} regions=100-103 start={start} end={end}\n"
+    )
+    out = packet / "official"
+    with pytest.raises(ValueError, match=reason):
+        capture.begin(out, mode="official")
+    assert not out.exists()
 
 
 def test_official_writer_separates_modes_and_refuses_smoke_or_resource_drift(packet, monkeypatch):

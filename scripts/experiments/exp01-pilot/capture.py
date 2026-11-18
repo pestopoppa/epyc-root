@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 
 P = Path(__file__).resolve().parent
@@ -117,11 +118,24 @@ def begin(out, mode="capture-control"):
     identity = artifact(grant)
     if identity["size"] > 65536:
         raise ValueError("unbounded grant")
-    grant_raw = grant.read_text()
-    fields = dict(field.split("=", 1) for field in grant_raw.split())
-    if (hashlib.sha256(grant_raw.encode()).hexdigest() != identity["sha256"]
-            or fields["id"] != row_id or fields["regions"] != allocation["FILLER_CPUS"]):
+    grant_bytes = grant.read_bytes()
+    grant_raw = grant_bytes.decode("utf-8")
+    tokens = grant_raw.split()
+    fields = dict(field.split("=", 1) for field in tokens)
+    if (len(grant_bytes) != identity["size"]
+            or hashlib.sha256(grant_bytes).hexdigest() != identity["sha256"]
+            or len(fields) != len(tokens)
+            or fields.get("id", row_id) != row_id or fields.get("regions") != allocation["FILLER_CPUS"]):
         raise ValueError("grant source differs from the allocated row")
+    try:
+        start, end = (
+            datetime.strptime(fields[key], "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc).timestamp()
+            for key in ("start", "end")
+        )
+    except (KeyError, ValueError) as exc:
+        raise ValueError("invalid grant window") from exc
+    if not start <= time.time() < deadline <= end:
+        raise ValueError("allocation deadline or current time outside grant window")
     if mode == "official":
         planned = _official_plan(pins, allocation)
     elif mode == "capture-control" and len(mask) == 4:

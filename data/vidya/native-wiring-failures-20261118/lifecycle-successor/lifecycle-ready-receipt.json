@@ -1,0 +1,32 @@
+{
+  "external_dependency": {
+    "acquisition_terminal": "rc=75 reason=operator_2026-11-18:_v11_HOLD,_no_v11_prep_until_operator_ratifies at=2026-11-18T13:12:02Z",
+    "acquisition_verdict": "/mnt/raid0/llm/tmp/compute-flags/filing-done/v9-8-contention-matrix-cpu-20261118.verdict.json",
+    "next_event": "Operator releases production relaunch/measurement hold and the matrix owner obtains a genuinely current matrix for the production lineup in a quiet window. Install the measured matrix at the canonical path and require the default freshness validator to return 0. Recheck successor precondition before publication."
+  },
+  "matrix": {
+    "fresh_alternative": "No genuine fresher measurement identified in the inspected scratch candidates.",
+    "measured_at": "2026-09-24T18:51:53.131277+00:00",
+    "mtime": "2026-10-03T04:41:08.460749492Z",
+    "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/contention_matrix.yaml",
+    "sha256": "092880eb3ddeb322afe16a251453b5ac11cbf492ddcecb21c5b85a552270100f",
+    "validator_exit": 2,
+    "validator_output": "FAIL: contention matrix is STALE (live topology hash=560d489b or file age > 30 days).\n      Run: python scripts/server/contention_matrix.py"
+  },
+  "original_retained": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/RESULT.json",
+  "published": false,
+  "row": "vb-v9-8-lifecycle-native-20261118-r2",
+  "status": "blocked_on_authorized_fresh_contention_matrix",
+  "successor": {
+    "current_lane_commit": "7dd5bd58088efc0cd96ca6fcb0a0d5262eae18fa",
+    "launch": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/successor/launch.sh",
+    "manifest": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/successor/SOURCE.sha256",
+    "manifest_sha256": "b7e9ef6be3828692e6c4f43e2c2557966472b005d14218ec7e7de920f39c4989",
+    "precondition_exit": 1,
+    "precondition_output": "REFUSED: FAIL: contention matrix is STALE (live topology hash=560d489b or file age > 30 days).\n      Run: python scripts/server/contention_matrix.py",
+    "publication_after_matrix_gate": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/successor/row.spec.json",
+    "snapshot_base": "62980727b01bb2713b0e14f2a65ebf0ad9a667ab",
+    "source_byte_comparison": "All 26 captured source hashes match the current lane; existing sealed snapshot retained.",
+    "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/successor/row.spec.json"
+  }
+}

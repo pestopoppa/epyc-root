@@ -1,0 +1,194 @@
+{
+  "artifacts": {
+    "bench": {
+      "ctime_ns": 1779973361011696942,
+      "dev": 2431,
+      "ino": 97265207,
+      "mtime_ns": 1779973361011180323,
+      "path": "/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench",
+      "sha256": "58194ccf81d06dd66051bc6bfcb6345556a23cd35bd0df9fcc56a04a5c02af55",
+      "size": 3776544
+    },
+    "cli": {
+      "ctime_ns": 1779973361135946008,
+      "dev": 2431,
+      "ino": 97265978,
+      "mtime_ns": 1779973361134945993,
+      "path": "/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-cli",
+      "sha256": "34ce38ab3077b64daeb87c3b3bee5327103859f27c7248bda04f046b63953fe8",
+      "size": 3689872
+    },
+    "instrument-lib:build/ggml/src/libggml.so": {
+      "ctime_ns": 1779973360654542291,
+      "dev": 2431,
+      "ino": 97265708,
+      "mtime_ns": 1779973360653938904,
+      "path": "/mnt/raid0/llm/ik_llama.cpp/build/ggml/src/libggml.so",
+      "sha256": "06d6cfac48484c086750fd13a572f3cd188861e62fa7356d2641eb5ac0c8b74b",
+      "size": 33227312
+    },
+    "instrument-lib:build/src/libllama.so": {
+      "ctime_ns": 1779973360805062886,
+      "dev": 2431,
+      "ino": 97261691,
+      "mtime_ns": 1779973360803941116,
+      "path": "/mnt/raid0/llm/ik_llama.cpp/build/src/libllama.so",
+      "sha256": "68aa5be8cb3564a87f1bb89c41d04d21a0c1ebb40919f5843ba531b1b14a6b47",
+      "size": 2963056
+    },
+    "interpreter": {
+      "ctime_ns": 1794130843654593511,
+      "dev": 44,
+      "ino": 65847589,
+      "mtime_ns": 1788171506000000000,
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "size": 8020928
+    },
+    "items": {
+      "ctime_ns": 1795008267460800752,
+      "dev": 2431,
+      "ino": 213781175,
+      "mtime_ns": 1794973675210703681,
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/items/exp01-items-24.jsonl",
+      "sha256": "96dc98cf6b2cfdd65897f1deaf2b6f8481225d013851262cf08d6171f150fdbc",
+      "size": 11861
+    },
+    "linkage_verifier": {
+      "ctime_ns": 1790564217591781638,
+      "dev": 2431,
+      "ino": 96479714,
+      "mtime_ns": 1790564217591781638,
+      "path": "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+      "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+      "size": 8875
+    },
+    "modelset": {
+      "ctime_ns": 1795015657987766810,
+      "dev": 2431,
+      "ino": 208594352,
+      "mtime_ns": 1795015657987766810,
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/models.env",
+      "sha256": "fc762117386f4f419a907cfe257e91762799b66183227d855276adcefe34b1cf",
+      "size": 1096
+    },
+    "producer": {
+      "ctime_ns": 1795015609213390796,
+      "dev": 2431,
+      "ino": 208594342,
+      "mtime_ns": 1795015209807044763,
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2/job_r3.sh",
+      "sha256": "dbba2fdc3116a6f08cd5d1e8d638f51100bc1b0e04a67689a659e3f969c8c3ef",
+      "size": 6823
+    },
+    "recovery_seal": {
+      "ctime_ns": 1795015196611997285,
+      "dev": 2431,
+      "ino": 116555106,
+      "mtime_ns": 1795015196610997281,
+      "path": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/exp01-input-recovery-20261118/continuation/full-complete/SEALED-RECEIPT.json",
+      "sha256": "48ded11a1f7f2267264d512d35f6d318b64bc0716b2a4bdb6e447a618ee40fa6",
+      "size": 12440
+    },
+    "recovery_terminal": {
+      "ctime_ns": 1795015005062624685,
+      "dev": 2431,
+      "ino": 215018197,
+      "mtime_ns": 1795015005062624685,
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/RESULT.json",
+      "sha256": "b09d136eafd95e3badf078f869d8a95966d4257f51ca46cbdc1586ec181f488a",
+      "size": 3329
+    },
+    "smoke_pin": {
+      "ctime_ns": 1795008267462800775,
+      "dev": 2431,
+      "ino": 208857027,
+      "mtime_ns": 1794973976379261708,
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/inputs/SMOKE-INPUT-PIN.json",
+      "sha256": "53c710a9df1ca26f4eaca1c9ce6c4fd0c5e7bbac64eab4987d7cfa54d0401828",
+      "size": 269
+    },
+    "tooling_manifest": {
+      "ctime_ns": 1795008506296513647,
+      "dev": 2431,
+      "ino": 208857850,
+      "mtime_ns": 1795008506295513636,
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/TOOLING-PINS.json",
+      "sha256": "7c5b4f60ea0c41c93b9cc46667fec4b740d780a49bae3680612af9715bd1a055",
+      "size": 3939
+    },
+    "validity_interpreter": {
+      "ctime_ns": 1794130875929531299,
+      "dev": 44,
+      "ino": 65966597,
+      "mtime_ns": 1794130875929531299,
+      "path": "/home/node/.local/share/uv/python/cpython-3.13.17-linux-x86_64-gnu/bin/python3.13",
+      "sha256": "06176065174ea24f24d109e55a374022ef5c4390234516c683d4726431be027d",
+      "size": 31624264
+    }
+  },
+  "models": {
+    "IQ2KT": {
+      "basis": "sealed one-time pregrant recovery digest and exact file metadata",
+      "metadata": {
+        "ctime_ns": 1795015005061624684,
+        "dev": 2431,
+        "ino": 215018172,
+        "mtime_ns": 1795015004133624528,
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/continuation/official/7e48d529b4cc483aa98db09d818d27a1/Qwen3.6-35B-A3B-IQ2_KT.gguf",
+        "size": 10217312160
+      },
+      "sha256_pinned": "fb50f4d97586a5a8ceccbcee789c33da0ca53368488ae6bd3619fdde4d0ab5f5"
+    },
+    "IQ2XXS": {
+      "basis": "sealed one-time pregrant recovery digest and exact file metadata",
+      "metadata": {
+        "ctime_ns": 1795010531778948711,
+        "dev": 2431,
+        "ino": 209119991,
+        "mtime_ns": 1795010530954939152,
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf",
+        "size": 9588011424
+      },
+      "sha256_pinned": "026ba0b90e8082945c55c097e6e1427e852c0e7eef9c6e6c9f145cc508faf48a"
+    },
+    "IQ4KT": {
+      "basis": "sealed one-time pregrant recovery digest and exact file metadata",
+      "metadata": {
+        "ctime_ns": 1795012550229810768,
+        "dev": 2431,
+        "ino": 209119993,
+        "mtime_ns": 1795012549394802811,
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-IQ4_KT.gguf",
+        "size": 17723187104
+      },
+      "sha256_pinned": "ac711336f4b02ca6e36df162a2e2290b1bd419d09926151c08526121032eae9e"
+    },
+    "Q4KM": {
+      "basis": "sealed one-time pregrant recovery digest and exact file metadata",
+      "metadata": {
+        "ctime_ns": 1795010237369526072,
+        "dev": 2431,
+        "ino": 209119989,
+        "mtime_ns": 1795010236577516840,
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/models/Qwen3.6-35B-A3B-Q4_K_M.gguf",
+        "size": 21125552544
+      },
+      "sha256_pinned": "89702b021ff0527be9591519d32bf33b32055c7c06d223a8e6fbd34296c3e972"
+    }
+  },
+  "smoke_fixture": {
+    "metadata": {
+      "ctime_ns": 1769627064381075183,
+      "dev": 2431,
+      "ino": 188775692,
+      "mtime_ns": 1765590200108301020,
+      "path": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+      "size": 804753824
+    },
+    "sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb"
+  },
+  "trees": {
+    "/mnt/raid0/llm/ik_llama.cpp": "c04881fc0f31dae5f8ec59c1d683889f0c9dfa11"
+  }
+}
