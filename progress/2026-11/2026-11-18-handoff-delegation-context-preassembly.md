@@ -147,3 +147,11 @@ TB-SEM-1b official row thinking-budget-semantics-headroom-20261118 ended rc=0 wi
 ## 16:54Z — File the registered TB-SEM-1b native headroom outcome and preserve censored semantics.
 
 Commit retry after the PII gate flagged duplicate filesystem nanosecond timestamps in the public result summary. Removed the unnecessary duplicated stat fields from that summary; original native receipt and digest remain intact. The previous wrapup already applied the TB-SEM-1b tick. No gate or exemption changed.
+
+## 17:00Z — Integrate sealed nine-task match-anchor replay/current-source port and file PRB-T4 CPU pilot
+
+Closed DCP-10-ANCHOR-REPLAY: sealed original nine-task comparison retained 72 candidates and 27 plans per arm. Ten Python FULL fallbacks became slices; included files at 2k/4k/8k changed 0/1/4 to 5/9/14, with three gold files per budget but still zero gold-line overlap. Current-source proposed patch at orchestrator 52db82df passed 130 focused mock tests and Ruff. Preserved empty/error denominators, original writable-ancestor refusal and trusted-packer mismatch; no application enablement, trusted score or population claim.
+
+Filed prb-t4-cpu-pilot-20261118: rc=0, 16/16 coverage PASS, clean teardown, source-scored baseline/static/TALE correctness 2/4, 2/4, 1/4. Estimator-inclusive tokens 2266/1789/3615; summed request seconds 128.945/75.393/154.333. Lower costs favorable. Full PRB-T4 remains open; no adoption inference from four items. file_result returned existing FILED receipt; alert 9d435fdce46db63be2fe1306 acknowledged. Durable native-result digest and per-suite costs in docs/research/prb-t4-cpu-pilot-results-20261118.json. Existing source-wiring tasks retain reader/canary work.
+
+Next SHA-rank-four original-source lexical task packet prepared under scratch dcp10-shard4, input seal edd06fc73906b8eb0293a24c614364e7206ae3bac7702e8f1647640e715e323a. Publisher correctly classifies DCP-10 as non-inference and rejects a compute row; its 90-second payload also falls below the 300-second row minimum. No row published, no timing inflation or bypass, and no official rank-four discovery run. Continue as deterministic non-inference work. DCP-12 calibration remains qualified-armed; file when dispatched. Session-bus drain could not run because this handoff session has no roster id; no other session identity was used.
