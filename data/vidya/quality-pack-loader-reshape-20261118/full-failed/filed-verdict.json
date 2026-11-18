@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "rc=1; production tensor-log witness for blk.0.hc_attn_norm.weight missing under strict parser. No captures or completed comparison; owned PID1077265 exited and listener closed. Original failure retained, no bank or promotion authority.",
+  "verdict": "fail"
+ },
+ "answer": null,
+ "at": "2026-11-18T02:35:50+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-18T02:33:04Z reason=job-rc-1:exited",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-loader-reshape-cpu-20261118.ended",
+ "filed_at": "2026-11-18T02:35:50+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-LOADER-DIAG",
+ "id": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-loader-reshape-cpu-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1; production tensor-log witness for blk.0.hc_attn_norm.weight missing under strict parser. No captures or completed comparison; owned PID1077265 exited and listener closed. Original failure retained, no bank or promotion authority.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118",
+ "row_verdict": "fail",
+ "rule": "Does the pinned C13 CPU loader accept the same flat F32 qwen4exp norm tensors that v10 loads flat, and can both serve the fixed JSON request? One diagnostic request per runtime, with pinned source and GGUF metadata, native debug logs for the witnessed tensors, exact HTTP bytes, CPU/process/library evidence and verified cleanup. Seal the v10 arm before C13 starts. Stop after two captures or at STOP/deadline or the first identity/load/response/cleanup failure. Four-CPU smoke runs the pinned v10 no-spec small-model completion. CPU diagnostic scope excludes the required HIP profile and supplies no broad-pack input or promotion authority.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 39,
+  "input": 119098637,
+  "output": 516488,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 119615125,
+  "tokens_per_task": 3067054.487179487
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "571e7af78f99c67cbfe26bd9b2c24c01ce7963bb40582c2837e370c4975c3721",
+  "result": "fail",
+  "status": "filed"
+ }
+}

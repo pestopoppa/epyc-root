@@ -1,0 +1,9 @@
+deterministic plan/spec, model stat and exact runtime receipt preflight: PASS
+archived production replay: mapped load and native response PASS; strict JSON semantics REFUSED
+pass: PASS
+semantic_refusal: PASS
+missing_loader_log: PASS
+duplicate_in_load_phase: PASS
+ambiguous_load_phase: PASS
+missing_context_boundary: PASS
+http_failure: PASS

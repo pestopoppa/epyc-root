@@ -1,0 +1,7 @@
+rc=1 time=2026-11-18T02:33:04Z reason=job-rc-1:exited
+job_id=handoff-vidya-quality-pack-loader-reshape-cpu-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=1300
+started=2026-11-18T02:32:16Z
+regions=72-95

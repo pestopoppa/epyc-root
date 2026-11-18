@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Replacement returns SOUTH/E59 with clean stop, 20 output tokens and 5549 uncached prompt tokens; three original items independently pass. Captured PID936101 exited and listener closed; no candidate collected.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T02:35:49+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T02:25:24Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/handoff-vidya-quality-pack-ingest-bank-20261118.ended",
+ "filed_at": "2026-11-18T02:35:49+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-INGEST-BANK",
+ "id": "handoff-vidya-quality-pack-ingest-bank-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-ingest-bank-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/out/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Replacement returns SOUTH/E59 with clean stop, 20 output tokens and 5549 uncached prompt tokens; three original items independently pass. Captured PID936101 exited and listener closed; no candidate collected.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-bank-20261118/out/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-vidya-quality-pack-ingest-bank-20261118",
+ "row_verdict": "pass",
+ "rule": "Capture one new ingest reconciliation request on the isolated v10 Qwen3.8-27B Q8_0 24-CPU no-spec server with one 16384-token split q8_0 KV slot. Revalidate three original production responses and admit only a clean stop with both correct structured values and at least 4096 uncached native prompt tokens on the replacement. Stop after the one request and owned cleanup, or on STOP, deadline, identity, capture, cleanup or strict admission failure. Publisher smoke uses the pinned four-CPU v10 small model. Candidate collection awaits a sealed seven-profile pack.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 38,
+  "input": 119098637,
+  "output": 516488,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 119615125,
+  "tokens_per_task": 3147766.447368421
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "f18745b7198ff142c50267d4fe7ff2c9ff85ad65b195a62127dcb10233432117",
+  "result": "pass",
+  "status": "filed"
+ }
+}

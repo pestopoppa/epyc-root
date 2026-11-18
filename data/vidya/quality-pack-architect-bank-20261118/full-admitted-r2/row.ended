@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T02:21:08Z reason=complete
+job_id=handoff-vidya-quality-pack-architect-critic-bank-r2-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=900
+started=2026-11-18T02:16:56Z
+regions=72-95

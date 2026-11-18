@@ -1,0 +1,68 @@
+{
+  "broad_pack_status": "incomplete",
+  "candidate_collected": false,
+  "checks": {},
+  "files": {
+    "RESULT.json": {
+      "archive": "RESULT.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "571e7af78f99c67cbfe26bd9b2c24c01ce7963bb40582c2837e370c4975c3721"
+    },
+    "filed-verdict.json": {
+      "archive": "filed-verdict.json",
+      "encoding": "raw",
+      "sha256": "4560af8d61a3dd8f18a8699be75daab5ea1fec30e71860f0ee220f081c4aaddc"
+    },
+    "native/production/cleanup.json": {
+      "archive": "native/production/cleanup.json",
+      "encoding": "raw",
+      "sha256": "e3d6d469b3d00ec6ea8aeb518ee19417fc6306185685b76cc0befa74f7809201"
+    },
+    "native/production/qwen4exp-loader-cpu-json.request.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.request.json",
+      "encoding": "raw",
+      "sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee"
+    },
+    "native/production/qwen4exp-loader-cpu-json.response.json": {
+      "archive": "native/production/qwen4exp-loader-cpu-json.response.json",
+      "encoding": "raw",
+      "sha256": "e195996d07a1f513c7498b1be1320cbccd741bfaf543105dcc54f96c165069db"
+    },
+    "native/production/server.json": {
+      "archive": "native/production/server.json",
+      "encoding": "raw",
+      "sha256": "4194ebccb015b47f1a4d90dc1e321561d015ebdea192e6db71dd599525774ba1"
+    },
+    "native/production/server.log": {
+      "archive": "native/production/server.log",
+      "encoding": "raw",
+      "sha256": "56482cf0c5774db12f60ef62089ca5ce2aeed58ac7c8f2dacd2159043971bc0e"
+    },
+    "native/scheduler.grant": {
+      "archive": "native/scheduler.grant",
+      "encoding": "raw",
+      "sha256": "2c5c72c8ab92f5af93df256ff62a20bd60543dfa9dbc08796c227b12fd475c45"
+    },
+    "owner-verdict.json": {
+      "archive": "owner-verdict.json",
+      "encoding": "raw",
+      "sha256": "0c2e9b9cc306c4311b1491f46f42aa1cfa6ccca80c2fad394c0b3fb9a616dffa"
+    },
+    "row-manifest.json": {
+      "archive": "row-manifest.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "8175e091a4e6daea92f3b00281a2fc4e2d37cd3dc2a18d3cf77f5d404804e871"
+    },
+    "row.ended": {
+      "archive": "row.ended",
+      "encoding": "raw",
+      "sha256": "7c487cb052de845a40f4137c49ca219af1eb29e04a67ce62740c1e831aa0d5b5"
+    }
+  },
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false,
+  "rationale": "rc=1; production tensor-log witness for blk.0.hc_attn_norm.weight missing under strict parser. No captures or completed comparison; owned PID1077265 exited and listener closed. Original failure retained, no bank or promotion authority.",
+  "row": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118",
+  "status": "incomplete",
+  "verdict": "fail"
+}
