@@ -16,8 +16,10 @@ import subprocess
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from itertools import combinations, product
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -42,6 +44,7 @@ CLEANUP_RESERVE_S = 45
 RAM_MARGIN_GIB = 100  # Rowflow's published RAM margin.
 GIB = 1024**3
 SCHEMA = 'epyc.kernel_promotion_hot_stack_observation.v1'
+MATRIX_CONFIG = 'orchestration/contention_matrix.yaml'
 FENCE_ENV = {'ROCR_VISIBLE_DEVICES': '', 'HIP_VISIBLE_DEVICES': '-1', 'GPU_DEVICE_ORDINAL': '-1',
              'CUDA_VISIBLE_DEVICES': '-1', 'GGML_VK_VISIBLE_DEVICES': '-1', 'HSA_ENABLE_SDMA': '0'}
 require = planner.require
@@ -233,6 +236,54 @@ def regenerate(plan, directory, ledger):
     require(actual['contention_matrix_status'] == 'ok', 'live contention matrix must be fresh')
     require(actual == plan, 'prepared plan differs from the regenerated pinned plan')
     return actual
+
+
+def matrix_instance_matches(instance, endpoint):
+    threads = planner.value_index(endpoint['argv'], '-t', required=False)
+    return (isinstance(instance, dict) and threads is not None
+            and instance.get('role') == endpoint['roles'][0]
+            and instance.get('port') == endpoint['canonical_port']
+            and instance.get('instance_idx') == endpoint['numa_instance']
+            and str(instance.get('threads')) == endpoint['argv'][threads]
+            and id_list(instance.get('cpu_list')) == set(endpoint['logical_cpus']))
+
+
+def select_concurrency_pair(endpoints, matrix):
+    """Return the first explicitly allowed pair of disjoint canonical instances."""
+    unknown = {tuple(sorted(row['roles'])) for row in matrix.get('unknown_pairs', [])}
+    for left, right in combinations(sorted(endpoints, key=lambda endpoint: endpoint['canonical_port']), 2):
+        if (left['port'] == right['port'] or set(left['physical_cpus']) & set(right['physical_cpus'])
+                or left['device'] == right['device'] != 'none'):
+            continue
+        roles = tuple(sorted((left['roles'][0], right['roles'][0])))
+        if roles[0] == roles[1] or roles in unknown:
+            continue
+        matches = []
+        for row in matrix.get('pairs', []):
+            if tuple(sorted(row['roles'])) != roles:
+                continue
+            first, second = row.get('instance_a'), row.get('instance_b')
+            if (matrix_instance_matches(first, left) and matrix_instance_matches(second, right)
+                    or matrix_instance_matches(second, left) and matrix_instance_matches(first, right)):
+                matches.append(row)
+        if len(matches) == 1 and matches[0]['verdict'] == 'allow':
+            return (left, right), matches[0]
+    raise ValueError('no distinct, disjoint endpoint pair explicitly allowed by the pinned contention matrix')
+
+
+def overlapping_samples(left, right):
+    """Locate overlapping complete scans inside the common request window."""
+    if any(report[field] is None for report in (left, right) for field in ('request_sent_s', 'response_headers_s')):
+        return None
+    sent = max(left['request_sent_s'], right['request_sent_s'])
+    headers = min(left['response_headers_s'], right['response_headers_s'])
+    for (li, ls), (ri, rs) in product(enumerate(left['samples']), enumerate(right['samples'])):
+        start = max(ls['start_s'], rs['start_s'])
+        end = min(ls['end_s'], rs['end_s'])
+        if sent <= min(ls['start_s'], rs['start_s']) and start < end and max(ls['end_s'], rs['end_s']) <= headers:
+            return {'sample_indices': [li, ri], 'start_s': start, 'end_s': end,
+                    'request_start_s': sent, 'request_end_s': headers}
+    return None
 
 
 def chat_body():
@@ -453,6 +504,20 @@ class Runtime:
         for endpoint in self.plan['endpoints']:
             verify_models(endpoint)
 
+    def select_pair(self):
+        import yaml
+
+        config = canonical_file(planner.ORCHESTRATOR.resolve(strict=True) / MATRIX_CONFIG).read_bytes()
+        checksum = self.plan['spec']['config_sha256'][MATRIX_CONFIG]
+        require(hashlib.sha256(config).hexdigest() == checksum, 'contention matrix changed after plan regeneration')
+        matrix = yaml.safe_load(config)
+        require(self.plan['contention_matrix_status'] == 'ok' and matrix['topology_hash'] == self.plan['topology_hash'],
+                'paired concurrency requires a fresh, topology-matched contention matrix')
+        endpoints, row = select_concurrency_pair(self.plan['endpoints'], matrix)
+        return {'endpoints': [{key: endpoint[key] for key in ('canonical_port', 'port', 'roles', 'physical_cpus', 'device')}
+                              for endpoint in endpoints],
+                'contention_matrix_sha256': checksum, 'topology_hash': matrix['topology_hash'], 'matrix_pair': row}
+
     def start(self, endpoint):
         self.check()
         self.verify_kfd_clients()
@@ -518,12 +583,14 @@ class Runtime:
         self.verify_identity(server)
         self.verify_kfd_clients()
         verify_models(server.endpoint)
-        witness = {'threads': placement(server.pid, server.birth, server.endpoint, server.binary),
+        witness = {'pid': server.pid, 'birth': server.birth,
+                   'threads': placement(server.pid, server.birth, server.endpoint, server.binary),
                    'backend': backend_residency(server.pid, server.endpoint['backend'], self.gpu_id)}
         self.verify_identity(server)
         return witness
 
-    def request_http(self, server, method, path, body, timeout, sent=None, response_started=None):
+    def request_http(self, server, method, path, body, timeout, request_sent=None, response_started=None,
+                     send_barrier=None):
         require(timeout > 0, 'HTTP request has no remaining time')
         deadline = time.monotonic() + timeout
         with_http = http.client.HTTPConnection('127.0.0.1', server.port, timeout=min(timeout, 5))
@@ -531,9 +598,14 @@ class Runtime:
             self.verify_identity(server)
             with_http.connect()
             self.verify_identity(server)
+            if send_barrier is not None:
+                send_barrier.wait(timeout=max(0, deadline - time.monotonic()))
+                remaining = deadline - time.monotonic()
+                require(remaining > 0, 'paired request has no time remaining after dispatch barrier')
+                with_http.sock.settimeout(min(remaining, 5))
             with_http.request(method, path, body=body, headers={'Content-Type': 'application/json'})
-            if sent is not None:
-                sent.set()
+            if request_sent is not None:
+                request_sent()
             response = with_http.getresponse()
             if response_started is not None:
                 response_started()
@@ -544,31 +616,40 @@ class Runtime:
                 if not chunk:
                     break
                 raw.extend(chunk)
-            self.verify_identity(server)
+            if request_sent is None:
+                self.verify_identity(server)
             return response.status, bytes(raw)
         finally:
             with_http.close()
 
-    def smoke(self, server, directory):
+    def smoke(self, server, directory, *, send_barrier=None, clock_origin=None, sent=None, peer_sent=None):
         kind = server.endpoint['test']
         require(kind in {'chat', 'embedding'}, 'unknown endpoint smoke kind')
         body = chat_body() if kind == 'chat' else embedding_body()
         path = '/v1/chat/completions' if kind == 'chat' else '/v1/embeddings'
         planner.write_new(directory / 'request.json', body)
         timeout = self.timeout(self.request_timeout)
-        sent, done = threading.Event(), threading.Event()
+        sent = threading.Event() if sent is None else sent
+        done = threading.Event()
         outcome = {}
-        started = time.monotonic()
+        started = time.monotonic() if clock_origin is None else clock_origin
 
         def request():
             try:
+                def request_sent():
+                    outcome['request_sent'] = time.monotonic()
+                    sent.set()
+
                 def response_started():
                     outcome['response_started'] = time.monotonic()
 
                 outcome['response'] = self.request_http(server, 'POST', path, json.dumps(body).encode(),
-                                                        timeout, sent, response_started)
+                                                        timeout, request_sent, response_started, send_barrier)
+                self.verify_identity(server)
             except Exception as exc:
                 outcome['failure'] = exc
+                if send_barrier is not None:
+                    send_barrier.abort()
             finally:
                 outcome['finished'] = time.monotonic()
                 done.set()
@@ -579,7 +660,8 @@ class Runtime:
         try:
             while not done.is_set() and 'response_started' not in outcome:
                 self.check()
-                if not sent.wait(0.05) or done.is_set() or 'response_started' in outcome:
+                if (not sent.wait(0.05) or (peer_sent is not None and not peer_sent.wait(0.05))
+                        or done.is_set() or 'response_started' in outcome):
                     continue
                 sample_start = time.monotonic()
                 witness = self.sample(server)
@@ -592,8 +674,13 @@ class Runtime:
             elapsed = outcome['finished'] - started
             request_window = outcome.get('response_started', outcome['finished']) - started
             during = [sample for sample in samples if sample['end_s'] <= request_window]
+            sent_at = outcome.get('request_sent')
+            headers_at = outcome.get('response_started')
             planner.write_new(directory / 'during-request.json',
-                              {'elapsed_s': elapsed, 'request_window_s': request_window, 'samples': during})
+                              {'elapsed_s': elapsed, 'request_window_s': request_window,
+                               'request_sent_s': None if sent_at is None else sent_at - started,
+                               'response_headers_s': None if headers_at is None else headers_at - started,
+                               'samples': during})
             if 'response' in outcome:
                 status, raw = outcome['response']
                 (directory / 'response.raw.json').write_bytes(raw)
@@ -607,6 +694,44 @@ class Runtime:
             planner.write_new(directory / 'response-comparability.json',
                               chat_comparability(body, result if isinstance(result, dict) else {}))
         response_check(kind, body, result)
+
+    def paired_smoke(self, selected):
+        directory = self.output / 'paired-concurrency'
+        directory.mkdir(mode=0o700)
+        planner.write_new(directory / 'pair.json', selected)
+        servers = {server.port: server for server in self.servers}
+        ports = [endpoint['port'] for endpoint in selected['endpoints']]
+        for port in ports:
+            (directory / str(port)).mkdir(mode=0o700)
+        send_barrier = threading.Barrier(2)
+        clock_origin = time.monotonic()
+        sent = {port: threading.Event() for port in ports}
+        failures = {}
+        observations = {}
+
+        def smoke_port(port, peer):
+            try:
+                self.smoke(servers[port], directory / str(port), send_barrier=send_barrier,
+                           clock_origin=clock_origin, sent=sent[port], peer_sent=sent[peer])
+            except Exception:
+                send_barrier.abort()
+                raise
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            futures = {port: pool.submit(smoke_port, port, peer) for port, peer in zip(ports, reversed(ports), strict=True)}
+            for port, future in futures.items():
+                try:
+                    future.result()
+                except Exception as exc:
+                    failures[str(port)] = f'{type(exc).__name__}: {exc}'
+                capture = directory / str(port) / 'during-request.json'
+                if capture.is_file():
+                    observations[port] = planner.read_json(capture)
+        overlap = overlapping_samples(*(observations[port] for port in ports)) if len(observations) == 2 else None
+        passed = not failures and overlap is not None
+        planner.write_new(directory / 'result.json',
+                          {'status': 'pass' if passed else 'failed', 'ports': ports, 'failures': failures, 'overlap': overlap})
+        require(passed, 'paired concurrency requires two successful requests and overlapping complete witness scans')
 
     def cleanup(self):
         result = {}
@@ -658,10 +783,11 @@ def seal(output, verdict):
         os.close(fd)
 
 
-def execute(runtime):
+def execute(runtime, *, paired_concurrency=False):
     output = runtime.output
     failure = None
     try:
+        selected = runtime.select_pair() if paired_concurrency else None
         runtime.preflight()
         runtime.verify_model_inputs()
         for endpoint in runtime.plan['endpoints']:
@@ -674,6 +800,8 @@ def execute(runtime):
             runtime.verify_identity(server)
         for server in runtime.servers:
             runtime.smoke(server, output / str(server.port))
+        if selected is not None:
+            runtime.paired_smoke(selected)
         runtime.check()
     except Exception as exc:
         failure = f'{type(exc).__name__}: {exc}'
@@ -693,7 +821,8 @@ def execute(runtime):
             artifact_failures.append(f'port {server.port}: {exc}')
     verdict = 'pass' if failure is None and not artifact_failures and cleanup_proved(cleanup) else 'failed'
     planner.write_new(output / 'result.json', {'schema': SCHEMA, 'functional_smoke': verdict, 'failure': failure,
-                                               'artifact_failures': artifact_failures, 'cleanup_proved': cleanup_proved(cleanup)})
+                                               'artifact_failures': artifact_failures, 'cleanup_proved': cleanup_proved(cleanup),
+                                               'paired_concurrency_requested': paired_concurrency})
     if cleanup_proved(cleanup):
         seal(output, verdict)
     return 0 if verdict == 'pass' else 2
@@ -706,6 +835,8 @@ def main(argv=None):
     parser.add_argument('--output-dir', type=Path, required=True)
     parser.add_argument('--startup-timeout', type=int, default=900)
     parser.add_argument('--request-timeout', type=int, default=60)
+    parser.add_argument('--paired-concurrency', action='store_true',
+                        help='also test one explicitly allowed disjoint endpoint pair')
     args = parser.parse_args(argv)
     try:
         plan_path = canonical_file(args.plan)
@@ -728,11 +859,12 @@ def main(argv=None):
         (output / 'plan.json').write_bytes(plan_bytes)
         planner.write_new(output / 'admission.json', admission.witness())
         planner.write_new(output / 'inputs.json', {'plan_sha256': args.plan_sha256, 'runner_sha256': planner.digest(Path(__file__)),
-                                                   'linkage_sha256': planner.digest(LINKAGE)})
+                                                   'linkage_sha256': planner.digest(LINKAGE),
+                                                   'paired_concurrency_requested': args.paired_concurrency})
         runtime = Runtime(plan, plan_path, output, admission, args.startup_timeout, args.request_timeout)
         previous = {sig: signal.signal(sig, lambda signum, _: setattr(runtime, 'interrupted', signum)) for sig in SIGNALS}
         try:
-            return execute(runtime)
+            return execute(runtime, paired_concurrency=args.paired_concurrency)
         finally:
             for sig, handler in previous.items():
                 signal.signal(sig, handler)

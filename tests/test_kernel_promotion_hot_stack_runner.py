@@ -147,8 +147,8 @@ def test_hip_residency_requires_positive_vram(tmp_path, monkeypatch):
         runner.backend_residency(123, 'hip', 25466)
 
 
-@pytest.mark.parametrize('before_headers', [True, False])
-def test_smoke_requires_complete_request_time_witness(tmp_path, monkeypatch, before_headers):
+@pytest.mark.parametrize(('before_headers', 'identity_changed'), [(True, False), (False, False), (True, True)])
+def test_smoke_requires_complete_request_time_witness(tmp_path, monkeypatch, before_headers, identity_changed):
     sampled = threading.Event()
     headers = threading.Event()
     admission = SimpleNamespace(deadline=time.time() + 15, check=lambda: None)
@@ -156,10 +156,11 @@ def test_smoke_requires_complete_request_time_witness(tmp_path, monkeypatch, bef
     endpoint = {'test': 'chat', 'endpoint': 'http://127.0.0.1:19520'}
     raw = b'{"choices":[{"message":{"role":"assistant","content":"text"}}]}'
 
-    def pretend_request(server, method, path, body, timeout, sent, response_started):
+    def pretend_request(server, method, path, body, timeout, request_sent, response_started, send_barrier):
         assert method == 'POST' and path == '/v1/chat/completions'
         assert json.loads(body)['stream'] is False
-        sent.set()
+        assert send_barrier is None
+        request_sent()
         assert sampled.wait(3)
         if before_headers:
             time.sleep(0.2)
@@ -174,22 +175,191 @@ def test_smoke_requires_complete_request_time_witness(tmp_path, monkeypatch, bef
         return {'threads': {123: {'cpus': [0], 'numa_policy': 'bind:0'}},
                 'backend': {'kfd_client': True, 'vram_bytes': 1024}}
 
+    def verify_identity(server):
+        if identity_changed:
+            raise ValueError('identity changed after raw capture')
+
     monkeypatch.setattr(runtime, 'request_http', pretend_request)
     monkeypatch.setattr(runtime, 'sample', sample)
+    monkeypatch.setattr(runtime, 'verify_identity', verify_identity)
     server = SimpleNamespace(endpoint=endpoint)
-    if before_headers:
+    if before_headers and not identity_changed:
         runtime.smoke(server, tmp_path)
         assert runner.planner.read_json(tmp_path / 'response-comparability.json') == {
             'status': 'diagnostic_incomplete', 'completion': 'incomplete', 'completion_tokens': None,
             'content': 'complete', 'token_ids': 'incomplete',
         }
     else:
-        with pytest.raises(ValueError, match='inside request'):
+        with pytest.raises(ValueError, match='identity changed' if identity_changed else 'inside request'):
             runtime.smoke(server, tmp_path)
         assert not (tmp_path / 'response-comparability.json').exists()
     observations = runner.planner.read_json(tmp_path / 'during-request.json')
     assert bool(observations['samples']) == before_headers
     assert (tmp_path / 'response.raw.json').read_bytes() == raw
+
+
+def pair_endpoint(port, canonical_port, role, logical_cpu, device='none'):
+    return {'port': port, 'canonical_port': canonical_port, 'roles': [role], 'logical_cpus': [logical_cpu],
+            'physical_cpus': [logical_cpu % 96], 'device': device, 'numa_instance': 0, 'argv': ['llama-server', '-t', '1']}
+
+
+def matrix_row(left, right):
+    def instance(endpoint):
+        return {'port': endpoint['canonical_port'], 'role': endpoint['roles'][0],
+                'instance_idx': endpoint['numa_instance'], 'cpu_list': str(endpoint['logical_cpus'][0]), 'threads': 1}
+    return {'roles': [left['roles'][0], right['roles'][0]], 'verdict': 'allow',
+            'instance_a': instance(left), 'instance_b': instance(right)}
+
+
+def test_select_pair_orders_by_canonical_port_and_binds_matrix_shape():
+    left = pair_endpoint(19530, 8080, 'a', 0)
+    middle = pair_endpoint(19520, 8081, 'b', 96)
+    right = pair_endpoint(19521, 8082, 'c', 2)
+    selected = matrix_row(right, left)
+    matrix = {'pairs': [matrix_row(middle, right), matrix_row(left, middle), selected]}
+    assert runner.select_concurrency_pair([right, middle, left], matrix) == ((left, right), selected)
+
+
+@pytest.mark.parametrize('defect', ['absent', 'ambiguous', 'blocked', 'shape', 'sibling', 'same_device', 'unknown'])
+def test_select_pair_fails_closed(defect):
+    left = pair_endpoint(19520, 8080, 'a', 0, 'ROCm0')
+    right = pair_endpoint(19521, 8081, 'b', 96 if defect == 'sibling' else 1,
+                          'ROCm0' if defect == 'same_device' else 'none')
+    row = matrix_row(left, right)
+    matrix = {'pairs': [row]}
+    if defect == 'absent':
+        matrix['pairs'].clear()
+    if defect == 'ambiguous':
+        matrix['pairs'].append(row | {'verdict': 'block'})
+    if defect == 'blocked':
+        row['verdict'] = 'block'
+    if defect == 'shape':
+        row['instance_b']['instance_idx'] = 1
+    if defect == 'unknown':
+        matrix['unknown_pairs'] = [{'roles': row['roles']}]
+    with pytest.raises(ValueError, match='no distinct, disjoint endpoint pair'):
+        runner.select_concurrency_pair([left, right], matrix)
+
+
+@pytest.mark.parametrize(('left_start', 'left_end', 'right_start', 'right_end', 'expected'), [
+    (3, 5, 4, 6, True),
+    (2, 5, 4, 6, False),
+    (3, 4, 4, 6, False),
+    (3, 5, 4, 8, False),
+])
+def test_overlapping_samples_requires_both_full_scans_in_shared_request(left_start, left_end,
+                                                                      right_start, right_end, expected):
+    left = {'request_sent_s': 1, 'response_headers_s': 7, 'samples': [{'start_s': left_start, 'end_s': left_end}]}
+    right = {'request_sent_s': 3, 'response_headers_s': 9, 'samples': [{'start_s': right_start, 'end_s': right_end}]}
+    assert bool(runner.overlapping_samples(left, right)) == expected
+
+
+@pytest.mark.parametrize('overlap', [True, False])
+def test_paired_smoke_dispatches_together_and_preserves_both_captures(tmp_path, monkeypatch, overlap):
+    ports = (19520, 19521)
+    raw = b'{"choices":[{"message":{"role":"assistant","content":"text"}}]}'
+    admission = SimpleNamespace(deadline=time.time() + 15, check=lambda: None)
+    runtime = runner.Runtime({}, tmp_path / 'plan.json', tmp_path, admission, 5, 5)
+    runtime.servers = [SimpleNamespace(port=port, endpoint={'test': 'chat', 'endpoint': f'http://127.0.0.1:{port}'})
+                       for port in ports]
+    headers = {port: threading.Event() for port in ports}
+    responses = {port: threading.Event() for port in ports}
+    first_scan = set()
+
+    def release_headers():
+        for ready in headers.values():
+            ready.set()
+
+    # Start the countdown after both complete scans have begun.
+    sample_gate = threading.Barrier(2, action=lambda: threading.Timer(0.2, release_headers).start())
+    first_waiting = threading.Event()
+    connected = set()
+    original_barrier = threading.Barrier
+
+    def dispatch_barrier(parties):
+        barrier = original_barrier(parties)
+
+        def wait(timeout):
+            first_waiting.set()
+            return barrier.wait(timeout)
+
+        return SimpleNamespace(wait=wait, abort=barrier.abort)
+
+    class Response:
+        status = 200
+
+        def __init__(self):
+            self.chunks = iter((raw, b''))
+
+        def read1(self, _):
+            return next(self.chunks)
+
+    class Connection:
+        def __init__(self, host, port, timeout):
+            assert host == '127.0.0.1' and timeout > 0
+            self.port = port
+            self.sock = SimpleNamespace(settimeout=lambda _: None)
+
+        def connect(self):
+            if self.port == ports[1]:
+                assert first_waiting.wait(3)
+            connected.add(self.port)
+
+        def request(self, method, path, body, headers):
+            assert connected == set(ports)
+            assert method == 'POST' and path == '/v1/chat/completions' and json.loads(body) == runner.chat_body()
+
+        def getresponse(self):
+            assert headers[self.port].wait(3)
+            return Response()
+
+        def close(self):
+            pass
+
+    def sample(server):
+        if server.port not in first_scan:
+            first_scan.add(server.port)
+            sample_gate.wait(3)
+            if server.port == ports[1] and not overlap:
+                assert responses[server.port].wait(3)
+        return {'threads': {}, 'backend': {'kfd_client': False}}
+
+    request_http = runtime.request_http
+
+    def record_headers(server, method, path, body, timeout, sent, response_started, barrier):
+        def observed():
+            response_started()
+            responses[server.port].set()
+        return request_http(server, method, path, body, timeout, sent, observed, barrier)
+
+    monkeypatch.setattr(runner.threading, 'Barrier', dispatch_barrier)
+    monkeypatch.setattr(runner.http.client, 'HTTPConnection', Connection)
+    monkeypatch.setattr(runtime, 'request_http', record_headers)
+    monkeypatch.setattr(runtime, 'verify_identity', lambda _: None)
+    monkeypatch.setattr(runtime, 'sample', sample)
+    selected = {'endpoints': [{'port': port} for port in ports]}
+    if overlap:
+        runtime.paired_smoke(selected)
+    else:
+        with pytest.raises(ValueError, match='overlapping complete witness scans'):
+            runtime.paired_smoke(selected)
+    path = tmp_path / 'paired-concurrency'
+    result = runner.planner.read_json(path / 'result.json')
+    assert result['status'] == ('pass' if overlap else 'failed')
+    assert bool(result['overlap']) == overlap
+    for port in ports:
+        assert (path / str(port) / 'response.raw.json').read_bytes() == raw
+
+
+def test_execute_preserves_requested_pair_refusal(tmp_path):
+    def refused():
+        raise ValueError('no allowed pair')
+
+    runtime = SimpleNamespace(output=tmp_path, select_pair=refused, servers=[],
+                              cleanup=lambda: {'spawn_unproved': False, 'servers': {}})
+    assert runner.execute(runtime, paired_concurrency=True) == 2
+    assert runner.planner.read_json(tmp_path / 'result.json')['paired_concurrency_requested'] is True
+    assert (tmp_path / 'COMPLETE').is_file()
 
 
 @pytest.mark.parametrize(('choice_override', 'response_override', 'expected'), [
