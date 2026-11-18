@@ -1,6 +1,6 @@
-# CMP-3 runtime gate and isolated semantic screen results
+# CMP-3 runtime, final-request and isolated semantic screen results
 
-The candidate runtime gate followed the evaluator's validated verdict in all three native boundary cases. It allowed continuation on a material external-state assertion that the fixture required it to treat as UNKNOWN. The separate isolated semantic screen stopped on its first calibration control after the evaluator cited reference text that was absent from the observed request. It produced no admissible judgments on the four original captures.
+The candidate runtime gate followed the evaluator's validated verdict in all three native boundary cases. It allowed continuation on a material external-state assertion that the fixture required it to treat as UNKNOWN. The separate isolated semantic screen stopped on its first calibration control after the evaluator cited reference text that was absent from the observed request. It produced no admissible judgments on the four original captures. The final assembled-request screen completed three observations, but all three were blocked after invalid evaluator citations, including the preserved control; its allowed-dispatch path remains unobserved.
 
 ## Runtime gate
 
@@ -49,3 +49,25 @@ Three separate publisher qualifications followed these results. Each smoke requi
 R3 ended rc=1 at 06:58:13Z with clean private-server exit. Its partial ledger is `/mnt/raid0/llm/tmp/compute-flags/dryrun/toc-cmp-3-evalqual-20261118-r3/cmp3-evalqual-r3-native/PARTIAL.json`; sibling `attempt-01/response.json` has SHA-256 `954ccd477acd166a4b39c02518facef6baffb26cc8aeb7f246290d8ef4e19eeb`. R3 input seal `a2d360d739379dd7e5b63c3dcec76e4476bd594d26e27598bc23032fb2856500` binds the unchanged strict importer, prior model/build/weight receipt and exact native template, and copies of both earlier smoke failures. The schema restricted legal citation lines and JSON shape; it did not guarantee nonempty evidence or semantic relevance. The importer continued to enforce its original requirements.
 
 The evaluator lineage is parked under the three-failed-qualifications rule, with no further retries. These adaptively reused development controls establish neither held-out semantic reliability nor a comparison of the two models' external-state reasoning: r3 never reached that case. Offline implementation tests do not change this native outcome.
+
+## Final assembled-request screen
+
+The separate final-request row `toc-cmp-3-final-request-20261118` ended rc=0 and completed **3/3** fixed observations, satisfying `completed >= 3`. This is coverage, not evaluator agreement. The private server exited, `error=null`, and no cases remain unobserved. Native result: `/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-final-request/native/RESULT.json`, SHA-256 `2fc1126ff288f9e5c5799b727409dda5bb72b66caff328aa8ee7957d3bce58ef`.
+
+| Final payload case | Literal contract delivered | Expected semantic verdict | Validated verdict / disposition |
+|---|---|---|---|
+| Preserved | Yes | Entailed | UNKNOWN / blocked |
+| Late conflict | Yes | Contradicted | UNKNOWN / blocked |
+| Late missing governance | No | UNKNOWN | UNKNOWN / blocked |
+
+All three trajectories reached the turn-5 graph boundary and pruned prior output. Each retained a complete evaluator response, but the strict importer rejected it with `invalid_evaluator_response`; no validated field-level semantic findings follow from those responses. Every audit records `detail="invalid citation for verbatim_task"`: the evaluator cited message index 4 although the final chat payload contained only one observed message (index 0). The rendered history contains numbered turns inside that single message; those turn numbers are not message indices. The importer correctly refused the out-of-range citations. The persisted UNKNOWN is the instrument's rejection outcome, not evidence that the evaluator correctly recognized the missing-governance case. The guard made zero worker transport dispatches in every case; no worker request body or synthetic worker response exists. Thus this run exercises refusal after invalid evaluator evidence, including a false block on the preserved control. It does not exercise the permitted request-body/audit match or demonstrate selective semantic enforcement.
+
+Original response custody (these are rejected evaluator responses, not accepted semantic findings):
+
+| Case | Request ID | Raw evaluator response SHA-256 |
+|---|---|---|
+| preserved | `c5c4ce63da908be65ea57378b4ba76af02180073fb62a7bf56202a73efba2b5b` | `0be6b387aa68ceb843b7fde1eed0a1acaf5ba53cc3495c94a4e09dd466f6e3af` |
+| late-conflict | `d9cfbaebb477dc246cabc9c25aa8c09e2deb0032da38e8d7885f5fe073b56ac8` | `77630e3426993b62e3311222b132d837236f3c9f4a18765a68e8202836136759` |
+| late-missing-governance | `91a52a733673fcbe0837bb135acab6325fb9dcbaf2f838495d05298d4d8891fb` | `a9dc03d72a89fa7609883db932cb1d54c86f2f3c12a7b946274ba82b42c28b99` |
+
+[Protocol and scope](../design/toc-cmp-3-final-request-protocol-20261118.md). The earlier runtime boundary screen did allow a preserved case, but that is a different gate and cannot supply the final-request screen's missing positive path. The evaluator-qualification lineage remains parked after three failed qualifications; this result does not authorize another retry or establish production readiness. Both newly delivered run-end notifications referred to already-filed rows; filing receipts were retained, and the final-request alert was acknowledged.
