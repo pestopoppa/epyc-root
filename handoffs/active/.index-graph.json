@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T07:26:05Z",
+  "generated_at": "2026-11-18T07:28:35Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2923,15 +2923,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 177,
-      "dispatchable": 38,
+      "closed": 179,
+      "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-18",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 40,
+      "open": 41,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2951,18 +2951,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 11,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 11,
+          "open": 12,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 349,
+          "line": 355,
           "name": "delegation-context-preassembly",
           "open": 7,
           "readiness": "ready"
@@ -2971,7 +2971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 548,
+          "line": 554,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2980,7 +2980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 814,
+          "line": 820,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -2989,7 +2989,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1309,
+          "line": 1315,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2998,7 +2998,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1846,
+          "line": 1852,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3007,7 +3007,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2608,
+          "line": 2614,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3016,7 +3016,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3035,
+          "line": 3041,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3025,7 +3025,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3692,
+          "line": 3698,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
@@ -3182,15 +3182,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 59,
-      "dispatchable": 18,
+      "closed": 64,
+      "dispatchable": 20,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-17",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
-      "open": 18,
+      "open": 20,
       "priority": 0.041,
       "priority_basis": {
         "campaign": 1,
