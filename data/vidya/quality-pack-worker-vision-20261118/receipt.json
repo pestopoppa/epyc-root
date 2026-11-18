@@ -1,0 +1,62 @@
+{
+  "schema": "epyc.vidya.worker_vision_hip_archive.v1",
+  "row": "handoff-vidya-quality-pack-worker-vision-hip-mmproj-20261118",
+  "profile": "worker-vision-hip-mmproj",
+  "status": "GPU-SMOKE-QUEUED",
+  "scope": "Four synthetic image-plus-text requests per arm on isolated one-MI210 v10 and C13, with a separate four-CPU HIP text smoke for readiness custody.",
+  "prepared_at_utc": "2026-11-18T01:24:03.396727+00:00",
+  "queue": {
+    "archive": "GPU-SMOKE-QUEUED.json",
+    "sha256": "7a02b333c37986046f13c770b7c0c2e31e81a1da85bfa39b55774ac9ab8c5de7",
+    "queued_at": "2026-11-18T01:24:26Z",
+    "regions": "mi210_0,184-191"
+  },
+  "original_bytes": {
+    "plan.json": {
+      "archive": "plan.json.original-bytes.json",
+      "archive_sha256": "eb67ab5b8defcfb63924d29fac599d4ec33c7ba9f05e7965d24cdc13b09138e1",
+      "original_sha256": "0734b30ab4701782c7b2a06dbcab4b8991eabb36e2bb0b8688e524f743ccd609"
+    },
+    "model-hash-receipt.json": {
+      "archive": "model-hash-receipt.json.original-bytes.json",
+      "archive_sha256": "0aa03595b689a765c52bd5f043d108c6b48418933084ae69e6e3e2c03b5db06f",
+      "original_sha256": "6654ab5606e2af97ff84bebc62b45d4e52eb80ce8a0814fdae7e50a4bb5b0c41"
+    },
+    "receipt.json": {
+      "archive": "receipt.json.original-bytes.json",
+      "archive_sha256": "41d799537f8657639050b233668d14c490170166a9ca80aae7b2266e516bd6a8",
+      "original_sha256": "50e7970bfbcbdcfc75f879b58057ba6064fd898bfe2594a79160f60a30c7144d"
+    }
+  },
+  "source_manifest": {
+    "archive": "SOURCE.sha256",
+    "sha256": "75be8cc8db0f072a452bba6fba443823e4f3b97cbb4277c32b8dbc45535f4a6a"
+  },
+  "model": {
+    "path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf",
+    "sha256": "7bd52989f39ddca3dde36edb902fef72c5fde81e9211ca0f5ceca0119bd16d9c"
+  },
+  "mmproj": {
+    "path": "/mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf",
+    "sha256": "a31d2c298f28735f6d27847851b8e3662ceb29cd6a1e66aa13d54b17f45aefca"
+  },
+  "template": {
+    "archive": "chat-template.jinja",
+    "sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4"
+  },
+  "checks": [
+    "Scratch and lane copy source manifests, Python syntax and shell syntax passed.",
+    "Scratch and lane capture preflight verified sealed request bytes, pregrant model/projector stat identities, witness bytes and live KFD topology metadata without launching inference.",
+    "Both build manifests pinned the resolved libmtmd DSO, and verify_ggml_linkage.sh and explicit libmtmd ldd checks passed with the per-image LD_LIBRARY_PATH.",
+    "Rowflow parsed the launcher, accepted the prose verdict rule, and confirmed the smoke and completion predicates are unsatisfied before launch.",
+    "Exact four multimodal request bodies passed parity request parsing. All embedded PNG bytes matched the standalone fixture SHA-256, dimensions, CRCs and RGB raster shape.",
+    "Offline media proof accepted complete two-batch logs and refused absent, incomplete, zero-token and duplicate-completion evidence.",
+    "Source review confirmed the image decode and CLIP backend messages in both pinned runtimes and checked the 29/29 Qwen3-0.6B smoke layer count from its 28-block GGUF header and the v10 output-layer rule."
+  ],
+  "readiness_passed": false,
+  "native_capture_complete": false,
+  "broad_pack_status": "incomplete",
+  "prior_frontdoor_json_mismatch": true,
+  "quality_transfer_authorized": false,
+  "promotion_authorized": false
+}

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T01:09:18Z reason=complete
+job_id=handoff-vidya-quality-pack-ingest-long-context-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=2400
+started=2026-11-18T00:53:53Z
+regions=72-95

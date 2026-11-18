@@ -22,10 +22,30 @@ mismatch remains part of that record.
 
 The publisher smoke passed on CPUs 116–119 with one v10 Qwen3-0.6B Q8_0
 no-spec completion, eight returned tokens, and verified process exit and
-listener closure. The full paired capture remains open. [Preparation and publication receipt](receipt.json)
+listener closure. [Preparation and publication receipt](receipt.json)
 
 The original-byte envelopes preserve plan and original model receipt bytes.
 Prior architecture preparation verified the full 27B model digest. This
 packet reused that receipt after checking the registry hash and the file
 identity. The staged scratch directory and launcher are in
 [row.spec.json](row.spec.json).
+
+## Full paired capture
+
+The capture passed with exit code 0 and eight responses. Two of four pairs
+matched exactly in content and token counts. The short summary differed in
+content and returned 38 versus 39 completion tokens on v10 and C13. Document
+reconciliation also differed in content and returned 34 versus 36 tokens.
+Both arms completed uncached prefill intact for all three long inputs at
+4,767, 4,892, and 5,439 prompt tokens. Both server processes exited and both
+listeners closed.
+
+The pass covers isolated native input capture only. Quality parity, deployed
+equivalence, and promotion remain outside its scope. [Full capture receipt](full-capture/receipt.json)
+
+The full capture result and both bank records use `.original-bytes.json`
+envelopes in this archive. Decode each envelope's `bytes_b64` into its
+original filename and verify the decoded SHA-256 against `sha256` and the
+receipt's `original_files_sha256`. The receipt's `files` map covers the
+archived files as stored. The scratch result and both bank records retain
+their original paths and bytes.
