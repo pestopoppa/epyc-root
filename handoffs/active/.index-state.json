@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 213
+      "open": 211
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -517,7 +517,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 1,
-      "closed": 159,
+      "closed": 160,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 39,
@@ -529,11 +529,11 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 199,
+      "total": 200,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 21,
+          "closed": 22,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -546,7 +546,7 @@
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 303,
+          "line": 305,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 7
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 502,
+          "line": 504,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 768,
+          "line": 770,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1263,
+          "line": 1265,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1800,
+          "line": 1802,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2562,
+          "line": 2564,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 56,
           "gates": [],
           "guarded": 0,
-          "line": 2989,
+          "line": 2991,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 4
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3640,
+          "line": 3642,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -2580,10 +2580,10 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 411,
+      "closed": 413,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 110,
+      "open": 108,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
