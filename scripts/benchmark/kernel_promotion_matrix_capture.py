@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Acquire configured-primary contention pairs through owned, isolated listeners."""
+"""Acquire configured-primary contention pairs or admit a complete split matrix offline."""
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
+from dataclasses import dataclass
 from datetime import datetime, timezone
 import os
 from pathlib import Path
@@ -12,6 +15,7 @@ import re
 import signal
 import subprocess
 import sys
+import tempfile
 import uuid
 
 SOURCE = Path(__file__).resolve().parent
@@ -23,6 +27,7 @@ runner = acquisition.runner
 planner = runner.planner
 require = planner.require
 SCHEMA = 'epyc.kernel_promotion_matrix_capture.v1'
+SPLIT_SCHEMA = 'epyc.kernel_promotion_split_matrix_admission.v1'
 ORCHESTRATOR_PIN = '12afe2858f9dbd4691447926d6cf1864de64348c'
 C13 = 'bda43aa17c11b671e0e203e7eb7bf4f1303bc273'
 PORTS = {
@@ -45,7 +50,7 @@ HEALTH_RULE_FILES = (
 )
 
 
-def canonical_modules(packet, spec):
+def canonical_checkout(packet, spec):
     root = packet / 'orchestrator'
     require(root == root.resolve(strict=True) and spec['orchestrator_commit'] == ORCHESTRATOR_PIN
             and planner.git(root, 'rev-parse', 'HEAD') == ORCHESTRATOR_PIN
@@ -54,6 +59,11 @@ def canonical_modules(packet, spec):
             'canonical modules require the clean detached orchestrator checkout')
     planner.ORCHESTRATOR = root
     planner.check_stack_inputs(spec)
+    return root
+
+
+def canonical_modules(packet, spec):
+    root = canonical_checkout(packet, spec)
     sys.path[:0] = [str(root / 'scripts/server'), str(root)]
     import contention_matrix
     import stack_numa
@@ -192,15 +202,23 @@ def prepare(packet, phase):
     return path
 
 
-def read_prepared(packet, phase):
+def read_prepared(packet, phase, *, trusted_sha=None, modules=None):
     path = runner.canonical_file(packet / phase / 'prepared/plan.json')
     require(path.parent.stat().st_mode & 0o077 == 0, 'prepared plan must be private')
-    digest = (path.parent / 'plan.sha256').read_text().strip()
-    planner.check_pin(path, digest)
-    plan = planner.read_json(path)
+    digest = runner.canonical_file(path.parent / 'plan.sha256').read_text().strip()
+    data = path.read_bytes()
+    require(planner.is_hash(digest) and hashlib.sha256(data).hexdigest() == digest
+            and (trusted_sha is None or digest == trusted_sha), f'invalid or changed prepared plan pin: {path}')
+    plan = json.loads(data, object_pairs_hook=planner.unique_keys)
     require(plan['schema'] == SCHEMA and plan['phase'] == phase and plan['spec']['candidate']['source_commit'] == C13,
             'prepared plan phase or C13 identity changed')
-    matrix, config, contention = canonical_modules(packet, plan['spec'])
+    if modules is None:
+        matrix, config, contention = canonical_modules(packet, plan['spec'])
+    else:
+        # Both detached checkouts have the same pinned commit. Verify this checkout,
+        # then replay with the canonical modules already imported from the first.
+        canonical_checkout(packet, plan['spec'])
+        matrix, config, contention = modules
     all_pairs, pairs = pair_sets(matrix, config, phase)
     require(plan['required_pairs'] == [list(pair) for pair in all_pairs]
             and plan['phase_pairs'] == [list(pair) for pair in pairs]
@@ -305,6 +323,13 @@ def stamp_acquisition_start(emitted, result):
     return emitted
 
 
+def source_identity(plan):
+    return {'repo_commit': ORCHESTRATOR_PIN, 'path': runner.MATRIX_CONFIG,
+            'sha256': plan['spec']['config_sha256'][runner.MATRIX_CONFIG],
+            'measured_at': plan['source_matrix_measured_at'],
+            'status_at_prepare': plan['source_matrix_status_at_prepare']}
+
+
 def capture(packet, phase, row_id, directory):
     result = {'schema': SCHEMA, 'unit_id': row_id, 'attempt_id': directory.name, 'status': 'failed',
               'phase': phase, 'phase_scope': SCOPE[phase], 'authority': 'isolated_observation', 'completed_pairs': [],
@@ -319,10 +344,7 @@ def capture(packet, phase, row_id, directory):
         path, digest, plan, matrix, config, contention = read_prepared(packet, phase)
         result.update(
             prepared_plan={'path': str(path), 'sha256': digest},
-            source_matrix={'repo_commit': ORCHESTRATOR_PIN, 'path': runner.MATRIX_CONFIG,
-                           'sha256': plan['spec']['config_sha256'][runner.MATRIX_CONFIG],
-                           'measured_at': plan['source_matrix_measured_at'],
-                           'status_at_prepare': plan['source_matrix_status_at_prepare']},
+            source_matrix=source_identity(plan),
             topology_hash=plan['topology_hash'], required_pairs=plan['required_pairs'],
             phase_pairs=plan['phase_pairs'], orchestrator_commit=ORCHESTRATOR_PIN, candidate_commit=C13,
         )
@@ -405,23 +427,433 @@ def capture(packet, phase, row_id, directory):
 
 
 def attempt_inventory(directory):
-    return {str(path.relative_to(directory)): planner.digest(runner.canonical_file(path))
-            for path in sorted(directory.rglob('*')) if path.is_file() or path.is_symlink()}
+    require(directory.is_dir() and not directory.is_symlink(), f'invalid native evidence directory: {directory}')
+    files = {}
+    for path in sorted(directory.rglob('*')):
+        if path.is_symlink() or not path.is_dir():
+            files[str(path.relative_to(directory))] = planner.digest(runner.canonical_file(path))
+    return files
 
 
-def main():
+def pinned_bytes(path, expected):
+    data = runner.canonical_file(path).read_bytes()
+    require(planner.is_hash(expected) and hashlib.sha256(data).hexdigest() == expected,
+            f'invalid or changed SHA-256 pin: {path}')
+    return data
+
+
+def packet_sources(packet, path, plan_sha, source_sha):
+    manifest = pinned_bytes(packet / 'SOURCE.sha256', source_sha)
+    entries = {}
+    for line in manifest.decode().splitlines():
+        checksum, filename = line.split(maxsplit=1)
+        require(filename not in entries and planner.is_hash(checksum), 'invalid packet source manifest')
+        entries[filename] = checksum
+    expected = [f'sources/scripts/benchmark/{name}.py' for name in (
+        'kernel_promotion_matrix_capture', 'kernel_promotion_contention_acquire',
+        'kernel_promotion_hot_stack_runner', 'kernel_promotion_hot_stack', 'kernel_promotion_evidence',
+    )]
+    require(entries.get(str(path.relative_to(packet))) == plan_sha and all(name in entries for name in expected),
+            'packet source manifest lacks the prepared plan or acquisition source pins')
+    for name in expected:
+        planner.check_pin(runner.canonical_file(packet / name), entries[name])
+    return {'manifest_sha256': source_sha,
+            'tool_sha256': {name: entries[name] for name in expected}}
+
+
+def validate_split_grant(admission, plan, result, interval):
+    row, env = admission['row'], admission['rowflow_env']
+    unit_id = result['unit_id']
+    phase = plan['phase']
+    gpu = phase == 'hip'
+    resources = plan['spec']['resources']
+    fields = runner.parse_grant(admission['grant'])
+    grant_start, grant_end = (datetime.fromisoformat(fields[key]) for key in ('start', 'end'))
+    require(grant_start.tzinfo is not None and grant_end.tzinfo is not None
+            and grant_start <= interval[0] <= interval[1] <= grant_end,
+            f'{phase} acquisition lies outside its recorded grant')
+    require(runner.grant_scope(fields, resources) == gpu
+            and row['schema'] == 'epyc.row.v3' and row['id'] == env['FILLER_ID'] == unit_id
+            and sorted(row['ports']) == sorted(plan['spec']['ports'].values())
+            and ('mi210_0' in row['regions'].split(',')) == gpu
+            and type(row['gib']) is int and row['gib'] >= resources['ram_gib']
+            and admission['mem_available_bytes'] >= (resources['ram_gib'] + runner.RAM_MARGIN_GIB) * runner.GIB
+            and planner.is_hash(admission['row_sha256'])
+            and row['stop_file'] == env['FILLER_STOPFILE']
+            and re.fullmatch(rf'0::/rowflow/{re.escape(unit_id)}@\d+', admission['cgroup']),
+            f'{phase} scope differs from its recorded Rowflow admission')
+    locks = {str(planner.SCRATCH / f'cpu_region.GLOBAL.q{node}.lock') for node in range(4)}
+    if gpu:
+        locks.add(str(planner.SCRATCH / 'gpu_device.mi210_0.lock'))
+    require(admission['flocks'].keys() == locks and env['FILLER_GPU_FENCE'] == str(int(not gpu)),
+            f'{phase} admission lacks its exclusive locks or expected GPU fence')
+    if gpu:
+        require(not (env.keys() & (*runner.FENCE_ENV, 'LD_PRELOAD')), 'HIP admission carries CPU fence settings')
+    else:
+        fence = Path(env['LD_PRELOAD'])
+        require(all(env.get(key) == value for key, value in runner.FENCE_ENV.items())
+                and fence.parent == Path(row['engine']['path']).parent / 'state'
+                and re.fullmatch(r'gpu_fence-[0-9a-f]{12}\.so', fence.name),
+                'CPU admission lacks the recorded Rowflow GPU fence')
+
+
+def validate_split_health(health, matrix, phase, expected_processes):
+    require(health['status'] == 'clean' and health['decision_grade'] is True
+            and health['decision_grade_blockers'] == [] and health['attestation_error'] == ''
+            and health['attestation_status'] == 'collected' and health['rule_source'] == matrix._HOST_HEALTH_RULE_SOURCE
+            and type(health['uptime_seconds']) in (int, float) and math.isfinite(health['uptime_seconds'])
+            and health['uptime_seconds'] > 0 and health['hostname'] and health['kernel']
+            and health['llama_processes_foreign'] == []
+            and health['llama_processes_lineup'] == health['llama_processes_at_attestation'] == expected_processes
+            and set(health['warnings']) == set(health['structural_for_harness']),
+            f'{phase} host-health refusal: {health}')
+
+
+def validate_native_witness(witness, endpoint, identity, numa_online, hip_backend=None):
+    pid, birth = identity
+    threads = witness['threads']
+    require((witness['pid'], witness['birth']) == identity
+            and runner.evidence.valid_affinity({tid: row['cpus'] for tid, row in threads.items()},
+                                               pid, set(endpoint['logical_cpus'])),
+            f'port {endpoint["port"]} placement differs from its captured identity')
+    argv = endpoint['argv'].copy()
+    if argv[1] == '--interleave=all':
+        argv[1] = '--interleave=' + numa_online
+    mode, nodes = runner.expected_numa(argv)
+    for thread in threads.values():
+        policy, _, observed = thread['numa_policy'].partition(':')
+        require(policy == mode and runner.id_list(observed) == nodes,
+                f'port {endpoint["port"]} NUMA policy differs from its prepared binding')
+    backend = witness['backend']
+    if endpoint['backend'] == 'cpu':
+        require(backend == {'kfd_client': False} and backend['kfd_client'] is False,
+                f'CPU port {endpoint["port"]} lacks the KFD absence witness')
+    else:
+        require(backend['kfd_client'] is True
+                and all(type(backend[key]) is int and backend[key] > 0 for key in ('gpu_id', 'pasid', 'vram_bytes'))
+                and (hip_backend is None or all(backend[key] == hip_backend[key] for key in ('gpu_id', 'pasid'))),
+                f'HIP port {endpoint["port"]} lacks its captured KFD client or nonzero device VRAM')
+
+
+def validate_split_startup(startup, endpoint, image):
+    port = endpoint['port']
+    binary = startup['image']['binary']
+    libraries = startup['image']['libraries']
+    pin = runner.image_pin(image, endpoint['backend'])
+    expected = {str(Path(image['library_dir']) / name): checksum for name, checksum in pin['libraries'].items()}
+    require(binary['sha256'] == pin['binary_sha256'] and runner.evidence.valid_stat(binary['stat'])
+            and {path: row['sha256'] for path, row in libraries.items()} == expected
+            and all(runner.evidence.valid_stat(row['stat']) for row in libraries.values()),
+            f'port {port} loaded executable or library differs from its pinned image')
+    models = {model['path']: model['stat'] for model in endpoint['models']}
+    mappings = startup['model_mappings']
+    required_models = set(models)
+    index = planner.value_index(endpoint['argv'], '--mmproj', required=False)
+    if index is not None:
+        source = endpoint['argv'][index]
+        path = str(Path(source).resolve(strict=True))
+        require(startup['mmproj'] == {'path': path, 'stat': models[path], 'argv_path': source, 'mapped': path in mappings},
+                f'port {port} projector witness differs from its prepared input')
+        required_models.remove(path)
+    require(mappings.keys() <= models.keys() and all(models[path][:2] == inode for path, inode in mappings.items())
+            and ('--no-mmap' in endpoint['argv'] or required_models <= mappings.keys()),
+            f'port {port} model mapping differs from its prepared inputs')
+
+
+def replay_native_legs(read, raw, name, roles, endpoints, startups, identities, numa_online):
+    require(read(f'{name}/request.json') == acquisition.REQUEST, f'{name} request differs from the fixed protocol')
+    runner.check_private_workloads(read, f'{name}/workloads.json', identities)
+    requests = read(f'{name}/requests.json')
+    legs, scans = requests['legs'], requests['overlap_scans']
+    by_port = {str(endpoints[role]['port']): role for role in roles}
+    require(legs.keys() == by_port.keys() and isinstance(scans, list) and scans,
+            f'{name} lacks the expected native legs and request-time custody scan')
+    durations = {}
+    for port, role in by_port.items():
+        leg = legs[port]
+        sent, headers, finished = (leg[key] for key in ('sent', 'headers', 'finished'))
+        require(all(type(value) in (int, float) and math.isfinite(value) for value in (sent, headers, finished))
+                and 0 < sent < headers <= finished and 'failure' not in leg,
+                f'{name} port {port} has an invalid native request interval')
+        body = raw(f'{name}/{port}.response.json')
+        require(len(body) <= runner.MAX_RESPONSE, f'{name} port {port} response exceeds the native size limit')
+        durations[role] = acquisition.leg_timing(leg['status'], body)
+    require(acquisition.complete_scans(legs, scans) == scans, f'{name} custody scan fell outside the shared request interval')
+    for scan in scans:
+        require(scan['witnesses'].keys() == by_port.keys(), f'{name} custody scan differs from the native leg scope')
+        for port, role in by_port.items():
+            startup = startups[role]
+            validate_native_witness(scan['witnesses'][port], endpoints[role], (startup['pid'], startup['birth']),
+                                    numa_online, startup['witness']['backend'])
+    return durations
+
+
+def replay_split_phase(plan, matrix, read, raw, logs, numa_online):
+    endpoints = {endpoint['roles'][0]: endpoint for endpoint in plan['endpoints']}
+    for backend, image in plan['images'].items():
+        linkage = raw(f'{backend}-linkage.log').decode().splitlines()
+        require(linkage[:2] == [f'binary : {image["binary"]}', f'expect : libraries under {image["library_dir"]}']
+                and f'PASS: all linked ggml libraries resolve inside {image["library_dir"]}' in linkage
+                and any(re.match(r'\s+OK\s+libggml-base\.so', line) for line in linkage)
+                and not any(re.match(r'\s*(?:FAIL:|BAD\s)', line) for line in linkage),
+                f'{backend} native linkage evidence differs from the prepared candidate')
+    identities, startups = {}, {}
+    runner.check_private_workloads(read, 'preload-workloads.json', identities)
+    for role, endpoint in endpoints.items():
+        port = endpoint['port']
+        runner.check_private_workloads(read, f'preload-{port}-workloads.json', identities)
+        startup = read(f'{port}.startup.json')
+        pid, birth = startup['pid'], startup['birth']
+        require(type(pid) is int and pid > 0 and type(birth) is int and birth > 0 and str(pid) not in identities,
+                f'port {port} lacks a unique captured PID and birth')
+        validate_split_startup(startup, endpoint, plan['images'][endpoint['backend']])
+        validate_native_witness(startup['witness'], endpoint, (pid, birth), numa_online)
+        require(logs(f'{port}.log'), f'port {port} lacks its native server log')
+        identities[str(pid)], startups[role] = birth, startup
+    require(raw('owned-pids.txt').decode().splitlines() == [f'{pid} {birth}' for pid, birth in identities.items()],
+            'native PID registry differs from the exact startup identities')
+
+    records = []
+    for first, second in plan['phase_pairs']:
+        name = f'{first}--{second}'
+        roles = first, second
+        solo = replay_native_legs(read, raw, f'{name}/solo-a', (first,), endpoints, startups, identities, numa_online)
+        solo.update(replay_native_legs(read, raw, f'{name}/solo-b', (second,), endpoints, startups, identities, numa_online))
+        parallel = replay_native_legs(read, raw, f'{name}/parallel', roles, endpoints, startups, identities, numa_online)
+        record = result_pair(matrix, plan['instances'], roles, solo, parallel)
+        require(read(f'{name}/cell.json') == record.to_yaml_dict() | {
+            'solo_s': solo, 'parallel_s': parallel, 'isolated_ports': {role: endpoints[role]['port'] for role in roles},
+        }, f'{name} cell differs from its native raw decode timings')
+        runner.check_private_workloads(read, f'{name}/post-workloads.json', identities)
+        records.append(record)
+
+    for name in ('post-requests-workloads.json', 'post-health-workloads.json'):
+        runner.check_private_workloads(read, name, identities)
+    cleanup = read('cleanup.json')
+    require(cleanup['spawn_unproved'] is False and runner.cleanup_proved(cleanup)
+            and identities.keys() == cleanup['servers'].keys(), 'cleanup does not cover the exact captured PID set')
+    for role, endpoint in endpoints.items():
+        pid, birth = startups[role]['pid'], startups[role]['birth']
+        record = cleanup['servers'][str(pid)]
+        require((record['pid'], record['birth'], record['port']) == (pid, birth, endpoint['port'])
+                and all(record[key] is True for key in ('pidfd_exited', 'port_closed', 'kfd_absent')),
+                f'port {endpoint["port"]} lacks exact cleanup identity or closure proof')
+    return records
+
+
+@dataclass
+class SplitPhase:
+    plan_path: Path
+    plan: dict
+    interval: tuple[datetime, datetime]
+    records: list
+    custody: dict
+
+
+def read_split_phase(result_path, result_sha, plan_sha, source_sha, phase, modules=None):
+    packet = result_path.parents[2]
+    scratch = planner.SCRATCH.resolve(strict=True)
+    require(result_path == packet / phase / 'out/RESULT.json' and packet.is_relative_to(scratch) and packet != scratch,
+            f'{phase} result must be the canonical packet {phase}/out/RESULT.json under host scratch')
+    result = json.loads(pinned_bytes(result_path, result_sha), object_pairs_hook=planner.unique_keys)
+    path, digest, plan, matrix, config, contention = read_prepared(packet, phase, trusted_sha=plan_sha, modules=modules)
+    require(result['attempt_id'] == Path(result['capture_dir']).name and planner.is_hash(result['attempt_id'], 32),
+            f'{phase} attempt identity is invalid')
+    directory = result_path.parent / result['attempt_id']
+    log_dir = path.parent / 'logs'
+    require(str(directory) == result['capture_dir'] and directory.resolve(strict=True) == directory
+            and directory.is_dir() and directory.stat().st_mode & 0o077 == 0,
+            f'{phase} native attempt must be its canonical private directory')
+    require(log_dir.resolve(strict=True) == log_dir and log_dir.is_dir() and log_dir.stat().st_mode & 0o077 == 0,
+            f'{phase} server logs must be in the original private prepared plan directory')
+    files, log_files = result['attempt_files_sha256'], result['server_logs_sha256']['files']
+    require(files == attempt_inventory(directory) and result['server_logs_sha256']['path'] == str(log_dir)
+            and log_files == attempt_inventory(log_dir), f'{phase} native attempt or server log inventory changed')
+
+    def artifact(parent, inventory, name):
+        require(name in inventory, f'{phase} missing native artifact {name}')
+        return pinned_bytes(parent / name, inventory[name])
+
+    def raw(name):
+        return artifact(directory, files, name)
+
+    def read(name):
+        return json.loads(raw(name), object_pairs_hook=planner.unique_keys)
+
+    summary = read('result.json')
+    envelope = {'capture_dir', 'attempt_files_sha256', 'server_logs_sha256'}
+    require(not (envelope & summary.keys()) and summary == {key: value for key, value in result.items() if key not in envelope},
+            f'{phase} outer result differs from its inventory-bound native summary')
+    require(summary['schema'] == SCHEMA and summary['status'] == 'captured' and summary['authority'] == 'isolated_observation'
+            and summary['unit_id'] == matrix_row_id(phase) and summary['cleanup_proved'] is True
+            and summary['complete_matrix'] is False and type(summary['samples_per_cell']) is int
+            and summary['samples_per_cell'] == 1 and summary['phase'] == phase and summary['phase_scope'] == SCOPE[phase]
+            and summary['required_pairs'] == plan['required_pairs']
+            and summary['phase_pairs'] == summary['completed_pairs'] == plan['phase_pairs'],
+            f'{phase} result lacks a complete, cleanup-proved three-pair native capture')
+    source = source_identity(plan)
+    source_path = runner.canonical_file(packet / 'orchestrator' / source['path'])
+    pinned_bytes(source_path, source['sha256'])
+    source_matrix = contention.load_contention_matrix(source_path)
+    require(summary['prepared_plan'] == {'path': str(path), 'sha256': digest}
+            and summary['orchestrator_commit'] == ORCHESTRATOR_PIN and summary['candidate_commit'] == C13
+            and summary['source_matrix'] == source and summary['topology_hash'] == plan['topology_hash']
+            and source['status_at_prepare'] in {'ok', 'stale'} and source_matrix.measured_at == source['measured_at']
+            and source_matrix.topology_hash == plan['topology_hash']
+            == contention.topology_fingerprint_for_matrix(config, source_matrix),
+            f'{phase} native plan, source matrix or topology differs from its pins')
+    sources = packet_sources(packet, path, digest, source_sha)
+    interval = acquisition_interval(summary)
+    validate_split_grant(read('admission.json'), plan, summary, interval)
+    before, after = read('host-before.json'), read('host-after.json')
+    require(after == summary['host_health'], f'{phase} host after probe differs from its native summary')
+    validate_split_health(before['health'], matrix, f'{phase} before', 0)
+    validate_split_health(after, matrix, f'{phase} after', len(plan['endpoints']))
+    require(all(before['health'][key] == after[key] for key in ('hostname', 'kernel')),
+            f'{phase} host identity differs between the recorded health probes')
+    runner.id_list(before['identity']['numa_online'])
+    records = replay_split_phase(plan, matrix, read, raw, lambda name: artifact(log_dir, log_files, name),
+                                 before['identity']['numa_online'])
+    custody = {key: summary[key] for key in ('attempt_id', 'unit_id', 'acquisition_started_at', 'acquisition_finished_at')}
+    custody.update(result_path=str(result_path), result_sha256=result_sha, prepared_plan=summary['prepared_plan'],
+                   packet_sources=sources, source_matrix=source, phase_pairs=summary['completed_pairs'],
+                   host_before=before, host_after=after)
+    return SplitPhase(path, plan, interval, records, custody), (matrix, config, contention)
+
+
+def shared_split_plan(cpu, hip):
+    cpu_plan, hip_plan = cpu.plan, hip.plan
+    scoped = {'ports', 'resources', 'endpoint_tests'}
+    require({key: value for key, value in cpu_plan['spec'].items() if key not in scoped}
+            == {key: value for key, value in hip_plan['spec'].items() if key not in scoped}
+            and cpu_plan['images']['cpu'] == hip_plan['images']['cpu']
+            and cpu.custody['source_matrix']['sha256'] == hip.custody['source_matrix']['sha256']
+            and cpu_plan['topology_hash'] == hip_plan['topology_hash'],
+            'split captures disagree on source, topology, config or CPU build image')
+    cpu_endpoints = runner.rebase_plan_storage(cpu_plan, cpu.plan_path.parent, hip.plan_path.parent)['endpoints']
+    hip_endpoints = {endpoint['port']: endpoint for endpoint in hip_plan['endpoints']}
+    for endpoint in cpu_endpoints:
+        port = endpoint['port']
+        require(endpoint == hip_endpoints[port] and cpu_plan['extra_inputs'][str(port)] == hip_plan['extra_inputs'][str(port)]
+                and cpu_plan['instances'][endpoint['roles'][0]] == hip_plan['instances'][endpoint['roles'][0]],
+                f'split captures disagree on prepared CPU recipe, models, shards, templates or geometry for port {port}')
+    for relative in (MATRIX_SCRIPT, FRESHNESS_SCRIPT):
+        paths = [str(phase.plan_path.parents[2] / 'orchestrator' / relative) for phase in (cpu, hip)]
+        require(cpu_plan['files'][paths[0]] == hip_plan['files'][paths[1]], f'split validator source differs: {relative}')
+    for path in (runner.LINKAGE, *HEALTH_RULE_FILES):
+        require(cpu_plan['files'][str(path)] == hip_plan['files'][str(path)], f'split witness source differs: {path}')
+    cpu_pairs, hip_pairs = ({tuple(pair) for pair in phase.plan['phase_pairs']} for phase in (cpu, hip))
+    expected = {tuple(pair) for pair in hip_plan['required_pairs']}
+    require(len(cpu_plan['phase_pairs']) == len(hip_plan['phase_pairs']) == len(cpu_pairs) == len(hip_pairs) == 3
+            and cpu_pairs.isdisjoint(hip_pairs) and (cpu_pairs | hip_pairs) == expected
+            and cpu_plan['required_pairs'] == hip_plan['required_pairs'], 'split scopes do not cover six distinct pairs')
+    return hip_plan
+
+
+def merge_split(cpu_pin, hip_pin, output):
+    cpu, modules = read_split_phase(*cpu_pin, 'cpu')
+    hip, _ = read_split_phase(*hip_pin, 'hip', modules=modules)
+    matrix, config, contention = modules
+    plan = shared_split_plan(cpu, hip)
+    first, last = sorted((cpu, hip), key=lambda phase: phase.interval[0])
+    require(first.interval[1] <= last.interval[0], 'exclusive split acquisition intervals overlap')
+    for key in ('hostname', 'kernel'):
+        require(cpu.custody['host_after'][key] == hip.custody['host_after'][key], 'split health probes refer to different hosts')
+    for key in ('numa_online', 'numa_cpus', 'cpu_online', 'cpu_model'):
+        require(cpu.custody['host_before']['identity'][key] == hip.custody['host_before']['identity'][key],
+                f'split captures disagree on host geometry: {key}')
+
+    scratch = planner.SCRATCH.resolve(strict=True)
+    require(output.is_absolute() and output.is_relative_to(scratch) and output != scratch
+            and output.parent.resolve(strict=True) == output.parent
+            and all(not output.is_relative_to(phase.plan_path.parents[2]) for phase in (cpu, hip)),
+            'split admission output must be a new directory under host scratch outside both native packets')
+    candidate = plan['spec']['candidate']
+    provenance = {'git_commit': C13}
+    production = planner.production_runtime_dirs()
+    for backend, image in plan['images'].items():
+        require(image == planner.verify_stage(candidate[backend], candidate, backend, production),
+                f'{backend} stage bytes differ from the prepared image')
+        field = 'llama_server_path' if backend == 'cpu' else 'hip_llama_server_path'
+        provenance[field] = image['binary']
+        provenance[f'{backend}_binary_sha256'] = image['binary_sha256']
+    times = {'acquisition_started_at': first.custody['acquisition_started_at'],
+             'acquisition_finished_at': last.custody['acquisition_finished_at']}
+    health = last.custody['host_after'].copy()
+    probes = [probe for phase in (first, last) for probe in (phase.custody['host_before']['health'], phase.custody['host_after'])]
+    for key in ('warnings', 'structural_for_harness'):
+        health[key] = list(dict.fromkeys(item for probe in probes for item in probe[key]))
+    source = planner.ORCHESTRATOR / runner.MATRIX_CONFIG
+    pinned_bytes(source, hip.custody['source_matrix']['sha256'])
+    emitted = matrix._emit_yaml(cpu.records + hip.records, topology_hash=plan['topology_hash'], binary=provenance,
+                                host=health['hostname'], host_health=health,
+                                preserve_sections=matrix._carry_forward_sections(source))
+    with tempfile.TemporaryDirectory(prefix='.split-matrix-', dir=output.parent) as temp:
+        directory = Path(temp)
+        path = directory / 'contention_matrix.yaml'
+        path.write_text(stamp_acquisition_start(emitted, times))
+        # The pinned canonical freshness gate uses mtime. Give it the native
+        # lower bound so packaging or running the merger cannot renew the cells.
+        os.utime(path, (first.interval[0].timestamp(), first.interval[0].timestamp()))
+        validated = validate_full(path, plan, matrix, config, contention)
+        require(validated['host_health']['decision_grade'] is True, 'canonical YAML lost the admitted host-health stamp')
+        report = {'schema': SPLIT_SCHEMA, 'status': 'admitted', 'authority': 'isolated_observation',
+                  'candidate_commit': C13, 'orchestrator_commit': ORCHESTRATOR_PIN,
+                  'topology_hash': plan['topology_hash'], 'required_pairs': plan['required_pairs'],
+                  'measured_at': times['acquisition_started_at'], 'phases': {'cpu': cpu.custody, 'hip': hip.custody},
+                  'matrix': validated | {'path': path.name}}
+        report_path = directory / 'admission.json'
+        planner.write_new(report_path, report)
+        output.mkdir(mode=0o700)
+        try:
+            os.link(report_path, output / report_path.name)
+            os.link(path, output / path.name)
+        except OSError:
+            (output / report_path.name).unlink(missing_ok=True)
+            output.rmdir()
+            raise
+    return report
+
+
+def matrix_row_id(phase):
+    return f'v9-8-contention-matrix-{phase}-20261118'
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--packet', type=Path, required=True)
-    parser.add_argument('--phase', choices=tuple(RAM), required=True)
+    parser.add_argument('--packet', type=Path)
+    parser.add_argument('--phase', choices=tuple(RAM))
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument('--prepare', action='store_true')
     action.add_argument('--validate-plan', action='store_true')
     action.add_argument('--acquire', action='store_true')
     action.add_argument('--dry-run-result', type=Path)
-    args = parser.parse_args()
+    action.add_argument('--merge-split', action='store_true', help='admit complete native CPU and HIP results offline')
+    for phase in ('cpu', 'hip'):
+        parser.add_argument(f'--{phase}-result', type=Path)
+        parser.add_argument(f'--{phase}-result-sha256')
+        parser.add_argument(f'--{phase}-plan-sha256')
+        parser.add_argument(f'--{phase}-source-sha256', help='publisher-bound SHA-256 of the original SOURCE.sha256')
+    parser.add_argument('--output-dir', type=Path)
+    args = parser.parse_args(argv)
+    pins = [(getattr(args, f'{phase}_result'), getattr(args, f'{phase}_result_sha256'),
+             getattr(args, f'{phase}_plan_sha256'), getattr(args, f'{phase}_source_sha256')) for phase in ('cpu', 'hip')]
+    if args.merge_split:
+        if args.packet or args.phase or not args.output_dir or not all(all(pin) for pin in pins):
+            parser.error('--merge-split requires two result paths, their result, plan and source SHA-256 pins, and --output-dir')
+        try:
+            merge_split(*pins, args.output_dir)
+        except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, OverflowError, ImportError,
+                subprocess.SubprocessError) as exc:
+            print(f'split matrix admission refused: {exc}', file=sys.stderr)
+            return 2
+        print(args.output_dir / 'admission.json')
+        return 0
+    if not args.packet or not args.phase or args.output_dir or any(any(pin) for pin in pins):
+        parser.error('native modes require --packet and --phase. Split inputs require --merge-split')
     packet = args.packet.resolve(strict=True)
     phase = args.phase
-    row_id = f'v9-8-contention-matrix-{phase}-20261118'
+    row_id = matrix_row_id(phase)
     if args.prepare:
         print(prepare(packet, phase))
         return 0

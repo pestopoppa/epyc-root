@@ -122,17 +122,41 @@ The exporter checks the result pin and attempt inventory, the frozen producer an
 The output is a single `private-matrix-diagnostic.json` record with `observation_only` authority. It links to the native capture by digest. Timing values stay in the original capture. The export is offline and unsealed, with no keeper admission or server launches. Live hot-stack admission and pair selection still require a fresh contention matrix. Routing, timing acceptance and promotion retain their existing gates.
 
 
-## Configured-primary full matrix capture time
+## Admit a split configured-primary matrix offline
 
-The six-pair producer `kernel_promotion_matrix_capture.py` records timezone-aware
-`acquisition_started_at` and `acquisition_finished_at` around admission, requests,
-and cleanup in each native phase result. Its full-mode YAML uses the original
-start bound as `measured_at`, so emission cannot refresh the observation.
-`acquisition_interval()` rejects missing, malformed, reversed, and future bounds.
+The native producer records timezone-aware `acquisition_started_at` and
+`acquisition_finished_at` around admission, requests, and captured-process cleanup.
+The split merger needs a successful three-pair CPU capture and a successful
+three-pair HIP capture. Supply their original `RESULT.json` paths, result digests
+from the retained captures, and the original publisher-bound digests of each
+`prepared/plan.json` and `SOURCE.sha256`. The native packet layout locates those
+files and the attempt and server log directories from each result path.
 
-CPU and HIP phases are separate observations. There is currently no offline
-merger or admission of their results as a complete matrix. Any future exporter
-must pin both native result files, preserve and validate their original time bounds,
-use the oldest start as its measurement time, replay their raw evidence and
-custody, and enforce the canonical freshness gate without changing production.
-Older captures lacking the bounds cannot establish this freshness.
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B \
+  scripts/benchmark/kernel_promotion_matrix_capture.py --merge-split \
+  --cpu-result "$cpu_packet/cpu/out/RESULT.json" \
+  --cpu-result-sha256 "$cpu_result_sha256" --cpu-plan-sha256 "$cpu_plan_sha256" \
+  --cpu-source-sha256 "$cpu_source_manifest_sha256" \
+  --hip-result "$hip_packet/hip/out/RESULT.json" \
+  --hip-result-sha256 "$hip_result_sha256" --hip-plan-sha256 "$hip_plan_sha256" \
+  --hip-source-sha256 "$hip_source_manifest_sha256" \
+  --output-dir "$scratch/admitted-split-matrix"
+```
+
+The merger checks both detached checkouts, the pinned source matrix and configured
+primary topology, the candidate images, and the prepared models, shards and
+templates. It checks the attempt inventories and replays the four raw fixed-token
+legs in each cell with their request-time CPU placement and HIP residency evidence.
+Each phase must have a complete cleanup record and clean before and after health
+attestations. Either phase's blockers cause refusal. The original phase intervals
+must be valid and disjoint. The oldest start becomes both the YAML `measured_at`
+and its file modification time for the canonical age check. Full-mode native YAML
+also uses its original start as `measured_at`.
+
+On success the new private scratch directory contains `contention_matrix.yaml`
+and `admission.json`. The admission record preserves each phase's original bounds,
+source and plan digests, health probes, and the canonical validation output. This
+admits six descriptive configured-primary observations with one sample per pair.
+Routing changes and promotion require their separate gates. A refusal exits 2
+before publishing an output, while the original packet retains its native records.
