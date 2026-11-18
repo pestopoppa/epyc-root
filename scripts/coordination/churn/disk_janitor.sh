@@ -125,7 +125,7 @@ reap() {  # reap [force]: the keeper's reap-only pass, unless the keeper reaped 
   fi
   log "REAP start: bash $KEEPER --reap-now (decisions go to ws58-calendar-keeper.log)"
   bash "$KEEPER" --reap-now >> "$LOG" 2>&1 || rc=$?
-  log "REAP end rc=$rc"
+  log "REAP launched rc=$rc (out of band since 2026-11-18: the pass logs REAP-START/END/SKIP itself)"
 }
 
 sweep() {  # trash-sweep --older-than 1 on every trash root that exists

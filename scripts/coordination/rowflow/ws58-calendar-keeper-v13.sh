@@ -16,28 +16,41 @@
 #        --dry-run = the allocation step only)
 #        ws58-calendar-keeper-v13.sh --reap-now   ONE live step-6 pass (legacy groups included), no allocation, then exit;
 #        scripts/coordination/churn/disk_janitor.sh runs it every 30 min. Step 6 is NOT run by the loop (operator 2026-11-03).
+# KEEPER-REAP-OOB (operator D9, 2026-11-18; the inline reap ran ~7.5 min at 100 % on cores 184 and 88 - the MI210 host
+# threads - and no GPU row was granted while the MI210 sat idle):
+#   * every housekeeping child (the reap python, its git/guarded_rm/trash-sweep subprocesses) runs under
+#     taskset -c $KEEPER_HOUSEKEEPING_CPUS, never on 88-95 or 184-191 (q3's GPU host cores/threads);
+#   * --reap-now only LAUNCHES the pass out of band (setsid, detached) and returns at once; the job (--reap-job) takes a
+#     non-blocking flock on ws58-keeper-state/reap.lock: at most one pass at a time, a second one logs REAP-SKIP and exits;
+#     REAP-START / REAP-END / REAP-SKIP carry durations;
+#   * the job writes its pid to ws58-keeper-state/housekeeping/reap.pid (emptied at the end); hostutil.measure excludes
+#     that pid and its descendants from the busy count.
 set -u
 F=/mnt/raid0/llm/tmp/compute-flags/
 G=/mnt/raid0/llm/tmp/compute-flags/grants/
-S=/mnt/raid0/llm/tmp/compute-flags/ws58-keeper-state/
+S=${WS58_KEEPER_STATE:-/mnt/raid0/llm/tmp/compute-flags/ws58-keeper-state/}
+KLOG=${WS58_KEEPER_LOG:-/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log}
+KEEPER_HOUSEKEEPING_CPUS=0-87,96-183   # every cpu except the MI210 host cores 88-95 and threads 184-191
+REAP_LOCK="${S}reap.lock"; HK_DIR="${S}housekeeping/"; REAP_PIDFILE="${HK_DIR}reap.pid"
+hk() { taskset -c "$KEEPER_HOUSEKEEPING_CPUS" "$@"; }   # run one housekeeping child pinned off the GPU host threads
 STOP_AT=$(date -u -d '2036-01-01T00:00:00Z' +%s)  # v7d: no expiry; the calendar must never lapse (10-31 06:00Z outage)
 DRY=0; REAPONLY=""; REAP_LEGACY=${REAP_LEGACY:-0}
 case "${1:-}" in
   --dry-run) DRY=1;;
   --reap-dry-run) DRY=1; REAPONLY=reap;;          # read-only: ONLY step 6 against the live tree, prints one line per decision
   --backfill-report) DRY=1; REAPONLY=reap; REAP_LEGACY=1;;   # step 6 + legacy dirs (manifests without scratch_root/keep) + unmanifested dirs, classified
-  --reap-now) REAPONLY=reap; REAP_LEGACY=1;;   # ws58 2026-11-02 (operator: four disk fixes): ONE live reaper pass, no allocation, then exit
+  --reap-now) REAPONLY=launch; REAP_LEGACY=1;;   # ws58 2026-11-02: ONE live reaper pass; since 2026-11-18 launched out of band
+  --reap-job) REAPONLY=job; REAP_LEGACY=1;;      # internal: the detached, flock'd pass --reap-now starts
 esac
-mkdir -p /mnt/raid0/llm/tmp/compute-flags/ws58-keeper-state
+mkdir -p "$S"
 
 log() {
   local line; line="$(date -u +%FT%TZ) $*"
-  if [ $DRY = 1 ]; then echo "[dry-run] $line"; else echo "$line" >> /mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log; fi
+  if [ $DRY = 1 ]; then echo "[dry-run] $line"; else echo "$line" >> "$KLOG"; fi
 }
 
 # ---------- 5. ALLOCATE (v11) ----------
 ROWFLOW=${WS58_ROWFLOW:-/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/rowflow.py}
-KLOG=/mnt/raid0/llm/tmp/compute-flags/ws58-calendar-keeper.log
 allocate_tick() {
   local l
   [ -f "$ROWFLOW" ] || { log "ROWFLOW: $ROWFLOW missing"; return 0; }
@@ -89,7 +102,7 @@ reap_filed() {   # called only by --reap-now / --reap-dry-run / --backfill-repor
     touch "${S}reap-last"; mkdir -p "${S}reap"   # disk_janitor.sh reads this stamp so a manual --reap-now and its own pass never double up
   fi
   REAP_MODE=$mode REAP_LEGACY=$REAP_LEGACY REAP_DAYS=$REAP_DAYS REAP_MAX_GIB=$REAP_MAX_GIB REAP_MAX_DIRS=$REAP_MAX_DIRS REAP_IDLE=$REAP_IDLE REAP_IDLE_DAYS=$REAP_IDLE_DAYS REAP_WORKTREES=$REAP_WORKTREES REAP_STATE="${S}reap/" REAP_REPORT="${REAP_REPORT:-0}" \
-  python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
+  hk python3 -I - <<'PY' | while IFS= read -r ln; do log "$ln"; done
 import os, sys, re, json, glob, time, hashlib, tarfile, subprocess, fnmatch, shutil, datetime as dt
 E = os.environ; MODE = E['REAP_MODE']; LEGACY = E['REAP_LEGACY'] == '1'; DAYS = float(E['REAP_DAYS'])
 ST = E['REAP_STATE']; REPORT = E['REAP_REPORT'] == '1'
@@ -612,8 +625,30 @@ PY
 # (scripts/coordination/churn/disk_janitor.sh -> --reap-now every 30 min); a ~100 s reap pass inside the tick blocked granting.
 tick() { if [ -n "$REAPONLY" ]; then reap_filed; return 0; fi; allocate_tick; }
 
+# KEEPER-REAP-OOB: the live reap pass, one at a time, never waited on by anything that places work.
+reap_job() {
+  local t0 held rc=0 since
+  mkdir -p "$HK_DIR"
+  exec 8>>"$REAP_LOCK"
+  if ! flock -n 8; then
+    held=$(cat "$REAP_PIDFILE" 2>/dev/null || echo '?'); since=$(stat -c %Y "$REAP_PIDFILE" 2>/dev/null || date -u +%s)
+    log "REAP-SKIP already running pid=${held:-?} for $(( $(date -u +%s) - since ))s; this pass skipped (duration=0s)"
+    return 0
+  fi
+  t0=$(date -u +%s); echo "$BASHPID" > "$REAP_PIDFILE"
+  log "REAP-START pid=$BASHPID cpus=$KEEPER_HOUSEKEEPING_CPUS (out of band; placement never waits on it)"
+  reap_filed || rc=$?
+  log "REAP-END pid=$BASHPID rc=$rc duration=$(( $(date -u +%s) - t0 ))s"
+  : > "$REAP_PIDFILE"   # emptied, not deleted: an empty pidfile names no pid
+  return 0
+}
+reap_launch() {   # detach: new session, pinned, stdio closed; the caller (disk_janitor.sh) returns at once
+  setsid -f taskset -c "$KEEPER_HOUSEKEEPING_CPUS" bash "${BASH_SOURCE[0]}" --reap-job </dev/null >/dev/null 2>&1
+}
+
 if [ $DRY = 1 ]; then tick; echo "[dry-run] one pass done; nothing changed"; exit 0; fi
-if [ -n "$REAPONLY" ]; then reap_filed; echo "reap-now pass done"; exit 0; fi   # --reap-now (disk_janitor.sh): one live pass
+if [ "$REAPONLY" = job ]; then reap_job; exit 0; fi
+if [ "$REAPONLY" = launch ]; then reap_launch; echo "reap-now: pass launched out of band (REAP-START/END/SKIP in $KLOG)"; exit 0; fi
 log "keeper v12 start pid=$$ (no expiry; rowflow allocate)"; echo $$ > ${F}ws58-calendar-keeper.pid  # main-loop pid for ws58-keeper-watchdog.sh
 while [ "$(date -u +%s)" -lt "$STOP_AT" ]; do
   tick || log "tick error rc=$?"

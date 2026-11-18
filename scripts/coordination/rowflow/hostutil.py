@@ -79,6 +79,78 @@ def gpu_sample(drm_glob=DRM_GLOB):
     return None
 
 
+# KEEPER-REAP-OOB (operator D9, 2026-11-18): the keeper's own housekeeping (the out-of-band reap, ~7.5 min at 100 % of a
+# core) must never read as job load. Each housekeeping job writes <flags>/ws58-keeper-state/housekeeping/<name>.pid; those
+# pids and their live descendants (never a name pattern) are subtracted from the busy jiffies of the cpu they ran on.
+HOUSEKEEPING_DIR = os.path.join(os.environ.get("ROWFLOW_FLAGS", "/mnt/raid0/llm/tmp/compute-flags"),
+                                "ws58-keeper-state", "housekeeping")
+
+
+def _stat_fields(pid, proc="/proc"):
+    """fields after the comm of /proc/<pid>/stat (f[0]=state, f[1]=ppid, f[11]=utime, f[12]=stime, f[36]=processor)."""
+    try:
+        f = open(f"{proc}/{pid}/stat").read().rsplit(")", 1)[1].split()
+    except (OSError, IndexError):
+        return None
+    return None if not f or f[0] in ("Z", "X") else f
+
+
+def housekeeping_pids(pid_dir=None, proc="/proc"):
+    """Live pids named by <pid_dir>/*.pid plus all their descendants (one /proc scan)."""
+    pid_dir = HOUSEKEEPING_DIR if pid_dir is None else pid_dir
+    roots = set()
+    for pf in glob.glob(os.path.join(pid_dir, "*.pid")):
+        try:
+            roots.add(int(open(pf).read().split()[0]))
+        except (OSError, ValueError, IndexError):
+            continue
+    if not roots:
+        return set()
+    kids = {}
+    try:
+        names = os.listdir(proc)
+    except OSError:
+        return set()
+    for q in names:
+        if q.isdigit():
+            f = _stat_fields(q, proc)
+            if f:
+                kids.setdefault(int(f[1]), []).append(int(q))
+    out, todo = set(), [r for r in roots if _stat_fields(r, proc)]
+    while todo:
+        x = todo.pop()
+        if x not in out:
+            out.add(x)
+            todo.extend(kids.get(x, []))
+    return out
+
+
+def pid_jiffies(pids, proc="/proc"):
+    """{pid: (utime+stime jiffies, last cpu)} for the live ones."""
+    out = {}
+    for p in pids:
+        f = _stat_fields(p, proc)
+        if f:
+            try:
+                out[p] = (int(f[11]) + int(f[12]), int(f[36]))
+            except (ValueError, IndexError):
+                continue
+    return out
+
+
+def subtract_pids(s0, s1, x0, x1):
+    """PURE: s1 with the excluded pids' jiffies (x1 - x0, attributed to the cpu each last ran on) removed from busy, never
+    below s0's busy. A pid absent from x0 (born mid-window) counts from 0."""
+    adj = dict(s1)
+    for pid, (j1, cpu) in x1.items():
+        d = j1 - x0.get(pid, (0, cpu))[0]
+        if d <= 0 or cpu not in adj:
+            continue
+        b, t = adj[cpu]
+        adj[cpu] = (max(s0.get(cpu, (0, 0))[0], b - d), t)
+    return adj
+
+
 def from_samples(s0, s1, groups=None, gpu=None):
     """PURE: utilisation dict from two cpu samples (+ an optional gpu reading). groups: {name: [cpus]} beyond the quarters."""
     u = {q: busy_pct(s0, s1, quarter_cpus(q)) for q in QUARTERS}
@@ -88,11 +160,17 @@ def from_samples(s0, s1, groups=None, gpu=None):
     return u
 
 
-def measure(sample_s=SAMPLE_S, groups=None, sleep=time.sleep):
-    """Measured utilisation now: two /proc/stat samples `sample_s` apart + one sysfs GPU reading."""
+def measure(sample_s=SAMPLE_S, groups=None, sleep=time.sleep, pid_dir=None):
+    """Measured utilisation now: two /proc/stat samples `sample_s` apart + one sysfs GPU reading. The keeper's own
+    housekeeping pids (housekeeping_pids) are excluded from the busy count."""
+    hk = housekeeping_pids(pid_dir)
+    x0 = pid_jiffies(hk)
     s0 = cpu_sample()
     sleep(sample_s)
-    return from_samples(s0, cpu_sample(), groups, gpu_sample())
+    s1 = cpu_sample()
+    if hk:
+        s1 = subtract_pids(s0, s1, x0, pid_jiffies(hk | housekeeping_pids(pid_dir)))
+    return from_samples(s0, s1, groups, gpu_sample())
 
 
 def pct(v):

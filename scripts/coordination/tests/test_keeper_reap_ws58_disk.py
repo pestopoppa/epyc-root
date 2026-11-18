@@ -38,8 +38,11 @@ class KeeperStatic(unittest.TestCase):
         self.assertIn("REAP_IDLE_DAYS=${REAP_IDLE_DAYS:-1}", s)
         self.assertIn("E.get('REAP_IDLE_DAYS', '1')", s)
         self.assertIn('if not os.path.isfile(c): c = G + rid + ".ended"', s)
-        self.assertIn("--reap-now) REAPONLY=reap; REAP_LEGACY=1;;", s)
-        self.assertIn('if [ -n "$REAPONLY" ]; then reap_filed; echo "reap-now pass done"; exit 0; fi', s)
+        # KEEPER-REAP-OOB (2026-11-18): --reap-now launches the live pass out of band; --reap-job runs it (flock'd)
+        self.assertIn("--reap-now) REAPONLY=launch; REAP_LEGACY=1;;", s)
+        self.assertIn("--reap-job) REAPONLY=job; REAP_LEGACY=1;;", s)
+        self.assertIn('if [ "$REAPONLY" = job ]; then reap_job; exit 0; fi', s)
+        self.assertIn('if [ "$REAPONLY" = launch ]; then reap_launch;', s)
         compile(heredoc(), "keeper-heredoc", "exec")
         for f in (KEEPER, JANITOR, CHURN_UP):
             self.assertEqual(subprocess.run(["bash", "-n", f]).returncode, 0, f)
