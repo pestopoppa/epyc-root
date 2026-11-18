@@ -15,7 +15,7 @@ from uuid import uuid4
 
 import gitnexus_native as native
 
-SCHEMA = 'epyc.dcp10.gitnexus-build-request.v1'
+SCHEMA = 'epyc.dcp10.gitnexus-build-request.v2'
 WORKER = Path(__file__).with_name('gitnexus_build_worker.mjs').resolve()
 TIMEOUT = 1800
 
@@ -113,22 +113,46 @@ def task_binding(task):
     return binding
 
 
-def prepare(assets):
-    """Write a fresh prospective request; caller retains its returned SHA-256."""
+def mount_binding(task, base, host_root):
+    """Validate an independent Git worktree of the exact original base.
+
+    Host placement is a transport detail. The worker, metadata and receipt keep
+    the original logical path. Reuse the cohort's clean-tree/read-scope checks
+    against a conventional <private-root>/bases/<language> host layout.
+    """
+    root = Path(host_root)
+    native.check_custody(root)
+    native.graph.bind_task(root.parent.parent, task, {**base, 'root': str(root)})
+    return str(root)
+
+
+def mount_layout(tasks, bindings, mount_bases):
+    if not isinstance(mount_bases, dict) or set(mount_bases) != set(tasks):
+        raise ValueError('mount layout must bind exactly the original tasks')
+    return {key: mount_binding(task, bindings[key], mount_bases[key])
+            for key, task in tasks.items()}
+
+
+def prepare(assets, mount_bases=None):
+    """Seal original identities plus explicitly validated host worktree paths."""
     check_build_path(assets)
     if assets.stat().st_mode & 0o077 or list(assets.iterdir()):
         raise ValueError('build assets must be empty and private')
     native.seal_file(native.NODE, native.NODE_SHA)
+    tasks = native.original_tasks()
+    bindings = {key: task_binding(task) for key, task in tasks.items()}
+    if mount_bases is None:
+        mount_bases = {key: base['root'] for key, base in bindings.items()}
     request = {'schema': SCHEMA, 'producer_sha256': producer_identity(),
                'gitnexus_source': native.writer_identity(), 'runtime': native.runtime_identity(),
-               'source_inventory': inventory(native.graph.SOURCE_ROOT),
-               'tasks': {key: task_binding(task) for key, task in native.original_tasks().items()}}
+               'source_inventory': inventory(native.graph.SOURCE_ROOT), 'tasks': bindings,
+               'mount_bases': mount_layout(tasks, bindings, mount_bases)}
     return write_new(assets / 'build-request.json', request)
 
 
-def launch_config(docker, name, output, base, timeout, pins=None):
+def launch_config(docker, name, output, base, timeout, pins=None, mount_base=None):
     mounts = [(native.graph.SOURCE_ROOT, str(native.graph.SOURCE_ROOT)),
-              (Path(base['root']), base['root']),
+              (mount_base if mount_base is not None else Path(base['root']), base['root']),
               (native.NODE.parent, '/dcp10/runtime'), (WORKER.parent, '/dcp10/producer')]
     pins = pins or {}
     mounts = [(pins.get(path, path), target) for path, target in mounts]
@@ -158,9 +182,11 @@ def build_private_index(assets, request_sha, task_id, remaining):
 
     def snapshot():
         writer = native.writer_identity()
+        bindings = {key: task_binding(task) for key, task in tasks.items()}
         expected = {'schema': SCHEMA, 'producer_sha256': producer_identity(), 'gitnexus_source': writer,
                     'runtime': native.runtime_identity(), 'source_inventory': inventory(native.graph.SOURCE_ROOT),
-                    'tasks': {key: task_binding(task) for key, task in tasks.items()}}
+                    'tasks': bindings,
+                    'mount_bases': mount_layout(tasks, bindings, request.get('mount_bases'))}
         if request != expected:
             raise ValueError('prospective build source/base/request drift')
         for path in (native.graph.SOURCE_ROOT, native.NODE, WORKER):
@@ -174,7 +200,8 @@ def build_private_index(assets, request_sha, task_id, remaining):
     output.mkdir(mode=0o700)  # existing/failed attempts cannot be overwritten
     check_build_path(output)
     base = request['tasks'][task_id]
-    command, result = run_isolated(output, base, remaining(TIMEOUT), snapshot)
+    command, result = run_isolated(output, base, remaining(TIMEOUT), snapshot,
+                                   mount_base=Path(request['mount_bases'][task_id]))
     remaining(TIMEOUT)
     index = output / 'index'
     if {path.name for path in output.iterdir()} != {'index'}:
@@ -192,7 +219,7 @@ def build_private_index(assets, request_sha, task_id, remaining):
         'schema': SCHEMA, 'request_sha256': request_sha, 'task_id': task_id,
         'command': command, 'stdout_sha256': native.sha256(result.stdout).hexdigest(),
         'stderr_sha256': native.sha256(result.stderr).hexdigest(), 'returncode': result.returncode,
-        'base': base, 'producer_sha256': request['producer_sha256']})
+        'base': base, 'mount_base': request['mount_bases'][task_id], 'producer_sha256': request['producer_sha256']})
     record = {'schema': native.INDEX_BUILD_SCHEMA, 'task_id': task_id, 'base': base,
               'gitnexus_source': writer, 'build_manifest_sha256': manifest_sha,
               'files': {path.name: native.common.hash_file(path) for path in index.iterdir()}}
@@ -205,7 +232,7 @@ def build_private_index(assets, request_sha, task_id, remaining):
     return receipt_sha
 
 
-def run_isolated(output, base, timeout, verify):
+def run_isolated(output, base, timeout, verify, mount_base=None):
     """One bounded private writer invocation, shared by native smoke and cohort."""
     name = f'dcp10-gitnexus-build-{uuid4().hex}'
     docker = shutil.which('docker')
@@ -215,13 +242,14 @@ def run_isolated(output, base, timeout, verify):
         raise ValueError('invalid build time budget')
     env = {'PATH': '/usr/bin:/bin', 'HOME': '/nonexistent', 'LANG': 'C.UTF-8',
            'DOCKER_HOST': 'unix:///var/run/docker.sock', 'DOCKER_CONFIG': '/run/dcp10-no-docker-config'}
+    mount_base = mount_base if mount_base is not None else Path(base['root'])
     previous = signal.signal(signal.SIGTERM, native._stop_on_term)
     try:
-        with pinned_mounts([native.graph.SOURCE_ROOT, Path(base['root']), native.NODE.parent, WORKER.parent, output]) as pins:
+        with pinned_mounts([native.graph.SOURCE_ROOT, mount_base, native.NODE.parent, WORKER.parent, output]) as pins:
             # Snapshot after custody/identity checks; descriptors stay open until
             # container cleanup and a second custody/identity check complete.
             verify()
-            command = launch_config(docker, name, output, base, timeout, pins)
+            command = launch_config(docker, name, output, base, timeout, pins, mount_base=mount_base)
             try:
                 result = native.read_bounded(command, env, native.pilot.encode(
                     {'source': str(native.graph.SOURCE_ROOT), 'base': base}).encode(), timeout + 5)

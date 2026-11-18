@@ -148,3 +148,41 @@ shared-ancestor refusal and refusal before Docker launch. Ruff passes. These
 checks do not establish native Docker compatibility, ABI or checkpoint behavior;
 no worker or graph build ran for this redesign. The parked lineage and the
 capture helper's custody/source-admission refusals remain unchanged.
+
+## Host checkout mapping (build request v2)
+
+`prepare(assets, mount_bases={task_id: host_checkout_path, ...})` seals one host
+path for each original task. Host paths follow
+`<trusted-row-scratch>/bases/<language>` and must pass strict ancestry custody.
+Use detached Git worktrees at the original commits, created with
+`git worktree add --detach`; do not copy checkouts, move the original bases
+while ColGREP uses them, or choose replacement tasks/revisions. Declare this
+trusted location as the prospective row's `scratch_root` before preparing it.
+The shared mode-777 `/mnt/raid0/llm/tmp` cannot be an ancestor. The lane's
+`/mnt/raid0/llm/worktrees` ancestor is also group-writable, so the producer packet
+must reside under the trusted row scratch root too. Installed GitNexus and Node
+stay at their source-pinned canonical locations.
+
+`mount_binding` reuses the existing `graph.bind_task` checks on the host checkout:
+exact original commit/tree/query, canonical detached linked worktree, clean
+tracked/untracked state, no ignored files or hidden Git index entries, and no
+escaping links. Preparation and every pre/post build snapshot validate the
+mapping. The request digest pins host placement prospectively; no registry or
+path fallback is allowed. Requests without the complete v2 mapping fail closed.
+
+Docker uses the host checkout as its read-only source and the original base
+path as its destination. Worker input, index metadata and capture-reader
+receipts retain the original `base` object. The build manifest separately
+records `mount_base` and the full command. The existing receipt reader accepts
+this arrangement without a schema relaxation. This does not change capture's
+own custody checks or admit shared-path capture inputs.
+
+All **42 offline GitNexus controls** pass, including actual detached Git
+worktrees for exact-base acceptance and rejection of commit/tree/query drift,
+dirty/untracked/ignored files and hidden index flags. A synthetic build checks
+host-source/logical-target separation through worker input, manifest and the
+unchanged receipt reader. Ruff and `git diff --check` pass. No native worker,
+Docker qualification, new row publication or source-tree relocation ran for
+this change. The next action is to prepare the declared trusted row scratch
+layout, seal a new request/packet, and qualify a fresh infrastructure-fix row;
+the three-failure original row must remain parked.

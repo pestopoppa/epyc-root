@@ -22,6 +22,7 @@ class BuildControls(unittest.TestCase):
         for owner, key, value in (
             (build.native, 'original_tasks', lambda: {'original': self.task}),
             (build, 'task_binding', lambda _: self.base),
+            (build, 'mount_binding', lambda task, base, root: str(root)),
             (build, 'producer_identity', lambda: {'builder': 'source'}),
             (build, 'inventory', lambda _: {'module': 'pinned'}),
             (build.native, 'writer_identity', lambda: {'version': 'pinned'}),
@@ -106,6 +107,98 @@ class BuildControls(unittest.TestCase):
         (self.assets / 'work-python').mkdir()
         with self.assertRaises(FileExistsError):
             self.run_build()
+
+    def test_host_mount_preserves_logical_payload_and_receipt(self):
+        other = self.assets / 'fresh'
+        other.mkdir(mode=0o700)
+        self.assets = other
+        host = '/trusted/row/bases/python'
+        self.request_sha = build.prepare(other, {'original': host})
+        digest, launch = self.run_build()
+        command, _, payload, _ = launch.call_args.args
+        self.assertIn(f'type=bind,src={host},dst=/original/base,readonly,bind-recursive=readonly,bind-propagation=rprivate', command)
+        self.assertEqual(build.native.graph.strict_json(payload)['base'], self.base)
+        receipt = other / 'index-builds/python.json'
+        admitted = build.native.read_record(receipt, digest)
+        self.assertEqual(admitted['base'], self.base)
+        manifest = build.native.graph.strict_json(receipt.with_suffix('.manifest.json').read_bytes())
+        self.assertEqual(manifest['mount_base'], host)
+
+    def test_mount_layout_refuses_missing_and_extra_tasks(self):
+        for mapping in ({}, {'original': '/host', 'replacement': '/other'}):
+            with self.subTest(mapping=mapping), self.assertRaisesRegex(ValueError, 'exactly the original tasks'):
+                build.mount_layout({'original': self.task}, {'original': self.base}, mapping)
+
+    def test_host_base_drift_prevents_launch(self):
+        with (patch.object(build, 'mount_binding', side_effect=ValueError('host base drift')),
+              patch.object(build.native, 'read_bounded') as launch,
+              self.assertRaisesRegex(ValueError, 'host base drift')):
+            build.build_private_index(self.assets, self.request_sha, 'original', lambda cap: cap)
+        launch.assert_not_called()
+        self.assertFalse((self.assets / 'index-builds').exists())
+
+
+class HostWorktreeControls(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.repo = self.root / 'repo'
+        self.repo.mkdir()
+        self.git(self.repo, 'init', '-q')
+        (self.repo / 'alpine.py').write_text('def alpine(): return 42\n')
+        self.git(self.repo, 'add', 'alpine.py')
+        self.git(self.repo, '-c', 'user.name=DCP fixture', '-c', 'user.email=fixture@example.invalid',
+                 'commit', '-qm', 'fixture')
+        self.commit = self.git(self.repo, 'rev-parse', 'HEAD')
+        self.host = self.root / 'trusted/bases/python'
+        self.host.parent.mkdir(parents=True)
+        self.git(self.repo, 'worktree', 'add', '--detach', str(self.host), self.commit)
+        self.task = {'language': 'python', 'base_commit': self.commit, 'query': 'find alpine'}
+        self.base = {'root': '/original/bases/python', 'base_commit': self.commit,
+                     'base_tree': self.git(self.host, 'rev-parse', 'HEAD^{tree}'),
+                     'query_sha256': build.native.sha256(b'find alpine').hexdigest()}
+        # /tmp is deliberately untrusted in production. Only fixture ancestry is
+        # bypassed here; all real Git/content/scope checks execute unchanged.
+        self.custody = patch.object(build.native, 'check_custody')
+        self.custody.start()
+        self.addCleanup(self.custody.stop)
+
+    def git(self, root, *args):
+        result = subprocess.run(['git', '-C', str(root), *args], check=True,
+                                capture_output=True, text=True, timeout=10)
+        return result.stdout.strip()
+
+    def test_exact_detached_original_base_is_accepted(self):
+        self.assertEqual(build.mount_binding(self.task, self.base, str(self.host)), str(self.host))
+        self.assertEqual(self.base['root'], '/original/bases/python')
+
+    def test_wrong_commit_tree_or_query_is_refused(self):
+        for field in ('base_commit', 'base_tree', 'query_sha256'):
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                build.mount_binding(self.task, {**self.base, field: '0' * 40}, str(self.host))
+
+    def test_dirty_or_untracked_checkout_is_refused(self):
+        (self.host / 'untracked.py').write_text('untracked')
+        with self.assertRaisesRegex(ValueError, 'local modifications'):
+            build.mount_binding(self.task, self.base, str(self.host))
+        (self.host / 'untracked.py').unlink()
+        (self.host / 'alpine.py').write_text('changed')
+        with self.assertRaisesRegex(ValueError, 'local modifications'):
+            build.mount_binding(self.task, self.base, str(self.host))
+
+    def test_hidden_index_entries_are_refused(self):
+        self.git(self.host, 'update-index', '--assume-unchanged', 'alpine.py')
+        with self.assertRaisesRegex(ValueError, 'hidden or unmerged'):
+            build.mount_binding(self.task, self.base, str(self.host))
+
+    def test_ignored_files_are_refused(self):
+        exclude = Path(self.git(self.host, 'rev-parse', '--git-path', 'info/exclude'))
+        exclude.write_text('ignored.py\n')
+        (self.host / 'ignored.py').write_text('ignored')
+        with self.assertRaisesRegex(ValueError, 'ignored checkout files'):
+            build.mount_binding(self.task, self.base, str(self.host))
+
 
 
 class SourceControls(unittest.TestCase):
