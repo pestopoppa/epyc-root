@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "git",
+    "rev-parse",
+    "HEAD"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/publisher-smoke-oh7500o1/native-run/primary",
+  "exit": 0
+}
