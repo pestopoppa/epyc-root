@@ -1,0 +1,23 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-architect-general-cpu-20261118/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-18T11:04:20Z reason=partial-native-incomplete",
+ "engine_sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 1000,
+ "first_unit_at": "2026-11-18T11:04:17Z",
+ "id": "ch17-c13-architect-general-cpu-20261118",
+ "launcher_sha256": "c9b79e5e324864c5fa7b700fae8dc7890f1674a6cc471706148b20a29f83d123",
+ "measured_busy_fraction": null,
+ "measured_claimed_cpus": 96,
+ "measured_threads": null,
+ "passed_at": "2026-11-18T11:04:22Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "164-167",
+ "residency_evidence": null,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-architect-general-cpu-20261118/native-attempts/attempt-hkqsdxse/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

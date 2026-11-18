@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc0 COMPARISON_COMPLETE: all three AB/BA/AB pairs and four fixed128-token prompts retained; 12/12 greedy token streams identical, draft acceptance1152/1446, pair median MTP/none throughput ratios1.524414/1.528828/1.534941. All24 requests have at least2 complete in-request own-PID/start/library/affinity samples and all6 captured processes cleaned up. This is descriptive quarter/np1 completion only, not final recipe selection or promotion acceptance. Three prior failures prohibit any retry.",
+  "tick_text": "**CH-17-FRONTDOOR-CPU-RESULT \u2014 file the bounded C13 frontdoor MTP-versus-none native diagnostic.** Row ch17-c13-frontdoor-cpu-20261118-r4: three AB/BA/AB pairs across four fixed 128-token prompts, original greedy-token comparisons, throughput and draft acceptance, in-request process/library/thread custody and captured-process cleanup. This result does not select all serving recipes or close CH-17.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T10:54:31+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T10:48:20Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/ch17-c13-frontdoor-cpu-20261118-r4.ended",
+ "filed_at": "2026-11-18T10:54:31+00:00",
+ "filed_by": "agent",
+ "handoff_task": "v11-promotion-checklist.md:CH-17",
+ "id": "ch17-c13-frontdoor-cpu-20261118-r4",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ch17-c13-frontdoor-cpu-20261118-r4.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "v11-promotion-checklist",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc0 COMPARISON_COMPLETE: all three AB/BA/AB pairs and four fixed128-token prompts retained; 12/12 greedy token streams identical, draft acceptance1152/1446, pair median MTP/none throughput ratios1.524414/1.528828/1.534941. All24 requests have at least2 complete in-request own-PID/start/library/affinity samples and all6 captured processes cleaned up. This is descriptive quarter/np1 completion only, not final recipe selection or promotion acceptance. Three prior failures prohibit any retry.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/RESULT.json",
+ "root_cause_family": null,
+ "row": "ch17-c13-frontdoor-cpu-20261118-r4",
+ "row_verdict": "pass",
+ "rule": "Collect missing same-image frontdoor evidence for Qwen3.6-35B-A3B-MTP Q8_0. Compare greedy tokens and decode tok/s (higher is better), paired by prompt and adjacent AB/BA/AB launches. Expect MTP to draft and improve decode relative to no-draft; a 2% effect is below design resolution and no speed winner is claimed from three pairs. Report all paired ratios, acceptance and exact token differences with raw responses. Stop on answer at three complete pairs across the frozen four-prompt suite, or on futility at startup/ownership/integrity/request failure, missing token identities, or absent MTP activation. The isolated np1 short-context quarter is an evidence supplement to serving-shape qualification. Smoke uses the same target/image with one 12-token prompt per arm and four keeper CPUs.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 58,
+  "input": 219772687,
+  "output": 1042971,
+  "owner_slug": "v11-promotion-checklist",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 220815658,
+  "tokens_per_task": 3807166.5172413792
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "532d57fce3043ebf4c9d5eaef3d90f4926cde2576c3cf104eef98211895c2aa9",
+  "result": "pass",
+  "status": "filed"
+ }
+}
