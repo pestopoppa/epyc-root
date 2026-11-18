@@ -707,11 +707,7 @@
       "weight": 6
     }
   ],
-<<<<<<< Updated upstream
-  "generated_at": "2026-11-18T07:41:53Z",
-=======
-  "generated_at": "2026-11-18T07:42:37Z",
->>>>>>> Stashed changes
+  "generated_at": "2026-11-18T07:44:12Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1677,7 +1673,7 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 363,
+      "closed": 364,
       "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
@@ -1763,7 +1759,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3112,
+          "line": 3114,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1772,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3625,
+          "line": 3627,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1781,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3720,
+          "line": 3722,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"

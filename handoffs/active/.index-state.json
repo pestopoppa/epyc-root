@@ -45,11 +45,7 @@
       "closed": 126,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-<<<<<<< Updated upstream
-      "open": 63,
-=======
       "open": 64,
->>>>>>> Stashed changes
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2159,7 +2155,7 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 363,
+      "closed": 364,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 6,
@@ -2171,7 +2167,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 369,
+      "total": 370,
       "tracks": [
         {
           "blocked": 0,
@@ -2200,7 +2196,7 @@
         },
         {
           "blocked": 0,
-          "closed": 23,
+          "closed": 24,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2216,7 +2212,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3112,
+          "line": 3114,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2226,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3625,
+          "line": 3627,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2236,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3720,
+          "line": 3722,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
