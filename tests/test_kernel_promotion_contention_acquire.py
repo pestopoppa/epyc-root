@@ -1,5 +1,6 @@
 """Software fixtures for the isolated CPU contention acquisition."""
 
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -113,3 +114,144 @@ def test_native_cli_without_live_grant_refuses_before_writes(tmp_path, monkeypat
     with pytest.raises(ValueError, match="real grant"):
         acquire.main(["--packet", str(tmp_path), "--acquire"])
     assert not (tmp_path / "out").exists()
+
+
+@pytest.mark.parametrize("options, error", [
+    (["--acquire", "--api-role", "worker_general"], "invalid choice"),
+    (["--validate-inputs", "--api-role", "frontdoor"], "--api-role requires --acquire"),
+])
+def test_api_cli_rejects_unscoped_role_and_non_acquire_mode(tmp_path, capsys, options, error):
+    with pytest.raises(SystemExit) as exc:
+        acquire.main(["--packet", str(tmp_path), *options])
+    assert exc.value.code == 2
+    assert error in capsys.readouterr().err
+
+
+@pytest.fixture
+def native_api(tmp_path, monkeypatch):
+    row_id = "fixture-native-api"
+    (tmp_path / "row.spec.json").write_text(json.dumps({"id": row_id}))
+    matrix = tmp_path / "matrix.yaml"
+    matrix.write_text("unchanged scoped topology fixture\n")
+    frontdoor = endpoint(19560, 8180, "frontdoor", 2, range(48, 96))
+    vision = endpoint(19561, 8086, "worker_vision", 0, range(48))
+    plan = {"endpoints": [vision, frontdoor], "images": {"cpu": {}},
+            "spec": {"resources": {"gpu_devices": []},
+                     "config_sha256": {matrix.name: acquire.planner.digest(matrix)}},
+            "contention_matrix_status": "stale", "topology_hash": "fixture"}
+    for item in plan["endpoints"]:
+        log = tmp_path / f'{item["port"]}.log'
+        log.touch()
+        item["log"] = str(log)
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(plan))
+    plan_sha = acquire.planner.digest(plan_path)
+    events = []
+    fixture = SimpleNamespace(plan=plan, events=events, api_fails=False, cleanup_fails=False)
+
+    class Runtime:
+        def __init__(self, selected, path, output, admission, startup_timeout, request_timeout, *, plan_sha256):
+            self.output = output
+            self.plan_sha256 = plan_sha256
+            self.servers = []
+
+        def preflight(self):
+            pass
+
+        def verify_model_inputs(self):
+            pass
+
+        def start(self, item):
+            server = SimpleNamespace(port=item["port"], endpoint=item)
+            self.servers.append(server)
+            return server
+
+        def ready(self, server):
+            return {}
+
+        def check(self):
+            pass
+
+        def isolated_api_smoke(self, role, port):
+            events.append((role, port))
+            plan_bytes = (self.output / "plan.json").read_bytes()
+            assert plan_bytes == plan_path.read_bytes()
+            assert hashlib.sha256(plan_bytes).hexdigest() == self.plan_sha256
+            output = self.output / "isolated-api" / "consumer"
+            output.mkdir(parents=True)
+            (output / "response.body").write_text('{"response":"raw"}')
+            if fixture.api_fails:
+                raise ValueError("api fixture refusal")
+
+        def cleanup(self):
+            events.append("cleanup")
+            return {"servers": {}, "spawn_unproved": fixture.cleanup_fails}
+
+    def phase(runtime, directory, servers):
+        events.append(directory.name)
+        return {server.endpoint["roles"][0]: 1.0 for server in servers}
+
+    monkeypatch.setenv("FILLER_ID", row_id)
+    for key in ("FILLER_SMOKE", "FILLER_DRYRUN", "FILLER_DIRECT"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setattr(acquire, "load_prepared", lambda _: (plan_path, plan_sha, plan_path.read_bytes(), plan))
+    monkeypatch.setattr(acquire, "verify_prepared_inputs", lambda _: None)
+    monkeypatch.setattr(acquire, "check_workloads", lambda *_: None)
+    monkeypatch.setattr(acquire, "capture_phase", phase)
+    monkeypatch.setattr(acquire.planner, "ORCHESTRATOR", tmp_path)
+    monkeypatch.setattr(acquire.planner, "check_stack_inputs", lambda _: None)
+    monkeypatch.setattr(acquire.runner, "MATRIX_CONFIG", matrix.name)
+    monkeypatch.setattr(acquire.runner, "LINKAGE", matrix)
+    monkeypatch.setattr(acquire.runner, "SIGNALS", ())
+    monkeypatch.setattr(acquire.runner, "Runtime", Runtime)
+    monkeypatch.setattr(acquire.runner, "Admission", lambda _: SimpleNamespace(witness=lambda: {}))
+    monkeypatch.setattr(acquire.runner.evidence, "host_snapshot", dict)
+    return fixture
+
+
+@pytest.mark.parametrize("role, port, fails", [(None, None, False), ("frontdoor", 19560, True),
+                                                ("worker_vision", 19561, False)])
+def test_native_api_runs_after_all_legs_with_raw_custody_and_cleanup(tmp_path, native_api, role, port, fails):
+    native_api.api_fails = fails
+    args = ["--packet", str(tmp_path), "--acquire"]
+    if role is not None:
+        args.extend(["--api-role", role])
+    assert acquire.main(args) == (2 if fails else 0)
+    result = json.loads((tmp_path / "out" / "RESULT.json").read_text())
+    assert result["status"] == ("failed" if fails else "captured")
+    assert result["cleanup_proved"] is True
+    phases = ["solo-frontdoor", "solo-worker_vision", "parallel"]
+    if role is None:
+        assert "isolated_api" not in result
+        assert "observation/plan.json" not in result["files"]
+    else:
+        phases.append((role, port))
+        assert result["isolated_api"] == {"role": role, "requested_port": port,
+                                         "status": "failed" if fails else "pass"}
+        capture = Path(result["capture_dir"]) / "observation/isolated-api/consumer/response.body"
+        assert capture.read_text() == '{"response":"raw"}'
+        assert result["files"]["observation/isolated-api/consumer/response.body"] == acquire.planner.digest(capture)
+        assert "observation/plan.json" in result["files"]
+    assert native_api.events == phases + ["cleanup"]
+
+
+def test_native_api_rejects_role_at_wrong_isolated_port(tmp_path, native_api):
+    frontdoor = next(item for item in native_api.plan["endpoints"] if item["roles"] == ["frontdoor"])
+    frontdoor["port"] = 19521
+    assert acquire.main(["--packet", str(tmp_path), "--acquire", "--api-role", "frontdoor"]) == 2
+    result = json.loads((tmp_path / "out" / "RESULT.json").read_text())
+    assert result["isolated_api"] == {"role": "frontdoor", "requested_port": 19560, "status": "not_run"}
+    assert "isolated API role port changed" in result["failure"]
+    assert result["cleanup_proved"] is True
+    assert native_api.events == []
+
+
+def test_successful_api_response_cannot_override_unproved_server_cleanup(tmp_path, native_api):
+    native_api.cleanup_fails = True
+    assert acquire.main(["--packet", str(tmp_path), "--acquire", "--api-role", "frontdoor"]) == 2
+    result = json.loads((tmp_path / "out/RESULT.json").read_text())
+    assert result["status"] == "failed"
+    assert result["isolated_api"]["status"] == "pass"
+    assert result["cleanup_proved"] is False
+    assert "observation/isolated-api/consumer/response.body" in result["files"]
+    assert native_api.events[-2:] == [("frontdoor", 19560), "cleanup"]

@@ -27,6 +27,7 @@ require = planner.require
 SCHEMA = "epyc.kernel_promotion_contention_observation.v1"
 PAIR = ((8180, "frontdoor", 2, range(48, 96)), (8086, "worker_vision", 0, range(48)))
 ROLE_ORDER = tuple(role for _, role, _, _ in PAIR)
+API_PORTS = {"frontdoor": 19560, "worker_vision": 19561}
 N_PREDICT = 100
 REQUEST = {
     "prompt": "Write a 100-word essay analyzing the philosophical implications of autonomous "
@@ -256,17 +257,24 @@ def require_live_grant(row_id, environ):
             "a real grant for the acquisition row is required")
 
 
-def run(packet, directory, row_id):
+def run(packet, directory, row_id, *, api_role=None):
     observation = directory / "observation"
     observation.mkdir(mode=0o700)
     result = {"schema": SCHEMA, "unit_id": row_id, "attempt_id": directory.name, "status": "failed",
               "authority": "observation_only"}
+    api_port = API_PORTS.get(api_role)
+    if api_role is not None:
+        result["isolated_api"] = {"role": api_role, "requested_port": api_port, "status": "not_run"}
     runtime = None
     previous = {}
     try:
         require_live_grant(row_id, os.environ)
         plan_path, plan_sha, plan_bytes, plan = load_prepared(packet)
         selected = scoped_plan(plan)
+        if api_role is not None:
+            require(api_port is not None, "isolated API role must belong to the scoped CPU pair")
+            require({endpoint["roles"][0]: endpoint["port"] for endpoint in selected["endpoints"]} == API_PORTS,
+                    "isolated API role port changed")
         admission = runner.Admission(selected)
         planner.write_new(observation / "admission.json", admission.witness())
         (observation / "prepared-plan.json").write_bytes(plan_bytes)
@@ -283,7 +291,7 @@ def run(packet, directory, row_id):
         require(hashlib.sha256(matrix_bytes).hexdigest() == source_digest, "source matrix changed")
         with (observation / "source-matrix.yaml").open("xb") as stream:
             stream.write(matrix_bytes)
-        runtime = runner.Runtime(selected, plan_path, observation, admission, 780, 180)
+        runtime = runner.Runtime(selected, plan_path, observation, admission, 780, 180, plan_sha256=plan_sha)
         previous = {sig: signal.signal(sig, lambda number, _: setattr(runtime, "interrupted", number))
                     for sig in runner.SIGNALS}
         check_workloads(runtime, observation / "preload-workloads.json")
@@ -315,6 +323,15 @@ def run(packet, directory, row_id):
                        "decode_s": {"solo": solo, "parallel": parallel},
                        **ratio(*(solo[role] for role in ROLE_ORDER),
                                *(parallel[role] for role in ROLE_ORDER))})
+        if api_role is not None:
+            result["isolated_api"]["status"] = "failed"
+            with (observation / "plan.json").open("xb") as stream:
+                stream.write(plan_bytes)
+            runtime.isolated_api_smoke(api_role, api_port)
+            result["isolated_api"]["status"] = "pass"
+            check_workloads(runtime, observation / "post-api-workloads.json")
+            runtime.check()
+            planner.check_stack_inputs(plan["spec"])
     except Exception as exc:
         result.update(status="failed", failure=f"{type(exc).__name__}: {exc}")
     finally:
@@ -341,7 +358,10 @@ def main(argv=None):
     mode.add_argument("--acquire", action="store_true")
     mode.add_argument("--validate-inputs", action="store_true")
     mode.add_argument("--dry-run-result", type=Path)
+    parser.add_argument("--api-role", choices=ROLE_ORDER, help="run the isolated API smoke after contention capture")
     args = parser.parse_args(argv)
+    if args.api_role is not None and not args.acquire:
+        parser.error("--api-role requires --acquire")
     packet = args.packet.resolve(strict=True)
     row_id = planner.read_json(packet / "row.spec.json")["id"]
     if args.acquire:
@@ -361,7 +381,7 @@ def main(argv=None):
     require(not (out / "RESULT.json").exists(), "acquisition result already exists")
     directory = out / uuid.uuid4().hex
     directory.mkdir(mode=0o700)
-    result = run(packet, directory, row_id)
+    result = run(packet, directory, row_id, api_role=args.api_role)
     files = {str(path.relative_to(directory)): planner.digest(path)
              for path in sorted(directory.rglob("*")) if path.is_file()}
     planner.write_new(out / "RESULT.json", result | {"capture_dir": str(directory), "files": files})

@@ -83,4 +83,24 @@ The reported ratio divides the sum of solo decode durations by the longer concur
 
 Acquisition relies on the engine’s region-lock provider; its launcher must omit `--self-claim`, because this producer does not acquire a provider claim itself. Keeper execution may use the row-scoped engine snapshot. Admission must bind that exact snapshot to the published engine digest and still require unique live provider/inner ancestors, shared cleanup cgroup and live lock inodes. A completed engine exit is not a native success: file the native `RESULT.json` status and required captures against the decision rule.
 
-Publish the prepared packet through `publish_row.py`; its software fixtures run in the publisher smoke. Run the acquisition only through the resulting keeper grant. A successful capture still needs an explicit consumer and the required coverage before it can contribute to any later matrix decision.
+Publish the prepared packet through `publish_row.py`. Its software fixtures run in the publisher smoke. Run the acquisition only through the resulting keeper grant.
+
+With `--acquire`, add `--api-role frontdoor` or `--api-role worker_vision` to opt into the forced-role API capture after all four native legs. This mode requires the exact isolated ports 19560 and 19561. It uses the admitted prepared plan digest and bytes, retains the raw API request and response and request-time custody, and requires proved cleanup. Omitting `--api-role` runs the original acquisition.
+
+## Export a private matrix diagnostic
+
+Supply a successful native acquisition's retained packet and a trusted `RESULT.json` digest to the runner's offline export mode. Pass the original prepared plan or its matching counterpart in another private plan directory. The isolated ports and plan contents must match. The export accounts for the generated log, state and slot paths and the recorded age status.
+
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B \
+  scripts/benchmark/kernel_promotion_hot_stack_runner.py \
+  --plan "$scratch/hot-stack-plan/plan.json" \
+  --plan-sha256 "$prepared_plan_sha256" \
+  --private-matrix-result "$native_packet/out/RESULT.json" \
+  --private-matrix-result-sha256 "$acquisition_result_sha256" \
+  --output-dir "$scratch/private-matrix-diagnostic"
+```
+
+The exporter checks the result pin and attempt inventory, the frozen producer and prepared plan, and the source matrix bytes and topology. It matches the exact CPU instances and their image and model witnesses, replays the solo and parallel request records, and requires cleanup to account for both captured PID and birth identities. Failed acquisitions and missing or inconsistent captures are refused.
+
+The output is a single `private-matrix-diagnostic.json` record with `observation_only` authority. It links to the native capture by digest. Timing values stay in the original capture. The export is offline and unsealed, with no keeper admission or server launches. Live hot-stack admission and pair selection still require a fresh contention matrix. Routing, timing acceptance and promotion retain their existing gates.

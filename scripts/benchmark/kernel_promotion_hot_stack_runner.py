@@ -48,6 +48,8 @@ RAM_MARGIN_GIB = 100  # Rowflow's published RAM margin.
 GIB = 1024**3
 SCHEMA = 'epyc.kernel_promotion_hot_stack_observation.v1'
 MATRIX_CONFIG = 'orchestration/contention_matrix.yaml'
+PRIVATE_MATRIX_SCHEMA = 'epyc.kernel_promotion_contention_observation.v1'
+PRIVATE_MATRIX_REPORT = 'epyc.kernel_promotion_private_matrix_diagnostic.v1'
 FENCE_ENV = {'ROCR_VISIBLE_DEVICES': '', 'HIP_VISIBLE_DEVICES': '-1', 'GPU_DEVICE_ORDINAL': '-1',
              'CUDA_VISIBLE_DEVICES': '-1', 'GGML_VK_VISIBLE_DEVICES': '-1', 'HSA_ENABLE_SDMA': '0'}
 require = planner.require
@@ -252,6 +254,249 @@ def regenerate(plan, directory, ledger):
     require(actual['contention_matrix_status'] == 'ok', 'live contention matrix must be fresh')
     require(actual == plan, 'prepared plan differs from the regenerated pinned plan')
     return actual
+
+
+def rebase_plan_storage(plan, source, destination):
+    """Translate only the private log, state and slot paths emitted by the planner."""
+    endpoints = []
+    for endpoint in plan['endpoints']:
+        port = str(endpoint['port'])
+        argv = endpoint['argv'].copy()
+        state, log = Path('state') / port, Path('logs') / f'{port}.log'
+        require(endpoint['state_dir'] == str(source / state) and endpoint['log'] == str(source / log),
+                'captured endpoint storage paths differ from its prepared directory')
+        slot = planner.value_index(argv, '--slot-save-path', required=False)
+        if slot is not None:
+            require(argv[slot] == str(source / state / 'slots'), 'captured slot path differs from its prepared directory')
+            argv[slot] = str(destination / state / 'slots')
+        endpoints.append(endpoint | {'argv': argv, 'state_dir': str(destination / state), 'log': str(destination / log)})
+    return plan | {'endpoints': endpoints}
+
+
+def private_matrix_endpoints(plan):
+    endpoints = []
+    for port, role, instance, cores in ((8180, 'frontdoor', 2, range(48, 96)),
+                                         (8086, 'worker_vision', 0, range(48))):
+        matches = [endpoint for endpoint in plan['endpoints'] if endpoint['canonical_port'] == port]
+        require(len(matches) == 1, f'private matrix requires exactly one canonical instance on {port}')
+        endpoint = matches[0]
+        require(endpoint['roles'][0] == role and endpoint['numa_instance'] == instance
+                and endpoint['backend'] == 'cpu' and endpoint['device'] == 'none' and endpoint['test'] == 'chat'
+                and endpoint['physical_cpus'] == list(cores), f'private matrix instance geometry differs on {port}')
+        endpoints.append(endpoint)
+    require(endpoints[0]['port'] != endpoints[1]['port'], 'private matrix isolated ports must be distinct')
+    return endpoints
+
+
+def check_private_witness(witness, endpoint, identity):
+    pid, birth = identity
+    require((witness['pid'], witness['birth']) == identity and witness['backend'] == {'kfd_client': False}
+            and str(pid) in witness['threads'], 'private matrix CPU process witness differs from startup')
+    mode, allowed_nodes = expected_numa(endpoint['argv'])
+    allowed_cpus = set(endpoint['logical_cpus'])
+    for tid, thread in witness['threads'].items():
+        observed_mode, _, nodes = thread['numa_policy'].partition(':')
+        cpus = thread['cpus']
+        require(tid.isdecimal() and int(tid) > 0 and isinstance(cpus, list) and cpus
+                and all(type(cpu) is int for cpu in cpus) and set(cpus) <= allowed_cpus
+                and observed_mode == mode and id_list(nodes) == allowed_nodes,
+                'private matrix thread affinity or NUMA witness differs from the plan')
+
+
+def check_private_workloads(read, name, identities):
+    workloads = read(name)
+    require(workloads['verified'] == identities and workloads['identity_errors'] == {} and workloads['foreign'] == []
+            and all(str(row['pid']) in identities for row in workloads['observed']),
+            'private matrix workload custody differs from its captured processes')
+
+
+def private_matrix_startup(read, endpoints, image):
+    identities = {}
+    inventory = canonical_file(Path(image['root']) / image['inventory'])
+    planner.check_pin(inventory, image['inventory_sha256'])
+    pin = image_pin(image, 'cpu')
+    library_dir = Path(image['binary']).parent
+    libraries = {str(library_dir / name): checksum for name, checksum in pin['libraries'].items()}
+    verified = {}
+    check_private_workloads(read, 'preload-workloads.json', verified)
+    for endpoint in endpoints:
+        port = str(endpoint['port'])
+        check_private_workloads(read, f'preload-{port}-workloads.json', verified)
+        startup = read(f'{port}.startup.json')
+        pid, birth = startup['pid'], startup['birth']
+        require(type(pid) is int and type(birth) is int and pid > 0 and birth > 0 and str(pid) not in verified,
+                'private matrix startup lacks a unique captured identity')
+        binary = startup['image']['binary']
+        mapped = startup['image']['libraries']
+        require(binary['sha256'] == pin['binary_sha256'] and evidence.valid_stat(binary['stat'])
+                and {path: record['sha256'] for path, record in mapped.items()} == libraries
+                and all(evidence.valid_stat(record['stat']) for record in mapped.values()),
+                'private matrix executable or library witness differs from the candidate')
+        models = {model['path']: model['stat'][:2] for model in endpoint['models']}
+        mappings = startup['model_mappings']
+        require(mappings.keys() <= models.keys() and all(models[path] == inode for path, inode in mappings.items())
+                and ('--no-mmap' in endpoint['argv'] or mappings == models),
+                'private matrix model witness differs from the prepared models')
+        identity = pid, birth
+        check_private_witness(startup['witness'], endpoint, identity)
+        identities[port] = identity
+        verified[str(pid)] = birth
+    check_private_workloads(read, 'post-requests-workloads.json', verified)
+    return identities
+
+
+def private_matrix_phase(read, name, endpoints, identities):
+    # Replay the fixed request and the four native decode legs of the v1 acquisition schema.
+    request = {'prompt': 'Write a 100-word essay analyzing the philosophical implications of autonomous '
+                         'decision-making in artificial intelligence systems.',
+               'n_predict': 100, 'temperature': 0, 'cache_prompt': False}
+    require(read(f'{name}/request.json') == request, 'private matrix request differs from the fixed acquisition request')
+    check_private_workloads(read, f'{name}/workloads.json', {str(pid): birth for pid, birth in identities.values()})
+    requests = read(f'{name}/requests.json')
+    legs = requests['legs']
+    by_port = {str(endpoint['port']): endpoint for endpoint in endpoints}
+    require(legs.keys() == by_port.keys(), 'private matrix phase endpoint set differs from the acquisition scope')
+    durations = {}
+    for port, endpoint in by_port.items():
+        leg = legs[port]
+        stamps = [leg[key] for key in ('sent', 'headers', 'finished')]
+        require(leg['status'] == 200 and 'failure' not in leg
+                and all(type(stamp) in (int, float) and math.isfinite(stamp) and stamp > 0 for stamp in stamps)
+                and stamps[0] < stamps[1] <= stamps[2], 'private matrix phase lacks a complete HTTP leg')
+        timings = read(f'{name}/{port}.response.json')['timings']
+        ms = timings['predicted_ms']
+        require(type(timings['predicted_n']) is int and timings['predicted_n'] == request['n_predict']
+                and type(ms) in (int, float) and math.isfinite(ms) and ms > 0,
+                'private matrix phase lacks a complete native fixed-token response')
+        durations[endpoint['roles'][0]] = ms / 1000
+    start, end = max(leg['sent'] for leg in legs.values()), min(leg['headers'] for leg in legs.values())
+    scans = requests['overlap_scans']
+    require(isinstance(scans, list) and scans, 'private matrix phase lacks a complete request-time scan')
+    for scan in scans:
+        require(start <= scan['start'] < scan['end'] <= end and scan['witnesses'].keys() == by_port.keys(),
+                'private matrix custody scan falls outside the shared request interval')
+        for port, endpoint in by_port.items():
+            check_private_witness(scan['witnesses'][port], endpoint, identities[port])
+    return durations
+
+
+def validate_private_matrix(plan, plan_path, result_path, result_sha):
+    import yaml
+
+    scratch = planner.SCRATCH.resolve(strict=True)
+    require(plan['schema'] == planner.PLAN_SCHEMA and plan['status'] == 'prepared_only'
+            and plan['contention_matrix_status'] in {'ok', 'stale'}, 'private matrix needs a pinned prepared plan')
+    require(result_path.name == 'RESULT.json' and result_path.parent.name == 'out'
+            and result_path.is_relative_to(scratch), 'private matrix result must be a native packet out/RESULT.json under scratch')
+    result_bytes = canonical_file(result_path).read_bytes()
+    require(planner.is_hash(result_sha) and hashlib.sha256(result_bytes).hexdigest() == result_sha,
+            'private matrix result SHA-256 differs from the requested pin')
+    result = json.loads(result_bytes, object_pairs_hook=planner.unique_keys)
+    require(result['schema'] == PRIVATE_MATRIX_SCHEMA and result['status'] == 'captured'
+            and result['authority'] == 'observation_only' and result['cleanup_proved'] is True,
+            'private matrix needs a captured, cleanup-proved native observation')
+    attempt_id = result['attempt_id']
+    require(planner.is_hash(attempt_id, 32), 'invalid private matrix attempt identity')
+    capture = result_path.parent / attempt_id
+    require(str(capture) == result['capture_dir'] and capture.resolve(strict=True) == capture
+            and (capture.stat().st_mode & 0o077) == 0, 'private matrix capture must be the canonical private attempt')
+    files = result['files']
+    require(not any((capture / name).exists() for name in ('MANIFEST.json', 'COMPLETE'))
+            and files == evidence.inventory(capture), 'private matrix file inventory differs from the acquisition manifest')
+
+    def bound_bytes(name):
+        require(name in files, f'private matrix capture is missing {name}')
+        data = canonical_file(capture / name).read_bytes()
+        require(hashlib.sha256(data).hexdigest() == files[name], f'private matrix artifact changed: {name}')
+        return data
+
+    def read(name):
+        return json.loads(bound_bytes(f'observation/{name}'), object_pairs_hook=planner.unique_keys)
+
+    summary = json.loads(bound_bytes('result.json'), object_pairs_hook=planner.unique_keys)
+    require(not {'capture_dir', 'files'} & summary.keys()
+            and result == (summary | {'capture_dir': str(capture), 'files': files}),
+            'private matrix outer result differs from its captured result.json')
+    packet = result_path.parent.parent
+    prepared_dir = packet / 'prepared'
+    prepared_file = canonical_file(prepared_dir / 'plan.json')
+    prepared = bound_bytes('observation/prepared-plan.json')
+    plan_sha = hashlib.sha256(prepared).hexdigest()
+    require((prepared_dir.stat().st_mode & 0o077) == 0 and prepared_file.read_bytes() == prepared
+            and canonical_file(prepared_dir / 'plan.sha256').read_text().strip() == plan_sha
+            and result['plan_sha256'] == plan_sha, 'private matrix acquisition prepared plan pin differs')
+    captured_plan = json.loads(prepared, object_pairs_hook=planner.unique_keys)
+    source_status = captured_plan['contention_matrix_status']
+    require(source_status in {'ok', 'stale'} and result['source_matrix_status_at_prepare'] == source_status
+            and rebase_plan_storage(captured_plan, prepared_dir, plan_path.parent)
+            == (plan | {'contention_matrix_status': source_status}),
+            'private matrix prepared topology, endpoints, images, models or config differ from the live plan')
+    matrix_bytes = bound_bytes('observation/source-matrix.yaml')
+    matrix_sha = plan['spec']['config_sha256'][MATRIX_CONFIG]
+    topology = plan['topology_hash']
+    live_matrix = canonical_file(planner.ORCHESTRATOR.resolve(strict=True) / MATRIX_CONFIG)
+    try:
+        source_matrix = yaml.safe_load(matrix_bytes)
+    except yaml.YAMLError as exc:
+        raise ValueError('private matrix source matrix is invalid') from exc
+    require(hashlib.sha256(matrix_bytes).hexdigest() == result['source_matrix_sha256'] == matrix_sha
+            and live_matrix.read_bytes() == matrix_bytes
+            and isinstance(source_matrix, dict) and source_matrix.get('topology_hash') == result['topology_hash'] == topology,
+            'private matrix source bytes or topology differ from the pinned live matrix')
+    endpoints = private_matrix_endpoints(captured_plan)
+    roles = [endpoint['roles'][0] for endpoint in endpoints]
+    instances = [{'role': endpoint['roles'][0], 'port': endpoint['port'], 'canonical_port': endpoint['canonical_port'],
+                  'instance_idx': endpoint['numa_instance']} for endpoint in endpoints]
+    require(result['roles'] == roles and result['instances'] == instances and type(result['samples']) is int
+            and result['samples'] == 1 and result['scope'] == 'isolated_cpu_instance_pair',
+            'private matrix result differs from the selected instance pair')
+    ports = {str(endpoint['canonical_port']): endpoint['port'] for endpoint in endpoints}
+    resources = plan['spec']['resources'] | {'gpu_devices': []}
+    inputs = read('inputs.json')
+    producer = 'sources/scripts/benchmark/kernel_promotion_contention_acquire.py'
+    manifest = canonical_file(packet / 'SOURCE.sha256').read_text().splitlines()
+    producer_pins = [line.split(maxsplit=1)[0] for line in manifest if line.split(maxsplit=1)[-1:] == [producer]]
+    require(producer_pins == [inputs['producer_sha256']], 'private matrix producer differs from the packet source pin')
+    planner.check_pin(canonical_file(packet / producer), inputs['producer_sha256'])
+    require(inputs['plan_sha256'] == plan_sha
+            and inputs['linkage_sha256'] == planner.digest(LINKAGE)
+            and inputs['scope'] == {'ports': ports, 'resources': resources},
+            'private matrix input, producer, linkage or claim scope differs')
+    admission = read('admission.json')
+    require(admission['row']['schema'] == 'epyc.row.v3' and admission['row']['id'] == result['unit_id']
+            and sorted(admission['row']['ports']) == sorted(ports.values())
+            and all(admission['rowflow_env'].get(key) == value for key, value in FENCE_ENV.items())
+            and not grant_scope(parse_grant(admission['grant']), resources), 'private matrix lacks its CPU grant and fence')
+    bound_bytes('observation/host.json')
+    bound_bytes('observation/cpu-linkage.log')
+    identities = private_matrix_startup(read, endpoints, plan['images']['cpu'])
+    registry = bound_bytes('observation/owned-pids.txt').decode().splitlines()
+    require(registry == [f'{pid} {birth}' for pid, birth in identities.values()], 'private matrix PID registry differs')
+    for port in identities:
+        bound_bytes(f'observation/{port}.server.log')
+    solo = {}
+    for endpoint in endpoints:
+        solo.update(private_matrix_phase(read, f'solo-{endpoint["roles"][0]}', [endpoint], identities))
+    parallel = private_matrix_phase(read, 'parallel', endpoints, identities)
+    seq_s, parallel_s = sum(solo.values()), max(parallel.values())
+    require(result['decode_s'] == {'solo': solo, 'parallel': parallel}
+            and result['seq_aggregate_tps'] == 200 / seq_s and result['parallel_aggregate_tps'] == 200 / parallel_s
+            and result['ratio'] == seq_s / parallel_s, 'private matrix native decode summary does not reproduce')
+    cleanup = read('cleanup.json')
+    require(cleanup['spawn_unproved'] is False and cleanup_proved(cleanup)
+            and cleanup['servers'].keys() == {str(pid) for pid, _ in identities.values()},
+            'private matrix cleanup does not cover both captured processes')
+    for port, (pid, birth) in identities.items():
+        clean = cleanup['servers'][str(pid)]
+        require((clean['pid'], clean['birth'], clean['port']) == (pid, birth, int(port))
+                and all(clean[key] is True for key in ('pidfd_exited', 'port_closed', 'kfd_absent')),
+                'private matrix cleanup identity or closure proof differs')
+    return {'schema': PRIVATE_MATRIX_REPORT, 'authority': 'observation_only', 'status': 'validated_capture',
+            'acquisition_result_sha256': result_sha, 'source_matrix_status_at_prepare': source_status,
+            'acquisition_plan_sha256': plan_sha, 'acquisition_unit_id': result['unit_id'],
+            'acquisition_attempt_id': attempt_id, 'contention_matrix_sha256': matrix_sha, 'topology_hash': topology,
+            'endpoints': [{key: endpoint[key] for key in ('canonical_port', 'port', 'roles', 'physical_cpus', 'device')}
+                          for endpoint in endpoints]}
 
 
 def matrix_instance_matches(instance, endpoint):
@@ -995,9 +1240,16 @@ def main(argv=None):
                         help='also test one explicitly allowed disjoint endpoint pair')
     parser.add_argument('--api-role', help='also run the isolated forced-role /chat smoke for this role')
     parser.add_argument('--api-port', type=int, help='isolated port for the forced role when it has multiple instances')
+    parser.add_argument('--private-matrix-result', type=Path,
+                        help='validate a native acquisition offline and export a private diagnostic record')
+    parser.add_argument('--private-matrix-result-sha256', help='pinned SHA-256 of the native acquisition RESULT.json')
     args = parser.parse_args(argv)
     if args.api_port is not None and args.api_role is None:
         parser.error('--api-port requires --api-role')
+    if (args.private_matrix_result is None) != (args.private_matrix_result_sha256 is None):
+        parser.error('--private-matrix-result and --private-matrix-result-sha256 must be supplied together')
+    if args.private_matrix_result is not None and (args.paired_concurrency or args.api_role is not None):
+        parser.error('private matrix validation runs offline and cannot be combined with live diagnostics')
     try:
         plan_path = canonical_file(args.plan)
         output = args.output_dir
@@ -1013,6 +1265,13 @@ def main(argv=None):
         require(planner.is_hash(args.plan_sha256) and hashlib.sha256(plan_bytes).hexdigest() == args.plan_sha256,
                 'prepared plan SHA-256 differs from the requested pin')
         plan = json.loads(plan_bytes, object_pairs_hook=planner.unique_keys)
+        if args.private_matrix_result is not None:
+            require(not output.is_relative_to(args.private_matrix_result.parent.parent),
+                    'private matrix output must be outside the acquisition packet')
+            record = validate_private_matrix(plan, plan_path, args.private_matrix_result, args.private_matrix_result_sha256)
+            output.mkdir(mode=0o700)
+            planner.write_new(output / 'private-matrix-diagnostic.json', record | {'plan_sha256': args.plan_sha256})
+            return 0
         admission = Admission(plan)
         output.mkdir(mode=0o700)
         plan = regenerate(plan, plan_path.parent, output / 'artifact-ledger.json')

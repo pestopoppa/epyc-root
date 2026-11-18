@@ -1,5 +1,6 @@
 """Fixtures for isolated hot-stack admission, request witnesses and cleanup."""
 
+import copy
 import importlib.util
 import json
 import os
@@ -158,6 +159,210 @@ def test_regenerate_refuses_mutated_argv_and_restores_environment(tmp_path, monk
                         lambda *_: expected | {'contention_matrix_status': 'stale'})
     with pytest.raises(ValueError, match='must be fresh'):
         runner.regenerate(expected, tmp_path, ledger)
+
+
+@pytest.fixture
+def private_matrix_capture(tmp_path, monkeypatch):
+    planner = runner.planner
+    monkeypatch.setattr(planner, 'SCRATCH', tmp_path)
+    orchestrator = tmp_path / 'orchestrator'
+    monkeypatch.setattr(planner, 'ORCHESTRATOR', orchestrator)
+    source = orchestrator / runner.MATRIX_CONFIG
+    source.parent.mkdir(parents=True)
+    topology = 'a' * 64
+    source.write_text(f'topology_hash: {topology}\n')
+    matrix_sha = planner.digest(source)
+    linkage = tmp_path / 'verify_ggml_linkage.sh'
+    linkage.touch()
+    monkeypatch.setattr(runner, 'LINKAGE', linkage)
+    binary = tmp_path / 'image' / 'bin' / 'llama-server'
+    inventory = binary.parent.parent / 'SHA256SUMS'
+    inventory.parent.mkdir()
+    inventory.touch()
+    stat = [1, 2, 3, 4, 5]
+    pin = {'binary_sha256': 'b' * 64, 'libraries': {'libggml.so': 'c' * 64}}
+    monkeypatch.setattr(runner, 'image_pin', lambda *_: pin)
+    model = str(tmp_path / 'model.gguf')
+
+    packet = tmp_path / 'native'
+    prepared = packet / 'prepared'
+    prepared.mkdir(mode=0o700, parents=True)
+    attempt_id = 'e' * 32
+    capture = packet / 'out' / attempt_id
+    capture.mkdir(mode=0o700, parents=True)
+    observation = capture / 'observation'
+    observation.mkdir(mode=0o700)
+    configurations = ((8180, 19560, 'frontdoor', 2, 48, 1), (8086, 19561, 'worker_vision', 0, 0, 0))
+    endpoints, instances, workloads, witnesses, cleanup = [], [], {}, {}, {}
+    producer = packet / 'sources/scripts/benchmark/kernel_promotion_contention_acquire.py'
+    producer.parent.mkdir(parents=True)
+    producer.write_text('# Frozen v1 fixture producer\n')
+    (packet / 'SOURCE.sha256').write_text(f'{planner.digest(producer)}  {producer.relative_to(packet)}\n')
+
+    def write_workloads(path, pids):
+        planner.write_new(path, {'verified': pids, 'identity_errors': {}, 'foreign': [], 'observed': []})
+
+    write_workloads(observation / 'preload-workloads.json', {})
+    for canonical, port, role, instance, low_core, node in configurations:
+        state = prepared / 'state' / str(port)
+        cpus = list(range(low_core, low_core + 48))
+        argv = ['numactl', f'--membind={node}', '--', 'taskset', '-c', str(low_core), str(binary),
+                '--slot-save-path', str(state / 'slots')]
+        endpoints.append({'canonical_port': canonical, 'port': port, 'roles': [role], 'backend': 'cpu',
+                          'numa_instance': instance, 'device': 'none', 'test': 'chat', 'physical_cpus': cpus,
+                          'logical_cpus': cpus, 'argv': argv, 'env': {}, 'models': [{'path': model, 'stat': stat}],
+                          'state_dir': str(state), 'log': str(prepared / 'logs' / f'{port}.log')})
+        instances.append({'role': role, 'canonical_port': canonical, 'port': port, 'instance_idx': instance})
+        pid, birth = port + 1000, port + 2000
+        witness = {'pid': pid, 'birth': birth, 'backend': {'kfd_client': False},
+                   'threads': {str(pid): {'cpus': [low_core], 'numa_policy': f'bind:{node}'}}}
+        witnesses[str(port)] = witness
+        write_workloads(observation / f'preload-{port}-workloads.json', workloads)
+        workloads[str(pid)] = birth
+        planner.write_new(observation / f'{port}.startup.json', {
+            'pid': pid, 'birth': birth, 'witness': witness, 'model_mappings': {model: stat[:2]},
+            'image': {'binary': {'sha256': pin['binary_sha256'], 'stat': stat}, 'libraries': {
+                str(binary.parent / 'libggml.so'): {'sha256': pin['libraries']['libggml.so'], 'stat': stat}}},
+        })
+        (observation / f'{port}.server.log').touch()
+        cleanup[str(pid)] = {'pid': pid, 'birth': birth, 'port': port, 'pidfd_exited': True,
+                             'reaped_rc': 0, 'port_closed': True, 'kfd_absent': True}
+    write_workloads(observation / 'post-requests-workloads.json', workloads)
+    (observation / 'owned-pids.txt').write_text(''.join(f'{pid} {birth}\n' for pid, birth in workloads.items()))
+    (observation / 'source-matrix.yaml').write_bytes(source.read_bytes())
+    (observation / 'cpu-linkage.log').touch()
+    planner.write_new(observation / 'host.json', {})
+    planner.write_new(observation / 'cleanup.json', {'servers': cleanup, 'spawn_unproved': False})
+    ports = {str(canonical): port for canonical, port, *_ in configurations}
+    resources = {'physical_cpus': '0-95', 'gpu_devices': [], 'ram_gib': 224}
+    plan = {'schema': planner.PLAN_SCHEMA, 'status': 'prepared_only', 'contention_matrix_status': 'stale',
+            'topology_hash': topology, 'spec': {'config_sha256': {runner.MATRIX_CONFIG: matrix_sha},
+                                               'ports': ports, 'resources': resources},
+            'endpoints': endpoints, 'images': {'cpu': {'binary': str(binary), 'root': str(inventory.parent),
+                                                       'inventory': inventory.name,
+                                                       'inventory_sha256': planner.digest(inventory)}}}
+    planner.write_new(prepared / 'plan.json', plan)
+    plan_sha = planner.digest(prepared / 'plan.json')
+    (prepared / 'plan.sha256').write_text(plan_sha + '\n')
+    (observation / 'prepared-plan.json').write_bytes((prepared / 'plan.json').read_bytes())
+    planner.write_new(observation / 'inputs.json', {
+        'plan_sha256': plan_sha, 'producer_sha256': planner.digest(producer), 'linkage_sha256': planner.digest(linkage),
+        'scope': {'ports': ports, 'resources': resources},
+    })
+    row = {'schema': 'epyc.row.v3', 'id': 'native-fixture', 'ports': list(ports.values())}
+    planner.write_new(observation / 'admission.json', {'row': row, 'rowflow_env': runner.FENCE_ENV,
+                                                       'grant': 'regions=0-95 holds=q0,q1,q2,q3'})
+    request = {'prompt': 'Write a 100-word essay analyzing the philosophical implications of autonomous '
+                         'decision-making in artificial intelligence systems.',
+               'n_predict': 100, 'temperature': 0, 'cache_prompt': False}
+    for phase, members in (('solo-frontdoor', ['19560']), ('solo-worker_vision', ['19561']),
+                           ('parallel', ['19560', '19561'])):
+        directory = observation / phase
+        directory.mkdir()
+        write_workloads(directory / 'workloads.json', workloads)
+        planner.write_new(directory / 'request.json', request)
+        for port in members:
+            planner.write_new(directory / f'{port}.response.json', {'timings': {'predicted_n': 100, 'predicted_ms': 2000}})
+        planner.write_new(directory / 'requests.json', {
+            'legs': {port: {'sent': 1, 'headers': 4, 'finished': 5, 'status': 200} for port in members},
+            'overlap_scans': [{'start': 2, 'end': 3, 'witnesses': {port: witnesses[port] for port in members}}],
+        })
+    decode = {'frontdoor': 2.0, 'worker_vision': 2.0}
+    summary = {'schema': runner.PRIVATE_MATRIX_SCHEMA, 'attempt_id': attempt_id, 'unit_id': row['id'],
+               'status': 'captured', 'authority': 'observation_only', 'cleanup_proved': True,
+               'scope': 'isolated_cpu_instance_pair', 'instances': instances, 'roles': list(decode),
+               'samples': 1, 'topology_hash': topology, 'source_matrix_sha256': matrix_sha, 'plan_sha256': plan_sha,
+               'source_matrix_status_at_prepare': 'stale', 'decode_s': {'solo': decode, 'parallel': decode},
+               'seq_aggregate_tps': 50.0, 'parallel_aggregate_tps': 100.0, 'ratio': 2.0}
+    planner.write_new(capture / 'result.json', summary)
+
+    plan_dir = tmp_path / 'target-plan'
+    plan_dir.mkdir(mode=0o700)
+    relocated = copy.deepcopy(plan)
+    for endpoint in relocated['endpoints']:
+        for field in ('state_dir', 'log'):
+            endpoint[field] = endpoint[field].replace(str(prepared), str(plan_dir))
+        endpoint['argv'][-1] = endpoint['argv'][-1].replace(str(prepared), str(plan_dir))
+    plan_path = plan_dir / 'plan.json'
+    planner.write_new(plan_path, relocated)
+    result_path = capture.parent / 'RESULT.json'
+
+    def write_outer(**changes):
+        summary = planner.read_json(capture / 'result.json')
+        result_path.write_text(json.dumps(summary | {'capture_dir': str(capture), 'files': runner.evidence.inventory(capture)}
+                                          | changes))
+        return planner.digest(result_path)
+
+    return SimpleNamespace(plan_path=plan_path, plan=relocated, result_path=result_path, write_outer=write_outer,
+                           capture=capture, observation=observation)
+
+
+def test_private_matrix_exports_offline_without_sealing(tmp_path, monkeypatch, private_matrix_capture):
+    capture = private_matrix_capture
+    result_sha = capture.write_outer()
+    output = tmp_path / 'export'
+    monkeypatch.setattr(runner, 'Admission', lambda *_: pytest.fail('offline export invoked live admission'))
+    monkeypatch.setattr(runner, 'regenerate', lambda *_: pytest.fail('offline export invoked live regeneration'))
+    monkeypatch.setattr(runner, 'Runtime', lambda *_: pytest.fail('offline export invoked live runtime'))
+    monkeypatch.setattr(runner, 'seal', lambda *_: pytest.fail('offline export invoked sealing'))
+    argv = ['--plan', str(capture.plan_path), '--plan-sha256', runner.planner.digest(capture.plan_path),
+            '--output-dir', str(output), '--private-matrix-result', str(capture.result_path),
+            '--private-matrix-result-sha256', result_sha]
+    assert runner.main(argv) == 0
+    assert [path.name for path in output.iterdir()] == ['private-matrix-diagnostic.json']
+    report = runner.planner.read_json(output / 'private-matrix-diagnostic.json')
+    assert report['authority'] == 'observation_only' and report['status'] == 'validated_capture'
+    assert report['acquisition_result_sha256'] == result_sha
+    assert report['source_matrix_status_at_prepare'] == 'stale'
+    assert [endpoint['canonical_port'] for endpoint in report['endpoints']] == [8180, 8086]
+    assert 'ratio' not in report
+    with pytest.raises(SystemExit):
+        runner.main(argv + ['--paired-concurrency'])
+
+
+@pytest.mark.parametrize(('damage', 'error'), [
+    ('outer', 'outer result differs'), ('failed', 'captured, cleanup-proved'), ('hash', 'file inventory differs'),
+    ('cleanup', 'cleanup does not cover'), ('overlap', 'shared request interval'), ('timing', 'native decode summary'),
+    ('missing_phase', 'missing observation/parallel/requests.json'), ('model', 'models or config differ'),
+    ('topology', 'topology, endpoints'), ('binary', 'executable or library witness differs'),
+    ('partial', 'fixed-token response'),
+])
+def test_private_matrix_refuses_changed_native_evidence(private_matrix_capture, damage, error):
+    capture = private_matrix_capture
+    captured_timing = capture.observation / 'parallel/19560.response.json'
+    if damage == 'outer':
+        result_sha = capture.write_outer(ratio=12.0)
+    elif damage == 'failed':
+        result_sha = capture.write_outer(status='failed')
+    elif damage == 'hash':
+        result_sha = capture.write_outer()
+        captured_timing.write_text('{}')
+    else:
+        if damage == 'cleanup':
+            (capture.observation / 'cleanup.json').write_text(json.dumps({'spawn_unproved': False, 'servers': {}}))
+        elif damage == 'overlap':
+            requests = capture.observation / 'parallel/requests.json'
+            data = runner.planner.read_json(requests)
+            data['overlap_scans'][0]['end'] = 8
+            requests.write_text(json.dumps(data))
+        elif damage == 'timing':
+            captured_timing.write_text(json.dumps({'timings': {'predicted_n': 100, 'predicted_ms': 2001}}))
+        elif damage == 'partial':
+            captured_timing.write_text(json.dumps({'timings': {'predicted_n': 99, 'predicted_ms': 2000}}))
+        elif damage == 'missing_phase':
+            (capture.observation / 'parallel/requests.json').unlink()
+        elif damage == 'model':
+            capture.plan['endpoints'][0]['models'][0]['stat'][1] = 42
+        elif damage == 'topology':
+            capture.plan['topology_hash'] = 'f' * 64
+        elif damage == 'binary':
+            startup = capture.observation / '19560.startup.json'
+            data = runner.planner.read_json(startup)
+            data['image']['binary']['sha256'] = 'f' * 64
+            startup.write_text(json.dumps(data))
+        result_sha = capture.write_outer()
+    with pytest.raises(ValueError, match=error):
+        runner.validate_private_matrix(capture.plan, capture.plan_path, capture.result_path, result_sha)
 
 
 def test_lock_witness_requires_an_exact_exclusive_flock(tmp_path, monkeypatch):
