@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T14:42:04Z",
+  "generated_at": "2026-11-18T15:02:16Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1994,7 +1994,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1737,
+          "line": 1745,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2003,7 +2003,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1861,
+          "line": 1869,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2012,7 +2012,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2193,
+          "line": 2201,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2332,
+          "line": 2340,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2030,7 +2030,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2894,
+          "line": 2902,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2042,7 +2042,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3032,
+          "line": 3040,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2054,7 +2054,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3039,
+          "line": 3047,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3299,7 +3299,7 @@
     },
     {
       "age_days": 0,
-      "blocked": 0,
+      "blocked": 1,
       "blocked_by": [],
       "closed": 353,
       "dispatchable": 8,
@@ -3309,7 +3309,7 @@
       "id": "RTG-34",
       "last_advanced": "2026-11-18",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
-      "open": 8,
+      "open": 9,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3420,7 +3420,7 @@
           ],
           "line": 5566,
           "name": "fleet-fanout-measurement",
-          "open": 2,
+          "open": 3,
           "readiness": "blocked"
         },
         {
@@ -3437,7 +3437,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5770,
+          "line": 5771,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3446,7 +3446,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6326,
+          "line": 6327,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"

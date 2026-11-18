@@ -25,7 +25,7 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 17,
+      "blocked": 18,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
       "open": 470
@@ -624,7 +624,7 @@
       ]
     },
     "coordination-and-churn-pipeline.md": {
-      "blocked": 0,
+      "blocked": 1,
       "closed": 353,
       "guarded": 0,
       "last_advanced": "2026-11-18",
@@ -637,7 +637,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 361,
+      "total": 362,
       "tracks": [
         {
           "blocked": 0,
@@ -711,7 +711,7 @@
           "open": 0
         },
         {
-          "blocked": 0,
+          "blocked": 1,
           "closed": 15,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5770,
+          "line": 5771,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6326,
+          "line": 6327,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1236,7 +1236,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1737,
+          "line": 1745,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1861,
+          "line": 1869,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2193,
+          "line": 2201,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2332,
+          "line": 2340,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2894,
+          "line": 2902,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3032,
+          "line": 3040,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3039,
+          "line": 3047,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
