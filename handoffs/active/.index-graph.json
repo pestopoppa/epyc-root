@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T15:02:16Z",
+  "generated_at": "2026-11-18T15:03:09Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1994,7 +1994,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1745,
+          "line": 1746,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2003,7 +2003,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1869,
+          "line": 1870,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2012,7 +2012,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2201,
+          "line": 2202,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2340,
+          "line": 2341,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2030,7 +2030,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2902,
+          "line": 2903,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2042,7 +2042,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3040,
+          "line": 3041,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2054,7 +2054,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3047,
+          "line": 3048,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
