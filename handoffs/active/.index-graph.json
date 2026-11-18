@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T15:52:18Z",
+  "generated_at": "2026-11-18T16:07:07Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2000,7 +2000,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1749,
+          "line": 1750,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1873,
+          "line": 1874,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2018,7 +2018,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2205,
+          "line": 2206,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2027,7 +2027,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2344,
+          "line": 2345,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2036,7 +2036,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2906,
+          "line": 2907,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2048,7 +2048,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3044,
+          "line": 3045,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2060,7 +2060,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3051,
+          "line": 3052,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3188,7 +3188,7 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 73,
+      "closed": 74,
       "dispatchable": 25,
       "domain": "routing-and-optimization",
       "guarded": 0,
