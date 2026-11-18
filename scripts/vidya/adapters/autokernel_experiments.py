@@ -483,7 +483,8 @@ def _same_code_excursion(row: Mapping[str, Any], payload: Mapping[str, Any]) -> 
     if (native_effect is None or native_floor is None or
             not isinstance(anchor_samples, list) or not anchor_samples or
             not isinstance(candidate_samples, list) or not candidate_samples or
-            any(_num(sample) is None for sample in (*anchor_samples, *candidate_samples))):
+            any(_num(sample) is None or sample <= 0
+                for sample in (*anchor_samples, *candidate_samples))):
         return False
     if (prior_floor < 0 or floor < 0 or comparison_floor < 0 or
             not math.isclose(delta, (current - prior) * 100.0, rel_tol=1e-12, abs_tol=1e-12) or

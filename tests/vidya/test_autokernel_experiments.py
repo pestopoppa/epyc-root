@@ -781,6 +781,37 @@ def test_same_code_excursion_without_producer_capture_stays_unprojected():
     assert exp.classify(row) == (None, "invalid_measurement")
 
 
+@pytest.mark.parametrize("arm", ["anchor_samples", "candidate_samples"])
+@pytest.mark.parametrize("sample", [0, -1.0])
+def test_same_code_excursion_refuses_nonpositive_native_samples(arm, sample):
+    row = _same_code_invalid_row()
+    payload = row["payload"]
+    payload["invalid_measurement"]["comparison"][arm][0] = sample
+    # A valid content seal cannot turn impossible native rates/timings into evidence.
+    payload["belief_capture"]["subject"] = exp._capture_subject(row, payload)
+    payload["belief_capture"]["content_sha256"] = hashlib.sha256(
+        exp._capture_canon(payload["belief_capture"]["subject"])).hexdigest()
+    row = _with_verified_prior(row)
+    assert exp.classify(row) == (None, "invalid_measurement")
+    assert exp.project(row, store_manifest=MANIFEST) is None
+
+
+def test_same_code_excursion_preserves_negative_signed_improvement():
+    row = _same_code_invalid_row()
+    payload = row["payload"]
+    invalid = payload["invalid_measurement"]
+    invalid["comparison"]["effect"] = -0.08
+    invalid["comparison"]["candidate_samples"] = [
+        value * 0.92 for value in invalid["comparison"]["anchor_samples"]]
+    invalid["same_code_tripwire"].update(effect_fraction=-0.08, delta_pct=-9.0)
+    payload["belief_capture"]["subject"] = exp._capture_subject(row, payload)
+    payload["belief_capture"]["content_sha256"] = hashlib.sha256(
+        exp._capture_canon(payload["belief_capture"]["subject"])).hexdigest()
+    row = _with_verified_prior(row)
+    assert exp.classify(row) == ("verifier", "measurement_invalid")
+    assert exp.project(row, store_manifest=MANIFEST).metric == "instrument:evaluator_excursion"
+
+
 @pytest.mark.parametrize("tamper", ["row_effect", "top_level_comparison"])
 def test_same_code_excursion_refuses_any_current_measurement_surface(tamper):
     row = _same_code_invalid_row()
