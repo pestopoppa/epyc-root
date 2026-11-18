@@ -1388,21 +1388,25 @@ def _git(repo, *args, date=None):
            "GIT_COMMITTER_EMAIL": "t@t", "PATH": "/usr/bin:/bin", "HOME": str(repo)}
     if date:
         env["GIT_COMMITTER_DATE"] = env["GIT_AUTHOR_DATE"] = date
-    subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True, env=env)
+    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True,
+                          input="", text=True, env=env).stdout.strip()
 
 
 def _checkout(tmp_path, behind, missing_date="2026-10-01T00:00:00Z"):
+    source = tmp_path / "history.git"
+    source.mkdir(parents=True)
     repo = tmp_path / "rootco"
-    repo.mkdir(parents=True)
-    _git(repo, "init", "-q", "-b", "main")
-    _git(repo, "commit", "-q", "--allow-empty", "-m", "one")
-    _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    _git(source, "init", "-q", "--bare", "-b", "main")
+    tree = _git(source, "mktree")
+    base = _git(source, "commit-tree", tree, "-m", "one")
     if behind:
-        _git(repo, "commit", "-q", "--allow-empty", "-m", "two", date=missing_date)
-        _git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
-        _git(repo, "reset", "-q", "--hard", "HEAD~1")
+        remote = _git(source, "commit-tree", tree, "-p", base, "-m", "two", date=missing_date)
+        head = base
     else:
-        _git(repo, "commit", "-q", "--allow-empty", "-m", "ahead-lane-commit")
+        remote = base
+        head = _git(source, "commit-tree", tree, "-p", base, "-m", "ahead-lane-commit")
+    _git(source, "update-ref", "refs/remotes/origin/main", remote)
+    _git(source, "worktree", "add", "-q", "--detach", str(repo), head)
     return repo
 
 

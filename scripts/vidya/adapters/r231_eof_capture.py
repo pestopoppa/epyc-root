@@ -15,11 +15,13 @@ ADAPTER_ID = "vidya.adapters.r231_eof_capture/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "r231-eof-capture"
 SCHEMA = "epyc.r231_eof.native_capture.v1"
-ROW = "vidya-r231-eof-native-wire-20261118-r2"
+ROW = "vidya-r231-eof-native-wire-20261118-r3"
 BASE = "ffc1bac82eeca6f9099e1ccd9ba49703c460a115"
 UPSTREAM = "b04642061d183dff8504127dfbee1c1a8352682c"
 CLI_SHA = "a90f1a24f8734ff02f293b8ab5eec38ec69574511daabcafde6bc089996cf6fb"
-PINSET_SHA = "f28e4e04fb44ff1fff6e0581fdd75a9c2107324deb65d671a84049527f22ce1b"
+PINSET_SHA = "c3046e6035a1acb6c114dbc5ebfed6606844685dc792e96e7ad9f28276ae4516"
+_PINSETS = {ROW: PINSET_SHA, "vidya-r231-eof-native-wire-20261118-r2":
+            "f28e4e04fb44ff1fff6e0581fdd75a9c2107324deb65d671a84049527f22ce1b"}
 REQUIRED_MAPS = ("libllama-cli-impl.so", "libllama.so", "libggml.so", "libggml-base.so")
 _LIMIT = 16 << 20
 
@@ -91,13 +93,41 @@ def _maps(record, executable, digest, libraries, pins, cpus):
                  for library in libraries), "required live mapped library missing")
 
 
+def _grant_cpus(text):
+    cpus = set()
+    for span in text.split(","):
+        first, _, last = span.partition("-")
+        start, end = int(first), int(last or first)
+        _require(0 <= start <= end <= 4095, "grant region differs")
+        cpus.update(range(start, end + 1))
+    return cpus
+
+
+def _grant_selection(grant, fields, field_count):
+    row = grant["row"]
+    granted = _grant_cpus(fields["regions"])
+    cpus = grant["cpus"]
+    if row != ROW:
+        return fields["id"] == row and cpus == sorted(granted)
+    engine = _grant_cpus(fields.get("lock", fields["regions"]))
+    inherited = grant["inherited_cpus"]
+    required = {"regions", "start", "end", "holds"}
+    return (len(fields) == field_count and required <= fields.keys() <= required | {"cpus", "lock"}
+            and Path(grant["path"]).is_absolute() and Path(grant["path"]).name == row + ".grant"
+            and grant["granted_cpus"] == sorted(granted) and engine <= granted
+            and grant["engine_cpus"] == sorted(engine)
+            and isinstance(inherited, list) and all(type(cpu) is int and 0 <= cpu <= 4095 for cpu in inherited)
+            and inherited == sorted(set(inherited))
+            and cpus == sorted(engine & set(inherited))[:4])
+
+
 def _verify(envelope):
     _require(set(envelope) == {"payload", "sha256"}, "original native envelope missing")
     record = envelope["payload"]
     _require(envelope["sha256"] == _digest(json.dumps(record, sort_keys=True,
                                                       separators=(",", ":")).encode()),
              "native payload seal differs")
-    _require(record["schema"] == SCHEMA and record["id"] == ROW
+    _require(record["schema"] == SCHEMA and record["id"] in _PINSETS
              and re.fullmatch(r"[a-f0-9]{32}", record["run_id"])
              and record["mode"] == "native" and record["status"] == "COMPLETE"
              and record["model_loaded"] is False and record["inference_executed"] is False
@@ -107,19 +137,15 @@ def _verify(envelope):
              "complete fixed case plan differs")
     grant = record["grant"]
     cpus = grant["cpus"]
-    sectors = []
-    for span in grant["regions"].split(","):
-        first, _, last = span.partition("-")
-        start, end = int(first), int(last or first)
-        _require(0 <= start <= end <= 4095, "grant region differs")
-        sectors.extend(range(start, end + 1))
     raw_grant = grant["original"].encode()
-    fields = dict(pair.split("=", 1) for pair in raw_grant.decode().split())
+    words = raw_grant.decode().split()
+    fields = dict(pair.split("=", 1) for pair in words)
     starts = datetime.fromisoformat(fields["start"].replace("Z", "+00:00")).timestamp()
     ends = datetime.fromisoformat(fields["end"].replace("Z", "+00:00")).timestamp()
-    _require(grant["row"] == fields["id"] == ROW and grant["regions"] == fields["regions"]
+    _require(grant["row"] == record["id"] and grant["regions"] == fields["regions"]
              and "dryrun" not in fields.get("kind", "") and "dryrun" not in fields.get("schema", "")
-             and len(cpus) == 4 and cpus == sorted(set(sectors))
+             and len(cpus) == 4 and all(type(cpu) is int for cpu in cpus)
+             and _grant_selection(grant, fields, len(words))
              and grant["sha256"] == _digest(raw_grant)
              and grant["deadline"] == ends - 90
              and starts <= record["started_at"] <= record["ended_at"] <= record["stop_at"]
@@ -127,7 +153,7 @@ def _verify(envelope):
              "grant, resources or terminal window differ")
     pins = record["pins"]
     _require(_digest(json.dumps(pins, sort_keys=True, separators=(",", ":")).encode())
-             == PINSET_SHA, "prospectively filed input and custody pin set differs")
+             == _PINSETS[record["id"]], "prospectively filed input and custody pin set differs")
     bindir = Path(pins["binary_dir"])
     cli = bindir / "llama-cli"
     build = pins["original_closure"]

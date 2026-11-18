@@ -1,0 +1,82 @@
+{
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/smoke/24286b6da6bf49da8454e1f67aea9ec1/models",
+      "bytes": 802996736
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-finish-20261118/pytest",
+      "bytes": 160174
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-finish-20261118/pytest-integration",
+      "bytes": 4591037
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/candidate-scope-validation/pytest-of-node",
+      "bytes": 2830780
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-adapter/pytest.AiUPGa",
+      "bytes": 5540385
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-adapter/pytest.Qb2Uq5",
+      "bytes": 5663396
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-adapter/pytest.j5K2QH",
+      "bytes": 5660018
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-adapter/pytest.psqWyi",
+      "bytes": 1197065
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-adapter/pytest.u9kzZv",
+      "bytes": 1249604
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/pytest",
+      "bytes": 229004
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/candidate-scope-validation",
+      "bytes": 8875913
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-prepublish-20261118.OPYaJA",
+      "bytes": 5359
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-smoke-fix-20261118.mMEK2L",
+      "bytes": 75495
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-repair-prepublish",
+      "bytes": 37168
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/source/base",
+      "bytes": 163471403,
+      "method": "git worktree remove after filed KVU19 completion"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-root-code",
+      "bytes": 32618457,
+      "method": "git worktree remove after filed KVU19 completion"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/source/candidate",
+      "bytes": 163471344,
+      "method": "git worktree remove --force; completed source patch preserved"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build",
+      "bytes": 420885939,
+      "method": "completed filed candidate build removed"
+    }
+  ],
+  "bytes_removed": 1619559277,
+  "retained": "Current continuation and its pinned reused official models, verified parent, and active queued source packets."
+}

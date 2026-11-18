@@ -493,3 +493,122 @@ def test_cli_ingest_end_to_end(tmp_path, capsys):
     supports = [r.frame for r in Ledger(ledger).read_all()
                 if r.frame["frame_type"].endswith("evidence_supports_claim/v1")]
     assert {tuple(f["assertion"]["grade"].values()) for f in supports} == {("Judged", "Located")}
+
+
+
+def campaign_pair(*, variable=True, **override):
+    started = "2026-11-18T03:00:01Z"
+    observed = "2026-11-18T03:00:00Z"
+    arm = "plain+ctx-variable" if variable else "plain"
+    props = b' { "model_alias": "native-qwen", "build_info": "b10500-729599d69", "default_generation_settings": {"n_ctx": 4096} }'
+    prompt = capture.prompt_identity(PROMPT)
+    bundle = json.dumps({
+        "schema": capture.BUNDLE_SCHEMA, "mode": "variable", "created_at": observed,
+        "prompt": {key: prompt[key] for key in ("sha256", "chars")},
+        "inline_equivalent_prompt_chars": prompt["chars"] - 2 + 5,
+        "context_chars": 5, "index_chars": 2,
+        "sections": [{"key": "target", "chars": 5, "inline": False}],
+        "files": {"sections/01-target.md": {"sha256": "d" * 64, "bytes": 5}},
+    }, indent=2).encode()
+    metrics = {"schema": capture.METRICS_SCHEMA, "call_id": "call-scoped", "role": "planner",
+               "seat_arm": arm, "backend_model": BACKEND["model"], "backend_kind": "opencode",
+               "returncode": 0, "timed_out": False, "wall_s": 3.1,
+               "opencode": {"totals": {"steps": 1, "decoded_tokens": 21, "elapsed_s": 1.52}}}
+    kwargs = dict(
+        call_id="call-scoped", role="planner", workspace="/scratch/example/lane", producer=PRODUCER,
+        seat={**seat(bounded=False), "arm": arm}, backend=PLAIN_BACKEND,
+        server={"endpoint": SERVER["endpoint"]}, prompt=PROMPT, started_at=started,
+        finished_at="2026-11-18T03:00:04Z", wall_s=3.1, returncode=0, timed_out=False,
+        recorded_at="2026-11-18T03:00:05Z", props_at=observed, props_raw=props,
+        bundle_raw=bundle if variable else None, metrics=metrics)
+    kwargs.update(override)
+    return capture.build_campaign_call_records(**kwargs)
+
+
+def test_prospective_campaign_native_facets_and_cli(tmp_path, capsys):
+    sibling, call = campaign_pair()
+    legacy = {"schema": capture.METRICS_SCHEMA, "role": "planner"}
+    log = write_log(tmp_path / "actor-calls.jsonl", legacy, call, sibling)
+    (native,) = reader.native_rows(log)
+    tup = reader.project(native)
+    assert ct.grade(tup)[:2] == ("Judged", "Located")
+    assert tup.extra["server"]["build_info"] == "b10500-729599d69"
+    assert tup.extra["server"]["n_ctx"] == 4096
+    assert tup.extra["server"]["served_model"] == "native-qwen"
+    assert tup.extra["actor_metrics"]["call_id"] == call["call_id"]
+    assert json.loads(tup.extra["actor_metrics"]["payload_json"]) == sibling["metrics"]
+    assert tup.extra["context_bundle"]["basis"] == "context offered by the producer"
+    as_of = "2026-11-18T04:00:00Z"
+    ledger = tmp_path / "scratch.jsonl"
+    args = ["--ledger", str(ledger), "--json", "ingest", "ak-actor-seat", "--as-of", as_of,
+            "--path", str(log)]
+    assert cli.main(args + ["--dry-run"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["refused"] == [] and report["rows_projected"] == 1
+    assert not ledger.exists()
+    assert cli.main(args) == 0
+    assertion = next(r.frame["assertion"] for r in Ledger(ledger).read_all()
+                     if r.frame["frame_type"].endswith("claim_proposed/v1"))
+    claim = assertion["display_text"]
+    assert "Native server native-qwen b10500-729599d69 with n_ctx 4096" in claim
+    assert "Metrics sibling " + sibling["record_sha256"][:16] in claim
+    assert "Offered context bundle " + call["campaign"]["bundle"]["sha256"][:16] in claim
+
+
+@pytest.mark.parametrize("fault", ["missing", "duplicate", "orphan", "changed-props", "changed-metrics", "changed-bundle"])
+def test_campaign_declared_corrupt_pair_refuses_whole_log(tmp_path, fault):
+    sibling, call = campaign_pair()
+    records = [call, sibling]
+    if fault == "missing":
+        records = [call]
+    elif fault == "duplicate":
+        records.append(sibling)
+    elif fault == "orphan":
+        records = [sibling, call_record()]
+    elif fault == "changed-props":
+        call["server"]["served_model"] = "model-other"
+        rehash(call)
+    elif fault == "changed-metrics":
+        sibling["metrics"]["call_id"] = "another-call"
+        rehash(sibling)
+        call["campaign"]["metrics_sha256"] = sibling["record_sha256"]
+        rehash(call)
+    else:
+        manifest = capture._original(call["campaign"]["bundle"], "test")
+        manifest["prompt"]["sha256"] = "0" * 64
+        call["campaign"]["bundle"] = capture._snapshot(json.dumps(manifest).encode())
+        rehash(call)
+    log = write_log(tmp_path / "actor-calls.jsonl", *records)
+    with pytest.raises(ct.ProjectionError):
+        reader.native_rows(log)
+
+
+def test_campaign_inline_and_chronology_kept_explicit(tmp_path):
+    sibling, call = campaign_pair(variable=False)
+    log = write_log(tmp_path / "actor-calls.jsonl", sibling, call)
+    (native,) = reader.native_rows(log)
+    assert "context_bundle" not in reader.project(native).extra
+    with pytest.raises(capture.CaptureError, match="60 seconds"):
+        campaign_pair(props_at="2026-11-18T02:58:00Z")
+    with pytest.raises(capture.CaptureError, match="exactly on a variable"):
+        campaign_pair(bundle_raw=None)
+    with pytest.raises(capture.CaptureError, match="predates the prospective"):
+        campaign_pair(variable=False, started_at="2026-11-17T03:00:01Z",
+                      finished_at="2026-11-17T03:00:04Z", recorded_at="2026-11-17T03:00:05Z",
+                      props_at="2026-11-17T03:00:00Z")
+
+
+
+def test_campaign_error_retains_disposition_but_timeout_emits_no_tuple(tmp_path):
+    original, _ = campaign_pair(variable=False)
+    failed_metrics = {**original["metrics"], "returncode": 7}
+    sibling, call = campaign_pair(variable=False, metrics=failed_metrics, returncode=7)
+    failed = write_log(tmp_path / "failed" / "actor-calls.jsonl", sibling, call)
+    (native,) = reader.native_rows(failed)
+    tup = reader.project(native)
+    assert tup.observation == {"outcome_native": "actor_call_failed"}
+    assert tup.value == call["wall_s"] and ct.grade(tup)[:2] == ("Judged", "Located")
+    timed = {**original["metrics"], "returncode": -1, "timed_out": True}
+    sibling, call = campaign_pair(variable=False, metrics=timed, returncode=-1, timed_out=True)
+    timeout = write_log(tmp_path / "timeout" / "actor-calls.jsonl", sibling, call)
+    assert reader.native_rows(timeout) == ()

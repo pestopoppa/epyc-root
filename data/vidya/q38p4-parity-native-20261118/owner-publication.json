@@ -1,0 +1,9 @@
+{
+  "at": "2026-11-18T04:14:48.898844+00:00",
+  "row": "q38p4-greedy-parity-20261118-r1",
+  "command": "ROWFLOW_REPO=\"$PWD\" TASK_LINT_DIR=\"$PWD/scripts/handoffs\" python3 /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/spec.json --smoke-now",
+  "rc": 0,
+  "stdout": "GPU busy: smoke queued; it runs in the next GPU gap; your row becomes ready on PASS \u2014 move to your next task",
+  "readiness_pass": false,
+  "native_capture_accepted": false
+}

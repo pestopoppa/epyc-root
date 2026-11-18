@@ -435,6 +435,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "mi210-paired-raw",  # isolated CLI, refusals and synthetic context: test_mi210_paired_raw_ingest.py
         "gpu-pool-native",  # sealed synthetic CLI and refusal controls: test_gpu_pool_native_ingest.py
         "qwen4exp-cpu-loader-diagnostic",  # Prospective writer and refusals: test_qwen4exp_cpu_loader.py.
+        # Dedicated original-byte, carrier/planner, and CLI decline/refusal controls: test_q38p4_parity.py.
+        "q38p4-greedy-parity",
         "quality-pack-comparison",  # Native comparison capture and refusal controls: test_kernel_promotion_quality_parity.py.
         "kernel-promotion-lifecycle",  # Sealed fixture, strict replay refusals and CLI retry: test_kernel_promotion_evidence.py.
     }

@@ -1,0 +1,35 @@
+# Native source wiring, 2026-11-18
+
+## KVU19a2: capture and planning acceptance
+
+The source-bound `handoff-vidya-kvu19a2-wire-20261117-r2` completed all 20 exact-input launches (cases 78 and 80, five repeats per arm). Both base arms were byte-identical across repeats; both candidate arms varied, with five distinct output digests each. Lower divergence is better. This is a finite model-free diagnostic, with no throughput, model-quality, causal or promotion verdict.
+
+The actual `AgentPlanner.propose` path invoked the child planning reader, ingested 20 rows / 60 frames with zero refusals, displayed host-tier GPU diagnostics for the Qwen3.8-27B target, excluded them for the CPU control, and rejected attempted proposal reliance. The backend was intercepted before inference. This completes VB-KVU19A2-WIRE; it does not establish candidate repeatability.
+
+Original native records, grant, output/log bytes, owner verdict and the planning canary are preserved under [data/vidya/kvu19a2-native-20261118](../../data/vidya/kvu19a2-native-20261118/). `SHA256.json` inventories archive bytes; the canary receipt binds the original source paths and acquisition-time ledger identity.
+
+## NPD1: native capture, planning acceptance still separate
+
+`vidya-mi210-npd1-native-wire-20261117` completed four CPU-only launches in the declared CPU/GPU-store/GPU-store/CPU order. Strict native replay produced four `Judged/Located` diagnostic tuples. Native TPOT values were 41.7874453125, 39.500798828125, 37.273232421875 and 36.270224609375 ms/token (lower is better). These are individual request observations, without an effect estimate or population claim. The multi-shard model remains unscoped; this capture supplies neither target-specific planning acceptance nor completion of the Q38 sibling requirement.
+
+The [original sealed capture and owner verdict](../../data/vidya/mi210-npd1-native-20261118/) retain request, timing, linkage, grant and process-release custody.
+
+## Instrument failures retained
+
+The EOF r2 row ended rc4 after five seconds without its declared result. It supplies no complete nine-case observation or planning acceptance. Its launcher required exactly four CPUs while the ended record names eight logical CPUs; this discrepancy requires a grant-contract repair before another official attempt.
+
+The lifecycle row ended rc1 with runner exit78. Its original resident capture shows preflight rejected a stale contention matrix (live topology hash `560d489b` or age over 30 days), before any cohort launched. The sealer then reported a missing `fresh_capture` key, masking that primary failure. No sealed resident/fresh acceptance or parity verdict is inferred. The successor must bind a genuinely current matrix and preserve preflight refusal explicitly; relabelling an old matrix would not establish freshness. [Failure manifests, original packet bytes, terminal records and owner verdicts](../../data/vidya/native-wiring-failures-20261118/) preserve both failures. Their parent boxes remain open.
+
+Parity r1 stopped before native inference (`unstarted`, `UNKNOWN`, zero comparison units) after a packet-local linkage receipt's metadata changed. The allocator's recursive terminal chmod invalidated ctime pins after smoke. Its successor isolates allocator workdir from immutable assets; this repairs source custody, not decoding parity.
+
+Current root sealer bytes (`e9927cc509cc98d23f69ef48cdc106a26a4918a2603405b73cb04326cb4e28d7`) already include explicit early-admission refusal and its regression control in `tests/test_kernel_promotion_evidence.py`. The failed native snapshot pinned validator `c2ba36da3f1f4fdbfb51030562b4bff2719924360253c90a5b08e8962f97e6bd`. Refresh the successor snapshot rather than duplicating that fix.
+
+## EOF r3 and EXP01 recovery boundary
+
+`vidya-r231-eof-native-wire-20261118-r3` ended rc0 and retained nine complete model-free cases. Strict replay of the original seal projects nine cases through the shared grader as Judged/Located observations; no model was loaded. Original bytes and the owner verdict are in `data/vidya/r231-eof-native-20261118/r3/full/`. The actual AgentPlanner.propose path, intercepted before any backend call, displayed the nine-case claim only as harness evidence. Real source sync ingested one seal / three frames with zero refusals; repeat ingest skipped three frames. The autopilot consumer excluded the claim, and the actual actor receipt refused proposal reliance as host_tier. The canary and original-byte identities are retained under `r3/planning-context/`. This completes VB-AK-R23-1-EOF-WIRE without giving CLI behavior model or promotion authority.
+
+`vidya-exp01-proxy-input-recovery-20261118` ended rc4 after its allocator deadline: the shared 560×512 matrix completed in 1589.1 s; Q4_K_M, IQ2_XXS and IQ4_KT completed in 91.8, 294.4 and 2018.4 s. IQ2_KT exhausted its remaining 820.9 s and ended rc124. The four-arm acceptance rule failed. These durations describe build work, not inference performance. The matrix and three completed generated artifacts remain reusable inputs, subject to prospective identity checks. Original logs/receipts are in `data/vidya/exp01-input-recovery-20261118/official-partial/`. Removing the incomplete unsealed IQ2_KT file and three superseded smoke attempts reclaimed 9.01 GiB; current inputs and successful output arms remain.
+
+The lifecycle successor now preserves the primary contention-matrix refusal instead of asking the sealer to interpret an absent fresh capture. Archived failure regression and the negative live precondition passed. No lifecycle successor is published: canonical matrix age exceeds 30 days, and a genuine quiet-window matrix refresh requires the operator-authorized production relaunch. A matching topology hash does not satisfy that freshness gate. Prepared launcher and failure report are retained in `data/vidya/native-wiring-failures-20261118/lifecycle-successor/`.
+
+The prospective continuation `vidya-exp01-proxy-input-recovery-20261118-r2` passed its four-CPU native publisher smoke at 15:01Z. Its official plan reuses the once-verified matrix and three completed arms and generates only missing IQ2_KT on 24 CPUs within a 5400-second window. Smoke is one 512-token matrix and one selected IQ2_KT tensor conversion on the separate 0.6B input, not full-size recovery acceptance. Packet source, retained-input pins, manifest and PASS are in `data/vidya/exp01-input-recovery-20261118/continuation/`.

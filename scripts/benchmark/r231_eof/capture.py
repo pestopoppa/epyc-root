@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+from datetime import datetime
 import errno
 import fcntl
 import hashlib
@@ -21,7 +22,7 @@ import uuid
 from control import cleanup, group_exists, stopped
 
 PACKET = Path(__file__).resolve().parent
-ROW = "vidya-r231-eof-native-wire-20261118-r2"
+ROW = "vidya-r231-eof-native-wire-20261118-r3"
 SCHEMA = "epyc.r231_eof.native_capture.v1"
 MAX_OUTPUT = 1 << 20
 PREFIXES = ("libllama", "libggml", "libmtmd")
@@ -77,28 +78,45 @@ def affinity(text):
         if not 0 <= start <= end <= 4095:
             raise ValueError("invalid CPU range")
         cpus.update(range(start, end + 1))
-    if len(cpus) != 4:
-        raise ValueError("expected exactly four granted CPUs")
     return sorted(cpus)
 
 
 def grant_record():
     row = os.environ["FILLER_ID"]
-    region = os.environ["FILLER_CPUS"]
+    engine = affinity(os.environ["FILLER_CPUS"])
     deadline = float(os.environ["FILLER_DEADLINE"])
-    cpus = affinity(region)
-    if row != ROW or not set(cpus) <= os.sched_getaffinity(0) or not time.time() < deadline:
-        raise ValueError("live row id, CPUs or deadline differs")
     path = Path(os.environ.get("FILLER_GRANTS_DIR",
                                "/mnt/raid0/llm/tmp/compute-flags/grants")) / (row + ".grant")
+    if row != ROW or path.is_symlink():
+        raise ValueError("live row or grant path differs")
     raw = path.read_bytes()
     if len(raw) > 65536:
         raise ValueError("oversized grant")
-    fields = dict(item.split("=", 1) for item in raw.decode().split())
-    if fields.get("id") != row or fields.get("regions") != region:
-        raise ValueError("allocated CPU evidence differs from the grant")
+    words = raw.decode().split()
+    fields = dict(item.split("=", 1) for item in words)
+    native_fields = {"regions", "start", "end", "holds"}
+    allowed = native_fields | {"cpus", "lock"}
+    if os.environ.get("FILLER_DRYRUN") == "1":
+        allowed |= {"schema", "id", "kind", "admission_class"}
+        if (fields.get("schema"), fields.get("id"), fields.get("kind")) != (
+                "epyc.rowflow.dryrun-grant.v1", row, "rowflow-dryrun"):
+            raise ValueError("publisher smoke grant identity differs")
+    if len(fields) != len(words) or not native_fields <= fields.keys() <= allowed:
+        raise ValueError("grant fields differ")
+    starts, ends = (datetime.fromisoformat(fields[key].replace("Z", "+00:00")).timestamp()
+                    for key in ("start", "end"))
+    granted = affinity(fields["regions"])
+    inherited = sorted(os.sched_getaffinity(0))
+    cpus = sorted(set(engine) & set(inherited))[:4]
+    if (engine != affinity(fields.get("lock", fields["regions"]))
+            or not set(engine) <= set(granted)
+            or len(cpus) != 4 or not starts <= time.time() < deadline == ends - 90):
+        raise ValueError("live CPU allocation, four-CPU affinity or deadline differs from the grant")
     os.sched_setaffinity(0, cpus)
-    return dict(row=row, regions=region, cpus=cpus, deadline=deadline, path=str(path),
+    if sorted(os.sched_getaffinity(0)) != cpus:
+        raise ValueError("effective CPU affinity differs from selection")
+    return dict(row=row, regions=fields["regions"], granted_cpus=granted, engine_cpus=engine,
+                inherited_cpus=inherited, cpus=cpus, deadline=deadline, path=str(path),
                 original=raw.decode(), sha256=hashlib.sha256(raw).hexdigest())
 
 
@@ -349,6 +367,9 @@ def _run():
         write_new(seal, encode(envelope) + b"\n")
     if capture["status"] != "COMPLETE":
         print(capture["error"], flush=True)
+        if not smoke:
+            write_new(out / "RESULT.json", encode(dict(id=ROW, status="UNKNOWN", mode="native",
+                      measurement=False, native_path=str(seal), native_sha256=sha(seal))) + b"\n")
         return 4
     destination = Path(os.environ["FILLER_DRYRUN_RESULT_PATH"]) if smoke else out / "RESULT.json"
     write_new(destination, encode(dict(unit_id=ROW + ":" + attempt.name, id=ROW, status="COMPLETE",

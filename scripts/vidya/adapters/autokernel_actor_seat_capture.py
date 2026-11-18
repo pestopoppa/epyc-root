@@ -68,6 +68,8 @@ never claim are now enforced in :func:`_server`:
 
 from __future__ import annotations
 
+import base64
+import binascii
 import hashlib
 import json
 import math
@@ -77,6 +79,12 @@ from datetime import datetime
 from typing import Any
 
 CALL_SCHEMA = "epyc.autokernel.actor_call.v1"
+CAMPAIGN_CALL_SCHEMA = "epyc.autokernel.actor_call.v2"
+CAMPAIGN_METRICS_SCHEMA = "epyc.autokernel.actor_call_metrics.v2"
+METRICS_SCHEMA = "epyc.autokernel.actor_call_metrics.v1"
+BUNDLE_SCHEMA = "epyc.autokernel.actor_context_bundle.v1"
+CAMPAIGN_HOOK_SINCE = "2026-11-18T00:00:00Z"
+_MAX_SNAPSHOT_BYTES = 1024 * 1024
 ARM_SCHEMA = "epyc.autokernel.seat_ab_arm.v1"
 CALL_LOG_NAME = "actor-calls.jsonl"
 ARM_RESULT_GLOB = "result-*.json"
@@ -419,9 +427,10 @@ def validate_call_record(record: Any) -> list[str]:
     if not isinstance(record, Mapping):
         return ["call record is not a JSON object"]
     p: list[str] = []
-    if record.get("schema") != CALL_SCHEMA:
-        p.append(f"schema must be {CALL_SCHEMA!r} (a line without it is pre-hook)")
-    p.extend(_closed(record, CALL_FIELDS, "call record"))
+    campaign = record.get("schema") == CAMPAIGN_CALL_SCHEMA
+    if record.get("schema") not in (CALL_SCHEMA, CAMPAIGN_CALL_SCHEMA):
+        p.append(f"schema must be {CALL_SCHEMA!r} or {CAMPAIGN_CALL_SCHEMA!r}")
+    p.extend(_closed(record, CALL_FIELDS + (("campaign",) if campaign else ()), "call record"))
     if p:
         return p
     if not _text(record["call_id"]):
@@ -455,6 +464,11 @@ def validate_call_record(record: Any) -> list[str]:
                 rp.extend(_file_ref(reply[key], f"reply.{key}", bare=True))
         p.extend(rp)
     p.extend(_self_hash(record))
+    if campaign and not p:
+        try:
+            _campaign_facets(record)
+        except CaptureError as exc:
+            p.append(str(exc))
     return p
 
 
@@ -480,6 +494,150 @@ def build_call_record(
     if problems:
         raise CaptureError("refusing to write an invalid call record: " + "; ".join(problems))
     return record
+
+
+def _require(condition, detail):
+    if not condition:
+        raise CaptureError(detail)
+
+
+def _snapshot(raw):
+    _require(isinstance(raw, bytes) and 0 < len(raw) <= _MAX_SNAPSHOT_BYTES, "invalid original-byte snapshot")
+    return {"sha256": hashlib.sha256(raw).hexdigest(), "bytes_b64": base64.b64encode(raw).decode("ascii")}
+
+
+def _unique_pairs(items):
+    result = dict(items)
+    _require(len(result) == len(items), "duplicate key in original JSON")
+    return result
+
+
+def _original(snapshot, label):
+    _require(not _closed(snapshot, ("sha256", "bytes_b64"), label), f"{label}: invalid snapshot fields")
+    encoded = snapshot["bytes_b64"]
+    _require(isinstance(encoded, str) and len(encoded) <= 4 * ((_MAX_SNAPSHOT_BYTES + 2) // 3),
+             f"{label}: oversized snapshot")
+    try:
+        raw = base64.b64decode(encoded, validate=True)
+        body = json.loads(raw, object_pairs_hook=_unique_pairs)
+        _require(_snapshot(raw) == snapshot and isinstance(body, dict), f"{label}: original bytes differ")
+        content_hash(body)
+    except (ValueError, TypeError, binascii.Error, RecursionError) as exc:
+        raise CaptureError(f"{label}: invalid original bytes ({exc})") from exc
+    return body
+
+
+def _props_identity(props):
+    settings = props.get("default_generation_settings")
+    n_ctx = settings.get("n_ctx") if isinstance(settings, Mapping) else None
+    alias, build = props.get("model_alias"), props.get("build_info")
+    _require(_text(alias) and _text(build) and _int(n_ctx, 1),
+             "/props requires model_alias, build_info and positive per-slot n_ctx")
+    return alias, build, n_ctx
+
+
+def _campaign_facets(call):
+    campaign = call["campaign"]
+    _require(not _closed(campaign, ("props", "props_at", "bundle", "metrics_sha256"), "campaign"),
+             "campaign must bind /props, observation timestamp, bundle and metrics")
+    _require(isinstance(campaign["metrics_sha256"], str) and _SHA256.fullmatch(campaign["metrics_sha256"]),
+             "campaign.metrics_sha256 is invalid")
+    started, observed = _parse_utc(call["started_at"]), _parse_utc(campaign["props_at"])
+    _require(started is not None and started >= _parse_utc(CAMPAIGN_HOOK_SINCE),
+             "campaign call predates the prospective capture boundary")
+    _require(observed is not None and 0 <= (started - observed).total_seconds() <= 60,
+             "/props must be observed within 60 seconds before the call")
+    _require(call["backend"]["kind"] == "opencode" and re.fullmatch(
+        r"https?://(?:127\.0\.0\.1|localhost)(?::[0-9]+)?(?:/v1)?/?", call["server"]["endpoint"]),
+        "campaign /props identity applies to the direct loopback OpenCode backend")
+    alias, build, n_ctx = _props_identity(_original(campaign["props"], "/props"))
+    _require((call["server"]["served_model"], call["server"]["build_info"]) == (alias, build),
+             "server identity does not match original /props bytes")
+    facets = {"server": {**call["server"], "n_ctx": n_ctx, "props_at": campaign["props_at"],
+                         "props_sha256": campaign["props"]["sha256"]}}
+    arm = call["seat"]["arm"]
+    variable = arm.endswith("+ctx-variable")
+    _require(variable == (campaign["bundle"] is not None), "bundle required exactly on a variable context arm")
+    if variable:
+        manifest = _original(campaign["bundle"], "bundle manifest")
+        fields = ("schema", "mode", "created_at", "prompt", "inline_equivalent_prompt_chars",
+                  "context_chars", "index_chars", "sections", "files")
+        _require(not _closed(manifest, fields, "bundle manifest") and manifest["schema"] == BUNDLE_SCHEMA
+                 and manifest["mode"] == "variable", "invalid variable context manifest")
+        expected_prompt = {key: call["prompt"][key] for key in ("sha256", "chars")}
+        _require(manifest["prompt"] == expected_prompt, "bundle manifest belongs to another prompt")
+        created = _parse_utc(manifest["created_at"])
+        _require(created is not None and 0 <= (started - created).total_seconds() <= 60,
+                 "bundle manifest was not sealed before this call")
+        context, index, equivalent = (manifest[k] for k in (
+            "context_chars", "index_chars", "inline_equivalent_prompt_chars"))
+        _require(all(_int(n, 0) for n in (context, index, equivalent)) and index <= expected_prompt["chars"]
+                 and equivalent == expected_prompt["chars"] - index + context, "bundle char dimensions disagree")
+        sections, files = manifest["sections"], manifest["files"]
+        _require(isinstance(sections, list) and sections and isinstance(files, Mapping) and files,
+                 "bundle sections or file inventory missing")
+        for section in sections:
+            _require(not _closed(section, ("key", "chars", "inline"), "section")
+                     and _text(section["key"]) and _int(section["chars"], 0) and type(section["inline"]) is bool,
+                     "invalid bundle section")
+        for path, file in files.items():
+            _require(path.startswith(("sections/", "json/")) and all(part not in ("", ".", "..")
+                     for part in path.split("/")) and not _closed(file, ("sha256", "bytes"), "bundle file")
+                     and isinstance(file["sha256"], str) and _SHA256.fullmatch(file["sha256"])
+                     and _int(file["bytes"], 0), "invalid bundle file reference")
+        facets["context_bundle"] = {
+            "manifest_sha256": campaign["bundle"]["sha256"], "mode": manifest["mode"],
+            "prompt": expected_prompt, "context_chars": context, "index_chars": index,
+            "inline_equivalent_prompt_chars": equivalent, "sections": sections, "files": files,
+            "basis": "context offered by the producer",
+        }
+    return facets
+
+
+def campaign_facets(call, sibling):
+    """Validate the explicit call ID, exact sibling digest and producer-bound facets."""
+    _require(not _closed(sibling, ("schema", "call_id", "metrics", "record_sha256"), "metrics sibling")
+             and sibling["schema"] == CAMPAIGN_METRICS_SCHEMA, "invalid campaign metrics sibling")
+    _require(not _self_hash(sibling) and sibling["record_sha256"] == call["campaign"]["metrics_sha256"],
+             "campaign metrics sibling digest differs")
+    native = sibling["metrics"]
+    _require(isinstance(native, Mapping) and native.get("schema") == METRICS_SCHEMA,
+             "missing original actor metrics payload")
+    _require(call["call_id"] == sibling["call_id"] == native.get("call_id"),
+             "campaign metrics call_id differs")
+    for key, expected in (("role", call["role"]), ("seat_arm", call["seat"]["arm"]),
+                          ("backend_kind", call["backend"]["kind"]), ("backend_model", call["backend"]["model"]),
+                          ("returncode", call["returncode"]), ("timed_out", call["timed_out"])):
+        _require(type(native.get(key)) is type(expected) and native.get(key) == expected,
+                 f"campaign metrics {key} differs from call")
+    _require(_finite_positive(native.get("wall_s"))
+             and abs(native["wall_s"] - call["wall_s"]) <= 0.002, "campaign metrics wall_s differs from call")
+    facets = _campaign_facets(call)
+    facets["actor_metrics"] = {"call_id": sibling["call_id"], "record_sha256": sibling["record_sha256"],
+                               "payload_json": _canonical_json(native)}
+    return facets
+
+
+def build_campaign_call_records(*, props_raw, props_at, bundle_raw, metrics, **call_args):
+    """Build a new call and its sibling for one atomic append in producer custody."""
+    call_args = dict(call_args)
+    _require(isinstance(call_args.get("server"), Mapping), "server endpoint is required")
+    props_snapshot = _snapshot(props_raw)
+    alias, build, _ = _props_identity(_original(props_snapshot, "/props"))
+    call_args["server"] = dict(call_args["server"], served_model=alias, build_info=build)
+    call = build_call_record(**call_args)
+    _require(isinstance(metrics, Mapping), "native metrics sibling is required")
+    sibling = {"schema": CAMPAIGN_METRICS_SCHEMA, "call_id": call["call_id"], "metrics": dict(metrics)}
+    sibling["record_sha256"] = record_digest(sibling)
+    call["schema"] = CAMPAIGN_CALL_SCHEMA
+    call["campaign"] = {"props": props_snapshot, "props_at": props_at,
+                        "bundle": _snapshot(bundle_raw) if bundle_raw is not None else None,
+                        "metrics_sha256": sibling["record_sha256"]}
+    call["record_sha256"] = record_digest(call)
+    problems = validate_call_record(call)
+    _require(not problems, "; ".join(problems))
+    campaign_facets(call, sibling)
+    return sibling, call
 
 
 # --- the arm record ----------------------------------------------------------------------------

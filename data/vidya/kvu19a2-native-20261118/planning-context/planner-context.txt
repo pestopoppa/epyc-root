@@ -1,0 +1,10 @@
+## Belief-kernel evidence (Vidya ledger, read-only)
+No beliefs are scoped to Qwen3.8-27B-Q8_0.gguf (gpu). The lines below are sibling/host context only.
+Target(s): Qwen3.8-27B-Q8_0.gguf / Q8_0 / gpu / gfx90a.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 60, as of 2026-11-18T13:18:32.848827+00:00.
+### Device-scope claims (host tier) -- scoped by device only, no model: host ceiling, not about this model; not evidence for a proposal
+- clm_kvu19a2_30de3fcb1da5932b6730362d [Judged/Located · verified] device-scope: host ceiling, not about this model: kvu19a2:run-output:4 (protocol none; n=1; 2026-11-18T05:24:11Z): Observed 0 NaN output elements for base FA_CASE=78,repeat=3 in one native launch
+- clm_kvu19a2_3924f78a5ca478d586d4b87f [Judged/Located · verified] device-scope: host ceiling, not about this model: kvu19a2:run-output:12 (protocol none; n=1; 2026-11-18T05:24:11Z): Observed 0 NaN output elements for candidate FA_CASE=80,repeat=2 in one native launch
+- clm_kvu19a2_3e7357581a7fbdad1c6558bc [Judged/Located · verified] device-scope: host ceiling, not about this model: kvu19a2:run-output:6 (protocol none; n=1; 2026-11-18T05:24:11Z): Observed 0 NaN output elements for candidate FA_CASE=78,repeat=4 in one native launch
+Shown 0 of 0 knob, 0 of 0 target, 0 of 0 lineup, 0 of 0 sibling, 3 of 20 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.

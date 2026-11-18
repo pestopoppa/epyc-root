@@ -161,6 +161,9 @@ DEVICE_BY_BACKEND = {"gpu": "gfx90a", "cpu": "epyc-9655"}
 _LOADER_DIAG_RUN = "handoff-vidya-quality-pack-loader-diag-wire-20261118"
 _LOADER_DIAG_OP = "QWEN4EXP_CPU_LOADER"
 _LOADER_DIAG_KIND = "qwen4exp-cpu-loader-diagnostic"
+_Q38P4_PARITY_KIND = "q38p4-greedy-parity"
+_Q38P4_PARITY_OP = "Q38P4_GREEDY_PARITY"
+_Q38P4_PARITY_RUN = re.compile(r"q38p4-greedy-parity-[0-9]{8}-r[1-9][0-9]*")
 _MATCH_KEYS = ("quant", "backend", "device", "context_tokens")
 #: Gate reasons that mean "the evidence disagrees or is under review", not merely "too weak".
 _CONTESTED_MARKERS = ("conflict", "oppos", "correction", "review", "dependency")
@@ -487,7 +490,8 @@ class Target:
                     or not isinstance(op, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", op)
                     or not isinstance(run, str)
                     or not (re.fullmatch(r"ni-gpu-pool-(matmul|attention|elementwise)-[0-9]{8}-v[1-9][0-9]*", run)
-                               or (run == _LOADER_DIAG_RUN and op == _LOADER_DIAG_OP))):
+                               or (run == _LOADER_DIAG_RUN and op == _LOADER_DIAG_OP)
+                               or (op == _Q38P4_PARITY_OP and _Q38P4_PARITY_RUN.fullmatch(run)))):
                 raise ValueError("candidate target requires exact source commit, candidate digest, native operator and run id")
             return cls(model_file="", quant="", backend="", device="", scope="candidate",
                        build_sha=head, candidate_sha256=candidate, op=op, run_id=run)
@@ -1076,6 +1080,10 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
         if kind == _LOADER_DIAG_KIND:
             if ("candidate_sha256" not in scope
                     or (scope.get("run_id"), scope.get("op")) != (_LOADER_DIAG_RUN, _LOADER_DIAG_OP)):
+                continue
+        elif kind == _Q38P4_PARITY_KIND:
+            if ("candidate_sha256" not in scope or scope.get("op") != _Q38P4_PARITY_OP
+                    or not _Q38P4_PARITY_RUN.fullmatch(str(scope.get("run_id", "")))):
                 continue
         elif "candidate_sha256" in scope and kind != "gpu-pool-native":
             continue

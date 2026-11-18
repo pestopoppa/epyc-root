@@ -1,0 +1,12 @@
+
+==== dry run 2026-11-18T05:22:14Z regions=mi210_0,184-191 launcher_sha=d8d5679433174141b01125d48b5332495239e133af1e2e81c8d01331e323e0d9 units_before=0
+2026-11-18T05:22:14Z [handoff-vidya-quality-pack-architect-general-hip-20261118] launcher up pid=795528 class=gpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-20261118/stop minwin=2250s ports=19478 dryrun=1
+2026-11-18T05:22:14Z [handoff-vidya-quality-pack-architect-general-hip-20261118] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-18T06:03Z
+[region-lock] dry run: no lock taken (cpus=184-191)
+2026-11-18T05:22:14Z mi210_0 flock held
+job rc=0
+2026-11-18T05:22:19Z [handoff-vidya-quality-pack-architect-general-hip-20261118] ended rc=0 reason=complete (grant deleted)
+2026-11-18T05:22:19Z [handoff-vidya-quality-pack-architect-general-hip-20261118] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-20261118/complete, row marked COMPLETE; exiting for good
+==== engine START at +5s; first-progress timer (120 s) starts now
+==== first progress at 2026-11-18T05:22:19Z (+5s): smoke_predicate exited 0
+==== dry run FAIL: GPU row produced a unit but VRAM never showed residency (max None B sampled during the run) [dry run held ONE quarter, WS58_REGIONS=184-191; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-18T05:22:19Z)

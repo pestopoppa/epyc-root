@@ -1,0 +1,568 @@
+CPU: using device CPU - 0 MiB free
+llama_model_loader: loaded meta data with 48 key-value pairs and 733 tensors from /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/inputs/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf (version GGUF V3 (latest))
+llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
+llama_model_loader: - kv   0:                       general.architecture str              = qwen35moe
+llama_model_loader: - kv   1:                               general.type str              = model
+llama_model_loader: - kv   2:                     general.sampling.top_k i32              = 20
+llama_model_loader: - kv   3:                     general.sampling.top_p f32              = 0.950000
+llama_model_loader: - kv   4:                      general.sampling.temp f32              = 1.000000
+llama_model_loader: - kv   5:                               general.name str              = Qwen3.6 35B A3B
+llama_model_loader: - kv   6:                           general.basename str              = Qwen3.6
+llama_model_loader: - kv   7:                         general.size_label str              = 35B-A3B
+llama_model_loader: - kv   8:                            general.license str              = apache-2.0
+llama_model_loader: - kv   9:                       general.license.link str              = https://huggingface.co/Qwen/Qwen3.6-3...
+llama_model_loader: - kv  10:                               general.tags arr[str,1]       = ["image-text-to-text"]
+llama_model_loader: - kv  11:                      qwen35moe.block_count u32              = 40
+llama_model_loader: - kv  12:                   qwen35moe.context_length u32              = 262144
+llama_model_loader: - kv  13:                 qwen35moe.embedding_length u32              = 2048
+llama_model_loader: - kv  14:             qwen35moe.attention.head_count u32              = 16
+llama_model_loader: - kv  15:          qwen35moe.attention.head_count_kv u32              = 2
+llama_model_loader: - kv  16:          qwen35moe.rope.dimension_sections arr[i32,4]       = [11, 11, 10, 0]
+llama_model_loader: - kv  17:                   qwen35moe.rope.freq_base f32              = 10000000.000000
+llama_model_loader: - kv  18: qwen35moe.attention.layer_norm_rms_epsilon f32              = 0.000001
+llama_model_loader: - kv  19:                     qwen35moe.expert_count u32              = 256
+llama_model_loader: - kv  20:                qwen35moe.expert_used_count u32              = 8
+llama_model_loader: - kv  21:             qwen35moe.attention.key_length u32              = 256
+llama_model_loader: - kv  22:           qwen35moe.attention.value_length u32              = 256
+llama_model_loader: - kv  23:       qwen35moe.expert_feed_forward_length u32              = 512
+llama_model_loader: - kv  24: qwen35moe.expert_shared_feed_forward_length u32              = 512
+llama_model_loader: - kv  25:                  qwen35moe.ssm.conv_kernel u32              = 4
+llama_model_loader: - kv  26:                   qwen35moe.ssm.state_size u32              = 128
+llama_model_loader: - kv  27:                  qwen35moe.ssm.group_count u32              = 16
+llama_model_loader: - kv  28:               qwen35moe.ssm.time_step_rank u32              = 32
+llama_model_loader: - kv  29:                   qwen35moe.ssm.inner_size u32              = 4096
+llama_model_loader: - kv  30:          qwen35moe.full_attention_interval u32              = 4
+llama_model_loader: - kv  31:             qwen35moe.rope.dimension_count u32              = 64
+llama_model_loader: - kv  32:                       tokenizer.ggml.model str              = gpt2
+llama_model_loader: - kv  33:                         tokenizer.ggml.pre str              = qwen35
+llama_model_loader: - kv  34:                      tokenizer.ggml.tokens arr[str,248320]  = ["!", "\"", "#", "$", "%", "&", "'", ...
+llama_model_loader: - kv  35:                  tokenizer.ggml.token_type arr[i32,248320]  = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+llama_model_loader: - kv  36:                      tokenizer.ggml.merges arr[str,247587]  = ["Ġ Ġ", "ĠĠ ĠĠ", "i n", "Ġ t",...
+llama_model_loader: - kv  37:                tokenizer.ggml.eos_token_id u32              = 248046
+llama_model_loader: - kv  38:            tokenizer.ggml.padding_token_id u32              = 248044
+llama_model_loader: - kv  39:                tokenizer.ggml.bos_token_id u32              = 248044
+llama_model_loader: - kv  40:               tokenizer.ggml.add_bos_token bool             = false
+llama_model_loader: - kv  41:                    tokenizer.chat_template str              = {%- set image_count = namespace(value...
+llama_model_loader: - kv  42:               general.quantization_version u32              = 2
+llama_model_loader: - kv  43:                          general.file_type u32              = 7
+llama_model_loader: - kv  44:                      quantize.imatrix.file str              = /models_out/Qwen3.6-35B-A3B-GGUF/Qwen...
+llama_model_loader: - kv  45:                   quantize.imatrix.dataset str              = /training_dir/calibration_datav5.txt
+llama_model_loader: - kv  46:             quantize.imatrix.entries_count u32              = 510
+llama_model_loader: - kv  47:              quantize.imatrix.chunks_count u32              = 802
+llama_model_loader: - type  f32:  361 tensors
+llama_model_loader: - type q8_0:  372 tensors
+load: 0 unused tokens
+load: printing all EOG tokens:
+load:   - 248044 ('<|endoftext|>')
+load:   - 248046 ('<|im_end|>')
+load:   - 248063 ('<|fim_pad|>')
+load:   - 248064 ('<|repo_name|>')
+load:   - 248065 ('<|file_sep|>')
+load: special tokens cache size = 33
+load: token to piece cache size = 1.7581 MB
+llm_load_print_meta: format           = GGUF V3 (latest)
+llm_load_print_meta: arch             = qwen35moe
+llm_load_print_meta: n_ctx_train      = 262144
+llm_load_print_meta: n_embd           = 2048
+llm_load_print_meta: n_layer          = 40
+llm_load_print_meta: n_head           = 16
+llm_load_print_meta: n_head_kv        = 2
+llm_load_print_meta: n_rot            = 64
+llm_load_print_meta: n_swa            = 0
+llm_load_print_meta: n_swa_pattern    = 1
+llm_load_print_meta: n_embd_head_k    = 256
+llm_load_print_meta: n_embd_head_v    = 256
+llm_load_print_meta: n_gqa            = 8
+llm_load_print_meta: n_embd_k_gqa     = 512
+llm_load_print_meta: n_embd_v_gqa     = 512
+llm_load_print_meta: f_norm_eps       = 0.0e+00
+llm_load_print_meta: f_norm_rms_eps   = 1.0e-06
+llm_load_print_meta: f_clamp_kqv      = 0.0e+00
+llm_load_print_meta: f_max_alibi_bias = 0.0e+00
+llm_load_print_meta: f_logit_scale    = 0.0e+00
+llm_load_print_meta: n_ff             = 0
+llm_load_print_meta: n_expert         = 256
+llm_load_print_meta: n_expert_used    = 8
+llm_load_print_meta: causal attn      = 1
+llm_load_print_meta: pooling type     = 0
+llm_load_print_meta: rope type        = 40
+llm_load_print_meta: rope scaling     = linear
+llm_load_print_meta: freq_base_train  = 10000000.0
+llm_load_print_meta: freq_scale_train = 1
+llm_load_print_meta: n_ctx_orig_yarn  = 262144
+llm_load_print_meta: rope_finetuned   = unknown
+llm_load_print_meta: mrope sections   = [11, 11, 10, 0]
+llm_load_print_meta: ssm_d_conv       = 4
+llm_load_print_meta: ssm_d_inner      = 4096
+llm_load_print_meta: ssm_d_state      = 128
+llm_load_print_meta: ssm_dt_rank      = 32
+llm_load_print_meta: ssm_n_group      = 16
+llm_load_print_meta: model type       = 35B.A3B
+llm_load_print_meta: model ftype      = Q8_0
+llm_load_print_meta: model params     = 34.661 B
+llm_load_print_meta: model size       = 34.369 GiB (8.518 BPW) 
+llm_load_print_meta: repeating layers = 33.363 GiB (8.518 BPW, 33.643 B parameters)
+llm_load_print_meta: general.name     = Qwen3.6 35B A3B
+print_info: vocab type            = BPE
+print_info: n_vocab               = 248320
+print_info: n_merges              = 247587
+print_info: BOS token             = 248044 '<|endoftext|>'
+print_info: EOS token             = 248046 '<|im_end|>'
+print_info: EOT token             = 248046 '<|im_end|>'
+print_info: PAD token             = 248044 '<|endoftext|>'
+print_info: LF token              = 198 'Ċ'
+print_info: FIM PRE token         = 248060 '<|fim_prefix|>'
+print_info: FIM SUF token         = 248062 '<|fim_suffix|>'
+print_info: FIM MID token         = 248061 '<|fim_middle|>'
+print_info: FIM PAD token         = 248063 '<|fim_pad|>'
+print_info: FIM REP token         = 248064 '<|repo_name|>'
+print_info: FIM SEP token         = 248065 '<|file_sep|>'
+print_info: EOG token             = 248044 '<|endoftext|>'
+print_info: EOG token             = 248046 '<|im_end|>'
+print_info: EOG token             = 248063 '<|fim_pad|>'
+print_info: EOG token             = 248064 '<|repo_name|>'
+print_info: EOG token             = 248065 '<|file_sep|>'
+print_info: max token length      = 256
+======================================= HAVE_FANCY_SIMD is defined
+Free memory 0 MiB on device 0 is less the 1024 MiB safety margin
+------------------- Layer sizes:
+Layer  0:    855.84,      2.09,    857.93       56.00  MiB
+Layer  1:    855.84,      2.09,    857.93       56.00  MiB
+Layer  2:    855.84,      2.09,    857.93       56.00  MiB
+Layer  3:    848.84,      1.00,    849.84       56.00  MiB
+Layer  4:    855.84,      2.09,    857.93       56.00  MiB
+Layer  5:    855.84,      2.09,    857.93       56.00  MiB
+Layer  6:    855.84,      2.09,    857.93       56.00  MiB
+Layer  7:    848.84,      1.00,    849.84       56.00  MiB
+Layer  8:    855.84,      2.09,    857.93       56.00  MiB
+Layer  9:    855.84,      2.09,    857.93       56.00  MiB
+Layer 10:    855.84,      2.09,    857.93       56.00  MiB
+Layer 11:    848.84,      1.00,    849.84       56.00  MiB
+Layer 12:    855.84,      2.09,    857.93       56.00  MiB
+Layer 13:    855.84,      2.09,    857.93       56.00  MiB
+Layer 14:    855.84,      2.09,    857.93       56.00  MiB
+Layer 15:    848.84,      1.00,    849.84       56.00  MiB
+Layer 16:    855.84,      2.09,    857.93       56.00  MiB
+Layer 17:    855.84,      2.09,    857.93       56.00  MiB
+Layer 18:    855.84,      2.09,    857.93       56.00  MiB
+Layer 19:    848.84,      1.00,    849.84       56.00  MiB
+Layer 20:    855.84,      2.09,    857.93       56.00  MiB
+Layer 21:    855.84,      2.09,    857.93       56.00  MiB
+Layer 22:    855.84,      2.09,    857.93       56.00  MiB
+Layer 23:    848.84,      1.00,    849.84       56.00  MiB
+Layer 24:    855.84,      2.09,    857.93       56.00  MiB
+Layer 25:    855.84,      2.09,    857.93       56.00  MiB
+Layer 26:    855.84,      2.09,    857.93       56.00  MiB
+Layer 27:    848.84,      1.00,    849.84       56.00  MiB
+Layer 28:    855.84,      2.09,    857.93       56.00  MiB
+Layer 29:    855.84,      2.09,    857.93       56.00  MiB
+Layer 30:    855.84,      2.09,    857.93       56.00  MiB
+Layer 31:    848.84,      1.00,    849.84       56.00  MiB
+Layer 32:    855.84,      2.09,    857.93       56.00  MiB
+Layer 33:    855.84,      2.09,    857.93       56.00  MiB
+Layer 34:    855.84,      2.09,    857.93       56.00  MiB
+Layer 35:    848.84,      1.00,    849.84       56.00  MiB
+Layer 36:    855.84,      2.09,    857.93       56.00  MiB
+Layer 37:    855.84,      2.09,    857.93       56.00  MiB
+Layer 38:    855.84,      2.09,    857.93       56.00  MiB
+Layer 39:    848.84,      1.00,    849.84       56.00  MiB
+Layer 40:    515.31,    429.00,    944.31 MiB (output layer)
+--------------------------------------------------------------------------
+Total   :  34163.48,    501.81,  34665.29 MiB
+Free memory 0 MiB on device 0 is less the required compute buffer size 56 MiB
+Memory required for model tensors + cache: 35181 MiB
+Memory available on all devices - compute: 0 MiB
+llm_load_tensors: ggml ctx size =    0.30 MiB
+llm_load_tensors:        CPU buffer size = 35194.11 MiB
+....................................................................................................
+llama_init_from_model: n_ctx         = 512
+llama_init_from_model: n_batch       = 512
+llama_init_from_model: n_ubatch      = 512
+llama_init_from_model: flash_attn    = 1
+llama_init_from_model: attn_max_b    = 0
+llama_init_from_model: fused_moe     = 0
+llama_init_from_model: grouped er    = 0
+llama_init_from_model: fused_up_gate = 0
+llama_init_from_model: fused_mmad    = 1
+llama_init_from_model: rope_cache    = 0
+llama_init_from_model: graph_reuse   = 1
+llama_init_from_model: k_cache_hadam = 0
+llama_init_from_model: v_cache_hadam = 0
+llama_init_from_model: split_mode_graph_scheduling = 0
+llama_init_from_model: reduce_type   = f16
+llama_init_from_model: sched_async   = 0
+llama_init_from_model: ser           = -1, 0
+llama_init_from_model: freq_base     = 10000000.0
+llama_init_from_model: freq_scale    = 1
+llama_kv_cache_init:        CPU KV buffer size =    72.81 MiB
+llama_init_from_model: KV self size  =   10.00 MiB, K (f16):    5.00 MiB, V (f16):    5.00 MiB
+llama_init_from_model:        CPU  output buffer size =     0.95 MiB
+llama_init_from_model:        CPU compute buffer size =   489.00 MiB
+llama_init_from_model: graph nodes  = 2775
+llama_init_from_model: graph splits = 1
+llama_init_from_model: enabling only_active_experts scheduling
+
+system_info: n_threads = 24 / 192 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | FMA = 1 | NEON = 0 | SVE = 0 | ARM_FMA = 0 | F16C = 1 | FP16_VA = 0 | WASM_SIMD = 0 | BLAS = 0 | SSE3 = 1 | SSSE3 = 1 | VSX = 0 | MATMUL_INT8 = 0 | 
+compute_imatrix: tokenizing the input ..
+compute_imatrix: tokenization took 515.191 ms
+compute_imatrix: computing over 560 chunks with batch_size 512
+compute_imatrix: 8.39 seconds per pass - ETA 1 hours 18.33 minutes
+
+save_imatrix: entry '             blk.38.ffn_gate_exps.weight' has partial data (84.38%) 40 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.39.ffn_down_exps.weight' has partial data (84.77%) 39 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.37.ffn_gate_exps.weight' has partial data (85.94%) 36 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.36.ffn_up_exps.weight' has partial data (88.28%) 30 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.35.ffn_down_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.35.ffn_gate_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.34.ffn_down_exps.weight' has partial data (91.02%) 23 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.34.ffn_up_exps.weight' has partial data (91.02%) 23 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.33.ffn_gate_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.32.ffn_down_exps.weight' has partial data (90.62%) 24 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.31.ffn_down_exps.weight' has partial data (88.67%) 29 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.31.ffn_gate_exps.weight' has partial data (88.67%) 29 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.30.ffn_down_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.29.ffn_gate_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.29.ffn_up_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.28.ffn_down_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.28.ffn_gate_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.28.ffn_up_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.27.ffn_gate_exps.weight' has partial data (91.80%) 21 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.26.ffn_up_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.24.ffn_gate_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.23.ffn_down_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.23.ffn_gate_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.23.ffn_up_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.33.ffn_down_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.32.ffn_gate_exps.weight' has partial data (90.62%) 24 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.30.ffn_gate_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.21.ffn_down_exps.weight' has partial data (88.67%) 29 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.21.ffn_up_exps.weight' has partial data (88.67%) 29 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.26.ffn_gate_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.39.ffn_up_exps.weight' has partial data (84.77%) 39 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.20.ffn_down_exps.weight' has partial data (90.62%) 24 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.22.ffn_down_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.27.ffn_down_exps.weight' has partial data (91.80%) 21 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.26.ffn_down_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.20.ffn_gate_exps.weight' has partial data (90.62%) 24 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.22.ffn_up_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.7.ffn_down_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_gate_exps.weight' has partial data (88.28%) 30 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.31.ffn_up_exps.weight' has partial data (88.67%) 29 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.6.ffn_down_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.20.ffn_up_exps.weight' has partial data (90.62%) 24 out of 256 experts are missing data - skipping
+save_imatrix: entry '                blk.6.ffn_up_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.11.ffn_up_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.37.ffn_down_exps.weight' has partial data (85.94%) 36 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.9.ffn_gate_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.10.ffn_gate_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.39.ffn_gate_exps.weight' has partial data (84.77%) 39 out of 256 experts are missing data - skipping
+save_imatrix: entry '                blk.9.ffn_up_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.12.ffn_gate_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.38.ffn_down_exps.weight' has partial data (84.38%) 40 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.15.ffn_down_exps.weight' has partial data (91.80%) 21 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.4.ffn_down_exps.weight' has partial data (98.83%) 3 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.34.ffn_gate_exps.weight' has partial data (91.02%) 23 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.21.ffn_gate_exps.weight' has partial data (88.67%) 29 out of 256 experts are missing data - skipping
+save_imatrix: entry '                blk.1.ffn_up_exps.weight' has partial data (99.61%) 1 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '                blk.5.ffn_up_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '              blk.8.ffn_gate_exps.weight' has partial data (93.36%) 17 out of 256 experts are missing data - skipping
+save_imatrix: entry '                blk.8.ffn_up_exps.weight' has partial data (93.36%) 17 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.24.ffn_down_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '                blk.4.ffn_up_exps.weight' has partial data (98.83%) 3 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.13.ffn_gate_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.7.ffn_gate_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.33.ffn_up_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.12.ffn_down_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.25.ffn_up_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.37.ffn_up_exps.weight' has partial data (85.94%) 36 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.8.ffn_down_exps.weight' has partial data (93.36%) 17 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.32.ffn_up_exps.weight' has partial data (90.62%) 24 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.17.ffn_up_exps.weight' has partial data (92.58%) 19 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.18.ffn_down_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.9.ffn_down_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.5.ffn_gate_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.38.ffn_up_exps.weight' has partial data (84.38%) 40 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.29.ffn_down_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.19.ffn_gate_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.6.ffn_gate_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '              blk.4.ffn_gate_exps.weight' has partial data (98.83%) 3 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '                blk.7.ffn_up_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.18.ffn_up_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.27.ffn_up_exps.weight' has partial data (91.80%) 21 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.25.ffn_down_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.14.ffn_gate_exps.weight' has partial data (89.06%) 28 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.10.ffn_down_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.16.ffn_gate_exps.weight' has partial data (91.02%) 23 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.30.ffn_up_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.5.ffn_down_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_down_exps.weight' has partial data (88.28%) 30 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.11.ffn_down_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.16.ffn_up_exps.weight' has partial data (91.02%) 23 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.18.ffn_gate_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.19.ffn_up_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.13.ffn_up_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.13.ffn_down_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.14.ffn_up_exps.weight' has partial data (89.06%) 28 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.14.ffn_down_exps.weight' has partial data (89.06%) 28 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.24.ffn_up_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.12.ffn_up_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.10.ffn_up_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.15.ffn_up_exps.weight' has partial data (91.80%) 21 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.15.ffn_gate_exps.weight' has partial data (91.80%) 21 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.22.ffn_gate_exps.weight' has partial data (93.75%) 16 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.1.ffn_gate_exps.weight' has partial data (99.61%) 1 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '              blk.1.ffn_down_exps.weight' has partial data (99.61%) 1 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.16.ffn_down_exps.weight' has partial data (91.02%) 23 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.11.ffn_gate_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.17.ffn_gate_exps.weight' has partial data (92.58%) 19 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.35.ffn_up_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.17.ffn_down_exps.weight' has partial data (92.58%) 19 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.25.ffn_gate_exps.weight' has partial data (91.41%) 22 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.19.ffn_down_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: warning: storing only 423 out of 510 entries
+
+save_imatrix: stored collected data after 10 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: entry '             blk.38.ffn_gate_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.39.ffn_down_exps.weight' has partial data (89.45%) 27 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.37.ffn_gate_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.36.ffn_up_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.35.ffn_down_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.35.ffn_gate_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.34.ffn_down_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.34.ffn_up_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.33.ffn_gate_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.32.ffn_down_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.31.ffn_down_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.31.ffn_gate_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.30.ffn_down_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.29.ffn_gate_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.29.ffn_up_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.28.ffn_down_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.28.ffn_gate_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.28.ffn_up_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.27.ffn_gate_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.26.ffn_up_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.23.ffn_down_exps.weight' has partial data (98.44%) 4 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.23.ffn_gate_exps.weight' has partial data (98.44%) 4 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.23.ffn_up_exps.weight' has partial data (98.44%) 4 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.33.ffn_down_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.32.ffn_gate_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.30.ffn_gate_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.21.ffn_down_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.21.ffn_up_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.26.ffn_gate_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.39.ffn_up_exps.weight' has partial data (89.45%) 27 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.20.ffn_down_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.22.ffn_down_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.27.ffn_down_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.26.ffn_down_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.20.ffn_gate_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.22.ffn_up_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_gate_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.31.ffn_up_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.20.ffn_up_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.37.ffn_down_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.9.ffn_gate_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.39.ffn_gate_exps.weight' has partial data (89.45%) 27 out of 256 experts are missing data - skipping
+save_imatrix: entry '                blk.9.ffn_up_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.12.ffn_gate_exps.weight' has partial data (98.83%) 3 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.38.ffn_down_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.15.ffn_down_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.34.ffn_gate_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.21.ffn_gate_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '              blk.8.ffn_gate_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '                blk.8.ffn_up_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.13.ffn_gate_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.33.ffn_up_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.12.ffn_down_exps.weight' has partial data (98.83%) 3 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.25.ffn_up_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.37.ffn_up_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '              blk.8.ffn_down_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.32.ffn_up_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.17.ffn_up_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.18.ffn_down_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '              blk.9.ffn_down_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.38.ffn_up_exps.weight' has partial data (90.23%) 25 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.29.ffn_down_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.19.ffn_gate_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.18.ffn_up_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.27.ffn_up_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.25.ffn_down_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.14.ffn_gate_exps.weight' has partial data (96.09%) 10 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.16.ffn_gate_exps.weight' has partial data (96.09%) 10 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.30.ffn_up_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_down_exps.weight' has partial data (92.97%) 18 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.16.ffn_up_exps.weight' has partial data (96.09%) 10 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.18.ffn_gate_exps.weight' has partial data (98.05%) 5 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.19.ffn_up_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.13.ffn_up_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.13.ffn_down_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.14.ffn_up_exps.weight' has partial data (96.09%) 10 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.14.ffn_down_exps.weight' has partial data (96.09%) 10 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.12.ffn_up_exps.weight' has partial data (98.83%) 3 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.15.ffn_up_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.15.ffn_gate_exps.weight' has partial data (96.48%) 9 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.22.ffn_gate_exps.weight' has partial data (97.27%) 7 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.16.ffn_down_exps.weight' has partial data (96.09%) 10 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.17.ffn_gate_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.35.ffn_up_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.17.ffn_down_exps.weight' has partial data (96.88%) 8 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.25.ffn_gate_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.19.ffn_down_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: warning: storing only 489 out of 510 entries
+
+save_imatrix: stored collected data after 20 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: entry '             blk.38.ffn_gate_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.39.ffn_down_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.37.ffn_gate_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.36.ffn_up_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.35.ffn_down_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.35.ffn_gate_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.34.ffn_down_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.34.ffn_up_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.39.ffn_up_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.20.ffn_down_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.20.ffn_gate_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_gate_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.20.ffn_up_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.37.ffn_down_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.39.ffn_gate_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.38.ffn_down_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.34.ffn_gate_exps.weight' has partial data (95.70%) 11 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.37.ffn_up_exps.weight' has partial data (94.53%) 14 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.38.ffn_up_exps.weight' has partial data (94.14%) 15 out of 256 experts are missing data - skipping
+save_imatrix: entry '             blk.36.ffn_down_exps.weight' has partial data (94.92%) 13 out of 256 experts are missing data - skipping
+save_imatrix: entry '               blk.35.ffn_up_exps.weight' has partial data (97.66%) 6 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: warning: storing only 498 out of 510 entries
+
+save_imatrix: stored collected data after 30 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: entry '             blk.38.ffn_gate_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.39.ffn_down_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.37.ffn_gate_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.36.ffn_up_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.39.ffn_up_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_gate_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.37.ffn_down_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.39.ffn_gate_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.38.ffn_down_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.37.ffn_up_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '               blk.38.ffn_up_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+save_imatrix: entry '             blk.36.ffn_down_exps.weight' has partial data (95.31%) 12 out of 256 experts are missing data Storing **but be aware**
+
+save_imatrix: stored collected data after 40 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 50 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 60 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 70 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 80 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 90 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 100 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 110 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 120 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 130 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 140 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 150 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 160 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 170 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 180 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 190 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 200 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 210 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 220 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 230 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 240 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 250 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 260 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 270 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 280 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 290 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 300 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 310 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 320 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 330 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 340 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 350 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 360 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 370 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 380 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 390 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 400 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 410 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 420 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 430 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 440 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 450 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 460 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 470 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 480 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 490 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 500 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 510 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 520 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 530 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 540 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 550 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 560 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+save_imatrix: stored collected data after 560 chunks in /mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/fbd168aa3fbd440eb4424f9a36a30f66/imatrix.dat.partial
+
+llama_print_timings:        load time =    3710.27 ms
+llama_print_timings:      sample time =       0.00 ms /     1 runs   (    0.00 ms per token,      inf tokens per second)
+llama_print_timings: prompt eval time =       0.00 ms /     0 tokens (    -nan ms per token,     -nan tokens per second)
+llama_print_timings:        eval time =       0.00 ms /     1 runs   (    0.00 ms per token,      inf tokens per second)
+llama_print_timings:       total time = 1587618.97 ms /     1 tokens
+

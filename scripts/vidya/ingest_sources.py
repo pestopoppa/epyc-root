@@ -631,6 +631,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V9-8 native sealed original-byte comparisons; coverage and outcomes replayed "
                 "under the bound validator source; complete comparisons are diagnostic observations",
            task="VB-V9-8-QUALITY-PACK-WIRE"),
+    Source("q38p4-greedy-parity", "q38p4_parity",
+           lambda p: importlib.import_module("adapters.q38p4_parity").units(p), frames="frames_for_path",
+           note="prospective native cross-engine token/stop comparison under an exclusive MI210 grant",
+           task="VB-Q38P4-PARITY-WIRE"),
     Source("qwen4exp-cpu-loader-diagnostic", "qwen4exp_cpu_loader",
            lambda p: importlib.import_module("adapters.qwen4exp_cpu_loader").units(p), frames="frames_for_path",
            note="prospective native CPU loader seals; replay raw scope, custody and both semantic dispositions",

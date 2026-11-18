@@ -5,7 +5,9 @@ import base64
 import hashlib
 import json
 from pathlib import Path
+import runpy
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -33,7 +35,7 @@ def raw_output(row, output):
 
 @pytest.fixture
 def native():
-    pins = json.loads((FILING / "pins.json").read_bytes())
+    pins = json.loads((FILING / "r3/pins.json").read_bytes())
     bindir = Path(pins["binary_dir"])
     cli = str(bindir / "llama-cli")
     run_id = "a" * 32
@@ -72,13 +74,17 @@ def native():
                 executable=image, executable_sha256=image_digest, affinity=[0, 1, 2, 3],
                 proc_start_ticks=str(i + 1), runtime_maps=maps))
         records.append(row)
-    grant = (f"id={adapter.ROW} regions=0-3 start=1970-01-01T00:16Z "
-             "end=1970-01-01T00:23:10Z kind=rowflow\n")
+    regions = "0,1,2,3,96,97,98,99"
+    granted = [0, 1, 2, 3, 96, 97, 98, 99]
+    grant = (f"regions={regions} start=1970-01-01T00:16Z "
+             "end=1970-01-01T00:23:10Z holds=c0,c1,c2,c3,t96,t97,t98,t99\n")
     return dict(schema=adapter.SCHEMA, id=adapter.ROW, run_id=run_id, pins=pins,
                 status="COMPLETE", mode="native", model_loaded=False, inference_executed=False,
                 started_at=1000, ended_at=1030, stop_at=1300, unstarted=[], records=records, plan=plan,
                 console_harness_sha256=console_digest,
-                grant=dict(row=adapter.ROW, regions="0-3", cpus=[0, 1, 2, 3], original=grant,
+                grant=dict(row=adapter.ROW, path=f"/grants/{adapter.ROW}.grant", regions=regions,
+                           granted_cpus=granted, engine_cpus=granted, inherited_cpus=granted,
+                           cpus=[0, 1, 2, 3], original=grant,
                            sha256=digest(grant.encode()), deadline=1300),
                 mock=dict(host="127.0.0.1", port=12345, requests=[["GET", "/v1/models"]], cleanup=True,
                           runner_sha256=pins["sources"]["capture.py"]))
@@ -90,7 +96,20 @@ def test_complete_native_fixture_uses_shared_grade_and_scoped_consumer(native, t
     assert grade(row)[:2] == ("Judged", "Located")
     assert row.value == 9 and row.protocol_id == "" and row.reps == 1
     assert row.applicability == {"consumer": "autokernel.planner"}
+    assert row.extra["cpus"] == [0, 1, 2, 3]
     assert len(adapter.frames_for_path(path, as_of="2026-11-18T00:00:00Z")) == 3
+
+
+def test_prior_exact_four_cpu_recipe_still_replays(native, tmp_path):
+    previous = "vidya-r231-eof-native-wire-20261118-r2"
+    native["id"] = previous
+    native["pins"] = json.loads((FILING / "pins.json").read_bytes())
+    native["mock"]["runner_sha256"] = native["pins"]["sources"]["capture.py"]
+    raw = (f"id={previous} regions=0-3 start=1970-01-01T00:16Z "
+           "end=1970-01-01T00:23:10Z kind=rowflow\n")
+    native["grant"] = dict(row=previous, regions="0-3", cpus=[0, 1, 2, 3], deadline=1300,
+                           original=raw, sha256=digest(raw.encode()))
+    assert adapter.project(authored(tmp_path / "NATIVE.json", native)).value == 9
 
 
 def test_scoped_cli_ingests_once(native, tmp_path, capsys):
@@ -111,6 +130,7 @@ def test_scoped_cli_ingests_once(native, tmp_path, capsys):
     ("affinity", "affinity"), ("mapping", "mapped library"), ("output", "console output"),
     ("source", "original native envelope"), ("mock", "mock requests"), ("order", "ordering"),
     ("resealed_dso", "pin set"), ("duration", "wall-clock window"), ("grant", "terminal window"),
+    ("grant_census", "terminal window"), ("wrong_selection", "terminal window"),
     ("duplicate_marker", "console output"), ("trailing_data", "console output"),
     ("unknown_echo", "console output"),
 ])
@@ -134,8 +154,12 @@ def test_resealed_faults_refuse_even_with_a_valid_outer_hash(native, tmp_path, c
         native["ended_at"] = native["started_at"] + 1
     elif change == "grant":
         grant = native["grant"]
-        grant["original"] = grant["original"].replace("kind=rowflow", "kind=rowflow-dryrun")
+        grant["original"] = grant["original"].strip() + " kind=rowflow-dryrun\n"
         grant["sha256"] = digest(grant["original"].encode())
+    elif change == "grant_census":
+        native["grant"]["granted_cpus"] = [0, 1, 2, 3]
+    elif change == "wrong_selection":
+        native["grant"]["cpus"] = [96, 97, 98, 99]
     elif change == "output":
         raw_output(native["records"][-1], b"READY\nRESULT more=0 hex=00\n")
     elif change in {"duplicate_marker", "trailing_data", "unknown_echo"}:
@@ -154,3 +178,32 @@ def test_resealed_faults_refuse_even_with_a_valid_outer_hash(native, tmp_path, c
         path.write_text('{"historical": true}')
     with pytest.raises(ProjectionError, match=reason):
         adapter.project(row)
+
+
+@pytest.mark.parametrize("lock", [None, "96-99"])
+def test_capture_records_actual_four_cpu_selection_from_allocator_grant(tmp_path, monkeypatch, lock):
+    monkeypatch.setitem(sys.modules, "control", SimpleNamespace(cleanup=None, group_exists=None, stopped=None))
+    script = runpy.run_path(str(ROOT / "scripts/benchmark/r231_eof/capture.py"))
+    cpus = set(range(4)) | set(range(96, 100))
+    current = cpus.copy()
+
+    def narrow(pid, selected):
+        assert pid == 0 and set(selected) <= current
+        current.intersection_update(selected)
+
+    monkeypatch.setattr(script["os"], "sched_getaffinity", lambda _: current.copy())
+    monkeypatch.setattr(script["os"], "sched_setaffinity", narrow)
+    monkeypatch.setattr(script["time"], "time", lambda: 1000)
+    monkeypatch.setenv("FILLER_ID", adapter.ROW)
+    monkeypatch.setenv("FILLER_CPUS", lock or "0-3,96-99")
+    monkeypatch.setenv("FILLER_GRANTS_DIR", str(tmp_path))
+    monkeypatch.setenv("FILLER_DEADLINE", "1290")
+    monkeypatch.delenv("FILLER_DRYRUN", raising=False)
+    raw = "regions=0-3,96-99 start=1970-01-01T00:16Z end=1970-01-01T00:23Z holds=c0,c1,c2,c3"
+    raw += f" lock={lock}\n" if lock else "\n"
+    (tmp_path / f"{adapter.ROW}.grant").write_text(raw)
+    grant = script["grant_record"]()
+    expected = list(range(96, 100)) if lock else list(range(4))
+    assert grant["granted_cpus"] == grant["inherited_cpus"] == sorted(cpus)
+    assert grant["cpus"] == sorted(current) == expected
+    assert grant["original"] == raw and grant["sha256"] == digest(raw.encode())

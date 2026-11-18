@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "rc0 complete four-launch native CPU-only NPD1 capture; strict raw replay and existing adapter produce four diagnostic tuples with original source/model/grant/linkage and release custody. TPOT lower-better; this is capture acceptance only, not paired effect or promotion. Multi-shard model remains unscoped; native planning canary and Q38 sibling remain required by the parent.",
+  "filed_by": "handoff-vidya-belief-substrate"
+}

@@ -1,0 +1,4 @@
+WARN task_lint vidya-belief-substrate-program.md:240: untestable prose prerequisite: 'prerequisite recovery]'
+DECISION-RULE prose; verdict_by agent: owner handoff-vidya-belief-substrate files the verdict by hand after the run
+SMOKE PASS vidya-exp01-proxy-input-recovery-20261118 on 116-119: first progress: new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118/native-attempts/attempt-xp7p3y8y/native-result.json (measurement field); rc=75 time=2026-11-18T13:28:52Z reason=partial-native-incomplete
+PUBLISHED vidya-exp01-proxy-input-recovery-20261118 lane=cpu regions=any-cpu-quarter window_s=4980 min_window_s=3600 book_s=3600 resumable=false gib=64 ports=[] result=/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118/official/RESULT.json (json) -> /mnt/raid0/llm/tmp/compute-flags/ready/vidya-exp01-proxy-input-recovery-20261118.json
