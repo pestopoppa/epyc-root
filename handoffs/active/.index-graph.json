@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T07:30:37Z",
+  "generated_at": "2026-11-18T07:41:53Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1667,7 +1667,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -1679,7 +1679,7 @@
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-18",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
       "open": 6,
       "priority": 0.8728,
@@ -1933,7 +1933,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 222,
@@ -1942,7 +1942,7 @@
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-18",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
       "open": 30,
       "priority": 0.9075,
@@ -2303,7 +2303,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [
         "INF-06",
@@ -2323,7 +2323,7 @@
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-18",
       "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
       "open": 64,
       "priority": 0.0021,
