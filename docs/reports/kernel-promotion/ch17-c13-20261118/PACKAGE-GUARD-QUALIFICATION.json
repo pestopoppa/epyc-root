@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "scope": "CH-17-PACKAGE-GUARD software only",
+  "fixture_tests_total": 160,
+  "ch17_fixture_tests": 29,
+  "publisher": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py --smoke-now",
+  "packet": "/mnt/raid0/llm/tmp/v11-promotion-checklist/split-admission-ch17-reviewed",
+  "source_manifest_sha256": "8eb3dd8a585d7bce70ca901a062fbe21be1d18137d38bc3ffaa4fd84983db1b0",
+  "native_plan_sha256": "2dae6a4cc127e7937575165cf4d688f4277afe0aabe17b11c5d97fa9a29b5448",
+  "ready_manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/v9-8-contention-matrix-cpu-20261118.json",
+  "publisher_receipt": "/mnt/raid0/llm/tmp/compute-flags/dryrun/v9-8-contention-matrix-cpu-20261118/PASS.json",
+  "publisher_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/v9-8-contention-matrix-cpu-20261118/launcher.out",
+  "native_row_id": "v9-8-contention-matrix-cpu-20261118",
+  "native_job_complete": false,
+  "same_id_replacement": true,
+  "fixture_source_sha256": {
+    ".claude/skills/kernel-promotion/promotion_gates.yaml": "79baa6f9db87495bd30db655473e2bf1002db0d7f417a336287bf38781c1189b",
+    ".claude/skills/kernel-promotion/scripts/package.sh": "108d42427b41bb6bdc89a97c10c79029df949e4a6d8c4d043b5dd65ba1bf282d",
+    ".claude/skills/kernel-promotion/scripts/drafter_selection_receipt.py": "728753c57929f309f7169e9b2c7993188ce33840f7250a50d40e2cfb1f183f6b",
+    "tests/test_kernel_promotion_drafter_selection.py": "5f122e2be072cd8b0577bd6d3d708162b087cd8ca782b02195bada0b903ff906"
+  },
+  "policy": "Required package gate through existing evidence directory; no winner determination or topology apply.",
+  "limitation": "No role-level CH-17 qualification was acquired by this smoke. Legacy roles with undeclared drafters need migration before a complete promotion receipt.",
+  "gitnexus": "Detached lane is unindexed; direct caller search found the documented package entry point only."
+}

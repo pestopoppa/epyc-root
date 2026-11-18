@@ -220,15 +220,16 @@ evals are the gate; `P-PARITY-1` (n>=5) if parity is wanted, never a 1-prompt sm
 ## Step 5 — the package
 
 ```bash
-scripts/package.sh --candidate <sha> --out <file> [--evidence <dir>]
-scripts/package.sh --check <file>       # validate one that already exists
+scripts/package.sh --candidate <sha> --out <file> --evidence <dir>
+scripts/package.sh --check <file>
 ```
 
 The required key set is **not a list in the script** — it is every gate marked
 `required: true` in `promotion_gates.yaml`, so the schema and the gates cannot drift
 apart. `package.sh` derives the store facts itself (resolved target, `llama-server`
 digest, `--version`, the newest archive anchor, the rewind commands) and folds in one
-`<gate>.json` per gate from `--evidence`. It exits non-zero naming every missing gate,
+`<gate>.json` per gate from `--evidence`. It exits non-zero before writing the package if
+any gate fails. Diagnostics name each missing gate,
 every gate whose result carries numbers but **no `status`**, and a `rollback` section
 without its `regeneration_command`.
 
@@ -236,6 +237,48 @@ The required keys exist because v9's qualification carried `relocatable_runtime`
 `rollback_rehearsal` and v10's silently dropped both. Run against v10's own qualification
 artifact on 2026-09-22 it named exactly those two, plus `binary_set_parity` and the
 `store`/`rollback`/`scope` sections. A fixed schema makes a gate impossible to lose.
+
+### CH-17 drafter selection receipt
+
+Package assembly and `--check` derive the current scope through `scope.sh` and compare it
+against the pinned inputs. The default covers both llama.cpp backends. Pass `--backend cpu`
+or `--backend gpu` on both commands when the promotion explicitly covers only that backend.
+The speech kernels have their own promotion workflow. Set `ORCH` for the orchestrator
+checkout whose compiled scope and configuration are under review.
+
+Place `drafter_selection.json` beside the other gate evidence. Its schema is
+`epyc.kernel_promotion_drafter_selection.v1` and its status is `pass`. Supply the following
+fields, using full Git IDs and lowercase SHA-256 digests.
+
+| Field | Required inputs |
+| --- | --- |
+| `inputs` | `topology`, `registry`, and `priors` are hashes of the orchestrator's `stack_topology.yaml`, master `model_registry.yaml`, and derived `stack_priors.yaml`. The derived priors must themselves pin the first two inputs. |
+| `candidate` | `source_commit`, `source_tree`, `branch` and `images` keyed by promoted backend. Each image supplies its `binary_sha256`, the sealed build `stage` (`root`, `inventory`, `inventory_sha256`, `identity_sha256`), `help` and the sorted `supported_spec_types` advertised by that evidence. |
+| `help` | Per image, the absolute `path` and `sha256` of retained `llama-server --help` output, with `argv`, `exit_code`, `source_commit` and `binary_sha256` from the same capture. Run the exact staged executable with its own runtime libraries. This observes advertised CLI types. |
+| `anchors` | Per backend, `commit`, `binary` and `binary_sha256` of the incumbent used for comparison. The commit and digest must match the configured incumbent's hash-pinned operator ratification. The resolved binary must match the derived scope and the ratified digest. |
+| `roles` | One entry per derived role with `backend`, `role`, `server_role`, `model_path`, `current`, `selected`, `decision` (`changed` or `unchanged`), `reason` and `choices`. Record the same server selection for aliases. |
+| `proposed_topology` | For any change, the absolute `path` and `sha256` of the reviewed proposed topology. Its configuration changes must consist solely of the named in-scope `drafter_selection` entries. The package reads this snapshot and includes its pin. |
+
+Key each role's `choices` by the drafter ID in its master registry entry. Include every
+registered drafter whose speculative type the candidate advertises, and include `none`
+when currently or prospectively selected. Explicitly record `drafters: {}` and a topology
+selection of `none` for a role with no drafters. A legacy row with no declared availability
+needs the registry/selection migrated before it can qualify. The receipt stays unresolved
+while a required choice has unknown evidence.
+
+For each choice provide an absolute `path`, `sha256`, and JSON `pointer` to its retained
+qualification record (an empty pointer names the root). The cited record carries a
+`binding` with `backend`, `role`, `model_path`, `choice`, `spec_type`, and `candidate`
+and `anchor` objects (each with `commit` and `binary_sha256`). It also records the fixed
+`workload`, existing `decision_rule`, `custody`, `quality`, and `measured_limits` for
+that comparison, and the existing qualification verdict as `status: pass` or `status: fail`.
+A rejected alternative can carry a resolved `fail`. The selected choice requires `pass`.
+Keep the original qualification artifacts available for review. The
+operator reviews the underlying evidence and each proposed change or explicit unchanged
+reason before signature. Load-only evidence establishes the distinct preflight gate.
+
+Retain the receipt inputs and referenced evidence at their pinned paths until ratification.
+To revalidate an older package from before CH-17, use its own revision's package schema.
 
 ## Step 6 — the signature
 

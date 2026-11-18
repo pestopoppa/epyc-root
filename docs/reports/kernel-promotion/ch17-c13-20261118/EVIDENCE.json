@@ -1,0 +1,53 @@
+{
+  "scope": "Preparation and publisher smoke only; no native timing, drafter selection or promotion acceptance. Archived scripts retain original paths and are not standalone launchers. Three failed qualifications prohibit another retry; r4 was already running when the last failure was recorded.",
+  "files": {
+    "PREPARE.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/PREPARE.json",
+      "sha256": "d4bc82d6ccd671b95ed4d74ec9e92a3464112f55cbfeb2b5f3ce18838fa0b250"
+    },
+    "row.spec.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/row.spec.json",
+      "sha256": "0fca3bcc0bf9000c3be837f640db95560dccac85546eb985c7931c805b5c4048"
+    },
+    "launch.sh": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/launch.sh",
+      "sha256": "cd4a8ca4ffea001b458a7181c49675c604765f8334cef8dd2fae24a67319f1da"
+    },
+    "job.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/job.py",
+      "sha256": "37b9ddfc7db10edbae896e3fa9cb1073a605ff797674c9c893cfb0df43b91d35"
+    },
+    "SOURCE.sha256": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/SOURCE.sha256",
+      "sha256": "19d4f7cfae7c3a2e56ca868ad39a2cf45586724091ebf9e01e3e872387c53c09"
+    },
+    "inputs.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/inputs.json",
+      "sha256": "2a74565e7d602e800fd65d1deb5d7d8f511f586d8811a804ebc33789f8f302ca"
+    },
+    "scope.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/scope.json",
+      "sha256": "19c8d66bb4786863ded846b06e422a1125159772810f4ca018db26ffc1e5a4ab"
+    },
+    "PUBLISHER-PASS.json": {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ch17-c13-frontdoor-cpu-20261118-r4/PASS.json",
+      "sha256": "5d796a26cbbb125fab77ca80c6c6ee90677d4e61fb9b085e098277f4e912c701"
+    },
+    "server_np_sweep.py": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/server_np_sweep.py",
+      "sha256": "915915174c0410a938c3159dcf355d6861984b52c163b7f4ad5c889981223a2d"
+    },
+    "verify_ggml_linkage.sh": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/verify_ggml_linkage.sh",
+      "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+    },
+    "PACKAGE-GUARD-QUALIFICATION.json": {
+      "original_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17-contract-outcome.json",
+      "sha256": "e03ea56b83099f4afbab872635201d607229a24d0ae9f24d1d29b41fd7b4fa27"
+    },
+    "MATRIX-PUBLISHER-PASS.json": {
+      "original_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/v9-8-contention-matrix-cpu-20261118/PASS.json",
+      "sha256": "8b4c451811428b8f7b47d6eb2ed1a0f11cf3648b0fb435ab11d910cf94eb7c3f"
+    }
+  }
+}
