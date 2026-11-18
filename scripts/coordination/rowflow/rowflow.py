@@ -2448,8 +2448,48 @@ def rank_reservation(c, pending, free, ram, gpu_grant_open, ports, now, grant_en
     return reserved, holds, skips
 
 
+# D9 2026-11-18 GPU-Q3-GUARD (codemode-ab-v2-35b-cpu-20261118-r2 took all of q3 for 24 h at 20:30Z; the MI210 idled with
+# 9 gpu-q3 rows queued): while any GPU-lane row is grantable or queued, a CPU row placed on q3 never takes q3's cores
+# 88-95 (SMT 184-191, the MI210 host threads). For that grant q3 is "q3-narrow" = 72-87 (+168-183), offered only to a
+# row whose declared threads fit 16 cores and only when no q0-q2 option fits; a row needing all 24 cores waits for
+# q0-q2. Host / quiet-host / GPU rows and the no-GPU-queued case are unchanged.
+Q3_NARROW = frozenset({f"c{k}" for k in range(72, 88)} | {f"t{k}" for k in range(168, 184)})
+Q3_NARROW_CORES = 16
+Q3_GUARD = frozenset({f"c{k}" for k in range(88, 96)} | {f"t{k}" for k in range(184, 192)})
+
+
+def gpu_lane_cand(c):
+    """A GPU-lane candidate: its lane is gpu, or (not a host / quiet-host row) an option holds gpu-quiet."""
+    return c.get("lane") == "gpu" or (c.get("shape") not in ("host", "quiet-host")
+                                      and any(GPU in o for o in c.get("options") or ()))
+
+
+def gpu_q3_guard(c):
+    """The options of CPU candidate c under GPU-Q3-GUARD (options already expanded): a q3 whole-quarter option becomes
+    Q3_NARROW when c's threads fit Q3_NARROW_CORES, else it is dropped; any other option touching 88-95/184-191 is
+    dropped. Host-wide options (all four quarters) and GPU-lane rows are returned unchanged."""
+    if gpu_lane_cand(c) or c.get("shape") in ("host", "quiet-host") or c.get("explicit"):
+        # explicit concrete regions stay honoured verbatim (operator 2026-11-18 scope add, rule 4: the declare-only
+        # contract package handles pins)
+        return list(c["options"])
+    th = c.get("threads")
+    fits = th is not None and int(th) <= Q3_NARROW_CORES
+    out = []
+    for o in c["options"]:
+        if sum(1 for q in QUARTERS if q in o) >= 4:
+            out.append(o)
+        elif "q3" in o:
+            if fits and not any(q in o for q in QUARTERS[:3]):
+                out.append(frozenset((o - expand({"q3"})) | Q3_NARROW))
+        elif o & Q3_GUARD:
+            continue
+        else:
+            out.append(o)
+    return out
+
+
 def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), quiet_ok=True, held_ports=(), drain_prev=None,
-         region_ends=None, region_holders=None):
+         region_ends=None, region_holders=None, gpu_queued=False):
     """PURE. One snapshot -> assignments. free: free regions; cands: [{id, kind: grant|dryrun, lane, rank, lane_count, gib,
     bench, options: [frozenset], shape?, since? (epoch the row became runnable), window_s? (how long it would hold)}];
     ram_gib: MemAvailable now; grant_ends: end epochs of the running grants; quiet_ok: quiet-host rows allowed now (window knob).
@@ -2480,6 +2520,10 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     # ws58 sub-quarter: a whole quarter also holds its core tokens. PURE: expand into shallow copies, never the
     # caller's dicts (e40203894 rewrote c["options"] in place; the returned assigned/pending carry the copies).
     cands = [dict(c, options=[frozenset(expand(o)) for o in c["options"]]) for c in cands]
+    # D9 2026-11-18 GPU-Q3-GUARD: gpu_queued (a GPU-lane row queued but not a candidate) or a GPU-lane candidate
+    plan.gpu_q3_guard = bool(gpu_queued) or any(gpu_lane_cand(c) for c in cands)
+    if plan.gpu_q3_guard:
+        cands = [dict(c, options=gpu_q3_guard(c)) for c in cands]
     pending = sorted(cands, key=plan_order)
     if not quiet_ok:
         pending = [c for c in pending if c.get("shape") != "quiet-host"]
@@ -2550,7 +2594,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 opts = kept
                 if opts:
                     plan.rank_skips += [(c, h, why) for h, why in skips]
-            if opts and not any(t in QUARTERS for x in opts for t in x):
+            if opts and not any(t in QUARTERS for x in opts for t in x) and not (plan.gpu_q3_guard and Q3_NARROW in opts):
+                # (GPU-Q3-GUARD: a quarter row's q3-narrow option is its whole-quarter grant, not sub-quarter packing)
                 # PACKING (operator "fix it" 2026-11-05): a sub-quarter row goes onto a partly used quarter; it breaks a
                 # whole free quarter only while more are free than the whole-quarter rows that fit now need
                 keep = [x for x in opts if not any(q in free and expand({q}) & x for q in QUARTERS)]
@@ -2559,12 +2604,16 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 opts = keep or (opts if sum(1 for q in QUARTERS if q in free) > wq else [])
             if not opts:
                 continue
+            if plan.gpu_q3_guard and any(not (x & Q3_NARROW and not x & set(QUARTERS)) for x in opts):
+                # GPU-Q3-GUARD: q3-narrow only when no q0-q2 option fits (it is smaller, so min() would pick it first)
+                opts = [x for x in opts if not (x & Q3_NARROW and not x & set(QUARTERS))] or opts
             # prefer the smallest option, then the one other pending rows want least (keeps their alternatives open)
             demand = {r: sum(1 for x in pending if x is not c for o2 in x["options"] if r in o2) for r in free}
             # operator 2026-11-10 ("Prefer q0-q2 for CPU rows"): a whole-quarter option on q3 goes last - q3 holds the
             # MI210's host cores c88-c95, so a CPU quarter row takes q3 only when it is its only fitting quarter (an
             # explicit q3 row has no other option; order only, never a reservation)
-            o = min(opts, key=lambda o: (len(o), not (o & qcores("q3")) and not (o & set(QUARTERS)),
+            # GPU-Q3-GUARD ordering (operator 2026-11-18): a CPU option touching 88-95/184-191 goes after every other one
+            o = min(opts, key=lambda o: (GPU not in o and bool(o & Q3_GUARD), len(o), not (o & qcores("q3")) and not (o & set(QUARTERS)),
                                          "q3" in o and GPU not in o, sum(demand.get(r, 0) for r in o), sorted(o)))
             placed = (c, o)
             break
@@ -2749,6 +2798,7 @@ RUN_DIRECT = os.path.join(_HERE, "run_direct.sh")
 
 
 RUNNABLE_STATES = ("grantable", "armed")
+GPU_QUEUED_STATES = RUNNABLE_STATES + ("needs-dryrun", "dryrun-running")   # GPU-Q3-GUARD: a GPU row still to run
 
 
 def runnable(st):
@@ -5056,8 +5106,11 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     gpu_open = any(GPU in g["holds"] for g in grants)
     counts = lane_counts(flags, allrows)
     cands = []
+    gpu_queued = False   # D9 2026-11-18 GPU-Q3-GUARD: a GPU-lane row queued (grantable, armed or awaiting its smoke)
     for rid, d in allrows.items():
         sd = status(flags, rid, allrows)
+        if d.get("lane") == "gpu" and sd.get("state") in GPU_QUEUED_STATES and not sd.get("precond_parked"):
+            gpu_queued = True
         if not runnable(sd):
             continue  # operator 2026-11-02: the dry run is publish_row's smoke; only PASSed, unparked rows are granted
         kind = "grant"
@@ -5071,7 +5124,7 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
                       "book_s": int(book_s(d)), "resumable": bool(d.get("resumable")),
                       "since": iso_epoch(since), "ports": list(d.get("ports") or []), "arm_fails": int(sd.get("arm_fails") or 0),
                       "busy_fraction": d.get("busy_fraction"), "lock": k["lock"],
-                      "claim": k["claim"]})
+                      "claim": k["claim"], "threads": k["threads"], "explicit": bool(k["explicit_cpus"])})
     if admit_hold:
         cands = []   # operator 2026-11-07: nothing new is granted; the reason was logged once on its transition
     qh_hold = None
@@ -5172,7 +5225,8 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
     for _pass in range(len(cands) + 1):
         assigned, idle, pending = plan(plan_free, [c for c in cands if c["id"] not in excluded], ram, gpu_open,
                                         grant_ends=[e for e in ends if e], quiet_ok=quiet_ok, held_ports=held_ports,
-                                        drain_prev=drain_prev, region_ends=r_ends, region_holders=holders)
+                                        drain_prev=drain_prev, region_ends=r_ends, region_holders=holders,
+                                        gpu_queued=gpu_queued)
         if not dry:
             atomic_json(dfile, {plan.last_drain[0]["id"]: plan.last_drain[1]} if plan.last_drain else {})
         for hc, bc in plan.drain_held:

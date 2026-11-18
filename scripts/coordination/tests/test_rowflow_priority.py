@@ -31,11 +31,12 @@ def ids(out):
 class UrgentBeatsStarvation(unittest.TestCase):
     def test_rank1_cpu_row_beats_starved_gpu_lane(self):
         # q3 + the MI210 free; the starved GPU lane's rank-100 row would take q3 + gpu and leave the pilot nothing
-        pilot = cand("brf-exp09-pilot", QUARTER_OPTS, 1, lane_count=27)
+        # GPU-Q3-GUARD (D9 2026-11-18): with a GPU row queued the CPU pilot gets q3-narrow (72-87), so it declares 16 threads
+        pilot = cand("brf-exp09-pilot", QUARTER_OPTS, 1, lane_count=27, threads=16)
         gpu = cand("gpu-row", GPU_OPT, 100, lane="gpu", lane_count=10)
         out, _, pend = rf.plan({"q3", rf.GPU}, [gpu, pilot], 1000, now=NOW)
         self.assertEqual(ids(out)[0], "brf-exp09-pilot")
-        self.assertEqual([sorted(o) for c, o in out if c["id"] == "brf-exp09-pilot"], [["q3"]])
+        self.assertEqual([set(rf.expand(o)) for c, o in out if c["id"] == "brf-exp09-pilot"], [set(rf.Q3_NARROW)])
         self.assertIn("gpu-row", [c["id"] for c in pend])
 
     def test_old_order_would_have_lost(self):
