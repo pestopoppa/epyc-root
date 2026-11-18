@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 217
+      "open": 218
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 463
+      "open": 462
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -1518,10 +1518,10 @@
     },
     "memory-program.md": {
       "blocked": 0,
-      "closed": 121,
+      "closed": 122,
       "guarded": 0,
-      "last_advanced": "2026-11-10",
-      "open": 42,
+      "last_advanced": "2026-11-18",
+      "open": 41,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1544,13 +1544,13 @@
         },
         {
           "blocked": 0,
-          "closed": 16,
+          "closed": 17,
           "gates": [],
           "guarded": 0,
           "line": 919,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 0,
@@ -2583,7 +2583,7 @@
       "closed": 416,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 114,
+      "open": 115,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 531
+      "total": 532
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

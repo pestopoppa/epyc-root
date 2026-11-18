@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T11:16:22Z",
+  "generated_at": "2026-11-18T11:38:24Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1142,18 +1142,18 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 121,
-      "dispatchable": 42,
+      "closed": 122,
+      "dispatchable": 41,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
-      "last_advanced": "2026-11-10",
+      "last_advanced": "2026-11-18",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 42,
+      "open": 41,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1182,11 +1182,11 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 11,
+          "dispatchable": 10,
           "gates": [],
           "line": 919,
           "name": "repl-session-memory-maturity",
-          "open": 11,
+          "open": 10,
           "readiness": "ready"
         },
         {
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 416,
-      "dispatchable": 114,
+      "dispatchable": 115,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 115,
+      "open": 116,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
