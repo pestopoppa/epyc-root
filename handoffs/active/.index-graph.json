@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T14:31:10Z",
+  "generated_at": "2026-11-18T14:39:45Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1994,7 +1994,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1732,
+          "line": 1733,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2003,7 +2003,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1856,
+          "line": 1857,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2012,7 +2012,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2186,
+          "line": 2189,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2325,
+          "line": 2328,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2030,7 +2030,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2887,
+          "line": 2890,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2042,7 +2042,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3025,
+          "line": 3028,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2054,7 +2054,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3032,
+          "line": 3035,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -3182,15 +3182,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 68,
-      "dispatchable": 19,
+      "closed": 73,
+      "dispatchable": 25,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-18",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
-      "open": 19,
+      "open": 25,
       "priority": 0.041,
       "priority_basis": {
         "campaign": 1,

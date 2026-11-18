@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 464
+      "open": 470
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -501,10 +501,10 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 68,
+      "closed": 73,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 19,
+      "open": 25,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-100",
       "state": "active",
-      "total": 87
+      "total": 98
     },
     "context-and-token-economy.md": {
       "blocked": 2,
@@ -1236,7 +1236,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1732,
+          "line": 1733,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1856,
+          "line": 1857,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2186,
+          "line": 2189,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2325,
+          "line": 2328,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2887,
+          "line": 2890,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3025,
+          "line": 3028,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3032,
+          "line": 3035,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
