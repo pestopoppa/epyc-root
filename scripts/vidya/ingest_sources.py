@@ -648,6 +648,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "(committed conclusion only); incomplete/failed trials project nothing; conflict inventory "
                 "is not a build or promotion verdict",
            task="VB-CH18-MERGE-TRIAL-WIRE"),
+    Source("tool-selector-events", "tool_selector_events",
+           lambda p: importlib.import_module("adapters.tool_selector_events").units(p),
+           note="orchestrator tool-picker event log (selection/outcome/shadow rows) joined by request_id; "
+                "per-stratum PROXY recall and p95 latency; explicit file only; unsealed producer log, "
+                "no true-recall or promotion warrant",
+           task="VB-TOOL-SELECTOR-WIRE"),
     Source("fused-decode-div", "fused_decode_div",
            lambda p: importlib.import_module("adapters.fused_decode_div").units(p),
            note="FD-DIV-1a epyc.fd_div_1a.smoke_receipt.v1 (one claim per decided smoke, byte identity "
