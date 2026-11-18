@@ -108,3 +108,34 @@ when the oracle applies the corresponding outcome. The hashes check artifact
 consistency across the run. Gate suitability and the origin of the task ID
 remain caller obligations. The selected claim describes the prospective gate's
 exit. It carries no grade for historical task accuracy.
+
+## Codex dispatch evidence
+
+Use the standalone collector with the actual parent and child Codex rollout
+files. It reads the files and emits a content-free JSON receipt to stdout.
+
+```bash
+python3 -B scripts/experiments/fm4/codex_dispatch.py \
+  --parent /private/fm4/parent-rollout.jsonl \
+  --child /private/fm4/child-rollout.jsonl
+```
+
+The collector verifies the child's structured `parent_thread_id` against the
+parent session ID. It requires one parent `collaboration.spawn_agent` call and one
+attributable result with the same `call_id`. A result can bind the child's
+session UUID directly with `agent_id` or return the exact canonical task path
+held in the child's `agent_path`. In the path case the receipt keeps the child
+UUID from its metadata and records `binding_kind: native_agent_path`. Conflicting
+IDs, duplicate matching results or an explicit spawn error refuse the binding.
+The receipt covers the supplied rollout pair and cannot rule out duplicate
+child rollout files elsewhere.
+
+Exit 0 means the first child turn has a matching structured terminal event and
+the dispatch identity is bound. The receipt distinguishes completion and
+interruption, and records whether a final message was present without retaining
+its contents. A structured refusal or launch-only receipt exits 1. Malformed
+or changing input exits 1 with an error on stderr. Every receipt keeps both
+rollout hashes, and `task_outcome` stays null. A separate independently
+identified task and an appropriate executed gate are required for prospective
+task acceptance. The standalone Codex collector is separate from the Claude
+oracle canary above.
