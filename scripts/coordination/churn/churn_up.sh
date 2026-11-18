@@ -161,7 +161,7 @@ show_lanes() { say "== lanes (region-lock status)"; "$RL" status 2>&1 | sed -n "
 # dispatcher is NOT running (it owns the file while it runs and handles its own dead children).
 clean_registry() {
   say "== reboot residue: handoff-sessions.json live entries"
-  if is_proc "$(pid_of "$F/handoff-sessions.dispatcher.pid")" handoff_sessions.py; then say "  dispatcher is running; it owns the registry (skipped)"; return; fi
+  if is_proc "$(pid_of "$F/handoff-sessions.dispatcher.pid")" "handoff_sessions.py dispatch"; then say "  dispatcher is running; it owns the registry (skipped)"; return; fi
   [ -f "$F/handoff-sessions.json" ] || { say "  no registry"; return; }
   local out; out=$(python3 -I - "$F/handoff-sessions.json" "$MODE" "$REPO" <<'PY'
 import json, os, subprocess, sys
@@ -201,10 +201,13 @@ check_legacy_writers() {
 
 # ---------------------------------------------------------------- 4. loops
 # name | pidfile | argv marker | cwd | command | exact installed path (duplicate key: any pid with this argv element)
+# The path field may carry " <subcommand>": then only an argv whose element AFTER the path IS that token matches, and the
+# marker names it too (CHURNUP-OBSERVER-ARGV: per-session `handoff_sessions.py pane-status <slug>` tmux processes share the
+# dispatcher's installed path; matching the path alone read them as a pidfile-less dispatcher -> OBSERVER-BLIND, no start).
 # ORDER IS THE START ORDER (the keeper is started by the watchdog between watchdog and dispatcher; see ensure_loops).
 LOOPS=(
   "watchdog|ws58-keeper-watchdog.pid|ws58-keeper-watchdog.sh|$F|bash $F/ws58-keeper-watchdog.sh|$F/ws58-keeper-watchdog.sh"
-  "dispatcher|handoff-sessions.dispatcher.pid|handoff_sessions.py|$F/bin|python3 -I $F/bin/handoff_sessions.py dispatch --loop --interval 60|$F/bin/handoff_sessions.py"
+  "dispatcher|handoff-sessions.dispatcher.pid|handoff_sessions.py dispatch|$F/bin|python3 -I $F/bin/handoff_sessions.py dispatch --loop --interval 60|$F/bin/handoff_sessions.py dispatch"
   "backlog-gen|ws58-backlog-gen.pid|backlog_gen.py|$F|bash $F/ws58-backlog-gen-v1.sh|$F/bin/backlog_gen.py"
   "flow-scoreboard|ws58-flow-scoreboard.pid|ws58-flow-scoreboard-v1.sh|$F|bash $F/ws58-flow-scoreboard-v1.sh|$F/ws58-flow-scoreboard-v1.sh"
   "disk-trend|ws58-disk-trend.pid|ws58-disk-trend.sh|$F|bash $F/ws58-disk-trend.sh|$F/ws58-disk-trend.sh"
@@ -218,6 +221,7 @@ argv_pids() {
   python3 -I - "$1" "$$" <<'PY'
 import os, sys
 path, me = sys.argv[1], sys.argv[2]
+path, _, sub = path.partition(" ")  # "<path> <subcommand>": optional required subcommand token
 d, b = os.path.dirname(path), os.path.basename(path)
 out = []
 for pid in os.listdir("/proc"):
@@ -230,6 +234,9 @@ for pid in os.listdir("/proc"):
     if not hit and f"./{b}" in argv:
         try: hit = os.readlink(f"/proc/{pid}/cwd") == d
         except OSError: pass
+    if hit and sub:  # CHURNUP-OBSERVER-ARGV: the element after <path> must BE the subcommand (pane-status is not dispatch)
+        i = argv.index(path) if path in argv else argv.index(f"./{b}")
+        hit = argv[i + 1:i + 2] == [sub]
     if hit: out.append(pid)
 print(" ".join(sorted(out, key=int)))
 PY
@@ -240,6 +247,7 @@ argv_scan() {
   python3 -I - "$1" "$$" <<'PY'
 import os, sys
 path, me = sys.argv[1], sys.argv[2]
+path, _, sub = path.partition(" ")  # "<path> <subcommand>": optional required subcommand token
 d, b = os.path.dirname(path), os.path.basename(path)
 try:
     pids = [p for p in os.listdir("/proc") if p.isdigit()]
@@ -257,6 +265,9 @@ for pid in pids:
     if not hit and f"./{b}" in argv:
         try: hit = os.readlink(f"/proc/{pid}/cwd") == d
         except OSError: pass
+    if hit and sub:  # CHURNUP-OBSERVER-ARGV: the element after <path> must BE the subcommand (pane-status is not dispatch)
+        i = argv.index(path) if path in argv else argv.index(f"./{b}")
+        hit = argv[i + 1:i + 2] == [sub]
     if hit: out.append(pid)
 if not readable: print("unavailable"); sys.exit(0)
 print(" ".join(sorted(out, key=int)))

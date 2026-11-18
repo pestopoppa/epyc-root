@@ -639,19 +639,48 @@ def lane_clean_and_landed(d) -> bool:
     return r.returncode == 0 and not any(l.startswith("+") for l in r.stdout.splitlines())
 
 
+def locked_worktrees(repo) -> set:
+    """Paths of worktrees `git worktree list --porcelain` marks `locked` (a session active between turns)."""
+    r = _git(repo, "worktree", "list", "--porcelain")
+    out, cur = set(), None
+    for line in (r.stdout or "").splitlines():
+        if line.startswith("worktree "):
+            cur = line[len("worktree "):].strip()
+        elif cur and (line == "locked" or line.startswith("locked ")):
+            out.add(os.path.realpath(cur))
+    return out
+
+
 def reap_lanes(flags, reg, repo=None):
     """Lanes of sessions that are not live (suspended/done/failed) are removed when clean and landed (never --force,
-    never prune); they are recreated on the next resume. A dirty lane is left for one wrap-up resume (logged once)."""
+    never prune, never unlock); they are recreated on the next resume. A locked lane (session active between turns)
+    is skipped. A dirty lane or a failed removal is logged once per state change, not on every loop."""
     repo = repo or ROOT
+    locked = None
     for slug, e in (reg.get("sessions") or {}).items():
         if alive(e.get("pid")) or e.get("status") in ("live", "retry", "unpushed"):
             continue
         d = lane_dir(slug)
         if not os.path.exists(d):
             continue
+        if locked is None:
+            locked = locked_worktrees(repo)
+        if os.path.realpath(d) in locked:
+            if e.get("lane_reap_state") != "locked":
+                e["lane_reap_state"] = "locked"
+                log(flags, f"LANE-LOCKED {slug} {d}: worktree locked (session active); not reaped")
+            continue
         if lane_clean_and_landed(d):
             r = _git(repo, "worktree", "remove", d)
-            log(flags, f"LANE-REAPED {slug} {d}: rc={r.returncode} {(r.stderr or '').strip()[:120]} (clean, landed; recreated on resume)")
+            if r.returncode == 0:
+                e.pop("lane_reap_state", None)
+                log(flags, f"LANE-REAPED {slug} {d} (clean, landed; recreated on resume)")
+            else:
+                err = (r.stderr or "").strip()[:120]
+                state = f"fail:{r.returncode}:{err}"
+                if e.get("lane_reap_state") != state:
+                    e["lane_reap_state"] = state
+                    log(flags, f"LANE-REAP-FAILED {slug} {d}: rc={r.returncode} {err}")
         elif not e.get("lane_dirty_logged"):
             e["lane_dirty_logged"] = now_iso()
             log(flags, f"LANE-DIRTY {slug} {d}: uncommitted or unlanded work; kept for one wrap-up resume")
@@ -850,6 +879,54 @@ def turn_effect(flags, slug, e, rep=None) -> str:
 
 def filed(flags, rid) -> bool:
     return os.path.exists(os.path.join(flags, "filing-done", f"{rid}.FILED"))
+
+
+# HS-DUPLICATE-EVENT-TURNS (2026-11-18): 29/81 overnight turns only acked a duplicate/replayed/superseded run end. The
+# enqueue DEDUPE saw only events queued at the same moment; the delivered ledger (state.json "delivered": {rid: iso})
+# remembers every run end handed to a session, so the twin .complete/.ended file, a restart replay and a lower -rN
+# arriving after its successor are dropped before they cost a turn.
+DELIVERED_TTL_S = 14 * 86400
+_REV = re.compile(r"-r(\d+)(?=-|$)")
+
+
+def row_base(rid: str) -> tuple[str, int]:
+    """('base', N) for a row id carrying a -rN revision anywhere (`x-r3`, `x-r2-20261118`); no -rN is revision 1."""
+    m = None
+    for m in _REV.finditer(rid or ""):
+        pass
+    if not m:
+        return rid, 1
+    return rid[:m.start()] + rid[m.end():], int(m.group(1))
+
+
+def superseded_by(rid, rids):
+    """The highest rid in `rids` with the same base and a higher -rN than `rid`, else None."""
+    base, n = row_base(rid)
+    best = None
+    for r in rids:
+        b, k = row_base(r)
+        if r != rid and b == base and k > n and (best is None or k > row_base(best)[1]):
+            best = r
+    return best
+
+
+def mark_delivered(st, rid, now=None):
+    d = st.setdefault("delivered", {})
+    d[rid] = now_iso()
+    cut = (now or time.time()) - DELIVERED_TTL_S
+    for k in [k for k, v in d.items() if _parse(v) < cut]:
+        d.pop(k, None)
+
+
+def stale_event(flags, st, rid, queued=()):
+    """(tag, reason) when a NEW run end for `rid` must not cost a turn, else None. Never true on a row's first end file."""
+    if rid in (st.get("delivered") or {}):
+        return "DEDUPE-DELIVERED", f"a run end for this row was already delivered at {st['delivered'][rid]}"
+    # operator 2026-11-18: a row filed before its owner saw it is still delivered once (no filed() drop here)
+    sup = superseded_by(rid, set(st.get("delivered") or {}) | set(queued))
+    if sup:
+        return "SUPERSEDED", f"superseded by {sup} (already queued or delivered)"
+    return None
 
 
 def escalate_filing(flags, slug, ev):
@@ -1531,6 +1608,11 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if kind == "run-end" and any(ev["slug"] == slug and ev["rid"] == rid for ev in st.get("queue") or []):
                 log(flags, f"DEDUPE {rid} -> {slug}: a run-end for this row is already queued; dropped {key}")  # CAF-6
                 continue
+            if kind == "run-end":
+                why = stale_event(flags, st, rid, [ev["rid"] for ev in st.get("queue") or [] if ev.get("kind") == "run-end"])
+                if why:
+                    log(flags, f"{why[0]} {rid} -> {slug}: {why[1]}; dropped {key}")
+                    continue
             st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
                                                "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
             log(flags, f"RUN-END {rid} -> {slug}")
@@ -1639,7 +1721,15 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 push(ev["slug"], e)
             elif ev.get("kind") == "awaiting":
                 _go(flags, ev["slug"], e, awaiting_prompt(ev["slug"], e, flags, ev.get("data") or {}), runner, None)
+            elif ev.get("kind") == "run-end" and superseded_by(ev["rid"], set(st.get("delivered") or {}) |
+                                                              {x["rid"] for x in q if x.get("kind") == "run-end"}):
+                log(flags, f"SUPERSEDED {ev['rid']} -> {ev['slug']}: superseded by "
+                           f"{superseded_by(ev['rid'], set(st.get('delivered') or {}) | {x['rid'] for x in q if x.get('kind') == 'run-end'})} "
+                           f"before dispatch; dropped {os.path.basename(ev.get('end') or '')}")
+                continue
             else:
+                if ev.get("kind") == "run-end":
+                    mark_delivered(st, ev["rid"], now)
                 filing = None if filed(flags, ev["rid"]) else file_result(flags, ev["rid"], e.get("cwd") or lane_dir(ev["slug"]))
                 if filing and filing[0] == 0:
                     log(flags, f"FILED-BY-SCRIPT {ev['rid']} -> {ev['slug']}: {filing[1].strip().splitlines()[0][:160] if filing[1].strip() else ''}")

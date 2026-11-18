@@ -188,3 +188,132 @@ def test_kill_window_respects_protected_and_start_recreates(monkeypatch):
     assert seen == []
     hs.kill_window("h0")
     assert seen and seen[0][0] == "kill-window"
+
+
+# --- HS-LANE-REAP-SPAM: locked lanes skipped, failures logged once, REAPED only on success ---
+class _R:
+    def __init__(self, rc=0, out="", err=""):
+        self.returncode, self.stdout, self.stderr = rc, out, err
+
+
+def _reap_setup(monkeypatch, tmp_path, *, locked, remove_rc=0):
+    lane = tmp_path / "h-x"
+    lane.mkdir()
+    calls, logs = [], []
+
+    def fake_git(cwd, *args, timeout=300):
+        calls.append(args)
+        if args[:2] == ("worktree", "list"):
+            out = f"worktree {tmp_path}/main\nHEAD abc\n\nworktree {lane}\nHEAD def\n"
+            if locked:
+                out += "locked Active session\n"
+            return _R(out=out)
+        if args[:2] == ("worktree", "remove"):
+            assert "--force" not in args
+            return _R(rc=remove_rc, err="fatal: boom" if remove_rc else "")
+        return _R()
+
+    monkeypatch.setattr(hs, "_git", fake_git)
+    monkeypatch.setattr(hs, "alive", lambda pid: False)
+    monkeypatch.setattr(hs, "lane_dir", lambda slug: str(lane))
+    monkeypatch.setattr(hs, "lane_clean_and_landed", lambda d: True)
+    monkeypatch.setattr(hs, "log", lambda flags, msg: logs.append(msg))
+    reg = {"sessions": {"x": {"status": "suspended"}}}
+    return reg, calls, logs
+
+
+def test_reap_skips_locked_lane_and_logs_once(monkeypatch, tmp_path):
+    reg, calls, logs = _reap_setup(monkeypatch, tmp_path, locked=True)
+    for _ in range(5):
+        hs.reap_lanes({}, reg, repo=str(tmp_path))
+    assert not any(a[:2] == ("worktree", "remove") for a in calls)
+    assert not any("unlock" in a for a in calls)
+    assert len(logs) == 1 and logs[0].startswith("LANE-LOCKED")
+
+
+def test_reap_failure_logged_once_never_as_reaped(monkeypatch, tmp_path):
+    reg, calls, logs = _reap_setup(monkeypatch, tmp_path, locked=False, remove_rc=128)
+    for _ in range(5):
+        hs.reap_lanes({}, reg, repo=str(tmp_path))
+    assert len(logs) == 1 and logs[0].startswith("LANE-REAP-FAILED")
+    assert not any("LANE-REAPED" in m for m in logs)
+
+
+def test_reap_success_logs_reaped(monkeypatch, tmp_path):
+    reg, calls, logs = _reap_setup(monkeypatch, tmp_path, locked=False)
+    hs.reap_lanes({}, reg, repo=str(tmp_path))
+    assert len(logs) == 1 and logs[0].startswith("LANE-REAPED")
+
+
+# HS-DUPLICATE-EVENT-TURNS: duplicate, replayed and superseded run ends are dropped before they cost a turn.
+def _filed(F, rid):
+    (F / "filing-done").mkdir(exist_ok=True)
+    (F / "filing-done" / f"{rid}.FILED").write_text("")
+
+
+def test_row_base_parses_revision_anywhere():
+    assert hs.row_base("h0-x") == ("h0-x", 1)
+    assert hs.row_base("h0-x-r3") == ("h0-x", 3)
+    assert hs.row_base("h0-bank-r2-20261118") == ("h0-bank-20261118", 2)
+    assert hs.superseded_by("h0-x", ["h0-x-r2", "h0-x-r3", "h1-x-r9"]) == "h0-x-r3"
+    assert hs.superseded_by("h0-x-r3", ["h0-x-r2"]) is None
+
+
+def test_twin_end_file_after_delivery_is_dropped(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, st = hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1 and "h0-r" in st["delivered"]  # first delivery always goes through
+    _filed(F, "h0-r")
+    hs.dispatch_once(str(F), runner)  # turn ends, receipt present
+    (F / "grants" / "h0-r.complete").write_text("complete")  # the .complete twin lands later
+    reg, st = hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1 and not st["queue"]
+    assert "DEDUPE-DELIVERED h0-r -> h0" in (F / "handoff-sessions.log").read_text()
+
+
+def test_prefiled_row_is_still_delivered_once(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-r")
+    _filed(F, "h0-r")
+    (F / "grants" / "h0-r.complete").write_text("complete")  # filed before the owner saw it
+    hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1  # operator 2026-11-18: first delivery kept
+    (F / "grants" / "h0-r.ended").write_text("rc=0")  # the twin is still a duplicate
+    hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1
+
+
+def test_lower_revision_after_higher_delivered_is_superseded(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-x-r2")
+    (F / "grants" / "h0-x-r2.complete").write_text("complete")
+    hs.dispatch_once(str(F), runner)
+    _filed(F, "h0-x-r2")
+    hs.dispatch_once(str(F), runner)
+    _manifest(F, "h0-x")
+    (F / "grants" / "h0-x.ended").write_text("rc=1")  # a late failure of the superseded r1
+    reg, st = hs.dispatch_once(str(F), runner)
+    assert len(calls) == 1 and not st["queue"]
+    assert "SUPERSEDED h0-x -> h0: superseded by h0-x-r2" in (F / "handoff-sessions.log").read_text()
+
+
+def test_queued_lower_revision_dropped_when_higher_queued(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=5)
+    hs.dispatch_once(str(F), runner, seed=True)
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: False)  # hold events in the queue
+    _manifest(F, "h0-y")
+    (F / "grants" / "h0-y.ended").write_text("rc=1")
+    _, st = hs.dispatch_once(str(F), runner)
+    assert [e["rid"] for e in st["queue"]] == ["h0-y"]
+    _manifest(F, "h0-y-r2")
+    (F / "grants" / "h0-y-r2.complete").write_text("complete")
+    monkeypatch.setattr(hs, "landed", lambda sha, repo=None: True)
+    n0 = len(calls)
+    _, st = hs.dispatch_once(str(F), runner)
+    assert not st["queue"] and len(calls) == n0 + 1 and "`h0-y-r2`" in calls[-1][1]
+    assert "SUPERSEDED h0-y -> h0" in (F / "handoff-sessions.log").read_text()
