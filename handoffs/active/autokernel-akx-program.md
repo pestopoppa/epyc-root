@@ -1605,7 +1605,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
     AKX-ALL-21 at-depth profile and `cpu_fa_schedule` candidate authoring directly — confirm or refute the O(n_kv)
     read before the planner commits to a candidate shape. Done when the at-depth profile shows flat (QSA bounds
     cost, drop this lever) or growing (structural gather lever is real; scope a candidate) decode cost.
-  - [ ] **AKX-ALL-24 — candidate CPU kernel target: dense attention decode may parallelize only over Q heads.**
+  - [ ] **AKX-ALL-24 — candidate CPU kernel target: dense attention decode may parallelize only over Q heads.** Row c15-cpu-fa-splitkv-20261118 (knob GGML_CPU_FA_SPLIT_KV=1, branch llama.cpp-experimental-c15-cpu-fa-splitkv-20261118 @ b67125fbd): model: Qwen3.8-Flash-Next (Q38FN) MTP decode on 48 CPU threads; stop-on-answer when tbo (default + fa_cpu_split_kv sets, knob off/on), KLD at -ub 5 and ABBAABBA decode at 4k/32k are measured, KEEP iff correctness holds and 32k geomean >= 1.02 and 4k >= 0.995; stop-on-futility on missing input, build/proof failure, tbo or KLD failure (speed not run) or block-1 32k ratio < 0.99; gate-class = futility-only.
     - Owner: AutoKernel (adopted; loop work only, no AK loop launch -- compute via granted rowflow rows). Action: ADOPT. Next: Inject as planner seed; roofline check via profiler (see AUTO-10 owned by main-inf22) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
     (filed 2026-10-05, ak-ds41-main; **hypothesis, not measured**) workspace-ec's INF-59 YaRN CPU leg
     (`yarn-context-extension-research.md` → YARN-CPU-ATTN) measured Qwen3.6-35B-A3B (dense attention, not QSA)
