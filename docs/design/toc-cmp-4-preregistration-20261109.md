@@ -1,8 +1,8 @@
-# TOC-CMP-4 pre-registration: compaction A/B (DRAFT for operator ack, 2026-11-09)
+# TOC-CMP-4 pre-registration: compaction A/B (2026-11-09)
 
-Status: written before any run. Nothing here has been measured. The arm set (section 2) is the one open choice; it is
-pre-registered as option (a), the recommendation recorded in the TOC-CMP-4 box. If the operator picks option (b), only
-section 2 and the run count in section 6 change; the rest stands.
+Status: written before any run. Nothing here has been measured. The operator selected option (a) on
+2026-11-09 and approved low-rank booking conditional on pilot cost, as recorded in the TOC-CMP-4 handoff.
+The implemented three-arm set in section 2 governs; the alternative below is historical context.
 
 ## 1. Question and primary endpoint
 
@@ -104,6 +104,34 @@ sha256 is unchanged by replacements; replacements are listed separately.
 If BAPS is ~0 in all arms at the base rate (nothing to improve), the endpoint is uninformative and the A/B is closed as
 "floor effect", not as "arms equal". Record the base BAPS before interpreting any contrast.
 
-## 9. Operator ack needed
+## 9. Decision record
 
-Option (a) versus (b) in section 2, and whether a 720-run cell may be booked once the pilot gives a per-run time.
+Operator-approved 2026-11-09: option (a), with the 720-run cell at low rank once the pilot gives a per-run time.
+
+## 10. Isolated pilot adapter (2026-11-17; prospective)
+
+The pilot adapter under `scripts/experiments/toc-cmp-4-live/` runs the REPL graph with a
+row-owned loopback server. It uses a private endpoint rather than claiming the production
+frontdoor's `:8070`: the running production API can route unrelated traffic to that port.
+All pilot arms share the same pinned model, production kernel, chat template and server
+shape (four slots, 65,536 tokens per slot). This is an isolated diagnostic pilot, not a
+measurement of live tenant contention or a deployment of experimental graph flags.
+
+The first eight points in the frozen receipt are all in the early stratum. Preserve that
+prospective ordering; report stratum coverage explicitly. Their variability cannot establish
+the MDE assumption for middle or late boundaries. No confirmatory arm conclusion follows
+from the pilot. Missing external grades remain UNKNOWN for accuracy and Pass^3; graph finish
+flags do not substitute for correctness. Missing post-boundary actions do not score zero BAPS.
+
+Stop at the fixed pilot matrix, the allocator STOP/deadline or the launcher's declared time
+cap, preserving raw attempts and partial/void/UNKNOWN outcomes. The publisher smoke is a
+separate instrument qualification and contributes no official pilot observations. The
+720-run booking and live-stack validation remain separate from adapter preparation.
+
+The analysis implementation preserves paired point and repeat resampling. For a future
+complete cell it reports marginal 95% intervals, Holm-adjusted empirical bootstrap tail
+areas and conservative Bonferroni simultaneous intervals, requiring both adjusted tests
+and simultaneous intervals to pass before applying the MDE. The simultaneous intervals
+are explicitly Bonferroni, not labelled Holm-adjusted intervals. This conservative
+implementation detail is declared before pilot data; synthetic arithmetic tests do not
+establish interval coverage or the model's effect size.
