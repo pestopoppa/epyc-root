@@ -317,3 +317,141 @@ def test_queued_lower_revision_dropped_when_higher_queued(tmp_path, monkeypatch)
     _, st = hs.dispatch_once(str(F), runner)
     assert not st["queue"] and len(calls) == n0 + 1 and "`h0-y-r2`" in calls[-1][1]
     assert "SUPERSEDED h0-y -> h0" in (F / "handoff-sessions.log").read_text()
+
+
+# ---- R1/R2/R3/R5 autonomy rules (operator-approved 2026-11-18) ----
+def _lanes(monkeypatch, tmp_path):
+    monkeypatch.setattr(hs, "ensure_lane", lambda slug, repo=None: (str(tmp_path), "ok"))
+    monkeypatch.setattr(hs, "_git", lambda *a, **k: type("R", (), {"returncode": 1, "stdout": ""})())
+
+
+def _continue(monkeypatch):
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, *a, **k: ("continue", "test: more work"))
+
+
+def _digest(F):
+    p = F / hs.AUTONOMY_DIGEST_NAME
+    return [json.loads(l) for l in p.read_text().splitlines()] if p.exists() else []
+
+
+def test_r1_refused_spawn_is_not_a_resume_and_parks_after_three(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    _lanes(monkeypatch, tmp_path)
+    _continue(monkeypatch)
+
+    def refuse(*a, **k):
+        raise hs.tg.SpawnRefused("codex: effort 'm1' not valid")
+    monkeypatch.setattr(hs, "launch", refuse)
+    for i in range(3):
+        reg, _ = hs.dispatch_once(str(F), runner)
+        e = reg["sessions"]["h0"]
+        assert not e.get("resume_ts"), "a refused spawn never counts toward max_resumes"
+    assert e["parked"]["reason"] == "spawn-config-invalid: codex: effort 'm1' not valid"
+    hs.dispatch_once(str(F), runner)  # parked: no fourth attempt, logged once
+    log = (F / "handoff-sessions.log").read_text()
+    assert log.count("REFUSED-SPAWN h0") == 3 and log.count("PARK h0: spawn-config-invalid") == 1
+    assert [d["action"] for d in _digest(F) if d["slug"] == "h0"] == ["PARK"]
+    e["parked"]["at"] = "2000-01-01T00:00:00Z"  # guardrail: never auto-unparked, even with a fresh event
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert reg["sessions"]["h0"]["parked"]["reason"].startswith("spawn-config-invalid")
+
+
+def test_r1_streak_resets_on_success_and_success_counts(tmp_path, monkeypatch):
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    _lanes(monkeypatch, tmp_path)
+    _continue(monkeypatch)
+    n = {}
+
+    def flaky(flags, slug, e, prompt, fresh=False, runner=None):
+        n[slug] = n.get(slug, 0) + 1
+        if n[slug] <= 2:
+            raise hs.tg.SpawnRefused("same")
+        return 999999999, "out"
+    monkeypatch.setattr(hs, "launch", flaky)
+    for _ in range(3):
+        reg, _ = hs.dispatch_once(str(F), runner)
+    e = reg["sessions"]["h0"]
+    assert not hs.tg.is_parked(e) and "spawn_refused_streak" not in e and len(e["resume_ts"]) == 1
+
+
+def _parked_setup(tmp_path, monkeypatch, reason="no progress evidence: last 2 turn(s)", n=1, cap=2):
+    F, calls, runner = _setup(tmp_path, n=n, cap=cap)
+    hs.dispatch_once(str(F), runner, seed=True)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    for e in reg["sessions"].values():
+        e["parked"] = {"reason": reason, "at": "2020-01-01T00:00:00Z", "wrapup": e.get("last_wrapup")}
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    return F, calls, runner
+
+
+def test_r2_event_after_park_auto_unparks(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert not hs.tg.is_parked(reg["sessions"]["h0"]) and len(reg["sessions"]["h0"]["auto_unparks"]) == 1
+    assert "AUTO-UNPARK h0: queued run-end event h0-r" in (F / "handoff-sessions.log").read_text()
+    assert _digest(F)[0]["action"] == "AUTO-UNPARK"
+
+
+def test_r2_new_landed_wrapup_auto_unparks(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["last_wrapup"] = "newsha"
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert not hs.tg.is_parked(reg["sessions"]["h0"])
+
+
+@pytest.mark.parametrize("reason", ["operator hold", "lease expired: 9000 s > 5400 s"])
+def test_r2_never_unparks_operator_or_ineligible(tmp_path, monkeypatch, reason):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, reason=reason)
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]) and not _digest(F)
+
+
+def test_r2_guardrails_no_event_full_cap_and_daily_limit(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch)
+    reg, _ = hs.dispatch_once(str(F), runner)  # same wrap-up as at park time, no event -> stays parked
+    assert hs.tg.is_parked(reg["sessions"]["h0"])
+    real_cap = hs.tg.width_cap
+    monkeypatch.setattr(hs.tg, "width_cap", lambda *a, **k: (0, "test"))
+    _manifest(F, "h0-r")
+    (F / "grants" / "h0-r.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]), "live >= cap: no auto-unpark"
+    monkeypatch.setattr(hs.tg, "width_cap", real_cap)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["auto_unparks"] = [hs.time.time(), hs.time.time()]
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]), "2 auto-unparks in 24 h already used"
+
+
+def test_r5_idle_slot_unparks_top_ranked_old_event(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=2)
+    st = {"seen": [], "queue": [{"slug": s, "rid": f"{s}-r", "kind": "run-end", "end": "x"} for s in ("h1", "h0")]}
+    (F / "handoff-sessions.state.json").write_text(json.dumps(st))  # events queued BEFORE the park: R2 does not fire
+    monkeypatch.setattr(hs, "priority_order", lambda repo, priority=None: {hs.hkey("handoffs/active/h1.md"): (0, 0),
+                                                                          hs.hkey("handoffs/active/h0.md"): (1, 0)})
+    reg, _ = hs.dispatch_once(str(F), runner)
+    S = reg["sessions"]
+    assert not hs.tg.is_parked(S["h1"]) and hs.tg.is_parked(S["h0"]), "one per pass, top-ranked first"
+    assert "AUTO-UNPARK h1: idle slot" in (F / "handoff-sessions.log").read_text()
+
+
+def test_r5_no_effect_when_unparked_candidate_has_work(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=2)
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h1"].pop("parked")
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    (F / "handoff-sessions.state.json").write_text(json.dumps({"seen": [], "queue": [
+        {"slug": "h0", "rid": "h0-r", "kind": "run-end", "end": "x"}]}))
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, *a, **k: ("continue", "work") if slug == "h1" else ("pause", "none"))
+    monkeypatch.setattr(hs, "_go", lambda *a, **k: True)
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"]) and not _digest(F)

@@ -86,7 +86,9 @@ class G2LeaseResumeQuota(unittest.TestCase):
 
     def test_resume_needs_progress_and_caps_count(self):
         now = 1_800_000_000.0
-        self.assertFalse(tg.resume_verdict({"noop_turns": 1}, now)[0])
+        self.assertTrue(tg.resume_verdict({"noop_turns": 1}, now)[0], "R3: one idle turn is not enough to park")
+        self.assertFalse(tg.resume_verdict({"noop_turns": 2}, now)[0])
+        self.assertFalse(tg.resume_verdict({"noop_turns": 1}, now, dict(tg.DEFAULTS, noop_park_turns=1))[0], "R3: configurable")
         e = {"noop_turns": 0}
         for _ in range(tg.DEFAULTS["max_resumes"]):
             self.assertTrue(tg.resume_verdict(e, now)[0])
@@ -95,6 +97,24 @@ class G2LeaseResumeQuota(unittest.TestCase):
         self.assertFalse(ok)
         self.assertIn("max_resumes", why)
         self.assertTrue(tg.resume_verdict(e, now + 86401)[0], "negative control: the 24 h window rolls")
+
+    def test_auto_unpark_eligibility_and_daily_cap(self):
+        now = 1_800_000_000.0
+        for reason in ("no progress evidence: last 2 turn(s)", "max_resumes: 12", "thread token ceiling: 2 > 1"):
+            e = {"parked": {"reason": reason, "at": "t"}}
+            self.assertTrue(tg.auto_unpark_eligible(e, now), reason)
+        for reason in ("operator hold", "spawn-config-invalid: bad effort", "lease expired: 9 s", "max_resumes (operator)"):
+            self.assertFalse(tg.auto_unpark_eligible({"parked": {"reason": reason}}, now), reason)
+        self.assertFalse(tg.auto_unpark_eligible({}, now), "not parked")
+        e = {"parked": {"reason": "thread token ceiling: 2 > 1"}, "session_id": "s"}
+        tg.auto_unpark(e, now)
+        self.assertFalse(tg.is_parked(e))
+        self.assertTrue(e["fresh_next"], "ceiling park restarts on a fresh thread")
+        tg.park(e, "max_resumes: 12", "t")
+        tg.auto_unpark(e, now + 1)
+        tg.park(e, "max_resumes: 12", "t")
+        self.assertFalse(tg.auto_unpark_eligible(e, now + 2), "at most 2 per 24 h")
+        self.assertTrue(tg.auto_unpark_eligible(e, now + 86401), "window rolls")
 
     def test_park_is_hard_until_unpark(self):
         e = {}

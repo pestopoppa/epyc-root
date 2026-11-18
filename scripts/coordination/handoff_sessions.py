@@ -76,6 +76,7 @@ ROOT = "/workspace"
 USAGE_RX = re.compile(r"usage limit|rate[ _-]?limit|quota exceeded|too many requests|\b429\b|hit your limit|limit reached", re.I)
 ADV_RX = re.compile(r"^- \[(blocked|needs-launcher|needs-qualification)\] ", re.M)  # JEV-3 deferred: used only by work_state()
 PAUSE_S = 30 * 60
+AUTONOMY_DIGEST_NAME = "autonomy-digest.jsonl"  # one JSON line per auto-action (AUTO-UNPARK, spawn-config-invalid park), under flags
 BACKOFF_S = (6 * 3600, 12 * 3600, 24 * 3600)  # unknown reset AND no budget.json resets_at: 6 h -> 12 h -> 24 h (never 30 min; audit rec 2)
 _MONTHS = {m: i + 1 for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
 
@@ -294,6 +295,32 @@ def save(p, d):
 def log(flags, msg):
     with open(os.path.join(flags, "handoff-sessions.log"), "a") as f:
         f.write(f"{now_iso()} {msg}\n")
+
+
+def digest(flags, action, slug, why):
+    """Append one auto-action to compute-flags/autonomy-digest.jsonl (the operator's after-the-fact review surface)."""
+    with open(os.path.join(flags, AUTONOMY_DIGEST_NAME), "a") as f:
+        f.write(json.dumps({"at": now_iso(), "action": action, "slug": slug, "why": why}) + "\n")
+
+
+def auto_unpark_why(st, slug, e, now, lcache, new_only=True):
+    """R2: why a guard-parked session's wait is over, or None. An event queued after the park (run-end or awaited file),
+    or a wrap-up newer than the one at park time that has landed on origin/main. new_only=False (R5) counts any queued event."""
+    at = _parse((e.get("parked") or {}).get("at") or "")
+    evs = [ev for ev in st.get("queue") or [] if ev.get("slug") == slug and (not new_only or float(ev.get("queued_at") or 0) >= at)]
+    if evs:
+        return f"queued {evs[0].get('kind')} event {evs[0].get('rid')}"
+    lw = e.get("last_wrapup")
+    if new_only and lw and lw != (e.get("parked") or {}).get("wrapup") and wrapped(e, lcache):
+        return f"wrap-up {lw} landed on origin/main"
+    return None
+
+
+def do_auto_unpark(flags, slug, e, now, why):
+    reason = e["parked"].get("reason")
+    tg.auto_unpark(e, now)
+    log(flags, f"AUTO-UNPARK {slug}: {why} (was parked: {reason})")
+    digest(flags, "AUTO-UNPARK", slug, f"{why} (was parked: {reason})")
 
 
 def alive(pid) -> bool:
@@ -1613,7 +1640,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 if why:
                     log(flags, f"{why[0]} {rid} -> {slug}: {why[1]}; dropped {key}")
                     continue
-            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind,
+            st.setdefault("queue", []).append({"slug": slug, "rid": rid, "end": p, "kind": kind, "queued_at": now,
                                                "related": {k: v for k, v in related_ids(flags, rid).items() if k in ("handoff_task", "lineage", "prior_fail", "manifest")}})
             log(flags, f"RUN-END {rid} -> {slug}")
     for slug, e in S.items():  # CAF-1: files a session registered as awaited - ALL fired files of a slug ride in ONE event
@@ -1629,7 +1656,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             ev["data"] = ([prev] if isinstance(prev, dict) else list(prev)) + fired  # coalesce: 15 awaited files, ONE turn
         else:
             st.setdefault("queue", []).append({"slug": slug, "rid": f"awaiting-{len(fired)}", "end": fired[0]["registration"] + ".fired",
-                                               "kind": "awaiting", "data": fired})
+                                               "kind": "awaiting", "data": fired, "queued_at": now})
         log(flags, f"AWAITED {len(fired)} file(s) -> {slug}: " + ", ".join(str(d.get("path")) for d in fired)[:300])
     # 3. waits_on from the generated handoff backlog (context only)
     for slug, e in S.items():
@@ -1682,7 +1709,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
 
     def push(slug, e):  # UNWRAPPED: the go-on nudge leads with fix-and-land; never parked
         log_unwrapped(flags, slug, e)
-        _go(flags, slug, e, continue_prompt(slug, e, flags, f"FIRST fix and land your wrap-up: {e.get('last_wrapup') or 'none reported'} is NOT "
+        return _go(flags, slug, e, continue_prompt(slug, e, flags, f"FIRST fix and land your wrap-up: {e.get('last_wrapup') or 'none reported'} is NOT "
             "on origin/main (wrapup.py / serialized_push.py), then the next task in your handoff", delta(slug)), runner, None, not e.get("session_id"))
     inventory_alarm(flags, st, bdata, now)
     dead_push_lock(flags, st, now)
@@ -1698,6 +1725,16 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
         log(flags, f"ADMIT-REFUSED work: {adm_why}")
     if not paused:
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
+        free = cap - live
+        for slug, e in S.items():  # R2: a guard park whose wait is over auto-unparks (bounded by free slots and 2/24 h)
+            if free <= 0:
+                break
+            if e.get("status") in ("done", "retired") or not tg.is_parked(e) or not tg.auto_unpark_eligible(e, now, gc):
+                continue
+            why = auto_unpark_why(st, slug, e, now, lcache)
+            if why:
+                do_auto_unpark(flags, slug, e, now, why)
+                free -= 1
         for ev in q:  # events: run-ends (filing), dry-run FAILs, awaited files
             e = S.get(ev["slug"])
             if not e or e.get("status") in ("done", "retired"):
@@ -1762,6 +1799,13 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                              for hf, evs in unowned.items() if hf not in have]
             work += [(((-1, (-1, 0)) if hkey(h["handoff"]) in unowned else (1, rank(h["handoff"], h.get("slug") or "", i))), None, h)
                      for i, h in enumerate(cands) if reg.get("auto_start", True) or hkey(h["handoff"]) in unowned]
+        if live < cap and not work:  # R5: idle slot, no unparked candidate -> unpark the top-ranked eligible parked slug
+            idle = sorted((rank(e.get("handoff"), slug, 0), slug) for slug, e in S.items()
+                          if e.get("status") not in ("done", "retired") and tg.is_parked(e) and tg.auto_unpark_eligible(e, now, gc)
+                          and auto_unpark_why(st, slug, e, now, lcache, new_only=False))
+            if idle:
+                slug = idle[0][1]
+                do_auto_unpark(flags, slug, S[slug], now, "idle slot: " + auto_unpark_why(st, slug, S[slug], now, lcache, new_only=False))
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
             if h is not None:
@@ -1784,15 +1828,16 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 continue
             if not adm_ok:
                 continue  # reserve reached: no resume of work (parking above is bookkeeping, not admission)
-            tg.note_resume(e, now)
             if not wrapped(e, lcache):
-                push(slug, e)
+                went = push(slug, e)
             else:
                 fresh = bool(e.get("fresh_next")) or not e.get("session_id")
                 cp = tg.checkpoint_block(e.pop("checkpoint", None)) if fresh else ""
-                _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" + cp if fresh else "") +
-                    continue_prompt(slug, e, flags, e["_work"][1], delta(slug)), runner, None, fresh)
-            live += 1
+                went = _go(flags, slug, e, (brief_text(slug, e, flags) + "\n" + cp if fresh else "") +
+                           continue_prompt(slug, e, flags, e["_work"][1], delta(slug)), runner, None, fresh)
+            if went:  # R1: only a spawn that actually launched counts toward max_resumes
+                tg.note_resume(e, now)
+                live += 1
         if started:
             save(reg_path(flags), reg)  # the registry must name the new sessions before their backlogs are rendered
             for slug in started:
@@ -2066,7 +2111,7 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     except (RuntimeError, OSError, subprocess.TimeoutExpired) as exc:
         log(flags, f"LANE-FAILED {slug}: {exc}; not spawned")
         e.update({"status": "suspended", "pending_event": ev, "last_refusal": str(exc)})
-        return
+        return False
     if e.get("cwd") != lane:
         log(flags, f"LANE {slug}: cwd {e.get('cwd') or ROOT} -> {lane} ({sync})")
     e["cwd"], e["lane_sync"] = lane, sync
@@ -2085,9 +2130,20 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     except ValueError as exc:  # project_cwd refused or model/effort unresolved (G1): never spawn
         log(flags, f"{'REFUSED-SPAWN' if isinstance(exc, tg.SpawnRefused) else 'REFUSED-CWD'} {slug}: {exc}")
         e.update({"status": "suspended", "pending_event": ev, "last_refusal": str(exc)})
-        return
+        if isinstance(exc, tg.SpawnRefused):  # R1: the same refusal N times in a row is a config defect, not a retry
+            same = e.get("spawn_refused_msg") == str(exc)
+            e["spawn_refused_msg"], e["spawn_refused_streak"] = str(exc), (int(e.get("spawn_refused_streak") or 0) + 1 if same else 1)
+            if e["spawn_refused_streak"] >= int(tg.cfg(load(reg_path(flags), {})).get("spawn_refused_park", 3)) and not tg.is_parked(e):
+                why = f"spawn-config-invalid: {exc}"
+                tg.park(e, why, now_iso())
+                log(flags, f"PARK {slug}: {why} ({e['spawn_refused_streak']} identical refusals); unpark: handoff_sessions.py unpark {slug}")
+                digest(flags, "PARK", slug, why)
+        return False
     e.update({"pid": pid, "last_output": out, "status": "live", "last_resume": now_iso(), "pending_event": ev})
+    e.pop("spawn_refused_streak", None)
+    e.pop("spawn_refused_msg", None)
     log(flags, f"{'START' if fresh else 'RESUME'} {slug} pid={pid} event={(ev or {}).get('rid', 'idle')} out={out}")
+    return True
 
 
 def guard_plan(flags, reg, now=None, repo=None, catalog=None, budget=None):
