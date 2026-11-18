@@ -257,7 +257,7 @@ def require_live_grant(row_id, environ):
             "a real grant for the acquisition row is required")
 
 
-def run(packet, directory, row_id, *, api_role=None):
+def run(packet, directory, row_id, *, api_role=None, api_image=None):
     observation = directory / "observation"
     observation.mkdir(mode=0o700)
     result = {"schema": SCHEMA, "unit_id": row_id, "attempt_id": directory.name, "status": "failed",
@@ -278,11 +278,16 @@ def run(packet, directory, row_id, *, api_role=None):
         admission = runner.Admission(selected)
         planner.write_new(observation / "admission.json", admission.witness())
         (observation / "prepared-plan.json").write_bytes(plan_bytes)
-        planner.write_new(observation / "inputs.json", {
+        inputs = {
             "plan_sha256": plan_sha, "producer_sha256": planner.digest(Path(__file__)),
             "linkage_sha256": planner.digest(runner.LINKAGE),
             "scope": {"ports": selected["spec"]["ports"], "resources": selected["spec"]["resources"]},
-        })
+        }
+        if api_image is not None:
+            image_inputs = runner.verify_api_image_inputs(selected, api_role, api_port, api_image)
+            inputs["api_image"] = image_inputs
+            result["isolated_api"].update(image_inputs)
+        planner.write_new(observation / "inputs.json", inputs)
         verify_prepared_inputs(plan)
         planner.write_new(observation / "host.json", runner.evidence.host_snapshot())
         source = planner.ORCHESTRATOR / runner.MATRIX_CONFIG
@@ -327,7 +332,8 @@ def run(packet, directory, row_id, *, api_role=None):
             result["isolated_api"]["status"] = "failed"
             with (observation / "plan.json").open("xb") as stream:
                 stream.write(plan_bytes)
-            runtime.isolated_api_smoke(api_role, api_port)
+            api_options = {} if api_image is None else {"image": api_image}
+            runtime.isolated_api_smoke(api_role, api_port, **api_options)
             result["isolated_api"]["status"] = "pass"
             check_workloads(runtime, observation / "post-api-workloads.json")
             runtime.check()
@@ -359,7 +365,9 @@ def main(argv=None):
     mode.add_argument("--validate-inputs", action="store_true")
     mode.add_argument("--dry-run-result", type=Path)
     parser.add_argument("--api-role", choices=ROLE_ORDER, help="run the isolated API smoke after contention capture")
+    runner.isolated_api.add_image_options(parser, "api-")
     args = parser.parse_args(argv)
+    api_image = runner.isolated_api.image_options(parser, args.api_role, args.api_image, args.api_image_sha256, "api-")
     if args.api_role is not None and not args.acquire:
         parser.error("--api-role requires --acquire")
     packet = args.packet.resolve(strict=True)
@@ -381,7 +389,7 @@ def main(argv=None):
     require(not (out / "RESULT.json").exists(), "acquisition result already exists")
     directory = out / uuid.uuid4().hex
     directory.mkdir(mode=0o700)
-    result = run(packet, directory, row_id, api_role=args.api_role)
+    result = run(packet, directory, row_id, api_role=args.api_role, api_image=api_image)
     files = {str(path.relative_to(directory)): planner.digest(path)
              for path in sorted(directory.rglob("*")) if path.is_file()}
     planner.write_new(out / "RESULT.json", result | {"capture_dir": str(directory), "files": files})

@@ -1,5 +1,7 @@
 """Fixture checks for the promotion candidate's forced API smoke."""
 
+import base64
+import hashlib
 import importlib.util
 import json
 import subprocess
@@ -15,6 +17,9 @@ MODULE = importlib.util.spec_from_file_location("kernel_promotion_isolated_api",
 isolated = importlib.util.module_from_spec(MODULE)
 MODULE.loader.exec_module(isolated)
 URL = "http://127.0.0.1:18600"
+PNG = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jD3sAAAAASUVORK5CYII="
+)
 
 
 def endpoint(role="frontdoor", kind="chat", url=URL):
@@ -33,6 +38,24 @@ def test_selects_one_manifest_endpoint_and_creates_single_role_request():
     assert payload["force_role"] == "frontdoor" and payload["force_mode"] == "direct"
     assert payload["real_mode"] and not payload["mock_mode"]
     assert not payload["allow_delegation"] and not payload["cache_prompt"]
+    assert "image_base64" not in isolated.request_payload("worker_vision", URL, 30)
+
+
+def test_prepared_png_is_read_only_by_canonical_path_and_digest(tmp_path):
+    path = tmp_path / "prepared.png"
+    path.write_bytes(PNG)
+    pin = {"path": str(path), "sha256": hashlib.sha256(PNG).hexdigest()}
+    assert isolated.read_image(pin) == PNG
+    alias = tmp_path / "alias.png"
+    alias.symlink_to(path)
+    with pytest.raises(ValueError, match="canonical prepared PNG"):
+        isolated.read_image(pin | {"path": str(alias)})
+    path.write_bytes(PNG + b"mutation")
+    with pytest.raises(ValueError, match="SHA-256 changed"):
+        isolated.read_image(pin)
+    path.unlink()
+    with pytest.raises(FileNotFoundError):
+        isolated.read_image(pin)
 
 
 def test_requires_explicit_port_for_multiple_role_instances():
@@ -135,10 +158,12 @@ def test_refuses_fallback_mock_and_error_responses(changes, status):
         isolated.verify_response(body, 200, "frontdoor", [])
 
 
-def test_real_chat_route_uses_only_selected_mock_backend(tmp_path):
+@pytest.mark.parametrize("mode", ["text", "image", "missing-image", "changed-image", "foreign-vision"])
+def test_real_chat_route_uses_only_selected_mock_backend(tmp_path, mode):
     # The publisher Python has no FastAPI dependencies. The child runs in the
     # orchestrator environment with an in-memory llama transport and zero sockets.
     fixture = r"""
+import base64
 import importlib.util
 import json
 import logging
@@ -146,7 +171,8 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
-source, output, orchestrator = map(Path, sys.argv[1:])
+source, output, orchestrator = map(Path, sys.argv[1:4])
+mode, encoded_png = sys.argv[4:]
 spec = importlib.util.spec_from_file_location("isolated_api", source)
 isolated = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(isolated)
@@ -156,6 +182,8 @@ sys.path.insert(0, str(orchestrator))
 import httpx
 import httpx._client
 from httpcore._trace import Trace
+from src.api.routes import chat_vision
+from src.services import document_client
 
 def no_connections(event, args):
     if event == "socket.connect":
@@ -196,32 +224,98 @@ def fake_response(request, raw):
 def mock_transport(**kwargs):
     return httpx.MockTransport(fake_server)
 
+async def fake_vision(request):
+    assert mode == "image", "only pinned image requests can reach the transport"
+    assert request.method == "POST"
+    assert str(request.url) == f"{url}/v1/chat/completions"
+    logger = logging.getLogger("httpcore.http11")
+    async with Trace("send_request_headers", logger, request):
+        pass
+    async with Trace("send_request_body", logger, request):
+        raw = await request.aread()
+    async with Trace("receive_response_headers", logger, request):
+        data = json.loads(raw)
+        content = data["messages"][0]["content"]
+        assert content[0]["image_url"]["url"] == f"data:image/png;base64,{encoded_png}"
+        assert isolated.VISION_PROMPT in content[1]["text"]
+        return httpx.Response(200, json={"choices": [{"message": {"content": "red square"}}]})
+
+def mock_async_transport(**kwargs):
+    return httpx.MockTransport(fake_vision)
+
+post = httpx.AsyncClient.post
+
+async def exercise_refusals(client, destination, **kwargs):
+    if destination == f"{url}/v1/chat/completions":
+        if mode == "missing-image":
+            kwargs["json"]["messages"][0]["content"].pop(0)
+        elif mode == "changed-image":
+            kwargs["json"]["messages"][0]["content"][0]["image_url"]["url"] = "data:image/png;base64,aW52YWxpZA=="
+        elif mode == "foreign-vision":
+            destination = "http://127.0.0.1:8086/v1/chat/completions"
+    return await post(client, destination, **kwargs)
+
+def production_service(*args, **kwargs):
+    raise AssertionError("real production vision resolver or OCR client was invoked")
+
 fence = isolated.SocketFence()
 result = {"outbound": [], "witness_events": []}
 
 def witness(event, request_id):
     result["witness_events"].append([event, request_id])
 
-with patch.object(httpx, "HTTPTransport", mock_transport), patch.object(
-    httpx._client, "HTTPTransport", mock_transport
+role, image = ("frontdoor", None) if mode == "text" else ("worker_vision", base64.b64decode(encoded_png))
+with (
+    patch.object(httpx, "HTTPTransport", mock_transport),
+    patch.object(httpx._client, "HTTPTransport", mock_transport),
+    patch.object(httpx._client, "AsyncHTTPTransport", mock_async_transport),
+    patch.object(httpx.AsyncClient, "post", exercise_refusals),
+    patch.object(chat_vision, "_vl_url_for_role", production_service),
+    patch.object(document_client, "get_document_client", production_service),
 ):
-    isolated.run_isolated_chat("frontdoor", url, 18600, 10, output, fence, result, witness)
+    try:
+        isolated.run_isolated_chat(role, url, 18600, 10, output, fence, result, witness, image=image)
+    except ValueError:
+        assert mode not in {"text", "image"}
+        assert not fence.denied
+    else:
+        assert mode in {"text", "image"}
 (output / "test-result.json").write_text(json.dumps(result))
 """
     orchestrator = isolated.planner.ORCHESTRATOR
     completed = subprocess.run(
         [str(orchestrator / ".venv/bin/python"), "-I", "-B", "-c", fixture,
-         str(SOURCE), str(tmp_path), str(orchestrator)],
+         str(SOURCE), str(tmp_path), str(orchestrator), mode, base64.b64encode(PNG).decode("ascii")],
         capture_output=True, text=True, timeout=30, check=False,
     )
     assert completed.returncode == 0, completed.stdout + completed.stderr
     request = json.loads((tmp_path / "request.json").read_bytes())
     response = json.loads((tmp_path / "response.body").read_bytes())
     observed = json.loads((tmp_path / "test-result.json").read_bytes())
-    assert request["server_urls"] == {"frontdoor": URL}
-    assert response["routed_to"] == "frontdoor" and response["answer"] == "ok"
+    role = "frontdoor" if mode == "text" else "worker_vision"
+    assert request["server_urls"] == {role: URL}
+    if mode != "text":
+        assert base64.b64decode(request["image_base64"]) == PNG
+    if mode not in {"text", "image"}:
+        assert any(not row["allowed"] and row["method"] == "POST" for row in observed["outbound"])
+        assert not any(row.get("status_code") == 200 and row["method"] == "POST" for row in observed["outbound"])
+        upstream = tmp_path / "upstream-request.json"
+        if mode == "foreign-vision":
+            assert not upstream.exists()
+            assert any(row["url"] == "http://127.0.0.1:8086/v1/chat/completions" and not row["allowed"]
+                       for row in observed["outbound"])
+        else:
+            with pytest.raises(ValueError):
+                isolated.verify_outbound_image(upstream.read_bytes(), hashlib.sha256(PNG).hexdigest())
+        return
+    assert response["routed_to"] == role and response["answer"] == ("ok" if mode == "text" else "red square")
     assert observed["server_urls_source"] == "request"
     assert any(row["status_code"] == 200 and row["method"] == "POST" for row in observed["outbound"])
+    if mode == "image":
+        raw = (tmp_path / "upstream-request.json").read_bytes()
+        proof = isolated.verify_outbound_image(raw, hashlib.sha256(PNG).hexdigest())
+        call = next(row for row in observed["outbound"] if row["method"] == "POST")
+        assert all(call[key] == value for key, value in proof.items())
     for index, row in enumerate(observed["outbound"], 1):
         events = [event for event, request_id in observed["witness_events"] if request_id == index]
         assert events == (["connect", "dispatch", "sent", "headers"]

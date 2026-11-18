@@ -71,6 +71,10 @@ The runner approves each upstream connection and dispatch after rechecking liste
 
 The observation keeps the exact API request body in `isolated-api/consumer/request.json`, any received response in `isolated-api/consumer/response.body`, and the plan digest, destination, upstream calls and API verdict in `isolated-api/consumer/result.json`. The surrounding `isolated-api/` directory records the worker's identity and exit, the generation witness and any runner refusal. The overall seal requires proved teardown of the API subprocess and the entire stack. The diagnostic carries observation-only status.
 
+To exercise image input, prepare a deterministic PNG in private scratch and compute its SHA-256 before the live grant. For a white field with a centered red square, run the same command with `--api-role worker_vision --api-port "$isolated_vision_port" --api-image "$png_path" --api-image-sha256 "$png_sha256"`. Supply a canonical regular file of at most 1 MiB. Both image arguments are required, and `worker_vision` without them remains a text smoke.
+
+The private probe follows the real forced multimodal `/chat` handler with document preprocessing and OCR disabled. It binds the vision resolver to the exact request-scoped worker URL, refuses fallback destinations, and requires one successful async `/v1/chat/completions` call with the same PNG bytes. `isolated-api/consumer/upstream-request.json` retains the exact upstream JSON. The result records its SHA-256, the decoded image digest, the vision probe scope, and the prepared `--mmproj` path and stat identity. The runner checks the projector and image before dispatch and after the request. The projector loader can buffer the tensors without retaining an mmap. Startup records whether its prepared inode was mapped and checks any observed mapping. The normal main and draft model mapping requirements still apply. The response records what the model answered.
+
 ## Acquire an isolated contention observation
 
 `scripts/benchmark/kernel_promotion_contention_acquire.py` is a separate observation-only producer for the native matrix prerequisite. Its immutable Rowflow packet pins the original production declarations, C13 image inventories and topology-matched source matrix. It records the source matrix as stale when applicable; it neither refreshes the canonical file nor relaxes the ordinary runner's fresh-matrix gate.
@@ -86,6 +90,8 @@ Acquisition relies on the engine’s region-lock provider; its launcher must omi
 Publish the prepared packet through `publish_row.py`. Its software fixtures run in the publisher smoke. Run the acquisition only through the resulting keeper grant.
 
 With `--acquire`, add `--api-role frontdoor` or `--api-role worker_vision` to opt into the forced-role API capture after all four native legs. This mode requires the exact isolated ports 19560 and 19561. It uses the admitted prepared plan digest and bytes, retains the raw API request and response and request-time custody, and requires proved cleanup. Omitting `--api-role` runs the original acquisition.
+
+For an image-bearing acquisition, publish the prepared PNG and include its canonical path and pinned SHA-256 in the packet's acquire command. Use `--acquire --api-role worker_vision --api-image "$png_path" --api-image-sha256 "$png_sha256"`. The four native timing legs run with their existing text workload before the optional image-bearing `/chat` probe.
 
 ## Export a private matrix diagnostic
 

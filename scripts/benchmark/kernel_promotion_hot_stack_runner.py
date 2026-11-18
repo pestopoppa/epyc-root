@@ -334,8 +334,18 @@ def private_matrix_startup(read, endpoints, image):
                 'private matrix executable or library witness differs from the candidate')
         models = {model['path']: model['stat'][:2] for model in endpoint['models']}
         mappings = startup['model_mappings']
+        required_models = models.copy()
+        if 'mmproj' in startup:
+            projector = startup['mmproj']
+            index = planner.value_index(endpoint['argv'], '--mmproj')
+            source = endpoint['argv'][index]
+            path = str(Path(source).resolve())
+            pins = [pin for pin in endpoint['models'] if pin['path'] == path]
+            require(len(pins) == 1 and projector == pins[0] | {'argv_path': source, 'mapped': path in mappings},
+                    'private matrix projector witness differs from the prepared --mmproj')
+            required_models.pop(path)
         require(mappings.keys() <= models.keys() and all(models[path] == inode for path, inode in mappings.items())
-                and ('--no-mmap' in endpoint['argv'] or mappings == models),
+                and ('--no-mmap' in endpoint['argv'] or required_models.keys() <= mappings.keys()),
                 'private matrix model witness differs from the prepared models')
         identity = pid, birth
         check_private_witness(startup['witness'], endpoint, identity)
@@ -697,6 +707,13 @@ def verify_models(endpoint):
         require(resolved == path and evidence.stat_identity(path.stat()) == model['stat'], f'prepared model changed: {path}')
 
 
+def verify_api_image_inputs(plan, role, port, image):
+    require(role == isolated_api.VISION_ROLE, f'image smoke requires {isolated_api.VISION_ROLE}')
+    url, _ = isolated_api.select_endpoint(plan['endpoint_manifest'], role, port, set())
+    isolated_api.read_image(image)
+    return {'image': image, 'mmproj': isolated_api.verify_vision_projector(plan, url)}
+
+
 @dataclass
 class Server:
     proc: subprocess.Popen
@@ -836,10 +853,21 @@ class Runtime:
                                            image_pin(self.plan['images'][endpoint['backend']], endpoint['backend']))
         models = {model['path']: model for model in endpoint['models']}
         maps = (proc / 'maps').read_text()
-        mappings = evidence.model_mappings(maps, models.keys(), models, no_mmap='--no-mmap' in endpoint['argv'])
+        index = planner.value_index(endpoint['argv'], '--mmproj', required=False)
+        projector = {}
+        required_models = models.keys()
+        if index is not None:
+            pin = isolated_api.verify_mmproj(endpoint)
+            # The mtmd loader can read projector tensors into buffers without retaining an mmap.
+            projector_maps = evidence.model_mappings(maps, {pin['path']}, models, no_mmap=True)
+            projector['mmproj'] = pin | {'argv_path': endpoint['argv'][index], 'mapped': bool(projector_maps)}
+            required_models = models.keys() - {pin['path']}
+        mappings = evidence.model_mappings(maps, required_models, models, no_mmap='--no-mmap' in endpoint['argv'])
+        if projector:
+            mappings.update(projector_maps)
         witness = self.sample(server)
         return {'pid': server.pid, 'birth': server.birth, 'image': server.image,
-                'model_mappings': mappings, 'witness': witness}
+                'model_mappings': mappings, 'witness': witness} | projector
 
     def sample(self, server):
         self.verify_identity(server)
@@ -995,7 +1023,7 @@ class Runtime:
                           {'status': 'pass' if passed else 'failed', 'ports': ports, 'failures': failures, 'overlap': overlap})
         require(passed, 'paired concurrency requires two successful requests and overlapping complete witness scans')
 
-    def observe_api_worker(self, proc, channel, server, deadline, capture):
+    def observe_api_worker(self, proc, channel, server, deadline, capture, check_image_inputs=None):
         requests = capture['requests']
         active = None
         next_scan = 0
@@ -1019,6 +1047,8 @@ class Runtime:
                 if event in {'connect', 'dispatch'}:
                     try:
                         self.verify_identity(server)
+                        if check_image_inputs is not None:
+                            check_image_inputs()
                     except Exception as exc:
                         capture.setdefault('witness_failure', f'{type(exc).__name__}: {exc}')
                         channel.send(b'deny')
@@ -1045,7 +1075,7 @@ class Runtime:
                     active['samples'].append({'start_ns': start, 'end_ns': end, 'witness': witness})
                     next_scan = time.monotonic() + 0.1
 
-    def isolated_api_smoke(self, role, port):
+    def isolated_api_smoke(self, role, port, *, image=None):
         directory = self.output / 'isolated-api'
         directory.mkdir(mode=0o700)
         capture = {'start_ns': time.monotonic_ns(), 'requests': {}}
@@ -1060,6 +1090,17 @@ class Runtime:
             server = matches[0]
             result.update(base_url=url, port=selected_port, pid=server.pid, birth=server.birth)
             self.verify_identity(server)
+            check_image_inputs = None
+            if image is not None:
+                inputs = verify_api_image_inputs(self.plan, role, selected_port, image)
+                result.update(inputs)
+
+                def check_image_inputs():
+                    isolated_api.read_image(image)
+                    require(isolated_api.verify_mmproj(server.endpoint) == inputs['mmproj'],
+                            'live --mmproj pin differs from the prepared vision endpoint')
+
+                check_image_inputs()
             require(planner.is_hash(self.plan_sha256), 'isolated API requires the admitted plan digest')
             consumer = canonical_file(Path(isolated_api.__file__).resolve())
             result['consumer_sha256'] = planner.digest(consumer)
@@ -1073,6 +1114,8 @@ class Runtime:
                            '--plan-sha256', self.plan_sha256, '--output-dir', str(output), '--role', role,
                            '--port', str(selected_port), '--timeout', str(int(budget)),
                            '--witness-fd', str(child.fileno())]
+                if image is not None:
+                    command.extend(['--image', image['path'], '--image-sha256', image['sha256']])
                 proc = subprocess.Popen(command, env=os.environ | self.admission.env, stdout=log,
                                         stderr=subprocess.STDOUT, pass_fds=(child.fileno(),))
                 result.update(worker_pid=proc.pid, worker_cleanup_proved=False)
@@ -1082,7 +1125,8 @@ class Runtime:
                     result['worker_cgroup'] = (PROC / str(proc.pid) / 'cgroup').read_text().strip()
                     require(result['worker_cgroup'] == self.admission.cgroup,
                             'isolated API worker escaped the Rowflow cleanup cgroup')
-                    self.observe_api_worker(proc, channel, server, deadline, capture)
+                    witness_options = {} if check_image_inputs is None else {'check_image_inputs': check_image_inputs}
+                    self.observe_api_worker(proc, channel, server, deadline, capture, **witness_options)
                 finally:
                     try:
                         if proc.poll() is None:
@@ -1114,6 +1158,17 @@ class Runtime:
             require(all('dispatch' in capture['requests'].get(str(index), {})
                         for index in range(1, len(api_result['outbound']) + 1)),
                     'isolated API outbound call is missing its dispatch identity witness')
+            if check_image_inputs is not None:
+                check_image_inputs()
+                require(all(api_result.get(key) == value for key, value in inputs.items()),
+                        'isolated API result changed its prepared PNG or --mmproj binding')
+                upstream = canonical_file(output / 'upstream-request.json').read_bytes()
+                proof = isolated_api.verify_outbound_image(upstream, image['sha256'])
+                call = api_result['outbound'][int(generation[0]) - 1]
+                require(call['path'] == isolated_api.VISION_PATH and call.get('status_code') == 200
+                        and all(call.get(key) == value for key, value in proof.items()),
+                        'isolated API result changed its multimodal generation evidence')
+                result['upstream_request_sha256'] = proof['request_sha256']
             self.verify_identity(server)
             result.update(status='pass', generation_request=generation[0])
         except Exception as exc:
@@ -1176,13 +1231,15 @@ def seal(output, verdict):
         os.close(fd)
 
 
-def execute(runtime, *, paired_concurrency=False, api_role=None, api_port=None):
+def execute(runtime, *, paired_concurrency=False, api_role=None, api_port=None, api_image=None):
     output = runtime.output
     failure = None
     api_status = 'not_run'
     try:
         selected = runtime.select_pair() if paired_concurrency else None
         runtime.preflight()
+        if api_image is not None:
+            verify_api_image_inputs(runtime.plan, api_role, api_port, api_image)
         runtime.verify_model_inputs()
         for endpoint in runtime.plan['endpoints']:
             directory = output / str(endpoint['port'])
@@ -1198,7 +1255,8 @@ def execute(runtime, *, paired_concurrency=False, api_role=None, api_port=None):
             runtime.paired_smoke(selected)
         if api_role is not None:
             api_status = 'failed'
-            runtime.isolated_api_smoke(api_role, api_port)
+            api_options = {} if api_image is None else {'image': api_image}
+            runtime.isolated_api_smoke(api_role, api_port, **api_options)
             api_status = 'pass'
         runtime.check()
     except Exception as exc:
@@ -1240,10 +1298,12 @@ def main(argv=None):
                         help='also test one explicitly allowed disjoint endpoint pair')
     parser.add_argument('--api-role', help='also run the isolated forced-role /chat smoke for this role')
     parser.add_argument('--api-port', type=int, help='isolated port for the forced role when it has multiple instances')
+    isolated_api.add_image_options(parser, 'api-')
     parser.add_argument('--private-matrix-result', type=Path,
                         help='validate a native acquisition offline and export a private diagnostic record')
     parser.add_argument('--private-matrix-result-sha256', help='pinned SHA-256 of the native acquisition RESULT.json')
     args = parser.parse_args(argv)
+    api_image = isolated_api.image_options(parser, args.api_role, args.api_image, args.api_image_sha256, 'api-')
     if args.api_port is not None and args.api_role is None:
         parser.error('--api-port requires --api-role')
     if (args.private_matrix_result is None) != (args.private_matrix_result_sha256 is None):
@@ -1281,12 +1341,15 @@ def main(argv=None):
                   'linkage_sha256': planner.digest(LINKAGE), 'paired_concurrency_requested': args.paired_concurrency}
         if args.api_role is not None:
             inputs.update(api_role=args.api_role, api_port=args.api_port)
+        if api_image is not None:
+            inputs['api_image'] = api_image
         planner.write_new(output / 'inputs.json', inputs)
         runtime = Runtime(plan, plan_path, output, admission, args.startup_timeout, args.request_timeout,
                           plan_sha256=args.plan_sha256)
         previous = {sig: signal.signal(sig, lambda signum, _: setattr(runtime, 'interrupted', signum)) for sig in SIGNALS}
         try:
-            return execute(runtime, paired_concurrency=args.paired_concurrency, api_role=args.api_role, api_port=args.api_port)
+            return execute(runtime, paired_concurrency=args.paired_concurrency, api_role=args.api_role,
+                           api_port=args.api_port, api_image=api_image)
         finally:
             for sig, handler in previous.items():
                 signal.signal(sig, handler)

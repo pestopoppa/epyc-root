@@ -1,5 +1,6 @@
 """Fixtures for isolated hot-stack admission, request witnesses and cleanup."""
 
+import base64
 import copy
 import importlib.util
 import json
@@ -64,6 +65,40 @@ def test_model_alias_cannot_retarget_after_preparation(tmp_path):
     alias.symlink_to(replacement)
     with pytest.raises(ValueError, match='prepared model changed'):
         runner.verify_models(endpoint)
+
+
+@pytest.mark.parametrize('main_mapped', [True, False])
+def test_ready_binds_buffered_projector_but_still_requires_main_mapping(tmp_path, monkeypatch, main_mapped):
+    model, projector = tmp_path / 'model.gguf', tmp_path / 'mmproj.gguf'
+    model.write_bytes(b'model fixture')
+    projector.write_bytes(b'projector fixture')
+    argv = ['llama-server', '-m', str(model), '--mmproj', str(projector)]
+    models = [{'path': str(path), 'stat': runner.evidence.stat_identity(path.stat())}
+              for path in (model, projector)]
+    endpoint = {'backend': 'cpu', 'argv': argv, 'models': models}
+    server = SimpleNamespace(pid=123, port=19561, birth=456, endpoint=endpoint, fd=1, binary=tmp_path / 'llama-server')
+    proc = tmp_path / str(server.pid)
+    proc.mkdir()
+    monkeypatch.setattr(runner, 'PROC', tmp_path)
+    info = model.stat()
+    mapping = f'0-a r--p 00000000 {os.major(info.st_dev):x}:{os.minor(info.st_dev):x} {info.st_ino} {model}\n'
+    (proc / 'maps').write_text(mapping if main_mapped else '')
+    monkeypatch.setattr(runner.owned, 'exited', lambda _: False)
+    monkeypatch.setattr(runner, 'listener_owned', lambda *_: True)
+    monkeypatch.setattr(runner, 'image_pin', lambda *_: {})
+    monkeypatch.setattr(runner.evidence, 'live_image', lambda *_: {})
+    runtime = runner.Runtime({'images': {'cpu': {}}}, tmp_path / 'plan.json', tmp_path,
+                             SimpleNamespace(check=lambda: None, deadline=time.time() + 10), 5, 5)
+    monkeypatch.setattr(runtime, 'verify_identity', lambda _: None)
+    monkeypatch.setattr(runtime, 'request_http', lambda *_: (200, b'{"status":"ok"}'))
+    monkeypatch.setattr(runtime, 'sample', lambda _: {'ready': True})
+    if main_mapped:
+        proof = runtime.ready(server)
+        assert proof['model_mappings'] == {str(model): models[0]['stat'][:2]}
+        assert proof['mmproj'] == models[1] | {'argv_path': str(projector), 'mapped': False}
+    else:
+        with pytest.raises(ValueError, match='model mmap witness does not cover'):
+            runtime.ready(server)
 
 
 def test_gpu_rowflow_fence_contract(tmp_path):
@@ -623,20 +658,32 @@ def test_execute_preserves_requested_pair_refusal(tmp_path):
     assert (tmp_path / 'COMPLETE').is_file()
 
 
-@pytest.mark.parametrize('outcome', ['pass', 'late', 'scan-failure', 'dispatch-refusal'])
+@pytest.mark.parametrize('outcome', ['pass', 'late', 'scan-failure', 'dispatch-refusal', 'image-pass', 'image-mutated'])
 def test_isolated_api_observes_upstream_generation_and_keeps_raw_capture(tmp_path, monkeypatch, outcome):
     port = 19520
     url = f'http://127.0.0.1:{port}'
-    role = 'frontdoor'
+    image_mode = outcome.startswith('image-')
+    role = 'worker_vision' if image_mode else 'frontdoor'
     plan_sha = 'a' * 64
     cgroup = '0::/rowflow/example@1234'
     manifest = {'schema': runner.isolated_api.MANIFEST_SCHEMA,
                 'endpoints': [{'base_url': url, 'role': role, 'kind': 'chat'}]}
     admission = SimpleNamespace(deadline=time.time() + 15, check=lambda: None, env={}, cgroup=cgroup)
-    runtime = runner.Runtime({'endpoint_manifest': manifest}, tmp_path / 'plan.json', tmp_path, admission,
+    endpoint = {'test': 'chat', 'roles': [role], 'endpoint': url}
+    image_options = {}
+    if image_mode:
+        image = tmp_path / 'prepared.png'
+        png_bytes = runner.isolated_api.PNG_SIGNATURE + b'fixture'
+        image.write_bytes(png_bytes)
+        image_pin = {'path': str(image), 'sha256': runner.planner.digest(image)}
+        image_options['image'] = image_pin
+        projector = tmp_path / 'mmproj.gguf'
+        projector.write_bytes(b'projector fixture')
+        projector_pin = {'path': str(projector), 'stat': runner.evidence.stat_identity(projector.stat())}
+        endpoint.update(argv=['llama-server', '--mmproj', str(projector)], models=[projector_pin])
+    runtime = runner.Runtime({'endpoint_manifest': manifest, 'endpoints': [endpoint]}, tmp_path / 'plan.json', tmp_path, admission,
                              5, 5, plan_sha256=plan_sha)
-    runtime.servers = [SimpleNamespace(pid=100, birth=1000, port=port, image={},
-                                      endpoint={'test': 'chat', 'roles': [role], 'endpoint': url})]
+    runtime.servers = [SimpleNamespace(pid=100, birth=1000, port=port, image={}, endpoint=endpoint)]
     worker_proc = tmp_path / 'proc' / '200'
     worker_proc.mkdir(parents=True)
     (worker_proc / 'cgroup').write_text(cgroup)
@@ -667,6 +714,9 @@ def test_isolated_api_observes_upstream_generation_and_keeps_raw_capture(tmp_pat
         def __init__(self, command, *, env, stdout, stderr, pass_fds):
             assert command[command.index('--plan-sha256') + 1] == plan_sha
             assert command[command.index('--port') + 1] == str(port)
+            if image_mode:
+                assert command[command.index('--image') + 1] == image_pin['path']
+                assert command[command.index('--image-sha256') + 1] == image_pin['sha256']
             output = Path(command[command.index('--output-dir') + 1])
             fd = os.dup(pass_fds[0])
             self.returncode = None
@@ -681,22 +731,35 @@ def test_isolated_api_observes_upstream_generation_and_keeps_raw_capture(tmp_pat
 
                     emit('connect')
                     assert channel.recv(16) == b'allow'
+                    if outcome == 'image-mutated':
+                        image.write_bytes(png_bytes + b'changed')
                     emit('dispatch')
                     allowed = channel.recv(16) == b'allow'
-                    assert allowed == (outcome != 'dispatch-refusal')
+                    assert allowed == (outcome not in {'dispatch-refusal', 'image-mutated'})
                     if allowed:
                         emit('sent')
                         assert sampled.wait(3)
-                        if outcome == 'pass':
+                        if outcome in {'pass', 'image-pass'}:
                             time.sleep(0.1)
                         emit('headers')
                         headers.set()
                     output.mkdir()
                     (output / 'response.body').write_bytes(raw if allowed else b'Internal Server Error')
+                    call = {'method': 'POST', 'path': '/completion'}
+                    inputs = {}
+                    if image_mode and allowed:
+                        encoded = base64.b64encode(png_bytes).decode()
+                        upstream = json.dumps({'messages': [{'role': 'user', 'content': [
+                            {'type': 'image_url', 'image_url': {'url': f'data:image/png;base64,{encoded}'}},
+                        ]}]}).encode()
+                        (output / 'upstream-request.json').write_bytes(upstream)
+                        call.update(path='/v1/chat/completions', status_code=200,
+                                    **runner.isolated_api.verify_outbound_image(upstream, image_pin['sha256']))
+                        inputs = {'image': image_pin, 'mmproj': projector_pin}
                     runner.planner.write_new(output / 'result.json', {
                         'status': 'passed' if allowed else 'failed', 'plan_sha256': plan_sha, 'role': role,
                         'base_url': url, 'error': 'refused dispatch',
-                        'outbound': [{'method': 'POST', 'path': '/completion'}],
+                        'outbound': [call], **inputs,
                     })
                     self.returncode = 0 if allowed else 1
 
@@ -726,23 +789,31 @@ def test_isolated_api_observes_upstream_generation_and_keeps_raw_capture(tmp_pat
     monkeypatch.setattr(runtime, 'verify_identity', verify)
     monkeypatch.setattr(runtime, 'sample', sample)
     monkeypatch.setattr(runner.subprocess, 'Popen', Worker)
-    if outcome == 'pass':
-        runtime.isolated_api_smoke(role, port)
+    passed = outcome in {'pass', 'image-pass'}
+    if passed:
+        runtime.isolated_api_smoke(role, port, **image_options)
     else:
         errors = {'late': 'inside isolated API generation', 'scan-failure': 'NUMA policy changed',
-                  'dispatch-refusal': 'refused dispatch'}
+                  'dispatch-refusal': 'refused dispatch', 'image-mutated': 'refused dispatch'}
         with pytest.raises(ValueError, match=errors[outcome]):
-            runtime.isolated_api_smoke(role, port)
+            runtime.isolated_api_smoke(role, port, **image_options)
     directory = tmp_path / 'isolated-api'
     observed = runner.planner.read_json(directory / 'during-request.json')['requests']['1']
-    assert bool(observed['samples']) == (outcome == 'pass')
+    assert bool(observed['samples']) == passed
+    denied = outcome in {'dispatch-refusal', 'image-mutated'}
     assert (directory / 'consumer' / 'response.body').read_bytes() == (
-        b'Internal Server Error' if outcome == 'dispatch-refusal' else raw)
+        b'Internal Server Error' if denied else raw)
     result = runner.planner.read_json(directory / 'result.json')
-    assert result['status'] == ('pass' if outcome == 'pass' else 'failed')
+    assert result['status'] == ('pass' if passed else 'failed')
     assert result['worker_pid'] == 200 and result['worker_birth'] == 2000
     assert result['worker_cgroup'] == cgroup and result['worker_cleanup_proved'] is True
-    assert result['worker_returncode'] == int(outcome == 'dispatch-refusal')
+    assert result['worker_returncode'] == int(denied)
+    if outcome == 'image-pass':
+        assert result['image'] == image_pin and result['mmproj'] == projector_pin
+        assert result['upstream_request_sha256'] == runner.planner.digest(directory / 'consumer/upstream-request.json')
+    if outcome == 'image-mutated':
+        capture = runner.planner.read_json(directory / 'during-request.json')
+        assert 'prepared PNG or SHA-256 changed' in capture['witness_failure']
 
 
 def test_isolated_api_refuses_role_without_ready_owned_chat_server(tmp_path):

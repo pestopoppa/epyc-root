@@ -119,6 +119,9 @@ def test_native_cli_without_live_grant_refuses_before_writes(tmp_path, monkeypat
 @pytest.mark.parametrize("options, error", [
     (["--acquire", "--api-role", "worker_general"], "invalid choice"),
     (["--validate-inputs", "--api-role", "frontdoor"], "--api-role requires --acquire"),
+    (["--acquire", "--api-role", "worker_vision", "--api-image", "/prepared.png"], "paired SHA-256"),
+    (["--acquire", "--api-role", "frontdoor", "--api-image", "/prepared.png", "--api-image-sha256", "a" * 64],
+     "--api-image requires the worker_vision role"),
 ])
 def test_api_cli_rejects_unscoped_role_and_non_acquire_mode(tmp_path, capsys, options, error):
     with pytest.raises(SystemExit) as exc:
@@ -135,10 +138,21 @@ def native_api(tmp_path, monkeypatch):
     matrix.write_text("unchanged scoped topology fixture\n")
     frontdoor = endpoint(19560, 8180, "frontdoor", 2, range(48, 96))
     vision = endpoint(19561, 8086, "worker_vision", 0, range(48))
+    projector = tmp_path / "mmproj.gguf"
+    projector.write_bytes(b"small projector fixture")
+    vision.update(argv=["llama-server", "--mmproj", str(projector)],
+                  models=[{"path": str(projector), "stat": acquire.runner.evidence.stat_identity(projector.stat())}])
     plan = {"endpoints": [vision, frontdoor], "images": {"cpu": {}},
             "spec": {"resources": {"gpu_devices": []},
                      "config_sha256": {matrix.name: acquire.planner.digest(matrix)}},
             "contention_matrix_status": "stale", "topology_hash": "fixture"}
+    for item in plan["endpoints"]:
+        item["endpoint"] = f'http://127.0.0.1:{item["port"]}'
+    plan["endpoint_manifest"] = {
+        "schema": acquire.runner.isolated_api.MANIFEST_SCHEMA,
+        "endpoints": [{"role": item["roles"][0], "kind": item["test"], "base_url": item["endpoint"]}
+                      for item in plan["endpoints"]],
+    }
     for item in plan["endpoints"]:
         log = tmp_path / f'{item["port"]}.log'
         log.touch()
@@ -147,7 +161,7 @@ def native_api(tmp_path, monkeypatch):
     plan_path.write_text(json.dumps(plan))
     plan_sha = acquire.planner.digest(plan_path)
     events = []
-    fixture = SimpleNamespace(plan=plan, events=events, api_fails=False, cleanup_fails=False)
+    fixture = SimpleNamespace(plan=plan, events=events, api_fails=False, cleanup_fails=False, projector=projector)
 
     class Runtime:
         def __init__(self, selected, path, output, admission, startup_timeout, request_timeout, *, plan_sha256):
@@ -172,8 +186,8 @@ def native_api(tmp_path, monkeypatch):
         def check(self):
             pass
 
-        def isolated_api_smoke(self, role, port):
-            events.append((role, port))
+        def isolated_api_smoke(self, role, port, *, image=None):
+            events.append((role, port) if image is None else (role, port, image))
             plan_bytes = (self.output / "plan.json").read_bytes()
             assert plan_bytes == plan_path.read_bytes()
             assert hashlib.sha256(plan_bytes).hexdigest() == self.plan_sha256
@@ -255,3 +269,25 @@ def test_successful_api_response_cannot_override_unproved_server_cleanup(tmp_pat
     assert result["cleanup_proved"] is False
     assert "observation/isolated-api/consumer/response.body" in result["files"]
     assert native_api.events[-2:] == [("frontdoor", 19560), "cleanup"]
+
+
+@pytest.mark.parametrize("mutation", [None, "image", "mmproj"])
+def test_native_image_options_bind_prepared_inputs_before_any_leg(tmp_path, native_api, mutation):
+    image = tmp_path / "red-square.png"
+    image.write_bytes(acquire.runner.isolated_api.PNG_SIGNATURE + b"fixture")
+    pin = {"path": str(image), "sha256": acquire.planner.digest(image)}
+    if mutation == "image":
+        image.write_bytes(image.read_bytes() + b"changed")
+    if mutation == "mmproj":
+        native_api.projector.write_bytes(b"changed")
+    args = ["--packet", str(tmp_path), "--acquire", "--api-role", "worker_vision",
+            "--api-image", pin["path"], "--api-image-sha256", pin["sha256"]]
+    assert acquire.main(args) == (0 if mutation is None else 2)
+    result = acquire.planner.read_json(tmp_path / "out" / "RESULT.json")
+    if mutation is None:
+        assert result["isolated_api"]["image"] == pin
+        assert result["isolated_api"]["mmproj"]["path"] == str(native_api.projector)
+        assert native_api.events[-2:] == [("worker_vision", 19561, pin), "cleanup"]
+    else:
+        assert result["status"] == "failed" and "changed" in result["failure"]
+        assert native_api.events == []

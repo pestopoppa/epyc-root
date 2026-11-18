@@ -4,13 +4,17 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import os
 import re
 import socket
+import stat
 import sys
 import time
+from contextlib import ExitStack
+from contextvars import ContextVar
 from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import patch
@@ -25,12 +29,94 @@ RESULT_SCHEMA = "epyc.kernel_promotion_isolated_api_observation.v1"
 ROLE_PATTERN = re.compile(r"[a-z][a-z0-9_]{0,63}")
 LOOPBACK_URL = re.compile(r"http://127\.0\.0\.1:([1-9][0-9]{3,4})")
 GENERATION_PATHS = {"/completion", "/v1/chat/completions"}
+VISION_ROLE = "worker_vision"
+VISION_PATH = "/v1/chat/completions"
+VISION_PROMPT = "What color and shape is centered in the image? Answer with the color and shape only."
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+MAX_IMAGE_BYTES = 1024 * 1024
 TRACE_EVENTS = {
     "http11.send_request_headers.started": "dispatch",
     "http11.send_request_body.complete": "sent",
     "http11.receive_response_headers.complete": "headers",
 }
 require = planner.require
+
+
+def add_image_options(parser, prefix=""):
+    parser.add_argument(f"--{prefix}image", type=Path, help="canonical path to a prepared vision-smoke PNG")
+    parser.add_argument(f"--{prefix}image-sha256", help="prepared SHA-256 of the PNG")
+
+
+def image_options(parser, role, path, checksum, prefix=""):
+    if path is None and checksum is None:
+        return None
+    if path is None or not planner.is_hash(checksum):
+        parser.error(f"--{prefix}image and --{prefix}image-sha256 require a path and a paired SHA-256")
+    if role != VISION_ROLE:
+        parser.error(f"--{prefix}image requires the {VISION_ROLE} role")
+    return {"path": str(path), "sha256": checksum}
+
+
+def read_image(pin):
+    path = Path(pin["path"])
+    require(path.is_absolute() and path.resolve(strict=True) == path,
+            f"expected a canonical prepared PNG path: {path}")
+    with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as stream:
+        before = os.fstat(stream.fileno())
+        require(stat.S_ISREG(before.st_mode) and len(PNG_SIGNATURE) < before.st_size <= MAX_IMAGE_BYTES,
+                "prepared image must be a regular PNG of at most 1 MiB")
+        raw = stream.read(MAX_IMAGE_BYTES + 1)
+        require(len(raw) == before.st_size and _input_stat(before) == _input_stat(os.fstat(stream.fileno()))
+                == _input_stat(path.stat()),
+                f"prepared image changed while reading: {path}")
+    require(raw.startswith(PNG_SIGNATURE) and hashlib.sha256(raw).hexdigest() == pin["sha256"],
+            f"prepared PNG or SHA-256 changed: {path}")
+    return raw
+
+
+def _input_stat(info):
+    return [info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns]
+
+
+def verify_mmproj(endpoint):
+    argv = endpoint["argv"]
+    index = planner.value_index(argv, "--mmproj")
+    source = Path(argv[index])
+    path = source.resolve(strict=True)
+    pins = [model for model in endpoint["models"] if model["path"] == str(path)]
+    info = path.stat()
+    require(source.is_absolute() and stat.S_ISREG(info.st_mode) and info.st_size > 0 and len(pins) == 1
+            and pins[0]["stat"] == _input_stat(info),
+            f"prepared --mmproj input is missing or changed: {source}")
+    return pins[0]
+
+
+def verify_vision_projector(plan, url):
+    matches = [endpoint for endpoint in plan["endpoints"]
+               if endpoint["endpoint"] == url and endpoint["test"] == "chat"
+               and endpoint["roles"][0] == VISION_ROLE]
+    require(len(matches) == 1, "expected one prepared worker_vision chat endpoint with --mmproj")
+    return verify_mmproj(matches[0])
+
+
+def verify_outbound_image(raw, expected_sha256):
+    body = json.loads(raw, object_pairs_hook=planner.unique_keys)
+    messages = body.get("messages") if isinstance(body, dict) else None
+    require(isinstance(messages, list), "vision upstream request is missing its messages")
+    parts = [part for message in messages if isinstance(message, dict)
+             and isinstance(message.get("content"), list)
+             for part in message["content"] if isinstance(part, dict) and part.get("type") == "image_url"]
+    require(len(parts) == 1 and len(messages) == 1 and messages[0].get("role") == "user",
+            "vision upstream request must carry exactly one user image")
+    image = parts[0].get("image_url")
+    data_url = image.get("url") if isinstance(image, dict) else None
+    prefix = "data:image/png;base64,"
+    require(isinstance(data_url, str) and data_url.startswith(prefix),
+            "vision upstream image must be an inline PNG")
+    decoded = base64.b64decode(data_url.removeprefix(prefix), validate=True)
+    require(hashlib.sha256(decoded).hexdigest() == expected_sha256,
+            "vision upstream image differs from the prepared SHA-256")
+    return {"image_sha256": expected_sha256, "request_sha256": hashlib.sha256(raw).hexdigest()}
 
 
 def configured_ports(urls):
@@ -127,8 +213,8 @@ def private_environment(output):
     return inherited_defaults
 
 
-def request_payload(role, url, timeout):
-    return {
+def request_payload(role, url, timeout, image=None):
+    payload = {
         "prompt": "Return the single word ok.",
         "force_role": role,
         "force_mode": "direct",
@@ -143,6 +229,10 @@ def request_payload(role, url, timeout):
         "x_request_source": "smoke",
         "server_urls": {role: url},
     }
+    if image is not None:
+        require(role == VISION_ROLE, f"image requests require {VISION_ROLE}")
+        payload.update(prompt=VISION_PROMPT, image_base64=base64.b64encode(image).decode("ascii"))
+    return payload
 
 
 def verify_primitives(primitives, role, url):
@@ -170,7 +260,7 @@ def verify_response(body, status, role, outbound):
             "expected exactly one successful upstream generation")
 
 
-def run_isolated_chat(role, url, port, timeout, output, fence, result, witness=None):
+def run_isolated_chat(role, url, port, timeout, output, fence, result, witness=None, *, image=None):
     import httpx
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
@@ -184,24 +274,47 @@ def run_isolated_chat(role, url, port, timeout, output, fence, result, witness=N
 
     require(Role.from_string(role) is not None, f"role is unknown to the orchestrator: {role!r}")
     set_features(Features(tools=False, repl=False, semantic_classifiers=False, generation_monitor=False))
-    payload = request_payload(role, url, timeout)
-    require(ChatRequest.model_validate(payload).force_role == role, "API changed the forced role")
+    payload = request_payload(role, url, timeout, image)
+    validated = ChatRequest.model_validate(payload)
+    require(validated.force_role == role, "API changed the forced role")
+    if image is not None:
+        require(validated.image_base64 == payload["image_base64"], "API changed the prepared image")
     app = FastAPI()
     app.add_api_route("/chat", chat_module.chat, methods=["POST"])
     state = AppState(admission=AdmissionController({url: 1}), q_scorer_enabled=False, _memrl_initialized=True)
     app.dependency_overrides[dep_app_state] = lambda: state
     init_primitives = chat_module._init_primitives
     send = httpx.Client.send
+    async_send = httpx.AsyncClient.send
     backends = []
     outbound = result["outbound"]
+    vision_primitives = ContextVar("isolated_vision_primitives", default=None)
 
-    def checked_primitives(request, request_state):
+    def check_request(request, request_state):
         require(request_state is state and request.real_mode and request.force_role == role
                 and request.server_urls == {role: url}, "request reached primitives without its isolated mapping")
+        if image is not None:
+            require(request.image_base64 == payload["image_base64"] and request.image_path is None
+                    and not request.files and request.force_mode == "direct" and request.prompt == VISION_PROMPT,
+                    "isolated vision request changed its image, mode, or prompt")
+
+    def checked_primitives(request, request_state):
+        check_request(request, request_state)
         primitives = init_primitives(request, request_state)
         backends.append(verify_primitives(primitives, role, url))
         result["server_urls_source"] = primitives.server_urls_source
         return primitives
+
+    def trace_upstream(generation):
+        request_id = len(outbound)
+        witness("connect", request_id)
+
+        def trace(name, _info):
+            event = TRACE_EVENTS.get(name)
+            if event == "dispatch" or (event is not None and generation):
+                witness(event, request_id)
+
+        return trace
 
     def checked_send(client, request, **kwargs):
         if client is api_client:
@@ -210,34 +323,88 @@ def run_isolated_chat(role, url, port, timeout, output, fence, result, witness=N
         row = {"method": request.method, "path": target.path, "url": str(target)}
         outbound.append(row)
         metadata = request.method == "GET" and target.path in {"/props", "/slots", "/metrics", "/health"}
-        bound_client = len(backends) == 1 and client is backends[0].client
+        bound_client = image is None and len(backends) == 1 and client is backends[0].client
         allowed = ((bound_client or metadata)
                    and (target.scheme, target.host, target.port) == ("http", "127.0.0.1", port))
         row["allowed"] = allowed
         require(allowed, f"isolated API refused HTTP destination {target}")
         if witness is not None:
-            request_id = len(outbound)
             generation = request.method == "POST" and target.path in GENERATION_PATHS
-            witness("connect", request_id)
-
-            def trace(name, _info):
-                event = TRACE_EVENTS.get(name)
-                if event == "dispatch" or (event is not None and generation):
-                    witness(event, request_id)
-
-            request.extensions["trace"] = trace
+            request.extensions["trace"] = trace_upstream(generation)
         kwargs["follow_redirects"] = False
         response = send(client, request, **kwargs)
         row["status_code"] = response.status_code
         return response
 
+    async def checked_async_send(client, request, **kwargs):
+        target = request.url
+        row = {"method": request.method, "path": target.path, "url": str(target), "allowed": False}
+        outbound.append(row)
+        require(vision_primitives.get() is not None and request.method == "POST"
+                and str(target) == f"{url}{VISION_PATH}", f"isolated vision refused HTTP destination {target}")
+        raw = request.content
+        with (output / "upstream-request.json").open("xb") as stream:
+            stream.write(raw)
+        row.update(verify_outbound_image(raw, hashlib.sha256(image).hexdigest()))
+        row["allowed"] = True
+        if witness is not None:
+            trace = trace_upstream(True)
+
+            async def async_trace(name, info):
+                trace(name, info)
+
+            request.extensions["trace"] = async_trace
+        kwargs["follow_redirects"] = False
+        response = await async_send(client, request, **kwargs)
+        row["status_code"] = response.status_code
+        return response
+
+    def isolate_vision(stack):
+        from src.api.routes import chat_vision
+        from src.services import document_client
+
+        handle_vision = chat_vision._handle_vision_request
+
+        async def skip_document_preprocessing(request, _routing, primitives, request_state, _start):
+            check_request(request, request_state)
+            verify_primitives(primitives, role, url)
+
+        async def checked_vision(request, primitives, request_state, task_id, force_server=None):
+            check_request(request, request_state)
+            require(force_server == role == VISION_ROLE, "multimodal handler changed the forced role")
+            require(not chat_vision._needs_structured_analysis(request.prompt),
+                    "isolated vision prompt selects the structured analysis service")
+            token = vision_primitives.set(primitives)
+            try:
+                return await handle_vision(request, primitives, request_state, task_id, force_server)
+            finally:
+                vision_primitives.reset(token)
+
+        def checked_vision_url(requested_role):
+            primitives = vision_primitives.get()
+            require(primitives is not None and requested_role == role, "unbound vision role refused")
+            verify_primitives(primitives, role, url)
+            return primitives.server_urls[role]
+
+        def refuse_ocr():
+            raise RuntimeError("OCR is disabled for the isolated vision request")
+
+        stack.enter_context(patch.object(chat_module, "_execute_vision", skip_document_preprocessing))
+        stack.enter_context(patch.object(chat_vision, "_handle_vision_request", checked_vision))
+        stack.enter_context(patch.object(chat_vision, "_vl_url_for_role", checked_vision_url))
+        stack.enter_context(patch.object(document_client, "get_document_client", refuse_ocr))
+        stack.enter_context(patch.object(httpx.AsyncClient, "send", checked_async_send))
+        result["vision_scope"] = "direct_multimodal_without_document_preprocessing_or_ocr"
+
     try:
         with TestClient(app, raise_server_exceptions=False) as api_client:
             request = api_client.build_request("POST", "/chat", json=payload)
             (output / "request.json").write_bytes(request.content)
-            with patch.object(chat_module, "_init_primitives", checked_primitives), patch.object(
-                httpx.Client, "send", checked_send
-            ):
+            with ExitStack() as stack:
+                stack.enter_context(patch.object(chat_module, "_init_primitives", checked_primitives))
+                stack.enter_context(patch.object(httpx.Client, "send", checked_send))
+                if image is not None:
+                    isolate_vision(stack)
                 fence.allowed = ("127.0.0.1", port)
                 response = api_client.send(request)
                 fence.allowed = None
@@ -262,7 +429,11 @@ def main(argv=None):
     parser.add_argument("--timeout", type=int, default=30)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--witness-fd", type=int, help=argparse.SUPPRESS)
+    add_image_options(parser)
     args = parser.parse_args(argv)
+    image_pin = image_options(parser, args.role, args.image, args.image_sha256)
+    if image_pin is not None and args.witness_fd is None:
+        parser.error("--image requires the live runner's dispatch witness")
     try:
         require(1 <= args.timeout <= 3600, "invalid request timeout")
         plan_raw = args.plan.read_bytes()
@@ -293,6 +464,10 @@ def main(argv=None):
         sys.path.insert(0, str(orchestrator))
         url, port = select_endpoint(plan["endpoint_manifest"], args.role, args.port, forbidden_ports(inherited_defaults))
         result["base_url"] = url
+        image = None
+        if image_pin is not None:
+            image = read_image(image_pin)
+            result.update(image=image_pin, mmproj=verify_vision_projector(plan, url))
         if args.witness_fd is None:
             run_isolated_chat(args.role, url, port, args.timeout, output, fence, result)
         else:
@@ -304,7 +479,12 @@ def main(argv=None):
                     if event in {"connect", "dispatch"}:
                         require(channel.recv(16) == b"allow", "hot-stack runner refused upstream dispatch")
 
-                run_isolated_chat(args.role, url, port, args.timeout, output, fence, result, witness)
+                run_isolated_chat(args.role, url, port, args.timeout, output, fence, result, witness,
+                                  image=image)
+        if image_pin is not None:
+            read_image(image_pin)
+            require(verify_vision_projector(plan, url) == result["mmproj"],
+                    "prepared --mmproj input changed during the isolated API request")
         result["status"] = "passed"
     except Exception as exc:
         result.update(status="failed", error=f"{type(exc).__name__}: {exc}")
