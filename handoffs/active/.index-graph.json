@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T08:50:11Z",
+  "generated_at": "2026-11-18T08:53:56Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1673,15 +1673,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 364,
-      "dispatchable": 6,
+      "closed": 365,
+      "dispatchable": 5,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-18",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 6,
+      "open": 5,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1745,21 +1745,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 3,
+          "dispatchable": 2,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2726,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3114,
+          "line": 3115,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3627,
+          "line": 3628,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3722,
+          "line": 3723,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -3182,15 +3182,15 @@
       "blocked_by": [
         "RTG-34"
       ],
-      "closed": 64,
-      "dispatchable": 20,
+      "closed": 68,
+      "dispatchable": 16,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "churn-pipeline.md",
       "id": "RTG-100",
       "last_advanced": "2026-11-18",
       "next_action": "Fix CHURN-UP-NO-DISPATCHER, then OBS-CHURN-UP and the per-row UNDERUSED action",
-      "open": 20,
+      "open": 16,
       "priority": 0.041,
       "priority_basis": {
         "campaign": 1,
