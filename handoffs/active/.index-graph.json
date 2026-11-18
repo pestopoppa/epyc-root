@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T12:00:27Z",
+  "generated_at": "2026-11-18T12:27:32Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1143,9 +1143,9 @@
     },
     {
       "age_days": 0,
-      "blocked": 0,
+      "blocked": 1,
       "blocked_by": [],
-      "closed": 122,
+      "closed": 123,
       "dispatchable": 41,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -1153,7 +1153,7 @@
       "id": "EVL-10",
       "last_advanced": "2026-11-18",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 41,
+      "open": 42,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1186,14 +1186,14 @@
           "gates": [],
           "line": 919,
           "name": "repl-session-memory-maturity",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1386,
+          "line": 1388,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1210,7 +1210,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1847,
+          "line": 1849,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 416,
-      "dispatchable": 115,
+      "dispatchable": 116,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 116,
+      "open": 117,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1759,7 +1759,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3121,
+          "line": 3122,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3634,
+          "line": 3635,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3729,
+          "line": 3730,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -3298,16 +3298,16 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 344,
+      "closed": 345,
       "dispatchable": 9,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "coordination-and-churn-pipeline.md",
       "id": "RTG-34",
-      "last_advanced": "2026-11-16",
+      "last_advanced": "2026-11-18",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
       "open": 9,
       "priority": 0.711,
@@ -3437,7 +3437,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5760,
+          "line": 5761,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3446,7 +3446,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6316,
+          "line": 6317,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"

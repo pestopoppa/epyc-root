@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 218
+      "open": 219
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -25,7 +25,7 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 16,
+      "blocked": 17,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
       "open": 462
@@ -625,9 +625,9 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 344,
+      "closed": 345,
       "guarded": 0,
-      "last_advanced": "2026-11-16",
+      "last_advanced": "2026-11-18",
       "open": 9,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -637,7 +637,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 353,
+      "total": 354,
       "tracks": [
         {
           "blocked": 0,
@@ -712,7 +712,7 @@
         },
         {
           "blocked": 0,
-          "closed": 6,
+          "closed": 7,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5760,
+          "line": 5761,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6316,
+          "line": 6317,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1517,8 +1517,8 @@
       ]
     },
     "memory-program.md": {
-      "blocked": 0,
-      "closed": 122,
+      "blocked": 1,
+      "closed": 123,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 41,
@@ -1530,7 +1530,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 163,
+      "total": 165,
       "tracks": [
         {
           "blocked": 0,
@@ -1543,8 +1543,8 @@
           "open": 14
         },
         {
-          "blocked": 0,
-          "closed": 17,
+          "blocked": 1,
+          "closed": 18,
           "gates": [],
           "guarded": 0,
           "line": 919,
@@ -1557,7 +1557,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1386,
+          "line": 1388,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1847,
+          "line": 1849,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2212,7 +2212,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3121,
+          "line": 3122,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3634,
+          "line": 3635,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3729,
+          "line": 3730,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2583,7 +2583,7 @@
       "closed": 416,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 115,
+      "open": 116,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 532
+      "total": 533
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
