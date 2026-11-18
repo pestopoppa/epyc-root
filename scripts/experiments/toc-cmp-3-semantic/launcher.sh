@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+D=/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-semantic/packet
+R=/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-semantic
+exec /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh \
+  --id toc-cmp-3-semantic-20261118 --class cpu --role bench --gpu-quiet none --no-fold-siblings \
+  --claim-cpus "$WS58_REGIONS" --min-window 2090 --stop "$R/STOP" --port 19363 --workdir "$D" \
+  --cmd "python3 -B $D/runner.py run" --complete-cmd "python3 -B $D/runner.py complete"

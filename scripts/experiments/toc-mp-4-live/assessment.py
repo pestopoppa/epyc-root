@@ -1,4 +1,5 @@
 """Assess exact-value submissions only after proving the assigned exposure."""
+import json
 from pathlib import Path
 
 import cmp4_runner as live
@@ -11,6 +12,21 @@ from trial import (
     record_output,
     sha,
 )
+
+
+def _generation_hit_token_limit(attempt, record):
+    response = captured(attempt, record, "response").decode("utf-8")
+    payloads = [response]
+    if record["stream_requested"]:
+        payloads = [line[6:] for line in response.splitlines()
+                    if line.startswith("data: ") and line[6:] != "[DONE]"]
+    for payload in payloads:
+        body = json.loads(payload)
+        if body.get("stop_type") == "limit" or any(
+            choice.get("finish_reason") == "length" for choice in body.get("choices", [])
+        ):
+            return True
+    return False
 
 
 def assess(attempt, row, case):
@@ -50,7 +66,9 @@ def assess(attempt, row, case):
         return evidence
     boundary = observed["boundary"]
     tails = [entry for entry in audit if entry["kind"] == "tail"]
-    if len(tails) != 1 or tails[0]["scope"] != task_scope:
+    if len(tails) != 1 or tails[0].get("turn") != BOUNDARY_TURN:
+        return failed_custody("boundary_generation_tail_observation_missing")
+    if tails[0]["scope"] != task_scope:
         return failed_custody("private_source_confinement_unverified")
     if (tails[0]["boundaries"] != [BOUNDARY_TURN] or tails[0]["turns"] != [2]
             or tails[0]["has_needle"] is not False):
@@ -132,6 +150,9 @@ def assess(attempt, row, case):
                  and graph["answer"] == needle)
     if exact and needle not in summary and not log_read_turns:
         return failed_custody("exact_answer_without_observed_recovery_source")
+    # A complete HTTP/SSE transcript can still contain a capped generation.
+    if any(_generation_hit_token_limit(attempt, record) for record in wire):
+        return {**evidence, "reason": "generation_token_limit_reached"}
     return {**evidence, "correct": exact, "status": "observed", "reason": None,
             "summary_has_needle": needle in summary, "log_read_turns": log_read_turns,
             "final_submission_observed": bool(submitted), "final_turn": final_turn,

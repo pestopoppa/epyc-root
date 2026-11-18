@@ -30,6 +30,7 @@ def main():
     fixture = json.load(sys.stdin)
     sys.path.insert(0, config["source"])
 
+    from src.llm_primitives import LLMPrimitives
     from src.repl_environment import environment
     from src.repl_environment.task_root import (
         begin_request_scope,
@@ -49,6 +50,23 @@ def main():
     observed = []
     state = None
     emitted = 0
+    tail_observed = False
+
+    llm_call = LLMPrimitives.llm_call
+
+    def observe_generation(primitives, *args, **kwargs):
+        nonlocal tail_observed
+        # A generation can exhaust its token cap before emitting executable code.
+        # Capture native state before the call that consumes the boundary prompt.
+        if state is not None and state.turns == BOUNDARY_TURN and not tail_observed:
+            tail = state.history_turns[state.history_tail_start:]
+            observed.append({"kind": "tail", "turn": state.turns,
+                             "boundaries": list(state.history_boundaries),
+                             "turns": [turn["turn"] for turn in tail],
+                             "has_needle": any(needle in repr(turn) for turn in tail),
+                             "scope": request_scope().snapshot()})
+            tail_observed = True
+        return llm_call(primitives, *args, **kwargs)
 
     def take_record():
         nonlocal emitted
@@ -76,12 +94,6 @@ def main():
             return result
 
         def execute(self, code):
-            if state.turns == BOUNDARY_TURN:
-                tail = state.history_turns[state.history_tail_start:]
-                observed.append({"kind": "tail", "boundaries": list(state.history_boundaries),
-                                 "turns": [turn["turn"] for turn in tail],
-                                 "has_needle": any(needle in repr(turn) for turn in tail),
-                                 "scope": request_scope().snapshot()})
             result = super().execute(code)
             output = result.output or ""
             observed.append({
@@ -101,11 +113,15 @@ def main():
         state = graph_state
         state.max_turns = MAX_TURNS
 
+    original_repl = environment.REPLEnvironment
     environment.REPLEnvironment = FixtureREPL
+    LLMPrimitives.llm_call = observe_generation
     try:
         begin_request_scope(str(task_root), edit_mode="none")
         run_graph(configure_state=configure_state)
     finally:
+        LLMPrimitives.llm_call = llm_call
+        environment.REPLEnvironment = original_repl
         clear_request_scope()
         (attempt / "FIXTURE-AUDIT.json").write_text(json.dumps(observed, indent=2) + "\n")
 

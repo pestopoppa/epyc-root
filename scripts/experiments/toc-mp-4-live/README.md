@@ -21,6 +21,9 @@ retain the receipt. The pointer arms may recover it from the native verbatim
 log. The fixture observes pre-boundary state for persistent variables or
 artifacts, and uses stdin for the helper input. The value is absent from the
 task and REPL context.
+The tail audit samples native state and request scope at the forced-boundary
+generation call, including when the model emits no REPL code on that turn.
+Assessment requires the witness and independently checks the served continuation.
 The trial uses a read-only request scope rooted at a fresh directory with no
 additional read roots. The native verbatim log is readable through its
 per-task file capability. The parent fixture, packet case file, raw input
@@ -47,8 +50,12 @@ rounds use the next integer. The helper does not publish. There are no automatic
 replacements, retries or new seeds. Stop on the fixed matrix or keeper
 STOP/deadline. The allocator also bounds each window.
 An instrument failure stops its window after saving the affected receipt.
-A model finishing before the forced boundary remains an ordinary UNKNOWN
-trial.
+A model finishing before the forced boundary or hitting a generation token
+limit receives an UNKNOWN grade.
+
+The [first cohort's disposition](../../../docs/research/toc-mp-4-results-20261118.md)
+records the instrument stop at cell 000. Its frozen UNKNOWN receipt makes the
+120-eligible decision threshold unreachable, so that cohort ended inconclusive.
 
 The native result reports scheduled, recorded, completed, eligible, correct,
 incorrect, UNKNOWN and unattempted and includes task/seed discordances.

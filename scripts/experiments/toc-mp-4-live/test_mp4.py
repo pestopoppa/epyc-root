@@ -1,5 +1,6 @@
 """Offline native graph and immutable-custody regressions."""
 import json
+import os
 import subprocess
 import sys
 import time
@@ -9,7 +10,8 @@ from types import SimpleNamespace
 import pytest
 
 PACKET = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/mp4/packet")
-sys.path.insert(0, str(PACKET))
+HERE = Path(__file__).resolve().parent
+sys.path[:0] = [str(HERE), str(PACKET)]
 import runner
 from assessment import assess
 from prepare import resume_files
@@ -44,13 +46,18 @@ def endpoint(request):
     text = "\n".join(x["content"] for x in body["messages"])
     if "<conversation>" in text:
         assert needle in text
-        summary = f"## Progress\nThe receipt is {needle}." if mode == "summary" else "## Progress\nCheckpoint ready."
+        summary = (f"## Progress\nThe receipt is {needle}." if mode in {"summary", "code_free", "capped"}
+                   else "## Progress\nCheckpoint ready.")
         return httpx.Response(200, json={
             "choices": [{"message": {"content": summary}, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 3300, "completion_tokens": 18},
         })
     calls += 1
-    if calls == 1:
+    code_free = calls == 3 and mode in {"code_free", "capped"}
+    if code_free:
+        content = "I should review the checkpoint before returning the receipt."
+        finish = "length" if mode == "capped" else "stop"
+    elif calls == 1:
         assert needle not in text
         code = "FINAL('UNKNOWN')" if mode == "early" else "print(take_record())"
     elif calls == 2:
@@ -64,17 +71,20 @@ def endpoint(request):
         assert mode == "wrong" or needle in text
         answer = needle + " " if mode == "wrong" else needle
         code = f"FINAL({answer!r})"
-    response = [{"choices": [{"delta": {"content": f"```python\n{code}\n```"}, "finish_reason": None}]},
-                {"choices": [{"delta": {}, "finish_reason": "stop"}],
+    if not code_free:
+        content, finish = f"```python\n{code}\n```", "stop"
+    response = [{"choices": [{"delta": {"content": content}, "finish_reason": None}]},
+                {"choices": [{"delta": {}, "finish_reason": finish}],
                  "usage": {"prompt_tokens": 500, "completion_tokens": 20}}]
+    sse = "".join(f"data: {json.dumps(item)}\n\n" for item in response) + "data: [DONE]\n\n"
     return httpx.Response(200, headers={"content-type": "text/event-stream"},
-                          content="".join(f"data: {json.dumps(item)}\n\n" for item in response)
-                          + "data: [DONE]\n\n")
+                          stream=httpx.ByteStream(sse.encode()))
 
 
 socket.socket.connect = reject_network
 httpx.Client._transport_for_url = lambda *args: httpx.MockTransport(endpoint)
 sys.path.insert(0, os.path.dirname(sys.argv[1]))
+sys.path.insert(1, os.environ["TOC_MP4_TEST_HARNESS"])
 runpy.run_path(sys.argv.pop(1), run_name="__main__")
 '''
 
@@ -84,22 +94,34 @@ def frozen():
     return runner.live.read_json(PACKET / "cases.json"), runner.live.read_json(PACKET / "schedule.json")
 
 
+@pytest.fixture(scope="session")
+def pinned_source():
+    source = Path(os.environ.get("TOC_MP4_TEST_SOURCE", runner.SOURCE))
+    git = ["git", "-C", source]
+    assert subprocess.check_output([*git, "rev-parse", "HEAD"], text=True).strip() == runner.live.SOURCE_SHA
+    assert not subprocess.check_output([*git, "status", "--porcelain"], text=True)
+    return source
+
+
 @pytest.mark.parametrize(("arm", "mode", "correct"), [
     ("summary_pointer", "retrieve", True),
     ("summary_only", "summary", True),
+    ("summary_only", "code_free", True),
+    ("summary_only", "capped", None),
     ("pointer_only", "wrong", False),
     ("summary_pointer", "early", None),
 ])
-def test_real_pinned_graph_offline(tmp_path, frozen, arm, mode, correct):
+def test_real_pinned_graph_offline(tmp_path, frozen, pinned_source, arm, mode, correct):
     cases, rows = frozen
     case = cases[0]
     row = next(row for row in rows if row["arm"] == arm)
     runner.seal(tmp_path / "INPUT.json", {"row": row, "case": {"prompt": runner.task_prompt(case)},
-                "source": str(runner.SOURCE), "endpoint": runner.ENDPOINT, "temperature": 0.3, "smoke": True})
+                "source": str(pinned_source), "endpoint": runner.ENDPOINT, "temperature": 0.3, "smoke": True})
     child = subprocess.run([str(runner.live.PYTHON), "-B", "-c", FAKE_TRANSPORT,
-                            str(PACKET / "trial.py"), str(tmp_path), mode, arm, case["needle"]],
+                            str(HERE / "trial.py"), str(tmp_path), mode, arm, case["needle"]],
                            check=False, input=json.dumps(case), cwd=tmp_path, text=True, capture_output=True,
-                           env=runner.live.graph_env(row, tmp_path, "offline"), timeout=30)
+                           env={**runner.live.graph_env(row, tmp_path, "offline"),
+                                "TOC_MP4_TEST_HARNESS": str(PACKET)}, timeout=30)
     assert child.returncode == 0, child.stdout + child.stderr
     outcome = assess(tmp_path, row, case)
     assert outcome["correct"] is correct, outcome
@@ -107,17 +129,35 @@ def test_real_pinned_graph_offline(tmp_path, frozen, arm, mode, correct):
         assert outcome["reason"] == "boundary_not_reached"
         assert outcome.get("instrument_error") is None
         return
-    assert outcome["summary_has_needle"] is (mode == "summary")
-    assert outcome["log_read_turns"] == ([] if arm == "summary_only" else [3])
+    if mode == "capped":
+        assert outcome["reason"] == "generation_token_limit_reached"
+        assert outcome.get("instrument_error") is None
+    else:
+        assert outcome["summary_has_needle"] is (mode in {"summary", "code_free"})
+        assert outcome["log_read_turns"] == ([] if arm == "summary_only" else [3])
     assert case["needle"] not in (tmp_path / "INPUT.json").read_text()
 
     audit_path = tmp_path / "FIXTURE-AUDIT.json"
     audit = runner.live.read_json(audit_path)
-    next(entry for entry in audit if entry["kind"] == "tail")["has_needle"] = True
-    runner.live.atomic_json(audit_path, audit)
-    rejected = assess(tmp_path, row, case)
-    assert rejected["reason"] == "needle_eviction_from_native_tail_unverified"
-    assert rejected["correct"] is None and rejected["instrument_error"] is True
+    tail, = [entry for entry in audit if entry["kind"] == "tail"]
+    if mode in {"code_free", "capped"}:
+        assert [entry["turn"] for entry in audit if entry["kind"] == "execute"] == [1, 2, 4]
+        assert tail["turn"] == 3
+        wire = runner.live.read_json(tmp_path / "GRAPH.json")["wire"]
+        boundary_request, = [record for record in wire
+                             if record["call_kind"] == "generation" and record["graph_turn"] == 3]
+        assert boundary_request["response_sse_done"] is True
+    without_tail = [entry for entry in audit if entry["kind"] != "tail"]
+    for altered_audit, reason in (
+        (without_tail, "boundary_generation_tail_observation_missing"),
+        (without_tail + [{**tail, "turn": 4}], "boundary_generation_tail_observation_missing"),
+        (without_tail + [{**tail, "scope": {}}], "private_source_confinement_unverified"),
+        (without_tail + [{**tail, "has_needle": True}], "needle_eviction_from_native_tail_unverified"),
+    ):
+        runner.live.atomic_json(audit_path, altered_audit)
+        rejected = assess(tmp_path, row, case)
+        assert rejected["reason"] == reason
+        assert rejected["correct"] is None and rejected["instrument_error"] is True
 
     wire = runner.live.read_json(tmp_path / "GRAPH.json")["wire"]
     (tmp_path / wire[0]["response_file"]).write_text("corrupt response")
