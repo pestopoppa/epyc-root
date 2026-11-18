@@ -1,0 +1,104 @@
+{
+  "candidate_collected": false,
+  "checks": {
+    "ingest-document-reconciliation": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 34,
+      "content_sha256": "7ff2e81a609c122bf11f523e9f500f192e3d952a749a9376d5896bb0c2d1b72a",
+      "expected_finish": "stop",
+      "output_format": "reasoning",
+      "output_token_count": 34,
+      "problems": [
+        "semantic_validation_failed"
+      ],
+      "prompt_tokens": 5439,
+      "reasoning_sha256": null,
+      "request_sha256": "2bf817b432f9459498a37e627cfacca4034e95dec62721de15d630724e202afb",
+      "response_sha256": "837c93fd5c15e932fdac7f0425482021099d9de63e4eea882e5f22ed9a3c488b",
+      "semantic_matches": false,
+      "validator": {
+        "expected": "SOUTH",
+        "id": "contains-text.v1"
+      }
+    },
+    "ingest-early-lookup": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 4,
+      "content_sha256": "4c2f9a673594828842c57ff54986506c5fec9c6201c97bd3339d3fa0b4f62301",
+      "expected_finish": "stop",
+      "output_format": "prose",
+      "output_token_count": 4,
+      "problems": [],
+      "prompt_tokens": 4767,
+      "reasoning_sha256": null,
+      "request_sha256": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688",
+      "response_sha256": "8e79054089d9628e8b1a04a0682995aa32dc690898d5a1b59621459bb954596c",
+      "semantic_matches": true,
+      "validator": {
+        "expected": "SANDSTONE",
+        "id": "contains-text.v1"
+      }
+    },
+    "ingest-recurrent-state": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 21,
+      "content_sha256": "5303df091765678e7996125bf079fc0ea315dc10b41dc28dac590e6a130c6561",
+      "expected_finish": "stop",
+      "output_format": "json",
+      "output_token_count": 21,
+      "problems": [],
+      "prompt_tokens": 4892,
+      "reasoning_sha256": null,
+      "request_sha256": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12",
+      "response_sha256": "1e48217039550a1ab684cdd399ce8f967796c35333843a3896fc2e58c5db8ebe",
+      "semantic_matches": true,
+      "validator": {
+        "expected": {
+          "shipment": "RAVEN",
+          "status": "RELEASE"
+        },
+        "id": "json-object-subset.v1"
+      }
+    },
+    "ingest-short-summary": {
+      "actual_finish": "stop",
+      "cached_prompt_tokens": 0,
+      "capture": "filed_original",
+      "completion_count": 38,
+      "content_sha256": "bae7f2ed1ef2b8a9dcab2864d0dcd916e807bbfd95d9b17cecad324fea15ed93",
+      "expected_finish": "stop",
+      "output_format": "prose",
+      "output_token_count": 38,
+      "problems": [],
+      "prompt_tokens": 218,
+      "reasoning_sha256": null,
+      "request_sha256": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273",
+      "response_sha256": "765b5374b69f45446f70af12eb4e82050bd56cd9cf63f505573924f3fd03013b",
+      "semantic_matches": true,
+      "validator": {
+        "expected": "gate sensor",
+        "id": "contains-text.v1"
+      }
+    }
+  },
+  "original_production": {
+    "bank_sha256": "66233d997e6758bfc67d7a2f0be2c600962b55137aa1c59cec3a601d0e8f15cf",
+    "filing_sha256": "21358b09c966d00181935a7346e96692078e757dfa44695a42af984410346a5b",
+    "plan_sha256": "d0fd4411fd423a5b133f9d8aed4bf276d14ee5323b73e7ced1f0b181c6231745",
+    "replaced_id": "ingest-document-reconciliation",
+    "replacement_id": "ingest-document-reconciliation-signed-record"
+  },
+  "preserved": [
+    "ingest-early-lookup",
+    "ingest-recurrent-state",
+    "ingest-short-summary"
+  ],
+  "replacement_not_run_by_preflight": true,
+  "validator_source_sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+}
