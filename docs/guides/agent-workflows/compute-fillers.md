@@ -207,7 +207,7 @@ Throughput*.
 ## Lessons from 2026-11-18 (AutoKernel, C14/C15 rows)
 
 - **rowflow derives threads only from launcher literals, never from spec `declared_threads`.** Write `-t N` or `OMP_NUM_THREADS=N` literally in the launcher or the row is booked with the wrong thread count.
-- **A high-rank multi-quarter or whole-host row whose quarters are held for hours makes the keeper drain and idle the GPU and q3.** Rank such rows below GPU work (110), or publish them only when their quarters are about to free. Two rows (13a-r2, a3b48-d-remeasure-r2) were withdrawn and republished at 110 for this.
+- **"draining for …" in queue_status is not proof a region is reserved (corrected 2026-11-18).** IDLE-WHY prefixed EVERY idle region with the drain line whenever any drain existed; the pm-drain-gpu-20261118 trace (FINDINGS.md) showed the drain never reserved the MI210 or q3 (a CPU multi-quarter target's options exclude q3). The GPU was actually held by an exclusive codemode GPU grant (11:50-~15:03Z, util swinging 0-100%), then the smoke batch. Before blaming a drain, check the real grants (`compute-flags/grants/*.grant`) and rocm-smi over a window. Operator D9 (2026-11-18): the label now prints only on actually-reserved regions, and drains have a 2 h reserve horizon. The rank 35->110 republish of 13a/a3b48 was harmless but did not change placement.
 - **`queue_status` "measured gpu-quiet=0% IDLE-HELD" is not GPU utilisation.** It reads the reservation, not the device; check `rocm-smi` before concluding the GPU is busy or idle.
 - **`test-backend-ops` MUL_MAT with n>128 q8_0 on CDNA goes to hipBLAS, not MMQ.** Capture, trace and replay rows must use n<=128 or they profile the wrong kernel.
 - **rocprofv3 is at `/opt/rocm/bin/rocprofv3`** (not on PATH).
