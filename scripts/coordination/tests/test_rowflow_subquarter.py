@@ -172,6 +172,8 @@ class GpuHostThreads(unittest.TestCase):
 class FarDrain(unittest.TestCase):
     def setUp(self):   # D9 2026-11-18: these fixtures put T beyond DRAIN_RESERVE_HORIZON_S; pin it wide to test the cap/backfill itself
         self._hz = rf.DRAIN_RESERVE_HORIZON_S
+        # NOT horizon coverage: these tests exercise backfill/cap semantics, so the horizon is raised to 24 h to keep
+        # every drain reserving; the real setting (7200 s, partial-host only) is covered in test_rowflow_drain_horizon.py
         rf.DRAIN_RESERVE_HORIZON_S = 24 * 3600
 
     def tearDown(self):

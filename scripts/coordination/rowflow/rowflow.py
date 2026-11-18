@@ -2029,7 +2029,15 @@ DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long dra
 DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
 # D9 2026-11-18 (KEEPER-DRAIN-HOLDS-GPU): a drain target whose earliest start lies beyond this horizon gets NO reservation
 # (nothing is drained for it); the DRAIN_AFTER_S age boost still ranks it first when its regions free.
-DRAIN_RESERVE_HORIZON_S = 10 ** 9   # OFF: the 7200 s horizon starved whole-host rows in the replay gate (2026-11-18); re-enable only with a starvation-safe rule
+DRAIN_RESERVE_HORIZON_S = 7200   # D9 2026-11-18: a PARTIAL-host drain target starting beyond this gets no reservation
+# (rule 3): only quarter / sub-quarter / multi-quarter(n) targets are deferred; host / quiet-host / gpu-exclusive whole
+# targets ALWAYS keep their reservation (the unconditional 7200 s horizon starved whole-host rows in the replay gate).
+
+
+def drain_horizon_applies(c):
+    """True when the drain target's contract shape is a partial host (quarter, sub-quarter, multi-quarter(n))."""
+    shape = str(c.get("shape") or "")
+    return shape in ("quarter", "sub-quarter") or bool(re.fullmatch(r"multi-quarter\(\d\)", shape))
 URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
                           # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
 
@@ -2482,6 +2490,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
     plan.drain_lowbusy = []
     plan.no_reserve = []
     plan.drain_deferred = []   # [(row, S)]: earliest start S beyond DRAIN_RESERVE_HORIZON_S -> no reservation
+    dfr_r, dfr_T = set(), None   # D9 2026-11-18 "only admit rows that end within 2 h": a deferred target's regions take
+    # only rows ending by now + DRAIN_RESERVE_HORIZON_S (capped there, or refused) - so its earliest start never moves later
     plan.rank_holds = []   # [(lower row, better row, T)]: the lower row was kept off the better row's regions
     plan.rank_skips = []   # [(lower row, better row, reason)]: a lower row took regions a better row wants (own block)
     plan.caps = []         # [(row id, regions, T)]: admitted by estimate ahead of T on these regions -> grant end capped at T
@@ -2502,8 +2512,9 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
                 prev = (drain_prev or {}).get(c["id"])
                 if S is not None and prev and now < float(prev) < S:   # T only moves earlier; an EXPIRED T never blocks
                     S = float(prev)
-                if S is not None and S - now > DRAIN_RESERVE_HORIZON_S:   # D9 2026-11-18: no reservation hours ahead
+                if S is not None and S - now > DRAIN_RESERVE_HORIZON_S and drain_horizon_applies(c):   # D9 2026-11-18: partial-host only
                     plan.drain_deferred.append((c, S))
+                    dfr_r, dfr_T = set().union(*c["options"]), now + DRAIN_RESERVE_HORIZON_S
                     S, why = None, (f"earliest start {dt.datetime.fromtimestamp(S, dt.timezone.utc):%Y-%m-%dT%H:%MZ} "
                                     f"beyond reserve horizon {DRAIN_RESERVE_HORIZON_S}s")
                 if S is None:
@@ -2527,6 +2538,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
             opts = _fits(c, free, ram, gpu_grant_open)
             if late:   # a row ending after T may only take regions the drain row does not need (T bounds backfill, never kills)
                 opts = [o for o in opts if not (o & need_r)]
+            if dfr_T is not None and (now + book_s(c) > dfr_T or now + hold_s(c) > dfr_T) and not cap_ok(c, now, dfr_T):
+                opts = [o for o in opts if not (o & dfr_r)]   # would end beyond the horizon: off the deferred target's regions
             if ports & {int(x) for x in (c.get("ports") or [])}:
                 continue  # its port is held by a running grant: it waits
             if opts:   # ws58 2026-11-04: never hand a lower-ranked row regions a better-ranked row is waiting for
@@ -2561,6 +2574,8 @@ def plan(free, cands, ram_gib, gpu_grant_open=False, now=None, grant_ends=(), qu
         caps = [t for rid, need, t in plan.caps if rid == c["id"] and need & o]
         if drain is not None and c is not drain and (now + hold_s(c) > T or now + book_s(c) > T) and o & need_r:
             caps.append(T)
+        if dfr_T is not None and (now + hold_s(c) > dfr_T or now + book_s(c) > dfr_T) and o & dfr_r:
+            caps.append(dfr_T)
         if caps:
             plan.hard_end[c["id"]] = min(caps)
         out.append((c, frozenset(compress(o)))); free -= o; ram -= float(c.get("gib") or 0); pending.remove(c)
