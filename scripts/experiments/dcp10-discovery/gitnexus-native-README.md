@@ -122,11 +122,29 @@ unused-extension handling, graph integrity and checkpointing remain untested.
 See `docs/research/dcp10-gitnexus-build-qualification-20261118.json` for original
 paths/hashes and the failed-qualification verdict.
 
-The candidate holds descriptor-backed mounts through teardown to resist parent
-rename, while preserving the original in-container base identities. The exact
-source-checked adapter variant omits VECTOR installation (no embedding arm),
+The revised builder supplies ordinary canonical directory paths to Docker;
+`/proc/<pid>/fd` is never a bind source. `pinned_mounts` applies the capture
+helper's strict custody policy before opening descriptors, then compares named
+and opened device/inode identities before launch and after container teardown.
+Descriptors detect replacement and close on failure; they do not authorize a
+peer-writable ancestor or make a shared path safe. Duplicate inputs close their
+extra descriptors. Recursive read-only mounts retain explicit `rprivate`
+propagation. The output is the only writable bind.
+
+The bookkeeping-only shared-scratch exception in `check_build_path` cannot
+admit a Docker mount. Existing request/base paths under shared scratch therefore
+fail closed before Docker invocation. A future qualification needs an ordinary
+path layout with trusted ancestry for **every** mounted directory (installed
+source, original base, runtime, producer and output). Do not chmod shared
+ancestors, silently relocate bases, substitute source trees, or copy checkouts
+to evade this requirement. Bind any approved layout and original identities
+prospectively before publishing a new qualification lineage.
+
+The source-checked adapter variant omits VECTOR installation (no embedding arm),
 sets a 1 GiB database buffer and four query threads. Installed source is never
-modified and all diagnostics still reject receipts. These are offline controls;
-the capture helper's strict path-only custody and existing source-admission
-refusals remain. A safe Docker mount transport requires an offline redesign
-before any new native qualification decision.
+modified and diagnostics still reject receipts. **34 offline GitNexus controls**
+pass, including ordinary-path emission, descriptor cleanup, replacement refusal,
+shared-ancestor refusal and refusal before Docker launch. Ruff passes. These
+checks do not establish native Docker compatibility, ABI or checkpoint behavior;
+no worker or graph build ran for this redesign. The parked lineage and the
+capture helper's custody/source-admission refusals remain unchanged.

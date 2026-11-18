@@ -20,8 +20,8 @@ WORKER = Path(__file__).with_name('gitnexus_build_worker.mjs').resolve()
 TIMEOUT = 1800
 
 
-# Shared scratch ancestry is untrusted. Only descriptor-backed Docker mount
-# sources may cross it; capture's stricter path-only custody remains unchanged.
+# Shared scratch is allowed for request bookkeeping only. Docker bind sources
+# use the stricter native.check_custody policy with no shared-ancestor exception.
 SHARED_TMP = Path('/mnt/raid0/llm/tmp')
 
 
@@ -41,21 +41,37 @@ def check_build_path(path):
 
 @contextmanager
 def pinned_mounts(paths):
-    """Hold inode references through Docker teardown; never mount mutable ancestry."""
-    descriptors = []
+    """Use daemon-resolvable names under trusted ancestry, never proc-fd mounts.
+
+    Descriptors detect replacement; they are not Docker mount sources. Both the
+    daemon and caller must resolve the same ordinary paths. The custody check
+    excludes peer-writable ancestors throughout the container's lifetime.
+    """
+    descriptors = {}
+
+    def verify_names():
+        for path, fd in descriptors.items():
+            native.check_custody(path)
+            named, pinned = path.stat(), os.fstat(fd)
+            if (named.st_dev, named.st_ino) != (pinned.st_dev, pinned.st_ino):
+                raise native.IsolationError('mount path changed while pinned')
+
     try:
-        mounts = {}
         for path in paths:
-            check_build_path(path)
+            native.check_custody(path)
             fd = os.open(path, os.O_PATH | os.O_NOFOLLOW | os.O_CLOEXEC)
-            descriptors.append(fd)
-            before, pinned = path.stat(), os.fstat(fd)
-            if (before.st_dev, before.st_ino) != (pinned.st_dev, pinned.st_ino):
-                raise native.IsolationError('mount path changed while pinning')
-            mounts[path] = Path(f'/proc/{os.getpid()}/fd/{fd}')
-        yield mounts
+            # Avoid losing a descriptor if the same source serves two targets.
+            if path in descriptors:
+                os.close(fd)
+                continue
+            descriptors[path] = fd
+        verify_names()
+        try:
+            yield {path: path for path in descriptors}
+        finally:
+            verify_names()
     finally:
-        for fd in descriptors:
+        for fd in descriptors.values():
             os.close(fd)
 
 
@@ -202,12 +218,9 @@ def run_isolated(output, base, timeout, verify):
     previous = signal.signal(signal.SIGTERM, native._stop_on_term)
     try:
         with pinned_mounts([native.graph.SOURCE_ROOT, Path(base['root']), native.NODE.parent, WORKER.parent, output]) as pins:
-            # Snapshot after pinning and check the named paths still identify each fd.
+            # Snapshot after custody/identity checks; descriptors stay open until
+            # container cleanup and a second custody/identity check complete.
             verify()
-            for path, fdpath in pins.items():
-                current, pinned = path.stat(), fdpath.stat()
-                if (current.st_dev, current.st_ino) != (pinned.st_dev, pinned.st_ino):
-                    raise native.IsolationError('source changed after mount pinning')
             command = launch_config(docker, name, output, base, timeout, pins)
             try:
                 result = native.read_bounded(command, env, native.pilot.encode(

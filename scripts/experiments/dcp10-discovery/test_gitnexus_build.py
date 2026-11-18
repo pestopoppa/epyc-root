@@ -122,18 +122,57 @@ class SourceControls(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'escapes'):
                 build.inventory(root)
 
-    def test_descriptor_mount_survives_ancestor_rename(self):
+    def test_named_mounts_and_descriptor_cleanup(self):
+        with tempfile.TemporaryDirectory() as name:
+            target = Path(name) / 'data'
+            target.write_bytes(b'original')
+            opened = []
+            real_open = build.os.open
+
+            def capture(*args):
+                fd = real_open(*args)
+                opened.append(fd)
+                return fd
+
+            with patch.object(build.native, 'check_custody'), patch.object(build.os, 'open', side_effect=capture):
+                with build.pinned_mounts([target, target]) as pins:
+                    self.assertEqual(pins, {target: target})
+                    self.assertEqual(pins[target].read_bytes(), b'original')
+                for fd in opened:
+                    with self.assertRaises(OSError):
+                        build.os.fstat(fd)
+
+    def test_named_mount_replacement_refused_after_teardown(self):
         with tempfile.TemporaryDirectory() as name:
             parent = Path(name) / 'owned'
             parent.mkdir(mode=0o700)
             target = parent / 'data'
             target.write_bytes(b'original')
-            with patch.object(build, 'check_build_path'), build.pinned_mounts([target]) as pins:
+            with (patch.object(build.native, 'check_custody'), self.assertRaisesRegex(
+                    build.native.IsolationError, 'changed while pinned'), build.pinned_mounts([target])):
                 parent.rename(Path(name) / 'moved')
                 parent.mkdir()
                 target.write_bytes(b'replacement')
-                self.assertEqual(pins[target].read_bytes(), b'original')
-            self.assertFalse(pins[target].exists())
+
+    def test_shared_scratch_exception_cannot_reach_docker(self):
+        with tempfile.TemporaryDirectory() as name:
+            shared = Path(name)
+            shared.chmod(0o777)
+            target = shared / 'owned'
+            target.mkdir(mode=0o700)
+            # Even the designated bookkeeping exception cannot authorize a mount.
+            with (patch.object(build, 'SHARED_TMP', shared),
+                  self.assertRaises(build.native.IsolationError), build.pinned_mounts([target])):
+                self.fail('untrusted named mount admitted')
+
+    def test_transport_refusal_prevents_launch_and_receipt(self):
+        with (patch.object(build, 'pinned_mounts', side_effect=build.native.IsolationError('custody')),
+              patch.object(build.native, 'read_bounded') as launch,
+              patch.object(build.shutil, 'which', return_value='/usr/bin/docker'),
+              patch.object(build.os, 'geteuid', return_value=1000),
+              self.assertRaisesRegex(build.native.IsolationError, 'custody')):
+            build.run_isolated(Path('/unused/output'), {'root': '/unused/base'}, 1, lambda: None)
+        launch.assert_not_called()
 
     def test_custody_still_refuses_untrusted_leaf_and_symlink(self):
         with tempfile.TemporaryDirectory() as name:
