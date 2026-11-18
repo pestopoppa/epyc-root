@@ -126,6 +126,15 @@ def test_cmp4_default_server_argv_and_new_port(probe):
     ]
 
 
+def test_cpu_timeout_envelope_covers_observed_prefill_and_summary_cap(probe):
+    spec = json.loads((probe.HERE / "spec.json").read_text())
+    cases = json.loads((probe.HERE / "cases.json").read_text())
+    assert probe.ROLE_TIMEOUT_S > 94.3 + 1024 / 4.9
+    assert probe.ROLE_TIMEOUT_S < probe.LOCK_WATCHDOG_S < probe.ATTEMPT_CAP_S
+    assert probe.ATTEMPT_CAP_S < spec["first_progress_s"]
+    assert len(probe.schedule(cases)) * probe.ATTEMPT_CAP_S < probe.TIME_CAP_S < spec["max_window_s"]
+
+
 def test_real_child_receives_case_and_sets_candidate_contract(probe, tmp_path):
     if not probe.SOURCE.is_dir() or not probe.live.PYTHON.is_file():
         pytest.skip("prepared candidate and orchestrator venv required")
@@ -147,11 +156,17 @@ def reject_network(*_args, **_kwargs):
 
 def inspect_graph(coroutine):
     try:
+        from src.config import get_config
         from src.features import features
         from src.graph.compaction_artifacts import ExecutionBrief, PinnedGovernance, render_contract
+        from src.graph.session_log import _session_summary_worker_role
+        from src.runtime.inference_lock import _max_lock_hold_s
         state = coroutine.cr_frame.f_locals["state"]
         assert features().context_compaction_contract
         assert state.max_turns - 3 > 3
+        timeouts = get_config().timeouts.role_timeouts_dict()
+        assert timeouts[_session_summary_worker_role()] == timeouts["frontdoor"] == 360
+        assert _max_lock_hold_s() == 390
         assert render_contract(
             ExecutionBrief(**state.compaction_execution_brief),
             PinnedGovernance(**state.compaction_pinned_governance),

@@ -18,16 +18,18 @@ from pathlib import Path
 import cmp4_runner as live
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = live.SCRATCH.parent / "cmp3-live-r2"
+SCRATCH = live.SCRATCH.parent / "cmp3-live-r3"
 SOURCE = SCRATCH / "source"
-ROW = "toc-cmp-3-live-20261118-r2"
+ROW = "toc-cmp-3-live-20261118-r3"
 PORT = 19368
 ENDPOINT = f"http://127.0.0.1:{PORT}"
 ARMS = ("baseline_summary_only", "contract_summary_only", "contract_verbatim_manifest")
 BOUNDARY_TURN = 3
 BUDGET = 8192
-TIME_CAP_S = 2700
-ATTEMPT_CAP_S = 660
+TIME_CAP_S = 7380
+ATTEMPT_CAP_S = 1200
+ROLE_TIMEOUT_S = 360
+LOCK_WATCHDOG_S = 390
 PATCH_SHA = "1b679a01e14e631ea58e6bcfe94f15e59195245b2309aab072d0bbfaaffaa0c3"
 MANIFEST_HEADER = "[Verbatim manifest:"
 SPAN = re.compile(
@@ -77,6 +79,12 @@ def schedule(cases):
                     "ORCHESTRATOR_CONTEXT_FORCE_TURNS": str(BOUNDARY_TURN),
                     "ORCHESTRATOR_CONTEXT_TRIAL_INDEX": "0",
                     "ORCHESTRATOR_FRONTDOOR_REPL_NON_TOOL_N_TOKENS": "128",
+                    # The r2 CPU smoke spent 94 s prefilling and decoded at
+                    # about 4.9 tok/s against the candidate's 1024-token summary cap.
+                    "ORCHESTRATOR_TIMEOUTS_FRONTDOOR": str(ROLE_TIMEOUT_S),
+                    "ORCHESTRATOR_TIMEOUTS_WORKER_SUMMARIZE": str(ROLE_TIMEOUT_S),
+                    "ORCHESTRATOR_TIMEOUTS_WORKER_GENERAL": str(ROLE_TIMEOUT_S),
+                    "ORCHESTRATOR_MAX_LOCK_HOLD_S": str(LOCK_WATCHDOG_S),
                 },
             })
     return rows

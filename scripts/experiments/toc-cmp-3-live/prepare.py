@@ -11,13 +11,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 CMP4 = HERE.parent / "toc-cmp-4-live"
 PATCH = HERE.parent / "toc-cmp-3-contract/orchestrator.patch"
-SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-live-r2")
+SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-live-r3")
 SOURCE = SCRATCH / "source"
 ORCH = Path("/mnt/raid0/llm/epyc-orchestrator")
 PATCH_SHA = "1b679a01e14e631ea58e6bcfe94f15e59195245b2309aab072d0bbfaaffaa0c3"
+# Keep the same shared harness bytes and weight receipt as the r2 packet.
+HARNESS_REF = "ed0496bf38d9228bd8420f5b8c3fde238097de9f"
+WEIGHT_RECEIPT_SHA = "3fcd6c2d01901a2a7266367b01179613ee9dd24109f6689d53e1dc183a8daaff"
 
 sys.path.insert(0, str(CMP4))
-import runner as live
+import runner as live  # noqa: E402
 
 
 def prepare():
@@ -29,10 +32,11 @@ def prepare():
         archive_inputs(packet)
         return packet / "spec.json"
 
-    receipt_path = live.SCRATCH / "packet/inputs.json"
+    receipt_path = SCRATCH.parent / "cmp4-r2/packet/inputs.json"
     receipt_bytes = receipt_path.read_bytes()
     custody = json.loads(receipt_bytes)
-    if (custody["source"] != live.SOURCE_SHA or custody["model_path"] != str(live.MODEL)
+    if (hashlib.sha256(receipt_bytes).hexdigest() != WEIGHT_RECEIPT_SHA
+            or custody["source"] != live.SOURCE_SHA or custody["model_path"] != str(live.MODEL)
             or custody["model_sha256"] != live.MODEL_SHA or custody["template_sha256"] != live.TEMPLATE_SHA):
         raise ValueError("CMP-4 weight receipt pin mismatch")
     SCRATCH.mkdir(parents=True, exist_ok=True)
@@ -43,16 +47,18 @@ def prepare():
         staged_packet.mkdir()
         for name in ("cmp3_live.py", "trial.py", "spec.json", "launcher.sh", "cases.json", "README.md"):
             shutil.copy2(HERE / name, staged_packet)
-        for name in ("graph_trial.py", "analysis.py"):
-            shutil.copy2(CMP4 / name, staged_packet)
-        shutil.copy2(CMP4 / "runner.py", staged_packet / "cmp4_runner.py")
+        for name, destination in (("graph_trial.py", "graph_trial.py"), ("analysis.py", "analysis.py"),
+                                  ("runner.py", "cmp4_runner.py")):
+            path = f"scripts/experiments/{CMP4.name}/{name}"
+            data = subprocess.check_output(["git", "-C", str(HERE), "show", f"{HARNESS_REF}:{path}"])
+            (staged_packet / destination).write_bytes(data)
         shutil.copy2(PATCH, staged_packet / "orchestrator.patch")
         shutil.copy2(live.LINKAGE, staged_packet / "verify_ggml_linkage.sh")
         live.atomic_json(staged_packet / "inputs.json", {
             "source": live.SOURCE_SHA,
             "source_diff_sha256": staged_diff,
             "candidate_patch_sha256": PATCH_SHA,
-            "cmp4_weight_receipt_sha256": hashlib.sha256(receipt_bytes).hexdigest(),
+            "cmp4_weight_receipt_sha256": WEIGHT_RECEIPT_SHA,
             **{k: custody[k] for k in ("model_path", "model_sha256", "model_stat", "template_sha256", "build_sha256")},
             "packet_sha256": {p.name: live.digest(p) for p in sorted(staged_packet.iterdir())},
         })
