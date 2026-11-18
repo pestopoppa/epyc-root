@@ -25,6 +25,14 @@ BINARY_IN = "/dcp10/colgrep"
 MODEL_IN = "/dcp10/model"
 DATA_IN = "/dcp10/data"
 RUNTIME_IN = f"/dcp10/{RUNTIME_NAME}"
+MAX_CPUS = 4
+THREAD_ENV = {"RAYON_NUM_THREADS": "2", "NEXT_PLAID_TOKENIZER_THREADS": "1",
+              "TOKENIZERS_PARALLELISM": "false", "OPENBLAS_NUM_THREADS": "1",
+              "OMP_NUM_THREADS": "1"}
+# ColGREP 1.2.0 spawns one scoped thread per prepared batch when multiple
+# sessions are configured. One session uses the serial path for any chunk size.
+CONFIG_PATH = Path("colgrep/config.json")
+CONFIG_BYTES = b'{"parallel_sessions":1}\n'
 MEMORY_BYTES = 8 * 1024**3
 MAX_SIDECAR_BYTES = 32_768
 NPY_V1 = b"\x93NUMPY\x01\x00"
@@ -243,7 +251,12 @@ def _run(arguments, inputs, timeout, *, build=False, lock=None):
         raise IsolationError("isolated ColGREP requires the local Docker launcher")
     env = _docker_env()
     name = f"dcp10-colgrep-{uuid4().hex}"
-    cpus = ",".join(str(cpu) for cpu in sorted(os.sched_getaffinity(0)))
+    cpus = ",".join(str(cpu) for cpu in sorted(os.sched_getaffinity(0))[:MAX_CPUS])
+    if not cpus:
+        raise IsolationError("no allocator CPUs available for ColGREP")
+    config = _canonical(data_home / CONFIG_PATH, stat.S_ISREG)
+    if config.read_bytes() != CONFIG_BYTES:
+        raise IsolationError("private ColGREP thread configuration changed")
     memory = str(_memory_limit())
     command = [docker, "run", "--rm", "--pull=never", "--name", name, "--runtime=runc",
                "--network=none", "--read-only", "--cap-drop=ALL", "--log-driver=none",
@@ -254,12 +267,14 @@ def _run(arguments, inputs, timeout, *, build=False, lock=None):
     for key, value in {"HOME": "/dcp10/home", "XDG_CONFIG_HOME": "/dcp10/config",
                        "XDG_DATA_HOME": DATA_IN, "XDG_CACHE_HOME": "/dcp10/cache",
                        "HF_HUB_OFFLINE": "1", "COLGREP_FORCE_CPU": "1",
-                       "ORT_DYLIB_PATH": RUNTIME_IN}.items():
+                       "ORT_DYLIB_PATH": RUNTIME_IN, **THREAD_ENV}.items():
         command.extend(("--env", f"{key}={value}"))
     for source, target in ((root, root), (binary, BINARY_IN), (model, MODEL_IN),
                            (runtime, RUNTIME_IN)):
         command.extend(("--mount", _mount(source, target)))
     command.extend(("--mount", _mount(data_home, DATA_IN, writable=build)))
+    if build:
+        command.extend(("--mount", _mount(config, Path(DATA_IN) / CONFIG_PATH)))
     if lock is not None:
         project, disposable = lock
         target = Path(DATA_IN) / project.relative_to(data_home) / ".lock"
@@ -300,6 +315,11 @@ def build_index(assets, root, data_home, timeout):
     root, data_home, *_ = inputs
     if any(data_home.iterdir()):
         raise ValueError("ColGREP init requires a fresh, empty private data directory")
+    config = data_home / CONFIG_PATH
+    config.parent.mkdir(mode=0o700)
+    with config.open("xb") as handle:
+        handle.write(CONFIG_BYTES)
+    config.chmod(0o400)
     _run(["init", "--model", MODEL_IN, "--force-cpu", "-y", "--", str(root)],
          inputs, _time_left(deadline), build=True)
     project = _project(root, data_home)

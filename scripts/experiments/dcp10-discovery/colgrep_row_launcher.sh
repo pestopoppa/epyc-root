@@ -6,6 +6,6 @@ D="$R/packet"
 (cd "$D" && /usr/bin/sha256sum --check --status --strict SOURCE.sha256)
 runner="/usr/bin/python3 -I -B $D/colgrep_row.py --receipt-sha __RECEIPT_SHA__"
 exec /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh \
-  --id dcp10-colgrep-native-20261118 --class cpu --role bench --gpu-quiet none --no-fold-siblings \
+  --id __ROW_ID__ --class cpu --role bench --gpu-quiet none --no-fold-siblings \
   --claim-cpus "$WS58_REGIONS" --min-window 1500 --stop "$R/STOP" --workdir "$D" \
   --cmd "$runner run" --complete-cmd "$runner complete" --precond-cmd "$runner precondition"

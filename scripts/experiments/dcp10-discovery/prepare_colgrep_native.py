@@ -22,6 +22,7 @@ from colgrep_row import (
     SCHEMA,
     base_tree,
     digest,
+    launch_policy,
     model_stat,
     original_inputs,
     require,
@@ -32,6 +33,10 @@ DEFAULT_ROOT = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly")
 ORIGINAL_BINARY = Path("/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0")
 MODEL_SNAPSHOT = Path("/mnt/raid0/llm/hf-home/hub/models--lightonai--LateOn-Code-edge/snapshots") / comparator.MODEL_REVISION
 RUNTIME_SHA = "b0ef55d282792a762a346db77ce79519f72b238092a3d8b8944b831d42eda564"
+ORIGINAL_ROW = "dcp10-colgrep-native-20261118"
+ORIGINAL_ROOT = DEFAULT_ROOT / "dcp10-colgrep-native"
+ORIGINAL_PREPARATION_SHA = "66b9f45fc59be61c1f58a3082977718240e0f0f173aac943c2c7f5752ad20950"
+ORIGINAL_RESULT_SHA = "f4ba555150a489036d8b79de3f26dc8b92f9074ec60efdddd82204ec1d8fc0e6"
 
 def copy_asset(source, target, mode):
     target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -53,7 +58,7 @@ def source_controls(root, source, receipt):
     manifest = source_manifest(receipt["source_hashes"])
     launcher = (source / "colgrep_row_launcher.sh").read_text()
     launcher = (launcher.replace("__SCRATCH_ROOT__", str(root)).replace("__RECEIPT_SHA__", receipt_sha)
-                .replace("__SOURCE_SHA__", digest(manifest))).encode()
+                .replace("__SOURCE_SHA__", digest(manifest)).replace("__ROW_ID__", receipt["row"])).encode()
     return receipt_sha, {"preparation.json": receipt_bytes, "SOURCE.sha256": manifest, "launcher.sh": launcher}
 
 
@@ -64,12 +69,34 @@ def write_sources(destination, files):
         path.chmod(0o500 if name == "launcher.sh" else 0o400)
 
 
-def prepare(root, work, runtime):
+def original_run(prior_root, work):
+    receipt = json.loads(comparator.read_sealed(prior_root / "packet/preparation.json", ORIGINAL_PREPARATION_SHA))
+    result_path = prior_root / "native/RESULT.json"
+    result = json.loads(comparator.read_sealed(result_path, ORIGINAL_RESULT_SHA))
+    require((receipt["row"], receipt["scratch"], receipt["work"]) == (ORIGINAL_ROW, str(prior_root), str(work))
+            and result["row"] == ORIGINAL_ROW and result["completed"] == 3 and result["reconciled"]
+            and not result["comparison_valid"] and not result["unknown"]
+            and len(result["observed"]) == 3
+            and all(item["status"] == "error" for item in result["observed"]),
+            "unexpected predecessor run")
+    for name, sealed in result["outputs_sha256"].items():
+        comparator.read_sealed(result_path.parent / name, sealed)
+    lineage = {"revision": 2, "reason": "qualification after native thread limit fix",
+               "prior_row": ORIGINAL_ROW, "prior_preparation_sha256": ORIGINAL_PREPARATION_SHA,
+               "prior_result_path": str(result_path), "prior_result_sha256": ORIGINAL_RESULT_SHA}
+    return receipt, lineage
+
+
+def prepare(root, work, runtime, *, prior_root=None):
     source = Path(__file__).resolve().parent
     require(root == root.resolve() and root.parent.is_dir(), "expected a canonical new scratch root")
     require(re.fullmatch(r"/[A-Za-z0-9/_.-]+", str(root)), "unsupported scratch path for launcher")
     require(runtime.name == native.RUNTIME_NAME and runtime.is_file(), "expected the ColGREP runtime library")
     request, admitted = original_inputs(work)
+    prior, lineage = original_run(prior_root, work) if prior_root else (None, None)
+    model_source = prior_root / "assets/model" if prior_root else MODEL_SNAPSHOT
+    if prior:
+        require(model_stat(model_source) == prior["model"]["file_stat"], "original staged model drift")
     root.mkdir(mode=0o700)
     packet, assets = root / "packet", root / "assets"
     packet.mkdir(mode=0o700)
@@ -84,13 +111,16 @@ def prepare(root, work, runtime):
     comparator.verify_hash(library, RUNTIME_SHA)
     model = assets / "model"
     model.mkdir(mode=0o700)
-    for item in sorted(MODEL_SNAPSHOT.iterdir()):
+    for item in sorted(model_source.iterdir()):
         copy_asset(item, model / item.name, 0o400)
     model.chmod(0o500)
+    if prior:
+        require(model_stat(model_source) == prior["model"]["file_stat"], "original staged model changed during copy")
+    model_sha = prior["model"]["directory_sha256"] if prior else comparator.directory_digest(model)
     model_identity = {
         "id": comparator.MODEL_ID,
         "revision": comparator.MODEL_REVISION,
-        "directory_sha256": comparator.directory_digest(model),
+        "directory_sha256": model_sha,
         "file_stat": model_stat(model),
     }
     bindings = {}
@@ -111,10 +141,16 @@ def prepare(root, work, runtime):
         "binary_sha256": comparator.BINARY_SHA, "runtime_sha256": RUNTIME_SHA,
         "model": model_identity, "tasks": bindings,
         "source_hashes": {name: comparator.hash_file(packet / name) for name in PACKET_SOURCES},
-        "launch": {"limit": comparator.LIMIT, "max_files": comparator.MAX_FILES,
-                   "alpha": comparator.ALPHA, "budgets": list(comparator.BUDGETS),
-                   "max_seconds": MAX_SECONDS, "isolation_image": native.IMAGE},
+        "launch": launch_policy(),
     }
+    if prior:
+        require(all(receipt[field] == prior[field] for field in (
+            "request_sha256", "baseline_sha256", "app_revision", "app_sources", "packet_hashes",
+            "binary_sha256", "runtime_sha256", "tasks",
+        )) and prior["model"]["id"] == comparator.MODEL_ID
+            and prior["model"]["revision"] == comparator.MODEL_REVISION,
+            "predecessor input identity differs from requalification")
+        receipt["lineage"] = lineage
     receipt_sha, controls = source_controls(root, source, receipt)
     write_sources(packet, controls)
     launcher = packet / "launcher.sh"
@@ -126,10 +162,10 @@ def prepare(root, work, runtime):
         "ram_gib": 10, "budget_gib": 3, "estimate_s": MAX_SECONDS, "min_window_s": 1500,
         "max_window_s": 2400, "resumable": False, "first_progress_s": 150, "unit_key": "unit",
         "smoke_predicate": smoke_predicate(packet, receipt_sha),
-        "decision_rule": "completed >= 3",
-        "handoff_task": "context-and-token-economy.md:DCP-10-COLGREP-NATIVE",
+        "decision_rule": "completed == 3 and comparison_valid == 1",
+        "handoff_task": "context-and-token-economy.md:DCP-10-COLGREP-THREADS",
         "keep": ["native/*", "packet/preparation.json"],
-        "notes": "Fixed three-task isolated ColGREP diagnostic, hard 1800s cap. Publisher smoke uses a separate fresh fixture.",
+        "notes": "Revision 2 qualifies the CPU thread fix on the fixed cohort. Hard 1800s cap. Publisher smoke uses a fresh fixture.",
     }
     save(root / "spec.json", spec)
     return receipt_sha
@@ -198,15 +234,18 @@ def refresh_sources(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=DEFAULT_ROOT / "dcp10-colgrep-native")
+    parser.add_argument("--root", type=Path, default=DEFAULT_ROOT / "dcp10-colgrep-native-r2")
     parser.add_argument("--work", type=Path, default=DEFAULT_ROOT / "dcp10")
     parser.add_argument("--runtime", type=Path,
                         default=DEFAULT_ROOT / "native-colgrep-ort-source" / native.RUNTIME_NAME)
+    parser.add_argument("--requalify-from", type=Path, default=ORIGINAL_ROOT,
+                        help="reuse the sealed asset proof and retain lineage from the failed original run")
     parser.add_argument("--refresh-sources", action="store_true",
                         help="refresh sources and seals in an existing staged packet only")
     args = parser.parse_args()
     root = args.root.absolute()
-    print(refresh_sources(root) if args.refresh_sources else prepare(root, args.work.absolute(), args.runtime.absolute()))
+    print(refresh_sources(root) if args.refresh_sources else prepare(
+        root, args.work.absolute(), args.runtime.absolute(), prior_root=args.requalify_from.absolute()))
 
 
 if __name__ == "__main__":

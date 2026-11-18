@@ -60,6 +60,7 @@ class NativeLaunchTests(unittest.TestCase):
         db.close()
 
     def seal_index(self):
+        (self.data / native.CONFIG_PATH).write_bytes(native.CONFIG_BYTES)
         native._materialize_merged_arrays(self.project / "index", time.monotonic() + 10)
         native._seal_sqlite(self.project / "index/metadata.db")
 
@@ -88,8 +89,12 @@ class NativeLaunchTests(unittest.TestCase):
             self.assertIn("--cap-drop=ALL", command)
             self.assertIn("COLGREP_FORCE_CPU=1", command)
             self.assertIn(f"ORT_DYLIB_PATH={native.RUNTIME_IN}", command)
-            self.assertEqual(command[command.index("--cpuset-cpus") + 1], "2,5")
+            self.assertEqual(command[command.index("--cpuset-cpus") + 1], "2,3,4,5")
             self.assertEqual(command[command.index("--memory") + 1], "1048576")
+            for key, value in native.THREAD_ENV.items():
+                self.assertIn(f"{key}={value}", command)
+                self.assertNotIn(key, kwargs["env"])
+            self.assertIn("--pids-limit=256", command)
             self.assertEqual(command[-3:], ["--", self.argv[-2], str(self.root)])
             self.assertEqual(kwargs["timeout"], 10)
             self.assertNotIn("HF_TOKEN", kwargs["env"])
@@ -97,9 +102,10 @@ class NativeLaunchTests(unittest.TestCase):
             return subprocess.CompletedProcess(command, 0, "[]\n", "")
 
         with (patch.object(native.shutil, "which", return_value="/usr/bin/docker"),
-              patch.object(native.os, "sched_getaffinity", return_value={5, 2}),
+              patch.object(native.os, "sched_getaffinity", return_value={5, 2, 4, 3, 100, 101, 102, 103}),
               patch.object(native, "_memory_limit", return_value=1048576),
-              patch.dict(native.os.environ, {"HF_TOKEN": "token", "DOCKER_HOST": "tcp://example"}),
+              patch.dict(native.os.environ, {"HF_TOKEN": "token", "DOCKER_HOST": "tcp://example",
+                                             "RAYON_NUM_THREADS": "256"}),
               patch.object(native.subprocess, "run", side_effect=run) as invoke):
             self.assertEqual(self.call_search(), "[]\n")
         self.assertEqual(invoke.call_count, 1)
@@ -115,6 +121,20 @@ class NativeLaunchTests(unittest.TestCase):
                 self.call_search()
             (self.project.parent / "parent-project-index").mkdir()
             with self.assertRaisesRegex(ValueError, "exactly one private"):
+                self.call_search()
+        invoke.assert_not_called()
+
+    def test_missing_or_changed_session_config_refuses_native_search(self):
+        self.lay_index()
+        self.seal_index()
+        config = self.data / native.CONFIG_PATH
+        with (patch.object(native.shutil, "which", return_value="/usr/bin/docker"),
+              patch.object(native.subprocess, "run") as invoke):
+            config.unlink()
+            with self.assertRaises(FileNotFoundError):
+                self.call_search()
+            config.write_bytes(b'{"parallel_sessions":4}\n')
+            with self.assertRaisesRegex(native.IsolationError, "thread configuration changed"):
                 self.call_search()
         invoke.assert_not_called()
 
@@ -181,6 +201,10 @@ class NativeLaunchTests(unittest.TestCase):
             ])
             self.assertEqual(command[-7:], ["init", "--model", native.MODEL_IN, "--force-cpu",
                                             "-y", "--", str(self.root)])
+            config = self.data / native.CONFIG_PATH
+            self.assertIn(native._mount(config, Path(native.DATA_IN) / native.CONFIG_PATH), command)
+            self.assertEqual(json.loads(config.read_bytes()), {"parallel_sessions": 1})
+            self.assertEqual(config.stat().st_mode & 0o777, 0o400)
             self.lay_index()
             return subprocess.CompletedProcess(command, 0, "", "")
 

@@ -21,8 +21,8 @@ import colgrep_compare as comparator
 import colgrep_native as native
 import pilot
 
-ROW = "dcp10-colgrep-native-20261118"
-SCHEMA = "epyc.dcp10.colgrep-native-preparation.v1"
+ROW = "dcp10-colgrep-native-20261118-r2"
+SCHEMA = "epyc.dcp10.colgrep-native-preparation.v2"
 MAX_SECONDS = 1800
 SMOKE_SECONDS = 120
 PACKET_SOURCES = ("colgrep_row.py", "colgrep_compare.py", "colgrep_native.py", "pilot.py")
@@ -112,6 +112,14 @@ def model_stat(model):
     return records
 
 
+def launch_policy():
+    return {"limit": comparator.LIMIT, "max_files": comparator.MAX_FILES,
+            "alpha": comparator.ALPHA, "budgets": list(comparator.BUDGETS),
+            "max_seconds": MAX_SECONDS, "isolation_image": native.IMAGE,
+            "max_cpus": native.MAX_CPUS, "thread_env": native.THREAD_ENV,
+            "private_config_sha256": digest(native.CONFIG_BYTES)}
+
+
 def load_preparation(root, expected):
     packet, assets = root / "packet", root / "assets"
     for path in (root, assets, packet):
@@ -120,6 +128,7 @@ def load_preparation(root, expected):
     receipt = json.loads(comparator.read_sealed(packet / "preparation.json", expected))
     require((receipt["schema"], receipt["row"], receipt["scratch"]) == (SCHEMA, ROW, str(root)),
             "unexpected preparation receipt")
+    require(receipt["launch"] == launch_policy(), "launch policy differs from preparation")
     require(set(receipt["source_hashes"]) == set(PACKET_SOURCES), "incomplete packet source seal")
     for name, sealed in receipt["source_hashes"].items():
         comparator.read_sealed(packet / name, sealed)
@@ -310,6 +319,8 @@ def run_official(root, receipt, admitted, remaining, *, build, search):
         "unknown": unresolved, "stop_reason": stop_reason,
         "outputs_sha256": {path.name: comparator.hash_file(path) for path in sorted(output.iterdir())},
     }
+    if "lineage" in receipt:
+        result["lineage"] = receipt["lineage"]
     save(output / "RESULT.json", result)
     return 0 if stop_reason is None else 1
 

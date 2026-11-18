@@ -76,3 +76,29 @@ WAL/SHM sidecars prepared after the sole index writer closes, before its content
 The retained record separately identifies publisher qualification on a fresh model-backed fixture.
 The source review and synthetic SQLite probe alone do not establish native retrieval success;
 fixture qualification establishes no official cohort observation.
+
+## Infrastructure-fix revision after the original row
+
+The original row completed its three attempts but every build failed with Rust
+thread-spawn EAGAIN; its comparison is invalid. Preserve that result and all error
+rows. A separately sealed revision tests whether bounded native threading lets the
+same three tasks complete index construction and immutable retrieval. This is an
+infrastructure qualification, with no task replacement or automatic retry.
+
+The pinned NextPlaid encoder starts a scoped thread for every prepared batch when
+multiple ONNX sessions exist (`next-plaid-onnx/src/lib.rs`,
+`encode_prepared_document_batches`). One session takes its serial branch. The
+revision therefore supplies the released ColGREP configuration
+`parallel_sessions=1` through a private read-only configuration file, bounds the
+other native thread pools, and limits the child affinity to at most four CPUs from
+the allocator grant. It retains the 256-PID limit, model/binary pins, original
+queries, search/file caps and pack budgets. A small successful smoke alone cannot
+show that the original multi-batch failure is fixed on the cohort.
+
+The new row's predicate requires both three completed attempts and
+`comparison_valid == 1`. Thus a completed set of error rows cannot pass the
+comparison predicate. The question is answered by three retained attempts; stop at
+the first source/isolation failure, allocator boundary or the existing 1,800-second
+cap. All failures and unresolved tasks remain visible. This finite revision does
+not estimate population quality or resolve source/custody admission. Native graph
+scoring still requires valid, admitted and sealed ColGREP seed outputs.
