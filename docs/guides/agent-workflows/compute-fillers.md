@@ -89,6 +89,10 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
   after start (`HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` or `taskset -a -p`; one ROCr thread is born with full-host
   affinity), and never run a CPU-wide preflight or bench inside a GPU-only grant. Containers carry `--cpuset-cpus
   "$FILLER_CPUS"`; the docker client's `taskset` does not confine them.
+- **GPU row serving argv = the orchestrator pinned-launch contract** (GPS-PIN-1, 2026-11-18): `numactl --membind=3 -- taskset -c 184-191
+  <llama-server> ... -t 8 -tb 8` with `HSA_OVERRIDE_CPU_AFFINITY_DEBUG=0` in the env (`scripts/server/launch_affinity.py
+  apply_pinned_launch_env`). The c14/c15 fold rows launched `taskset` only: no membind, no knob, so one ROCr thread per server ran on all
+  CPUs. Whether that matters for visit scatter is measured by `gps-pin-1-scatter-gpu-20261118` (pinned vs unpinned, KEEP iff pinned CV <= 0.5x).
 - **Harness servers guard the HIP-graph VRAM leak** (GPU-LEAK-1): correctness jobs run `GGML_CUDA_DISABLE_GRAPHS=1`,
   timing jobs keep graphs on with a fresh server per session, both with an own-PID VRAM guard that ends cleanly
   (`.ended`, not OOM). Prove the knob is in the binary first (`strings <lib> | grep GGML_CUDA_DISABLE_GRAPHS`).
