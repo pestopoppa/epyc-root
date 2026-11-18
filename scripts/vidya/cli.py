@@ -611,7 +611,7 @@ _FILE_SOURCES = (
     "rus2-probe", "gpu-leak-probe", "v11-oracle-rerun", "kvu16a-sampled-load", "kvu19a2-native", "kvu19b-gap", "ds41-w5d", "akx-lb32", "repl-embedder-parity", "clbench-cache-hit", "spec-rng-1-2", "pb-qcost", "ev19-gold-selfcheck", "oolong", "yarn-gate-agg", "nemotron-bolt-fold", "np-ctx-kvu-measurement", "ufh14-lb7-stall", "ch19-t3-screen",
     "ak-r18-symbols", "ak-r18d-aa", "ak-r234-sweep", "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
-    "moe-routing", "exp01-proxy-capture", "mi210-paired-raw", "gpu-pool-native",
+    "moe-routing", "exp01-proxy-capture", "mi210-paired-raw", "gpu-pool-native", "r231-eof-capture",
     "quality-pack-comparison", "qwen4exp-cpu-loader-diagnostic", "kernel-promotion-lifecycle",
     "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
     "hsf5p-microbench", "v11-gate-bench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",

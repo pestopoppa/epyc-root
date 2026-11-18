@@ -1,0 +1,4 @@
+........................................................................ [ 60%]
+...............................................                          [100%]
+P1-A carrier invariants: 1280 tuples from 65 source kinds checked (byte identity / grade invariance), 0 violation(s)
+119 passed in 2.84s

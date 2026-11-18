@@ -613,6 +613,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="filed original EXP01 source-capture controls only; archived launch and paired-item "
                 "outputs re-derived; no pilot performance comparison or protocol",
            task="VB-EXP01-PROXY-WIRE"),
+    Source("r231-eof-capture", "r231_eof_capture",
+           lambda p: importlib.import_module("adapters.r231_eof_capture").units(p), frames="frames_for_path",
+           note="complete prospective model-free CLI EOF and simple/PTY cases; pinned grants, process "
+                "scopes, outputs and exact binary custody replayed; smoke and UNKNOWN refused",
+           task="VB-AK-R23-1-EOF-WIRE"),
     Source("mi210-paired-raw", "mi210_paired_raw", lambda p: [p], frames="emit",
            note="explicit original MI210 raw capture directory; completed measurement requests only; "
                 "diagnostic observations through the shared grade",
