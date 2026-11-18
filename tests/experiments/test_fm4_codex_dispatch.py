@@ -3,6 +3,8 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
+import sys
 import pytest
 
 from scripts.experiments.fm4 import codex_dispatch as dispatch, native_canary
@@ -204,13 +206,18 @@ def _replay_fixture(tmp_path, *, parent_changes=lambda _: None, child_changes=la
 
 
 @pytest.mark.parametrize("terminal", ["task_complete", "turn_aborted"])
-def test_dispatch_canary_uses_real_planner_and_terminal_only_authority(tmp_path, capsys, terminal):
+@pytest.mark.parametrize("coordinator_review", [False, True])
+def test_dispatch_canary_uses_real_planner_and_terminal_only_authority(
+        tmp_path, capsys, terminal, coordinator_review):
     def child_changes(rows):
         rows[-1]["payload"]["type"] = terminal
 
     replay, result, private = _replay_fixture(tmp_path, child_changes=child_changes)
     state = tmp_path / "state"
-    assert native_canary.main(["--dispatch-replay", str(replay), "--state-dir", str(state)]) == 0
+    args = ["--dispatch-replay", str(replay), "--state-dir", str(state)]
+    if coordinator_review:
+        args.append("--coordinator-review")
+    assert native_canary.main(args) == 0
     output = capsys.readouterr().out
     canary = json.loads(output)
     (item,) = canary["selected"]
@@ -226,6 +233,55 @@ def test_dispatch_canary_uses_real_planner_and_terminal_only_authority(tmp_path,
     assert adapter.DISPATCH_AUTHORITY in ledger and adapter.AUTHORITY not in ledger
     assert "fm4_selected_gate_pass" not in ledger and "fm4_codex_terminal_dispatch" in ledger
     assert len((state / "reads.jsonl").read_text().splitlines()) == 2
+    if coordinator_review:
+        entry = native_canary.ROOT / native_canary.COORDINATOR_ENTRY
+        assert canary["entrypoint"] == "scripts/vidya/coordinator_fm4_context.py"
+        assert canary["entrypoint_sha256"] == hashlib.sha256(entry.read_bytes()).hexdigest()
+        assert canary["reliance_count"] == canary["task_gate_claim_count"] == 0
+        config = state / "alarm-config.json"
+        assert json.loads(config.read_bytes())["backend"] == "file"
+
+
+def test_coordinator_review_uses_the_fixed_consumer():
+    entry = native_canary.ROOT / native_canary.COORDINATOR_ENTRY
+    refused = subprocess.run([sys.executable, "-B", str(entry), "--consumer", "autokernel.planner"],
+                             capture_output=True, text=True)
+    assert refused.returncode == 2
+    assert "unrecognized arguments: --consumer autokernel.planner" in refused.stderr
+
+
+def test_coordinator_entry_refuses_invalid_index_and_defaults_to_checkout_check(tmp_path):
+    entry = native_canary.ROOT / native_canary.COORDINATOR_ENTRY
+    index = tmp_path / "index.yaml"
+    index.write_text("[\n")
+    config = tmp_path / "alarm-config.json"
+    config.write_text(json.dumps({"backend": "file", "file": {"path": str(tmp_path / "alarms.jsonl")}}))
+    run = subprocess.run([
+        sys.executable, "-B", str(entry), "--ledger", str(tmp_path / "ledger.jsonl"),
+        "--index", str(index), "--known-good", str(tmp_path / "known-good.json"),
+        "--read-log", str(tmp_path / "reads.jsonl"), "--alarm-state", str(tmp_path / "alarm-state.json"),
+        "--alarm-config", str(config),
+    ], capture_output=True, text=True)
+    answer = json.loads(run.stdout)
+    assert run.returncode == native_canary.loop_beliefs.EXIT_REFUSED
+    assert answer["consumer"] == adapter.PLANNER_CONSUMER and answer["reader_checkout_check"] is True
+    assert answer["status"] == "refused" and answer["evidence"] is None
+
+
+def test_coordinator_canary_preserves_reader_timeout_as_refusal(tmp_path, capsys, monkeypatch):
+    def timeout(argv, **kwargs):
+        assert argv[3].endswith("/scripts/vidya/coordinator_fm4_context.py")
+        assert kwargs["timeout"] == 60
+        assert kwargs["env"]["ALARM_BACKEND"] == "file"
+        assert kwargs["env"]["ALARM_FILE_PATH"] == str(tmp_path / "state" / "alarms.jsonl")
+        raise subprocess.TimeoutExpired(argv, kwargs["timeout"], output=b"private content")
+
+    replay, _, _ = _replay_fixture(tmp_path)
+    monkeypatch.setattr(native_canary.subprocess, "run", timeout)
+    assert native_canary.main(["--dispatch-replay", str(replay), "--state-dir", str(tmp_path / "state"),
+                               "--coordinator-review"]) == 1
+    output = capsys.readouterr()
+    assert not output.out and output.err == "FM-4 canary refused: FM-4 coordinator reader timed out\n"
 
 
 @pytest.mark.parametrize(("fixture_change", "refusal"), [

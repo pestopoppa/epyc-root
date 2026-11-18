@@ -6,11 +6,14 @@ from datetime import datetime, timezone
 import hashlib
 import inspect
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[3]
+COORDINATOR_ENTRY = Path("scripts/vidya/coordinator_fm4_context.py")
 sys.path[:0] = [str(ROOT / "scripts" / "vidya"), str(ROOT)]
 
 import ingest_sources  # noqa: E402
@@ -89,6 +92,30 @@ def _planning_context(state_dir, ledger, index, consumer):
     return answer
 
 
+def _coordinator_context(state_dir, ledger, index):
+    config = state_dir / "alarm-config.json"
+    alarm_log = str(state_dir / "alarms.jsonl")
+    config.write_text(json.dumps({"backend": "file", "file": {"path": alarm_log}}), encoding="utf-8")
+    command = [
+        sys.executable, "-E", "-B", str(ROOT / COORDINATOR_ENTRY), "--allow-stale-reader",
+        "--ledger", str(ledger), "--index", str(index),
+        "--known-good", str(state_dir / "known-good.json"), "--read-log", str(state_dir / "reads.jsonl"),
+        "--alarm-state", str(state_dir / "alarm-state.json"), "--alarm-config", str(config),
+    ]
+    try:
+        # The alarm loader gives these environment values precedence over the config file.
+        env = dict(os.environ, ALARM_BACKEND="file", ALARM_FILE_PATH=alarm_log)
+        result = subprocess.run(command, capture_output=True, timeout=60, env=env)
+    except subprocess.TimeoutExpired:
+        raise ValueError("FM-4 coordinator reader timed out") from None
+    if result.returncode != loop_beliefs.EXIT_READY:
+        raise ValueError(f"FM-4 coordinator reader refused (exit {result.returncode})")
+    answer = loop_beliefs.validate_ready(json.loads(result.stdout))
+    if answer.get("consumer") != adapter.PLANNER_CONSUMER:
+        raise ValueError("FM-4 coordinator reader selected the wrong consumer")
+    return answer
+
+
 def _selected_claim(state_dir, native):
     ledger, index = _ingest(state_dir, Path(native["path"]), 1)
     answer = _planning_context(state_dir, ledger, index, adapter.PLANNER_CONSUMER)
@@ -138,8 +165,8 @@ def run(child, parent, task_id, acceptance, state_dir):
             "selected_claim": claim, "ledger_state": ledger_state, "ledger_state_digest": state_digest}
 
 
-def run_codex_dispatch(replay, state_dir):
-    """Replay a completed census selection through the real coordination planner reader."""
+def run_codex_dispatch(replay, state_dir, *, coordinator_review=False):
+    """Replay a completed census selection through the coordination planning reader."""
     natives = adapter.native_rows(replay)
     if not natives or any("receipt" not in row for row in natives):
         raise ValueError("a native Codex dispatch replay bundle is required")
@@ -151,7 +178,8 @@ def run_codex_dispatch(replay, state_dir):
     if gate_claim_count or any(frame["pubinfo"]["authority_scope"] != adapter.DISPATCH_AUTHORITY
                                for frame in frames):
         raise ValueError("Vidya did not preserve native dispatch authority in the canary ledger")
-    answer = _planning_context(state_dir, ledger, index, adapter.PLANNER_CONSUMER)
+    answer = (_coordinator_context(state_dir, ledger, index) if coordinator_review
+              else _planning_context(state_dir, ledger, index, adapter.PLANNER_CONSUMER))
     evidence = answer["evidence"]
     claims = {row["claim_id"]: row for row in evidence["claims"]}
     selected = []
@@ -171,18 +199,25 @@ def run_codex_dispatch(replay, state_dir):
         selected.append({"receipt": receipt, "claim": claim})
     if len(evidence["claims"]) != len(selected) or adapter.DISPATCH_LIMITATION not in evidence["section"]:
         raise ValueError("Vidya planning context included extra claims or lost the task-outcome limitation")
+    if evidence["claim_ids"]:
+        raise ValueError("Vidya planning context made dispatch observations eligible for reliance")
     other = _planning_context(state_dir, ledger, index, "autokernel.planner")
-    if other["evidence"]["claims"] or other["ledger_state_digest"] != answer["ledger_state_digest"]:
+    if (other["evidence"]["claims"] or other["evidence"]["claim_ids"]
+            or other["ledger_state_digest"] != answer["ledger_state_digest"]):
         raise ValueError("Vidya planning context leaked dispatch observations to an unrelated consumer")
     if any(read.get("read_log_error") or read.get("known_good_error") for read in (answer, other)):
         raise ValueError("Vidya planning context did not retain its read or freshness record")
     if adapter.native_rows(replay) != natives:
         raise ValueError("the dispatch replay bundle changed during Vidya ingest or retrieval")
-    return {"schema": "fm4.codex_dispatch.canary.v1", "consumer": adapter.PLANNER_CONSUMER,
-            "census": {"path": natives[0]["result_path"], "sha256": natives[0]["sha256"]},
-            "selected": selected, "task_outcome": None, "task_gate_claim_count": gate_claim_count,
-            "excluded_consumer": other["consumer"],
-            "ledger_state": answer["ledger_state"], "ledger_state_digest": answer["ledger_state_digest"]}
+    result = {"schema": "fm4.codex_dispatch.canary.v1", "consumer": adapter.PLANNER_CONSUMER,
+              "census": {"path": natives[0]["result_path"], "sha256": natives[0]["sha256"]},
+              "selected": selected, "task_outcome": None, "task_gate_claim_count": gate_claim_count,
+              "excluded_consumer": other["consumer"], "ledger_state": answer["ledger_state"],
+              "ledger_state_digest": answer["ledger_state_digest"]}
+    if coordinator_review:
+        result.update(entrypoint=str(COORDINATOR_ENTRY), entrypoint_sha256=_sha256(ROOT / COORDINATOR_ENTRY),
+                      reliance_count=len(evidence["claim_ids"]))
+    return result
 
 
 def main(argv=None):
@@ -192,16 +227,21 @@ def main(argv=None):
     parser.add_argument("--task-id", help="task identity obtained from the dispatch")
     parser.add_argument("--acceptance", type=Path, help="record emitted by run_gate.py")
     parser.add_argument("--dispatch-replay", type=Path, help="read-only native Codex census replay bundle")
+    parser.add_argument("--coordinator-review", action="store_true",
+                        help="exercise the exact interactive coordinator entry point in isolated replay")
     parser.add_argument("--state-dir", type=Path, required=True, help="new directory for isolated Vidya state")
     args = parser.parse_args(argv)
     gate_args = (args.child, args.parent, args.task_id, args.acceptance)
+    if args.coordinator_review and not args.dispatch_replay:
+        parser.error("--coordinator-review requires --dispatch-replay")
     if args.dispatch_replay:
         if any(arg is not None for arg in gate_args):
             parser.error("--dispatch-replay is exclusive with the selected-gate arguments")
     elif any(arg is None for arg in gate_args):
         parser.error("use --dispatch-replay or supply --child, --parent, --task-id and --acceptance")
     try:
-        receipt = (run_codex_dispatch(args.dispatch_replay, args.state_dir) if args.dispatch_replay
+        receipt = (run_codex_dispatch(args.dispatch_replay, args.state_dir,
+                                      coordinator_review=args.coordinator_review) if args.dispatch_replay
                    else run(*gate_args, args.state_dir))
     except (OSError, ValueError, RuntimeError) as exc:
         print(f"FM-4 canary refused: {exc}", file=sys.stderr)

@@ -1,0 +1,127 @@
+{
+  "timestamp_utc": "2026-11-18T17:19:22.073038+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "ready_manifests_checked": 2462,
+  "reclaimed_bytes": 98168832,
+  "byte_basis": "Allocated bytes under removed paths (du -sx -B1)",
+  "removed": [
+    {
+      "path": "architect-critic-20261118",
+      "allocated_bytes": 339968,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-architect-critic-20261118/full-capture/RESULT.json.original-bytes.json",
+      "result_sha256": "a0c3cba0228c9ee7156f5b36a323e0fe5aa6a98b25804ce2e3a8f0eb9f5d6331"
+    },
+    {
+      "path": "architect-bank-r2-20261118",
+      "allocated_bytes": 294912,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-architect-bank-20261118/full-admitted-r2/RESULT.json.original-bytes.json",
+      "result_sha256": "e1afec69b1fe53ffc85a33eca6285030688bfcba986400b2fb76ce59af32b47b"
+    },
+    {
+      "path": "dflash-bank-20261118",
+      "allocated_bytes": 655360,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-dflash-bank-20261118/full-admitted/RESULT.json.original-bytes.json",
+      "result_sha256": "9f6bb49532726c6f950f253e035fae5b9bc1fca6de03ec0790d841c8c7522cb3"
+    },
+    {
+      "path": "dspark-dflash-r3-20261118",
+      "allocated_bytes": 794624,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-dspark-dflash-20261118/full-capture-r3/RESULT.json.original-bytes.json",
+      "result_sha256": "187bad99acd192141a75c012285868f7fde7507de28bc688fa228971a527b966"
+    },
+    {
+      "path": "ingest-bank-20261118",
+      "allocated_bytes": 667648,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-ingest-bank-20261118/full-admitted/RESULT.json.original-bytes.json",
+      "result_sha256": "f18745b7198ff142c50267d4fe7ff2c9ff85ad65b195a62127dcb10233432117"
+    },
+    {
+      "path": "ingest-long-context-20261118",
+      "allocated_bytes": 974848,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-ingest-long-context-20261118/full-capture/RESULT.json.original-bytes.json",
+      "result_sha256": "09b2c853297fe605d4614e8de0f0adf8a41930b478436b267e6c90a8041df3c1"
+    },
+    {
+      "path": "quality-pack-worker-general",
+      "allocated_bytes": 303104,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-worker-general-20261118/full-capture/RESULT.json.original-bytes.json",
+      "result_sha256": "62c1d473b631ddf2137e55998b56d995c66c5ee50c4fa3d6f1be413b8b1e5dfa"
+    },
+    {
+      "path": "loader-diag-wire-20261118",
+      "allocated_bytes": 1327104,
+      "reason": "Terminal and filed, scratch result matches committed original bytes",
+      "evidence": "data/vidya/quality-pack-loader-reshape-20261118/wire/full/RESULT.json.original-bytes.json",
+      "result_sha256": "b5883f01e41bf101a8801b6c821a48ffdd7d6cb613934b10f01c3e377ca48cda"
+    },
+    {
+      "path": "fm4-native-current/test-projection",
+      "allocated_bytes": 835584,
+      "reason": "Generated software test fixture directory"
+    },
+    {
+      "path": "quality-pack/software-fixture-q6hipe66",
+      "allocated_bytes": 397312,
+      "reason": "Generated software test fixture directory"
+    },
+    {
+      "path": "quality-pack/software-fixture-s5pa3s4s",
+      "allocated_bytes": 397312,
+      "reason": "Generated software test fixture directory"
+    },
+    {
+      "path": "lifecycle-native/out/smoke/8f1289df795d49318cd5320116a61d5b/pytest-tmp",
+      "allocated_bytes": 91181056,
+      "reason": "Generated software test fixture directory"
+    }
+  ],
+  "retained_current_dependencies": {
+    "actor-seat-native-20261118": [
+      "Native writer and retained custody sources"
+    ],
+    "attention-ready": [
+      "ni-gpu-pool-attention-20261117-v1"
+    ],
+    "attention-rest-ready": [
+      "ni-gpu-pool-attention-20261117-v2"
+    ],
+    "elementwise-ready": [
+      "ni-gpu-pool-elementwise-20261117-v1"
+    ],
+    "fm2-current": [
+      "FM2 packet and coordinator source/native closure needed for filing"
+    ],
+    "fm4-native-current": [
+      "FM4 private capture and projection-row closure needed for review"
+    ],
+    "gpu-pool": [
+      "ni-gpu-pool-matmul-20261117-v1"
+    ],
+    "kvq-ready": [
+      "Prepared KVQ successor, pinned research worktree"
+    ],
+    "lifecycle-native": [
+      "Prepared successor and recorded native evidence"
+    ],
+    "matmul-id-ready": [
+      "ni-gpu-pool-matmul-20261117-v2"
+    ],
+    "mi210-native-20261117": [
+      "vidya-mi210-q38-native-wire-20261117"
+    ],
+    "parity-native-20261118-r2": [
+      "q38p4-greedy-parity-20261118-r2"
+    ],
+    "r231-eof-wire-20261118": [
+      "R3 closure and unique R2 native failure"
+    ]
+  },
+  "guarded_candidates": {}
+}

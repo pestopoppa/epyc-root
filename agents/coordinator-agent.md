@@ -79,6 +79,23 @@ recovers. An empty section leaves the diagnosis unavailable. The FM-2 claims des
 judge's code assignments and carry harness context only. Use them to frame diagnostic questions.
 Reliance is limited to `evidence.claim_ids`; task outcomes and accuracy require independent evidence.
 
+### FM-4 diagnostic review
+
+When reviewing FM-4 dispatch findings or sequencing FM-4 follow-up work, load the scoped context
+before forming the review or task brief:
+
+```bash
+python3 -B /mnt/raid0/llm/views/epyc-root-main/scripts/vidya/coordinator_fm4_context.py
+```
+
+Read `evidence.section` from a `ready` answer and read the owning handoff for task history and
+prerequisites. If the read refuses, retain its reason and pause the FM-4 review until it recovers.
+An empty section leaves the diagnosis unavailable. A terminal-dispatch observation records the
+bound dispatch identity and the first child turn's terminal event. Its task outcome is unknown.
+Selected-gate observations describe the recorded gate exit. Use both as harness context for review
+and use `evidence.claim_ids` for reliance. Task acceptance requires an independently suitable gate
+and a verified oracle binding to the exact task and dispatch.
+
 ### Auditor and Inference Main provisioning
 
 When either special role is absent or must be instantiated, ask the operator **before any launch**:

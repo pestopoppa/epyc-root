@@ -1,0 +1,132 @@
+{
+  "canary": {
+    "census": {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/source/data/vidya/fm4-native-ready-20261118/official/RESULT.json",
+      "sha256": "06b0ece27a099748d991c62d817aa0a8050d38865014db281ac1bd5ea1355432"
+    },
+    "consumer": "coordination.fm4",
+    "entrypoint": "scripts/vidya/coordinator_fm4_context.py",
+    "entrypoint_sha256": "5861ede35b460b3de8e3c8d1b42d342098e1ada0198ad904f788e888db415362",
+    "excluded_consumer": "autokernel.planner",
+    "ledger_state": {
+      "frame_count": 3,
+      "fresh": true,
+      "freshness": {
+        "frames_emitted": 0,
+        "index_max_id": 0,
+        "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/publisher_smoke-hdl43ljn/planner/intake_index.yaml",
+        "last_sync": "2026-11-18T17:23:09Z",
+        "sources": [],
+        "sync_action": "ingested",
+        "sync_seconds": 0.0,
+        "synced_max_id": 0,
+        "was_fresh": false
+      },
+      "head_hash": "sha256:e610110715742123c4c3e5f27466487607b67a698597d8b80043fc554d696448",
+      "head_seq": 2,
+      "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/publisher_smoke-hdl43ljn/planner/ledger.jsonl",
+      "schema": "epyc.vidya.ledger_state.v1",
+      "verified_at": "2026-11-18T17:23:09Z"
+    },
+    "ledger_state_digest": "sha256:088bd06e7b3c9d75f4163d7330dd41611c65175a87a7803aa13506d1f348c8f8",
+    "reliance_count": 0,
+    "schema": "fm4.codex_dispatch.canary.v1",
+    "selected": [
+      {
+        "claim": {
+          "anchor_value": null,
+          "claim_id": "clm_fm4-gate-acceptance:06b0ece27a099748d991c62d817aa0a8050d38865014db281ac1bd5ea1355432:scratch_cleanup",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-review-current/source/data/vidya/fm4-native-ready-20261118/official/RESULT.json#sha256=06b0ece27a099748d991c62d817aa0a8050d38865014db281ac1bd5ea1355432&pair_id=scratch_cleanup",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": true,
+          "outcome": "",
+          "recipe": "",
+          "reps": 1,
+          "retrofit": false,
+          "role": "",
+          "run": null,
+          "source_kind": "fm4-gate-acceptance",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "harness",
+          "unit": "terminal_dispatch_indicator",
+          "value": 1.0,
+          "varied": []
+        },
+        "receipt": {
+          "binding_kind": "native_agent_path",
+          "child_turn": {
+            "final_message_present": true,
+            "start_line": 2,
+            "state": "completed",
+            "terminal_event": "task_complete",
+            "terminal_line": 147,
+            "turn_id": "01a1ef4a-44e5-7952-87dc-41caf16926e7"
+          },
+          "disposition": "terminal_child",
+          "identity": {
+            "child_agent_id": "01a1ef4a-44d3-74e3-ae17-c8fa32009836",
+            "dispatch_tool_use_id": "call_83106cd980044f1bac254e200034127d",
+            "parent_session_id": "01a1ef49-ca67-7a53-bdfc-4bd5a1c87a6a"
+          },
+          "inputs": {
+            "child": {
+              "sha256": "c96d3e863eeff8fb413c00d9cdeec93c26793d9db7600d2d0b6e1bddaa2dcf17"
+            },
+            "parent": {
+              "sha256": "86cc0f612eefeec2794773c2468358bd9315a0e05e761d37dfb2ad831b8c675c"
+            }
+          },
+          "lineage": {
+            "child_agent_path": "/root/scratch_cleanup",
+            "child_parent_thread_id": "01a1ef49-ca67-7a53-bdfc-4bd5a1c87a6a",
+            "child_session_id": "01a1ef4a-44d3-74e3-ae17-c8fa32009836",
+            "parent_session_id": "01a1ef49-ca67-7a53-bdfc-4bd5a1c87a6a"
+          },
+          "pair_id": "scratch_cleanup",
+          "schema": "fm4.codex_dispatch.v1",
+          "spawn_candidates": [
+            {
+              "call_id": "call_83106cd980044f1bac254e200034127d",
+              "call_line": 33,
+              "result_agent_id": null,
+              "result_error": false,
+              "result_line": 36,
+              "result_task_name": "/root/scratch_cleanup"
+            }
+          ],
+          "task_outcome": null
+        }
+      }
+    ],
+    "task_gate_claim_count": 0,
+    "task_outcome": null
+  },
+  "cpus": [
+    116,
+    117,
+    118,
+    119
+  ],
+  "id": "vb-fm4-coordinator-context-20261118",
+  "mode": "publisher_smoke",
+  "refusal_count": 0,
+  "reliance_count": 0,
+  "schema": "fm4.codex_dispatch.coordinator_context_row.v1",
+  "selected_count": 1,
+  "source_base_commit": "0f190f1109485553b352a87208852308300c7456",
+  "source_pins_sha256": "6d024859f259ad088dc569176c442501318c20bab965b3ddb0acef8aae0fe615",
+  "status": "passed",
+  "task_gate_claims": 0,
+  "task_outcome": null
+}

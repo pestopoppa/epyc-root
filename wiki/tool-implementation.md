@@ -2029,3 +2029,7 @@ Source References:
 - [autopilot-backlog-session 2026-11-18](../progress/2026-11/2026-11-18-autopilot-backlog-session.md)
 - [autopilot-backlog-session 2026-11-17](../progress/2026-11/2026-11-17-autopilot-backlog-session.md)
 - [tool-picker recall alarm proposal](../docs/design/tool-picker-recall-alarm-proposal.md)
+
+## FM2 and FM4 native diagnostic context acceptance — 2026-11-18
+
+The official retained-native FM2 coordinator entrypoint canary selected one original diagnostic with no refusals or reliance; the official FM4 shared-reader canary selected both original terminal-dispatch receipts with no refusals or task-gate claims. Both completed allocator rc0 and preserved the existing Judged/Located harness scope. FM4 task outcomes remain null. These results establish diagnostic context assembly; genuine coordinator review and suitable oracle/task-accuracy acceptance remain separate. See [FM2 findings](../docs/findings/fm2-native-source-control-20261118.md) and [FM4 findings](../docs/findings/fm4-native-dispatch-projection-20261118.md).

@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": null,
+ "answer": null,
+ "at": "2026-11-18T17:15:44+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T17:15:02Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-fm2-coordinator-context-20261118.ended",
+ "filed_at": "2026-11-18T17:15:44+00:00",
+ "filed_by": "file_result.py",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM2-COORDINATOR-ENTRY-PREP",
+ "id": "vb-fm2-coordinator-context-20261118",
+ "machine_checkable": true,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-fm2-coordinator-context-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current/coordinator-row/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-fm2-coordinator-context-20261118",
+ "row_verdict": "pass",
+ "rule": "selected_count >= 1 and refusal_count == 0 and reliance_count == 0",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 87,
+  "input": 368986925,
+  "output": 1558124,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 370545049,
+  "tokens_per_task": 4259138.494252874
+ },
+ "values": {
+  "refusal_count": 0.0,
+  "reliance_count": 0.0,
+  "selected_count": 1.0
+ },
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "fcc3bab02338149fee3e5973e35af9495715f44e8d6c2c33acd92189f305442b",
+  "result": "pass",
+  "status": "filed"
+ }
+}
