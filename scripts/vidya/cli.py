@@ -886,14 +886,14 @@ def cmd_sync(args) -> int:
     path = _ledger_path(args)
     index = Path(args.index) if args.index else None
     if args.check:
-        st = vsync.status(path, index, from_worktree=args.from_worktree)
+        st = vsync.status(path, index, from_worktree=args.from_worktree, fetch=not args.no_fetch)
         human = (f"ledger {'FRESH' if st['fresh'] else 'STALE'}: index max intake-{st['index_max_id']} "
                  f"({st['index_entries']} entries), ledger synced through intake-{st['synced_max_id']}, "
                  f"lag {st['lag_entries']}, source {st['index']}, last sync {st['last_sync']}, ledger {st['ledger']}")
         _emit(st, args.json, human)
         return 0 if st["fresh"] else 1
     rep = vsync.sync(path, index, as_of=args.as_of, force=args.force,
-                     from_worktree=args.from_worktree)
+                     from_worktree=args.from_worktree, fetch=not args.no_fetch)
     if args.quiet:
         return 0
     return _emit(rep, args.json, f"sync: {rep['action']}  frames={rep.get('frames_emitted', 0)}  "
@@ -1123,6 +1123,8 @@ def build_parser() -> argparse.ArgumentParser:
     sy.add_argument("--as-of", help="ingest timestamp (default now)")
     sy.add_argument("--force", action="store_true")
     sy.add_argument("--quiet", action="store_true")
+    sy.add_argument("--no-fetch", action="store_true",
+                    help="read the existing origin/main ref without fetching (Git hook)")
     sy.set_defaults(func=cmd_sync)
 
     co = sub.add_parser("conclusion", help="committed-conclusion register (VB-CC)")

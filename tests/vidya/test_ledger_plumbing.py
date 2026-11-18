@@ -246,12 +246,50 @@ def test_installer_is_idempotent_and_block_runs_hook(tmp_path):
     inst = REPO / "scripts" / "vidya" / "install_sync_hook.sh"
     for _ in range(2):
         subprocess.run(["bash", str(inst), str(hooks)], check=True, capture_output=True)
-    for ev in ("post-commit", "post-merge"):
+    for ev in ("post-commit", "post-merge", "reference-transaction"):
         text = (hooks / ev).read_text()
         assert text.count(">>> vidya-sync hook >>>") == 1
         assert text.startswith("#!/bin/sh")
     assert "echo existing" in (hooks / "post-commit").read_text()
     assert os.access(hooks / "post-merge", os.X_OK)
+
+
+def test_reference_hook_preserves_stdin_and_veto_and_only_syncs_committed_origin_main(tmp_path):
+    repo = _hook_repo(tmp_path)
+    state = tmp_path / "state"
+    state.mkdir()
+    hooks = repo / ".git" / "hooks"
+    hook = hooks / "reference-transaction"
+    hook.write_text('#!/bin/sh\ncat > "$VIDYA_STATE_DIR/stdin"\nprintf "%s" "$1" > "$VIDYA_STATE_DIR/event"\n[ "$1" != prepared ]\n')
+    hook.chmod(0o755)
+    subprocess.run(["bash", str(REPO / "scripts/vidya/install_sync_hook.sh"), str(hooks)],
+                   cwd=repo, check=True, capture_output=True)
+    env = {**os.environ, "VIDYA_STATE_DIR": str(state)}
+    line = "1" * 40 + " " + "2" * 40 + " refs/remotes/origin/main\n"
+    def invoke(event, payload):
+        return subprocess.run([str(hook), event], cwd=repo, env=env, input=payload,
+                              text=True, capture_output=True)
+    assert invoke("prepared", line).returncode == 1
+    assert (state / "stdin").read_text() == line
+    assert not (state / "called").exists()
+    bad_bin = tmp_path / "bad-bin"
+    bad_bin.mkdir()
+    (bad_bin / "mktemp").write_text("#!/bin/sh\nexit 1\n")
+    (bad_bin / "mktemp").chmod(0o755)
+    failed_temp = subprocess.run([str(hook), "prepared"], cwd=repo,
+                                 env={**env, "PATH": f"{bad_bin}:{os.environ['PATH']}"},
+                                 input=line, text=True, capture_output=True)
+    assert failed_temp.returncode == 1 and (state / "stdin").read_text() == line
+    other = line.replace("origin/main", "origin/other")
+    assert invoke("committed", other).returncode == 0
+    assert (state / "stdin").read_text() == other
+    assert not (state / "called").exists()
+    assert invoke("aborted", line).returncode == 0
+    assert not (state / "called").exists()
+    assert invoke("committed", line).returncode == 0
+    assert (state / "stdin").read_text() == line
+    assert _wait(state / "called")
+    assert (state / "called").read_text().strip() == "sync --quiet --no-fetch"
 
 
 # ---- default source = origin/main's index --------------------------------------------------

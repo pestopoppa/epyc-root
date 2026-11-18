@@ -8,6 +8,18 @@
 # an already-folded index and takes the host-wide ledger write lock.
 set -u
 event="${1:-post-commit}"
+if [ "$event" = "reference-transaction" ]; then
+  top="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+  cli="$top/scripts/vidya/cli.py"
+  [ -f "$cli" ] || exit 0
+  state="${VIDYA_STATE_DIR:-/mnt/raid0/llm/state/vidya}"
+  mkdir -p "$state" 2>/dev/null || exit 0
+  # The committed remote-tracking ref is already published; do not fetch from
+  # inside the Git hook, which could recursively trigger another transaction.
+  timeout 120 python3 "$cli" sync --quiet --no-fetch >>"$state/sync-hook.log" 2>&1 </dev/null || \
+    printf '%s\n' 'vidya reference-transaction sync failed or timed out' >>"$state/sync-hook.log" 2>/dev/null || true
+  exit 0
+fi
 top="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
 branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null)" || exit 0
 [ "$branch" = "main" ] || exit 0
