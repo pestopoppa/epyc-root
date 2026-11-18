@@ -1,9 +1,17 @@
 {
   "row_id": "ni-gpu-pool-elementwise-20261118-v6",
   "publisher_rc": 0,
+  "attempt": "repaired_same_id_republish",
+  "queued_at": "2026-11-18T21:12:32Z",
   "qualification": "queued_GPU_busy",
   "smoke_pass": false,
   "repo_override": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
   "max_window_s": 720,
-  "note": "Publisher accepted corrected 420+300-second envelope and queued qualification for the next GPU gap. No unchanged republish or manual grant. Initial unlanded-box lookup used the default hub view and was corrected with ROWFLOW_REPO=lane; envelope refusal was corrected before queue acceptance."
+  "previous_smoke": {
+    "failed_at": "2026-11-18T21:04:50Z",
+    "failure": "smoke-repair/FAIL-1.json",
+    "controls_log": "smoke-repair/controls.log",
+    "repair": "smoke-repair/fix-report.json"
+  },
+  "note": "The publisher accepted the repaired packet under the same row ID and queued qualification for the next GPU gap. Qualification and official capture are pending."
 }

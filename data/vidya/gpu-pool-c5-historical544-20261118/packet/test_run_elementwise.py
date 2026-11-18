@@ -127,7 +127,11 @@ class PacketTests(unittest.TestCase):
                 producer.check_capture(out, pins, smoke=False)
 
             (native_root / "RESULT.json").write_text(json.dumps(result))
-            with patch.object(producer, "HERE", base), patch.object(producer, "pinned_inputs", return_value=pins):
+            with (
+                patch.dict(os.environ, {}, clear=True),
+                patch.object(producer, "HERE", base),
+                patch.object(producer, "pinned_inputs", return_value=pins),
+            ):
                 with self.assertRaisesRegex(ValueError, "prospective selection changed"):
                     producer.main(["complete"])
 

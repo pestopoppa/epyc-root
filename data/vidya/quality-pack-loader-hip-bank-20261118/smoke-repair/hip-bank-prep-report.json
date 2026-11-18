@@ -1,0 +1,32 @@
+{
+  "changed_paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/capture.py",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/make_plan.py",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/plan.json",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/production-runtime-stat-refresh.json",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/row-launch.sh",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/row.spec.json",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/SOURCE.sha256"
+  ],
+  "changes": [
+    "Smoke accepts a grant covering at least four CPUs and applies affinity to the first four granted CPUs before launching the same v10 HIP completion.",
+    "Ten v10 runtime/build files had ctime-only drift. Each refreshed pin retains its original path, SHA-256, device, inode, size and mtime. Strict stat checks remain active.",
+    "The relocated byte-identical template updates the recipe and generation path digests. All four request bytes, scoring, loader witness, model and production CPU affinity are preserved."
+  ],
+  "failure_cause": "The queued publisher GPU grant supplied CPUs 184\u2013191. Smoke preflight required an already narrowed four-CPU process mask and exited before startup.",
+  "native_smoke_run": false,
+  "original_and_paired_packets_preserved": true,
+  "original_failure": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/FAIL-1.json",
+  "original_native_result": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/native-attempts/attempt-hbntb8ka/native-result.json",
+  "original_publish_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118/row.spec.json",
+  "original_unpublished_manifest": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/unpublished.json",
+  "original_unpublished_manifest_sha256": "d5f93af99a034e76e9240ef6e422cfecdd3e9dbb0100fb3d060ce39edd8a453b",
+  "production_capture_run": false,
+  "publish_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/row.spec.json",
+  "publish_spec_sha256": "d1dc9f0cb3e849bc482f5c688846664ad2aebe82e0fa1c381b095eb35685c59f",
+  "row_id": "handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118",
+  "source_manifest_sha256": "d2285cda72b44e63859b69106b1ae1edf6ccb393d6b97cb9454cf50847c5f3bd",
+  "status": "repair_staged_native_publisher_smoke_pending",
+  "task": "VB-V9-8-QUALITY-PACK-LOADER-HIP-BANK-PREP",
+  "unresolved": "Native publisher smoke PASS is pending. The preparation box remains open."
+}
