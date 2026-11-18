@@ -44,6 +44,7 @@ PLANNED = 96
 TEMPERATURE = 0.3
 ATTEMPT_S = 480
 STOP = False
+BOUNDARY_TURN_TERMINAL = "terminated_on_boundary_turn"
 
 
 class WindowEnded(BaseException):
@@ -236,15 +237,32 @@ def trajectory_metrics(events, row, *, smoke=False, pre_generation_budget_exhaus
     if [event["turn"] for event in boundaries] != [boundary_turn]:
         raise ValueError("trajectory did not compact at exactly the assigned boundary")
     boundary = boundaries[0]
+    boundary_index = events.index(boundary)
     # TOC-MP-3(b) specifies the numeric turns b+1 through b+5.
-    turns = [event for event in events[events.index(boundary) + 1:]
-             if event["event"] == "turn" and boundary_turn < event["turn"] <= boundary_turn + 5]
+    turns_after_boundary = [event for event in events[boundary_index + 1:]
+                            if event["event"] == "turn"]
+    turns = [event for event in turns_after_boundary if boundary_turn < event["turn"] <= boundary_turn + 5]
     if not turns and smoke:
         return {"boundary_reached": True, "baps": None, "actions": 0,
                 "boundary": boundary, "terminal_state": final["terminal_state"]}
-    if not turns or any(type(t.get("blocked")) is not bool or "log_follows" not in t
-                        or "log_follow_attempts" not in t for t in turns):
-        raise ValueError("missing post-boundary action or measurement fields")
+    if not turns:
+        terminal_state = final["terminal_state"]
+        terminal_outcome = {"finished": "final", "killed": "error"}.get(terminal_state)
+        previous_turns = [event for event in events[:boundary_index] if event["event"] == "turn"]
+        observed_turns = [turn["turn"] for turn in previous_turns + turns_after_boundary]
+        if (terminal_outcome is None or final.get("solved") is not (terminal_state == "finished")
+                or type(final.get("turns")) is not int or final["turns"] != boundary_turn
+                or type(boundary["turn"]) is not int or len(turns_after_boundary) != 1
+                or turns_after_boundary[0].get("outcome") != terminal_outcome
+                or any(turn.get("outcome") not in ("ok", "error") for turn in previous_turns)
+                or any(type(turn) is not int for turn in observed_turns)
+                or observed_turns != list(range(1, boundary_turn + 1))):
+            raise ValueError("missing post-boundary actions without a boundary-turn terminal record")
+        return {"boundary_reached": True, "baps": None, "actions": 0, "boundary": boundary,
+                "terminal_state": terminal_state, "baps_unknown_reason": BOUNDARY_TURN_TERMINAL}
+    if any(type(t.get("blocked")) is not bool or "log_follows" not in t
+           or "log_follow_attempts" not in t for t in turns):
+        raise ValueError("missing post-boundary measurement fields")
     actions = [{"blocked": t["blocked"], "error": t["outcome"] == "error",
                 "deliberate_reread": bool(t["log_follows"]) and t["outcome"] != "error"
                 and t["tool_calls"]["execution"] == 0
@@ -256,6 +274,26 @@ def trajectory_metrics(events, row, *, smoke=False, pre_generation_budget_exhaus
             "actions": len(turns), "log_follows": sum(len(t["log_follows"]) for t in turns),
             "log_follow_attempts": sum(len(t["log_follow_attempts"]) for t in turns),
             "boundary": boundary, "terminal_state": final["terminal_state"]}
+
+
+def trial_metrics(graph, events, row, *, smoke=False):
+    pre_generation_exhausted = graph["pre_generation_budget_exhausted"]
+    wire = graph["wire"]
+    if pre_generation_exhausted is True and wire == []:
+        return trajectory_metrics(events, row, smoke=smoke, pre_generation_budget_exhausted=True)
+    if pre_generation_exhausted is not False or not isinstance(wire, list) or not wire:
+        raise ValueError("missing or inconsistent generation transport")
+    for record in wire:
+        if not isinstance(record, dict):
+            raise ValueError("malformed generation transport record")
+        status = record.get("http_status")
+        streaming = record.get("stream_requested")
+        if (type(status) is not int or not 200 <= status < 300 or type(streaming) is not bool
+                or record.get("response_complete") is not True or "request_error" in record
+                or "response_error" in record or not record.get("response_sha256")
+                or (streaming and record.get("response_sse_done") is not True)):
+            raise ValueError("incomplete or failed generation transport")
+    return trajectory_metrics(events, row, smoke=smoke)
 
 
 def summarize_ledger(out, schedule, draw):
@@ -270,11 +308,14 @@ def summarize_ledger(out, schedule, draw):
             continue
         point, arm, repeat = rec["run_id"].rsplit("|", 2)
         result = rec.get("result", {})
-        valid = rec["status"] == "ok" and point not in voided
+        observed_run = rec["status"] == "ok" and point not in voided
+        baps_unknown_reason = result.get("baps_unknown_reason")
+        valid = observed_run and result.get("baps") is not None and baps_unknown_reason is None
         runs.append({"run_id": rec["run_id"], "point_id": point, "stratum": strata[point], "arm": arm,
                      "repeat": int(repeat[1:]), "valid": valid, "status": rec["status"],
                      "baps": result.get("baps") if valid else None,
-                     "correct": result.get("correct") if valid else None, "wall_s": result.get("wall_s"),
+                     "baps_unknown_reason": baps_unknown_reason,
+                     "correct": result.get("correct") if observed_run else None, "wall_s": result.get("wall_s"),
                      "attempts": rec.get("attempts"), "void_point": point in voided})
     temp = out / "RUNS.tmp"
     temp.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in runs))
@@ -286,8 +327,10 @@ def summarize_ledger(out, schedule, draw):
                 if r["point_id"] in active and r["status"] in {"ok", "dropped"}}
     dropped = sum(r["status"] == "dropped" and r["point_id"] not in voided for r in runs)
     completed = sum(r["valid"] for r in runs)
+    baps_unknown = sum(r["status"] == "ok" and not r["void_point"] and r["baps_unknown_reason"] is not None
+                       for r in runs)
     return {"completed": completed, "processed": len(observed), "planned": PLANNED,
-            "dropped": dropped, "drop_limit_exceeded": dropped * 10 > PLANNED,
+            "dropped": dropped, "baps_unknown": baps_unknown, "drop_limit_exceeded": dropped * 10 > PLANNED,
             "active_points": sorted(active), "points_voided": sorted(voided),
             "voided_per_stratum": dict(Counter(strata[point] for point in voided)),
             "replacements": replacements, "reserve_exhausted": len(active) < PILOT_POINTS,
@@ -408,10 +451,8 @@ def run():
                 check_window(deadline)
                 graph = read_json(attempt / "GRAPH.json")
                 path = attempt / "trial.trajectory.jsonl"
-                pre_generation_exhausted = graph["pre_generation_budget_exhausted"]
-                metrics = trajectory_metrics(read_jsonl(path), row, smoke=smoke,
-                                             pre_generation_budget_exhausted=pre_generation_exhausted)
-                if budget_probe and not pre_generation_exhausted:
+                metrics = trial_metrics(graph, read_jsonl(path), row, smoke=smoke)
+                if budget_probe and graph["pre_generation_budget_exhausted"] is not True:
                     raise ValueError(f"frozen budget probe did not stop before generation; see {path}")
                 result = {**metrics, "wall_s": time.monotonic() - started, "correct": graph["correct"],
                           "grade_reason": graph["grade_reason"], "trajectory": str(path),

@@ -5,6 +5,7 @@ import subprocess
 import pytest
 import runner as cpu_runner
 from runner import (
+    BOUNDARY_TURN_TERMINAL,
     ENDPOINT,
     HERE,
     PYTHON,
@@ -14,6 +15,7 @@ from runner import (
     split_kv_observed,
     summarize_ledger,
     trajectory_metrics,
+    trial_metrics,
 )
 
 
@@ -68,6 +70,63 @@ def test_final_artifact_must_report_assigned_trial_and_budget():
         trajectory_metrics([turn(1), {**final(), "trial_index": 1}], row())
     with pytest.raises(ValueError, match="effective_context_budget_tokens"):
         trajectory_metrics([turn(1), {**final(), "effective_context_budget_tokens": 4096}], row())
+
+
+def boundary_terminal_events(terminal_state="finished"):
+    finished = terminal_state == "finished"
+    return [turn(1, error=True), {"event": "boundary", "turn": 2},
+            {**turn(2), "outcome": "final" if finished else "error"},
+            {**final(), "terminal_state": terminal_state, "solved": finished, "turns": 2}]
+
+
+@pytest.mark.parametrize("terminal_state", ["finished", "killed"])
+def test_verified_boundary_turn_terminal_has_unknown_baps(terminal_state):
+    events = boundary_terminal_events(terminal_state)
+    assert trajectory_metrics(events, row()) == {
+        "boundary_reached": True, "actions": 0, "baps": None,
+        "baps_unknown_reason": BOUNDARY_TURN_TERMINAL,
+        "boundary": events[1], "terminal_state": terminal_state,
+    }
+
+
+@pytest.mark.parametrize("malformation", ["no_boundary_action", "wrong_terminal_state", "wrong_outcome",
+                                           "wrong_final_turn", "wrong_finish_flag", "later_turn",
+                                           "missing_prior_turn", "misordered_boundary"])
+def test_missing_post_boundary_turns_require_consistent_terminal_evidence(malformation):
+    events = boundary_terminal_events()
+    if malformation == "no_boundary_action":
+        events.pop(2)
+    elif malformation == "wrong_terminal_state":
+        events[-1]["terminal_state"] = "context-exhausted"
+    elif malformation == "wrong_outcome":
+        events[2]["outcome"] = "ok"
+    elif malformation == "wrong_final_turn":
+        events[-1]["turns"] = 3
+    elif malformation == "wrong_finish_flag":
+        events[-1]["solved"] = False
+    elif malformation == "later_turn":
+        events.insert(-1, turn(8))
+    elif malformation == "missing_prior_turn":
+        events.pop(0)
+    else:
+        events[0], events[1] = events[1], events[0]
+    with pytest.raises(ValueError, match="without a boundary-turn terminal record"):
+        trajectory_metrics(events, row())
+
+
+@pytest.mark.parametrize("invalid_fields", [
+    {"http_status": 503}, {"response_complete": False}, {"response_sse_done": False},
+    {"response_sha256": None}, {"response_error": "ReadError"},
+])
+def test_invalid_wire_on_any_call_prevents_unknown_classification(invalid_fields):
+    response = {"http_status": 200, "stream_requested": True, "response_complete": True,
+                "response_sse_done": True, "response_sha256": "a" * 64}
+    graph = {"pre_generation_budget_exhausted": False, "wire": [response, response]}
+    events = boundary_terminal_events()
+    assert trial_metrics(graph, events, row())["baps_unknown_reason"] == BOUNDARY_TURN_TERMINAL
+    graph["wire"][0] = {**response, **invalid_fields}
+    with pytest.raises(ValueError, match="incomplete or failed generation transport"):
+        trial_metrics(graph, events, row())
 
 
 @pytest.mark.parametrize(("message", "expected"), [
@@ -457,6 +516,29 @@ def test_prior_runs_of_voided_points_are_kept_and_made_ineligible(tmp_path):
     assert runs[-1]["correct"] is None
     assert runs[-1]["valid"] is True
     assert summary["coverage_complete"] is False
+
+
+def test_boundary_terminal_keeps_grade_without_counting_baps_coverage(tmp_path, monkeypatch):
+    monkeypatch.setattr(cpu_runner, "PILOT_POINTS", 1)
+    monkeypatch.setattr(cpu_runner, "PLANNED", 2)
+    schedule = [row(), {**row(), "repeat": 1}]
+    draw = {"points": [{"point_id": "item@2", "stratum": "early"}], "reserves": {}}
+    records = [
+        {"run_id": "item@2|summary_only|r0", "status": "ok", "attempts": 1,
+         "result": {**trajectory_metrics(boundary_terminal_events(), row()), "correct": True}},
+        {"run_id": "item@2|summary_only|r1", "status": "ok", "attempts": 1,
+         "result": {"boundary_reached": True, "baps": 0, "correct": False}},
+    ]
+    (tmp_path / "ledger.jsonl").write_text("".join(json.dumps(record) + "\n" for record in records))
+    summary = summarize_ledger(tmp_path, schedule, draw)
+    unknown, zero = cpu_runner.read_jsonl(tmp_path / "RUNS.jsonl")
+    assert summary["processed"] == 2 and summary["schedule_exhausted"] is True
+    assert summary["completed"] == summary["baps_unknown"] == 1
+    assert summary["dropped"] == 0 and summary["replacements"] == summary["points_voided"] == []
+    assert summary["coverage_complete"] is False
+    assert unknown["valid"] is False and unknown["correct"] is True and unknown["baps"] is None
+    assert unknown["baps_unknown_reason"] == BOUNDARY_TURN_TERMINAL
+    assert zero["valid"] is True and zero["correct"] is False and zero["baps"] == 0
 
 
 @pytest.mark.parametrize("allocated,threads,expected", [

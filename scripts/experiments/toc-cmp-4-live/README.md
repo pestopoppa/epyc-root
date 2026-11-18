@@ -35,6 +35,13 @@ runner applies the same whole-point replacement rule. Accuracy and BAPS are
 UNKNOWN for the voided attempt. Zero-generation exits without this evidence
 still fail validation.
 
+A verified graph termination on the assigned boundary turn leaves BAPS UNKNOWN
+with reason `terminated_on_boundary_turn` because no action entered the endpoint's
+denominator. The run remains in the ledger with its accuracy grade when available,
+and contributes no eligible completion. The frozen reserve rule applies only to
+trajectories that never reach the boundary. Incomplete generation transport still
+follows the registered retry and drop rules.
+
 - `RECEIPT.json` identifies the frozen inputs, scope and run configuration.
 - `ledger.jsonl` records raw scheduling decisions. Each window has its native server evidence and per-attempt graph, verdict and trajectory capture.
 - `RUNS.jsonl` contains normalized observations for `analysis.py pilot RUNS.jsonl`. Rows for voided points remain visible and are ineligible for analysis.
