@@ -49,3 +49,7 @@ TOC-CMP-3d: unchanged sealed real-REPL r3 packet requalified through publish_row
 ## 04:06Z — Consume duplicate CMP-3 fixed-summary contract run-end event; preserve already-landed verdict and completed checkbox.
 
 TOC-CMP-3c: duplicate run-end event for `toc-cmp-3-contract-20261118-r2`. Native result remains completed=36/36, rc=0, coverage PASS (`completed >= 36`); descriptive compliance counts 2/12, 11/12 and 12/12 retain three baseline UNKNOWN outcomes. The result and checkbox were already landed; file_result.py acknowledged the existing FILED receipt without refiling or reclaim. No new measurement or checkbox completion. Remaining CMP-3 live and CMP-4 pilot work waits on the two readied r3 rows.
+
+## 04:08Z — Consume both delayed CMP-3 repair and publisher-PASS notifications against the already-completed TOC-CMP-3d qualification.
+
+TOC-CMP-3d: consumed both delayed awaiting-file notifications (`live-smoke-fix-report.json` and r3 `PASS.json`). Both correspond to the already-landed repair and qualification under TOC-CMP-3d. Publisher PASS records the registered smoke predicate succeeding, engine rc=75 (partial-native-incomplete), four allocated CPUs and no official six-session completion claim. No republish, code repair, repeat validation or additional checkbox is needed. Remaining work continues to wait on the already-readied CMP-3 live r3 and CMP-4 pilot r3 rows.
