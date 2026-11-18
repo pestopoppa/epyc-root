@@ -37,3 +37,7 @@ TOC-CMP-3 live r2 smoke failed after the inherited 120s summary timeout canceled
 ## 03:53Z — Interpret and file the completed 36-session fixed-summary artifact-contract comparison.
 
 TOC-CMP-3c: interpreted official toc-cmp-3-contract-20261118-r2 rc=0, completed=36/36, native RESULT.json at /mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2/native/RESULT.json. Coverage passes. Compliance baseline 2/12 planned (2/9 conclusive), contract-summary 11/12, contract-manifest 12/12; baseline has seven violations and three UNKNOWN/no_sibling_headroom. Exact retention W 0/12, 12/12, 12/12. Descriptive combined-package fixture finding only; parent live CMP-3 stays open. Filing helper reports both the contract row and original rc=1 live row already FILED; acknowledged contract completion alert 40c928a8ac2c2404738a3de2. Existing r3 PASS/FAIL qualification registrations remain active; qualification is still in flight and CMP-4 r3 was dispatched running. No duplicate successor, inference launch, or grant change. Documentation diff check passed.
+
+## 03:54Z — Consume duplicate CMP-4 r2 run-end event without duplicating the filed verdict or running r3 successor.
+
+TOC-CMP-4 duplicate run-end event: file_result.py reports toc-cmp-4-pilot96-20261118-r2 already FILED. The failed coverage and r3 repair/qualification are already recorded under CMP-4r; no new result, checkbox completion, or successor is claimed. Dispatcher reports CMP-4 r3 running and CMP-3 live r3 qualification in flight with PASS/FAIL events registered.
