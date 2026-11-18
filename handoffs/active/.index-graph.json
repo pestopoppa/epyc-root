@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T04:41:11Z",
+  "generated_at": "2026-11-18T04:52:22Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2921,10 +2921,10 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 2,
       "blocked_by": [],
-      "closed": 166,
-      "dispatchable": 38,
+      "closed": 168,
+      "dispatchable": 37,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
@@ -2951,7 +2951,7 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 8,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
@@ -2962,7 +2962,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 321,
+          "line": 324,
           "name": "delegation-context-preassembly",
           "open": 7,
           "readiness": "ready"
@@ -2971,7 +2971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 520,
+          "line": 523,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2980,7 +2980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 786,
+          "line": 789,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -2989,7 +2989,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1281,
+          "line": 1284,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2998,7 +2998,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1818,
+          "line": 1821,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3007,7 +3007,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2580,
+          "line": 2583,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3016,7 +3016,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 3007,
+          "line": 3010,
           "name": "tool-output-compression",
           "open": 4,
           "readiness": "ready"
@@ -3025,7 +3025,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3658,
+          "line": 3661,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
