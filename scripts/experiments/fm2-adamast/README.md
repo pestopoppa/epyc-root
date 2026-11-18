@@ -50,3 +50,34 @@ Run the six synthetic transport and summary controls without inference:
 
 Set `FM2_ADAMAST_CHECKOUT` if the pinned source commit lives in a different clone.
 Test scratch stays under this handoff's temporary root and is removed on exit.
+
+## Prospective diagnostic capture
+
+A fresh prepared packet can activate capture with a sealed
+`code/belief-selection.json` listing its predeclared trace IDs. Include it and
+the producer in `SOURCE.sha256` before publication. The producer writes
+`belief-begin.json` before each request, with its input and runtime identities.
+An existing begin marker conservatively ends that unit as interrupted; it
+never issues a replacement request. Smoke exercises this boundary with a
+separate scope and remains ineligible for official projection.
+
+The explicit Vidya source `fm2-adamast` verifies the pre-call marker, source
+seal, grant, original request and response, and complete normalized diagnosis.
+It reuses the pinned AdaMAST parser and regenerates the prompt from the frozen
+trace and taxonomy. Failures and partials emit no numeric diagnosis. A valid
+assigned-code count describes one judgment through the shared diagnostic
+observation carrier, without accuracy or faithfulness warrant.
+
+After an official native unit completes, use its receipt with
+`belief_canary.py --receipt <packet>/out/units/<unit>/receipt.json --scratch
+/mnt/raid0/llm/tmp/vidya-belief-substrate/fm2-current`. The canary uses an
+isolated ledger and checks the exact `coordination.fm2` claim, its limitations
+and exclusion from the reader reliance whitelist and unrelated consumers. A production
+coordinator consumption point remains a separate acceptance requirement in
+`VB-FM2-ADAMAST-WIRE`.
+
+The focused controls are `test_pilot.py` and
+`tests/vidya/test_fm2_adamast.py`; run them with the prepared runtime Python
+containing the OpenAI transport dependencies. Set `FM2_TEST_ROOT` under this
+handoff's scratch and `FM2_ADAMAST_CHECKOUT` to a local clone containing the
+pinned AdaMAST revision when needed. They make no model calls.

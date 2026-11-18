@@ -24,7 +24,14 @@ def load(path):
 
 
 def traces():
-    return sorted((ROOT / "inputs/traces").glob("*.jsonl"))
+    paths = sorted((ROOT / "inputs/traces").glob("*.jsonl"))
+    selection = CODE / "belief-selection.json"
+    if selection.exists():
+        selected = load(selection)["unit_ids"]
+        paths = [path for path in paths if path.stem in selected]
+        if len(paths) != len(selected) or len(set(selected)) != len(selected):
+            raise RuntimeError("invalid prospective selection")
+    return paths
 
 
 def receipts():
@@ -73,7 +80,14 @@ def smoke():
     path = Path(value)
     try:
         row = load(path)
-        return 0 if row["ok"] and valid_diagnosis(path.parent / "unit", row["unit_id"]) and journal_ok(path.parent / "unit") else 1
+        unit = path.parent / "unit"
+        if (CODE / "belief-selection.json").exists():
+            begin = load(unit / "belief-begin.json")
+            if (begin["scope"] != "smoke" or begin["unit_id"] != row["unit_id"]
+                    or begin["trace_sha256"] != row["trace_sha256"]
+                    or begin["packet_sha256"] != digest(ROOT / "SOURCE.sha256")):
+                return 1
+        return 0 if row["ok"] and valid_diagnosis(unit, row["unit_id"]) and journal_ok(unit) else 1
     except (OSError, ValueError, KeyError, IndexError, TypeError):
         return 1
 
@@ -86,6 +100,24 @@ def run_one(trace, directory, is_smoke, pins):
     if receipt.exists():
         return load(receipt)
     metadata = load(trace)["metadata"]
+    # This exclusive record must precede the judge call. A pre-existing receipt or
+    # request is never promoted into a prospective observation.
+    resumed_begin = False
+    if (CODE / "belief-selection.json").exists():
+        begin = directory / "belief-begin.json"
+        if not begin.exists():
+            if any(directory.iterdir()):
+                raise RuntimeError("cannot start belief capture after native output exists")
+            with begin.open("x", encoding="utf-8") as stream:
+                json.dump({"schema": "epyc.fm2.belief-begin.v1", "started_at": now(),
+                           "unit_id": trace.stem, "scope": "smoke" if is_smoke else "pilot", "trace_sha256": digest(trace),
+                           "packet_sha256": digest(ROOT / "SOURCE.sha256"),
+                           "runtime": pins}, stream, sort_keys=True)
+                stream.write("\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+        else:
+            resumed_begin = True
     row = {
         "schema": "epyc.fm2_adamast.judge.v1",
         "unit_id": trace.stem, "trace_sha256": digest(trace),
@@ -97,8 +129,8 @@ def run_one(trace, directory, is_smoke, pins):
         "max_output_tokens": 768 if is_smoke else 1536,
     }
     request_log = directory / "request.json"
-    if request_log.exists():
-        row.update(ok=False, status="interrupted", error="interrupted after request was journaled")
+    if request_log.exists() or resumed_begin:
+        row.update(ok=False, status="interrupted", error="interrupted after prospective capture began; request may be missing")
     else:
         env = os.environ.copy()
         env.update(ADAMAST_CAPTURE_DIR=str(directory), PYTHONPATH=str(CODE))
@@ -156,7 +188,9 @@ def persist_progress(rows, terminal):
     temporary.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows), encoding="utf-8")
     temporary.replace(results)
     codes = Counter()
-    planned = load(CODE / "pins.json")["sample_strata"]
+    planned = (dict(Counter(load(path)["metadata"]["stratum"] for path in traces()))
+               if (CODE / "belief-selection.json").exists()
+               else load(CODE / "pins.json")["sample_strata"])
     attempted = Counter(row["stratum"] for row in rows)
     valid_by_stratum = Counter()
     status_counts = Counter(row["status"] for row in rows)
@@ -202,9 +236,12 @@ def capture_runtime(pins):
               ("FILLER_ID", "FILLER_CPUS", "FILLER_THREADS", "FILLER_DEADLINE", "FILLER_END")}
     grants = Path(os.environ.get("FILLER_GRANTS_DIR", "/mnt/raid0/llm/tmp/compute-flags/grants"))
     grant = grants / f'{filler["FILLER_ID"]}.grant'
+    grant_bytes = grant.read_bytes() if grant.is_file() else None
     return {
         **pins, "captured_at": now(), "filler": filler,
-        "grant_path": str(grant.resolve()), "grant_sha256": digest(grant) if grant.is_file() else None,
+        "grant_path": str(grant.resolve()),
+        "grant_sha256": sha256(grant_bytes).hexdigest() if grant_bytes is not None else None,
+        "grant_body_b64": base64.b64encode(grant_bytes).decode() if grant_bytes is not None else None,
         "server_argv": argv, "server_executable_sha256": digest(server),
         "runtime_dsos": {str(path): digest(path) for path in sorted(libraries)},
     }
@@ -254,7 +291,7 @@ def health():
     from urllib.request import ProxyHandler, build_opener
 
     try:
-        with build_opener(ProxyHandler({})).open("http://127.0.0.1:18711/health", timeout=2) as response:
+        with build_opener(ProxyHandler({})).open(os.environ.get("ADAMAST_BASE_URL", "http://127.0.0.1:18711/v1").removesuffix("/v1") + "/health", timeout=2) as response:
             return 0 if response.status == 200 else 1
     except OSError:
         return 1

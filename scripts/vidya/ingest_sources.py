@@ -659,6 +659,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "per-stratum PROXY recall and p95 latency; explicit file only; unsealed producer log, "
                 "no true-recall or promotion warrant",
            task="VB-TOOL-SELECTOR-WIRE"),
+    Source("fm2-adamast", "fm2_adamast",
+           lambda p: importlib.import_module("adapters.fm2_adamast").units(p),
+           note="Prospective single-judge native diagnostic; explicit receipt only",
+           task="VB-FM2-ADAMAST-WIRE"),
     Source("fm4-gate-acceptance", "fm4_gate_acceptance",
            lambda p: importlib.import_module("adapters.fm4_gate_acceptance").units(p),
            frames="emit",

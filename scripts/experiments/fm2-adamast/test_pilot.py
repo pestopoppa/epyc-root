@@ -134,6 +134,22 @@ class PilotTransportTest(unittest.TestCase):
             self.assertEqual(payload["max_completion_tokens"], 768)
             self.assertFalse((self.root / "out").exists())
 
+    def test_belief_smoke_requires_precall_capture_and_never_repeats(self):
+        selection = self.code / "belief-selection.json"
+        selection.write_text(json.dumps({"unit_ids": [UNIT_ID]}))
+        self.addCleanup(selection.unlink, missing_ok=True)
+        with fixture_endpoint(VALID_REPLY) as (endpoint, requests, _):
+            with patch.dict(os.environ, ADAMAST_BASE_URL=endpoint):
+                self.assertEqual(pilot.run(), 0)
+                self.assertEqual(pilot.smoke(), 0)
+                begin = pilot.load(self.output / "unit/belief-begin.json")
+                self.assertEqual(begin["scope"], "smoke")
+                self.assertEqual(begin["unit_id"], UNIT_ID)
+                (self.output / "unit/belief-begin.json").unlink()
+                self.assertEqual(pilot.smoke(), 1)
+                self.assertEqual(pilot.run(), 0)
+                self.assertEqual(len(requests), 1)
+
     def test_malformed_model_reply_is_preserved_and_never_repaired(self):
         with fixture_endpoint("malformed mode receipt") as (endpoint, requests, response):
             with patch.dict(os.environ, ADAMAST_BASE_URL=endpoint):
