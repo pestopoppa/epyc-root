@@ -28,6 +28,15 @@ if [ -n "$_vac_staged" ]; then
 fi
 unset _vac_staged
 
+# D9 commit-size guard (operator-approved 2026-11-18) -- BLOCKING, but only for Codex handoff lanes:
+# branch h-* / lane/h-*, or EPYC_CODEX_WRAPUP=1 (set by scripts/coordination/churn/wrapup.py). Refuses a
+# duplicated blob, a >2,000-line file, or >20,000 lines under evidence/packet paths. Absent in older trees.
+_bloat_checker="${HOOK_SRC_DIR}/check_commit_bloat.py"
+if [[ -f "$_bloat_checker" ]]; then
+    python3 "$_bloat_checker" || status=1
+fi
+unset _bloat_checker
+
 # LOOP-50 tick/deletion science gate — ADVISORY (operator decision 2026-11-03, decision tool,
 # relax LOOP-50 / T6-1; it was blocking from 2026-11-02). Warns about a new handoff tick without
 # its [belief: ...] / [no-belief: <reason>] tag and an open box dropped without re-add, [moved:]

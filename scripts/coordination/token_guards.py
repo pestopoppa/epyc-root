@@ -45,6 +45,9 @@ DEFAULTS = {
     "reserve_fraction": 0.05,              # CHURN-CONT-RESERVE: weekly-budget tranche held back for janitor/filing/teardown
     "per_session_frac_per_h": 0.012,       # fallback weekly-fraction burn per live session (audit W2: ~1.2 %/h)
     "pace_multiplier": 1.0,                # operator scales the budget-paced allowed rate (2026-11-17: 2.5 so that width 2 fits)
+    # D9 net-progress guard (2026-11-18): rolling per-slug turn history of real tick flips vs new open boxes
+    "netprog_window": 6,                   # (a) last N turns: sum(opened) >= sum(closed) and no result -> park
+    "netprog_prep_only": 8,                # (b) last N consecutive turns with result=False -> park
 }
 EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
 CODEX_SESSIONS = os.path.expanduser("~/.codex/sessions")
@@ -250,7 +253,76 @@ def note_resume(e: dict, now: float) -> None:
     e["resume_ts"] = [t for t in e.get("resume_ts") or [] if now - t < 86400] + [now]
 
 
-AUTO_UNPARK_REASONS = ("no progress evidence", "max_resumes", "thread token ceiling")
+AUTO_UNPARK_REASONS = ("no progress evidence", "max_resumes", "thread token ceiling", "no-net-progress")
+
+NETPROG_PREFIX = "no-net-progress"
+_TICK_RX = re.compile(r"^[-+]\s*[-*] \[[xX]\]")
+_OPEN_RX = re.compile(r"^[-+]\s*[-*] \[ \]")
+
+
+_BELIEF_RX = re.compile(r"\[belief:\s*([^\]]*)\]")
+# a verdict word, or a NUMBER in the measurement sense (unit, ratio, comparison, fraction) - bare digits in ids, dates,
+# shas, model names ("Qwen3-0.6B", "v10", "2026-11-18") are not results
+_VERDICT_RX = re.compile(r"\b(PASS(ED)?|FAIL(ED)?|KEEP|NO-GO|GO|verdict)\b|%|×|"
+                         r"\d(\.\d+)?\s*(x\b|tok/s|t/s|ms\b|s\b|GiB|GB|MiB|MB|pp\b)|[<>=≥≤±]\s*-?\d|\b\d+\s*/\s*\d+\b")
+_PREP_RX = re.compile(r"\b(prepar\w*|ready|custody|publish\w*|pin\w*|wire\w*|implement\w*)\b", re.I)
+_NOISE_RX = re.compile(r"✅\s*\d{4}-\d{2}-\d{2}|\b\d{4}-\d{2}-\d{2}\b|\b[0-9a-f]{7,40}\b|\*\*[A-Z][A-Za-z0-9-]*")
+
+
+def belief_result(line: str) -> bool:
+    """D9: a `[belief:` tick is a RESULT only when the ticked line states a verdict or a number; `[belief: cc]` on a
+    prepare/ready/custody/publish/wire line is ceremony, never a result."""
+    m = _BELIEF_RX.search(line)
+    if not m:
+        return False
+    if m.group(1).strip() == "cc" and _PREP_RX.search(line):
+        return False
+    return bool(_VERDICT_RX.search(_NOISE_RX.sub(" ", _BELIEF_RX.sub(" ", line))))
+
+
+def wrapup_progress(diff_text: str) -> dict:
+    """D9 net progress of ONE wrap-up commit's handoff diff (`git show --format= <sha> -- handoffs/`).
+    closed = real open->ticked flips: added tick lines beyond the ticked lines the commit removed (an edited or moved
+    tick shows as -[x]/+[x] and nets to zero). opened = net new `- [ ]` lines: added open boxes beyond the removed open
+    boxes that a flip does not explain. belief = an added tick line carries a RESULT-grade `[belief:` (belief_result)."""
+    add_x = rem_x = add_o = rem_o = 0
+    belief = False
+    for l in diff_text.splitlines():
+        if l.startswith(("+++", "---")):
+            continue
+        if _TICK_RX.match(l):
+            if l[0] == "+":
+                add_x += 1
+                belief = belief or belief_result(l)
+            else:
+                rem_x += 1
+        elif _OPEN_RX.match(l):
+            if l[0] == "+":
+                add_o += 1
+            else:
+                rem_o += 1
+    closed = max(0, add_x - rem_x)
+    opened = max(0, add_o - max(0, rem_o - closed))
+    return {"closed": closed, "opened": opened, "belief": belief}
+
+
+def netprog_verdict(hist: list, conf=None) -> str | None:
+    """D9: park reason `no-net-progress: <numbers>` or None, from the per-slug turn history (oldest first; each item
+    has closed / opened / result)."""
+    conf = conf or DEFAULTS
+    w = int(conf.get("netprog_window", DEFAULTS["netprog_window"]))
+    p = int(conf.get("netprog_prep_only", DEFAULTS["netprog_prep_only"]))
+    if w > 0 and len(hist) >= w:
+        last = hist[-w:]
+        so, sc = sum(int(t.get("opened") or 0) for t in last), sum(int(t.get("closed") or 0) for t in last)
+        if so >= sc and not any(t.get("result") for t in last):
+            return f"{NETPROG_PREFIX}: last {w} turns opened {so} >= closed {sc}, 0 results"
+    if p > 0 and len(hist) >= p:
+        last = hist[-p:]
+        if not any(t.get("result") for t in last):  # ticks of prep boxes are the ceremony: closes do not rescue it
+            return (f"{NETPROG_PREFIX}: last {p} turns 0 results (closed {sum(int(t.get('closed') or 0) for t in last)}, "
+                    f"opened {sum(int(t.get('opened') or 0) for t in last)})")
+    return None
 
 
 def auto_unpark_eligible(e: dict, now: float, conf=None) -> bool:

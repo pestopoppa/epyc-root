@@ -213,7 +213,8 @@ def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) ->
         raise WrapupError("nothing staged under the pathspec")
     text = message.rstrip() + ("\n\n" + "\n".join(trailers) if trailers else "") + "\n"
     r = subprocess.run(["git", "-C", lane, "commit", "-q", "-F", "-", "--", *pathspec], input=text,
-                       capture_output=True, text=True, timeout=600)
+                       capture_output=True, text=True, timeout=600,
+                       env=dict(os.environ, EPYC_CODEX_WRAPUP="1"))  # D9: arms scripts/hooks/check_commit_bloat.py
     _ok(r, "git commit")
     return _ok(_git(lane, "rev-parse", "HEAD"), "rev-parse").strip()
 

@@ -906,6 +906,83 @@ def turn_effect(flags, slug, e, rep=None) -> str:
     return "; ".join(out)
 
 
+NETPROG_HIST_MAX = 16
+
+
+def wrapup_diff(sha, repo=None) -> str:
+    if not sha or not re.fullmatch(r"[0-9a-f]{7,40}", str(sha)):
+        return ""
+    r = subprocess.run(["git", "-C", repo or ROOT, "show", "--format=", sha, "--", "handoffs/"], capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else ""
+
+
+def row_owned(flags, rid, slug, e) -> bool:
+    """D9: the row belongs to this slug - its handoff_task/handoff file is the slug's handoff (bg.pilot_of's matching),
+    or its owner is handoff-<slug>. Read from the ready/ manifest, else the filing-done verdict."""
+    docs = [manifest_for(flags, rid)[1], bg.load_json(os.path.join(flags, "filing-done", f"{rid}.verdict.json"))]
+    hf = os.path.basename(e.get("handoff") or "")
+    for d in docs:
+        if not isinstance(d, dict):
+            continue
+        if d.get("owner") == f"handoff-{slug}":
+            return True
+        rf = bg.handoff_file(d.get("handoff_task") or d.get("handoff"))
+        if hf and rf == hf:
+            return True
+    return False
+
+
+def withdrawn_filing(flags, rid) -> bool:
+    """A SUPERSEDED / WITHDRAWN receipt files no result."""
+    try:
+        head = open(os.path.join(flags, "filing-done", f"{rid}.FILED")).read(400)
+    except OSError:
+        return False
+    return bool(re.match(rf"FILED {re.escape(rid)}: (SUPERSEDED|WITHDRAWN)\b", head))
+
+
+def turn_result(flags, slug, e) -> bool:
+    """D9 result: a run result FILED for a row OWNED by this slug during the turn - the owned pending event's FILED
+    receipt, an owned filing-done receipt written since the resume, or an owned FILED/FILED-BY-SCRIPT log line."""
+    since = _parse(e.get("last_resume") or "") - 1
+    rids = set()
+    ev = e.get("pending_event") or {}
+    if ev.get("rid") and filed(flags, ev["rid"]):
+        rids.add(ev["rid"])
+    if since > 0:
+        for p in glob.glob(os.path.join(flags, "filing-done", "*.FILED")):
+            if os.path.getmtime(p) >= since:
+                rids.add(os.path.basename(p)[:-len(".FILED")])
+        try:
+            with open(os.path.join(flags, "handoff-sessions.log")) as f:
+                for l in f:
+                    m = re.search(r"\bFILED(?:-BY-SCRIPT)? (\S+)", l)
+                    if m and _parse(l.split(" ", 1)[0]) >= since:
+                        rids.add(m.group(1))
+        except OSError:
+            pass
+    return any(row_owned(flags, r, slug, e) and not withdrawn_filing(flags, r) for r in rids)
+
+
+def netprog_record(flags, slug, e, conf=None, repo=None) -> str | None:
+    """D9 net-progress guard: append this turn to e['netprog'] and guard-park the slug when tg.netprog_verdict fires.
+    A turn whose wrap-up sha equals the previous turn's adds no closes/opens (no double count of one commit)."""
+    hist = list(e.get("netprog") or [])
+    sha = e.get("last_wrapup")
+    prev = hist[-1].get("sha") if hist else None
+    pr = tg.wrapup_progress(wrapup_diff(sha, repo)) if sha and sha != prev else {"closed": 0, "opened": 0, "belief": False}
+    t = {"at": now_iso(), "sha": sha, "closed": pr["closed"], "opened": pr["opened"],
+         "result": bool(pr["belief"]) or turn_result(flags, slug, e)}
+    e["netprog"] = (hist + [t])[-NETPROG_HIST_MAX:]
+    why = tg.netprog_verdict(e["netprog"], conf)
+    if why and not tg.is_parked(e):
+        tg.park(e, why, now_iso())
+        e["netprog"] = []  # a fresh window after the park; an auto-unpark does not re-fire on the same turns
+        log(flags, f"PARK {slug}: {why}; unpark: handoff_sessions.py unpark {slug}")
+        digest(flags, "PARK", slug, why)
+    return why
+
+
 def filed(flags, rid) -> bool:
     return os.path.exists(os.path.join(flags, "filing-done", f"{rid}.FILED"))
 
@@ -1579,6 +1656,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
                 log(flags, f"NOOP {slug}: turn completed nothing (no landed tick, no row published, no filing) [{e['noop_turns']} consecutive]")
             else:
                 e["noop_turns"], e["last_effect"] = 0, effect
+            netprog_record(flags, slug, e, gc)
             if "FRESH-SESSION-REQUESTED" in tailtxt:
                 e["fresh_next"] = True
             e["context_tokens"] = context_size(e.get("session_id"), e.get("engine", "codex"))
