@@ -1,0 +1,27 @@
+{
+  "actor_receipts_sha256": {
+    "path-only": "d187ed879c36447f14415a519e2ff5a2312609844b346f1144f4dab8ece5daec",
+    "preflight": "19272be2e7e0b0c438a228dda5fb51e1c0d55d0e9b772fe538b78127261ef9c0"
+  },
+  "authority": "software-control-only",
+  "baseline_visible": 0,
+  "candidate_visible": 16,
+  "control_count": 2,
+  "cpus": [
+    116,
+    117,
+    118,
+    119
+  ],
+  "id": "vb-q38-preflight-planner-20261118",
+  "mode": "publisher-smoke",
+  "native_q38_acceptance_count": 0,
+  "probe_sha256": "96135e96527e4ff1d4bbd6d2c55ab10a05c65705b23467942d5688480acff8d7",
+  "refusal_count": 0,
+  "research_commit": "6decaeda4481a841b3a85b55b0be87a6963b3042",
+  "run_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/publisher-smoke-8b7mk8vz",
+  "source_commit": "f36c26d6df868016be962a8b631a879ef311f2f6",
+  "source_pins_sha256": "75753d6c7911105e1a4ad6e4a529b80647c0c4026db76e5406087fad02ce9f1a",
+  "status": "passed",
+  "verified_model_sha256": "b77b39d0b04be35c28b568f577b1b9e15e6c8b0b51beccd6b267abdeaac6b0b6"
+}
