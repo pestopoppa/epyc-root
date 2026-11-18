@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 220
+      "open": 221
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 462
+      "open": 460
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 127,
+      "closed": 128,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 63,
+      "open": 62,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 78,
+          "closed": 79,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -95,7 +95,7 @@
           "line": 955,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 53
+          "open": 52
         }
       ]
     },
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 179,
+      "closed": 183,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 39,
+      "open": 38,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -529,24 +529,24 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 220,
+      "total": 223,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 38,
+          "closed": 41,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 11
+          "open": 10
         },
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 355,
+          "line": 361,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 7
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 554,
+          "line": 563,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 820,
+          "line": 829,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1315,
+          "line": 1324,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1852,
+          "line": 1861,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2614,
+          "line": 2623,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3041,
+          "line": 3050,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3698,
+          "line": 3707,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -625,10 +625,10 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 346,
+      "closed": 348,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 9,
+      "open": 8,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -637,7 +637,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 355,
+      "total": 356,
       "tracks": [
         {
           "blocked": 0,
@@ -712,7 +712,7 @@
         },
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 10,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -724,7 +724,7 @@
           "line": 5566,
           "markers": 1,
           "name": "fleet-fanout-measurement",
-          "open": 3
+          "open": 2
         },
         {
           "blocked": 0,
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5763,
+          "line": 5765,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6319,
+          "line": 6321,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -1518,7 +1518,7 @@
     },
     "memory-program.md": {
       "blocked": 1,
-      "closed": 123,
+      "closed": 124,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 41,
@@ -1530,7 +1530,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 165,
+      "total": 166,
       "tracks": [
         {
           "blocked": 0,
@@ -1544,7 +1544,7 @@
         },
         {
           "blocked": 1,
-          "closed": 18,
+          "closed": 19,
           "gates": [],
           "guarded": 0,
           "line": 919,
@@ -1557,7 +1557,7 @@
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1388,
+          "line": 1389,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1849,
+          "line": 1850,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2155,10 +2155,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 366,
+      "closed": 367,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2167,7 +2167,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 372,
+      "total": 374,
       "tracks": [
         {
           "blocked": 0,
@@ -2196,7 +2196,7 @@
         },
         {
           "blocked": 0,
-          "closed": 26,
+          "closed": 27,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2205,14 +2205,14 @@
           "line": 2727,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3122,
+          "line": 3125,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3635,
+          "line": 3638,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3730,
+          "line": 3733,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2583,7 +2583,7 @@
       "closed": 416,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 117,
+      "open": 118,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 534
+      "total": 535
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
