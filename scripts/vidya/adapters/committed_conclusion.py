@@ -147,7 +147,18 @@ def resolve_anchor(path: str, line: int, *, ref: str = "origin/main",
     rng = [f"{first}^..{ref}"] if len(parents) > 1 else [ref]
     concluded = None
     for commit in _git(repo, "rev-list", "--reverse", *rng, "--", path).split():
-        blob = blob_lines(repo, commit, path)
+        try:
+            blob = blob_lines(repo, commit, path)
+        except ProjectionError as blob_error:
+            # A path-limited walk includes deletion commits. Verify absence in the tree.
+            try:
+                entry = _git(repo, "--literal-pathspecs", "ls-tree", "--full-tree", commit,
+                             "--", path)
+            except ProjectionError as tree_error:
+                raise blob_error from tree_error
+            if not entry:
+                continue
+            raise
         text = "\n".join(blob)
         if quote in text:
             concluded = commit

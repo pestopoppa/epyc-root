@@ -74,6 +74,36 @@ def test_anchor_resolves_concluding_commit_and_item_extent(repo):
     assert "[belief" not in a["head_norm"] and "✅" not in a["head_norm"]
 
 
+def test_anchor_resolves_after_file_deletion_and_reintroduction(repo):
+    git(repo, "reset", "--hard", "HEAD~1")
+    introduced = git(repo, "rev-parse", "HEAD")
+    git(repo, "rm", HANDOFF)
+    git(repo, "commit", "-qm", "delete handoff")
+    (repo / HANDOFF).parent.mkdir(parents=True, exist_ok=True)
+    (repo / HANDOFF).write_text(TEXT)
+    git(repo, "add", HANDOFF)
+    git(repo, "commit", "-qm", "restore handoff with conclusion")
+
+    anchor = row(repo)["anchor"]
+    assert anchor["commit_introduced"] == introduced
+    assert anchor["commit_concluded"] == git(repo, "rev-parse", "HEAD")
+    assert (anchor["line_start"], anchor["line_end"]) == (2, 3)
+
+
+def test_anchor_refuses_failed_blob_read_for_present_historical_path(repo, monkeypatch):
+    historical_commit = git(repo, "rev-parse", "HEAD~1")
+    blob_lines = ccm.blob_lines
+
+    def failed_blob_read(repo, commit, path):
+        if commit == historical_commit:
+            raise ct.ProjectionError("cannot read historical blob")
+        return blob_lines(repo, commit, path)
+
+    monkeypatch.setattr(ccm, "blob_lines", failed_blob_read)
+    with pytest.raises(ct.ProjectionError, match="cannot read historical blob"):
+        row(repo)
+
+
 def test_projection_is_judged_located_with_no_warrant(repo, tmp_path):
     natives = ccm.native_rows(write(tmp_path, [row(repo)]), repo=repo)
     assert len(natives) == 2
