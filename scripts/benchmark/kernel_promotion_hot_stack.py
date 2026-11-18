@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import UTC, datetime, timedelta
 import hashlib
 import json
 import os
@@ -15,6 +16,7 @@ from pathlib import Path
 
 
 SPEC_SCHEMA = "epyc.kernel_promotion_hot_stack_spec.v1"
+QUALITY_SPEC_SCHEMA = "epyc.kernel_promotion_quality_stack_spec.v1"
 PLAN_SCHEMA = "epyc.kernel_promotion_hot_stack_plan.v1"
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 SCRATCH = Path("/mnt/raid0/llm/tmp")
@@ -205,14 +207,18 @@ def validate_endpoints(spec, servers, production_ports):
     require(servers and len(declared) == len(servers), "empty or duplicate production endpoint set")
     validate_keys(spec["ports"], declared, "isolated port map")
     validate_keys(spec["endpoint_tests"], declared, "endpoint test selection")
-    ports = list(spec["ports"].values())
-    require(all(type(port) is int and 1024 <= port <= 65535 and port not in production_ports for port in ports),
-            "isolated ports must be valid non-production ports")
-    require(len(set(ports)) == len(ports), "duplicate isolated port")
+    validate_isolated_ports(spec["ports"], production_ports)
     for server in servers:
         expected = "embedding" if server.get("embedding") else "chat"
         require(spec["endpoint_tests"][str(server["port"])] == expected,
                 f"endpoint test on :{server['port']} must use {expected}")
+
+
+def validate_isolated_ports(mapping, production_ports):
+    ports = list(mapping.values())
+    require(all(type(port) is int and 1024 <= port <= 65535 and port not in production_ports for port in ports),
+            "isolated ports must be valid non-production ports")
+    require(len(set(ports)) == len(ports), "duplicate isolated port")
 
 
 def build_endpoint(spec, output, server, manifest, launch, numa, registry, images):
@@ -283,11 +289,12 @@ def validate_claim(resources, endpoints, numa, physical_cores):
 
 
 def prepare_plan(spec, output):
-    validate_keys(spec, {
-        "schema", "orchestrator_commit", "config_sha256", "candidate", "numa_mode",
-        "warm_roles", "ports", "resources", "endpoint_tests",
-    }, "hot stack spec")
-    require(spec["schema"] == SPEC_SCHEMA, "unknown hot stack spec schema")
+    common = {"schema", "orchestrator_commit", "config_sha256", "candidate", "ports", "resources"}
+    require(isinstance(spec, dict), "invalid hot stack spec")
+    quality = spec.get("schema") == QUALITY_SPEC_SCHEMA
+    require(quality or spec.get("schema") == SPEC_SCHEMA, "unknown hot stack spec schema")
+    mode_keys = {"request_inputs_sha256"} if quality else {"numa_mode", "warm_roles", "endpoint_tests"}
+    validate_keys(spec, common | mode_keys, "hot stack spec")
     root = check_stack_inputs(spec)
     candidate = spec["candidate"]
     validate_keys(candidate, {"source_commit", "source_tree", "branch", "cpu", "hip"}, "candidate")
@@ -296,8 +303,6 @@ def prepare_plan(spec, output):
     production_dirs = production_runtime_dirs()
     images = {backend: verify_stage(candidate[backend], candidate, backend, production_dirs) for backend in ("cpu", "hip")}
     require(images["cpu"]["root"] != images["hip"]["root"], "CPU and HIP images must be separate")
-    require(spec["numa_mode"] in ("full", "quarter", "both"), "invalid NUMA mode")
-
     sys.path.insert(0, str(root))
     from scripts.server import orchestrator_stack as launch, stack_manifest as manifest, stack_numa as numa, stack_prewarm
     from src.scheduling import contention
@@ -308,14 +313,51 @@ def prepare_plan(spec, output):
     require(matrix.topology_hash == topology_hash, "contention matrix topology differs from the live declarations")
     matrix_status = contention.matrix_status(matrix_path, current_topology_hash=topology_hash)
     require(matrix_status in {contention.MatrixStatus.OK, contention.MatrixStatus.STALE}, "invalid contention matrix")
+    # Checkout refreshes the file mtime. Also check the measurement
+    # timestamp recorded in the pinned matrix bytes.
+    measured_at = datetime.fromisoformat(matrix.measured_at)
+    require(measured_at.tzinfo is not None, "matrix measurement timestamp must include a timezone")
+    age = datetime.now(UTC) - measured_at
+    if not timedelta(0) <= age <= timedelta(days=contention.MATRIX_STALENESS_DAYS):
+        matrix_status = contention.MatrixStatus.STALE
+    production_ports = set(manifest.PORT_MAP.values()) | {service.port for service in manifest.AUX_SERVICES.values()}
+    production_ports.update(server["port"] for server in manifest.HOT_SERVERS + manifest.WARM_SERVERS)
+    if quality:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from kernel_promotion_quality_prepare import prepare_quality_endpoints
+
+        endpoints = prepare_quality_endpoints(spec, output, images, production_ports, manifest)
+        targets = {}
+    else:
+        endpoints, targets = prepare_serving_endpoints(spec, output, images, production_ports, launch, manifest,
+                                                       numa, stack_prewarm)
+
+    check_stack_inputs(spec)
+    return {
+        "schema": PLAN_SCHEMA, "status": "prepared_only", "spec": spec,
+        "topology_hash": topology_hash, "contention_matrix_status": matrix_status.value,
+        "planner_sha256": digest(Path(__file__).resolve()),
+        "launcher_sha256": {relative: digest(root / relative) for relative in LAUNCHER_FILES},
+        "launcher_sequence": "serial", "images": images, "endpoints": endpoints,
+        "endpoint_manifest": {
+            "schema": "epyc.kernel_promotion_isolated_endpoints.v1",
+            "endpoints": [{"role": endpoint["roles"][0], "kind": endpoint["test"],
+                           "base_url": endpoint["endpoint"]} for endpoint in endpoints],
+        },
+        "prewarm_targets": [{"path": str(target["path"]), "size_bytes": target["size_bytes"],
+                             "canonical_ports": sorted(set(target["ports"])), "roles": sorted(target["roles"])}
+                            for target in targets.values()],
+    }
+
+
+def prepare_serving_endpoints(spec, output, images, production_ports, launch, manifest, numa, stack_prewarm):
+    require(spec["numa_mode"] in ("full", "quarter", "both"), "invalid NUMA mode")
     warm_roles = spec["warm_roles"]
     require(isinstance(warm_roles, list) and all(isinstance(role, str) for role in warm_roles)
             and sorted(set(warm_roles)) == sorted(warm_roles), "invalid warm role selection")
     warm = [server for server in manifest.WARM_SERVERS if set(server["roles"]) & set(warm_roles)]
     require(set(warm_roles) <= {role for server in warm for role in server["roles"]}, "unknown warm role")
     servers = manifest._filter_by_numa_mode(manifest.HOT_SERVERS + warm, spec["numa_mode"])
-    production_ports = set(manifest.PORT_MAP.values()) | {service.port for service in manifest.AUX_SERVICES.values()}
-    production_ports.update(server["port"] for server in manifest.HOT_SERVERS + manifest.WARM_SERVERS)
     validate_endpoints(spec, servers, production_ports)
     registry = launch.RegistryLoader()
     endpoints = [build_endpoint(spec, output, server, manifest, launch, numa, registry, images) for server in servers]
@@ -338,22 +380,7 @@ def prepare_plan(spec, output):
                             f"missing prewarm target on :{endpoint['canonical_port']}: {path}")
         endpoint["models"] = models
 
-    check_stack_inputs(spec)
-    return {
-        "schema": PLAN_SCHEMA, "status": "prepared_only", "spec": spec,
-        "topology_hash": topology_hash, "contention_matrix_status": matrix_status.value,
-        "planner_sha256": digest(Path(__file__).resolve()),
-        "launcher_sha256": {relative: digest(root / relative) for relative in LAUNCHER_FILES},
-        "launcher_sequence": "serial", "images": images, "endpoints": endpoints,
-        "endpoint_manifest": {
-            "schema": "epyc.kernel_promotion_isolated_endpoints.v1",
-            "endpoints": [{"role": endpoint["roles"][0], "kind": endpoint["test"],
-                           "base_url": endpoint["endpoint"]} for endpoint in endpoints],
-        },
-        "prewarm_targets": [{"path": str(target["path"]), "size_bytes": target["size_bytes"],
-                             "canonical_ports": sorted(set(target["ports"])), "roles": sorted(target["roles"])}
-                            for target in targets.values()],
-    }
+    return endpoints, targets
 
 
 def write_new(path, value):

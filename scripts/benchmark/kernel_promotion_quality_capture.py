@@ -64,6 +64,8 @@ def pinned_bytes(filename, pin):
 
 def tool_files():
     return {
+        "planner": Path(planner.__file__),
+        "preparer": Path(__file__).resolve().with_name("kernel_promotion_quality_prepare.py"),
         "runner": Path(runner.__file__),
         "evidence": Path(evidence.__file__),
         "linkage": runner.LINKAGE,
@@ -137,22 +139,27 @@ def endpoint_for(plan, mapping, shape):
     require(type(mapping["canonical_port"]) is int and type(mapping["numa_instance"]) is int
             and isinstance(mapping["role"], str) and mapping["path"] == shape["endpoint"],
             f"{shape['id']}: invalid endpoint mapping")
-    matches = [endpoint for endpoint in plan["endpoints"] if endpoint["canonical_port"] == mapping["canonical_port"]]
+    spec = plan["spec"]
+    quality = spec.get("schema") == planner.QUALITY_SPEC_SCHEMA
+    profile = shape["profile"]
+    matches = [endpoint for endpoint in plan["endpoints"]
+               if endpoint["canonical_port"] == mapping["canonical_port"]
+               and (not quality or endpoint["quality_profile"] == profile)]
     require(len(matches) == 1, f"{shape['id']}: missing or ambiguous endpoint port")
     endpoint = matches[0]
     port = endpoint["port"]
     argv = endpoint["argv"]
-    role, backend, spec = PROFILES[shape["profile"]]
+    role, backend, speculation = PROFILES[profile]
     spec_index = planner.value_index(argv, "--spec-type", required=False)
     spec_type = argv[spec_index] if spec_index is not None else "none"
     require(mapping["role"] in endpoint["roles"] and (role is None or role == mapping["role"])
             and endpoint["numa_instance"] == mapping["numa_instance"]
             and endpoint["test"] == "chat" and (backend is None or endpoint["backend"] == backend)
             and endpoint["endpoint"] == f"http://127.0.0.1:{port}"
-            and plan["spec"]["ports"][str(mapping["canonical_port"])] == port
+            and spec["ports"][profile if quality else str(mapping["canonical_port"])] == port
             and argv[planner.value_index(argv, "--port")] == str(port)
             and argv[planner.value_index(argv, "--host")] == "127.0.0.1"
-            and (spec is None or spec_type == spec),
+            and (speculation is None or spec_type == speculation),
             f"{shape['id']}: prepared endpoint differs from the prescribed serving profile or instance")
     if shape["profile"] == "worker-vision-hip-mmproj":
         require(mapping["path"] == "/v1/chat/completions"
@@ -316,6 +323,10 @@ def load_config(path, pin, output):
     left, right = [plan["spec"] for _, _, plan in plans.values()]
     require(left["ports"] == right["ports"] and left["resources"] == right["resources"],
             "the arms must match the port and resource assignment of one Rowflow grant")
+    if any(spec.get("schema") == planner.QUALITY_SPEC_SCHEMA for spec in (left, right)):
+        require(left.get("schema") == right.get("schema") == planner.QUALITY_SPEC_SCHEMA
+                and left["request_inputs_sha256"] == right["request_inputs_sha256"],
+                "both arms must share the same isolated recipe input pin")
     require(left["candidate"]["source_commit"] != right["candidate"]["source_commit"],
             "production and candidate source commits must differ")
     verify_source(config)

@@ -78,6 +78,35 @@ input_pin=e9b8d9d40b88851de2299b8fba372c8e0f5920abd47315747251a87313855914
   --out "$scratch/prospective-requests.json"
 ```
 
+The seven isolated recipes preserve the original packet arguments and request endpoints. Inspect the
+arguments, placement sources, model and template paths and digests, and role mappings with the
+`recipes` command. The two HIP templates are read from the paths in the original launch arguments.
+The planner checks their content against the original template digest, including when the archive
+describes a different copy of the same template.
+
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B "$prepare" recipes \
+  --inputs-sha256 "$input_pin" --out "$scratch/quality-recipes.json"
+jq 'map_values(.mapping)' "$scratch/quality-recipes.json" > "$mappings"
+sha256sum "$mappings"
+```
+
+To prepare an arm, use `kernel_promotion_hot_stack.py --spec "$spec" --output-dir "$arm_dir"`
+with the following specification.
+
+| Field | Required contents |
+| --- | --- |
+| `schema` | `epyc.kernel_promotion_quality_stack_spec.v1` |
+| `orchestrator_commit`, `config_sha256`, `candidate` | The ordinary stack planner's checkout, config and image pins. Use each arm's own sealed CPU and HIP images. Stage a separate verified copy of the production images. |
+| `request_inputs_sha256` | Digest of the checked-in prospective request inputs. Regeneration uses the pinned input, original recipe envelopes and archived CPU-affinity witnesses. |
+| `ports` | Seven distinct non-production loopback ports keyed by profile. Both arms use the same map. The role mapping's canonical port is a provenance anchor. Several isolated profiles can share that anchor and still have separate listeners. |
+| `resources` | `physical_cpus` set to `0-95`, `gpu_devices` set to `["ROCm0"]`, and integer `ram_gib` of at least 112, the largest serial source row's budget. |
+
+The planner matches the CPU slices' thread count and CPU affinity to their archived server records.
+Both HIP slices use the original recipe affinity on CPUs 184–191. The isolated launcher adds local NUMA
+memory binding on node 2 for frontdoor and node 3 for the remaining slices. The dedicated plan uses
+distinct state and log paths and opens one listener at a time during quality capture.
+
 Once both arms have private prepared plans, supply the digest of each plan and a pinned JSON mapping keyed
 by the seven profile IDs. Use the same detached orchestrator checkout for assembly and live execution. The
 assembler checks the frozen production image, regenerates both plans, verifies their exact serving paths and
@@ -115,7 +144,7 @@ Build the configuration and pin its exact bytes before publication. The schema i
 | --- | --- |
 | `schema` | `epyc.kernel_quality_live_capture.v1`. |
 | `source_repository` and `capture_source` | Canonical path to a Git repository containing the committed capture adapter, and its `commit`, `tree` and `source_sha256` as in the offline format. The adapter checks the committed file against the executed copy, including for a row snapshot. |
-| `tool_sha256` | Hashes keyed by `runner`, `evidence`, `linkage`, `workload_guard`, `k35` and `comparator`. The adapter's `tool_files()` identifies the installed files. |
+| `tool_sha256` | Hashes keyed by `planner`, `preparer`, `runner`, `evidence`, `linkage`, `workload_guard`, `k35` and `comparator`. The adapter's `tool_files()` identifies the installed files. |
 | `production_attestation` | Canonical path to the ratified v10 final freeze JSON. The adapter checks the fixed ratification digest, frozen branch, commit and tree, and the staged binary and hot libraries against the production store. |
 | `arms` | Object with `production` and `candidate` entries. Each provides canonical `plan`, `plan_sha256`, and the offline `runtime` object keyed by shape. The plans must be in distinct private directories and pin the same full Rowflow port and resource assignments. Stage a separate copy of the ratified production image for its plan. The regular planner rejects overlap and hardlinks with the serving tree. Both plans must regenerate exactly with a fresh, topology-matched matrix. |
 | `shapes` | The complete offline serving-shape inventory. The adapter validates the serving path pins against both prepared arms. |
@@ -126,7 +155,7 @@ Build the configuration and pin its exact bytes before publication. The schema i
 
 Compute the adapter-specific shape digests with `shape_digests(plan, endpoint, shape, artifact_integrity, models)` using the pinned orchestrator's artifact-integrity module. The recipe digest covers the launcher arguments, environment, roles, placement and device after normalizing the isolated executable, library directory, listener port and slot-storage path. The model digest covers the ordered canonical paths and precomputed content digests of target, drafter and projector files. The template digest covers the effective chat template or the `raw-native-prompt.v1` marker for direct native prompts. The endpoint digest covers the exact POST path, canonical JSON body, raw JSON response body and non-streaming mode. The generation-path digest binds those four digests. Sampling, scorer and question-pool pins refer to the predeclared experiment inputs. The full configuration and request pins bind the individual settings, prompts and expected answers.
 
-The row must reserve full-host CPU placement, every isolated plan port, the plan RAM budget and the MI210 when called for by the plans. Capture runs serially by arm and isolated listener. All requests for a DFlash shape run on one owned `-np 1` listener in each arm, with the cap read from each raw response echo. A shape that requires HIP, MTP, a projector or a one-slot DFlash configuration must have a prepared endpoint with those settings. A stale matrix or a plan that lacks one of the prescribed shapes cannot supply this experiment. The adapter is a consumer of prepared plans and does not provision adjusted serving recipes.
+The row must reserve full-host CPU placement, every isolated plan port, the plan RAM budget and the MI210. Capture runs serially by arm and isolated listener. All requests for a DFlash shape run on one owned `-np 1` listener in each arm, with the cap read from each raw response echo. Configuration assembly requires a fresh topology-matched matrix for both arms and one prepared endpoint for every prescribed shape.
 
 The experiment asks whether the two isolated kernels produce exactly matching returned token IDs, content and reasoning for the predeclared requests. It uses the fixed comparator coverage, with at least 32 distinct requests and four DFlash pairs. This is exact agreement for a finite pack. HTTP or custody failure stops collection at the affected request. A production semantic failure or missing production token IDs or completion counts stops the run before candidate capture. The adapter finalizes and checks the production pack and its SHA-256 file before starting the candidate arm. Candidate token or count gaps produce comparator `incomplete` when the recorded comparisons otherwise agree.
 

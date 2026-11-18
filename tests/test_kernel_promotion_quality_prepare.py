@@ -1,6 +1,9 @@
 """Offline checks for the production-first prospective quality request inputs."""
 
 from collections import Counter
+import base64
+from datetime import UTC, datetime, timedelta
+from enum import Enum
 import json
 from pathlib import Path
 import subprocess
@@ -52,6 +55,122 @@ def test_rejects_changed_request_or_source_pin(tmp_path):
     path.write_text(json.dumps(inputs))
     with pytest.raises(ValueError, match="changed original plan bytes"):
         prepare.materialize(path, prepare.planner.digest(path))
+
+
+def test_builds_all_seven_original_recipes_with_dedicated_loopback_ports(tmp_path, monkeypatch):
+    recipes = prepare.recipe_inputs(INPUTS_SHA)
+    inputs = prepare.parity._parse(INPUTS.read_bytes())["profiles"]
+    assert set(recipes) == set(inputs)
+    ports = {profile: 19100 + index for index, profile in enumerate(recipes)}
+    resources = {"physical_cpus": "0-95", "gpu_devices": ["ROCm0"], "ram_gib": 112}
+    spec = {"schema": prepare.planner.QUALITY_SPEC_SCHEMA, "request_inputs_sha256": INPUTS_SHA,
+            "ports": ports, "resources": resources}
+    role_ports = {recipe["mapping"]["role"]: recipe["mapping"]["canonical_port"] for recipe in recipes.values()}
+    manifest = SimpleNamespace(PORT_MAP=role_ports, _HOST_LOGICAL_CPUS=192,
+                               _smt_fold=lambda cpus: {cpu % 96 for cpu in cpus})
+    images = {backend: {"binary": f"/{backend}/llama-server", "library_dir": f"/{backend}"}
+              for backend in ("cpu", "hip")}
+    checked_models = []
+    checked_templates = []
+    monkeypatch.setattr(prepare.live.evidence, "verify_models", checked_models.append)
+    monkeypatch.setattr(prepare.live.runner, "canonical_file", lambda path: path)
+    monkeypatch.setattr(prepare.planner, "check_pin", lambda path, sha: checked_templates.append((str(path), sha)))
+
+    endpoints = prepare.prepare_quality_endpoints(spec, tmp_path, images, set(role_ports.values()), manifest)
+    plan = {"spec": spec, "endpoints": endpoints, "images": images}
+    shapes = {shape["id"]: shape for shape in prepare.materialize(INPUTS, INPUTS_SHA)["shapes"]}
+    assert len({endpoint["port"] for endpoint in endpoints}) == 7
+    for profile, entry in recipes.items():
+        record = inputs[profile]
+        recipe = prepare.read_source(record["source"])["recipes"][record["recipe"]]
+        assert entry["args"] == recipe["args"]
+        endpoint = prepare.live.endpoint_for(plan, entry["mapping"], shapes[profile])
+        assert endpoint["port"] == ports[profile]
+        assert endpoint["argv"][13:] == recipe["args"]
+        assert endpoint["argv"][11:13] == ["--threads", str(len(entry["logical_cpus"]))]
+    assert len(checked_models) == 7
+    assert len(checked_models[list(recipes).index("architect-general-hip")]) == 3
+    assert len(checked_templates) == 6
+    vision = next(endpoint for endpoint in endpoints if endpoint["quality_profile"] == "worker-vision-hip-mmproj")
+    assert vision["env"]["MTMD_BACKEND_DEVICE"] == "ROCm0"
+
+    with pytest.raises(ValueError, match="at least 112 GiB"):
+        prepare.prepare_quality_endpoints(spec | {"resources": resources | {"ram_gib": 111}}, tmp_path,
+                                          images, set(role_ports.values()), manifest)
+    frontdoor = "frontdoor-cpu-moe-mtp"
+    with pytest.raises(ValueError, match="non-production ports"):
+        prepare.prepare_quality_endpoints(spec | {"ports": ports | {frontdoor: 8070}}, tmp_path,
+                                          images, set(role_ports.values()), manifest)
+
+
+def test_quality_plan_dispatch_regenerates_and_refuses_changed_archive(tmp_path, monkeypatch):
+    planner = prepare.planner
+    monkeypatch.setattr(sys, "path", sys.path.copy())
+    server = ModuleType("scripts.server")
+    server.orchestrator_stack = server.stack_prewarm = SimpleNamespace()
+    server.stack_numa = SimpleNamespace(NUMA_CONFIG={})
+    server.stack_manifest = SimpleNamespace(
+        PORT_MAP={role: port for port, role, _ in prepare.RECIPE_LAYOUT.values()},
+        AUX_SERVICES={}, HOT_SERVERS=[], WARM_SERVERS=[], _HOST_LOGICAL_CPUS=192,
+        _smt_fold=lambda cpus: {cpu % 96 for cpu in cpus},
+    )
+    scheduling = ModuleType("src.scheduling")
+    matrix_status = Enum("MatrixStatus", {"OK": "ok", "STALE": "stale"})
+    matrix = SimpleNamespace(topology_hash="topology", measured_at=datetime.now(UTC).isoformat())
+    scheduling.contention = SimpleNamespace(
+        load_contention_matrix=lambda path: matrix,
+        topology_fingerprint_for_matrix=lambda numa, matrix: "topology",
+        matrix_status=lambda *args, **kwargs: matrix_status.OK,
+        MatrixStatus=matrix_status,
+        MATRIX_STALENESS_DAYS=30,
+    )
+    for name, module in (("scripts", ModuleType("scripts")), ("scripts.server", server),
+                         ("src", ModuleType("src")), ("src.scheduling", scheduling)):
+        monkeypatch.setitem(sys.modules, name, module)
+    monkeypatch.setattr(planner, "check_stack_inputs", lambda spec: tmp_path)
+    monkeypatch.setattr(planner, "production_runtime_dirs", lambda: [])
+    monkeypatch.setattr(planner, "verify_stage", lambda image, candidate, backend, dirs: image)
+    monkeypatch.setattr(planner, "digest", lambda path: "c" * 64)
+    monkeypatch.setattr(planner, "check_pin", lambda path, sha: None)
+    monkeypatch.setattr(prepare.live.runner, "canonical_file", lambda path: path)
+    monkeypatch.setattr(prepare.live.evidence, "verify_models", lambda pins: None)
+    images = {backend: {"root": f"/{backend}", "binary": f"/{backend}/llama-server", "library_dir": f"/{backend}"}
+              for backend in ("cpu", "hip")}
+    spec = {
+        "schema": planner.QUALITY_SPEC_SCHEMA, "request_inputs_sha256": INPUTS_SHA, "config_sha256": {},
+        "orchestrator_commit": "d" * 40, "candidate": {"source_commit": "a" * 40,
+                                                     "source_tree": "b" * 40, "branch": "fixture", **images},
+        "ports": {profile: 19200 + index for index, profile in enumerate(prepare.RECIPE_LAYOUT)},
+        "resources": {"physical_cpus": "0-95", "gpu_devices": ["ROCm0"], "ram_gib": 112},
+    }
+    plan = planner.prepare_plan(spec, tmp_path)
+    assert len(plan["endpoints"]) == 7
+    assert prepare.live.runner.regenerate(plan, tmp_path, tmp_path / "ledger.json") == plan
+    fresh_time = matrix.measured_at
+    matrix.measured_at = (datetime.now(UTC) - timedelta(days=31)).isoformat()
+    stale = planner.prepare_plan(spec, tmp_path)
+    assert stale["contention_matrix_status"] == "stale"
+    with pytest.raises(ValueError, match="matrix must be fresh"):
+        prepare.live.runner.regenerate(stale, tmp_path, tmp_path / "ledger.json")
+    ordinary = {key: value for key, value in spec.items() if key != "request_inputs_sha256"}
+    ordinary.update(schema=planner.SPEC_SCHEMA, numa_mode="full", warm_roles=[], endpoint_tests={})
+    monkeypatch.setattr(planner, "prepare_serving_endpoints", lambda *args: (stale["endpoints"], {}))
+    assert planner.prepare_plan(ordinary, tmp_path)["contention_matrix_status"] == "stale"
+    matrix.measured_at = fresh_time
+
+    record = prepare.parity._parse(INPUTS.read_bytes())["profiles"]["architect-critic-cpu-mtp"]
+    archive = prepare.ROOT / record["source"]["path"]
+    wrapper = prepare.parity._parse(archive.read_bytes())
+    source = prepare.read_source(record["source"])
+    source["recipes"][record["recipe"]]["args"][-1] = "5"
+    modified = prepare.parity.pack_bytes(source)
+    wrapper.update(bytes_b64=base64.b64encode(modified).decode("ascii"), sha256=prepare.live.sha(modified))
+    local = tmp_path / record["source"]["path"]
+    local.parent.mkdir(parents=True)
+    local.write_bytes(prepare.parity.pack_bytes(wrapper))
+    monkeypatch.setattr(prepare, "ROOT", tmp_path)
+    with pytest.raises(ValueError, match="changed original plan bytes"):
+        prepare.live.runner.regenerate(plan, tmp_path, tmp_path / "ledger.json")
 
 
 def test_stale_plan_refuses_to_emit_config(tmp_path, monkeypatch, capsys):

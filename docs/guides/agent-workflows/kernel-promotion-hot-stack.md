@@ -28,7 +28,7 @@ Reusing the shared virtual environment requires checking its editable-install `.
 
 Preserve the five configuration hashes and launcher source checks; changing the pin to the latest shared HEAD changes the prepared experiment. The detached tree must remain available until the row has finished.
 
-A Git checkout also gives the matrix file a new filesystem mtime. When the pinned freshness checker uses that mtime, retain the original matrix age and its provenance on the byte-identical detached copy before planning; checking out an old matrix is not a new acquisition and must not change a stale classification to fresh.
+A Git checkout gives the matrix file a new filesystem mtime. Both prepared-plan modes also check the pinned matrix's timezone-aware `measured_at` against the orchestrator's existing freshness window. An old or future-dated measurement yields a stale plan.
 
 A completion predicate that only checks file existence can make the grant wrapper exit zero after retaining a failed native result. Native completion predicates must require `status=captured` and `cleanup_proved=true`; keep plumbing-only dry-run acceptance separate. File the native `RESULT.json` status and failure, together with cleanup, rather than treating wrapper completion as capture acceptance. The 2026-11-18 text and image API attempts stopped before inference because the shared orchestrator HEAD changed after preparation; both retained `status=failed`, `isolated_api.status=not_run` and `cleanup_proved=true`.
 

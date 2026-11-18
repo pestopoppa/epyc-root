@@ -91,7 +91,7 @@ def test_pinned_plan_refuses_alternate_and_emits_fixture_matrix(tmp_path):
     if not packet_path:
         pytest.skip('published packet integration fixture')
     packet = Path(packet_path)
-    _, _, plan, matrix, config, contention = capture.read_prepared(packet, 'cpu')
+    _, _, plan, matrix, config, contention = capture.read_prepared(packet, os.environ.get('MATRIX_TEST_PHASE', 'cpu'))
     broken = json.loads(json.dumps(plan['endpoints']))
     broken[0]['numa_instance'] = 1
     with pytest.raises(ValueError, match='configured primary'):
@@ -109,3 +109,18 @@ def test_pinned_plan_refuses_alternate_and_emits_fixture_matrix(tmp_path):
     output.write_text(matrix._emit_yaml(result[:-1], topology_hash=plan['topology_hash']))
     with pytest.raises(ValueError, match='coverage'):
         capture.validate_full(output, plan | {'instances': instances}, matrix, config, contention)
+
+
+def test_hip_phase_allows_only_owned_current_birth_kfd_workload(tmp_path, monkeypatch):
+    processes = tmp_path / 'proc'
+    processes.mkdir()
+    (processes / '17').mkdir()
+    monkeypatch.setattr(capture.runner, 'KFD', tmp_path)
+    runtime = capture.MatrixRuntime({}, None, None, SimpleNamespace(gpu=True), 1, 1)
+    server = SimpleNamespace(pid=17, birth=123, endpoint={'backend': 'hip'})
+    runtime.servers = [server]
+    monkeypatch.setattr(capture.runner.owned, 'birth', lambda pid: 123)
+    runtime.verify_kfd_clients()
+    monkeypatch.setattr(capture.runner.owned, 'birth', lambda pid: 124)
+    with pytest.raises(ValueError, match='foreign KFD workloads.*17'):
+        runtime.verify_kfd_clients()
