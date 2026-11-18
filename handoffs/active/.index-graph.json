@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T08:58:38Z",
+  "generated_at": "2026-11-18T08:59:55Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1447,7 +1447,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6049,
+          "line": 6050,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1456,7 +1456,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6129,
+          "line": 6130,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1475,7 +1475,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6426,
+          "line": 6427,
           "name": "autokernel-rebuild-program",
           "open": 16,
           "readiness": "blocked"
@@ -1492,7 +1492,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9643,
+          "line": 9644,
           "name": "autokernel-unified-surface-program",
           "open": 55,
           "readiness": "blocked"
@@ -1505,7 +1505,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 13996,
+          "line": 13997,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1539,7 +1539,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14208,
+          "line": 14209,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1674,14 +1674,14 @@
         "INF-48#rocm-verify-profile-backend"
       ],
       "closed": 365,
-      "dispatchable": 6,
+      "dispatchable": 7,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-18",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 6,
+      "open": 7,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1745,21 +1745,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 3,
+          "dispatchable": 4,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
           "line": 2726,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3,
+          "open": 4,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3116,
+          "line": 3118,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3629,
+          "line": 3631,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3724,
+          "line": 3726,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"

@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 533
+      "open": 534
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -135,7 +135,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 6049,
+          "line": 6050,
           "markers": 1,
           "name": "agent-collab-rnd-harness",
           "open": 1
@@ -145,7 +145,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 6129,
+          "line": 6130,
           "markers": 1,
           "name": "autokernel-restart-and-strip",
           "open": 2
@@ -160,7 +160,7 @@
             "INF-65"
           ],
           "guarded": 0,
-          "line": 6426,
+          "line": 6427,
           "markers": 1,
           "name": "autokernel-rebuild-program",
           "open": 16
@@ -174,7 +174,7 @@
             "INF-70#cpu-decode-roofline-program"
           ],
           "guarded": 0,
-          "line": 9643,
+          "line": 9644,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
           "open": 55
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 13996,
+          "line": 13997,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14208,
+          "line": 14209,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -2158,7 +2158,7 @@
       "closed": 365,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 6,
+      "open": 7,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2167,7 +2167,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 371,
+      "total": 372,
       "tracks": [
         {
           "blocked": 0,
@@ -2205,14 +2205,14 @@
           "line": 2726,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3116,
+          "line": 3118,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3629,
+          "line": 3631,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3724,
+          "line": 3726,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
