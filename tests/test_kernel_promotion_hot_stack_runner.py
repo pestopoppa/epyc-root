@@ -81,6 +81,61 @@ def test_gpu_rowflow_fence_contract(tmp_path):
         runner.rowflow_environment(True, engine, gpu | {'ROCR_VISIBLE_DEVICES': ''})
 
 
+@pytest.mark.parametrize(('shape', 'refusal'), [
+    ('keeper_snapshot', None),
+    ('legacy_engine', None),
+    ('changed_snapshot', 'invalid or changed pin'),
+    ('foreign_snapshot', 'inner launcher ancestor'),
+    ('linked_snapshot', 'canonical regular file'),
+    ('self_claim', 'CPU lock provider'),
+    ('wrong_parent', 'CPU lock provider'),
+    ('duplicate_inner', 'inner launcher ancestor'),
+    ('duplicate_provider', 'CPU lock provider'),
+])
+def test_rowflow_ancestors_require_the_pinned_engine_and_lock_provider(tmp_path, monkeypatch, shape, refusal):
+    flags = tmp_path / 'compute-flags'
+    monkeypatch.setattr(runner, 'FLAGS', flags)
+    row_id = 'v9-8-fixture'
+    engine = flags / 'bin/rowflow/filler_run15.sh'
+    engine.parent.mkdir(parents=True)
+    engine.write_text('#!/bin/bash\n')
+    engine_sha = runner.planner.digest(engine)
+
+    snapshot_row = 'different-row' if shape == 'foreign_snapshot' else row_id
+    snapshot = flags / 'dryrun' / snapshot_row / 'engine' / engine.name
+    snapshot.parent.mkdir(parents=True)
+    if shape == 'linked_snapshot':
+        snapshot.symlink_to(engine)
+    else:
+        snapshot.write_bytes(b'changed' if shape == 'changed_snapshot' else engine.read_bytes())
+
+    running_engine = engine if shape == 'legacy_engine' else snapshot
+    inner_cmd = [b'/bin/bash', os.fsencode(running_engine), b'--inner', b'--id', row_id.encode(),
+                 b'--class', b'cpu', b'--cmd', b'python -I -B acquire.py --acquire']
+    inner = (102, 1002, inner_cmd)
+    provider = (101, 1001, [b'/orchestrator/.venv/bin/python3', b'-m', b'src.runtime.region_lock_cli',
+                             b'run', b'--cpu-list', b'0-95', b'--role', b'bench', b'--timeout-s', b'2100',
+                             b'--tag', f'filler-{row_id}'.encode(), b'--', *inner_cmd])
+    poller = (100, 1000, [b'/bin/bash', os.fsencode(running_engine), b'--id', row_id.encode()])
+    chain = [inner, provider, poller]
+    if shape == 'self_claim':
+        chain.remove(provider)
+    elif shape == 'wrong_parent':
+        chain.insert(1, (103, 1003, [b'bash']))
+    elif shape == 'duplicate_inner':
+        chain.insert(0, (103, 1003, inner_cmd))
+    elif shape == 'duplicate_provider':
+        chain.append((99, 999, provider[2]))
+
+    # Rowflow unsets this before exec. Custody comes from /proc ancestry.
+    monkeypatch.delenv('FILLER_ENGINE_SNAPSHOT', raising=False)
+    if refusal:
+        with pytest.raises(ValueError, match=refusal):
+            runner.rowflow_ancestors(chain, row_id, engine, engine_sha)
+    else:
+        assert runner.rowflow_ancestors(chain, row_id, engine, engine_sha) == (provider[:2], inner[:2])
+
+
 def test_regenerate_refuses_mutated_argv_and_restores_environment(tmp_path, monkeypatch):
     expected = {'schema': runner.planner.PLAN_SCHEMA, 'status': 'prepared_only', 'spec': {'test': True},
                 'contention_matrix_status': 'ok', 'endpoints': [{'argv': ['safe'], 'env': {}}]}

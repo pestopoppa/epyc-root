@@ -111,6 +111,25 @@ def ancestor_chain():
     return chain
 
 
+def rowflow_ancestors(chain, row_id, engine, engine_sha):
+    # At arm time the keeper copies the engine here. The launcher execs that
+    # copy and unsets FILLER_ENGINE_SNAPSHOT before starting the inner process.
+    snapshot = FLAGS / 'dryrun' / row_id / 'engine' / engine.name
+    engines = {os.fsencode(path): path for path in (engine, snapshot)}
+    inner_args = [b'--inner', b'--id', os.fsencode(row_id), b'--class']
+    inner = [(index, engines[cmd[1]]) for index, (_, _, cmd) in enumerate(chain)
+             if cmd[:1] == [b'/bin/bash'] and cmd[2:6] == inner_args and cmd[1] in engines]
+    require(len(inner) == 1, 'missing unique Rowflow inner launcher ancestor')
+    index, running_engine = inner[0]
+    planner.check_pin(canonical_file(running_engine), engine_sha)
+
+    tag = f'filler-{row_id}'.encode()
+    providers = [index for index, (_, _, cmd) in enumerate(chain)
+                 if cmd[1:4] == [b'-m', b'src.runtime.region_lock_cli', b'run'] and tag in cmd]
+    require(providers == [index + 1], 'missing unique CPU lock provider parenting the Rowflow inner launcher')
+    return chain[index + 1][:2], chain[index][:2]
+
+
 def live_flocks(pid, paths):
     """Find exact lock-owning open descriptions in one ancestor's fdinfo."""
     stat_keys = {}
@@ -187,17 +206,11 @@ class Admission:
         require(int(os.environ['FILLER_END']) == self.end and os.environ.get('FILLER_NEEDGPU') == str(int(self.gpu)),
                 'live Rowflow environment differs from the grant')
         self.deadline = min(self.end - CLEANUP_RESERVE_S, int(os.environ['FILLER_DEADLINE']))
-        chain = ancestor_chain()
-        tag = f'filler-{self.row_id}'.encode()
-        providers = [(pid, birth) for pid, birth, cmd in chain
-                     if cmd[1:4] == [b'-m', b'src.runtime.region_lock_cli', b'run'] and tag in cmd]
         engine = canonical_file(Path(self.row['engine']['path']))
-        planner.check_pin(engine, self.row['engine']['sha256'])
+        engine_sha = self.row['engine']['sha256']
+        planner.check_pin(engine, engine_sha)
         self.env = rowflow_environment(self.gpu, engine, os.environ)
-        inner = [(pid, birth) for pid, birth, cmd in chain
-                 if cmd[1:6] == [os.fsencode(engine), b'--inner', b'--id', os.fsencode(self.row_id), b'--class']]
-        require(len(providers) == 1 and len(inner) == 1, 'missing unique Rowflow inner launcher or CPU lock ancestor')
-        self.provider, self.inner = providers[0], inner[0]
+        self.provider, self.inner = rowflow_ancestors(ancestor_chain(), self.row_id, engine, engine_sha)
         self.cgroup = (PROC / 'self/cgroup').read_text().strip()
         require(re.fullmatch(rf'0::/rowflow/{re.escape(self.row_id)}@\d+', self.cgroup)
                 and all((PROC / str(pid) / 'cgroup').read_text().strip() == self.cgroup
