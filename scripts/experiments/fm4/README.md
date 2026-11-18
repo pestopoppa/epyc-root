@@ -69,6 +69,42 @@ nor an execution record authenticates a dispatch or establishes that the gate
 was suitable for the task.
 
 The opt-in Vidya source `fm4-gate-acceptance` revalidates these records as
-observations about the selected gate. Its synthetic planning-context canary
-tests this plumbing only. The protected oracle consumer, native task-outcome
-evidence and end-to-end identity binding remain separate acceptance steps.
+observations about the selected gate. Its synthetic planning-context controls
+test this plumbing only.
+
+## Native oracle and Vidya canary
+
+After the [D9 oracle acceptance change](../../../proposed/fm4-acceptance-consumption/README.md)
+is authorized and available in this checkout, pass the actual Claude child and
+parent transcript files, the task ID obtained independently from the dispatch,
+and the existing `run_gate.py` acceptance record:
+
+```bash
+python3 -B scripts/experiments/fm4/native_canary.py \
+  --child /private/fm4/agent-actual-child.jsonl \
+  --parent /private/fm4/actual-parent.jsonl \
+  --task-id <independently-known-assigned-task-id> \
+  --acceptance /private/fm4/task-acceptance.json \
+  --state-dir /private/fm4/vidya-canary-new
+```
+
+The parent transcript must contain a uniquely attributable terminal structured
+`Agent` or `Task` result without an explicit outcome. The child must qualify
+for the oracle's acceptance join. An asynchronous launch acknowledgment by
+itself is insufficient. The current API joins Claude transcripts. Supply the
+execution sidecar and snapshot at their recorded bundle locations. The canary
+refuses if the D9 API is missing or if the oracle declines to apply the receipt.
+
+The state directory must be new and its parent must exist. The canary ingests
+one record through the registered adapter, uses a local empty intake index,
+and checks that `coordination.fm4` retrieves the exact receipt-derived claim as
+planning context. The directory holds the isolated ledger, freshness marker
+and planner read record. It can remain on disk if a later check fails.
+
+Exit 0 emits a JSON receipt with child, parent and acceptance SHA-256 hashes,
+the execution evidence digest, the matched identities, the oracle result and
+the selected claim. Both a passing and a failing gate can satisfy the canary
+when the oracle applies the corresponding outcome. The hashes check artifact
+consistency across the run. Gate suitability and the origin of the task ID
+remain caller obligations. The selected claim describes the prospective gate's
+exit. It carries no grade for historical task accuracy.
