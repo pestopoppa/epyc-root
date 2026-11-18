@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 469
+      "open": 468
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14003,
+          "line": 14014,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14215,
+          "line": 14226,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 200,
+      "closed": 201,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 39,
+      "open": 38,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -543,20 +543,20 @@
         },
         {
           "blocked": 0,
-          "closed": 31,
+          "closed": 32,
           "gates": [],
           "guarded": 0,
           "line": 367,
           "markers": 1,
           "name": "delegation-context-preassembly",
-          "open": 9
+          "open": 8
         },
         {
           "blocked": 0,
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 598,
+          "line": 599,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 864,
+          "line": 865,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 4
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1369,
+          "line": 1370,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1906,
+          "line": 1907,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2668,
+          "line": 2669,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3095,
+          "line": 3096,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3752,
+          "line": 3753,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0

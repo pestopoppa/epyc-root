@@ -11084,6 +11084,7 @@ Its other GPU commits (nwarps=4, async prefetch, GDN bf16 +21.5%, `GGML_CUDA_GDN
       serving surface or any re-baselined surface, and report the count on the promotion record.
       intake-1378#record. Consumed by INF-75 AKX-P3b.
       - 2026-11-17 PARTIAL (autokernel, code-only; box stays OPEN): `epyc-inference-research` `f6e09036a` `goodhart_count.count_goodharted` takes the R23-48 LOO arms (keep-time effect + per-surface leave-one-out throughput) against full-bundle throughput per surface, counts keeps whose LOO arm is >= the full bundle on any surface (tie counts), records the keep-time effect beside each arm, and refuses malformed input or a surface with no full-bundle value. Tests in `test_promotion_goodhart.py` (5 cases). Remaining: feed it the real LOO arms and put `goodharted_count` on the promotion record (needs a promotion run). [no-belief: tooling landing]
+      - 2026-11-18 (autokernel, AKU bulk pass) PARTIAL (code-only; box stays OPEN): research `64fc1cfc1` `promotion_evidence.compound_from_heldout(goodhart=...)` validates a `goodhart_count.v1` result and records `goodharted_count`/`goodhart` on the promotion record beside the unchanged gain (None = not measured, never 0); `test_promotion_goodhart.py` 12 passed. Needs a RUN: the real R23-48 leave-one-out arms measured on the serving and re-baselined surfaces, then fed through `count_goodharted`. [no-belief: tooling landing]
 - [ ] First CPU serving gate produces an `epyc.autokernel.serving_ab.v1` record
 
   - 2026-11-01 codex3 acceptance: Staleness is derived from the existing shared-COR authority and checked by already-loaded readers, status/quotes and decision entry points. The explicit own-surface rebaseline runs the existing native CPU/GPU harness after resource admission, binds intent before measurement, retains native failure/aborted raw records, then checks COR, tip and the original surface-journal snapshot under the existing authority lock before saving a current measurement. Only a complete typed native comparison clears the stale state. Late initialization and seed cannot erase existing state or bypass recovery; incompatible recovery flags refuse. The final frozen eight-file suite passed 354 with original source hashes and drained processes. No actual COR promotion, model execution, deployment, threshold/grade change or planning-canary claim. [belief: cc]
@@ -12484,6 +12485,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     has HIGH17 upstream impact, including Journal validation and replay. Changing its helper
     language is the same authority change, not an exemption. Independent selected-range
     transport may proceed but cannot enable discovery or complete this task by itself.
+    - 2026-11-18 (autokernel, AKU bulk pass): still needs OP-AKU-A2 approval (transition validator, HIGH17); not implemented.
   - [x] **AKU-04i — transport one original native plan unit through the owned worker**:
     ✅ 2026-09-09. Additive Prepared v4 and result/run/artifact v3 bind the unchanged full
     native-v2 plan, exact absolute unit range and attempt lineage. Both parent and child refuse
@@ -12702,6 +12704,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     alone is insufficient. Explicit versioned successor/predecessor semantics require shared
     `actor_preparation_state.validate_event` changes (HIGH16, Journal publication/replay);
     OP-AKU-REFRESH approval was requested. Do not conceal new authority in a nested v1 contract.
+    - 2026-11-18 (autokernel, AKU bulk pass): still needs OP-AKU-REFRESH approval (actor event validator, HIGH16); not implemented.
   - [x] **AKU-06q — project original CPU profile evidence through the durable feed**:
     ✅ 2026-09-09. ROOT closure-v3 registers measurement and receipt-integrity projections;
     original accepted terminal and PROFILE_VERIFIED join precedes compact artifact verification.
@@ -12792,6 +12795,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     to its original guarded manifest before build; no caller-authored mapping becomes authority.
     Preserve OP-AKU-BIND/HELD and ENROLL approval boundaries and existing native refusals. Prove
     actual startup→profile→actor/source/build→settlement through the same installed entrypoint.
+    - 2026-11-18 (autokernel, AKU bulk pass): still needs OP-AKU-BIND (paired with HELD; HELD now approved 2026-11-02, BIND is not); not implemented.
   - [x] **AKU-06n — specify original multi-child accounting and denial recovery**:
     ✅ 2026-09-09. Reviewed current scheduler/lifecycle/actor APIs and retained the implementation
     decision package linked in AKU-06l. It delineates original held-proof/child/settlement append
@@ -12898,6 +12902,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     work. Source composition is accepted under AKU-07p; finish installed provider bindings,
     durable held-cost restart settlement (07j), all selected work-kind dispatch and native-v2
     scientific adapter configuration. A source-level runtime_factory is not standalone acceptance.
+    - 2026-11-18 (autokernel, AKU bulk pass): unblocked in part by AKU-07j's lifecycle record (`82bbc6e92`); still needs the installed provider bindings, the service-owned run thread and the restart settlement consumer. Not done in this pass.
   - [x] **AKU-07p — compose bounded runtime, startup parser and service ownership**:
     exact issued-intent recovery, bounded same-outcome retry, one service-owned non-daemon run
     thread, recovery before listener admission and owned shutdown are connected. Closed startup
@@ -12931,6 +12936,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     validator event (22 upstream, three processes) awaits its own operator approval, distinct from
     approved descendant capture; low-risk independent work continues. See OP-AKU-HELD in the router.
     - 2026-11-02 operator decision: Approve (decisions-batch2-4-20261102.json)
+    - 2026-11-18 (autokernel, AKU bulk pass) PARTIAL (code-only; box stays OPEN): research `82bbc6e92`, under the 2026-11-02 OP-AKU-HELD approval. Additive `OWNED_HELD_RECEIPT_RETAINED` (schema `worker_held_receipt.v1`) after OWNED_TERMINAL and before WORKER_RESULT_ACCEPTED/STALE with a closed validator binding the receipt interval; `project_events().held_receipts`; `WorkerLifecycle.reconcile` settles a crash after OWNED_TERMINAL / the held record as exactly one stale event and restores the durable held receipt with no provider reacquisition or relaunch; legacy streams unchanged. `test_worker_lifecycle.py` 48 passed (5 new); 258 passed across campaign_control/serial_run/runtime_recovery/evidence_feed/unified_worker/unified_driver/standalone_runtime/campaign_worker_lifecycle. Remaining: the driver/serial_run/campaign_control consumer that restores separate accounting-only indexes from `held_receipts` and binds them to the original unsettled driver selection on process restart (needs the real driver restart path exercised, AKU-07h).
   - [ ] **AKU-07k — bind scheduled work through provider admission/accounting**: version the native
     StageRequest accounting binding with catalog/transition/selection/proposal digests, proposal ID,
     backend and scheduler stage class; include it in prospective request identity, launch contract,
@@ -12939,6 +12945,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Current provider authorize/close APIs receive no typed backend/class binding, so request-ID-only
     changes cannot fix profile settlement. The additional HIGH22/three-process validator scope awaits
     OP-AKU-BIND approval; descendant approval does not cover it. Preserve v1 and old-reader refusal.
+    - 2026-11-18 (autokernel, AKU bulk pass): still needs OP-AKU-BIND approval (HIGH22, three-process validator); not implemented.
   - [x] **AKU-07l — select and materialize native-v2 work through the public driver**:
     plan_iteration selects the existing schema-appropriate plan identity builder while preserving
     proposal recipe identities; materialize_runtime preserves the issued version and checks the
@@ -13434,6 +13441,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     Require closed original evaluation/native/worker/held-cost evidence and exclusive physical
     ownership before issuing any disposition. No inferred rejection, caller-label authority,
     historical backfill, temporary duplicate accounting record or deletion-policy change.
+    - 2026-11-18 (autokernel, AKU bulk pass): still needs OP-AKU-ENROLL approval (Journal native payload validation, HIGH20); not implemented.
   - [x] **AKU-10j — bound retired serial build-cache retention**: ✅ 2026-09-15 — startup now
     plans and reaps only reproducible `targets/*/builds` roots from retired serial states, preserves
     the current state plus the newest inactive cache, and refuses live, locked, unreconciled,
@@ -13625,6 +13633,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
     The generated full-SMT campaign resolves seven production workloads plus the explicit GLM
     candidate and passes original-owner preflight. Final closure awaits the persisted final-code
     dry-run artifact and repair of the full-suite speculation-identity regression it exposed.
+    - 2026-11-18 (autokernel, AKU bulk pass): still needs OP-AKU-STACK approval (generated-stack repair, HIGH 66 upstream) in the isolated orchestrator lane; not done.
 
   - [x] **AKU-12j — retire the GLM-5.3 `active_campaign` pin** (found 2026-09-22): the research <!-- evidence-integrity: Research `084deaf0ef76680c11f89ac3d7cf56de5e81253f`; ROOT `03b38117545d91d77a3784f0bee85e5922d0d33c`; artifact: artifacts/compute/task-evidence-repair-20261031/aku-12j/EVIDENCE.json; hygiene, not quota -->
     repo's `scripts/kernel_rnd/autokernel/loop/historical_trajectory.py:168` still hard-codes
@@ -13656,6 +13665,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       lifecycle, intake-883#record @3a8b0286 (community-contributed #322, not alphaXiv's design). Either
       implement the §8.12 state set or delete it. Any change to the native transition validator rides
       OP-AKU-A2; do not bypass it.
+      - 2026-11-18 (autokernel, AKU bulk pass) NEEDS DESIGN + OP-AKU-A2 (box stays OPEN): `Outcome.status` (loop/loop.py) is a per-iteration terminal outcome string consumed throughout run.py with no existing transition table or §8.12 state set to derive from; replacing it needs the status inventory and either implementing or deleting §8.12, and the native transition validator rides OP-AKU-A2. Not started.
 - [x] **S3-AKU-02 — evaluate a compile-time build-channel stamp for loop binaries.** Make "is this an
       official/production build" unforgeable: a mis-set flag FAILS THE BUILD rather than degrading silently.
       Compare against the existing anchor provenance.json + object-digest approach, and record
@@ -13670,6 +13680,7 @@ historical P1/P1b/§5b tasks remain with their recorded owners unless explicitly
       and retain non-dominated candidates. Reuse autopilot's pareto_math.dominates; do not write a second
       one. intake-1367#record (remedy R2).
       - 2026-11-17 PARTIAL (autokernel, code-only; box stays OPEN): `epyc-inference-research` `f6e09036a` `keep_frontier.py` carries (effect, spread) per keep (`KeepPoint.record()`, schema `epyc.autokernel.keep_frontier.v1`; missing/NaN/negative coordinate refuses) and `frontier`/`retain` keep every non-dominated candidate using the orchestrator's `pareto_math.dominates` loaded by path (asserted not a copy). `test_keep_frontier.py` 11 passed incl. a slower-but-tighter keep surviving a faster noisy one. Remaining: write the spread coordinate onto the live keep record in `loop/run.py` and apply `retain` at keep time. [no-belief: tooling landing]
+      - 2026-11-18 (autokernel, AKU bulk pass) NEEDS DECISION (box stays OPEN): the remaining step (write spread onto the live keep record in `loop/run.py` and apply `keep_frontier.retain` at keep time) changes which keeps are retained, i.e. scientific admission authority; blocked on OP-AKU-U3 (variance-only keep rule). Not implemented to avoid a silent policy change.
 - [x] **S3-AKU-05 — validator provenance on every critic verdict and every keep.** Record per decision:
       validator identity and kind (script / oracle / LLM critic), its independence relation to the producer
       (same fleet / same family / different family / non-model), the evidence it inspected, and whether its
