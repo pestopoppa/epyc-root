@@ -1,6 +1,6 @@
 {
-  "actor_receipt_id": "sha256:7a4ec099d58b282a20071df55bed70c201cad313bae07e5d89703cdeed925bb5",
-  "as_of": "2026-11-18T15:42:21.025407+00:00",
+  "actor_receipt_id": "sha256:31a9ccb431f3cd8c3e6b6161a8baf79f5090a811347ad3ffa82a1e37f3d3c165",
+  "as_of": "2026-11-18T15:49:12.171967+00:00",
   "bounded": 1,
   "claims": [
     {
@@ -11,7 +11,7 @@
       "knob_family": "",
       "knobs": {},
       "linked_claim_ids": [],
-      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-current/replay/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-01.json",
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-published-20261118/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-01.json",
       "mechanism_id": "",
       "metric": "native_request_tpot_ms",
       "metric_direction": "lower_better",
@@ -50,7 +50,7 @@
       "knob_family": "",
       "knobs": {},
       "linked_claim_ids": [],
-      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-current/replay/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-03.json",
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-published-20261118/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-03.json",
       "mechanism_id": "",
       "metric": "native_request_tpot_ms",
       "metric_direction": "lower_better",
@@ -89,7 +89,7 @@
       "knob_family": "",
       "knobs": {},
       "linked_claim_ids": [],
-      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-current/replay/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-00.json",
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-published-20261118/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-00.json",
       "mechanism_id": "",
       "metric": "native_request_tpot_ms",
       "metric_direction": "lower_better",
@@ -166,7 +166,7 @@
   },
   "ledger": {
     "frame_count": 12,
-    "head_hash": "sha256:754a5b7a4e563793b57bf50214eb11236de9ea4ce536e0b761a92846826bbd9c",
+    "head_hash": "sha256:a2deea18291e48b90a2d9701aec70ecbbe0ff7a7a00617f53a1a109c66ca2e07",
     "intake_index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
     "scratch": true
   },
@@ -186,14 +186,11 @@
   "original_terminal_row_sha256": "bb87c7dd6a5a7e9e0a7f855ae4d7e96e6c310c88d751ffe2b33e96ecf2057ecb",
   "original_weight_file_count": 4,
   "reader_checkout": {
-    "behind": 3,
     "current": true,
     "error": null,
-    "head": "3e5562f640b51276fdcb1e06c6e5570d14acea54",
-    "oldest_missing_age_s": 452.0,
-    "origin_main": "ee88610ba36780f505212c0338e7c0daabcaed5d",
-    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
-    "within_grace": true
+    "head": "a9c449bd38737749081ddd55929698d4b351a462",
+    "origin_main": "a9c449bd38737749081ddd55929698d4b351a462",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
   },
   "reader_sha256": "8f1b6d02c531c429101d35c890945c6237dfcc08c5a26a0feadbeeedafdf52d9",
   "reliance": {
@@ -223,23 +220,11 @@
       }
     ]
   },
-  "rendered_excerpt_sha256": "40a9f4c2a050efb456651cc4d48e156ab465b66aaf430a05a270440ee5eb92b9",
+  "rendered_excerpt_sha256": "f1d882fd1206a81a2e944e2f606cf98119137082bb8e18aafb95693885a9c515",
   "schema": "epyc.vidya.mi210_npd1_planning_canary.v1",
   "scope": "Four original per-request native TPOT observations as consumer background only. No modeled placement effect, paired inference or promotion. No inference rerun or canonical ledger write.",
   "shown": 3,
-  "status": "candidate-passed",
+  "status": "passed",
   "stop_boundary": "AgentPlanner._proposal_from_agent intercepted before backend execution",
-  "unmodified_reader_control": {
-    "claims": [],
-    "reader_checkout": {
-      "current": true,
-      "error": null,
-      "head": "6f5cf4b45ea023a20546f4d27256487217b71f90",
-      "origin_main": "6f5cf4b45ea023a20546f4d27256487217b71f90",
-      "root": "/mnt/raid0/llm/views/epyc-root-main"
-    },
-    "reasons": [
-      "no_applicable_claims"
-    ]
-  }
+  "unmodified_reader_control": null
 }
