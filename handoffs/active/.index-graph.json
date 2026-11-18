@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T06:59:34Z",
+  "generated_at": "2026-11-18T07:10:13Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 29,
-      "dispatchable": 15,
+      "closed": 30,
+      "dispatchable": 16,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-BUILD-PREFLIGHT r2 (queued); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; D6/D7 open",
-      "open": 15,
+      "open": 16,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
@@ -2923,15 +2923,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 176,
-      "dispatchable": 37,
+      "closed": 177,
+      "dispatchable": 38,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-18",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 39,
+      "open": 40,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2951,18 +2951,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 10,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 337,
+          "line": 349,
           "name": "delegation-context-preassembly",
           "open": 7,
           "readiness": "ready"
@@ -2971,7 +2971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 536,
+          "line": 548,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2980,7 +2980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 802,
+          "line": 814,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -2989,7 +2989,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1297,
+          "line": 1309,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2998,7 +2998,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1834,
+          "line": 1846,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3007,7 +3007,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2596,
+          "line": 2608,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3016,7 +3016,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3023,
+          "line": 3035,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3025,7 +3025,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3680,
+          "line": 3692,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"

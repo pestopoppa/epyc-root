@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 534
+      "open": 535
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 461
+      "open": 462
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 176,
+      "closed": 177,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 37,
+      "open": 38,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -529,24 +529,24 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 215,
+      "total": 217,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 35,
+          "closed": 36,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 9
+          "open": 10
         },
         {
           "blocked": 0,
           "closed": 19,
           "gates": [],
           "guarded": 0,
-          "line": 337,
+          "line": 349,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 7
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 536,
+          "line": 548,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 802,
+          "line": 814,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 3
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1297,
+          "line": 1309,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1834,
+          "line": 1846,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2596,
+          "line": 2608,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3023,
+          "line": 3035,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3680,
+          "line": 3692,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -2564,10 +2564,10 @@
     },
     "v11-promotion-checklist.md": {
       "blocked": 0,
-      "closed": 29,
+      "closed": 30,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 15,
+      "open": 16,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2576,7 +2576,7 @@
       },
       "row_id": "INF-83",
       "state": "active",
-      "total": 44
+      "total": 46
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
