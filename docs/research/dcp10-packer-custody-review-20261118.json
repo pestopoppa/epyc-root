@@ -1,0 +1,147 @@
+{
+  "scope": "Bounded ContextBench lexical pilot source and receipt-custody review.",
+  "sources": {
+    "repository": "/mnt/raid0/llm/epyc-orchestrator",
+    "packer_path": "src/context_assembly.py",
+    "trusted_packer": {
+      "source_change_commit": "2e2e0d33caa1842df5e466c949527ce99a1777d9",
+      "git_blob": "d6126af056fdac88feada9dc7dc269d4c84fd571",
+      "sha256": "7d39ebc4c3afb18dd015a74d3be5adf77352b325771041ceab72d4a4287d2679"
+    },
+    "trusted_checkout": {
+      "commit": "c8851695cc6ae46845c06b9f60402e687f1698ec",
+      "ancestor_of_reviewed_head": true,
+      "scorer_and_packer_and_package_match": true
+    },
+    "current_packer": {
+      "checkout_head": "072d1583b3ead7456731946cd4e4595da6a9877f",
+      "source_change_commit": "b7110ec02502113ba8f1554ca54153c734e44bd6",
+      "git_blob": "9ba50c358e61766ef63340580a70016d4f3a5954",
+      "sha256": "c24d8421ebc495e3ee728a11a51a66f6b5d08d941c80f03df329daa24930a924"
+    },
+    "sha256_shared_by_trusted_and_head": {
+      "src/contextbench_score.py": "feabbd1c29d5e236a3e81b664d05d15178faeaa7d8418306581b289705b177de",
+      "src/__init__.py": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    "root_producer_sha256": "3cd780bd53268274c0d9db2550ac204cedd21ce6bc33ac6fa12b4514dca9a879"
+  },
+  "changes": [
+    {
+      "commit": "8739c03486819aba2e59f9141bbf7ad977e26dbe",
+      "impact": "Removes CODEMAP_ONLY from the ladder for ColGREP candidates with line ranges, including explicit CODEMAP_ONLY requests. If allowed FULL/SLICES modes do not fit, excludes the candidate and leaves its former signature budget available to later candidates."
+    },
+    {
+      "commit": "b7110ec02502113ba8f1554ca54153c734e44bd6",
+      "impact": "Opt-in verbatim SLICES ranges bypass BundleEntry normalization and serialize an optional flag. The ContextBench scorer constructs candidates without setting the flag, and merges ranges itself, so this addition has no effect on its score semantics."
+    }
+  ],
+  "score_impact": [
+    "The scorer assigns no candidate source from input rows. Every parsed candidate inherits the ColGREP default, so the budget ladder change applies to range-bearing lexical pilot candidates regardless of retrieval-arm label.",
+    "Discovery scope scores identical captured prediction files and spans directly. Failed attempts score zero in all scopes. Only packed scopes at 2000, 4000 and 8000 supplied-cost units can differ from the packer swap.",
+    "An old codemap-only placement adds one predicted file and zero lines. Its removal can change file precision, recall and F1. Freed budget can admit or enrich a later path and also change line precision, recall and F1. Directions and magnitude depend on gold overlap and budget competition."
+  ],
+  "synthetic_check": {
+    "method": "Executed Git blob copies of the same scorer with each packer in memory, calling _pack on two synthetic candidates.",
+    "candidates": [
+      {
+        "path": "a.py",
+        "priority": 2,
+        "full_slice_codemap_costs": [
+          3000,
+          2500,
+          500
+        ],
+        "hit": [
+          3,
+          4
+        ],
+        "total_lines": 10
+      },
+      {
+        "path": "b.py",
+        "priority": 1,
+        "full_slice_codemap_costs": [
+          2100,
+          1800,
+          100
+        ],
+        "hit": [
+          7,
+          8
+        ],
+        "total_lines": 10
+      }
+    ],
+    "packed_path_to_line_ranges": {
+      "2000": {
+        "trusted": {
+          "a.py": [],
+          "b.py": []
+        },
+        "current": {
+          "b.py": [
+            [
+              7,
+              8
+            ]
+          ]
+        }
+      },
+      "4000": {
+        "trusted": {
+          "a.py": [
+            [
+              1,
+              10
+            ]
+          ],
+          "b.py": []
+        },
+        "current": {
+          "a.py": [
+            [
+              1,
+              10
+            ]
+          ]
+        }
+      },
+      "8000": {
+        "trusted": {
+          "a.py": [
+            [
+              1,
+              10
+            ]
+          ],
+          "b.py": [
+            [
+              1,
+              10
+            ]
+          ]
+        },
+        "current": {
+          "a.py": [
+            [
+              1,
+              10
+            ]
+          ],
+          "b.py": [
+            [
+              1,
+              10
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "custody": [
+    "Use a separate clean detached application worktree at c8851695cc6ae46845c06b9f60402e687f1698ec for an existing-v1-trust score capture. Verify the three content hashes and pass that worktree as app_root to the unchanged capture producer. The earlier packer change commit alone lacks the scorer.",
+    "Preserve the immutable request, captured inputs and four source snapshots, output and receipt. The producer binds runtime origins and source bytes before and after scoring. The reader checks referenced and copied source hashes against its constants and checks request/receipt consistency.",
+    "Current HEAD fails the reader's packer-source identity check. Keep any current-packer comparison separately identified by the actual commit and hash. A future human-authorized trust amendment must preserve readback of historical receipts bound to the old digest and distinguish the two packed semantics."
+  ],
+  "limitations": "No real pilot input or output was scored in this review. Source identity checks and the synthetic budget example establish a possible behavior difference. The current adapter's warrant is bounded report integrity, with numeric pilot metrics descriptive."
+}
