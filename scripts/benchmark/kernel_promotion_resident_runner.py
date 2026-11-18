@@ -26,11 +26,38 @@ RESEARCH = Path("/mnt/raid0/llm/epyc-inference-research")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 K35 = RESEARCH / "scripts/benchmark/k35_stack_context_matrix_runner.py"
 CLAIM_ROOT = Path("/mnt/raid0/llm/tmp")
+V10_CPU_BINARY = Path("/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server")
+V10_CPU_SHA256 = "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c"
+V10_CPU_MANIFEST_SHA256 = "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2"
 REGIONS = ("q0", "q1", "q2", "q3")
 CPUS = set(range(96))
+CPU_SYSFS = Path("/sys/devices/system/cpu")
 FRESH_REQUIRED = 78
 AFFINITY_SAMPLE_INTERVAL = 0.1
 SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
+CONTENTION_TOPOLOGY_PROBE = """
+import json
+from pathlib import Path
+import sys
+import time
+
+root, path = map(Path, sys.argv[1:])
+sys.path[:0] = [str(root), str(root / 'scripts/server')]
+from stack_numa import NUMA_CONFIG
+from src.scheduling.contention import (
+    MATRIX_STALENESS_DAYS, load_contention_matrix, matrix_status, topology_fingerprint_for_matrix,
+)
+
+matrix = load_contention_matrix(path)
+live = topology_fingerprint_for_matrix(NUMA_CONFIG, matrix)
+print(json.dumps({
+    'recorded_topology_hash': matrix.topology_hash,
+    'live_topology_hash': live,
+    'matrix_status': matrix_status(path, current_topology_hash=live).value,
+    'max_age_days': MATRIX_STALENESS_DAYS,
+    'age_days': (time.time() - path.stat().st_mtime) / 86400,
+}))
+"""
 sys.path[:0] = [
     str(Path(__file__).resolve().parent),
     str(ROOT / ".claude/skills/kernel-promotion/scripts"),
@@ -149,6 +176,42 @@ def scenario_affinity(scenario):
     return text, cpus
 
 
+def verify_calibration_host():
+    host = evidence.host_snapshot()
+    expected_nodes = {
+        f"node{node}": f"{offset}-{offset + 23},{offset + 96}-{offset + 119}"
+        for node, offset in enumerate(range(0, 96, 24))
+    }
+    if (host["cpu_online"] != "0-191" or host["numa_online"] != "0-3"
+            or host["numa_cpus"] != expected_nodes):
+        raise ValueError("exclusive self-calibration requires the live four-region NPS4 CPU topology")
+    for primary in sorted(CPUS):
+        sibling = primary + 96
+        for cpu in (primary, sibling):
+            cpu_topology = CPU_SYSFS / f"cpu{cpu}/topology/thread_siblings_list"
+            if cpu_topology.read_text().strip() != f"{primary},{sibling}":
+                raise ValueError(f"live SMT siblings for CPU {cpu} differ from the region layout")
+    return host
+
+
+def verify_calibration_image():
+    manifest = (V10_CPU_BINARY.parents[1] / "SHA256SUMS").read_bytes()
+    if hashlib.sha256(manifest).hexdigest() != V10_CPU_MANIFEST_SHA256:
+        raise ValueError("exclusive self-calibration requires the frozen v10 CPU store manifest")
+    libraries = {}
+    for line in manifest.decode().splitlines():
+        digest, relative = line.split(maxsplit=1)
+        path = Path(relative)
+        if path.parent == Path("bin") and any(
+            path.name == prefix or path.name.startswith(f"{prefix}.")
+            for prefix in evidence.REQUIRED_HOT_LIBRARIES
+        ):
+            libraries[path.name] = digest
+    pin = {"binary_path": str(V10_CPU_BINARY), "binary_sha256": V10_CPU_SHA256, "libraries": libraries}
+    evidence.verify_image_pins({"arms": {"production": pin}}, "production", V10_CPU_BINARY)
+    return pin
+
+
 @dataclass
 class Server:
     proc: subprocess.Popen
@@ -184,6 +247,8 @@ class Runtime:
         self.evidence = None
         self.pins = None
         self.observation_source = None
+        self.exclusive_self_calibration = getattr(args, "exclusive_self_calibration", False)
+        self.calibration_image = None
         self.env = {"PATH": "/usr/bin:/bin", "LANG": "C"}
         for key in ("FILLER_ID", "FILLER_STOPFILE", "FILLER_GPU_FENCE",
                     "GPU_DEVICE_ORDINAL", "GGML_VK_VISIBLE_DEVICES", "HSA_ENABLE_SDMA"):
@@ -220,19 +285,14 @@ class Runtime:
         self.k35.write_json(output / "claim.open.json", receipt)
         if urllib.request.getproxies().get("http") and not urllib.request.proxy_bypass("127.0.0.1"):
             raise ValueError("health and request traffic must reach loopback directly")
-        command = [
-            str(ORCHESTRATOR / ".venv/bin/python"),
-            str(ORCHESTRATOR / "scripts/validate/check_contention_matrix_fresh.py"),
-        ]
         if self.evidence is not None:
             self.evidence.verify_models(self.pins["models"])
             self.k35.write_json(output / "host.json", self.evidence.host_snapshot())
-            matrix = output / "contention-matrix.yaml"
-            shutil.copy2(ORCHESTRATOR / "orchestration/contention_matrix.yaml", matrix)
-            command.extend(("--matrix-path", str(matrix.resolve())))
-        check = subprocess.run(command, env=self.env, capture_output=True, text=True, timeout=30)
-        (output / "contention-matrix.txt").write_text(check.stdout + check.stderr)
-        check.check_returncode()
+        if self.exclusive_self_calibration:
+            if self.calibration_image is None:
+                raise ValueError("exclusive self-calibration image pins were not validated")
+            self.k35.write_json(output / "host.json", verify_calibration_host())
+        self.check_contention_matrix(output)
         blockers = self.k35.collect_process_blockers()
         if blockers:
             self.k35.write_json(output / "process-blockers.json", blockers)
@@ -244,6 +304,37 @@ class Runtime:
             ], env=self.env | {"LD_LIBRARY_PATH": str(binary.parent)}, capture_output=True, text=True, timeout=30)
             (output / f"{arm}-linkage.txt").write_text(report.stdout + report.stderr)
             report.check_returncode()
+
+    def check_contention_matrix(self, output):
+        python = str(ORCHESTRATOR / ".venv/bin/python")
+        command = [python, str(ORCHESTRATOR / "scripts/validate/check_contention_matrix_fresh.py")]
+        matrix = (output / "contention-matrix.yaml").resolve()
+        if self.evidence is not None or self.exclusive_self_calibration:
+            shutil.copy2(ORCHESTRATOR / "orchestration/contention_matrix.yaml", matrix)
+            command.extend(("--matrix-path", str(matrix)))
+        check = subprocess.run(command, env=self.env, capture_output=True, text=True, timeout=30)
+        (output / "contention-matrix.txt").write_text(check.stdout + check.stderr)
+        if check.returncode != 2 or not self.exclusive_self_calibration or self.evidence is not None:
+            check.check_returncode()
+            return
+
+        # The checker uses exit 2 for missing, mismatched and aged matrices.
+        # Require a parsed matrix and prove age alone accounts for its refusal.
+        probe = subprocess.run(
+            [python, "-I", "-c", CONTENTION_TOPOLOGY_PROBE, str(ORCHESTRATOR), str(matrix)],
+            env=self.env, capture_output=True, text=True, timeout=30,
+        )
+        (output / "contention-matrix-topology-probe.txt").write_text(probe.stdout + probe.stderr)
+        probe.check_returncode()
+        witness = json.loads(probe.stdout, object_pairs_hook=resident_plan._unique_object)
+        age = witness["age_days"]
+        max_age = witness["max_age_days"]
+        live = witness["live_topology_hash"]
+        if (witness["matrix_status"] != "stale" or type(live) is not str or not re.fullmatch(r"[0-9a-f]{16}", live)
+                or witness["recorded_topology_hash"] != live or not evidence.positive_finite(age)
+                or type(max_age) is not int or not 0 < max_age < age):
+            raise ValueError("exclusive self-calibration requires matching topology and age-only matrix staleness")
+        self.k35.write_json(output / "contention-matrix-age-only.json", witness)
 
     def binary(self, arm):
         return getattr(self.args, f"{arm}_binary")
@@ -339,24 +430,27 @@ class Runtime:
             "birth": server.birth, "port": server.port,
             "ggml_maps": sorted({str(path) for path in ggml}), "affinity": self.affinity(server),
         }
-        if self.evidence is not None:
+        image_pin = self.pins["arms"][arm] if self.evidence is not None else self.calibration_image
+        if image_pin is not None:
             proc = Path(f"/proc/{server.proc.pid}")
-            server.image = self.evidence.live_image(proc, self.binary(arm), self.pins["arms"][arm])
+            server.image = evidence.live_image(proc, self.binary(arm), image_pin)
             result.update(image=server.image, allowed_cpus=sorted(server.cpus))
             maps = (proc / "maps").read_text()
+            (directory / f"{arm}-maps.txt").write_text(maps)
+            numa = (proc / "numa_maps").read_text()
+            nodes = Path("/sys/devices/system/node/online").read_text().strip()
+            evidence.require(any(line.split()[1:2] == [f"interleave:{nodes}"] for line in numa.splitlines()),
+                             f"{arm} has no live NUMA interleave witness")
+            (directory / f"{arm}-numa-maps.txt").write_text(numa)
+        if self.evidence is not None:
             argv = read_json(directory / f"{arm}-argv.json")
             models = {argv[argv.index(flag) + 1] for flag in ("-m", "-md") if flag in argv}
             result["models"] = self.evidence.model_mappings(
                 maps, models, self.pins["models"], no_mmap="--no-mmap" in argv,
             )
-            (directory / f"{arm}-maps.txt").write_text(maps)
-            numa = (proc / "numa_maps").read_text()
-            nodes = Path("/sys/devices/system/node/online").read_text().strip()
-            self.evidence.require(any(line.split()[1:2] == [f"interleave:{nodes}"] for line in numa.splitlines()),
-                                  f"{arm} has no live NUMA interleave witness")
-            (directory / f"{arm}-numa-maps.txt").write_text(numa)
             env = dict(item.split("=", 1) for item in (proc / "environ").read_text().split("\0") if item)
             self.k35.write_json(directory / f"{arm}-env.json", env)
+        if image_pin is not None:
             self.verify_server(server, arm)
         return result
 
@@ -369,7 +463,7 @@ class Runtime:
         ):
             raise RuntimeError(f"{arm} local listener differs from the owned server")
         if server.image is not None:
-            self.evidence.verify_live_image(Path(f"/proc/{pid}"), server.image)
+            evidence.verify_live_image(Path(f"/proc/{pid}"), server.image)
 
     def affinity(self, server):
         return affinity_guard.verify_threads(server.proc.pid, server.birth, server.cpus)
@@ -445,7 +539,7 @@ class Runtime:
                 )
         if failure is not None:
             raise RequestAffinityError(failure, response) from failure
-        if self.evidence is not None:
+        if self.evidence is not None or self.exclusive_self_calibration:
             try:
                 self.verify_server(server, arm)
             except (OSError, RuntimeError, ValueError) as exc:
@@ -575,10 +669,11 @@ def cleanup_proved(result):
 
 
 def capture_host_after(runtime, output):
-    evidence = getattr(runtime, "evidence", None)
-    if evidence is not None:
-        evidence.verify_models(runtime.pins["models"])
-        runtime.k35.write_json(output / "host-after.json", evidence.host_snapshot())
+    if getattr(runtime, "evidence", None) is not None:
+        runtime.evidence.verify_models(runtime.pins["models"])
+        runtime.k35.write_json(output / "host-after.json", runtime.evidence.host_snapshot())
+    if getattr(runtime, "exclusive_self_calibration", False):
+        runtime.k35.write_json(output / "host-after.json", verify_calibration_host())
 
 
 def execute_fresh_plan(plan, output, runtime, *, provenance=None):
@@ -746,6 +841,8 @@ def validate_inputs(plan, args, runtime):
         binary = binary.resolve(strict=True)
         if not os.access(binary, os.X_OK) or sha256_file(binary) != digest:
             raise ValueError(f"{arm} binary is not executable or differs from its SHA-256 pin")
+        if runtime.exclusive_self_calibration and (binary != V10_CPU_BINARY or digest != V10_CPU_SHA256):
+            raise ValueError("exclusive self-calibration requires the pinned v10 CPU store image in both arms")
         setattr(args, f"{arm}_binary", binary)
     for cohort in plan["cohorts"]:
         scenario = runtime.k35.scenario_by_name(cohort["scenario"])
@@ -755,12 +852,20 @@ def validate_inputs(plan, args, runtime):
             or scenario.spec_draft_ngl not in (None, 0)
         ):
             raise ValueError(f"{scenario.name} is not a CPU-only recipe")
+        if runtime.exclusive_self_calibration and (
+            scenario.name != "frontdoor_cpu_no_spec" or scenario.draft_model is not None
+            or scenario.spec_type != "none" or scenario.threads != len(CPUS)
+            or scenario_affinity(scenario)[1] != CPUS
+        ):
+            raise ValueError("exclusive self-calibration requires the full-host K35 frontdoor CPU no-spec recipe")
         runtime.k35.validate_scenario_speculation(scenario)
         body = cohort["request_body"]
         if body.get("stream", False) is not False or body.get("speculative.n_max") != scenario.request_spec_n_max:
             raise ValueError(f"{scenario.name} request stream or speculative settings differ from the recipe")
         for arm in resident_plan.ARMS:
             runtime.command(cohort, arm, args.base_port)
+    if runtime.exclusive_self_calibration:
+        runtime.calibration_image = verify_calibration_image()
 
 
 def main(argv=None):
@@ -779,6 +884,8 @@ def main(argv=None):
     parser.add_argument("--fresh-only", action="store_true", help="capture the canonical schedule using fresh servers")
     parser.add_argument("--evidence-pins", type=Path, help="validate prepared pins and record sealed-capture witnesses")
     parser.add_argument("--compare-fresh", action="store_true", help="replay the schedule after a complete resident run")
+    parser.add_argument("--exclusive-self-calibration", action="store_true",
+                        help="permit age-only matrix staleness for the unsealed v10 CPU self-calibration")
     parser.add_argument("--apply", action="store_true", help="launch only under a verified provider receipt")
     args = parser.parse_args(argv)
     if not 1024 <= args.base_port < 65535 or min(args.startup_timeout, args.request_timeout) <= 0:
@@ -787,6 +894,8 @@ def main(argv=None):
         parser.error("--apply requires an absolute --claim-open path")
     if args.compare_fresh and (args.fresh_only or args.evidence_pins is None):
         parser.error("--compare-fresh requires evidence pins and the paired resident lifecycle")
+    if args.exclusive_self_calibration and (args.evidence_pins is not None or args.fresh_only):
+        parser.error("--exclusive-self-calibration requires an unsealed paired resident diagnostic")
     try:
         plan_bytes = args.plan.read_bytes()
         plan = json.loads(plan_bytes, object_pairs_hook=resident_plan._unique_object)

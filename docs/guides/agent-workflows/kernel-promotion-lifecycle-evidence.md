@@ -90,3 +90,27 @@ compares each resident request with the same fresh request. Missing IDs remain
 `incomplete`; a content or token mismatch is `different`. A successful fresh
 fallback cannot turn a failed resident capture into an accepted resident run.
 This lifecycle comparison does not replace the broad quality-parity pack.
+
+
+The first observation-only resident self-calibration attempt,
+`v9-8-calibration-20261117`, stopped in admission on 2026-11-18 with grant
+`rc=1` and runner exit 78. The matrix checker reported staleness before either
+server started. Its original capture retained zero cohorts,
+`complete=false` and `cleanup_proved=true`; this is a failed attempt, with no
+request, parity or timing evidence. The result is preserved at
+`/mnt/raid0/llm/tmp/v11-promotion-checklist/resident-calibration/out/RESULT.json`.
+A retry must use a new row and retain the original failure. Refreshing a file's
+mtime cannot establish matrix freshness. Any observation-only admission
+exception must distinguish age from topology drift and preserve the original
+checker output; it cannot supply cross-role contention or promotion authority.
+
+
+The retry's explicit `--exclusive-self-calibration` mode is limited to the
+canonical pinned v10 CPU store executable in both arms and the full-host K35
+`frontdoor_cpu_no_spec` recipe. It requires the live exclusive CPU0–95 claim,
+current physical topology, no competing workloads and backend-local linkage.
+It retains the ordinary matrix check and permits age-only staleness after
+independently parsing the matrix and matching its full topology fingerprint.
+Missing or invalid matrices and changed topology remain failures. This mode
+cannot produce a sealed promotion packet or authorize candidate admission;
+ordinary resident/fresh and hot-stack runs retain strict freshness checks.
