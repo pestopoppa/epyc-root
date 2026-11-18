@@ -1,0 +1,40 @@
+{
+  "schema": "epyc.vidya.prospective_source_archive.v1",
+  "source_scratch": "/mnt/raid0/llm/tmp/vidya-belief-substrate/profile-metadata",
+  "archives": {
+    "build_loader_witness.py": {
+      "archive": "build_loader_witness.py",
+      "original_sha256": "59986db16f536ec05bdc29ac6c1d512cd901634af9af8f3e695803b20551afa4",
+      "archive_sha256": "59986db16f536ec05bdc29ac6c1d512cd901634af9af8f3e695803b20551afa4"
+    },
+    "dflash-original-admission.json": {
+      "archive": "dflash-original-admission.json.original-bytes.json",
+      "original_sha256": "7ea47884274923aa89b5ac3864899d77ead7062e45d4fe188f5b2944c9b3ddc0",
+      "archive_sha256": "77477d62c19cbbb99afbf8babf717eaa1b5923f5b8ca8142c2b9202e7c03403a"
+    },
+    "loader-reshape-witness.json": {
+      "archive": "loader-reshape-witness.json.original-bytes.json",
+      "original_sha256": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3",
+      "archive_sha256": "4486058718ba5bba1ed2eb413a62594c4880a2761c6b76dab4763336a7fee2e8"
+    },
+    "prepare_profile_metadata.py": {
+      "archive": "prepare_profile_metadata.py",
+      "original_sha256": "37512ac731a0aaa120f16bd562948f1d32b02df575fd147dfb25bbf7b839698e",
+      "archive_sha256": "37512ac731a0aaa120f16bd562948f1d32b02df575fd147dfb25bbf7b839698e"
+    },
+    "prospective-metadata.json": {
+      "archive": "prospective-metadata.json.original-bytes.json",
+      "original_sha256": "52f05ac66733bfe7783011084e2da8b14fa835254050d947d52e7e254c2a7b71",
+      "archive_sha256": "12c6ee6e0aeb9d6514c5a364984cd5e6e3666385424976a704673b9f58dca929"
+    },
+    "result.json": {
+      "archive": "result.json.original-bytes.json",
+      "original_sha256": "3c24bc6f5c6eaab4925a370cf2a203ddb8639a3b575538df6afbaef041d0589a",
+      "archive_sha256": "74a24d68062022b51fcd37215986f75b41aca6aab57208225e1935ebf3eff65e"
+    }
+  },
+  "native_full_capture_complete": false,
+  "broad_pack_sealed": false,
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false
+}
