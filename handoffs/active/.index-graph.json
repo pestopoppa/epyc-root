@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T13:37:03Z",
+  "generated_at": "2026-11-18T13:40:01Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 416,
-      "dispatchable": 118,
+      "dispatchable": 117,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 119,
+      "open": 118,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 51,
-      "dispatchable": 19,
+      "closed": 24,
+      "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-GPU-LOADCHECK (row 1b); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; C14 fold per INF-65; D6/D7",
-      "open": 19,
+      "open": 18,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
@@ -2923,7 +2923,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 183,
+      "closed": 184,
       "dispatchable": 38,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -2971,7 +2971,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 563,
+          "line": 565,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2980,7 +2980,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 829,
+          "line": 831,
           "name": "per-request-reasoning-budget",
           "open": 3,
           "readiness": "ready"
@@ -2989,7 +2989,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1324,
+          "line": 1326,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -2998,7 +2998,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1861,
+          "line": 1863,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3007,7 +3007,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2623,
+          "line": 2625,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3016,7 +3016,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3050,
+          "line": 3052,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3025,7 +3025,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3707,
+          "line": 3709,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
