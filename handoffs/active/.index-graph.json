@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T09:02:52Z",
+  "generated_at": "2026-11-18T09:05:13Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1759,7 +1759,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3118,
+          "line": 3119,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3631,
+          "line": 3632,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3726,
+          "line": 3727,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
