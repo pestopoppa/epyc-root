@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 534
+      "open": 532
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 125,
+      "closed": 126,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 62,
+      "open": 63,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -54,7 +54,7 @@
       },
       "row_id": "INF-82",
       "state": "active",
-      "total": 188,
+      "total": 190,
       "tracks": [
         {
           "blocked": 0,
@@ -68,7 +68,7 @@
         },
         {
           "blocked": 0,
-          "closed": 44,
+          "closed": 45,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-06#autokernel-rebuild-program",
@@ -78,7 +78,7 @@
           "line": 27,
           "markers": 1,
           "name": "autokernel-cross-workload-keep-gate",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 1,
@@ -92,10 +92,10 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 954,
+          "line": 955,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 51
+          "open": 53
         }
       ]
     },
@@ -503,7 +503,7 @@
       "blocked": 0,
       "closed": 64,
       "guarded": 0,
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-18",
       "open": 20,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 1,
-      "closed": 220,
+      "closed": 222,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 31,
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 1,
-          "closed": 177,
+          "closed": 179,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,14 +1229,14 @@
           "line": 18,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 28
+          "open": 26
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1725,
+          "line": 1728,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1849,
+          "line": 1852,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2179,
+          "line": 2182,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2318,
+          "line": 2321,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2880,
+          "line": 2883,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3018,
+          "line": 3021,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3025,
+          "line": 3028,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2155,10 +2155,10 @@
     },
     "rocm-kernel-authoring.md": {
       "blocked": 0,
-      "closed": 362,
+      "closed": 363,
       "guarded": 0,
       "last_advanced": "2026-11-17",
-      "open": 7,
+      "open": 6,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2196,7 +2196,7 @@
         },
         {
           "blocked": 0,
-          "closed": 22,
+          "closed": 23,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
@@ -2205,14 +2205,14 @@
           "line": 2726,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 4
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3111,
+          "line": 3112,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3624,
+          "line": 3625,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3719,
+          "line": 3720,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
@@ -2667,7 +2667,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense in-process defect; greedy A/A bisect r3 (smoke queued); GDN-SHARE-1",
+      "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
       "track": "autokernel research loop"
     },
     "INF-45": {
@@ -2687,7 +2687,7 @@
       "id": "INF-48",
       "index": "inference-research-index.md",
       "line": 27,
-      "next_action": "C6-CONTROLLER-PROOF (r7 smoke queued) then LIVE-1 wiring; publish race-eqv with 7/7 fixtures; FA-ALLMASK/HS256 follow-ups",
+      "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
       "track": "rocm verify profile backend"
     },
     "INF-50": {
@@ -2719,7 +2719,7 @@
       "id": "INF-65",
       "index": "inference-research-index.md",
       "line": 16,
-      "next_action": "C13 champion; c12-cpu-validate r5 running; HIP FA side-channel port (cap 10 runs, last); FA-ALLMASK fix r3 running; q81 overflow row",
+      "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
       "track": "autokernel aggregate candidate (champion)"
     },
     "INF-70": {
@@ -2730,7 +2730,7 @@
       "id": "INF-70",
       "index": "inference-research-index.md",
       "line": 20,
-      "next_action": "Q38P-1 r2 on C13 queued; XFER-4b prefill A/B + task eval; G2-CONC on candidate binary; WRAP-8 static-chunks noise rerun",
+      "next_action": "Q38P-1 r4 on C13 queued (profiler path inside Landlock fence); XFER-4b prefill A/B + task eval; G2-CONC on candidate; WRAP-8 rerun",
       "track": "cpu decode roofline program"
     },
     "INF-77": {
@@ -2772,7 +2772,7 @@
       "id": "INF-82",
       "index": "inference-research-index.md",
       "line": 17,
-      "next_action": "W5s census r3 queued (whole host); QDEC r3 on C12 (smoke queued); file EDGE-HIP-NONFINITE fix; LB4.9 per-route bar",
+      "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
       "track": "autokernel akx program (keep gate + all dims)"
     },
     "INF-83": {
@@ -2783,7 +2783,7 @@
       "id": "INF-83",
       "index": "inference-research-index.md",
       "line": 18,
-      "next_action": "Run V11-C13-BUILD-PREFLIGHT r2 (queued); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; D6/D7 open",
+      "next_action": "Run V11-C13-GPU-LOADCHECK (row 1b); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; C14 fold per INF-65; D6/D7",
       "track": "v11 promotion checklist"
     },
     "INF-84": {
@@ -2805,7 +2805,7 @@
       "id": "INF-86",
       "index": "inference-research-index.md",
       "line": 25,
-      "next_action": "open: slot-restore-checkpoints validation (C13 has #26004), DS-F1 (waits AM-DECISIVE-1), earlyoom (operator)",
+      "next_action": "DS-F1 (waits on external AM-DECISIVE-1 verdict) + earlyoom --ignore tweak (operator host edit); slot-restore fix validated on C13, ships v11",
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     "INF-87": {
