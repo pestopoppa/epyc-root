@@ -87,7 +87,8 @@ def test_v10_split_kv_startup_witness(message, expected):
 def test_smoke_receipt_requires_a_valid_current_launch_timestamp(tmp_path, monkeypatch, started, expected):
     receipt = tmp_path / "cmp4-native/SMOKE.json"
     receipt.parent.mkdir()
-    receipt.write_text(json.dumps({"transport_and_graph": True, "server_exited": True}))
+    receipt.write_text(json.dumps({"transport_and_graph": True, "server_exited": True,
+                                   "budget_probe": {"boundary_reached": False, "terminal_state": "context-exhausted"}}))
     os.utime(receipt, (1000, 1000))
     monkeypatch.setenv("FILLER_DRYRUN_DIR", str(tmp_path))
     if started is None:
@@ -95,6 +96,15 @@ def test_smoke_receipt_requires_a_valid_current_launch_timestamp(tmp_path, monke
     else:
         monkeypatch.setenv("FILLER_SMOKE_T0", started)
     assert smoke_predicate() == expected
+
+
+def test_smoke_receipt_requires_the_frozen_budget_probe(tmp_path, monkeypatch):
+    receipt = tmp_path / "cmp4-native/SMOKE.json"
+    receipt.parent.mkdir()
+    receipt.write_text(json.dumps({"transport_and_graph": True, "server_exited": True}))
+    monkeypatch.setenv("FILLER_DRYRUN_DIR", str(tmp_path))
+    monkeypatch.setenv("FILLER_SMOKE_T0", str(receipt.stat().st_mtime))
+    assert smoke_predicate() == 1
 
 
 def test_graph_child_initializes_from_isolated_trial_dir(tmp_path):
@@ -151,6 +161,98 @@ else:
                               str(tmp_path), str(tmp_path), str(SOURCE), ENDPOINT],
                              cwd=tmp_path, env=graph_env(trial, tmp_path, "offline-test"), text=True,
                              capture_output=True, timeout=20, check=False)
+    assert process.returncode == 0, process.stderr
+
+
+@pytest.mark.parametrize("mode", ["native", "without_opt_in", "unrelated", "tokenizer_fallback"])
+def test_frozen_first_point_exhaustion_uses_the_reserve_path(tmp_path, mode):
+    if not PYTHON.is_file() or not SOURCE.is_dir():
+        pytest.skip("pinned orchestrator trial worktree and venv required")
+    script = """
+import json
+import os
+import socket
+import sys
+from pathlib import Path
+
+import httpx
+
+source, repo, attempt = map(Path, sys.argv[1:4])
+mode = sys.argv[4]
+sys.path[:0] = [str(repo), str(source)]
+from graph_trial import main
+from runner import graph_env, read_json, read_jsonl, trajectory_metrics
+from scripts.benchmark import toc_cmp4_runner as scheduler
+
+draw = read_json(source / "benchmarks/toc_cmp4/points-20261109.json")
+schedule = scheduler.build_schedule(draw["points"][:1], repeats=1, seed=draw["seed"])
+first = schedule[0]
+assert first["task_id"] == "longbench_671b3fa1bb02136c067d5353"
+cases = read_jsonl(source / "benchmarks/prompts/core_v2.jsonl")
+case = next(case for case in cases if case.get("id") == first["task_id"])
+config = {"row": first, "case": case, "source": str(source), "temperature": 0.3,
+          "endpoint": "http://127.0.0.1:19359", "smoke": False,
+          "allow_pre_generation_exhaustion": mode != "without_opt_in"}
+(attempt / "INPUT.json").write_text(json.dumps(config))
+os.environ.update(graph_env(first, attempt, "fixture-key"))
+sys.argv[1] = str(attempt)
+
+def reject_network(*_args, **_kwargs):
+    raise AssertionError("offline budget replay attempted network I/O")
+
+def tokenize(request):
+    assert request.url.path == "/tokenize", request.url
+    assert request.headers["authorization"] == "Bearer fixture-key"
+    if mode == "tokenizer_fallback":
+        return httpx.Response(503)
+    text = json.loads(request.content)["content"]
+    return httpx.Response(200, json={"tokens": [1] * (16385 if len(text) > 100000 else 1)})
+
+socket.socket.connect = reject_network
+httpx.Client._transport_for_url = lambda *_args: httpx.MockTransport(tokenize)
+if mode == "unrelated":
+    from src.graph import graph
+    from src.graph.state import TaskResult
+
+    async def unrelated_exit(state, deps):
+        state.turns = 1
+        deps.primitives._tokenizer.count_tokens("one token")
+        return TaskResult("unrelated early exit", False)
+
+    graph.run_task = unrelated_exit
+
+try:
+    main()
+except ValueError as exc:
+    assert mode != "native" and "live transport/tokenizer pin incomplete" in str(exc), exc
+    assert not (attempt / "GRAPH.json").exists()
+else:
+    assert mode == "native", mode
+    graph_result = read_json(attempt / "GRAPH.json")
+    assert graph_result["pre_generation_budget_exhausted"] is True
+    assert graph_result["wire"] == [] and graph_result["correct"] is None
+    assert graph_result["context_counter"]["fallback_count"] == 0
+    events = read_jsonl(attempt / "trial.trajectory.jsonl")
+    metrics = trajectory_metrics(events, first, pre_generation_budget_exhausted=True)
+    assert metrics == {"boundary_reached": False, "baps": None, "terminal_state": "context-exhausted"}
+    pins = dict.fromkeys(scheduler.REQUIRED_PINS, "fixture")
+    pins.update(sampling_config=[], prompt_hashes=[])
+    dispatched = []
+
+    def submit(row):
+        dispatched.append(row["point_id"])
+        return {"pins": pins, "boundary_reached": row["point_id"] != first["point_id"]}
+
+    summary = scheduler.run_schedule(schedule, submit, attempt / "ledger.jsonl",
+                                     reserves=draw["reserves"], repeats=1, seed=draw["seed"])
+    reserve = draw["reserves"][first["stratum"]][0]["point_id"]
+    assert dispatched == [first["point_id"], reserve, reserve, reserve]
+    assert summary["rerun"] == summary["dropped"] == 0
+    assert summary["voided_points"] == [first["point_id"]]
+    assert summary["ok"] == 3
+"""
+    process = subprocess.run([str(PYTHON), "-B", "-c", script, str(SOURCE), str(HERE), str(tmp_path), mode],
+                             cwd=tmp_path, text=True, capture_output=True, timeout=20, check=False)
     assert process.returncode == 0, process.stderr
 
 

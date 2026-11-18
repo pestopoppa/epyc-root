@@ -17,11 +17,23 @@ the separate `VB-TOC-CMP4-LIVE-WIRE` task.
 
 Copy `runner.py`, `graph_trial.py`, `analysis.py`, `launcher.sh`, and `spec.json` into the scratch packet directory declared in `launcher.sh`. Prepare the detached orchestrator worktree at the scratch `source` path using the commit pinned in `runner.py`. Run `python3 -B runner.py prepare` from the scratch packet before publishing. Preparation checks the pinned orchestrator tracked tree, verifies the frozen draw and reserve order, hashes the GGUF once, and binds the v10 server, libraries, and template. The grant checks file custody and the small executable/library hashes. It never hashes the model. The smoke and grants use the allocated CPU engine. The smoke uses a one-turn REPL instruction to qualify real model delivery, graph and trajectory capture, seed forwarding, and server exit. Its early finish leaves BAPS unknown, separate from the pilot ledger.
 
+The `20261118-r3` smoke first sends the rendered prompt for the first frozen
+LongBench point to the private server's tokenizer. It requires the graph to
+report context exhaustion on turn 1 before any generation or boundary event.
+The smoke then runs the short REPL instruction to qualify generation transport.
+Both attempts are instrument checks outside the pilot ledger.
+
 Start the row through the project's standard publisher with the scratch `spec.json`. The launcher fails closed on a busy private port, wrong source, changed model or build, slot shape mismatch, or backend or graph failure. The elapsed-time allocation is an estimate, pending observed costs. The runner resumes from its persisted ledger under an identical receipt and honors STOP and allocator deadlines between attempts. Process teardown reaps the captured server PID on exit.
 
 ## Read the results
 
 The registered first eight points are all early. The pilot uses three arms and four repeats at those eight points, for 96 nominal runs. The frozen reserve sequence replaces whole points when a trajectory ends before the assigned boundary. The scheduler retries transport and pin failures once with the same seed. More than 9 dropped active runs voids the cell. A run requiring an unavailable image input is invalid. An unavailable external grade stays unknown and does not change a valid BAPS measurement.
+
+The graph can exhaust the 16,384-token experiment budget before generation.
+When the tokenizer and native trajectory confirm this outcome on turn 1, the
+runner applies the same whole-point replacement rule. Accuracy and BAPS are
+UNKNOWN for the voided attempt. Zero-generation exits without this evidence
+still fail validation.
 
 - `RECEIPT.json` identifies the frozen inputs, scope and run configuration.
 - `ledger.jsonl` records raw scheduling decisions. Each window has its native server evidence and per-attempt graph, verdict and trajectory capture.

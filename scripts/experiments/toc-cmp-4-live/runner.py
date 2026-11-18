@@ -21,7 +21,7 @@ from pathlib import Path
 from analysis import calculate_baps
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp4-r2")
+SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp4-r3")
 SOURCE = SCRATCH / "source"
 PYTHON = Path("/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python")
 SOURCE_SHA = "12afe2858f9dbd4691447926d6cf1864de64348c"
@@ -33,7 +33,7 @@ SERVER_SHA = "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c"
 TEMPLATE_SHA = "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
 TEMPLATE = MODEL.parent / "chat-templates/sha256" / f"{TEMPLATE_SHA}.jinja"
 LINKAGE = Path("/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh")
-ROW = "toc-cmp-4-pilot96-20261118-r2"
+ROW = "toc-cmp-4-pilot96-20261118-r3"
 PORT = 19359
 ENDPOINT = f"http://127.0.0.1:{PORT}"
 NSLOTS = 4
@@ -210,7 +210,7 @@ def server_ready(proc, port_proof, key, deadline, log_path, *, port=PORT):
             "mapped_libraries": sorted(map(str, mapped))}
 
 
-def trajectory_metrics(events, row, *, smoke=False):
+def trajectory_metrics(events, row, *, smoke=False, pre_generation_budget_exhausted=False):
     finals = [event for event in events if event["event"] == "final"]
     if len(finals) != 1 or events[-1] != finals[0]:
         raise ValueError("missing or malformed final trajectory record")
@@ -227,6 +227,10 @@ def trajectory_metrics(events, row, *, smoke=False):
             raise ValueError(f"trajectory pin mismatch: {field}")
     boundary_turn = int(expected["ORCHESTRATOR_CONTEXT_FORCE_TURNS"])
     boundaries = [event for event in events if event["event"] == "boundary"]
+    if pre_generation_budget_exhausted and (
+        boundaries or final["terminal_state"] != "context-exhausted" or final.get("turns") != 1
+    ):
+        raise ValueError("trajectory does not confirm pre-generation budget exhaustion")
     if not boundaries:
         return {"boundary_reached": False, "baps": None, "terminal_state": final["terminal_state"]}
     if [event["turn"] for event in boundaries] != [boundary_turn]:
@@ -371,7 +375,7 @@ def run():
             server = server_ready(proc, port_proof, key, min(deadline, time.time() + 160), log_path)
             atomic_json(window / "SERVER.json", server)
 
-            def submit(row, smoke=False):
+            def submit(row, smoke=False, *, budget_probe=False):
                 check_window(deadline)
                 if proc.poll() is not None or not (port_proof.listen_inodes(PORT) & port_proof.pid_socket_inodes(proc.pid)):
                     raise OSError("private listener ownership lost")
@@ -380,15 +384,17 @@ def run():
                     if progress["drop_limit_exceeded"]:
                         raise WindowEnded("more than 10% of the nominal pilot schedule dropped")
                 attempt = Path(tempfile.mkdtemp(prefix="trial-", dir=window))
-                case = cases[row["task_id"]] if not smoke else {
-                    "prompt": "Output only a Python code block calling FINAL(5).",
-                }
+                if smoke and not budget_probe:
+                    case = {"prompt": "Output only a Python code block calling FINAL(5)."}
+                else:
+                    case = cases[row["task_id"]]
                 if case.get("image_path"):
                     atomic_json(attempt / "INPUT_UNAVAILABLE.json", {
                         "row": row, "reason": "image input requires a vision backend"})
                     raise ValueError(f"required image input unsupported; see {attempt}")
                 atomic_json(attempt / "INPUT.json", {"row": row, "case": case, "source": str(SOURCE),
-                    "temperature": TEMPERATURE, "endpoint": ENDPOINT, "smoke": smoke})
+                    "temperature": TEMPERATURE, "endpoint": ENDPOINT, "smoke": smoke,
+                    "allow_pre_generation_exhaustion": not smoke or budget_probe})
                 started = time.monotonic()
                 with (attempt / "child.log").open("wb") as child_log:
                     try:
@@ -402,7 +408,11 @@ def run():
                 check_window(deadline)
                 graph = read_json(attempt / "GRAPH.json")
                 path = attempt / "trial.trajectory.jsonl"
-                metrics = trajectory_metrics(read_jsonl(path), row, smoke=smoke)
+                pre_generation_exhausted = graph["pre_generation_budget_exhausted"]
+                metrics = trajectory_metrics(read_jsonl(path), row, smoke=smoke,
+                                             pre_generation_budget_exhausted=pre_generation_exhausted)
+                if budget_probe and not pre_generation_exhausted:
+                    raise ValueError(f"frozen budget probe did not stop before generation; see {path}")
                 result = {**metrics, "wall_s": time.monotonic() - started, "correct": graph["correct"],
                           "grade_reason": graph["grade_reason"], "trajectory": str(path),
                           "trajectory_sha256": digest(path), "graph": str(attempt / "GRAPH.json"),
@@ -418,6 +428,7 @@ def run():
                 return result
 
             if dry:
+                budget_probe_result = submit(schedule[0], smoke=True, budget_probe=True)
                 smoke_row = next(row for row in schedule if row["arm"] == "pointer_only")
                 smoke_result = submit(smoke_row, smoke=True)
             else:
@@ -440,7 +451,8 @@ def run():
     if dry:
         if smoke_result is not None and error is None:
             atomic_json(out / "SMOKE.json", {"unit": smoke_row["run_id"], "server_exited": proc.poll() is not None,
-                                           "transport_and_graph": True, "smoke": smoke_result})
+                                           "transport_and_graph": True, "smoke": smoke_result,
+                                           "budget_probe": budget_probe_result})
             return 0
         print(error, file=sys.stderr)
         return 1
@@ -474,7 +486,9 @@ def smoke_predicate():
     if not root or not path.is_file():
         return 1
     data = read_json(path)
+    probe = data.get("budget_probe", {})
     return int(not (data.get("transport_and_graph") is True and data.get("server_exited") is True
+                    and probe.get("boundary_reached") is False and probe.get("terminal_state") == "context-exhausted"
                     and path.stat().st_mtime >= started))
 
 
