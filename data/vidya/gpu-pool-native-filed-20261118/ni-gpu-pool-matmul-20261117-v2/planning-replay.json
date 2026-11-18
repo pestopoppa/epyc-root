@@ -1,0 +1,365 @@
+{
+  "candidate_identity": {
+    "artifacts": [
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/bin/libggml-base.so.0",
+        "sha256": "23735e6f21028356fa81657393f9c4ffeda70477e3377a4fb49fb2eda55b002a"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/bin/libggml-cpu.so.0",
+        "sha256": "a19eb802decd2c76acd7403239ecf0ec054ae4519e2b991d6bd4cfff8edb6b5e"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/bin/libggml-hip.so.0",
+        "sha256": "45bca96a11d4dbaa30470e79b24012f32504d8c0edd00710c130ad755ca0bb7c"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/bin/libggml.so.0",
+        "sha256": "9c1bcacfe8fd67b0a1ac8dab56ff6c21ca6825a5771adfd8dbee1606461fa742"
+      },
+      {
+        "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/bin/test-backend-ops",
+        "sha256": "373b44b7476e7d34cae8e1b03e1bee40c31e515ece133667d440ce4128eb745f"
+      }
+    ],
+    "shim": {
+      "SHIM_NPROCS": 2,
+      "later_recreated_source_matches_receipt": false,
+      "original_source_digest_receipt": "51080dff80b0b8a72b7a41ce878f093eff0f13e739fee93d3490421c8d1041e6",
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/nprocs_shim.so",
+      "sha256": "d3103d7ab45e0a5fe9473d7dd401e5462f39c06174b4a64109af6e387e3b3eb4"
+    },
+    "source": {
+      "commit": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+      "removed_worktree_dirty_state": "UNKNOWN",
+      "snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/candidate/test-backend-ops.cpp",
+      "snapshot_sha256": "9a017871d6354015151630af6d75fa88d77637d599a40421a38746e0f67e7239"
+    }
+  },
+  "candidate_reads": {
+    "MUL_MAT_ID": {
+      "checkout_checked": true,
+      "claims": [
+        {
+          "anchor_value": null,
+          "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+          "candidate_sha256": "1ed8d4529923fe94dcabeea048ae7a01574ee301e709ae74c8127ee21f02f25a",
+          "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+          "effect_rel": null,
+          "grade": "Judged/Located",
+          "knob_family": "",
+          "knobs": {},
+          "linked_claim_ids": [],
+          "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/MUL_MAT_ID.log#sha256=038eeca658ab43da56adca683f66e6d692756a4504a0ed90e06b0de571fdc76c",
+          "mechanism_id": "",
+          "model_file": "",
+          "n_pairs": null,
+          "noise_floor_rel": null,
+          "not_evidence": false,
+          "op": "MUL_MAT_ID",
+          "outcome": "",
+          "recipe": "",
+          "reps": null,
+          "retrofit": false,
+          "role": "",
+          "run": "ni-gpu-pool-matmul-20261117-v2",
+          "source_kind": "gpu-pool-native",
+          "stack_regime": "",
+          "stale_epoch": false,
+          "status": "verified",
+          "tier": "target",
+          "unit": "",
+          "value": null,
+          "varied": []
+        }
+      ],
+      "reason": null,
+      "reliance": {
+        "accepted": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": []
+      },
+      "section_sha256": "d05b6d1037d33e070ed4a5690b3dbd59161d06fa3c951a571bedaa49f007b6dc",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "1ed8d4529923fe94dcabeea048ae7a01574ee301e709ae74c8127ee21f02f25a",
+        "op": "MUL_MAT_ID",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "missing_operator": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "inapplicable_target",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "1ed8d4529923fe94dcabeea048ae7a01574ee301e709ae74c8127ee21f02f25a",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "wrong_artifact": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "c117c525ec53ae57a6a7100ccf3b82696cc8e04ffa6348d115b9c3b920377390",
+        "op": "MUL_MAT_ID",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "wrong_operator": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "1ed8d4529923fe94dcabeea048ae7a01574ee301e709ae74c8127ee21f02f25a",
+        "op": "NOT_A_GPU_POOL_OPERATOR",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "wrong_run": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "1ed8d4529923fe94dcabeea048ae7a01574ee301e709ae74c8127ee21f02f25a",
+        "op": "MUL_MAT_ID",
+        "run_id": "ni-gpu-pool-matmul-20261117-v3",
+        "scope": "candidate"
+      }
+    },
+    "wrong_shim": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+        "candidate_sha256": "26c0f8eff4dc7866f909bf5428b02451186e23f4b2a17904f362136b4068f025",
+        "op": "MUL_MAT_ID",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    },
+    "wrong_source": {
+      "checkout_checked": true,
+      "claims": [],
+      "reason": "no_applicable_claims",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "0000000000000000000000000000000000000000",
+        "candidate_sha256": "1ed8d4529923fe94dcabeea048ae7a01574ee301e709ae74c8127ee21f02f25a",
+        "op": "MUL_MAT_ID",
+        "run_id": "ni-gpu-pool-matmul-20261117-v2",
+        "scope": "candidate"
+      }
+    }
+  },
+  "capture_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/belief.json",
+  "capture_sha256": "f82533e2a82167b0bf9051fafcab54778ef4ef708f4047b46bcbf500963192bb",
+  "claims": [
+    {
+      "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+      "failed": 0,
+      "observed": 370,
+      "op": "MUL_MAT_ID",
+      "partition": "370 native supported passes, 0 unsupported and 0 failures",
+      "passed": 370,
+      "rc": 0,
+      "seed": 20261026,
+      "unsupported": 0
+    }
+  ],
+  "ingest": {
+    "adapter": "adapters/gpu_pool_native.py",
+    "adapter_id": "vidya.adapters.gpu_pool_native/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 3,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/belief.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "gpu-pool-native",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "native_grant": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-gpu-pool-matmul-20261117-v2.grant",
+    "record": {
+      "end": "2026-11-18T19:41Z",
+      "holds": "gpu-quiet,t184,t185,t186,t187,t188,t189,t190,t191",
+      "regions": "mi210_0,184-191",
+      "start": "2026-11-18T19:30Z"
+    },
+    "smoke": false
+  },
+  "native_planning_context": true,
+  "native_producer_result": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/RESULT.json",
+    "sha256": "5e9e4083bf6386b2b061d80c54822d6021dd9eef89f606ee58e8372eb7851f4b"
+  },
+  "official_native_acceptance": false,
+  "positive_planning_context": true,
+  "production_consumer_adoption": false,
+  "readers": {
+    "autokernel.planner": {
+      "checkout_checked": true,
+      "ledger_head": "sha256:fabe6d7e44cc8b9ce325c28d83f44d63e49b1b2485a8b61b3ca0665a9e9a99f1",
+      "model_target": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "visible_claims": []
+    },
+    "autopilot.planner": {
+      "checkout_checked": true,
+      "ledger_head": "sha256:fabe6d7e44cc8b9ce325c28d83f44d63e49b1b2485a8b61b3ca0665a9e9a99f1",
+      "model_target": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "reliance": {
+        "accepted": [],
+        "declared": [
+          "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0"
+        ],
+        "rejected": [
+          {
+            "claim_id": "clm_gpu-pool:ecf4f0ced4d1225df40b328e8be0bd6fae8b97f884087668feea32ffab059ec4:0",
+            "reason": "not_presented"
+          }
+        ]
+      },
+      "visible_claims": []
+    }
+  },
+  "retry": {
+    "adapter": "adapters/gpu_pool_native.py",
+    "adapter_id": "vidya.adapters.gpu_pool_native/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 0,
+    "frames_skipped": 3,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/native/belief.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "gpu-pool-native",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "row_id": "ni-gpu-pool-matmul-20261117-v2",
+  "schema": "epyc.vidya.gpu_pool_candidate_scope.v1",
+  "scope": "candidate-local observations in the shared planning reader",
+  "sources_sha256": {
+    "adapter": "063650063cedab15e0218bd85648f6d89d4a32c46996167a1430e0449d451ef3",
+    "canary": "f2542455581540b8c51d87334c0c8e33ca2e4ed990e01b21c8a90d8ee36aaac9",
+    "carrier": "f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5",
+    "consumer": "8bd7e279795d491b79c1e1b5f930d1cb41959b8641d64d4a7327144825d82a7f",
+    "read_counter": "4e478e063b9267a0910cdfb5841dc4cc50aac43730841edb0d9f3d1ec4b40797",
+    "reader": "937f899cd39d6998bfadba3a6d3caef08e984bdb5d665b760e533b4438acb2fc"
+  },
+  "status": "passed",
+  "synthetic_control": false
+}

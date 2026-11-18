@@ -1,0 +1,122 @@
+{
+  "as_of": "2026-11-18T19:24:52+00:00",
+  "claim_id": "clm_q38p4-greedy-parity:d044c1613217f0fceeec6265080d323e8bb67d3e709b0b71661bbd91b21ba03f",
+  "content_sha256": "d044c1613217f0fceeec6265080d323e8bb67d3e709b0b71661bbd91b21ba03f",
+  "grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "ingest": {
+    "adapter": "adapters/q38p4_parity.py",
+    "adapter_id": "vidya.adapters.q38p4_parity/v1",
+    "declined": [],
+    "dry_run": false,
+    "frames_emitted": 3,
+    "frames_skipped": 0,
+    "missing": [],
+    "only_new": true,
+    "paths": [
+      "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/parity-native-filed-20261118/official/capture/q38p4-greedy-parity.json"
+    ],
+    "refused": [],
+    "rows_projected": 1,
+    "source": "q38p4-greedy-parity",
+    "units_matched": 1,
+    "units_projected": 1
+  },
+  "ledger_head": "sha256:2cefc0581bec5d0487a758b981d6bef3458a21961a2281305dbf898ba68ff63e",
+  "ledger_sha256": "4fd904b787d28ce22e2aeb43ae0ed466436f5c6ad90fadcb499c5169d043dd17",
+  "native_status": "divergence",
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "baee85cc291e27a36c3b6494682f9a214db3ab94",
+    "origin_main": "baee85cc291e27a36c3b6494682f9a214db3ab94",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate"
+  },
+  "reader_sha256": {
+    "adapters/q38p4_parity.py": "cd85d59dd300c9065cece06b17a309a25b697a11b010af7b6eb68d12e77ae69e",
+    "canary/q38p4_parity_context.py": "23705b94e97bc96fc8e138e79c7e92d9b4a5326abbd4a6385e4da3367b41a089",
+    "claim_tuple.py": "f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5",
+    "ingest_sources.py": "43079365b8a3d82518763af13cdfb231c5ee04661ef6784de8ff2acf7b025851",
+    "loop_beliefs.py": "937f899cd39d6998bfadba3a6d3caef08e984bdb5d665b760e533b4438acb2fc",
+    "producers/q38p4_parity.py": "257c101d1c7176a9b4a736d31e60918ddc604e51f7ecbcf244c3faf08d028fed"
+  },
+  "reads": {
+    "exact-candidate": {
+      "claim_ids": [
+        "clm_q38p4-greedy-parity:d044c1613217f0fceeec6265080d323e8bb67d3e709b0b71661bbd91b21ba03f"
+      ],
+      "consumer": "autokernel.planner",
+      "reasons": [],
+      "section_sha256": "8a2b109bac78718530e2dc34dec4bd1d9080fa1db132075545f78204aa592a97",
+      "selector": {
+        "build_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+        "candidate_sha256": "4f7fd3485b44b5064556f9ffca239fbb382c44b1164e2eea4ee09f8dd5d8e440",
+        "op": "Q38P4_GREEDY_PARITY",
+        "run_id": "q38p4-greedy-parity-20261118-r2",
+        "scope": "candidate"
+      }
+    },
+    "production-lineup": {
+      "claim_ids": [],
+      "consumer": "autopilot.planner",
+      "reasons": [
+        "no_applicable_claims"
+      ],
+      "section_sha256": "",
+      "selector": {
+        "scope": "lineup",
+        "stack_regime": "production"
+      }
+    },
+    "same-model": {
+      "claim_ids": [],
+      "consumer": "autokernel.planner",
+      "reasons": [
+        "no_applicable_claims"
+      ],
+      "section_sha256": "",
+      "selector": {
+        "backend": "gpu",
+        "model_file": "Qwen3-4B-Instruct-2507-BF16.gguf",
+        "model_sha256": "d7934f6fa06f9781bc15540f0e2b83f89b1895e86440a4e97af4f0434311d1bd"
+      }
+    },
+    "wrong-artifact": {
+      "claim_ids": [],
+      "consumer": "autokernel.planner",
+      "reasons": [
+        "no_applicable_claims"
+      ],
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+        "candidate_sha256": "d74410cdbe5d218658b83e6c267f092dba749d2900f11886202c96f42cd6a6b8",
+        "op": "Q38P4_GREEDY_PARITY",
+        "run_id": "q38p4-greedy-parity-20261118-r2",
+        "scope": "candidate"
+      }
+    },
+    "wrong-run": {
+      "claim_ids": [],
+      "consumer": "autokernel.planner",
+      "reasons": [
+        "no_applicable_claims"
+      ],
+      "section_sha256": "",
+      "selector": {
+        "build_sha": "729599d69871181d67af715a4c2f9162d5153a2e",
+        "candidate_sha256": "4f7fd3485b44b5064556f9ffca239fbb382c44b1164e2eea4ee09f8dd5d8e440",
+        "op": "Q38P4_GREEDY_PARITY",
+        "run_id": "q38p4-greedy-parity-20261118-r3",
+        "scope": "candidate"
+      }
+    }
+  },
+  "schema": "epyc.q38p4.native_planning_context.v1",
+  "seal_sha256": "b49fcbe37faae7a54c54a1671bd2534c06220d0c7627c9f6ed356a5f42142234",
+  "status": "passed",
+  "stop_equal": true,
+  "tokens_equal": false
+}
