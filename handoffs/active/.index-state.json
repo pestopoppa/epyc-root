@@ -1236,7 +1236,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1746,
+          "line": 1749,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1246,7 +1246,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1870,
+          "line": 1873,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1256,7 +1256,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2202,
+          "line": 2205,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1266,7 +1266,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 2341,
+          "line": 2344,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1
@@ -1276,7 +1276,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2903,
+          "line": 2906,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1286,7 +1286,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3041,
+          "line": 3044,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1296,7 +1296,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3048,
+          "line": 3051,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -2189,7 +2189,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 1570,
+          "line": 1571,
           "markers": 1,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0
@@ -2202,7 +2202,7 @@
             "EVL-47"
           ],
           "guarded": 0,
-          "line": 2727,
+          "line": 2728,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 4
@@ -2212,7 +2212,7 @@
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3126,
+          "line": 3130,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3639,
+          "line": 3643,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3734,
+          "line": 3738,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0

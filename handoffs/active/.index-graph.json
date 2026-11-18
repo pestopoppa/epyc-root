@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T15:34:49Z",
+  "generated_at": "2026-11-18T15:39:16Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1735,7 +1735,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1570,
+          "line": 1571,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1750,7 +1750,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2727,
+          "line": 2728,
           "name": "mi210-q8-dequant-gemv-roofline",
           "open": 4,
           "readiness": "blocked"
@@ -1759,7 +1759,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3126,
+          "line": 3130,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3639,
+          "line": 3643,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3734,
+          "line": 3738,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1994,7 +1994,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1746,
+          "line": 1749,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2003,7 +2003,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1870,
+          "line": 1873,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2012,7 +2012,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2202,
+          "line": 2205,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2341,
+          "line": 2344,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2030,7 +2030,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2903,
+          "line": 2906,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2042,7 +2042,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3041,
+          "line": 3044,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2054,7 +2054,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3048,
+          "line": 3051,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"

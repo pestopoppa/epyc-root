@@ -203,3 +203,12 @@ Throughput*.
 - **A futility verdict must name its offenders.** FUTILITY_NEAR_UNPARSED ended with an EMPTY offender list on q81 r3: a classifier bug masked as a finding, and the answer was only recoverable by reading the raw data. A futility class must print the cases, gate or unit that triggered it; an empty list is a classifier defect, not a verdict.
 - **GPU greedy identity gates need an A-vs-A calibration.** Identical GPU runs diverge (C10-GPU-GREEDY-AA-DIVERGENCE, NOT_LOCALIZED), so a bitwise token-ID gate with no calibration reads nondeterminism as NOT_EXACT: inf48-favec-tail returned NOT_EXACT while its knob-OFF build, a no-op, also failed to reproduce C13. Run an A-vs-A arm first and make the gate "candidate divergence within the A-vs-A band", or use only the correctness and speed gates on GPU.
 - 2026-11-18 (autokernel, C11-GPUPROOF-ANSI-PARSE): parse tbo output with rowlib tbo_parse (`epyc-inference-research/scripts/kernel_rnd/rowlib/tbo_parse.py`), never `endswith('OK')`. Note: no box by that name exists in kernel-champion-and-promotion.md and the c11 `gpuproof.py` has no tbo parser, so nothing was ticked.
+
+## Lessons from 2026-11-18 (AutoKernel, C14/C15 rows)
+
+- **rowflow derives threads only from launcher literals, never from spec `declared_threads`.** Write `-t N` or `OMP_NUM_THREADS=N` literally in the launcher or the row is booked with the wrong thread count.
+- **A high-rank multi-quarter or whole-host row whose quarters are held for hours makes the keeper drain and idle the GPU and q3.** Rank such rows below GPU work (110), or publish them only when their quarters are about to free. Two rows (13a-r2, a3b48-d-remeasure-r2) were withdrawn and republished at 110 for this.
+- **`queue_status` "measured gpu-quiet=0% IDLE-HELD" is not GPU utilisation.** It reads the reservation, not the device; check `rocm-smi` before concluding the GPU is busy or idle.
+- **`test-backend-ops` MUL_MAT with n>128 q8_0 on CDNA goes to hipBLAS, not MMQ.** Capture, trace and replay rows must use n<=128 or they profile the wrong kernel.
+- **rocprofv3 is at `/opt/rocm/bin/rocprofv3`** (not on PATH).
+- **The commit hook misreads `git commit -qF <file>` as a pathspec.** Use separate flags: `git commit -q -F <file>`.
