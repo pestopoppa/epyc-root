@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T06:17:07Z",
+  "generated_at": "2026-11-18T06:27:43Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 23,
-      "dispatchable": 16,
+      "closed": 26,
+      "dispatchable": 15,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-BUILD-PREFLIGHT r2 (queued); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; D6/D7 open",
-      "open": 16,
+      "open": 15,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
