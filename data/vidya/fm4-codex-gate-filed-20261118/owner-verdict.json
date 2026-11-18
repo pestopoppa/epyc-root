@@ -1,0 +1,9 @@
+{
+  "row": "vb-fm4-codex-gate-20261118",
+  "verdict": "pass",
+  "rc": 0,
+  "authority": "diagnostic-only",
+  "task_outcome": null,
+  "answer": "Exact native executed-gate observation selected1/pass1/refused0/task-outcome-claims0.",
+  "limits": "No genuine coordinator adoption, Claude oracle acceptance, historical task accuracy or performance verdict."
+}
