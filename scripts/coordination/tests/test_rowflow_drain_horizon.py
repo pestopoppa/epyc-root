@@ -44,6 +44,13 @@ def run(rows, T, free=None):
 
 
 class DrainHorizon(unittest.TestCase):
+    def setUp(self):
+        self._h = rf.DRAIN_RESERVE_HORIZON_S
+        rf.DRAIN_RESERVE_HORIZON_S = 7200   # the horizon is OFF in production; these tests exercise it at 2 h
+
+    def tearDown(self):
+        rf.DRAIN_RESERVE_HORIZON_S = self._h
+
     def test_1_gpu_row_assigned_under_far_cpu_drain(self):
         a, _, _ = run([mq_drain(), gpu_row()], NOW + 7 * H)
         self.assertIn("c14-fold-gpu", {c["id"] for c, _ in a})

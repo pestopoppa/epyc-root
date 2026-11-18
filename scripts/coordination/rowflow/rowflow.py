@@ -2029,7 +2029,7 @@ DRAIN_AFTER_S = 3600      # a host / multi-quarter row that waited this long dra
 DRAIN_MAX_WAIT_S = 3600  # ws58 hotfix: drain only when the host frees within 1 h
 # D9 2026-11-18 (KEEPER-DRAIN-HOLDS-GPU): a drain target whose earliest start lies beyond this horizon gets NO reservation
 # (nothing is drained for it); the DRAIN_AFTER_S age boost still ranks it first when its regions free.
-DRAIN_RESERVE_HORIZON_S = 7200
+DRAIN_RESERVE_HORIZON_S = 10 ** 9   # OFF: the 7200 s horizon starved whole-host rows in the replay gate (2026-11-18); re-enable only with a starvation-safe rule
 URGENT_RANK = 10          # ws58 2026-11-02: an explicit operator priority_rank below this beats lane starvation (21:25Z
                           # four rank-1 pilots lost the host to a rank-30 whole-host row that was promoted as a drain)
 
