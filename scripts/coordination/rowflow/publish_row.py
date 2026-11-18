@@ -712,11 +712,19 @@ def run_gpu_queue(flags):
         qd = rf.load_json(q) or {}
         rid = os.path.basename(os.path.dirname(q))
         up = unpublished_path(flags, rid)
+        if os.path.exists(rf.withdraw_pending_path(flags, rid)):
+            # withdrawn while queued under this batch: never smoked; the keeper's finish_withdrawals ends it (rc=75)
+            print(f"GPU-SMOKE SKIP {rid}: withdrawn-pending")
+            os.remove(q)
+            continue
         if os.path.exists(up):
             os.replace(up, rf.ready_path(flags, rid))
         try:
             v, msg = run_smoke(flags, rid, qd.get("regions") or "mi210_0,184-191", int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
-            if v == "PASS":
+            if v == "PASS" and os.path.exists(rf.withdraw_pending_path(flags, rid)):
+                unpublish(flags, rid)   # withdrawn during its smoke: a PASS never lands a withdrawn row in ready/
+                v, msg = "WITHDRAWN", "withdrawn-pending; PASS not published"
+            elif v == "PASS":
                 row = rf.load_json(rf.ready_path(flags, rid))
                 rf.need(row is not None, f"queued smoke {rid} lost its ready manifest")
                 rf.supersede(flags, row)
@@ -724,7 +732,7 @@ def run_gpu_queue(flags):
         except Exception as e:  # noqa: BLE001 - one smoke never stops the batch
             v, msg = "FAIL", f"{type(e).__name__}: {e}"
         print(f"GPU-SMOKE {v} {rid}: {msg}")
-        if v != "PASS":
+        if v not in ("PASS", "WITHDRAWN"):
             alert_queued_nonpass(flags, rid, v, msg)
         os.remove(q)
         n += 1
