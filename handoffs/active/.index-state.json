@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 220
+      "open": 221
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 463
+      "open": 464
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -517,10 +517,10 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 184,
+      "closed": 186,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 38,
+      "open": 39,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -529,7 +529,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 224,
+      "total": 227,
       "tracks": [
         {
           "blocked": 1,
@@ -543,7 +543,7 @@
         },
         {
           "blocked": 0,
-          "closed": 21,
+          "closed": 22,
           "gates": [],
           "guarded": 0,
           "line": 361,
@@ -556,27 +556,27 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 565,
+          "line": 567,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
         },
         {
           "blocked": 0,
-          "closed": 7,
+          "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 831,
+          "line": 833,
           "markers": 1,
           "name": "per-request-reasoning-budget",
-          "open": 3
+          "open": 4
         },
         {
           "blocked": 0,
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1326,
+          "line": 1331,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1863,
+          "line": 1868,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2625,
+          "line": 2630,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3052,
+          "line": 3057,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3709,
+          "line": 3714,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -625,7 +625,7 @@
     },
     "coordination-and-churn-pipeline.md": {
       "blocked": 0,
-      "closed": 349,
+      "closed": 353,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 8,
@@ -637,7 +637,7 @@
       },
       "row_id": "RTG-34",
       "state": "active",
-      "total": 357,
+      "total": 361,
       "tracks": [
         {
           "blocked": 0,
@@ -712,7 +712,7 @@
         },
         {
           "blocked": 0,
-          "closed": 11,
+          "closed": 15,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5766,
+          "line": 5770,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6322,
+          "line": 6326,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -2583,7 +2583,7 @@
       "closed": 416,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 117,
+      "open": 118,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 534
+      "total": 535
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
