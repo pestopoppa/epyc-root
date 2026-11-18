@@ -1,0 +1,23 @@
+{
+  "adapter": "adapters/p5_astropy_scorer.py",
+  "adapter_id": "vidya.adapters.p5_astropy_scorer/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 0,
+  "frames_skipped": 0,
+  "missing": [],
+  "only_new": true,
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/official-3ljhcbgb/canary/tamper-packet/official/RESULT.json"
+  ],
+  "refused": [
+    {
+      "reason": "p5-astropy-scorer: arm artifact changed",
+      "unit": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/official-3ljhcbgb/canary/tamper-packet/official/RESULT.json"
+    }
+  ],
+  "rows_projected": 0,
+  "source": "p5-astropy-scorer",
+  "units_matched": 1,
+  "units_projected": 0
+}
