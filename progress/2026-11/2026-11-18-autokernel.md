@@ -54,7 +54,7 @@ Verified every note against origin/main `6f5cf4b45`; only the gaps below were fi
 | rka-a3b-n4-step-gpu-20261118 | futility | MMVQ_Q8_B4_ROWS knob does not move the n=3->4 step; trace row published (rank 20) |
 
 ### Rows queued / prepared
-Published: c6-admission-live-proof-r8 (40), rka-a3b-n4-trace-gpu-20261118 (20), akx-all-13a-q38fn-threads-20261118-r2 (110), rka-a3b48-d-remeasure-20261118-r2 (110). Prepared, unpublished: c15-epi-q8-gpu, c15-lightning-idx-fix-gpu (HELD), c15 gv-bw, c15-cpu-fa-splitkv, c5-isa1-live-proof, c5-isa2-capture-replay, rvp-race2-executor, ch33 C15 same-tip.
+Published: c6-admission-live-proof-r8 (40), rka-a3b-n4-trace-gpu-20261118 (20), akx-all-13a-q38fn-threads-20261118-r2 (110), rka-a3b48-d-remeasure-20261118-r2 (110). Also published (verified 2026-11-18 via compute-flags/dryrun state): c15-epi-q8-gpu-20261118, c15-gv-bw-gpu-20261118, c15-cpu-fa-splitkv-20261118, c5-isa1-live-proof-20261118, c5-isa2-capture-replay-20261118 (republished after smoke fix), rvp-race2-executor-20261118; c5-isa1, c5-isa2 (r1), rvp-race2, c6 r8 and both rank-110 rows have PASSed smoke. Prepared, unpublished: c15-lightning-idx-fix-gpu (HELD, priority rule), ch33-nonc-split-cpu-c15 (needs a C15+CH-33 store; rides the next candidate build).
 
 ### Operator decisions and findings
 - AKX-ALL-13a re-scoped vs production `-t 96` (row -r2, rank 110). CH-19 not needed (hook live on C14, ceiling < 1%). FD-DIV-2 and FUSED-DECODE-ZERO-ROW already in C14 (source read). CH-33 folded `4265996a8`; CH-LB1.1 already present by content.
