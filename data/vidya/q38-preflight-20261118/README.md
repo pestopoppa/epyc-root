@@ -4,7 +4,7 @@ The [Research patch](research-model-preflight.patch) extends the earlier planner
 
 The local control exercised the normal Research serving runner, its planner context builder, the real `AgentPlanner` and the shared belief reader. The preflight arm displayed 16 target claims and accounted for four at the reader limit. The path-only arm displayed zero. The registered adapter projected 20 synthetic records into 60 frames. The probe simulated resource claims, profiling, calibration and the provider reply. It used the reader's explicit isolated replay override because a detached checkout shares moving remote refs. The packet verifies its pinned checkout and file content before and after the run. [Control results](local-control.json)
 
-This control supplies software evidence only. The source packet records zero native Q38 observations. The patch has not been adopted into the live Research checkout; official structural acceptance, live adoption and native Q38 planning acceptance remain separate.
+This control supplies software evidence only. The source packet records zero native Q38 observations. The original official structural control passed at 18:00:48 UTC with allocator rc0, two controls, path-only visible0 and verified-digest visible16, zero refusals and zero native Q38 acceptances. [Original receipts and owner verdict](official/owner-verdict.json). The patch has not been adopted into the live Research checkout; live adoption and native Q38 planning acceptance remain separate.
 
 ## Reproduce
 
