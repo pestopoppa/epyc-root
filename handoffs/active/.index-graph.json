@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T22:46:11Z",
+  "generated_at": "2026-11-18T23:09:11Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2929,15 +2929,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 198,
-      "dispatchable": 39,
+      "closed": 199,
+      "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "context-and-token-economy.md",
       "id": "RTG-08",
       "last_advanced": "2026-11-18",
       "next_action": "Operator answers Enable decision (options A-D); build shadow flag; CTX-HO-1 is standalone",
-      "open": 41,
+      "open": 42,
       "priority": 0.5087,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): Run ACM's own UNREPORTED ablation (`runtime.py disable_query_memory`, the `re_mem_noquery`",
@@ -2966,18 +2966,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 8,
+          "dispatchable": 9,
           "gates": [],
           "line": 365,
           "name": "delegation-context-preassembly",
-          "open": 8,
+          "open": 9,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 591,
+          "line": 596,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2986,7 +2986,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 857,
+          "line": 862,
           "name": "per-request-reasoning-budget",
           "open": 4,
           "readiness": "ready"
@@ -2995,7 +2995,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1362,
+          "line": 1367,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -3004,7 +3004,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1899,
+          "line": 1904,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3013,7 +3013,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2661,
+          "line": 2666,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3022,7 +3022,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3088,
+          "line": 3093,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3031,7 +3031,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3745,
+          "line": 3750,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
