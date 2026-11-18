@@ -25,7 +25,7 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 17,
+      "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
       "open": 469
@@ -624,8 +624,8 @@
       ]
     },
     "coordination-and-churn-pipeline.md": {
-      "blocked": 1,
-      "closed": 353,
+      "blocked": 0,
+      "closed": 354,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 8,
@@ -711,8 +711,8 @@
           "open": 0
         },
         {
-          "blocked": 1,
-          "closed": 15,
+          "blocked": 0,
+          "closed": 16,
           "gates": [
             "RTG-34#coordination-and-churn-pipeline",
             "RTG-34#churn-pipeline",
@@ -2580,7 +2580,7 @@
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
-      "closed": 424,
+      "closed": 425,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 118,
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 543
+      "total": 544
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T16:07:07Z",
+  "generated_at": "2026-11-18T16:17:53Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1349,7 +1349,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 424,
+      "closed": 425,
       "dispatchable": 118,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -3305,9 +3305,9 @@
     },
     {
       "age_days": 0,
-      "blocked": 1,
+      "blocked": 0,
       "blocked_by": [],
-      "closed": 353,
+      "closed": 354,
       "dispatchable": 8,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3315,7 +3315,7 @@
       "id": "RTG-34",
       "last_advanced": "2026-11-18",
       "next_action": "Screen the 32 open boxes; decide AUD-15 and bus-file untracking; finish DASH-FU-1",
-      "open": 9,
+      "open": 8,
       "priority": 0.711,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): R9 \u2014 replay-eligibility screen at queue admission (M1/M3). *Enforcement DONE",
@@ -3426,7 +3426,7 @@
           ],
           "line": 5566,
           "name": "fleet-fanout-measurement",
-          "open": 3,
+          "open": 2,
           "readiness": "blocked"
         },
         {
