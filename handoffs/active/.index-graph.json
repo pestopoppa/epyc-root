@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T13:47:09Z",
+  "generated_at": "2026-11-18T13:57:59Z",
   "nodes": [
     {
       "age_days": 8,
@@ -3301,7 +3301,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 348,
+      "closed": 349,
       "dispatchable": 8,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3437,7 +3437,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5765,
+          "line": 5766,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3446,7 +3446,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6321,
+          "line": 6322,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
