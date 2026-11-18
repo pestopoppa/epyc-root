@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T23:33:41Z",
+  "generated_at": "2026-11-18T23:37:21Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1393,14 +1393,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 849,
-      "dispatchable": 125,
+      "dispatchable": 126,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-18",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 126,
+      "open": 127,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1437,7 +1437,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 33,
+          "dispatchable": 34,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47",
@@ -1446,14 +1446,14 @@
           ],
           "line": 27,
           "name": "autokernel-research-loop",
-          "open": 34,
+          "open": 35,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6053,
+          "line": 6054,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1462,7 +1462,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6133,
+          "line": 6134,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1481,7 +1481,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6430,
+          "line": 6431,
           "name": "autokernel-rebuild-program",
           "open": 16,
           "readiness": "blocked"
@@ -1498,7 +1498,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9647,
+          "line": 9648,
           "name": "autokernel-unified-surface-program",
           "open": 55,
           "readiness": "blocked"
@@ -1511,7 +1511,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14000,
+          "line": 14003,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14212,
+          "line": 14215,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -2390,7 +2390,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 955,
+          "line": 956,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53,
           "readiness": "blocked"
