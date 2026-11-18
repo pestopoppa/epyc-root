@@ -319,3 +319,7 @@ Repaired historical544 offline control to isolate official-completion testing fr
 ## 21:26Z — Make existing NEMO source task addressable by the publisher and split readiness from official replay.
 
 Existing VB-NEMO-RANGE-JOIN-WIRE lacked a checkbox, so publisher refused its exact task identity before compute. Restored the existing task checkbox and split source/readiness preparation from official retained-fixture replay acceptance. The source-sealed implementation is under review; no smoke or native acceptance claimed.
+
+## 21:27Z — State the exact NEMO readiness inference stop contract for publisher admission.
+
+Publisher admission requires the explicit stop-on-answer / stop-on-futility grammar. The existing finite 80-run/480-join question now states those rules and futility-only gate class. No native qualification has run yet; source packet remains prepared for immediate owner publication.
