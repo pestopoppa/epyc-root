@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T20:48:33Z",
+  "generated_at": "2026-11-18T20:58:50Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1349,7 +1349,7 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 466,
+      "closed": 467,
       "dispatchable": 112,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -2929,7 +2929,7 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 194,
+      "closed": 195,
       "dispatchable": 39,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -2977,7 +2977,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 581,
+          "line": 583,
           "name": "memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -2986,7 +2986,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 847,
+          "line": 849,
           "name": "per-request-reasoning-budget",
           "open": 4,
           "readiness": "ready"
@@ -2995,7 +2995,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1352,
+          "line": 1354,
           "name": "rao-redel-substrate-spike",
           "open": 4,
           "readiness": "ready"
@@ -3004,7 +3004,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1889,
+          "line": 1891,
           "name": "reasoning-compression",
           "open": 2,
           "readiness": "ready"
@@ -3013,7 +3013,7 @@
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 2651,
+          "line": 2653,
           "name": "reasoning-effort-levels",
           "open": 10,
           "readiness": "ready"
@@ -3022,7 +3022,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 3078,
+          "line": 3080,
           "name": "tool-output-compression",
           "open": 3,
           "readiness": "ready"
@@ -3031,7 +3031,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 3735,
+          "line": 3737,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"
