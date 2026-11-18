@@ -1,0 +1,69 @@
+{
+ "book_s": 3300,
+ "budget_gib": 1.0,
+ "busy_fraction": 1.0,
+ "busy_fraction_source": "declared_threads",
+ "decision_rule": "Can the isolated Qwen3.8-27B hybrid GDN CPU no-spec recipe produce four fixed native captures per arm against v10 and C13? Stop after eight raw responses with zero draft, consistent token counts, content and finish, intact prefill, and verified cleanup. Stop on STOP, deadline, or first identity, startup, response or cleanup failure. The four-CPU publisher smoke captures one v10 small-model no-spec completion. The isolated 16384-token one-slot split KV recipe does not qualify the shared MI210 393216-token four-slot unified q8_0 KV DFlash2 host. Retain the prior frontdoor JSON mismatch.",
+ "declared_shape": "quarter",
+ "declared_threads": 24,
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 100,
+ "gib": 48,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-INGEST-LONG-CONTEXT",
+ "id": "handoff-vidya-quality-pack-ingest-long-context-20261118",
+ "keep": [
+  "out/**",
+  "requests/**",
+  "*.py",
+  "*.json",
+  "*.md",
+  "*.sh",
+  "SOURCE.sha256",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/row-launch.sh",
+  "sha256": "1713dbfa51f34b802671fec245c79823ca572dcb79108a47cda1c9be968fbf5c"
+ },
+ "min_window_s": 3300,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [
+  19477
+ ],
+ "priority_rank": 38.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:125: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "vidya-belief-substrate-program.md:125: untestable prose prerequisite: 'after eight responses and verified cleanup; stop-on-futility on STOP, deadline or first identity/startup/response/cleanu'"
+ ],
+ "published_at": "2026-11-18T00:51:04Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/row.spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T00:51:04Z",
+  "session": "01a1ec1d-ff38-73d3-9943-155c540460f6",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/out/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/smoke_predicate.py",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118/STOP",
+ "threads_evidence": [
+  "--threads 24"
+ ],
+ "verdict_by": "agent",
+ "window_s": 3600,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ingest-long-context-20261118"
+}
