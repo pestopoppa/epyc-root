@@ -14,7 +14,7 @@ import runner
 
 class ThinkingProbeTests(unittest.TestCase):
     def setUp(self):
-        self.cells = prepare.requests("pinned")
+        self.cells = prepare.requests("pinned", prepare.ORIGINAL)
         self.terminal = {
             "object": "chat.completion",
             "model": "pinned",
@@ -52,6 +52,27 @@ class ThinkingProbeTests(unittest.TestCase):
         del msg["reasoning_content"]
         result = runner.read_terminal(json.dumps(self.terminal), request)
         self.assertFalse(result["reasoning_field_present"])
+
+    def test_headroom_profile_changes_only_request_cap_and_isolates_row(self):
+        profile = prepare.HEADROOM
+        followup = prepare.requests("pinned", profile)
+        expected = copy.deepcopy(self.cells)
+        for cell in expected:
+            cell["body"]["max_tokens"] = 1024
+        self.assertEqual(followup, expected)
+        self.assertEqual(profile.request_s, 180)
+        files = prepare.profile_files(profile)
+        spec = json.loads(files["spec.json"])
+        self.assertEqual(spec["id"], profile.row)
+        self.assertEqual(spec["scratch_root"], str(profile.scratch))
+        self.assertEqual(spec["result_path"], str(profile.scratch / "native/RESULT.json"))
+        self.assertEqual(spec["handoff_task"], "context-and-token-economy.md:TB-SEM-1b")
+        self.assertEqual(spec["decision_rule"], "completed >= 3")
+        self.assertEqual((spec["estimate_s"], spec["max_window_s"]), (1200, 1200))
+        self.assertIn(f"--id {profile.row} ", files["launcher.sh"])
+        self.assertIn(f"--port {profile.port} ", files["launcher.sh"])
+        self.assertIn(f"R={profile.scratch}\n", files["launcher.sh"])
+        self.assertEqual(prepare.profile_files(prepare.ORIGINAL), {})
 
     def test_length_finish_is_captured_for_descriptive_comparison(self):
         self.terminal["choices"][0]["finish_reason"] = "length"

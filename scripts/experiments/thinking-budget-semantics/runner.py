@@ -21,7 +21,7 @@ from prepare import (ARMS, BUILD, BUILD_PINS, COMMIT, MAX_TOKENS, PORT, REQUEST_
                      read_json, verify_packet)
 
 RESULT = SCRATCH / "native/RESULT.json"
-SMOKE_DIR = "thinking-budget-semantics-native"
+SMOKE_DIR = f"{ROW.rsplit('-', 1)[0]}-native"
 SCHEMA = "epyc.thinking-budget-semantics.native.v1"
 CHAT_PATH = "/v1/chat/completions"
 RESPONSE_LIMIT = 1024 * 1024

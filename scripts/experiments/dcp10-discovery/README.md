@@ -167,3 +167,29 @@ task-scope counts, 24 macro metric values, and all actual entry modes and budget
 tasks provide a local diagnostic and share the original custody and packer identity limitations.
 The original artifacts are at `/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard2`.
 [Retained shard metadata](../../../docs/research/dcp10-lexical-shard2-results-20261118.json)
+
+## Third lexical shard
+
+DCP-10-P3 took the third SHA-256 rank in each original stratum. It used the same released bytes,
+orchestrator revision, discovery and packer bytes, scoring, and budgets as shard two. The request
+bound the shard-two request digest before execution. Replay the second-shard commands above
+with shard two's `packet/request.json` as `prior`. The run stopped after the three preselected
+attempts under a 90-second cap, with zero decodes and zero substitutions.
+
+| Stratum | Instance ID | Base repository and commit |
+| --- | --- | --- |
+| Lite Python | `SWE-Bench-Verified__python__maintenance__bugfix__1d90db61` | `astropy/astropy` at `1a4462d72eb03f30dc83a879b1dd57aac8b2c18b` |
+| Full C | `Multi-SWE-Bench__c__maintenance__bugfix__1e842312` | `ponylang/ponyc` at `f00f95b30dd68c7faaff0aa88508c218bc19f02b` |
+| Full C++ | `Multi-SWE-Bench__cpp__maintenance__bugfix__5a3de72a` | `nlohmann/json` at `9294e25c98f9c09a1874842dbcaae7a91336a57e` |
+
+All three tasks had resolved gold and returned eight files each in 8.939 seconds. Discovery macro
+file recall, precision, and F1 were 0.416667, 0.083333, and 0.129630. Discovery line metrics were
+zero. The packer included zero files at 2,000, 4,000, and 8,000 estimated tokens, so all packed
+metrics were zero. Independent recomputation reconciled 12 task-scope counts, all 24 macro metric
+values, and pack and render modes for all 72 entries.
+
+The local request SHA-256 is `c0fea8996fd1894af83dd7512d230dc696c6a133790472c078a4f6fb5c0a6176`.
+The three tasks provide diagnostic evidence under the existing writable-ancestor and trusted
+packer identity limits. Accepted score receipts for this shard number zero. Raw evidence is at
+`/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard3`.
+[Retained shard metadata](../../../docs/research/dcp10-lexical-shard3-results-20261118.json)
