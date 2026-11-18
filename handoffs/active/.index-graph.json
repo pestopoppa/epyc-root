@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T12:28:39Z",
+  "generated_at": "2026-11-18T12:38:11Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1936,15 +1936,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 222,
-      "dispatchable": 31,
+      "closed": 223,
+      "dispatchable": 30,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-18",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 32,
+      "open": 31,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1978,7 +1978,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 28,
+          "dispatchable": 27,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1987,7 +1987,7 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 29,
+          "open": 28,
           "readiness": "blocked"
         },
         {
