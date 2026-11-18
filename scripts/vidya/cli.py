@@ -612,7 +612,7 @@ _FILE_SOURCES = (
     "ak-r18-symbols", "ak-r18d-aa", "ak-r234-sweep", "hil17-attribution-ladder", "hil-lb1-loop-score",
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing", "exp01-proxy-capture", "mi210-paired-raw", "gpu-pool-native",
-    "quality-pack-comparison", "kernel-promotion-lifecycle",
+    "quality-pack-comparison", "qwen4exp-cpu-loader-diagnostic", "kernel-promotion-lifecycle",
     "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
     "hsf5p-microbench", "v11-gate-bench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",
 )

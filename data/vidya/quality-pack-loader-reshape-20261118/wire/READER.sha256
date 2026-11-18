@@ -1,0 +1,6 @@
+55577cad5a8afd0d67f25b3175b6a2c29db06234f50b7673472b1aff0bdaf952  /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/canary/qwen4exp_cpu_loader_context.py
+16c29a15a0e5e4c8852bff43fbab328614df990347d4c77352db931178e657a8  /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/adapters/qwen4exp_cpu_loader.py
+ffc0ed5f63f0480d734c7d64cd37b75e06115b1d62db4cbd1688d155b511d94a  /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/producers/qwen4exp_cpu_loader_contract.py
+f540063d9a738d437476def902ef23a1e5b0420e8b0fe15d8742d53d1c67b5b5  /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/claim_tuple.py
+212c20ee34b162c4b757fd8d5c1bcc55b9305ef8fec1a72db0943a5e681fd301  /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/ingest_sources.py
+c33760cc067f8394659293322e352875df978a5db8ee32532892d72438c5145c  /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/loop_beliefs.py

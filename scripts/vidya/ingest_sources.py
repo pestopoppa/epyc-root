@@ -626,6 +626,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V9-8 native sealed original-byte comparisons; coverage and outcomes replayed "
                 "under the bound validator source; complete comparisons are diagnostic observations",
            task="VB-V9-8-QUALITY-PACK-WIRE"),
+    Source("qwen4exp-cpu-loader-diagnostic", "qwen4exp_cpu_loader",
+           lambda p: importlib.import_module("adapters.qwen4exp_cpu_loader").units(p), frames="frames_for_path",
+           note="prospective native CPU loader seals; replay raw scope, custody and both semantic dispositions",
+           task="VB-V9-8-QUALITY-PACK-LOADER-DIAG-WIRE"),
     Source("kernel-promotion-lifecycle", "kernel_promotion_lifecycle",
            lambda p: importlib.import_module("adapters.kernel_promotion_lifecycle").units(p),
            frames="frames_for_path",

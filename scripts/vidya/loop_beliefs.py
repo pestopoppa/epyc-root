@@ -157,6 +157,9 @@ OMITTED_CAP = 24
 POLICY = {"use": "planner-context", "floor": "Judged/Located", "standard": "DV"}
 DEVICE_BY_BACKEND = {"gpu": "gfx90a", "cpu": "epyc-9655"}
 #: Dimensions compared after the model identity (model_file / model_sha256) is settled.
+_LOADER_DIAG_RUN = "handoff-vidya-quality-pack-loader-diag-wire-20261118"
+_LOADER_DIAG_OP = "QWEN4EXP_CPU_LOADER"
+_LOADER_DIAG_KIND = "qwen4exp-cpu-loader-diagnostic"
 _MATCH_KEYS = ("quant", "backend", "device", "context_tokens")
 #: Gate reasons that mean "the evidence disagrees or is under review", not merely "too weak".
 _CONTESTED_MARKERS = ("conflict", "oppos", "correction", "review", "dependency")
@@ -482,7 +485,8 @@ class Target:
                     or not isinstance(candidate, str) or not _SHA256_RE.fullmatch(candidate)
                     or not isinstance(op, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{0,63}", op)
                     or not isinstance(run, str)
-                    or not re.fullmatch(r"ni-gpu-pool-(matmul|attention|elementwise)-[0-9]{8}-v[1-9][0-9]*", run)):
+                    or not (re.fullmatch(r"ni-gpu-pool-(matmul|attention|elementwise)-[0-9]{8}-v[1-9][0-9]*", run)
+                               or (run == _LOADER_DIAG_RUN and op == _LOADER_DIAG_OP))):
                 raise ValueError("candidate target requires exact source commit, candidate digest, native operator and run id")
             return cls(model_file="", quant="", backend="", device="", scope="candidate",
                        build_sha=head, candidate_sha256=candidate, op=op, run_id=run)
@@ -1068,7 +1072,11 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
             scope = _table_scope(table)
         else:
             continue
-        if "candidate_sha256" in scope and kind != "gpu-pool-native":
+        if kind == _LOADER_DIAG_KIND:
+            if ("candidate_sha256" not in scope
+                    or (scope.get("run_id"), scope.get("op")) != (_LOADER_DIAG_RUN, _LOADER_DIAG_OP)):
+                continue
+        elif "candidate_sha256" in scope and kind != "gpu-pool-native":
             continue
         tier, hits = _tier(scope, targets, consumer)
         if tier is None:
