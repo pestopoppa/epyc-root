@@ -1,0 +1,129 @@
+{
+  "pairs": [
+    {
+      "order": [
+        "nollg",
+        "llg"
+      ],
+      "metrics": {
+        "pp512": {
+          "nollg_ts": 248.424745,
+          "llg_ts": 244.200386,
+          "nollg_stddev_ts": 6.906009,
+          "llg_stddev_ts": 4.462591,
+          "delta_pct": -1.700458221261325,
+          "nollg_loss_pct": -1.7298740060140538,
+          "llg_loss_pct": 1.700458221261325,
+          "within_cv_pct": 2.77991993108416,
+          "nollg_drop_gt2": false,
+          "llg_drop_gt2": false
+        },
+        "tg128": {
+          "nollg_ts": 24.932229,
+          "llg_ts": 24.264933,
+          "nollg_stddev_ts": 0.386797,
+          "llg_stddev_ts": 1.014203,
+          "delta_pct": -2.676439398980335,
+          "nollg_loss_pct": -2.750042623237414,
+          "llg_loss_pct": 2.676439398980335,
+          "within_cv_pct": 4.179706574916156,
+          "nollg_drop_gt2": false,
+          "llg_drop_gt2": true
+        }
+      }
+    },
+    {
+      "order": [
+        "llg",
+        "nollg"
+      ],
+      "metrics": {
+        "pp512": {
+          "nollg_ts": 240.849005,
+          "llg_ts": 246.006335,
+          "nollg_stddev_ts": 35.515944,
+          "llg_stddev_ts": 4.157785,
+          "delta_pct": 2.141312562200537,
+          "nollg_loss_pct": 2.0964216226383003,
+          "llg_loss_pct": -2.141312562200537,
+          "within_cv_pct": 14.746145204129032,
+          "nollg_drop_gt2": true,
+          "llg_drop_gt2": false
+        },
+        "tg128": {
+          "nollg_ts": 24.294921,
+          "llg_ts": 24.929193,
+          "nollg_stddev_ts": 2.13842,
+          "llg_stddev_ts": 0.045101,
+          "delta_pct": 2.6107185119062626,
+          "nollg_loss_pct": 2.544294153444926,
+          "llg_loss_pct": -2.6107185119062626,
+          "within_cv_pct": 8.801922014893567,
+          "nollg_drop_gt2": true,
+          "llg_drop_gt2": false
+        }
+      }
+    },
+    {
+      "order": [
+        "nollg",
+        "llg"
+      ],
+      "metrics": {
+        "pp512": {
+          "nollg_ts": 271.216831,
+          "llg_ts": 270.39408,
+          "nollg_stddev_ts": 5.972703,
+          "llg_stddev_ts": 5.333076,
+          "delta_pct": -0.3033554359316404,
+          "nollg_loss_pct": -0.30427848124487955,
+          "llg_loss_pct": 0.3033554359316404,
+          "within_cv_pct": 2.2021874446280214,
+          "nollg_drop_gt2": false,
+          "llg_drop_gt2": false
+        },
+        "tg128": {
+          "nollg_ts": 23.186806,
+          "llg_ts": 23.041427,
+          "nollg_stddev_ts": 0.308625,
+          "llg_stddev_ts": 0.153722,
+          "delta_pct": -0.6269901943372513,
+          "nollg_loss_pct": -0.6309461649228743,
+          "llg_loss_pct": 0.6269901943372513,
+          "within_cv_pct": 1.3310371424162515,
+          "nollg_drop_gt2": false,
+          "llg_drop_gt2": false
+        }
+      }
+    }
+  ],
+  "n_pairs": 3,
+  "summary": {
+    "pp512": {
+      "median_delta_pct": -0.3033554359316404,
+      "noise_band_pct": 2.77991993108416,
+      "drops_gt2": {
+        "nollg": 1,
+        "llg": 0
+      }
+    },
+    "tg128": {
+      "median_delta_pct": -0.6269901943372513,
+      "noise_band_pct": 4.179706574916156,
+      "drops_gt2": {
+        "nollg": 1,
+        "llg": 1
+      }
+    }
+  },
+  "verdict": "PASS",
+  "final": true,
+  "rule": "AB, BA, AB, with A=nollg and B=llg. FAIL on two pairs with >2% loss for the same arm and metric, relative to the other arm. After all three pairs, PASS when both absolute median paired deltas are <1% and within their respective noise bands (median larger within-pair repeat CV, floor 0.5%). Otherwise INCONCLUSIVE at three pairs or RUNNING at an earlier checkpoint.",
+  "row_id": "v11-122-llg-cpu-c13-gate-20261118",
+  "run": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/out/run-3fdmhg64",
+  "run_metadata": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/out/run-3fdmhg64/run.json",
+  "proof": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/out/run-3fdmhg64/proof.json",
+  "started_at": "2026-11-18T10:19:07.226130+00:00",
+  "checkpoint_at": "2026-11-18T10:23:09.114125+00:00",
+  "ended_at": "2026-11-18T10:23:09.114134+00:00"
+}

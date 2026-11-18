@@ -1,0 +1,50 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=0; three AB/BA/AB pairs; pp512 median llg-minus-nollg -0.303355% within 2.779920% repeat-noise band; tg128 -0.626990% within 4.179707%; both absolute deltas <1%; neither arm loses >2% on two pairs of the same metric. CPU portion only; GPU remains pending; no promotion acceptance.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T10:27:05+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T10:23:12Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/v11-122-llg-cpu-c13-gate-20261118.ended",
+ "filed_at": "2026-11-18T10:27:05+00:00",
+ "filed_by": "agent",
+ "handoff_task": "v11-promotion-checklist.md:V11-122-GATE",
+ "id": "v11-122-llg-cpu-c13-gate-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/v11-122-llg-cpu-c13-gate-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "v11-promotion-checklist",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc=0; three AB/BA/AB pairs; pp512 median llg-minus-nollg -0.303355% within 2.779920% repeat-noise band; tg128 -0.626990% within 4.179707%; both absolute deltas <1%; neither arm loses >2% on two pairs of the same metric. CPU portion only; GPU remains pending; no promotion acceptance.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/RESULT.json",
+ "root_cause_family": null,
+ "row": "v11-122-llg-cpu-c13-gate-20261118",
+ "row_verdict": "pass",
+ "rule": "Determine grammar-free CPU throughput parity with only LLAMA_LLGUIDANCE toggled at matched C13 identity. Qwen3.6-35B-A3B-MTP-Q8_0, llama-bench pp512/tg128 r5, device none, ngl 0, fa 1, one granted physical CPU quarter. Higher t/s is better and expected effect is zero. Check after each adjacent pair in AB, BA, AB order (A=nollg). Stop on futility and FAIL if the same arm falls >2% below the other on two pairs for either metric. At three pairs, stop on answer and PASS if both absolute median paired deltas are <1% and within their own repeat noise band (median larger within-pair CV, floor 0.5%). Otherwise INCONCLUSIVE. Publisher smoke uses pp8/tg2 r1 on both pinned arms and four keeper CPUs.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 53,
+  "input": 196468262,
+  "output": 932916,
+  "owner_slug": "v11-promotion-checklist",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 197401178,
+  "tokens_per_task": 3724550.5283018867
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "70063f5ee2dc0a78f17186b678c267bad929d89bb608fd3c27b3a209104e04b8",
+  "result": "pass",
+  "status": "filed"
+ }
+}

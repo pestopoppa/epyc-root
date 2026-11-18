@@ -1,0 +1,9 @@
+4f0a862978656b5a5eebfbc6da0354778041d4c9a5120f03b490fd897c72685b  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/llama-bench
+59118c29cc74092f1b7b99efc31e340ac3e24aa95fba8adfc243faea2e6df70a  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama-common.so
+852c33da274dd52882a4118323470f8627435fe81a132ba3a1e6980f652d285b  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama.so
+224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml.so
+e2125018b397018a0f7bf8207e7df75b821dd21cf640f72100b8cd8af11b15ad  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-base.so
+1cdfde8202836f92cf0ed115c37a1540cf0dc880154b8ee6a1f50d37d75b48ec  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-cpu.so
+21914a66c297ac5a87cee448747622cbe1434851edc18fe00f678ff90ca9b53b  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libggml-hip.so
+86f7944dfde974a59f235326645cd715d6732274f464abc166a3bf7b8678bed7  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/bin/libllama-bench-impl.so
+5dbd6fbcf54930a8d1b7ce9cccc86f11818d5679135584b0c2460a6f7040389d  /mnt/raid0/llm/kernels/builds/gpu-20261117-bda43aa17-c13/CMakeCache.txt
