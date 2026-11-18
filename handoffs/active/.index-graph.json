@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T23:45:10Z",
+  "generated_at": "2026-11-18T23:47:43Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1151,7 +1151,7 @@
       "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 126,
+      "closed": 127,
       "dispatchable": 40,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -1199,7 +1199,7 @@
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1390,
+          "line": 1392,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1216,7 +1216,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1851,
+          "line": 1853,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
