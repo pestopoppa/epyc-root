@@ -69,3 +69,33 @@ Added to compute-fillers.md "Lessons from 2026-11-18": launcher-literal threads,
 
 ### Gaps filled this wrap-up
 Notes added for c14/c15 fold-build PASS, c6 r8, 13a-r2, a3b48 -r2 and n4-trace published, Fused-q8 STOP, LIGHTNING hold, C5-ISA-2, RVP-RACE-2. No boxes ticked (all remaining boxes' questions are still open); no result ticks added, so belief-capture count is 0 cited / 0 cc / 0 declined, with every new note tagged `[no-belief: ...]`.
+
+## Wrap-up 3 (after ~16:00Z)
+
+### Results filed
+| Row | Verdict | Box |
+|---|---|---|
+| rka-a3b-n4-trace-gpu-20261118 | inconclusive (coverage clause); cause confirmed | router MMVF->MMF at n=4; fix `79650eeab` removes 76-95% of the step |
+| rka-a3b-mmvf8-e2e-gpu-20261118 r1 / r2 | harness bug / KEEP | D4 +13.6%, D2 unchanged, RECOMMEND_D=2; RKA-A3B-N4-STEP ticked [belief: cc] |
+| c14-kld-diag-gpu-20261118-r2 | NOISE | Q38FN GPU A/A KLD ~0.025; 27B C14-vs-C13 KLD 0 (already in C14 tick) |
+| c14-fold-gpu-20261118-r3 | geomean 1.012, P3 0.973 | operator "Promote C14 now"; C14 `eee3da838` CHAMPION (c9496880d) |
+| c15-fold-gpu-20261118 | FAIL (Q38FN PPL only), 27B bit-identical | operator "27B decides on GPU"; r2 decode-only published |
+| c15-fold-cpu-20261118 r1-r4 | FAIL / contended / stopped / contended | r3 idled the GPU (whole-host booking); C15 CPU clause still unmeasured |
+| c15-cpu-fa-splitkv-speed-20261118-r2 | KEEP (robust +2-4%/step) | AKX-ALL-24 ticked [belief: cc]; xmodel SPLITKV_ROUNDING_ONLY 27B KLD 0.00055 |
+| q81-v2-e2e-gpu-20261118 | COST_REAL | operator "fold it" (already noted) |
+| c5-isa2-capture-replay-20261118 | FAIL 7/9 | tooling works; C5-ISA-2 open |
+| rvp-race2-executor-20261118 | BAR_MISSED (6/7 sens, 1/109 spec) | RVP-RACE-2 ticked |
+| c6-admission-live-proof-r8 | inconclusive | reached C6 oracle; untyped refusal |
+| ak-c12-greedy-aa-bisect-20261118-r5 | NO_SINGLE_CULPRIT | quality half open |
+| inf48-gateup-cpu-prof / rvp-ctr1 | NO_CANDIDATE / FAIL | already ticked in wrap-up 1 |
+
+### Landed
+- AKX-ALL-23 analysis `bfee9898d` (CPU FA skips masked cells; AKX-ALL-24 bytes model overstated K/V). Gain-chain write-up `a1bc3e593`.
+- C16 composite `llama.cpp-experimental-c16-composite-20261118` @ `13d6fc150` (12 commits on C14); c16-fold-build published.
+- Operator decisions: Q38FN 27B-anchored gate + GPU amendment "27B decides"; A3B split-KV test not needed; C15 quiet-host CPU run; DF2-BLOCK16 prep now, GPU later; FAROWS KEEP; v11 HOLD.
+
+### Lessons (compute-fillers.md)
+gpu-q3 grant = 16 CPUs; CPU timing on q0-q2 not whole host (amended the earlier quiet-host lesson); never carry estimate_s; Q38FN GPU A/A noise floor.
+
+### Belief / loop-awareness audit
+See the AK planner harvest #10 (research) and the committed-conclusion rows added in this wrap-up; table in the session report.
