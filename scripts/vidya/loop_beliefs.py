@@ -152,8 +152,15 @@ _KPF17_CONSUMER = "kvfork.planner"
 _KPF17_METRIC = "kpf17_map_revalidation_fixture_refused"
 _KPF17_ID_RE = re.compile(r"kpf17-map-[0-9a-f]{64}")
 _KPF17_LOCATOR_RE = re.compile(r".+/attempts/[0-9a-f]{48}/native\.json#sha256=[0-9a-f]{64}")
-_P5_ID_RE = re.compile(r"p5-sphinx-scorer:[0-9a-f]{64}")
-_P5_LOCATOR_RE = re.compile(r".+/official/RESULT\.json#(?:gold|negative):(?:FAIL_TO_PASS|PASS_TO_PASS):tests/\S+")
+_P5_TASK = ("p5.scorer_controls", "VB-P5-SCORER-CONTROLS-WIRE")
+_P5_TASK_SOURCES = {
+    "p5-sphinx-scorer": ("p5_sphinx_scorer_status", "vidya.adapters.p5_sphinx_scorer/v1",
+                         re.compile(r"tests/\S+")),
+    "p5-astropy-scorer": ("p5_astropy_scorer_status", "vidya.adapters.p5_astropy_scorer/v1",
+                          re.compile(r"astropy/modeling/tests/test_separable\.py::\S+")),
+}
+_P5_OBSERVATION_ID_RE = re.compile(r"[0-9a-f]{64}")
+_P5_LOCATOR_RE = re.compile(r".+/official/RESULT\.json#(?:gold|negative):(?:FAIL_TO_PASS|PASS_TO_PASS):(?P<test>\S+)")
 #: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
 #: unknown family never reaches the knob tier.
 KNOB_FAMILIES = frozenset({"spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
@@ -1074,13 +1081,17 @@ def _task_observation(consumer: str, task_id: str, source: Mapping[str, Any],
             and _KPF17_ID_RE.fullmatch(identity)
             and _KPF17_LOCATOR_RE.fullmatch(_str(source.get("locator")))):
         return {"mechanism_id": _KPF17_METRIC}
-    if ((consumer, task_id) == ("p5.scorer_controls", "VB-P5-SCORER-CONTROLS-WIRE")
-            and source.get("source_kind") == "p5-sphinx-scorer"
-            and source.get("title") == evidence.get("metric") == "p5_sphinx_scorer_status"
-            and provenance.get("method") == "vidya.adapters.p5_sphinx_scorer/v1"
-            and _P5_ID_RE.fullmatch(identity)
-            and _P5_LOCATOR_RE.fullmatch(_str(source.get("locator")))):
-        return {}  # This adapter already carries its native observation fields.
+    if (consumer, task_id) == _P5_TASK:
+        kind = _str(source.get("source_kind"))
+        route = _P5_TASK_SOURCES.get(kind)
+        if route is not None:
+            metric, method, test_pattern = route
+            locator = _P5_LOCATOR_RE.fullmatch(_str(source.get("locator")))
+            if (source.get("title") == evidence.get("metric") == metric
+                    and provenance.get("method") == method and identity.startswith(kind + ":")
+                    and _P5_OBSERVATION_ID_RE.fullmatch(identity.removeprefix(kind + ":"))
+                    and locator and test_pattern.fullmatch(locator["test"])):
+                return {}  # This adapter already carries its native observation fields.
     return None
 
 

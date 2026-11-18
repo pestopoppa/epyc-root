@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "Original official allocator rc0; COMPLETE native capture at 2026-11-18T19:58:42.881494Z retains grant CPUs0-23, source and original content hashes, both gold/no-op arms, all 30 named statuses, and owned-container removal. Gold passes both FAIL_TO_PASS and thirteen PASS_TO_PASS; no-op fails both FAIL_TO_PASS and passes thirteen PASS_TO_PASS. Finite Astropy12907 instrument diagnostic PASS; no model quality, population or performance conclusion. Strict projection and planning acceptance are separate.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T20:01:26+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T19:58:46Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-p5-astropy-scorer-native-20261118.ended",
+ "filed_at": "2026-11-18T20:01:26+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-P5-ASTROPY-SCORER-NATIVE",
+ "id": "vb-p5-astropy-scorer-native-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-p5-astropy-scorer-native-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-astropy-native-r1-20261118/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Original official allocator rc0; COMPLETE native capture at 2026-11-18T19:58:42.881494Z retains grant CPUs0-23, source and original content hashes, both gold/no-op arms, all 30 named statuses, and owned-container removal. Gold passes both FAIL_TO_PASS and thirteen PASS_TO_PASS; no-op fails both FAIL_TO_PASS and passes thirteen PASS_TO_PASS. Finite Astropy12907 instrument diagnostic PASS; no model quality, population or performance conclusion. Strict projection and planning acceptance are separate.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/p5-astropy-native-r1-20261118/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-p5-astropy-scorer-native-20261118",
+ "row_verdict": "pass",
+ "rule": "Can the pinned Astropy scorer capture both native controls with the original CPU grant, UTC completion, source and raw-content hashes, all two FAIL_TO_PASS and thirteen PASS_TO_PASS named statuses in each arm, and owned-container removal? Require complete acquisition before filing the diagnostic PASS or FAIL. Stop after both arms or at the first source, test coverage or cleanup refusal, STOP, the allocation deadline or 270 seconds, whichever comes first. One model-free case.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 139,
+  "input": 521288152,
+  "output": 2173056,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 523461208,
+  "tokens_per_task": 3765907.9712230214
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "4239f3f2c1712e818c7430af8e67b8fb40f97b1eeef0b749ac2da39a7c45a34b",
+  "result": "pass",
+  "status": "filed"
+ }
+}
