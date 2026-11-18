@@ -1,0 +1,101 @@
+{
+  "timestamp_utc": "2026-11-18T16:29:54.033067+00:00",
+  "root": "/mnt/raid0/llm/tmp/vidya-belief-substrate",
+  "allocated_bytes_before": 71775539200,
+  "allocated_bytes_after_before_receipt": 12759511040,
+  "net_scratch_allocated_bytes_reclaimed": 59016028160,
+  "allocated_bytes_in_removed_paths": 59016028160,
+  "byte_basis": "Filesystem allocation from du -sx -B1.",
+  "ready_manifest_count_checked": 1327,
+  "archived_evidence_head": "1111b6b95363330db613c52a1759dea25a1aa982",
+  "terminal_row_receipts_sha256": {
+    "vidya-exp01-proxy-input-recovery-20261118-r2": {
+      "grants/vidya-exp01-proxy-input-recovery-20261118-r2.ended": "ccd8c83e9d16221cfa08c6110ae620bee2dae2acd7ca7c28d64607532fa69e10",
+      "grants/vidya-exp01-proxy-input-recovery-20261118-r2.complete": "c7aaeb9598e2647cc2e4a469954047f44b7e0a500b83b1b26681b457e1423dcd",
+      "filing-done/vidya-exp01-proxy-input-recovery-20261118-r2.FILED": "72595616db04472be2888806a6d5004651e0c772c7af5817d02213682680730f"
+    },
+    "vidya-exp01-proxy-official-native-20261118-r2": {
+      "grants/vidya-exp01-proxy-official-native-20261118-r2.ended": "5730d3c3436080e7a1a747d8de4201629b31f5c6a7dcf80ce0dc083b40194269",
+      "grants/vidya-exp01-proxy-official-native-20261118-r2.complete": "6da509877eaa11ac7e73df923a00cd999e9789b8266ca8475d221875060f8022",
+      "filing-done/vidya-exp01-proxy-official-native-20261118-r2.FILED": "7f5ac3b544a53eeaeceaac22fa48bdbd5f3ad9a1d166c63866f87c35d5f1c398"
+    }
+  },
+  "removed": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-ready-20261118",
+      "allocated_bytes": 58851233792,
+      "reason": "Filed R2 recovery and completed official R2 run exhausted use of the four recovered GGUFs and generated imatrix. Recovery receipts, original tool/input/output identities, and native logs are committed.",
+      "row_id": "vidya-exp01-proxy-input-recovery-20261118-r2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-official-20261118-r2",
+      "allocated_bytes": 10792960,
+      "reason": "Official R2 ran to completion, was accepted, and is reproducible from the portable native archive and the committed R2 preparation. The scratch launcher and measurements belong to that completed run.",
+      "row_id": "vidya-exp01-proxy-official-native-20261118-r2"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-canary-20261117",
+      "allocated_bytes": 122880,
+      "reason": "Archived historical control replay. Its result matches the committed control receipt byte for byte.",
+      "archived_matches": [
+        "data/vidya/exp01-control-canary-20261117/receipt.json"
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-acceptance-20261118",
+      "allocated_bytes": 81920,
+      "reason": "Archived control replay. Committed receipt and rendered context match the scratch replay.",
+      "archived_matches": [
+        "data/vidya/exp01-control-canary-20261118/receipt.json",
+        "data/vidya/exp01-control-canary-20261118/planner-context.txt"
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-canary-current-20261118-all-targets",
+      "allocated_bytes": 77824,
+      "reason": "Completed all-target regression replay. Committed receipt and rendered context match the scratch replay.",
+      "archived_matches": [
+        "data/vidya/exp01-official-reader-20261118/control-regression/receipt.json",
+        "data/vidya/exp01-official-reader-20261118/control-regression/planner-context.txt"
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/exp01-acceptance-current",
+      "allocated_bytes": 704512,
+      "reason": "Completed official acceptance and relocation replays. Original native evidence and the accepted receipt are committed.",
+      "archived_matches": [
+        "data/vidya/exp01-official-native-20261118/receipt.json",
+        "data/vidya/exp01-official-native-20261118/planner-context.txt",
+        "data/vidya/exp01-official-native-20261118/native-official.tar.gz",
+        "data/vidya/exp01-official-native-20261118/official-completion-binding.json",
+        "data/vidya/exp01-official-native-20261118/results.jsonl"
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118",
+      "allocated_bytes": 153014272,
+      "reason": "Completed KVU16a planner replay. The canonical acceptance summary and replay script match the committed filing. Scratch ledger snapshots, staged scripts and isolated replay work were generated inputs.",
+      "archived_matches": [
+        "data/vidya/kvu16a-planning-20261118/canonical/summary.json",
+        "data/vidya/kvu16a-planning-20261118/check_planner.py"
+      ]
+    }
+  ],
+  "protected": {
+    "gpu-pool": "Shared current GPU pool build and launcher assets.",
+    "attention-ready": "Current attention GPU row assets.",
+    "attention-rest-ready": "Current attention-rest GPU row assets.",
+    "matmul-id-ready": "Current matmul-ID GPU row assets.",
+    "elementwise-ready": "Current elementwise GPU row assets.",
+    "pool-canary-ready": "Current pool canary assets.",
+    "parity-native-20261118-r2": "Qualified parity row and current pinned BF16 model.",
+    "mi210-native-20261117": "Current MI210 native launcher and evidence dependencies.",
+    "fm4-native-current/private": "Frozen private snapshots needed for strict FM4 native projection.",
+    "kvq-ready": "Current KVQ successor and its registered, locked research worktree.",
+    "actor-seat-native-20261118": "Current source custody for the still-open actor-seat campaign, including its unique detached research commit.",
+    "architect-general-hip-smoke-20261118": "Successor full recipe still uses the predecessor\u2019s pinned chat-template path.",
+    "worker-vision-20261118 and R2": "Unresolved publisher qualification; R2 reuses original source and the original packet remains a pinned input.",
+    "wrap-merge-recovery": "Locally unique merge input missing from the repository object database, as verified in the previous cleanup receipt.",
+    "other scratch": "Current launch dependencies or original evidence without confirmed durable replicas."
+  }
+}

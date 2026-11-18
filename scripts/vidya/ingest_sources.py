@@ -661,8 +661,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            task="VB-TOOL-SELECTOR-WIRE"),
     Source("fm4-gate-acceptance", "fm4_gate_acceptance",
            lambda p: importlib.import_module("adapters.fm4_gate_acceptance").units(p),
-           note="Prospective caller-selected gate observations; revalidated execution evidence, "
-                "not authenticated task outcomes or historical accuracy",
+           frames="emit",
+           note="FM-4 diagnostic observations from revalidated selected gates or filed Codex "
+                "dispatch receipts replayed against private snapshots; task acceptance is separate",
            task="VB-FM4-ORACLE-WIRE"),
     Source("fused-decode-div", "fused_decode_div",
            lambda p: importlib.import_module("adapters.fused_decode_div").units(p),

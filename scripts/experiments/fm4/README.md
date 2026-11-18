@@ -139,3 +139,29 @@ rollout hashes, and `task_outcome` stays null. A separate independently
 identified task and an appropriate executed gate are required for prospective
 task acceptance. The standalone Codex collector is separate from the Claude
 oracle canary above.
+
+### Replay a filed Codex census in Vidya
+
+Create a read-only JSON replay descriptor containing `schema`
+`fm4.codex_dispatch.replay.v1`, `result` (the absolute path to the filed
+`official/RESULT.json`), `result_sha256` (its pinned digest), `snapshot_dir`
+(the absolute path to the retained private snapshots), and `pair_ids` (the
+nonempty list of filed pair IDs to replay). Keep the filed `input-pins.json`
+one directory above `official/`. The adapter checks the census and input-pin
+digests, the pinned collector version, the read-only snapshots, and the
+entire structured receipt for each selected pair. Each observation links to
+the digest-only public census and its pair ID.
+
+```bash
+python3 -B scripts/experiments/fm4/native_canary.py \
+  --dispatch-replay /private/fm4/dispatch-replay.json \
+  --state-dir /private/fm4/vidya-dispatch-canary-new
+```
+
+The canary uses the registered `fm4-gate-acceptance` ingest and the shared
+planning reader for `coordination.fm4`. It checks the exact selected claims,
+their `Judged/Located` harness tier, and their exclusion from reliance and
+from `autokernel.planner`. The metric records a bound first-turn terminal
+event, including interruption. Every selected receipt carries a null task
+outcome. The same replay descriptor is accepted by Vidya's explicit
+`ingest fm4-gate-acceptance --path` entry point.

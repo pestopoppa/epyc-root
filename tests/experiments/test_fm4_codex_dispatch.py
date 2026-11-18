@@ -2,9 +2,13 @@
 
 import hashlib
 import json
+from pathlib import Path
 import pytest
 
-from scripts.experiments.fm4 import codex_dispatch as dispatch
+from scripts.experiments.fm4 import codex_dispatch as dispatch, native_canary
+
+
+adapter = native_canary.adapter
 
 
 PARENT = "01a1eeed-335d-7812-b888-306f9fa8a828"
@@ -154,3 +158,117 @@ def test_rollout_change_after_parse_refuses(tmp_path, monkeypatch):
     monkeypatch.setattr(dispatch, "_read", change)
     with pytest.raises(ValueError, match="changed_input"):
         dispatch.collect(parent, child)
+
+
+def _write_json(path, record):
+    path.write_text(json.dumps(record))
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _replay_fixture(tmp_path, *, parent_changes=lambda _: None, child_changes=lambda _: None,
+                    receipt_change=lambda _: None, pin_change=lambda _: None):
+    private = tmp_path / "private"
+    private.mkdir()
+    parent, child = _rollouts(private, parent_changes=parent_changes, child_changes=child_changes)
+    receipt = dispatch.collect(parent, child)
+    receipt["pair_id"] = "example"
+    inputs = {}
+    for role, path in zip(("parent", "child"), (parent, child)):
+        destination = path.with_name(f"example.{path.name}")
+        path.rename(destination)
+        destination.chmod(0o400)
+        sha = receipt["inputs"][role]["sha256"]
+        del receipt["inputs"][role]["path"]
+        inputs[role] = {"file": f"private/{destination.name}", "bytes": destination.stat().st_size,
+                        "sha256": sha}
+    pin = {"pair_id": "example", "inputs": inputs, "identity": receipt["identity"],
+           "binding_kind": receipt["binding_kind"], "child_agent_path": AGENT_PATH}
+    pin_change(pin)
+    receipt_change(receipt)
+    collector_sha = hashlib.sha256(Path(dispatch.__file__).read_bytes()).hexdigest()
+    pin_sha = _write_json(tmp_path / "input-pins.json", {"schema": adapter.DISPATCH_PINS_SCHEMA,
+                         "collector_sha256": collector_sha, "pairs": [pin]})
+    official = tmp_path / "official"
+    official.mkdir()
+    result = official / "RESULT.json"
+    result_sha = _write_json(result, {"schema": adapter.DISPATCH_CENSUS_SCHEMA, "id": "fixture",
+                             "mode": "official", "cpus": [0, 1, 2, 3], "input_pins_sha256": pin_sha,
+                             "collector_sha256": collector_sha, "receipts": [receipt],
+                             "terminal_receipt_count": 1, "refusal_count": 0,
+                             "pair_ids": ["example"], "task_outcome": None})
+    replay = tmp_path / "replay.json"
+    _write_json(replay, {"schema": adapter.DISPATCH_BUNDLE_SCHEMA, "result": str(result),
+                         "result_sha256": result_sha, "snapshot_dir": str(private), "pair_ids": ["example"]})
+    replay.chmod(0o400)
+    return replay, result, private
+
+
+@pytest.mark.parametrize("terminal", ["task_complete", "turn_aborted"])
+def test_dispatch_canary_uses_real_planner_and_terminal_only_authority(tmp_path, capsys, terminal):
+    def child_changes(rows):
+        rows[-1]["payload"]["type"] = terminal
+
+    replay, result, private = _replay_fixture(tmp_path, child_changes=child_changes)
+    state = tmp_path / "state"
+    assert native_canary.main(["--dispatch-replay", str(replay), "--state-dir", str(state)]) == 0
+    output = capsys.readouterr().out
+    canary = json.loads(output)
+    (item,) = canary["selected"]
+    assert item["receipt"]["child_turn"]["terminal_event"] == terminal
+    assert item["receipt"]["child_turn"]["state"] == (
+        "completed" if terminal == "task_complete" else "ended_with_error")
+    assert item["receipt"]["task_outcome"] is canary["task_outcome"] is None
+    assert item["claim"]["locator"].startswith(f"{result}#sha256=")
+    assert item["claim"]["not_evidence"] and item["claim"]["grade"] == "Judged/Located"
+    assert canary["excluded_consumer"] == "autokernel.planner"
+    ledger = (state / "ledger.jsonl").read_text()
+    assert str(private) not in (output + ledger) and "private content" not in (output + ledger)
+    assert adapter.DISPATCH_AUTHORITY in ledger and adapter.AUTHORITY not in ledger
+    assert "fm4_selected_gate_pass" not in ledger and "fm4_codex_terminal_dispatch" in ledger
+    assert len((state / "reads.jsonl").read_text().splitlines()) == 2
+
+
+@pytest.mark.parametrize(("fixture_change", "refusal"), [
+    ({"pin_change": lambda row: row.update(identity={"child_agent_id": "unrelated"})},
+     "identity disagrees"),
+    ({"receipt_change": lambda row: row.update(task_outcome="success")}, "disagrees with native replay"),
+    ({"receipt_change": lambda row: row["child_turn"].update(final_message_present=1)},
+     "disagrees with native replay"),
+    ({"parent_changes": lambda rows: rows.append(rows[-1])}, "ambiguous_spawn_result"),
+    ({"child_changes": lambda rows: rows.append(rows[-1])}, "ambiguous_child_turn"),
+    ({"child_changes": lambda rows: rows.pop()}, "launch_only"),
+])
+def test_dispatch_replay_refuses_resealed_identity_outcome_and_ambiguity(tmp_path, fixture_change, refusal):
+    replay, _, _ = _replay_fixture(tmp_path, **fixture_change)
+    state = tmp_path / "state"
+    with pytest.raises(ValueError, match=refusal):
+        native_canary.run_codex_dispatch(replay, state)
+    assert not state.exists()
+
+
+@pytest.mark.parametrize(("artifact", "refusal"), [
+    ("result", "RESULT.json digest mismatch"), ("pins", "input-pins.json digest mismatch"),
+    ("snapshot", "snapshot digest or path drift"), ("symlink", "snapshot type, mode or size drift"),
+    ("writable", "snapshot type, mode or size drift"),
+])
+def test_dispatch_rechecks_custody_before_projection(tmp_path, artifact, refusal):
+    replay, result, private = _replay_fixture(tmp_path)
+    (native,) = adapter.native_rows(replay)
+    if artifact == "result":
+        result.write_bytes(result.read_bytes() + b"\n")
+    elif artifact == "pins":
+        pins = tmp_path / "input-pins.json"
+        pins.write_bytes(pins.read_bytes() + b"\n")
+    else:
+        child = private / "example.child.jsonl"
+        child.chmod(0o600)
+        if artifact == "snapshot":
+            child.write_bytes(child.read_bytes().replace(b"private content", b"changed content"))
+            child.chmod(0o400)
+        elif artifact == "symlink":
+            relocated = child.with_suffix(".relocated")
+            child.rename(relocated)
+            relocated.chmod(0o400)
+            child.symlink_to(relocated)
+    with pytest.raises(ValueError, match=refusal):
+        adapter.project(native)
