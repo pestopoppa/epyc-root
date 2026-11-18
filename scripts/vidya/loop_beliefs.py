@@ -140,6 +140,10 @@ _ROUTE_SHARE_RE = re.compile(r"^(?P<route>[a-z0-9_]+?)_(?:core_)?(?:kernel|route
 _MODEL_TIERS = ("knob", "target")
 #: Tiers shown as context only: never reliance-eligible, never planner evidence.
 NOT_EVIDENCE_TIERS = ("host", "harness")
+_NPD1_SOURCE = "mi210-paired-raw"
+_NPD1_ADAPTER = "vidya.adapters.mi210_paired_raw/v1"
+_NPD1_METRIC = "native_request_tpot_ms"
+_NPD1_CONSUMER = "autokernel.planner"
 #: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
 #: unknown family never reaches the knob tier.
 KNOB_FAMILIES = frozenset({"spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
@@ -1069,6 +1073,15 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
         kind = str(source.get("source_kind", ""))
         scope_raw = source.get("applicability")
         table = SOURCE_SCOPES.get(kind)
+        evidence = support.get(raw_id) or {}
+        if (scope_raw is None and kind == _NPD1_SOURCE and consumer == _NPD1_CONSUMER
+                and source_prov[sid].get("method") == _NPD1_ADAPTER
+                and source.get("title") == evidence.get("metric") == _NPD1_METRIC
+                and evidence.get("metric_direction") == "lower_better"
+                and evidence.get("unit") == "ms/token" and evidence.get("reps") == 1
+                and evidence.get("protocol_id") == ""):
+            # Consumer routing only. The measurement frames stay unscoped.
+            scope_raw = {"consumer": _NPD1_CONSUMER}
         if scope_raw:
             if not isinstance(scope_raw, Mapping):
                 continue
@@ -1114,7 +1127,6 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                 expected[(kind, run)] = table.expected_keys
         verdict = evaluate(claim_id, result, policy)
         belief = result.beliefs.get(claim_id)
-        evidence = support.get(raw_id) or {}
         obs = read_observation(evidence)
         model_file = PurePath(str(scope.get("model_file") or "")).name if scope.get(
             "model_file") else ""
@@ -1577,6 +1589,8 @@ def _where(row: Mapping[str, Any], tier: str) -> str:
     if tier == "host":
         return "device-scope: host ceiling, not about this model"
     if tier == "harness":
+        if row["source_kind"] == _NPD1_SOURCE and row["metric"] == _NPD1_METRIC:
+            return "native serving diagnostic: lower TPOT is better; no model scope"
         return "harness fact: loop infrastructure, not about any model"
     if tier == "sibling":
         recipe = f", recipe {row['recipe']}" if row["recipe"] else ""

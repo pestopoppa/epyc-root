@@ -1,4 +1,4 @@
-"""Read an original filed EXP01 source-capture control without launching its producer.
+"""Read an original filed EXP01 source-capture control or official pilot.
 
 The write-time reader checked the pinned source, model and item-set files. Here
 the archived bytes re-derive the result within that recorded scope. A filed
@@ -15,11 +15,12 @@ from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 
-from claim_tuple import ClaimTuple, ProjectionError, register
+from claim_tuple import ClaimTuple, ProjectionError, register, to_frames
 
 ADAPTER_ID = "vidya.adapters.exp01_proxy_capture/v1"
 AUTHORITY = "measurement"
 SOURCE_KIND = "exp01-proxy-capture-diagnostic"
+OFFICIAL_SOURCE_KIND = "exp01-proxy-capture-official"
 ARCHIVE = "native-control.tar.gz"
 ARMS = ("Q4KM", "IQ4KT", "IQ2XXS", "IQ2KT")
 MODE = "capture-control"
@@ -306,15 +307,35 @@ def _read_control(path: Path) -> tuple[ClaimTuple, ...]:
         raise ProjectionError(f"invalid EXP01 filed source-control record: {exc}") from exc
 
 
+def _read_filing(path: Path) -> tuple[ClaimTuple, ...]:
+    from .exp01_official import MARKER, official_rows
+
+    marker = path / MARKER
+    if not marker.exists() and not marker.is_symlink():
+        return _read_control(path)
+    _require(not (path / "completion-binding.json").exists(), "mixed official and source-control filing markers")
+    try:
+        return tuple(official_rows(path))
+    except (OSError, EOFError, ValueError, KeyError, TypeError, AttributeError, IndexError, OverflowError,
+            tarfile.TarError, re.error) as exc:
+        raise ProjectionError(f"invalid EXP01 filed official record: {exc}") from exc
+
+
 def native_rows(path: Path) -> tuple[dict, ...]:
-    return tuple({"filing": path, "measurement_id": row.measurement_id} for row in _read_control(path))
+    return tuple({"filing": path, "measurement_id": row.measurement_id} for row in _read_filing(path))
+
+
+def emit(path: Path, *, as_of: str, limit: int | None = None) -> list[dict]:
+    return [frame for row in _read_filing(path)[:limit]
+            for frame in to_frames(row, as_of=as_of, adapter_id=ADAPTER_ID, authority=AUTHORITY)]
 
 
 @register(SOURCE_KIND)
+@register(OFFICIAL_SOURCE_KIND)
 def project(native: dict) -> ClaimTuple:
     if not isinstance(native, dict) or set(native) != {"filing", "measurement_id"}:
-        raise ProjectionError("EXP01 projection requires a filed source-control locator and identity")
-    for row in _read_control(Path(native["filing"])):
+        raise ProjectionError("EXP01 projection requires a filing locator and measurement identity")
+    for row in _read_filing(Path(native["filing"])):
         if row.measurement_id == native["measurement_id"]:
             return row
-    raise ProjectionError("EXP01 measurement identity was absent from the filed control")
+    raise ProjectionError("EXP01 measurement identity was absent from the filing")

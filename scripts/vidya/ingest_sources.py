@@ -610,8 +610,9 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            task="VB-LAUNCH-AFFINITY-WIRE"),
     Source("exp01-proxy-capture", "exp01_proxy_capture",
            lambda p: importlib.import_module("adapters.exp01_proxy_capture").units(p),
-           note="filed original EXP01 source-capture controls only; archived launch and paired-item "
-                "outputs re-derived; no pilot performance comparison or protocol",
+           frames="emit",
+           note="filed original EXP01 source controls and prospective official CPU proxy pilots; "
+                "original custody, native vectors, ordered looks and paired output replayed; no formal protocol",
            task="VB-EXP01-PROXY-WIRE"),
     Source("r231-eof-capture", "r231_eof_capture",
            lambda p: importlib.import_module("adapters.r231_eof_capture").units(p), frames="frames_for_path",

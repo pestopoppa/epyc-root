@@ -156,3 +156,28 @@ def test_synthetic_exact_digest_context_canary(tmp_path, capsys):
     for target_digest, backend in (("", "gpu"), ("f" * 64, "gpu"), (digest, "cpu")):
         other = prepare(target_digest, backend)
         assert other["status"] == "ready" and not other["evidence"]["claim_ids"]
+
+
+def test_unscoped_native_tpot_is_background_for_autokernel_only(tmp_path):
+    as_of = datetime.now(timezone.utc).isoformat()
+    npd1, _ = _capture(tmp_path, source="NPD1-STEP3")
+    other_dir = tmp_path / "other-source"
+    other_dir.mkdir()
+    q38, _ = _capture(other_dir, model_name="MOCK_ONLY-00001-of-00003.gguf")
+    frames = [*mi210_paired_raw.emit(npd1, as_of=as_of),
+              *mi210_paired_raw.emit(q38, as_of=as_of)]
+    native_sources = [frame["assertion"] for frame in frames
+                      if frame["frame_type"].endswith("source_observed/v1")]
+    assert all("applicability" not in source for source in native_sources)
+    for name in ("MOCK_ONLY.gguf", "UNRELATED.gguf"):
+        targets = [loop_beliefs.Target.from_mapping({"model_file": name, "backend": "cpu"})]
+        planner = loop_beliefs.evaluate_frames(
+            frames, targets, as_of=as_of, consumer="autokernel.planner")
+        assert {claim["value"] for claim in planner["claims"]} == {12.5, 25.0}
+        assert all(claim["tier"] == "harness" and claim["not_evidence"]
+                   and not claim["model_file"] for claim in planner["claims"])
+        assert not planner["claim_ids"] and not planner["nonempty_target"]
+        other = loop_beliefs.evaluate_frames(
+            frames, targets, as_of=as_of, consumer="autopilot.planner")
+        assert other["reasons"] == ["no_applicable_claims"] and not other["claims"]
+    assert all("applicability" not in source for source in native_sources)
