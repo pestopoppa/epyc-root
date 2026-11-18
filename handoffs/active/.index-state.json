@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 220
+      "open": 221
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -25,16 +25,16 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 18,
+      "blocked": 17,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 470
+      "open": 469
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 100
+      "open": 104
     }
   },
   "duplicates": {},
@@ -1069,7 +1069,7 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 93,
+      "open": 97,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1078,7 +1078,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 350,
+      "total": 354,
       "tracks": [
         {
           "blocked": 12,
@@ -1107,14 +1107,14 @@
           "line": 391,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 13
+          "open": 17
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 778,
+          "line": 789,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1544,
+          "line": 1555,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 14
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2220,
+          "line": 2231,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2303,
+          "line": 2314,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 18
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2751,
+          "line": 2762,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3619,
+          "line": 3630,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1517,11 +1517,11 @@
       ]
     },
     "memory-program.md": {
-      "blocked": 1,
-      "closed": 124,
+      "blocked": 0,
+      "closed": 126,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 41,
+      "open": 40,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1543,21 +1543,21 @@
           "open": 14
         },
         {
-          "blocked": 1,
-          "closed": 19,
+          "blocked": 0,
+          "closed": 21,
           "gates": [],
           "guarded": 0,
           "line": 919,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 0,
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1389,
+          "line": 1390,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1850,
+          "line": 1851,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2583,7 +2583,7 @@
       "closed": 422,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 117,
+      "open": 118,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 540
+      "total": 541
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
@@ -2924,7 +2924,7 @@
       "id": "UFH-01",
       "index": "user-facing-harness-index.md",
       "line": 18,
-      "next_action": "Run CM-2..CM-5 per-request tool selection (base: probe/codemode-ab); then UFH-TE-2 dispatch guard, HIL-RE-1",
+      "next_action": "Land CODEMODE-AB-V2 r2 rows, then CODEMODE-REL-FLIP; measure CM-2..CM-5; then UFH-TE-2 dispatch guard, HIL-RE-1",
       "track": "harness selection and integration"
     },
     "UFH-13": {
