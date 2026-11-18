@@ -15,7 +15,7 @@ import sys
 import tempfile
 import time
 import urllib.request
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from analysis import calculate_baps
@@ -25,6 +25,8 @@ SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp4-r3")
 SOURCE = SCRATCH / "source"
 PYTHON = Path("/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python")
 SOURCE_SHA = "12afe2858f9dbd4691447926d6cf1864de64348c"
+SCHEDULER_PATH = "scripts/benchmark/toc_cmp4_runner.py"
+TERMINAL_SCHEDULER_SHA256 = "33be5f451bc47dce162050eafe44ee0a9647e83e22d68d92e529bd4adfbd8222"
 POINTS_SHA = "9de7e3bad1714675d1550421aa920840dc7ab7ff2ccb22dded16b853bad2655a"
 MODEL = Path("/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf")
 MODEL_SHA = "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
@@ -75,12 +77,20 @@ def file_identity(path):
     return [stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns]
 
 
-def verify_source():
+def verify_source(*, replace_boundary_terminal=False):
     def git(*args):
         return subprocess.check_output(["git", "-C", str(SOURCE), *args], text=True).strip()
 
-    if git("rev-parse", "HEAD") != SOURCE_SHA or git("status", "--porcelain", "--untracked-files=no"):
-        raise ValueError("orchestrator HEAD or tracked source differs from the frozen candidate")
+    if git("rev-parse", "HEAD") != SOURCE_SHA:
+        raise ValueError("orchestrator HEAD differs from the frozen candidate")
+    if replace_boundary_terminal:
+        scheduler = SOURCE / SCHEDULER_PATH
+        if (git("diff", "--cached", "--name-only")
+                or git("diff", "--name-only", "--no-renames") != SCHEDULER_PATH
+                or scheduler.is_symlink() or digest(scheduler) != TERMINAL_SCHEDULER_SHA256):
+            raise ValueError("orchestrator source does not match the terminal-boundary scheduler candidate")
+    elif git("status", "--porcelain", "--untracked-files=no"):
+        raise ValueError("orchestrator tracked source differs from the frozen candidate")
     sys.path.insert(0, str(SOURCE))
     from scripts.benchmark import own_port_proof, toc_cmp4_runner
 
@@ -111,8 +121,8 @@ def verify_inputs(manifest):
             raise ValueError(f"packet changed: {name}")
 
 
-def prepare():
-    runner, _ = verify_source()
+def prepare(*, replace_boundary_terminal=False):
+    runner, _ = verify_source(replace_boundary_terminal=replace_boundary_terminal)
     draw_path = SOURCE / "benchmarks/toc_cmp4/points-20261109.json"
     pool_path = SOURCE / "benchmarks/prompts/core_v2.jsonl"
     cases = {case["id"]: case for case in read_jsonl(pool_path) if "id" in case}
@@ -133,6 +143,8 @@ def prepare():
         "model_stat": model_stat, "build_sha256": build_pins(), "template_sha256": TEMPLATE_SHA,
         "packet_sha256": {name: digest(HERE / name) for name in packet_names if (HERE / name).is_file()},
         "points_source_sha256": digest(draw_path), "draw": draw, "pool_sha256": digest(pool_path),
+        **({"replace_boundary_terminal": True, "scheduler_sha256": TERMINAL_SCHEDULER_SHA256}
+           if replace_boundary_terminal else {}),
     })
 
 
@@ -298,15 +310,20 @@ def trial_metrics(graph, events, row, *, smoke=False):
 
 def summarize_ledger(out, schedule, draw):
     records = read_jsonl(out / "ledger.jsonl")
-    voided = {r["point_id"] for r in records if r["status"] == "void_point"}
-    replacements = [r for r in records if r["status"] == "replacement"]
+    void_reasons = {r["point_id"]: r.get("reason") for r in records if r["status"] == "void_point"}
+    voided = set(void_reasons)
+    replacements = [r if r["status"] == "replacement" else r["reserve"] for r in records
+                    if r["status"] == "replacement" or (r["status"] == "void_point" and r.get("reserve"))]
     strata = {p["point_id"]: p["stratum"] for p in draw["points"]}
     strata.update({p["point_id"]: p["stratum"] for group in draw["reserves"].values() for p in group})
+    terminal_voids = defaultdict(Counter)
     runs = []
     for rec in records:
         if "run_id" not in rec:
             continue
         point, arm, repeat = rec["run_id"].rsplit("|", 2)
+        if rec["status"] == "void_point" and rec.get("reason") == BOUNDARY_TURN_TERMINAL:
+            terminal_voids[strata[point]][arm] += 1
         result = rec.get("result", {})
         observed_run = rec["status"] == "ok" and point not in voided
         baps_unknown_reason = result.get("baps_unknown_reason")
@@ -317,6 +334,9 @@ def summarize_ledger(out, schedule, draw):
                      "baps_unknown_reason": baps_unknown_reason,
                      "correct": result.get("correct") if observed_run else None, "wall_s": result.get("wall_s"),
                      "attempts": rec.get("attempts"), "void_point": point in voided})
+        if void_reasons.get(point) == BOUNDARY_TURN_TERMINAL:
+            runs[-1].update({"void_reason": BOUNDARY_TURN_TERMINAL,
+                             "observed_correct": result.get("correct"), "grade_reason": result.get("grade_reason")})
     temp = out / "RUNS.tmp"
     temp.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in runs))
     temp.replace(out / "RUNS.jsonl")
@@ -333,6 +353,8 @@ def summarize_ledger(out, schedule, draw):
             "dropped": dropped, "baps_unknown": baps_unknown, "drop_limit_exceeded": dropped * 10 > PLANNED,
             "active_points": sorted(active), "points_voided": sorted(voided),
             "voided_per_stratum": dict(Counter(strata[point] for point in voided)),
+            "void_reasons": void_reasons,
+            "terminal_voids_by_stratum_and_arm": dict(terminal_voids),
             "replacements": replacements, "reserve_exhausted": len(active) < PILOT_POINTS,
             "schedule_exhausted": observed == expected,
             "coverage_complete": len(active) == PILOT_POINTS and observed == expected and completed == PLANNED}
@@ -362,16 +384,21 @@ def bind_four_cores():
     return selected
 
 
-def run():
+def run(*, replace_boundary_terminal=False):
     if os.environ.get("FILLER_ID") != ROW:
         raise ValueError("rowflow grant/smoke environment required")
     dry = os.environ.get("FILLER_DRYRUN") == "1"
     out = Path(os.environ["FILLER_DRYRUN_DIR"]) / "cmp4-native" if dry else SCRATCH / "native"
+    manifest = read_json(HERE / "inputs.json")
+    if manifest.get("replace_boundary_terminal", False) is not replace_boundary_terminal:
+        raise ValueError("requested terminal-boundary policy differs from prepared inputs")
+    scheduler_sha = TERMINAL_SCHEDULER_SHA256 if replace_boundary_terminal else None
+    if manifest.get("scheduler_sha256") != scheduler_sha or manifest["source"] != SOURCE_SHA:
+        raise ValueError("orchestrator source differs from prepared inputs")
+    verify_inputs(manifest)
+    runner, port_proof = verify_source(replace_boundary_terminal=replace_boundary_terminal)
     out.mkdir(parents=True, exist_ok=True)
     window = Path(tempfile.mkdtemp(prefix="window-", dir=out))
-    manifest = read_json(HERE / "inputs.json")
-    verify_inputs(manifest)
-    runner, port_proof = verify_source()
     pool_path = SOURCE / "benchmarks/prompts/core_v2.jsonl"
     if digest(pool_path) != manifest["pool_sha256"]:
         raise ValueError("benchmark pool changed")
@@ -391,6 +418,8 @@ def run():
                "frozen_points_sha256": draw["points_sha256"], "reserves": draw["reserves"],
                "seed": draw["seed"], "pilot_schedule": schedule, "region": cpus, "argv": argv,
                "dry_run": dry, "temperature": TEMPERATURE}
+    if replace_boundary_terminal:
+        receipt.update({"replace_boundary_terminal": True, "scheduler_sha256": scheduler_sha})
     receipt_path = (window if dry else out) / "RECEIPT.json"
     if receipt_path.exists() and read_json(receipt_path) != receipt:
         raise ValueError("resume receipt differs from frozen run, serving build, or CPU region")
@@ -458,7 +487,9 @@ def run():
                           "grade_reason": graph["grade_reason"], "trajectory": str(path),
                           "trajectory_sha256": digest(path), "graph": str(attempt / "GRAPH.json"),
                           "pins": {"model_pin": {"artifact": MODEL.name, "sha256": MODEL_SHA, "server": server},
-                                   "build": {"orchestrator": SOURCE_SHA, "llama_server": SERVER_SHA, "template": TEMPLATE_SHA},
+                                   "build": {"orchestrator": SOURCE_SHA, "llama_server": SERVER_SHA,
+                                             "template": TEMPLATE_SHA,
+                                             **({"scheduler_sha256": scheduler_sha} if replace_boundary_terminal else {})},
                                    "sampling_config": [wire["sampling"] for wire in graph["wire"]],
                                    "region": cpus, "prompt_hashes": [wire["prompt_sha256"] for wire in graph["wire"]],
                                    **{name: row["env"][name] for name in (
@@ -473,8 +504,9 @@ def run():
                 smoke_row = next(row for row in schedule if row["arm"] == "pointer_only")
                 smoke_result = submit(smoke_row, smoke=True)
             else:
+                validity = {"replace_boundary_terminal": True} if replace_boundary_terminal else {}
                 runner.run_schedule(schedule, submit, out / "ledger.jsonl", reserves=draw["reserves"],
-                                    repeats=REPEATS, seed=draw["seed"])
+                                    repeats=REPEATS, seed=draw["seed"], **validity)
         except WindowEnded as exc:
             stopped = True
             error = str(exc)
@@ -536,9 +568,14 @@ def smoke_predicate():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("prepare", "run", "smoke", "complete", "precondition"))
-    mode = parser.parse_args().mode
+    parser.add_argument("--replace-boundary-terminal", action="store_true",
+                        help="enable the prospectively approved terminal-boundary replacement policy")
+    args = parser.parse_args()
+    mode = args.mode
+    if args.replace_boundary_terminal and mode not in {"prepare", "run"}:
+        parser.error("--replace-boundary-terminal requires prepare or run")
     if mode == "prepare":
-        prepare()
+        prepare(replace_boundary_terminal=args.replace_boundary_terminal)
         return 0
     if mode == "smoke":
         return smoke_predicate()
@@ -547,7 +584,7 @@ def main():
     if mode == "complete":
         result_path = SCRATCH / "native/RESULT.json"
         return int(not (result_path.is_file() and read_json(result_path).get("coverage_complete") is True))
-    return run()
+    return run(replace_boundary_terminal=args.replace_boundary_terminal)
 
 
 if __name__ == "__main__":

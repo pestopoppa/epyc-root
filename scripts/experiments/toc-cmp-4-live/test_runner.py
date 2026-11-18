@@ -1,6 +1,8 @@
+import importlib.util
 import json
 import os
 import subprocess
+from types import ModuleType
 
 import pytest
 import runner as cpu_runner
@@ -539,6 +541,154 @@ def test_boundary_terminal_keeps_grade_without_counting_baps_coverage(tmp_path, 
     assert unknown["valid"] is False and unknown["correct"] is True and unknown["baps"] is None
     assert unknown["baps_unknown_reason"] == BOUNDARY_TURN_TERMINAL
     assert zero["valid"] is True and zero["correct"] is False and zero["baps"] == 0
+
+
+@pytest.fixture
+def candidate_scheduler(tmp_path):
+    repo = PYTHON.parents[2]
+    pinned = subprocess.run(
+        ["git", "-C", str(repo), "show", f"{cpu_runner.SOURCE_SHA}:{cpu_runner.SCHEDULER_PATH}"],
+        capture_output=True, check=False,
+    )
+    if pinned.returncode != 0:
+        pytest.skip("pinned orchestrator scheduler source required")
+    path = tmp_path / cpu_runner.SCHEDULER_PATH
+    path.parent.mkdir(parents=True)
+    path.write_bytes(pinned.stdout)
+    subprocess.run(["git", "apply", str(HERE / "terminal-boundary-scheduler.patch")], cwd=tmp_path, check=True)
+    assert cpu_runner.digest(path) == cpu_runner.TERMINAL_SCHEDULER_SHA256
+    spec = importlib.util.spec_from_file_location("candidate_cmp4_scheduler", path)
+    scheduler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(scheduler)
+    return scheduler
+
+
+def test_candidate_replaces_whole_point_and_resumes_with_accuracy_custody(candidate_scheduler, tmp_path, monkeypatch):
+    scheduler = candidate_scheduler
+    point = {"point_id": "item@2", "task_id": "item", "boundary_turn": 2, "stratum": "early"}
+    next_point = {**point, "point_id": "next@2", "task_id": "next"}
+    later = {**point, "point_id": "later@2", "task_id": "later"}
+    middle = {**point, "point_id": "middle@4", "boundary_turn": 4, "stratum": "middle"}
+    draw = {"points": [point], "reserves": {"middle": [middle], "early": [next_point, later]}}
+    schedule = scheduler.build_schedule([point], repeats=1, budget_tokens=20000, trigger_fraction=0.4)
+    replacement = scheduler.build_schedule([next_point], repeats=1, budget_tokens=20000, trigger_fraction=0.4)
+    monkeypatch.setattr(cpu_runner, "PILOT_POINTS", 1)
+    monkeypatch.setattr(cpu_runner, "PLANNED", len(schedule))
+    ledger = tmp_path / "ledger.jsonl"
+    pins = dict.fromkeys(scheduler.REQUIRED_PINS, "offline")
+    valid = {"pins": pins, "boundary_reached": True, "baps": 0, "correct": False, "grade_reason": "fixture"}
+    terminal = {**valid, **trajectory_metrics(boundary_terminal_events(), row()), "correct": True}
+    dispatched = []
+
+    def submit(row):
+        dispatched.append(row)
+        if row == schedule[1]:
+            return terminal
+        if row == replacement[0]:
+            raise cpu_runner.WindowEnded("offline stop")
+        return valid
+
+    with pytest.raises(cpu_runner.WindowEnded):
+        scheduler.run_schedule(schedule, submit, ledger, reserves=draw["reserves"], repeats=1,
+                               replace_boundary_terminal=True)
+    assert dispatched == [*schedule[:2], replacement[0]]
+    earlier, void = cpu_runner.read_jsonl(ledger)
+    assert earlier["result"] == valid
+    assert void["result"] == terminal and void["reason"] == BOUNDARY_TURN_TERMINAL
+    assert void["reserve"]["replacement"] == next_point["point_id"]
+
+    resumed = []
+
+    def resume(row):
+        resumed.append(row)
+        return valid
+
+    scheduler.run_schedule(schedule, resume, ledger, reserves=draw["reserves"], repeats=1,
+                           replace_boundary_terminal=True)
+    assert resumed == replacement
+    summary = summarize_ledger(tmp_path, schedule, draw)
+    assert summary["coverage_complete"] is True and summary["dropped"] == 0
+    assert summary["active_points"] == [next_point["point_id"]]
+    assert summary["void_reasons"] == {point["point_id"]: BOUNDARY_TURN_TERMINAL}
+    assert summary["terminal_voids_by_stratum_and_arm"] == {"early": {schedule[1]["arm"]: 1}}
+    earlier, void, *_ = cpu_runner.read_jsonl(tmp_path / "RUNS.jsonl")
+    assert earlier["observed_correct"] is False and void["observed_correct"] is True
+    assert all(r["correct"] is None and r["valid"] is False and r["void_point"] is True
+               and r["grade_reason"] == "fixture" for r in (earlier, void))
+
+
+@pytest.mark.parametrize(("mode", "status"), [
+    ("default", "ok"), ("malformed", "dropped"), ("exhausted", "void_point"), ("no_boundary", "void_point"),
+])
+def test_candidate_default_retry_exhaustion_and_legacy_rule(candidate_scheduler, tmp_path, mode, status):
+    scheduler = candidate_scheduler
+    point = {"point_id": "item@2", "task_id": "item", "boundary_turn": 2, "stratum": "early"}
+    trial = row()
+    native = {"http_status": 200, "stream_requested": True, "response_complete": True,
+              "response_sse_done": mode != "malformed", "response_sha256": "a" * 64}
+    pins = dict.fromkeys(scheduler.REQUIRED_PINS, "offline")
+
+    def submit(_):
+        if mode == "no_boundary":
+            return {"pins": pins, "boundary_reached": False}
+        metrics = trial_metrics({"pre_generation_budget_exhausted": False, "wire": [native]},
+                                boundary_terminal_events(), trial)
+        return {"pins": pins, **metrics}
+
+    ledger = tmp_path / "ledger.jsonl"
+    policy = {"replace_boundary_terminal": True} if mode != "default" else {}
+    summary = scheduler.run_schedule(scheduler.build_schedule([point], repeats=1)[:1], submit, ledger, **policy)
+    record, = cpu_runner.read_jsonl(ledger)
+    assert record["status"] == status
+    assert summary["rerun"] == summary["dropped"] == int(mode == "malformed")
+    assert summary["reserve_exhausted"] == int(status == "void_point")
+    assert summary["replacements"] == []
+    if mode == "exhausted":
+        assert record["reason"] == BOUNDARY_TURN_TERMINAL and record["reserve"] is None
+    if mode == "no_boundary":
+        assert record["reason"] == "boundary_not_reached" and "reserve" not in record
+
+
+def test_run_rejects_policy_different_from_prepared_inputs(tmp_path, monkeypatch):
+    monkeypatch.setenv("FILLER_ID", cpu_runner.ROW)
+    monkeypatch.setattr(cpu_runner, "HERE", tmp_path)
+    (tmp_path / "inputs.json").write_text("{}")
+    with pytest.raises(ValueError, match="policy differs"):
+        cpu_runner.run(replace_boundary_terminal=True)
+    (tmp_path / "inputs.json").write_text('{"replace_boundary_terminal": true}')
+    with pytest.raises(ValueError, match="policy differs"):
+        cpu_runner.run()
+
+
+@pytest.mark.parametrize(("opted", "alteration", "allowed"), [
+    (False, "clean", True), (False, "scheduler", False), (True, "scheduler", True),
+    (True, "extra_path", False), (True, "bad_digest", False), (True, "staged", False),
+    (True, "bad_head", False),
+])
+def test_source_verification_pins_base_and_opted_scheduler(tmp_path, monkeypatch, opted, alteration, allowed):
+    monkeypatch.setattr(cpu_runner, "SOURCE", tmp_path)
+    path = cpu_runner.SCHEDULER_PATH
+    outputs = {
+        ("rev-parse", "HEAD"): "wrong-head" if alteration == "bad_head" else cpu_runner.SOURCE_SHA,
+        ("status", "--porcelain", "--untracked-files=no"): "" if alteration == "clean" else f" M {path}",
+        ("diff", "--cached", "--name-only"): "other.py" if alteration == "staged" else "",
+        ("diff", "--name-only", "--no-renames"): f"{path}\nother.py" if alteration == "extra_path" else path,
+    }
+    monkeypatch.setattr(cpu_runner.subprocess, "check_output", lambda command, **_: outputs[tuple(command[3:])])
+    digest = "wrong-digest" if alteration == "bad_digest" else cpu_runner.TERMINAL_SCHEDULER_SHA256
+    monkeypatch.setattr(cpu_runner, "digest", lambda _: digest)
+    benchmark = ModuleType("scripts.benchmark")
+    benchmark.toc_cmp4_runner = object()
+    benchmark.own_port_proof = object()
+    monkeypatch.setitem(cpu_runner.sys.modules, "scripts.benchmark", benchmark)
+    monkeypatch.setattr(cpu_runner.sys, "path", list(cpu_runner.sys.path))
+    if allowed:
+        assert cpu_runner.verify_source(replace_boundary_terminal=opted) == (
+            benchmark.toc_cmp4_runner, benchmark.own_port_proof,
+        )
+    else:
+        with pytest.raises(ValueError, match="orchestrator"):
+            cpu_runner.verify_source(replace_boundary_terminal=opted)
 
 
 @pytest.mark.parametrize("allocated,threads,expected", [

@@ -38,9 +38,34 @@ still fail validation.
 A verified graph termination on the assigned boundary turn leaves BAPS UNKNOWN
 with reason `terminated_on_boundary_turn` because no action entered the endpoint's
 denominator. The run remains in the ledger with its accuracy grade when available,
-and contributes no eligible completion. The frozen reserve rule applies only to
-trajectories that never reach the boundary. Incomplete generation transport still
+and contributes no eligible completion. By default, the frozen reserve rule applies
+only to trajectories that never reach the boundary. Incomplete generation transport
 follows the registered retry and drop rules.
+
+### Proposed terminal-on-boundary replacement
+
+The default-off candidate requires prospective human approval under the
+[policy proposal](../../../docs/design/toc-cmp-4-boundary-terminal-proposal-20261118.md).
+Any one verified terminal-on-boundary result with zero BAPS actions voids its
+whole point. The scheduler draws the next point in the frozen same-stratum
+reserve order and schedules all its arms and repeats. The void record preserves
+the observed boundary, null BAPS, grade, native artifact references and reserve
+decision. In `RUNS.jsonl`, earlier arms and the triggering arm at that point
+retain their grades as `observed_correct` and `grade_reason` with analytical
+eligibility set to false. Failed transport continues through the retry/drop
+path. Terminal behavior can depend on the assigned arm, so this post-treatment
+selection restricts the estimand to retained points and cannot establish an
+unbiased arm effect for the frozen pool.
+
+After approval, use a fresh successor row, scratch directory and ledger. Apply
+`terminal-boundary-scheduler.patch` to the pinned orchestrator base in a
+dedicated detached scratch worktree using `git apply`. Leave the scheduler
+change unstaged. The runner checks the base commit, expects a single tracked
+file change and verifies the scheduler digest. Prepare that successor packet with
+`python3 -B runner.py prepare --replace-boundary-terminal` and add
+`--replace-boundary-terminal` to its launcher’s `runner.py run` invocation.
+The flag must match the prepared input manifest, and the receipt binds the
+opted-in policy, base commit and candidate scheduler digest across windows.
 
 - `RECEIPT.json` identifies the frozen inputs, scope and run configuration.
 - `ledger.jsonl` records raw scheduling decisions. Each window has its native server evidence and per-attempt graph, verdict and trajectory capture.
