@@ -258,14 +258,26 @@ def main(*, feature_overrides=None, configure_state=None) -> None:
             configure_state(state, config, attempt)
         deps = TaskDeps(primitives=primitives, repl=repl, config=GraphConfig(max_escalations=0))
         result = asyncio.run(run_task(state, deps))
-        if failures or not wire or any("response_sha256" not in record for record in wire) or tokenizer.fallback_count:
+        # A frozen point can exceed the experiment budget before any generation.
+        # The pilot scheduler needs the native no-boundary outcome to replace it.
+        pre_generation_exhausted = (
+            config.get("allow_pre_generation_exhaustion") is True
+            and not wire and not result.success and state.turns == 1
+            and not state.history_boundaries and state.history_context_exhausted
+            and state.artifacts.get("_context_budget_exhausted") is True
+            and tokenizer.total_calls > 0
+        )
+        if (failures or (not wire and not pre_generation_exhausted) or tokenizer.fallback_count
+                or any("response_sha256" not in record for record in wire)):
             raise ValueError(f"live transport/tokenizer pin incomplete: {failures}, wire={len(wire)}, "
                              f"tokenizer_fallbacks={tokenizer.fallback_count}")
         reason = infra_failure_reason(error=result.answer if not result.success else None)
         if reason:
             raise ValueError(f"graph infrastructure failure: {reason}")
         method = case.get("scoring_method")
-        if config["smoke"]:
+        if pre_generation_exhausted:
+            correct, grade_reason = None, "context budget exhausted before generation"
+        elif config["smoke"]:
             correct, grade_reason = None, "smoke instrument only"
         elif method == "llm_judge":
             correct, grade_reason = None, "external judge unavailable"
@@ -277,6 +289,7 @@ def main(*, feature_overrides=None, configure_state=None) -> None:
         (attempt / "GRAPH.json").write_text(json.dumps({
             "answer": result.answer, "success": result.success, "wire": wire,
             "correct": correct, "grade_reason": grade_reason, "summary_role": summary_role,
+            "pre_generation_budget_exhausted": pre_generation_exhausted,
             "role_history": [str(role) for role in state.role_history],
             "context_counter": tokenizer.get_stats(),
         }, indent=2) + "\n")
