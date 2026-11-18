@@ -1,0 +1,21 @@
+{
+  "schema": "epyc.vidya.lifecycle_native_readiness.v1",
+  "row_id": "vb-v9-8-lifecycle-native-20261118",
+  "publication": "PUBLISHED; publisher smoke PASS on CPUs116-119",
+  "native_run_complete": false,
+  "smoke_mode": "validated-real-inputs-no-model-load",
+  "smoke_pytest_exit": 0,
+  "source_manifest_sha256": "8da6b23d9803ac2317132f212344a34b9dd3659f71ad56de02c0f441518842b9",
+  "copied_sha256": {
+    "publisher-PASS.json": "9bf8a4ea804f6c03ba4abd5970702fdd88134ab9d0627172e5ec5690a6fa286a",
+    "publisher-launcher.out": "bca0b873a15fec0958811faa5ae9f05252104f40bfed56778af16ccf6653f1cb",
+    "smoke-result.json": "15ccbe9e5800203dc1f3d12fb5abbbd2505bc43335ace646eef939da767a933c",
+    "smoke-pytest.log": "1baf1d5b4d008923dd4c3c09aa3c8250619bd255368007205a7c9ad70d647d59"
+  },
+  "warnings_explained": {
+    "model.sha256": "Copy of a precomputed one-line digest receipt into evidence staging; never hashes or copies GGUF weights in grant.",
+    "env dict": "dict(os.environ, ...) preserves FILLER_ID and all inherited row custody; no environment cleaning.",
+    "smoke rc75": "Publisher PASS is readiness only; no full native result exists."
+  },
+  "scope": "Prospective v10/v10 finite diagnostic; native acceptance and actual planning-context canary remain open."
+}

@@ -129,7 +129,14 @@ class MatmulIdCaptureTest(unittest.TestCase):
                           result["projected"], result["refused"]), (370, 370, 0, 0, 1, 0))
         self.assertGreaterEqual(result["resident_samples"], 2)
         self.assertEqual(result, runner.check_capture(self.out, self.pins, smoke=False))
-        self.assertEqual(len(runner.capture.emit(result["capture"], as_of=runner.capture.now())), 1)
+        source, claim, evidence = runner.capture.emit(result["capture"], as_of=runner.capture.now())
+        self.assertEqual([frame["frame_type"] for frame in (source, claim, evidence)], [
+            "epyc.vidya/frame/source_observed/v1",
+            "epyc.vidya/frame/claim_proposed/v1",
+            "epyc.vidya/frame/evidence_supports_claim/v1",
+        ])
+        self.assertEqual(claim["assertion"]["source_id"], source["assertion"]["source_id"])
+        self.assertEqual(evidence["assertion"]["claim_id"], claim["assertion"]["claim_id"])
         with self.assertRaises(FileExistsError):
             self.execute()
         self.assert_reaped()

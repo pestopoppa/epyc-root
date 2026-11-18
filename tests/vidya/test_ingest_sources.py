@@ -431,6 +431,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "inf66-r2364",  # sealed-sweep fixture, tamper and real-data controls: test_inf66_r2364.py
         "mi210-paired-raw",  # isolated CLI, refusals and synthetic context: test_mi210_paired_raw_ingest.py
         "gpu-pool-native",  # sealed synthetic CLI and refusal controls: test_gpu_pool_native_ingest.py
+        "quality-pack-comparison",  # Native comparison capture and refusal controls: test_kernel_promotion_quality_parity.py.
+        "kernel-promotion-lifecycle",  # Sealed fixture, strict replay refusals and CLI retry: test_kernel_promotion_evidence.py.
     }
 
 

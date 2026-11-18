@@ -63,8 +63,26 @@ finalizer validates the captures, writes `comparison.json`, hashes the artifact
 inventory into `MANIFEST.json`, writes a manifest-bound `COMPLETE`, verifies
 the result and renames the directory. Verification reproduces comparisons
 from the raw artifacts and rejects changed or incomplete inventories.
-The seal binds the runner's diagnostic report. Its comparison verdict covers
-exact parity.
+For prospective Vidya ingestion, prepare the packet's `SOURCE.sha256` with the
+exact runner, evidence validator, resident planner and K35 source used by the
+packet. Use the original relative paths for the root files under the source
+snapshot and `k35-research.py` for the K35 snapshot. The prepared arm pins
+include the source commits. The runner records its source identities,
+the retained HTTP entity bytes, the request's live claim identity and whether
+a fresh comparison was requested. The finalizer verifies those records and
+rederives the resident validity summaries and disposition before sealing.
+Earlier parity-only seals can still be verified by the evidence tool.
+
+Ingest a prospective sealed directory with:
+
+```bash
+python3 scripts/vidya/cli.py ingest kernel-promotion-lifecycle --path /path/to/sealed --as-of <UTC-timestamp> --only-new
+```
+
+Completed resident captures with full token-ID comparisons project an
+observation about exact-parity mismatches for the sealed schedule and images.
+The reader declines incomplete comparisons and fresh fallbacks. Unsealed
+failure artifacts remain available in the capture directory.
 
 Scheduled opposite-arm pairs compare full request bodies, full output content
 and integer token IDs. When both lifecycles completed, the comparator also

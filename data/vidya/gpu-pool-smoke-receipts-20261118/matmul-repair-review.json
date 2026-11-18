@@ -1,0 +1,48 @@
+{
+  "failure": [
+    "Private packet lacked frames.py, an import required by the strict emission control.",
+    "With the dependency present, the control expected one frame for a tuple whose shared carrier emits three linked frames."
+  ],
+  "official_acceptance": false,
+  "packet_pins_sha256": "8a99c62287958eb147d6badd38c589463e7c2226511a48f9be4e9acc86c6a588",
+  "publication": {
+    "command": "python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/matmul-id-ready/spec.json --smoke-now",
+    "prior_job_sha256": "cfb5ea374e4c12a8b7ec4ba42f77c55e3eb22565537581bcf4a1464691d7ab99",
+    "queued_at": "2026-11-18T00:16:42Z",
+    "repaired_job_sha256": "085773dd1405f5951b2fd3d214baeaefaa9ed2b6ababf85f4043a4f8d6e57217",
+    "returncode": 0,
+    "status": "gpu-busy-smoke-queued"
+  },
+  "repair": [
+    "Copied the repository's frames.py into the private packet and content-pinned it.",
+    "The control now requires the linked source, claim and evidence frames and still requires one strict projected tuple."
+  ],
+  "row_id": "ni-gpu-pool-matmul-20261117-v2",
+  "schema": "epyc.vidya.publisher-smoke-repair-review.v1",
+  "sha256": {
+    "matmul-dependency-only-controls.log": "acfe5422740752b1f00b05151d3a2e349ce806f02128193d6cdc700ad2d0976b",
+    "matmul-failed-FAIL-1.json": "ab51e68b0307d9042a054a68935aad8b9d803917c3dc64318bfab753db0e0b87",
+    "matmul-failed-custody-controls.log": "06cb98a55e379651e1b9fa6f4e6c3a2d9668de746519637d57e25e4c821fb845",
+    "matmul-failed-launcher.out": "a6ed391cf02952255a5fc8260a1486e51fded02bff65747845d85e727be5c06b",
+    "matmul-repaired-GPU-SMOKE-QUEUED.json": "48d34628ffcf09dd0a2ce1d5f5d8f5e31ee2f8844bccc016392f6ace1deb0a28",
+    "matmul-repaired-controls.log": "3c3a315018265d3c76c25b2eadb7510d04b77acd7d9f6fe286747a9d9af1ce5e",
+    "matmul-repaired-preflight.log": "52373272e3e41cc133b9a7ffa811a2604db45d156f37769106aac3b6a8d87378",
+    "matmul-repaired-publisher.log": "ade408ca605813338b62ca268e83dc2dea9fb030d36878086dbea87908a25acc"
+  },
+  "shim_recreated_source_matches_receipt": false,
+  "source_dirty_state": "UNKNOWN",
+  "terminal_registrations": {
+    "FAIL": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/sc18-matmul-id-smoke-repaired-fail.json",
+    "PASS": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/sc18-matmul-id-smoke-20261117.json"
+  },
+  "verification": {
+    "fake_child_controls": {
+      "control_log": "matmul-repaired-controls.log",
+      "passed": 15
+    },
+    "gitnexus_impact": "unavailable in unindexed worktree",
+    "launcher_bash_syntax": "PASS",
+    "packet_pins_verified": 18,
+    "preflight": "PASS (artifact bytes, loader linkage, compiled graphs-off knob and shim)"
+  }
+}

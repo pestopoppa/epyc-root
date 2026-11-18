@@ -626,6 +626,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="V9-8 native sealed original-byte comparisons; coverage and outcomes replayed "
                 "under the bound validator source; complete comparisons are diagnostic observations",
            task="VB-V9-8-QUALITY-PACK-WIRE"),
+    Source("kernel-promotion-lifecycle", "kernel_promotion_lifecycle",
+           lambda p: importlib.import_module("adapters.kernel_promotion_lifecycle").units(p),
+           frames="frames_for_path",
+           note="Sealed prospective V9-8 diagnostics with original HTTP, source and resident validity "
+                "replay. Incomplete and failed resident comparisons yield no claims.",
+           task="VB-V9-8-LIFECYCLE-WIRE"),
     Source("ch18-merge-trial", "ch18_merge_trial",
            lambda p: importlib.import_module("adapters.ch18_merge_trial").units(p),
            note="CH-18 fresh-production merge trial: sealed epyc.ch18_merge_trial.v1 (base/upstream commits, "

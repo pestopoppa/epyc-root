@@ -30,9 +30,6 @@ REGIONS = ("q0", "q1", "q2", "q3")
 CPUS = set(range(96))
 FRESH_REQUIRED = 78
 AFFINITY_SAMPLE_INTERVAL = 0.1
-CALIBRATION_RATIO = (0.99, 1.01)
-ORDER_EFFECT_LIMIT = 0.01
-ABBA_QUARTET_SIZE = 4
 SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
 sys.path[:0] = [
     str(Path(__file__).resolve().parent),
@@ -45,6 +42,8 @@ import affinity_guard
 import kernel_promotion_evidence as evidence
 import owned
 import resident_plan
+
+same_runtime_image = evidence.same_runtime_image
 
 
 def sha256_file(path):
@@ -181,8 +180,10 @@ class Runtime:
         self.args = args
         self.interrupted_by = None
         self.request_affinity_witness = None
+        self.request_http = {}
         self.evidence = None
         self.pins = None
+        self.observation_source = None
         self.env = {"PATH": "/usr/bin:/bin", "LANG": "C"}
         for key in ("FILLER_ID", "FILLER_STOPFILE", "FILLER_GPU_FENCE",
                     "GPU_DEVICE_ORDINAL", "GGML_VK_VISIBLE_DEVICES", "HSA_ENABLE_SDMA"):
@@ -385,7 +386,9 @@ class Runtime:
 
     def request(self, server, arm, body):
         self.request_affinity_witness = None
-        timeout = self.timeout(self.args.request_timeout, verify_claim(self.args.claim_open))
+        self.request_http = {}
+        receipt = verify_claim(self.args.claim_open)
+        timeout = self.timeout(self.args.request_timeout, receipt)
         self.verify_server(server, arm)
         endpoint = "completion" if token_limit_field(body) == "n_predict" else "chat"
         active = threading.Event()
@@ -413,7 +416,10 @@ class Runtime:
         started = time.monotonic()
         try:
             active.set()
-            response = self.k35.query_chat(server.port, body, timeout_s=timeout, endpoint=endpoint)
+            if self.observation_source is None:
+                response = self.k35.query_chat(server.port, body, timeout_s=timeout, endpoint=endpoint)
+            else:
+                response = self.query_with_http_capture(server.port, endpoint, body, timeout)
         finally:
             finished = time.monotonic()
             done.set()
@@ -427,6 +433,16 @@ class Runtime:
                 "sample_offsets_s": offsets, "first_sample_affinity": first_sample if offsets else None,
                 "failure": repr(failure) if failure is not None else None,
             }
+            if self.observation_source is not None:
+                self.request_affinity_witness.update(
+                    claim_id=receipt["claim_id"],
+                    provider_pid_starttime=receipt["provider_pid_starttime"],
+                    http_status=self.request_http.get("status"),
+                    http_body_sha256={
+                        kind: hashlib.sha256(self.request_http[kind]).hexdigest()
+                        for kind in ("request", "response") if kind in self.request_http
+                    },
+                )
         if failure is not None:
             raise RequestAffinityError(failure, response) from failure
         if self.evidence is not None:
@@ -435,6 +451,28 @@ class Runtime:
             except (OSError, RuntimeError, ValueError) as exc:
                 raise CapturedResponseError(f"post-request image witness failed: {exc}", response) from exc
         return response
+
+    def query_with_http_capture(self, port, endpoint, body, timeout):
+        path = "/completion" if endpoint == "completion" else "/v1/chat/completions"
+        payload = json.dumps(body).encode("utf-8")
+        self.request_http["request"] = payload
+        request = urllib.request.Request(
+            f"http://127.0.0.1:{port}{path}", data=payload,
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                self.request_http["status"] = response.status
+                self.request_http["response"] = response.read()
+                evidence.require(response.geturl() == request.full_url, "request was redirected from the owned endpoint")
+        except urllib.error.HTTPError as exc:
+            with exc:
+                self.request_http["status"] = exc.code
+                self.request_http["response"] = exc.read()
+            raise RuntimeError(f"HTTP {exc.code}") from exc
+        result = json.loads(self.request_http["response"], object_pairs_hook=resident_plan._unique_object)
+        evidence.require(isinstance(result, dict), "HTTP response is not an object")
+        return result
 
     def stop(self, server):
         try:
@@ -466,6 +504,11 @@ def request_with_capture(runtime, server, arm, body, directory):
         runtime.k35.write_json(directory / "response.json", exc.response)
         raise
     finally:
+        http = getattr(runtime, "request_http", {})
+        for kind in ("request", "response"):
+            if kind in http:
+                with (directory / f"{kind}.http.json").open("xb") as stream:
+                    stream.write(http[kind])
         witness = getattr(runtime, "request_affinity_witness", None)
         if witness is not None:
             runtime.k35.write_json(directory / "request-affinity.json", witness)
@@ -497,8 +540,8 @@ def run_request(runtime, servers, cohort, row, directory):
     before = runtime.sample(peer)
     affinity_before = runtime.affinity(server)
     response, elapsed = request_with_capture(runtime, server, arm, body, directory)
-    after = runtime.sample(peer)
     runtime.k35.write_json(directory / "response.json", response)
+    after = runtime.sample(peer)
     affinity_after = runtime.affinity(server)
     idle_cpu_s = after["cpu_s"] - before["cpu_s"]
     capture_row(runtime, cohort, row, directory, body, response, elapsed,
@@ -538,114 +581,6 @@ def capture_host_after(runtime, output):
         runtime.k35.write_json(output / "host-after.json", evidence.host_snapshot())
 
 
-def same_runtime_image(provenance):
-    arms = (provenance or {}).get("arms", {})
-    production, candidate = (arms.get(arm, {}) for arm in resident_plan.ARMS)
-    if "binary_sha256" in production or "binary_sha256" in candidate:
-        libraries = production.get("libraries")
-        commit = production.get("commit")
-        binary_sha = production.get("binary_sha256")
-        return bool(
-            evidence.sha(binary_sha) and binary_sha == candidate.get("binary_sha256")
-            and isinstance(libraries, dict) and libraries and libraries == candidate.get("libraries")
-            and all(evidence.sha(digest) for digest in libraries.values())
-            and isinstance(commit, str) and re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", commit)
-            and commit == candidate.get("commit")
-        )
-    path, binary_sha = production.get("path"), production.get("sha256")
-    return (isinstance(path, str) and Path(path).is_absolute() and path == candidate.get("path")
-            and evidence.sha(binary_sha) and binary_sha == candidate.get("sha256"))
-
-
-def positive_finite(value):
-    return type(value) in (int, float) and 0 < value <= sys.float_info.max
-
-
-def median(values):
-    ordered = sorted(values)
-    middle = len(ordered) // 2
-    # Adding half the difference keeps the midpoint within the input range.
-    if len(ordered) % 2 == 0:
-        lower = ordered[middle - 1]
-        return lower + (ordered[middle] - lower) / 2
-    return ordered[middle]
-
-
-def median_and_mad(values):
-    center = median(values)
-    return center, median(abs(value - center) for value in values)
-
-
-def summarize_resident_validity(cohort, directory, calibration):
-    comparisons, invalid_timing_positions = [], []
-    by_arm = {arm: {} for arm in resident_plan.ARMS}
-    measured = cohort["requests"]
-    for left, right in zip(measured[::2], measured[1::2], strict=True):
-        parity_by_arm, tps_by_arm = {}, {}
-        for row in (left, right):
-            arm, position = row["arm"], row["schedule_position"]
-            request_dir = directory / f"request-{position:03}"
-            body = read_json(request_dir / "request.json")
-            response = read_json(request_dir / "response.json")
-            parity_by_arm[arm] = evidence.parity_values(body, response, body[token_limit_field(body)])
-            timings = response.get("timings")
-            tps = timings.get("predicted_per_second") if isinstance(timings, dict) else None
-            if not positive_finite(tps):
-                invalid_timing_positions.append(position)
-                tps = None
-            by_arm[arm].setdefault(position % ABBA_QUARTET_SIZE, []).append(tps)
-            tps_by_arm[arm] = tps
-        production_tps, candidate_tps = (tps_by_arm[arm] for arm in resident_plan.ARMS)
-        ratio = candidate_tps / production_tps if production_tps is not None and candidate_tps is not None else None
-        comparisons.append({
-            "pair_index": left["pair_index"],
-            "positions_by_arm": {row["arm"]: row["schedule_position"] for row in (left, right)},
-            **evidence.compare(*(parity_by_arm[arm] for arm in resident_plan.ARMS)),
-            "production_tps": production_tps, "candidate_tps": candidate_tps,
-            "candidate_over_production": ratio if positive_finite(ratio) else None,
-        })
-    outcomes = {pair[field] for pair in comparisons for field in ("content", "token_ids")}
-    parity = "different" if "different" in outcomes else "incomplete" if "incomplete" in outcomes else "exact"
-    ratios = [pair["candidate_over_production"] for pair in comparisons]
-    summary = {
-        "parity": parity, "median_by_arm": {}, "mad_by_arm": {},
-        "median_paired_ratio": None, "mad_paired_ratio": None, "arm_order_bias": {},
-        "idle_peer_pass": True, "calibration_ratio_pass": None, "order_effect_pass": None,
-        "invalid_timing_positions": invalid_timing_positions, "comparisons": comparisons,
-        "violations": [],
-    }
-    violations = summary["violations"]
-    if parity == "different":
-        violations.append("exact parity mismatch")
-    if None in ratios:
-        violations.append("invalid decode timing or ratio")
-        return summary
-    median_ratio, mad_ratio = median_and_mad(ratios)
-    summary["median_paired_ratio"], summary["mad_paired_ratio"] = median_ratio, mad_ratio
-    if calibration:
-        summary["calibration_ratio_pass"] = CALIBRATION_RATIO[0] <= median_ratio <= CALIBRATION_RATIO[1]
-        if not summary["calibration_ratio_pass"]:
-            violations.append("incumbent throughput drift")
-    summary["order_effect_pass"] = True
-    for arm, position_samples in by_arm.items():
-        first, second = sorted(position_samples)
-        earlier, later = (median(position_samples[position]) for position in (first, second))
-        low, high = sorted((earlier, later))
-        effect = (high - low) / low
-        summary["arm_order_bias"][arm] = {
-            "quartet_positions": [first, second],
-            "median_tps": [earlier, later],
-            "relative_effect": effect if effect <= sys.float_info.max else None,
-        }
-        if effect > ORDER_EFFECT_LIMIT:
-            summary["order_effect_pass"] = False
-        values = position_samples[first] + position_samples[second]
-        summary["median_by_arm"][arm], summary["mad_by_arm"][arm] = median_and_mad(values)
-    if not summary["order_effect_pass"]:
-        violations.append("ABBA schedule-position bias")
-    return summary
-
-
 def execute_fresh_plan(plan, output, runtime, *, provenance=None):
     """Capture the unchanged schedule with one freshly started server per measured row."""
     resident_plan.validate_plan(plan)
@@ -657,6 +592,8 @@ def execute_fresh_plan(plan, output, runtime, *, provenance=None):
         "lifecycle_mode": "fresh_server", "schedule_sha256": plan["schedule_sha256"],
         "attempted": False, "complete": False, "cleanup_proved": True, "cohorts": [], "provenance": provenance,
     }
+    if getattr(runtime, "observation_source", None) is not None:
+        report["observation_source"] = runtime.observation_source
     try:
         runtime.preflight(output)
         runtime.verify_fresh_ready()
@@ -709,12 +646,11 @@ def execute_plan(plan, output, runtime, *, provenance=None):
         "schema": "epyc.kernel_promotion_resident_capture.v1", "status": "observation_only",
         "lifecycle_mode": "paired_resident", "schedule_sha256": plan["schedule_sha256"],
         "complete": False, "cohorts": [], "provenance": provenance,
-        "resident_validity": {
-            "status": "incomplete", "same_runtime_calibration": calibration,
-            "calibration_ratio_bounds": list(CALIBRATION_RATIO), "order_effect_limit": ORDER_EFFECT_LIMIT,
-            "order_effect_estimator": "per-arm quartet-position medians, abs(earlier-later)/min(earlier,later)",
-        },
+        "resident_validity": evidence.validity_header(calibration, status="incomplete"),
     }
+    if getattr(runtime, "observation_source", None) is not None:
+        report["observation_source"] = runtime.observation_source
+        report["fresh_comparison_requested"] = runtime.args.compare_fresh
     clean = True
     preflight_passed = False
     try:
@@ -740,7 +676,7 @@ def execute_plan(plan, output, runtime, *, provenance=None):
                     result = stop_server(runtime, server)
                     info["cleanup"][arm] = result
                     clean &= cleanup_proved(result)
-            validity = summarize_resident_validity(cohort, directory, calibration)
+            validity = evidence.summarize_resident_validity(cohort, directory, calibration)
             info["validity"] = validity
             if validity["violations"]:
                 report["resident_validity"]["status"] = "failed"
@@ -779,9 +715,9 @@ def execute_plan(plan, output, runtime, *, provenance=None):
     return FRESH_REQUIRED
 
 
-def validate_evidence_inputs(plan, args, runtime):
+def validate_evidence_inputs(plan, plan_sha256, args, runtime):
     pins = read_json(args.evidence_pins)
-    evidence.require(pins["plan_sha256"] == sha256_file(args.plan)
+    evidence.require(pins["plan_sha256"] == plan_sha256
                      and pins["k35_sha256"] == args.k35_sha256 and pins["kv_mode"] == args.kv_mode
                      and evidence.sha(pins["source_manifest_sha256"]), "evidence inputs differ from run pins")
     expected_models = set()
@@ -797,6 +733,7 @@ def validate_evidence_inputs(plan, args, runtime):
         evidence.require(pins["arms"][arm]["binary_sha256"] == getattr(args, f"{arm}_sha256"),
                          f"{arm} executable pins differ")
     runtime.evidence, runtime.pins = evidence, pins
+    runtime.observation_source = evidence.observation_source(args.k35_sha256)
 
 
 def validate_inputs(plan, args, runtime):
@@ -851,11 +788,12 @@ def main(argv=None):
     if args.compare_fresh and (args.fresh_only or args.evidence_pins is None):
         parser.error("--compare-fresh requires evidence pins and the paired resident lifecycle")
     try:
-        plan = read_json(args.plan)
+        plan_bytes = args.plan.read_bytes()
+        plan = json.loads(plan_bytes, object_pairs_hook=resident_plan._unique_object)
         runtime = Runtime(load_k35(args.k35_sha256), args)
         validate_inputs(plan, args, runtime)
         if args.evidence_pins is not None:
-            validate_evidence_inputs(plan, args, runtime)
+            validate_evidence_inputs(plan, hashlib.sha256(plan_bytes).hexdigest(), args, runtime)
         if not args.apply:
             print(f"validated observation-only plan {plan['schedule_sha256']}")
             return 0

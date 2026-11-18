@@ -6,9 +6,11 @@ shape inventory is not relabeled to satisfy the broad pack contract.
 
 Publisher smoke passed on CPUs 140–143 with one genuine Qwen3-0.6B no-spec
 completion from v10. `smoke-native/` retains original request/response bytes,
-server identity, grant and cleanup. This is a separate smoke control; the full
-Qwen3.6-35B MTP pair still awaits its granted run. No direct inference was run
-outside publisher smoke.
+server identity, grant and cleanup. This is a separate smoke control. The full Qwen3.6-35B MTP pair subsequently
+completed through its granted row (rc=0), with four requests per arm and
+verified captured-PID cleanup. [Full native bytes and verdict](full-capture/README.md)
+preserve the JSON mismatch and the three matching responses. No inference ran
+outside publisher smoke or the granted row.
 
 `receipt.json` and `smoke-PASS.json` preserve scope and custody. Full broad pack
 coverage, strict comparison ingestion and planning-context acceptance remain

@@ -371,12 +371,15 @@ def test_command_preserves_explicit_narrow_k35_placement():
         runtime.command(plan()["cohorts"][0], "production", 19100)
 
 
-def test_post_request_image_failure_preserves_response(tmp_path, monkeypatch):
+@pytest.mark.parametrize("prospective", [False, True])
+def test_post_request_image_failure_preserves_response(tmp_path, monkeypatch, prospective):
     args = SimpleNamespace(request_timeout=1, claim_open=tmp_path / "claim")
     response = {"content": "raw response", "tokens": [1]}
     k35 = SimpleNamespace(write_json=write_json, query_chat=lambda *args, **kwargs: response)
     runtime = runner.Runtime(k35, args)
     runtime.evidence = object()
+    if prospective:
+        runtime.observation_source = {}
 
     def verify_server(*_):
         if checks:
@@ -384,7 +387,8 @@ def test_post_request_image_failure_preserves_response(tmp_path, monkeypatch):
         checks.append(True)
 
     checks = []
-    monkeypatch.setattr(runner, "verify_claim", lambda path: {})
+    claim = {"claim_id": "fixture", "provider_pid_starttime": 1}
+    monkeypatch.setattr(runner, "verify_claim", lambda path: claim)
     monkeypatch.setattr(runner, "AFFINITY_SAMPLE_INTERVAL", 0.001)
     monkeypatch.setattr(runtime, "timeout", lambda *args: 1)
     monkeypatch.setattr(runtime, "verify_server", verify_server)
@@ -392,7 +396,7 @@ def test_post_request_image_failure_preserves_response(tmp_path, monkeypatch):
 
     def affinity(_):
         sampled.set()
-        return {10: [0]}
+        return {"10": [0]}
 
     def query(*args, **kwargs):
         assert sampled.wait(1)
@@ -401,7 +405,39 @@ def test_post_request_image_failure_preserves_response(tmp_path, monkeypatch):
 
     monkeypatch.setattr(runtime, "affinity", affinity)
     k35.query_chat = query
+    raw = b'{ "content": "raw response", "tokens": [1] }\n'
+    if prospective:
+        class Reply:
+            status = 200
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                pass
+
+            def read(self):
+                query()
+                return raw
+
+            def geturl(self):
+                return "http://127.0.0.1:19100/completion"
+
+        def urlopen(request, *, timeout):
+            assert timeout == 1 and request.full_url == Reply().geturl()
+            assert json.loads(request.data) == {"n_predict": 1}
+            return Reply()
+
+        monkeypatch.setattr(runner.urllib.request, "urlopen", urlopen)
     with pytest.raises(runner.CapturedResponseError, match="post-request image witness failed"):
         runner.request_with_capture(runtime, SimpleNamespace(port=19100), "production", {"n_predict": 1}, tmp_path)
     assert runner.read_json(tmp_path / "response.json") == response
     assert not (tmp_path / "row.json").exists()
+    if prospective:
+        assert (tmp_path / "response.http.json").read_bytes() == raw
+        assert (tmp_path / "request.http.json").read_bytes() == b'{"n_predict": 1}'
+        witness = runner.read_json(tmp_path / "request-affinity.json")
+        assert witness["claim_id"] == claim["claim_id"]
+        assert witness["http_status"] == 200
+        assert witness["http_body_sha256"]["response"] == runner.hashlib.sha256(raw).hexdigest()
+        assert witness["sample_offsets_s"]

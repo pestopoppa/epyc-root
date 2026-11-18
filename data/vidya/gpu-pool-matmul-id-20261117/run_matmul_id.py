@@ -44,6 +44,7 @@ ENV = {
 }
 PINNED = {BIN, *DSOS, SHIM, SNAPSHOT, LINKAGE, Path(capture.__file__),
           HERE / "scripts/vidya/claim_tuple.py", HERE / "scripts/vidya/canonical.py",
+          HERE / "scripts/vidya/frames.py",
           HERE / "launch.sh", HERE / "spec.json", HERE / "test_run_matmul_id.py",
           HERE / "controls/MUL_MAT_ID.log", HERE / "controls/results.json", Path(__file__).resolve()}
 
