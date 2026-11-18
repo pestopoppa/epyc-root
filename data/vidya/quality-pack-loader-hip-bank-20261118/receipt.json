@@ -1,0 +1,147 @@
+{
+  "admission_task": "VB-V9-8-QUALITY-PACK-LOADER-HIP-BANK",
+  "archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-loader-hip-bank-20261118",
+  "archive_files_sha256": {
+    "README.md": "6f51eef5657cc961ec53e3c52792f362273f25b7747de4c879ed0a8e1cbf03ad",
+    "SOURCE.sha256": "8ba186faf5fe6ab6034bb569693dd80c1469c394931f14483e56a474cb5d8bb4",
+    "base-plan.json.original-bytes.json": "23422b7b13888d4f7e19bd9f59e62c06a8ef9662aded767a24933c54b13c79dd",
+    "capture.py": "4e0174491d2a6ee06d060e7a04e40142622c28acf3b83eb2e926051f934a00db",
+    "capture_base.py": "5df23ca1649372d91954776510e5ae572aa477c34be96d3e6417c014ad692a43",
+    "chat-template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+    "complete.py": "c47e0b5f09a7ef02b448fe03b7442b497ecbd1128c5e309f77f9d67dca78fe96",
+    "cpu-diagnostic-result.original.json": "dee8f89c8d199e9232441251b48f714d2ea738992cb435ba2ae5bb2591bbf7a5",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "hip-plan.original.json.original-bytes.json": "b07e136a644b294e8d0ebd77c94cf64eb2ca588438bd9cc181c50280e07afbb5",
+    "hip-scoring-from-prospective-metadata.json": "7089409366c9a50bd8dbe962c2cc7a641abe93d33ac412e52e36d02c66200ef8",
+    "loader-reshape-witness.json": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3",
+    "loader_log.py": "cfb91b3ba94e4d8c825a7a67ff06d5fee23731ab24be9e9e9c1cdb4f49fdd6ef",
+    "make_plan.py": "6f8bfb12dfaa45f65aca70f8d91fd775740e9d8010a1620d74e6fd19256a7f21",
+    "model-hash-receipt.json": "f07d999ec84134b63bc4d836a9ed038f7f046534589834c4dd5ef3e386d89163",
+    "offline-validation.txt": "643a8440d89c5107fa15c4906a55c241d95b16225bdf65966d28f479d69a067c",
+    "offline_controls.py": "701766b0c078dbefadb906a401aa85bc054c8b3764ddc74eaf47b0148fe3896c",
+    "plan.json.original-bytes.json": "ba5f0a5a95d3fd0968887bc1ff1ef131faebe691ff447b0899626a9d9b467f50",
+    "quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d",
+    "requests/architect-general-hip-code.json": "b173e985d3d1b30ffcbbb1644a6a4162c7636b3e351026857c0d84232a6d01a7",
+    "requests/architect-general-hip-loader-reshape-json.json": "af6e3149687c5e9722159dfec97076c657c43e6b2c85842077540307a623401a",
+    "requests/architect-general-hip-prose.json": "1c5a50da19c729a13696178ab702104faa78778dd11dc9a388faf5a1f6cb1616",
+    "requests/architect-general-hip-reasoning.json": "f44c1ab1d97aa0a6bf7d1157aa31b562887e88d6550084e890efb2e0dba2e997",
+    "requests/native-smoke.json": "1a05b2db197c7c179d5fae6e1b53fdba31987d8ba7d57f07830b88389f927e99",
+    "row-launch.sh": "438910fe3085c6a52930e5ea70f1ed815939b4ccc332232e7485a429aa3bcf43",
+    "row.spec.json": "2a9e01b2a1327817f2b32cd70356bb8b9705e01208608a21d11cb7b4b67686a1",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "smoke_predicate.py": "e15f2b5a0a761e7c641059c2578cf7d0c565ec3d5fa842d3708b4d47d27ecf4b"
+  },
+  "candidate_collected": false,
+  "coverage": "Four strict v10 production captures on one new traced architect-general HIP recipe. Candidate fixture capture is fresh and post-seal.",
+  "decision_rule": "Admit four v10 architect-general HIP production items after all replies pass their pinned semantics, clean stops and token checks and each proves two in-window same-PID MI210 samples. The unique mapped serving phase must prove both pinned loader fixture tensor load lines. Preserve source, header, model, grant, raw request and response, process and mapped-library evidence and verified cleanup. Stop after four captures and cleanup or at STOP/deadline or first custody, transport or fixture failure. Publisher smoke runs one genuine v10 HIP small-model completion on the MI210 and four CPUs. Candidate capture waits for the complete bank seal.",
+  "extent": {
+    "estimate_s": 980,
+    "max_window_s": 1500,
+    "min_window_s": 1200,
+    "ram_gib": 112,
+    "regions": "mi210_0,184-191"
+  },
+  "gitnexus": "worktree not indexed; upstream impact unavailable. Changes limited to an independent new packet.",
+  "ingest_bank": "already owner-admitted in 9b87d8507",
+  "inspected_existing_hip_smokes": {
+    "architect_general": "GPU-SMOKE-QUEUED",
+    "worker_vision": "GPU-SMOKE-QUEUED"
+  },
+  "native_admission_run_by_preparer": false,
+  "native_smoke_run_by_preparer": false,
+  "original_byte_envelopes": {
+    "base-plan.json": {
+      "archive": "base-plan.json.original-bytes.json",
+      "sha256": "21d6f8f792480208a83dc48694592ee1910600737ad6793e986ed376bd711324"
+    },
+    "hip-plan.original.json": {
+      "archive": "hip-plan.original.json.original-bytes.json",
+      "sha256": "51ca3cdd63fea358a53449151f1174751ac857431663f7745791cd0f317b0e23"
+    },
+    "plan.json": {
+      "archive": "plan.json.original-bytes.json",
+      "sha256": "aad53d6f5d0761bde11be33a9a1b0fda8fc79d399694b95814f2463d05c71d71"
+    }
+  },
+  "pack_shape": {
+    "endpoint": "/v1/chat/completions",
+    "endpoint_semantics_sha256": "cd2babbb7c4d73675e93d3e8f12db42e15482d6ab2d2180e9a86fd888baee4e0",
+    "generation_path_sha256": "83184555d4095e0a73354406007fdb6d8cb230d00c1753da28385a3aef7a3f98",
+    "id": "architect-general-hip",
+    "model_sha256": "5067ad3b22001a21c132959615780a7cff735364c0b548baf44915e9b937a891",
+    "profile": "architect-general-hip",
+    "prompt_template_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+    "question_pool_sha256": "5754fc157dec19df4b7fe70bf833c26b321723b6c963b7599a19b75b1c0f7c26",
+    "recipe_sha256": "bbd27da80a52f2e41d89c3c2b88156d60dc4c875c7df42350391efeb1a873235",
+    "sampling_sha256": "8508fccbc22db90145f2bf218ded287dab062010b7ba729cabcbbb6553224cc3",
+    "scorer_sha256": "80f7bcc0d088dc6b2ae937242a8d2f746e93b42076d0a4f214c1c1744960fdaa"
+  },
+  "prep_task": "VB-V9-8-QUALITY-PACK-LOADER-HIP-BANK-PREP",
+  "production_runtime": {
+    "binary": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "kernel_tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d"
+  },
+  "request_checks": {
+    "architect-general-hip-code": {
+      "expected_finish": "stop",
+      "fixture": null,
+      "request_sha256": "b173e985d3d1b30ffcbbb1644a6a4162c7636b3e351026857c0d84232a6d01a7",
+      "validator": {
+        "expected": "sorted(set(codes))",
+        "id": "contains-text.v1"
+      }
+    },
+    "architect-general-hip-loader-reshape-json": {
+      "expected_finish": "stop",
+      "fixture": "loader-reshape",
+      "request_sha256": "af6e3149687c5e9722159dfec97076c657c43e6b2c85842077540307a623401a",
+      "validator": {
+        "expected": {
+          "enabled": true,
+          "replicas": 3,
+          "route": "amber"
+        },
+        "id": "json-object-subset.v1"
+      }
+    },
+    "architect-general-hip-prose": {
+      "expected_finish": "stop",
+      "fixture": null,
+      "request_sha256": "1c5a50da19c729a13696178ab702104faa78778dd11dc9a388faf5a1f6cb1616",
+      "validator": {
+        "expected": "Friday",
+        "id": "contains-text.v1"
+      }
+    },
+    "architect-general-hip-reasoning": {
+      "expected_finish": "stop",
+      "fixture": null,
+      "request_sha256": "f44c1ab1d97aa0a6bf7d1157aa31b562887e88d6550084e890efb2e0dba2e997",
+      "validator": {
+        "expected": "Gate B",
+        "id": "contains-text.v1"
+      }
+    }
+  },
+  "request_pool_sha256": "7f1449c04e76fd36e3bf0ec4d832608e56c3c1237c4c4b4b37d4afea73e50cef",
+  "row_id": "handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118",
+  "row_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118/row.spec.json",
+  "row_spec_sha256": "2a9e01b2a1327817f2b32cd70356bb8b9705e01208608a21d11cb7b4b67686a1",
+  "schema": "epyc.vidya.next_quality_packet.v1",
+  "source_manifest_sha256": "8ba186faf5fe6ab6034bb569693dd80c1469c394931f14483e56a474cb5d8bb4",
+  "source_receipts_sha256": {
+    "cpu-diagnostic-result.original.json": "dee8f89c8d199e9232441251b48f714d2ea738992cb435ba2ae5bb2591bbf7a5",
+    "hip-plan.original.json": "51ca3cdd63fea358a53449151f1174751ac857431663f7745791cd0f317b0e23",
+    "hip-scoring-from-prospective-metadata.json": "7089409366c9a50bd8dbe962c2cc7a641abe93d33ac412e52e36d02c66200ef8",
+    "loader-reshape-witness.json": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3"
+  },
+  "status": "ready_for_owner_publication_after_handoff_task_binding",
+  "validation": {
+    "bash_syntax": "passed",
+    "existing_comparator_suite": "51 passed",
+    "runtime_model_stat_preflight": "passed",
+    "source_seal": "verified",
+    "synthetic_admission_controls": "13 passed"
+  }
+}

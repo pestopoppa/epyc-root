@@ -1,0 +1,1 @@
+{"cache_prompt":false,"chat_template_kwargs":{"enable_thinking":false},"max_tokens":48,"messages":[{"content":"Return only this JSON object, without a code fence: {\"loader_probe\":\"amber\",\"count\":2}","role":"user"}],"model":"qwen4exp-cpu-loader-diagnostic","return_tokens":true,"seed":35,"stream":false,"temperature":0,"verbose":true}

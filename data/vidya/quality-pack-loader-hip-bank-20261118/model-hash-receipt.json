@@ -1,0 +1,481 @@
+{
+  "builds": {
+    "cpu": {
+      "build_identity": {
+        "error": null,
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/BUILD-IDENTITY.json",
+        "prepared_stat": {
+          "ctime_ns": 1793733461322871384,
+          "device": 2431,
+          "inode": 109321677,
+          "mtime_ns": 1793733461322871384,
+          "size_bytes": 7720
+        },
+        "sha256": "6a9aae4aa849c4bb9abd710819b8495fa003a39872eb685e239c4a4f60b5e10c"
+      },
+      "build_manifest": {
+        "error": null,
+        "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/SHA256SUMS",
+        "prepared_stat": {
+          "ctime_ns": 1793733478338328779,
+          "device": 2431,
+          "inode": 109321997,
+          "mtime_ns": 1793733478338328779,
+          "size_bytes": 1787
+        },
+        "sha256": "3417dec5da935f9519b1c146f658356ec1d30504093024258d589c6234f473f2"
+      },
+      "directory": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin",
+      "files": [
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733356150789649,
+            "device": 2431,
+            "inode": 109599165,
+            "mtime_ns": 1793733356150789649,
+            "size_bytes": 940008
+          },
+          "sha256": "5b2f33daa1dc7ec57300df442450a191069a61d4726a8977f53bceb55bafdba6"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733366876895334,
+            "device": 2431,
+            "inode": 109599222,
+            "mtime_ns": 1793733366876895334,
+            "size_bytes": 3600320
+          },
+          "sha256": "27c7e27656fb413028c8c9ba16da44267ecaf20dc7dfdcc177c0e90bced25c3f"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733367587290572,
+            "device": 2431,
+            "inode": 109599230,
+            "mtime_ns": 1793733367587290572,
+            "size_bytes": 59648
+          },
+          "sha256": "838262cb0bbd3f192ac7a4d036e567fce2b7bcbacbc7c322cfa9cd46ae8d951a"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-bench-impl.so",
+          "prepared_stat": {
+            "ctime_ns": 1793733411891091313,
+            "device": 2431,
+            "inode": 109599833,
+            "mtime_ns": 1793733411891081673,
+            "size_bytes": 511816
+          },
+          "sha256": "1dd1fdfd756d38afdbf2b1012e44f30a25bbbb1c25c03a396a2d9d05fbffe8ca"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+          "prepared_stat": {
+            "ctime_ns": 1793733386613089321,
+            "device": 2431,
+            "inode": 109599774,
+            "mtime_ns": 1793733386613089321,
+            "size_bytes": 6105184
+          },
+          "sha256": "8d84cd48a40badbc2bb2bda28993946e87b696ae10d3c35d4f60da2a9d2f59a3"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-quantize-impl.so",
+          "prepared_stat": {
+            "ctime_ns": 1793733413104974362,
+            "device": 2431,
+            "inode": 109599860,
+            "mtime_ns": 1793733413104966272,
+            "size_bytes": 84048
+          },
+          "sha256": "3e5bdd436f44febe63f0a83e3253f08c8da706951bb8f8e0805780f1673a1b7f"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-server-impl.so",
+          "prepared_stat": {
+            "ctime_ns": 1793733405326125259,
+            "device": 2431,
+            "inode": 109599803,
+            "mtime_ns": 1793733405325272690,
+            "size_bytes": 7232920
+          },
+          "sha256": "7b7c17862475b2cfa059cc0ea7479898f602fd1c27354ec7d9fae104a316a3da"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+          "prepared_stat": {
+            "ctime_ns": 1793733375037975624,
+            "device": 2431,
+            "inode": 109599614,
+            "mtime_ns": 1793733375037975624,
+            "size_bytes": 4704240
+          },
+          "sha256": "ec45054f0f729d84c776a125d7fdd75457f66256f555c28851fa7ad318319081"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+          "prepared_stat": {
+            "ctime_ns": 1793733383712060845,
+            "device": 2431,
+            "inode": 109599764,
+            "mtime_ns": 1793733383712060845,
+            "size_bytes": 1469136
+          },
+          "sha256": "8f19c153fa7785bb78a6b037016b014a467cbd2c8d55704bfe1750cc5f7a4f4f"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/llama-server",
+          "prepared_stat": {
+            "ctime_ns": 1793733405398350398,
+            "device": 2431,
+            "inode": 109599808,
+            "mtime_ns": 1793733405398340768,
+            "size_bytes": 17984
+          },
+          "sha256": "9b222ba09185269a7c53046c4f53cb7cbe2cda8b99607418a56d387e2cc1204c"
+        }
+      ],
+      "source_commit": "181483cfc8154be00c6369eb4ee0d7d931c9faf8",
+      "targets": {
+        "libggml-base.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+        "libggml-base.so.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+        "libggml-base.so.0.16.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+        "libggml-cpu.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+        "libggml-cpu.so.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+        "libggml-cpu.so.0.16.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+        "libggml.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+        "libggml.so.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+        "libggml.so.0.16.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+        "libllama-bench-impl.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-bench-impl.so",
+        "libllama-common.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+        "libllama-common.so.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+        "libllama-common.so.0.0.10420": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+        "libllama-quantize-impl.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-quantize-impl.so",
+        "libllama-server-impl.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama-server-impl.so",
+        "libllama.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+        "libllama.so.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+        "libllama.so.0.0.10420": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+        "libmtmd.so": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+        "libmtmd.so.0": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+        "libmtmd.so.0.0.10420": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+        "llama-server": "/mnt/raid0/llm/kernels/builds/cpu-20261103-181483cfc-lbt/bin/llama-server"
+      }
+    },
+    "gpu_cpu": {
+      "build_identity": {
+        "error": null,
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/BUILD-IDENTITY.json",
+        "prepared_stat": {
+          "ctime_ns": 1793733478643885670,
+          "device": 2431,
+          "inode": 109322055,
+          "mtime_ns": 1793733478643885670,
+          "size_bytes": 8379
+        },
+        "sha256": "98a8b609591b6e2b01023f8fc60e18aa771453cf5ee23e6a9ac39232392294c7"
+      },
+      "build_manifest": {
+        "error": null,
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/SHA256SUMS",
+        "prepared_stat": {
+          "ctime_ns": 1793733612855329632,
+          "device": 2431,
+          "inode": 109321721,
+          "mtime_ns": 1793733612855329632,
+          "size_bytes": 1879
+        },
+        "sha256": "c102d7f3ea197c2de105e1cc5b0f85b102b25ebd68a0563d1616a982bc7e423c"
+      },
+      "directory": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin",
+      "files": [
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733484174039886,
+            "device": 2431,
+            "inode": 109745248,
+            "mtime_ns": 1793733484174039886,
+            "size_bytes": 940008
+          },
+          "sha256": "4b6e2416c315b59ddea2653abc6acf44828ccfb48b535ab527a86e8426417aad"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733497139384008,
+            "device": 2431,
+            "inode": 109745386,
+            "mtime_ns": 1793733497139384008,
+            "size_bytes": 3600320
+          },
+          "sha256": "e2fb59ee4d34fd5cb726f89f4039cdc7c28dd01d7b9e9c217b01db086d6d605e"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-hip.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733532822509218,
+            "device": 2431,
+            "inode": 109761722,
+            "mtime_ns": 1793733532822509218,
+            "size_bytes": 71348816
+          },
+          "sha256": "0041fa8150f6e71ca436f58090af2bbcfb9fd174b6990ec4cddff3d6bc31c4fd"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+          "prepared_stat": {
+            "ctime_ns": 1793733533522515951,
+            "device": 2431,
+            "inode": 109761729,
+            "mtime_ns": 1793733533522515951,
+            "size_bytes": 59440
+          },
+          "sha256": "bb7e5a7a33787ddce1133d414d0f7d86f06dfb512d7f38a5e2e43b4aabe98b3a"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-bench-impl.so",
+          "prepared_stat": {
+            "ctime_ns": 1793733578186050858,
+            "device": 2431,
+            "inode": 109745492,
+            "mtime_ns": 1793733578186041547,
+            "size_bytes": 511816
+          },
+          "sha256": "dd6d3f4dd6a83519e97458ad8c64d1f18e4aa075c56b0a1318e5c7f6737348bb"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+          "prepared_stat": {
+            "ctime_ns": 1793733552687108473,
+            "device": 2431,
+            "inode": 109762265,
+            "mtime_ns": 1793733552687108473,
+            "size_bytes": 6105184
+          },
+          "sha256": "4a69f765866bb4e5ba476ed05b4bc9a0e61ca606068482cddb38c2b65478570c"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-quantize-impl.so",
+          "prepared_stat": {
+            "ctime_ns": 1793733579483841745,
+            "device": 2431,
+            "inode": 109745500,
+            "mtime_ns": 1793733579483833655,
+            "size_bytes": 84048
+          },
+          "sha256": "b06695c918c670b33176e9e70b0139761baeb8a157fac1d7c3f9f29f145f7e2a"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-server-impl.so",
+          "prepared_stat": {
+            "ctime_ns": 1793733571671612598,
+            "device": 2431,
+            "inode": 109745449,
+            "mtime_ns": 1793733571670882029,
+            "size_bytes": 7232920
+          },
+          "sha256": "1d49d9186977b31b0351e1faee131569cb63605bd1d61e540efdd4a3ac9ecb38"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+          "prepared_stat": {
+            "ctime_ns": 1793733541147589252,
+            "device": 2431,
+            "inode": 109762107,
+            "mtime_ns": 1793733541147589252,
+            "size_bytes": 4704240
+          },
+          "sha256": "d4975083d1ae78c70a8c18017e9149a94a6abe917035ac72fe30b8e0757ee01e"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+          "prepared_stat": {
+            "ctime_ns": 1793733549880593857,
+            "device": 2431,
+            "inode": 109762254,
+            "mtime_ns": 1793733549880593857,
+            "size_bytes": 1469136
+          },
+          "sha256": "8312d178cd5c90875a0d61694c510bb827634ae39d1ebccb1a0360d29f78e3a6"
+        },
+        {
+          "error": null,
+          "path": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/llama-server",
+          "prepared_stat": {
+            "ctime_ns": 1793733571750467672,
+            "device": 2431,
+            "inode": 109745453,
+            "mtime_ns": 1793733571750460142,
+            "size_bytes": 17984
+          },
+          "sha256": "6933f9a8095b384895750b8175e915ec38d2a66f4835228c709e5eb81f69a2ba"
+        }
+      ],
+      "source_commit": "181483cfc8154be00c6369eb4ee0d7d931c9faf8",
+      "targets": {
+        "libggml-base.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+        "libggml-base.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+        "libggml-base.so.0.16.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-base.so.0.16.0",
+        "libggml-cpu.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+        "libggml-cpu.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+        "libggml-cpu.so.0.16.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-cpu.so.0.16.0",
+        "libggml-hip.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-hip.so.0.16.0",
+        "libggml-hip.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-hip.so.0.16.0",
+        "libggml-hip.so.0.16.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml-hip.so.0.16.0",
+        "libggml.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+        "libggml.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+        "libggml.so.0.16.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libggml.so.0.16.0",
+        "libllama-bench-impl.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-bench-impl.so",
+        "libllama-common.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+        "libllama-common.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+        "libllama-common.so.0.0.10420": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-common.so.0.0.10420",
+        "libllama-quantize-impl.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-quantize-impl.so",
+        "libllama-server-impl.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama-server-impl.so",
+        "libllama.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+        "libllama.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+        "libllama.so.0.0.10420": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libllama.so.0.0.10420",
+        "libmtmd.so": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+        "libmtmd.so.0": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+        "libmtmd.so.0.0.10420": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/libmtmd.so.0.0.10420",
+        "llama-server": "/mnt/raid0/llm/kernels/builds/gpu-20261103-181483cfc-lbt/bin/llama-server"
+      }
+    }
+  },
+  "changed_lane_paths": [
+    "scripts/vidya/producers/mi210_npd1_native_deploy.py",
+    "tests/vidya/test_mi210_npd1_native_deploy.py"
+  ],
+  "controls": [
+    "32 focused synthetic controls passed",
+    "Pinned original and prospective patch digests verified; transformed job compiles",
+    "Three target GGUF shards and shared MTP head hashed before grant, with known sidecar digests checked",
+    "Both experimental build manifests and shared source commit verified against executable and library contents",
+    "Isolated Python -BI staged helper precondition verifies all sealed inputs and prepared external identities",
+    "Rowflow lint, handoff reference, shape policy, claim width, readiness preflight, and launcher syntax checked read-only",
+    "CPU dry-run four-core placement and full quiet-host official placement distinct; official payload restricted to CPU0\u201395 inside grant lock mask",
+    "Valid raw measurement fixture yields four Judged/Located lower-better TPOT projections",
+    "Wrong GPU quiet lock, CPU width, mapped store DSO, stale smoke, smoke-as-measurement and modified archived grant refused",
+    "Deployed STOP branch seals a stopped terminal; early runtime refusal retains attempt custody without a measurement result"
+  ],
+  "fingerprint_representation": "Named device/inode/size_bytes/mtime_ns/ctime_ns fields mirror the ordered runtime stat fingerprint; sealed runtime manifest unchanged.",
+  "gitnexus": "Status and upstream impact attempted. No repository index available. New module has no existing callers; resolved launcher and helper imports directly.",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-MI210-PAIRED-DIAG-WIRE",
+  "immediate_repair": "Owner's first publication refusal for timing=true fixed to timing=bench and stage resealed.",
+  "input_digests": {
+    "job.py": "780280de793f6a05122b8223d5fb976696b24d9d12218b57a9a337b676a490a4",
+    "mi210_native_deploy.py": "95ffaf24ecc38a7ad2b6351b1f14ad8234bf8a3728ea0940fd401be7c6f15cf4",
+    "mi210_npd1_native_deploy.py": "6881a92ead76174f3ba249986ed5e2916f360a32d409e89b4c4df58801bc780b",
+    "scripts/vidya/adapters/_native_sidecar.py": "405e9fe8fa536029886580070eb6c8c6838e1eab8309cc33c94956ee260a23d2",
+    "scripts/vidya/adapters/mi210_paired_raw.py": "234b7a4ba221699a46fa43fa31967b27696c2e7a17afae5725be95d47c89b6dc",
+    "scripts/vidya/canonical.py": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+    "scripts/vidya/claim_tuple.py": "bb69eac8a5c1cc9ad3e743d3c4817d84339095fef9c1c31a37543a8b550fb4e6",
+    "scripts/vidya/lattice.py": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+    "scripts/vidya/producers/mi210_native_run.py": "bb6dd702ba9ea69a90d749670335cca0f14067b6b70e6357f5a6eff9d36f8a60",
+    "scripts/vidya/producers/mi210_paired_capture.py": "55787a1ce44cb311bda6a7e6581a489eb8f20df22845cb8848be37ade1a70b56"
+  },
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/npd1/launch.sh",
+  "launcher_sha256": "83a477a2a398e27cbc70507028d0a4844398e7741f3b23e014ba180b3a16eb7d",
+  "model_prepared_identities": [
+    {
+      "error": null,
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "prepared_stat": {
+        "ctime_ns": 1787946258059149197,
+        "device": 2431,
+        "inode": 96209037,
+        "mtime_ns": 1787946258053345946,
+        "size_bytes": 10946624
+      },
+      "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4"
+    },
+    {
+      "error": null,
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "prepared_stat": {
+        "ctime_ns": 1787971384778473886,
+        "device": 2431,
+        "inode": 96209038,
+        "mtime_ns": 1787971384722588539,
+        "size_bytes": 49835229856
+      },
+      "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7"
+    },
+    {
+      "error": null,
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
+      "prepared_stat": {
+        "ctime_ns": 1787972823102165070,
+        "device": 2431,
+        "inode": 96209043,
+        "mtime_ns": 1787972823021404632,
+        "size_bytes": 43836407744
+      },
+      "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
+    },
+    {
+      "error": null,
+      "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
+      "prepared_stat": {
+        "ctime_ns": 1788344735091117079,
+        "device": 2431,
+        "inode": 96212066,
+        "mtime_ns": 1788344735087117043,
+        "size_bytes": 2786568256
+      },
+      "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6"
+    }
+  ],
+  "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/npd1/RESULT.json",
+  "original_native_producer": {
+    "patched_sha256": "59a5fbd707cb19fe1fa447f462de67fd430696e2668b1ed3b674dd47948b1738",
+    "path": "/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/npd1-step3/job.py",
+    "sha256": "651effb20a51a451866cc700dcd924bdd5b625835fe4fa4584f429efd0d8e530"
+  },
+  "owner": "handoff-vidya-belief-substrate",
+  "packet_digests": {
+    "manifest.json": "5767fe75462577591855de8ffaac942f8716bca5916411927c613ee5a86dc909",
+    "npd1.patch": "f53a7172d76abf4bc30e5c8ba89cbd4dc0a8e3d6c331bac35e1dce6bcff1c613"
+  },
+  "pending": [
+    "First official native capture and planning-context acceptance"
+  ],
+  "prepared": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/npd1/prepared.json",
+  "prepared_sha256": "606494aafbe790a81126fef62da3af4903380d96d2db60acdf0c0aa05d6eaf6e",
+  "publication": {
+    "cpus": "116-119",
+    "end_line": "rc=75 time=2026-11-17T20:11:09Z reason=partial-native-incomplete",
+    "official_native_capture": false,
+    "qualification": "first progress: smoke_predicate exited 0",
+    "row": "vidya-mi210-npd1-native-wire-20261117",
+    "smoke": "PASS"
+  },
+  "row_id": "vidya-mi210-npd1-native-wire-20261117",
+  "schema": "epyc.mi210.npd1-native-preparation-result.v1",
+  "smoke_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/npd1/SMOKE.json",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-native-20261117/npd1/spec.json",
+  "spec_sha256": "f506682b0729debf12400c2db5d94099595e6c6df765f1e79af8c3e4c5a2e323",
+  "state": "published-smoke-pass"
+}
