@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 533
+      "open": 532
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -28,7 +28,7 @@
       "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 465
+      "open": 467
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -1521,7 +1521,7 @@
       "closed": 121,
       "guarded": 0,
       "last_advanced": "2026-11-10",
-      "open": 40,
+      "open": 42,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1530,7 +1530,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 161,
+      "total": 163,
       "tracks": [
         {
           "blocked": 0,
@@ -1550,14 +1550,14 @@
           "line": 919,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 9
+          "open": 11
         },
         {
           "blocked": 0,
           "closed": 38,
           "gates": [],
           "guarded": 0,
-          "line": 1383,
+          "line": 1386,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 10
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1844,
+          "line": 1847,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2564,10 +2564,10 @@
     },
     "v11-promotion-checklist.md": {
       "blocked": 0,
-      "closed": 34,
+      "closed": 37,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 17,
+      "open": 16,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2576,7 +2576,7 @@
       },
       "row_id": "INF-83",
       "state": "active",
-      "total": 51
+      "total": 53
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
@@ -2924,7 +2924,7 @@
       "id": "UFH-01",
       "index": "user-facing-harness-index.md",
       "line": 18,
-      "next_action": "Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel",
+      "next_action": "Run CM-2..CM-5 per-request tool selection (base: probe/codemode-ab); then UFH-TE-2 dispatch guard, HIL-RE-1",
       "track": "harness selection and integration"
     },
     "UFH-13": {

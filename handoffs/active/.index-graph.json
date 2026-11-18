@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T08:34:51Z",
+  "generated_at": "2026-11-18T08:50:11Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1146,14 +1146,14 @@
       "blocked": 0,
       "blocked_by": [],
       "closed": 121,
-      "dispatchable": 40,
+      "dispatchable": 42,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-10",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 40,
+      "open": 42,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1182,18 +1182,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 9,
+          "dispatchable": 11,
           "gates": [],
           "line": 919,
           "name": "repl-session-memory-maturity",
-          "open": 9,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 10,
           "gates": [],
-          "line": 1383,
+          "line": 1386,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1210,7 +1210,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1844,
+          "line": 1847,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 34,
-      "dispatchable": 17,
+      "closed": 37,
+      "dispatchable": 16,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-GPU-LOADCHECK (row 1b); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; C14 fold per INF-65; D6/D7",
-      "open": 17,
+      "open": 16,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
@@ -3655,7 +3655,7 @@
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-18",
-      "next_action": "Run UFH-TE-2 serving-identity dispatch guard, then HIL-RE-1 claim grammar; P6 EP probe in parallel",
+      "next_action": "Run CM-2..CM-5 per-request tool selection (base: probe/codemode-ab); then UFH-TE-2 dispatch guard, HIL-RE-1",
       "open": 108,
       "priority": 0.9364,
       "priority_basis": {
