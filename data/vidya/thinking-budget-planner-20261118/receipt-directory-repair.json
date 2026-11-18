@@ -1,0 +1,21 @@
+{
+  "fix": "Create actor-replies directory before planner call; actual best-effort receipt writer does not create it.",
+  "last_smoke": "FAIL: receipt directory missing",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-ready-20261118/launch/launch.sh",
+  "launcher_sha256": "fb036e8c09b5d97dd25d763187d03ee55127f99de45bc9203bef354d0941bbca",
+  "next": "Preserve parked status after three failed qualifications; no retry or publication.",
+  "pins": "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-ready-20261118/pins.json",
+  "pins_sha256": "e01fdfeb93af62b5d0e74e9c2c88929818be3e2442d24b12c60d73cb45942b4a",
+  "row_id": "vb-tb-semantics-native-planner-20261118",
+  "row_status": "unknown - no epyc.row.v3 row in ready",
+  "source": "scripts/vidya/canary/thinking_budget_semantics_context.py",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-ready-20261118/spec.json",
+  "spec_sha256": "8b8f4ac691ef8ed3d815262cf1599c3f0b03bd90c592a661e797ce2f0406a5bd",
+  "status": "parked_do_not_publish",
+  "tests": [
+    "seven producer protocol unit tests passed",
+    "actual Research receipt writer writes/reads receipt in created directory",
+    "all packet input hashes and both pinned git revisions verified",
+    "bash -n launcher and py_compile canary passed"
+  ]
+}

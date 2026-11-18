@@ -42,6 +42,8 @@ mixed (belief redesign 2026-10-21, §7.1):
                sharing their budget. Lines print the claim's `varied` and fixed `knobs`.
   * lineup  -- (§12.3) a lineup target `{scope: "lineup", stack_regime}` matches only claims
                declaring the same `stack_regime`; else "No beliefs at this regime".
+  * task targets use the target tier for native observations selected by an exact planner
+    task ID and a reviewed source contract.
   The declared scope table (`SOURCE_SCOPES`) covers sources written before VB-APPLICABILITY whose
   producer contract pins the whole scope; it is tiered by the same rule.
 
@@ -144,6 +146,14 @@ _NPD1_SOURCE = "mi210-paired-raw"
 _NPD1_ADAPTER = "vidya.adapters.mi210_paired_raw/v1"
 _NPD1_METRIC = "native_request_tpot_ms"
 _NPD1_CONSUMER = "autokernel.planner"
+_TASK_ID_RE = re.compile(r"[A-Z][A-Z0-9]*(?:[-_][A-Z0-9]+)+")
+_KPF17_TASK = "VB-KPF17-MAP-REVALIDATION-WIRE"
+_KPF17_CONSUMER = "kvfork.planner"
+_KPF17_METRIC = "kpf17_map_revalidation_fixture_refused"
+_KPF17_ID_RE = re.compile(r"kpf17-map-[0-9a-f]{64}")
+_KPF17_LOCATOR_RE = re.compile(r".+/attempts/[0-9a-f]{48}/native\.json#sha256=[0-9a-f]{64}")
+_P5_ID_RE = re.compile(r"p5-sphinx-scorer:[0-9a-f]{64}")
+_P5_LOCATOR_RE = re.compile(r".+/official/RESULT\.json#(?:gold|negative):(?:FAIL_TO_PASS|PASS_TO_PASS):tests/\S+")
 #: AutoPilot knob families (belief redesign §12.1). A target may only name these; a claim's
 #: unknown family never reaches the knob tier.
 KNOB_FAMILIES = frozenset({"spec_draft", "kv_profile", "kv_compaction", "placement", "routing",
@@ -461,6 +471,7 @@ class Target:
     candidate_sha256: str = ""
     op: str = ""
     run_id: str = ""
+    task_id: str = ""
 
     @property
     def is_lineup(self) -> bool:
@@ -469,6 +480,8 @@ class Target:
     @property
     def key(self) -> tuple[str, ...]:
         """Identity of this target inside one answer (several roles may share one model)."""
+        if self.scope == "task":
+            return ("task", self.task_id)
         if self.scope == "build":
             return ("build", self.build_sha, self.build_surface)
         if self.scope == "candidate":
@@ -482,6 +495,12 @@ class Target:
         """`model_file`, or `model_path` reduced to its basename. An incomplete target raises:
         it is not a wildcard. `device` defaults from the backend on this host. `recipe` is taken
         as given, else from an AutoKernel `surface` of the form `serving:<recipe>`."""
+        if raw.get("scope") == "task" or "task_id" in raw:
+            task_id = raw.get("task_id")
+            if (set(raw) != {"scope", "task_id"} or raw["scope"] != "task"
+                    or not isinstance(task_id, str) or not _TASK_ID_RE.fullmatch(task_id)):
+                raise ValueError("task target requires only an exact task_id")
+            return cls(model_file="", quant="", backend="", device="", scope="task", task_id=task_id)
         families = _target_families(raw)
         role = str(raw.get("role") or "").strip()
         regime = str(raw.get("stack_regime") or "").strip()
@@ -547,6 +566,8 @@ class Target:
                    stack_regime=regime, kernel_only=raw.get("kernel_only") is True, **values)
 
     def as_dict(self) -> dict[str, Any]:
+        if self.scope == "task":
+            return {"scope": "task", "task_id": self.task_id}
         if self.scope == "build":
             return {"scope": "build", "build_sha": self.build_sha, "surface": self.build_surface, "label": self.label}
         if self.scope == "candidate":
@@ -704,6 +725,8 @@ def lineup_matches(scope: Mapping[str, Any], target: Target) -> bool:
 
 
 def tier_of(scope: Mapping[str, Any], target: Target) -> str | None:
+    if target.scope == "task":
+        return None
     if target.scope == "candidate":
         exact = (isinstance(scope, Mapping)
                  and set(scope) == {"build_sha", "candidate_sha256", "op", "run_id", "scope_basis"}
@@ -930,7 +953,7 @@ def _tier(scope: Mapping[str, Any], targets: list[Target],
         return None, []
     if isinstance(scope, Mapping) and scope.get("consumer"):
         if consumer and str(scope["consumer"]) == consumer:
-            hits = [target for target in targets if target.scope != "candidate"]
+            hits = [target for target in targets if target.scope not in ("candidate", "task")]
             if hits:
                 return "harness", hits
         return None, []
@@ -1031,12 +1054,43 @@ def _mark_stale_epochs(rows: list[dict[str, Any]]) -> None:
         row["stale_epoch"] = bool(row["epoch"]) and current[key][2] != row["epoch"]
 
 
+def _task_observation(consumer: str, task_id: str, source: Mapping[str, Any],
+                      provenance: Mapping[str, Any], evidence: Mapping[str, Any],
+                      claim_id: str) -> dict[str, Any] | None:
+    """Select existing native observations for an exact task without changing ledger scope."""
+    identity = _str(provenance.get("about"))
+    if (provenance.get("retrofit") is not False
+            or claim_id != f"clm_{identity}"
+            or source.get("source_id") != f"src_{identity}"
+            or evidence.get("source_id") != source.get("source_id")
+            or source.get("applicability") is not None
+            or evidence.get("protocol_id") != ""
+            or evidence.get("category") != "CANDIDATE"):
+        return None
+    if ((consumer, task_id) == (_KPF17_CONSUMER, _KPF17_TASK)
+            and source.get("source_kind") == "kv-prefix-fork-measurement"
+            and source.get("title") == _KPF17_METRIC
+            and provenance.get("method") == "vidya.adapters.kv_prefix_fork/v1"
+            and _KPF17_ID_RE.fullmatch(identity)
+            and _KPF17_LOCATOR_RE.fullmatch(_str(source.get("locator")))):
+        return {"mechanism_id": _KPF17_METRIC}
+    if ((consumer, task_id) == ("p5.scorer_controls", "VB-P5-SCORER-CONTROLS-WIRE")
+            and source.get("source_kind") == "p5-sphinx-scorer"
+            and source.get("title") == evidence.get("metric") == "p5_sphinx_scorer_status"
+            and provenance.get("method") == "vidya.adapters.p5_sphinx_scorer/v1"
+            and _P5_ID_RE.fullmatch(identity)
+            and _P5_LOCATOR_RE.fullmatch(_str(source.get("locator")))):
+        return {}  # This adapter already carries its native observation fields.
+    return None
+
+
 def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of: str,
             fold_result: Any = None, consumer: str = "") -> dict[str, Any]:
     """Every claim that applies to the targets, tiered and gated, before any cap. Usable rows
     (gate ALLOW, newest complete run per source) are `rows`; refused-but-decision-relevant ones
     are in `flagged`. Public so acceptance checks can count what the caps hide."""
     targets = list(targets)
+    task = targets[0] if len(targets) == 1 and targets[0].scope == "task" else None
     visible = visible_frames(frames, as_of)
     result = fold_result if fold_result is not None else fold(visible, as_of=as_of)
     policy = _policy()
@@ -1074,6 +1128,10 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
         scope_raw = source.get("applicability")
         table = SOURCE_SCOPES.get(kind)
         evidence = support.get(raw_id) or {}
+        task_observation = _task_observation(consumer, task.task_id, source, source_prov[sid],
+                                             evidence, raw_id) if task else None
+        if task and task_observation is None:
+            continue
         if (scope_raw is None and kind == _NPD1_SOURCE and consumer == _NPD1_CONSUMER
                 and source_prov[sid].get("method") == _NPD1_ADAPTER
                 and source.get("title") == evidence.get("metric") == _NPD1_METRIC
@@ -1082,7 +1140,9 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                 and evidence.get("protocol_id") == ""):
             # Consumer routing only. The measurement frames stay unscoped.
             scope_raw = {"consumer": _NPD1_CONSUMER}
-        if scope_raw:
+        if task:
+            scope = {}
+        elif scope_raw:
             if not isinstance(scope_raw, Mapping):
                 continue
             scope: Mapping[str, Any] = scope_raw
@@ -1100,7 +1160,7 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                 continue
         elif "candidate_sha256" in scope and kind != "gpu-pool-native":
             continue
-        tier, hits = _tier(scope, targets, consumer)
+        tier, hits = ("target", [task]) if task else _tier(scope, targets, consumer)
         if tier is None:
             continue
         matched_any = True
@@ -1109,7 +1169,9 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
             continue
         seen.add(claim_id)
         locator = str(source.get("locator", ""))
-        if scope_raw:
+        if task:
+            run, key, depth = None, (locator,), None
+        elif scope_raw:
             run = scope_raw.get("run_id")
             run_keys = scope_raw.get("run_expected_keys")
             key = (locator.split("|", 1)[0],)
@@ -1128,6 +1190,8 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
         verdict = evaluate(claim_id, result, policy)
         belief = result.beliefs.get(claim_id)
         obs = read_observation(evidence)
+        if task_observation:
+            obs.update(task_observation)
         model_file = PurePath(str(scope.get("model_file") or "")).name if scope.get(
             "model_file") else ""
         pro = getattr(belief, "pro", None)
@@ -1143,7 +1207,8 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "reps": evidence.get("reps"),
                "text": str(claim.get("display_text", "")),
                "grade_reasons": reasons.get(raw_id, ()),
-               "targets": sorted({_target_label(t) if t.scope == "candidate" else t.model_file for t in hits}),
+               "targets": sorted({_target_label(t) if t.scope in ("candidate", "task")
+                                  else t.model_file for t in hits}),
                "target_keys": sorted({t.key for t in hits}),
                "knob_family": ",".join(claim_families(scope)),
                "knobs": dict(scope["knobs"]) if isinstance(scope.get("knobs"), Mapping) else {},
@@ -1156,6 +1221,7 @@ def collect(frames: list[Mapping[str, Any]], targets: Iterable[Target], *, as_of
                "recipe": _str(scope.get("recipe")), "epoch": _str(scope.get("epoch")),
                "build_sha": _str(scope.get("build_sha")),
                "candidate_sha256": _str(scope.get("candidate_sha256")),
+               "task_id": task.task_id if task else "",
                "np": np_value if isinstance(np_value, int) and not isinstance(np_value, bool)
                else None,
                "symbol": _str(scope.get("symbol")), "op": _str(scope.get("op")),
@@ -1565,6 +1631,8 @@ def _value_text(value: float | None, unit: str) -> str:
 
 
 def _where(row: Mapping[str, Any], tier: str) -> str:
+    if row.get("task_id"):
+        return f"task {row['task_id']}"
     if row.get("candidate_sha256"):
         return f"candidate {row['candidate_sha256'][:12]} / {row['op']}"
     extras = []
@@ -1690,7 +1758,7 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
     if what:
         lines.append(head)
         lines.append(f"  {what}{_earlier_text(row)}")
-        if tier == "harness" and row["text"]:
+        if (tier == "harness" or row.get("task_id")) and row["text"]:
             lines.append(f"  {row['locator']}: {_cap(row['text'], CLAIM_TEXT_CAP)}")
         if tier in _MODEL_TIERS and row["statement"]:
             falsifier = (f"; falsifier: {_cap(row['falsifier'], STATEMENT_CAP // 2)}"
@@ -1720,13 +1788,15 @@ def row_lines(row: Mapping[str, Any], *, first_of_source: bool = False) -> list[
 
 
 def _target_label(target: Target) -> str:
-    if target.scope == "candidate":
+    if target.scope in ("candidate", "task"):
         return ":".join(target.key)
     return f"lineup:{target.stack_regime or 'unrecorded'}" if target.is_lineup \
         else target.model_file
 
 
 def _target_name(target: Target) -> str:
+    if target.scope == "task":
+        return f"task {target.task_id}"
     if target.scope == "candidate":
         return (f"source {target.build_sha} / candidate {target.candidate_sha256} / "
                 f"{target.op} / {target.run_id}")
@@ -1748,7 +1818,7 @@ def banner_text(targets: list[Target], empty: list[Target]) -> str | None:
         regimes = ", ".join(t.stack_regime or "regime unrecorded" for t in lineups)
         parts.append(f"No beliefs at this regime ({regimes}).")
     text = " ".join(parts)
-    if len(empty) == len(targets) and any(t.scope != "candidate" for t in targets):
+    if len(empty) == len(targets) and any(t.scope not in ("candidate", "task") for t in targets):
         text += " The lines below are sibling/host context only."
     return text
 
@@ -1793,7 +1863,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
             model_budget -= used
     entries = list((tried or [])[:INDEX_CAP])
     names = "; ".join(
-        (_target_name(t) if t.scope == "candidate" else
+        (_target_name(t) if t.scope in ("candidate", "task") else
          f"lineup / regime {t.stack_regime or 'unrecorded'}" if t.is_lineup else
          f"{t.model_file} / {t.quant or 'quant unstated'} / {t.backend} / {t.device}")
         + (f" / context {t.context_tokens}" if t.context_tokens else "")
@@ -1802,7 +1872,8 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         + (f" / knob families {','.join(t.knob_families)}" if t.knob_families else "")
         for t in targets)
     has_candidate = any(t.scope == "candidate" for t in targets)
-    model_context = any(t.scope != "candidate" for t in targets)
+    has_task = any(t.scope == "task" for t in targets)
+    model_context = any(t.scope not in ("candidate", "task") for t in targets)
     applicability = (
         "Claims are tiered by declared applicability: knob (the target's own weights and a "
         "knob family it can change), target (the target's own weights), lineup (this stack "
@@ -1811,6 +1882,8 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
         "not about this model, never target evidence). " if model_context else "")
     if has_candidate:
         applicability += "Candidate claims apply to the exact captured source, artifacts, shim and operator. "
+    if has_task:
+        applicability += "Task observations apply only to the requested task and the scope stated in each claim. "
     head = [SECTION_HEADER] + ([banner] if banner else []) + [
         f"Target(s): {names}.",
         f"{applicability}Grade is the folded "
@@ -1835,7 +1908,7 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
             if not usable:
                 continue
             title = TIER_TITLES[tier]
-            if tier == "target" and has_candidate:
+            if tier == "target" and (has_candidate or has_task):
                 title = "### Usable, target tier -- claims scoped to the requested target"
             body.append(title)
             described: set[tuple[str, str | None]] = set()
@@ -1856,8 +1929,11 @@ def render(targets: list[Target], rows: list[dict[str, Any]],
                     _index_text(entry))
             for (tier, model_file), texts in groups.items():
                 label = model_label(model_file) or model_file
-                prefix = (f"Tried on {label}:" if tier in _MODEL_TIERS
-                          else f"Tried on {label} (sibling; transfer unproven):")
+                if has_task:
+                    prefix = f"Tried for task {targets[0].task_id}:"
+                else:
+                    prefix = (f"Tried on {label}:" if tier in _MODEL_TIERS
+                              else f"Tried on {label} (sibling; transfer unproven):")
                 line = prefix
                 for text in texts:
                     if len(line) + len(text) + 2 > 220 and line != prefix:
@@ -1955,6 +2031,7 @@ def _claim_view(row: Mapping[str, Any]) -> dict[str, Any]:
             "varied": list(row["varied"]), "knobs": dict(row["knobs"]),
             "stack_regime": row["stack_regime"],
             **({k: row[k] for k in ("build_sha", "candidate_sha256", "op")} if row["candidate_sha256"] else {}),
+            **({"task_id": row["task_id"]} if row.get("task_id") else {}),
             "not_evidence": row["tier"] in NOT_EVIDENCE_TIERS}
 
 
@@ -1964,6 +2041,9 @@ def evaluate_frames(frames: list[Mapping[str, Any]], targets: Iterable[Target], 
                     consumer: str = "") -> dict[str, Any]:
     """The evidence half of a `ready` answer, from frames already verified."""
     targets = list(targets)
+    if len(targets) > 1 and any(target.scope == "task" for target in targets):
+        return _evidence_empty("inapplicable_target", as_of=as_of, targets=targets,
+                               error="task target must be the only target")
     col = collect(frames, targets, as_of=as_of, fold_result=fold_result, consumer=consumer)
     if not col["matched_any"]:
         return _evidence_empty("no_applicable_claims", as_of=as_of, frontier=col["frontier"],
@@ -2327,7 +2407,10 @@ def _prepare_impl(consumer: str, targets: Iterable[Mapping[str, Any]] | Mapping[
             as_of = datetime.now(timezone.utc).isoformat()
             base["as_of"] = as_of
         result = fold(visible_frames(frames, as_of), as_of=as_of)
-        if parsed:
+        if target_errors and any(target.scope == "task" for target in parsed):
+            evidence = _evidence_empty("inapplicable_target", as_of=as_of, targets=parsed,
+                                       error="task target must be the only target")
+        elif parsed:
             evidence = evaluate_frames(frames, parsed, as_of=as_of, max_claims=max_claims,
                                        max_bytes=max_bytes, fold_result=result,
                                        reply_field=reply_field, consumer=consumer)

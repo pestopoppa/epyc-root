@@ -1,0 +1,109 @@
+{
+  "as_of": "2026-11-18T19:09:41Z",
+  "cases": {
+    "cpu-model": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "exact-task": {
+      "claims": 1,
+      "section_sha256": "05c6a6144639fda080d7fe492cf9230650f83cffa72848ac69ee12e8754acc5b",
+      "tried": 1
+    },
+    "gpu-model": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "lineup": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "wrong-consumer": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    },
+    "wrong-task": {
+      "claims": 0,
+      "section_sha256": "",
+      "tried": 0
+    }
+  },
+  "consumer": "kvfork.planner",
+  "ledger_frame_count": 3,
+  "ledger_head": "sha256:f45dc8e3d18004d227cf9db37a608b00ae4d9e25394bc14fa9f464d319acc27f",
+  "native_claim": {
+    "anchor_value": null,
+    "claim_id": "clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+    "effect_rel": null,
+    "grade": "Judged/Located",
+    "knob_family": "",
+    "knobs": {},
+    "linked_claim_ids": [],
+    "locator": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/kpf17-native-20261118/attempts/1bc3e2e4aa5230d8d6871a4870cdffbe114196b788ce126b/native.json#sha256=c387bca05539f43f07f539e606e9ea912c28152dba382dc39e137084d9568a4f",
+    "mechanism_id": "kpf17_map_revalidation_fixture_refused",
+    "model_file": "",
+    "n_pairs": null,
+    "noise_floor_rel": null,
+    "not_evidence": false,
+    "outcome": "",
+    "recipe": "",
+    "reps": null,
+    "retrofit": false,
+    "role": "",
+    "run": null,
+    "source_kind": "kv-prefix-fork-measurement",
+    "stack_regime": "",
+    "stale_epoch": false,
+    "status": "verified",
+    "task_id": "VB-KPF17-MAP-REVALIDATION-WIRE",
+    "tier": "target",
+    "unit": "",
+    "value": null,
+    "varied": []
+  },
+  "native_claim_id": "clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+  "native_grade": "Judged/Located",
+  "reader_checkout": {
+    "behind": 1,
+    "current": true,
+    "error": null,
+    "head": "4795cb2dd93b5dc9a114889376d2ac365981b5f4",
+    "oldest_missing_age_s": 403.0,
+    "origin_main": "a6ffc6747db167b8d7a708efdd24d14c03cc32ea",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
+    "within_grace": true
+  },
+  "reader_file_sha256": "937f899cd39d6998bfadba3a6d3caef08e984bdb5d665b760e533b4438acb2fc",
+  "rendered_section": "## Belief-kernel evidence (Vidya ledger, read-only)\nTarget(s): task VB-KPF17-MAP-REVALIDATION-WIRE.\nTask observations apply only to the requested task and the scope stated in each claim. Grade is the folded claim_tuple.grade() Q/T at ledger frontier 3, as of 2026-11-18T19:09:41Z.\n### Usable, target tier -- claims scoped to the requested target\nSource kv-prefix-fork-measurement.\n- clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6 [Judged/Located \u00b7 verified] task VB-KPF17-MAP-REVALIDATION-WIRE: /mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/kpf17-native-20261118/attempts/1bc3e2e4aa5230d8d6871a4870cdffbe114196b788ce126b/native.json#sha256=c387bca05539f43f07f539e606e9ea912c28152dba382dc39e137084d9568a4f (protocol none; n unrecorded; 2026-11-18T19:07:41.469517+00:00): KPF-17 custody.validate_maps accepted the five-file private baseline and refused the second call after the synchronized in-place overwrite. Private fixture only. Scope ends at the second validate_maps call following the overwrite.\n  grade notes: no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)\n### Tried mechanisms -- every mechanism with a projected outcome here (the detailed lines above are capped; this index is not)\nTried for task VB-KPF17-MAP-REVALIDATION-WIRE: kpf17_map_revalidation_fixture_refused recorded\nShown 0 of 0 knob, 1 of 1 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 1 of 1 mechanism(s); bounded at 30 claims / 14000 bytes.\nOptional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.",
+  "schema": "epyc.kpf17.task_planning_context.review.v1",
+  "status": "PASS",
+  "targets": [
+    {
+      "scope": "task",
+      "task_id": "VB-KPF17-MAP-REVALIDATION-WIRE"
+    }
+  ],
+  "tried_entry": {
+    "captures": 1,
+    "claim_id": "clm_kpf17-map-c539c3ecbf4ab11b1bf388ecb6c481486aa61128af86e1cbc00568596c715ce6",
+    "date": "2026-11-18T19:07:41.469517+00:00",
+    "effect_rel": null,
+    "in_section": true,
+    "knob_family": "",
+    "label": "",
+    "mechanism_id": "kpf17_map_revalidation_fixture_refused",
+    "model_file": "",
+    "noise_floor_rel": null,
+    "outcome": "recorded",
+    "outcome_native": "",
+    "reason": "",
+    "recipe": "",
+    "stale_epoch": false,
+    "status": "verified",
+    "tier": "target"
+  }
+}

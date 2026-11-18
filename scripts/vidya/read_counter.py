@@ -65,6 +65,8 @@ def build_record(answer: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def _label(t: Mapping[str, Any]) -> str:
+    if t.get("scope") == "task":
+        return f"task:{t.get('task_id') or 'unrecorded'}"
     if t.get("scope") == "candidate":
         return ":".join(str(t.get(key) or "") for key in ("scope", "build_sha", "candidate_sha256", "op", "run_id"))
     if t.get("is_lineup") or t.get("lineup"):

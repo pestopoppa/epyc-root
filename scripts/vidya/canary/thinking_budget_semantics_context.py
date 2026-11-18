@@ -122,6 +122,9 @@ def replay(results, research, out):
             context_root = out / label
             workspace = context_root / "lane"
             workspace.mkdir(parents=True)
+            # Receipt writing is best-effort and does not create its parent directory.
+            # A live actor call normally creates it; this canary stops before that call.
+            (context_root / actors.ACTOR_REPLY_DIR).mkdir()
             planner = actors.AgentPlanner(workspace=workspace,
                                           belief=replace(config, known_good=context_root / "known-good.json"),
                                           belief_runner=run_child)
