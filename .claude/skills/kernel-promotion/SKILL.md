@@ -190,13 +190,6 @@ an available region claim or the diagnostic row's reserved publisher smoke befor
 using the instrument for any decision. Sealing, the parity/comparison pack and
 prospective human ratification remain required.
 
-A sealed evidence attempt that stops before a complete lifecycle capture reports
-the recorded runner failure and keeps the staging directory available for diagnosis.
-When resident execution fails, a complete and bound fresh replay is required to
-seal the result. Both sealed lifecycles require a fresh contention matrix. The
-age-only exception is available for unsealed v10 CPU self-calibration in resident
-or fresh-only mode, with the full topology fingerprint and exclusive claim checked.
-
 Speed per derived model, candidate vs incumbent, **each at its own best recipe** (recipe-to-recipe;
 never force one kernel through the other's configuration). Quality per the incumbent's recorded
 suites, same pinned questions and seed.

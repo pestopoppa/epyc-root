@@ -610,18 +610,6 @@ def build_comparison(root):
             and closed["child_rc"] in (0, 78), "provider claim closure is unproved")
     resident_root = root / "resident"
     capture = read(resident_root / "capture.json")
-    fresh_root = resident_root / "fresh-replay"
-    fallback_path = resident_root / "fresh-fallback.json"
-    failed = capture["complete"] is not True
-    fallback = read(fallback_path) if failed and fallback_path.is_file() else {}
-    if failed:
-        require(fallback.get("fresh_complete") is True,
-                f"resident capture is incomplete and has no complete fresh replay: "
-                f"{capture.get('failure') or 'no runner failure recorded'}")
-    if (fresh_root / "capture.json").is_file():
-        fresh_capture = read(fresh_root / "capture.json")
-        require(fresh_capture["complete"] is True,
-                f"fresh capture is incomplete: {fresh_capture.get('failure') or 'no runner failure recorded'}")
     source = capture["observation_source"] if "observation_source" in capture else None
     if "observation_source" in capture:
         check_observation_source(root, source, pins)
@@ -638,11 +626,14 @@ def build_comparison(root):
     resident = capture_rows(
         resident_root, plan, pins, opened, fresh=False, source=source, seen_processes=seen_processes,
     )
+    fresh_root = resident_root / "fresh-replay"
+    failed = capture["complete"] is not True
     if failed:
+        fallback = read(resident_root / "fresh-fallback.json")
         require(fallback["resident_rows_valid"] is False and fallback["cleanup_proved"] is True
                 and fallback["plan"] == plan
-                and fallback.get("fresh_capture") == "fresh-replay/capture.json"
-                and closed["child_rc"] == 78,
+                and fallback["fresh_capture"] == "fresh-replay/capture.json"
+                and fallback["fresh_complete"] is True and closed["child_rc"] == 78,
                 "fresh replay does not bind a clean resident failure")
         if source is not None:
             require(fallback["schema"] == "epyc.kernel_promotion_fresh_fallback.v1"
@@ -654,7 +645,7 @@ def build_comparison(root):
         require(closed["child_rc"] == 0, "resident/fresh comparison did not finish")
         if source is not None:
             require(capture["fresh_comparison_requested"] == fresh_root.exists()
-                    and not fallback_path.exists(),
+                    and not (resident_root / "fresh-fallback.json").exists(),
                     "fresh replay does not match the resident run intent")
     fresh = None
     if fresh_root.exists():

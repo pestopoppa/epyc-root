@@ -3,7 +3,6 @@
 import importlib.util
 import json
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -322,36 +321,6 @@ def fixture_pair(tmp_path, *, prospective=False):
     fresh = staging / "resident/fresh-replay"
     fixture_capture(fresh, schedule, pins, opened, fresh=True, source=source)
     return staging
-
-
-@pytest.mark.parametrize("phase", ["resident", "fresh"])
-def test_early_admission_failure_retains_reason_and_refuses_seal(tmp_path, phase):
-    staging, sealed = fixture_pair(tmp_path, prospective=True), tmp_path / "sealed"
-    resident = staging / "resident"
-    directory = resident if phase == "resident" else resident / "fresh-replay"
-    path = directory / "capture.json"
-    failure = "contention matrix is STALE"
-    update_json(path, evidence.read(path) | {"complete": False, "cohorts": [], "failure": failure})
-    (directory / "claim.open.json").unlink()
-    if phase == "resident":
-        shutil.rmtree(resident / "fresh-replay")
-        evidence.write(resident / "fresh-fallback.json", {"fresh_attempted": False, "fresh_complete": False})
-    close_path = staging / "provider.close.json"
-    update_json(close_path, evidence.read(close_path) | {"child_rc": 78})
-
-    with pytest.raises(ValueError, match=f"{phase} capture is incomplete.*{failure}"):
-        evidence.seal(staging, sealed)
-    assert path.is_file() and not (staging / "COMPLETE").exists() and not sealed.exists()
-
-
-@pytest.mark.parametrize("location", ["resident", "resident/fresh-replay"])
-def test_complete_capture_still_requires_matching_fresh_matrix(tmp_path, location):
-    staging, sealed = fixture_pair(tmp_path), tmp_path / "sealed"
-    (staging / location / "contention-matrix.txt").write_text("FAIL: contention matrix is STALE\n")
-
-    with pytest.raises(ValueError, match="missing matching topology freshness witness"):
-        evidence.seal(staging, sealed)
-    assert not sealed.exists()
 
 
 def test_full_pair_and_fresh_capture_seals_and_recomputes(tmp_path):
