@@ -1,0 +1,17 @@
+NORM	UNSUPPORTED	type=f32,ne=[64,5,4,3],v=0,eps=0.000000,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[1025,5,4,3],v=0,eps=0.000000,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[64,5,4,3],v=0,eps=0.000001,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[1025,5,4,3],v=0,eps=0.000001,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[64,5,4,3],v=0,eps=0.000100,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[1025,5,4,3],v=0,eps=0.000100,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[64,5,4,3],v=0,eps=0.100000,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[1025,5,4,3],v=0,eps=0.100000,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[64,5,4,3],v=0,eps=10.000000,noncontig_rows=1
+NORM	UNSUPPORTED	type=f32,ne=[1025,5,4,3],v=0,eps=10.000000,noncontig_rows=1
+SUM	UNSUPPORTED	type=f32,ne=[33,256,1,1],permute=[1,0,2,3]
+SUM_ROWS	UNSUPPORTED	type=f32,ne=[11,5,6,3],permute=1,slice=0
+SUM_ROWS	UNSUPPORTED	type=f32,ne=[11,5,6,3],permute=0,slice=1
+SUM_ROWS	UNSUPPORTED	type=f32,ne=[11,5,6,3],permute=1,slice=1
+SUM_ROWS	UNSUPPORTED	type=f32,ne=[16,5,6,3],permute=1,slice=0
+SUM_ROWS	UNSUPPORTED	type=f32,ne=[16,5,6,3],permute=0,slice=1
+SUM_ROWS	UNSUPPORTED	type=f32,ne=[16,5,6,3],permute=1,slice=1

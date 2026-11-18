@@ -19,6 +19,57 @@ from ledger import Ledger
 from loop_beliefs import Target
 
 
+class NativeResultBinding(unittest.TestCase):
+    def test_repeated_seed_blocks_must_match_the_manifest_and_operator_order(self):
+        out = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        capture = out / "belief.json"
+        result_path = out / "RESULT.json"
+        capture_sha = "a" * 64
+        row_id = "ni-gpu-pool-elementwise-20261118-v6"
+        ops = ["NORM", "SUM", "SUM_ROWS"]
+        seeds = list(range(2026102600, 2026102632))
+        runs = [dict(seed=seed, op=op, rc=0, status="native_exit_recorded", generated_expected=2,
+                     observed=2, passed=1, unsupported=1, failed=[])
+                for seed in seeds for op in ops]
+        request = dict(row_id=row_id, selected_ops=ops)
+        native = dict(seeds=seeds, runs=runs, owned_pid_reaped=True,
+                      grant=dict(smoke=False, record={},
+                                 path=str(control.SCRATCH_ROOT / "compute-flags/grants" / f"{row_id}.grant")))
+
+        # Keep the producer aggregates consistent with each control input so only block validation can reject it.
+        def bind(request, native):
+            count = len(native["runs"])
+            result = dict(row_id=row_id, capture=str(capture), sha256=capture_sha, projected=count,
+                          refused=0, failed=0, observed=2 * count, passed=count, unsupported=count,
+                          resident_samples=2 * count)
+            result_path.write_text(json.dumps(result))
+            return control.validate_native_result(capture, capture_sha, dict(capture=request, native=native),
+                                                  result_path)
+
+        self.assertEqual(bind(request, native), {"path": str(result_path), "sha256": control.sha(result_path)})
+        for name, malformed in (
+            ("missing operator", runs[1:]),
+            ("missing seed block", runs[:-3]),
+            ("duplicate seed block", runs[:3] + runs[:3] + runs[6:]),
+            ("out-of-order seed blocks", runs[3:6] + runs[:3] + runs[6:]),
+            ("out-of-order operators", [runs[1], runs[0], *runs[2:]]),
+            ("unlisted seed", [{**runs[0], "seed": seeds[-1] + 1}, *runs[1:]]),
+        ):
+            with self.subTest(name=name), self.assertRaisesRegex(RuntimeError, "complete terminal invocations"):
+                bind(request, {**native, "runs": malformed})
+        for malformed in (None, [], [seeds[0], seeds[0]], [False, *seeds[1:]]):
+            with self.subTest(seeds=malformed), self.assertRaisesRegex(RuntimeError, "unique seed manifest"):
+                bind(request, {**native, "seeds": malformed})
+        with self.assertRaisesRegex(RuntimeError, "complete terminal invocations"):
+            bind(request, {k: v for k, v in native.items() if k != "seeds"})
+        with self.assertRaisesRegex(RuntimeError, "unique selected operators"):
+            bind({**request, "selected_ops": ops + [ops[0]]}, native)
+
+        legacy = {k: v for k, v in native.items() if k != "seeds"}
+        legacy.update(seed=seeds[0], runs=runs[:3])
+        self.assertEqual(bind(request, legacy), {"path": str(result_path), "sha256": control.sha(result_path)})
+
+
 class ScopeControls(unittest.TestCase):
     def setUp(self):
         self.out = Path(self.enterContext(tempfile.TemporaryDirectory()))
@@ -28,7 +79,7 @@ class ScopeControls(unittest.TestCase):
                           "(set GPU_POOL_CONTROL_RESEARCH)")
         self.capture = self.out / "belief.json"
 
-    def make_capture(self, *, smoke=False, spoof_scope=False):
+    def make_capture(self, *, smoke=False, spoof_scope=False, seeds=(7,)):
         identity = {"source": {"commit": "a" * 40, "removed_worktree_dirty_state": "UNKNOWN"},
                     "artifacts": [{"path": "/synthetic/backend-ops", "sha256": "b" * 64}],
                     "shim": {"path": "/synthetic/shim", "sha256": "c" * 64,
@@ -38,15 +89,16 @@ class ScopeControls(unittest.TestCase):
         request = native_adapter.begin("attention", "ni-gpu-pool-attention-20990101-v1", identity,
                                        ops, producer=__file__)
         runs = []
-        for op, passed in zip(ops, (1, 2)):
-            log = self.out / f"{op}.log"
-            argv = ["synthetic", "-o", op, "--suite-seed", "7"]
-            failed = f"  {op}(case=failed) FAIL"
-            lines = [f"  {op}(case={i}) OK" for i in range(passed)]
-            lines += [f"  {op}(case=unsupported) not supported", failed]
-            log.write_text("\n".join(["ARGV " + json.dumps(argv), *lines]) + "\n")
-            runs.append(dict(op=op, observed=passed + 2, passed=passed, unsupported=1,
-                             failed=[failed], argv=argv, log=str(log), log_sha256=control.sha(log), seed=7, rc=1))
+        for seed in seeds:
+            for op, passed in zip(ops, (1, 2)):
+                log = self.out / f"{seed}-{op}.log"
+                argv = ["synthetic", "-o", op, "--suite-seed", str(seed)]
+                failed = f"  {op}(case=failed) FAIL"
+                lines = [f"  {op}(case={i}) OK" for i in range(passed)]
+                lines += [f"  {op}(case=unsupported) not supported", failed]
+                log.write_text("\n".join(["ARGV " + json.dumps(argv), *lines]) + "\n")
+                runs.append(dict(op=op, observed=passed + 2, passed=passed, unsupported=1,
+                                 failed=[failed], argv=argv, log=str(log), log_sha256=control.sha(log), seed=seed, rc=1))
         scope = {"model_file": control.MODEL, "device": "gfx90a", "consumer": "autokernel.planner"}
         native = dict(schema=native_adapter.NATIVE, model_free=True, synthetic_control=True,
                       row_id=request["row_id"], invocation_token=request["invocation_token"],
@@ -96,6 +148,21 @@ class ScopeControls(unittest.TestCase):
                            ("device", "gfx90a"), ("consumer", "autokernel.planner")):
             with self.subTest(key=key), self.assertRaises(ValueError):
                 Target.from_mapping({**selector, key: value})
+
+    def test_repeated_candidate_claims_can_be_bounded_by_the_reader(self):
+        self.make_capture(seeds=range(32))
+        report = self.check_capture()
+        self.assertEqual(report["ingest"]["rows_projected"], 64)
+        for op in ("ROPE", "SOFT_MAX"):
+            with self.subTest(op=op):
+                read = report["candidate_reads"][op]
+                expected = {c["claim_id"] for c in report["claims"] if c["op"] == op}
+                presented = {c["claim_id"] for c in read["claims"]}
+                self.assertEqual(len(expected), 32)
+                self.assertEqual(read["reason"], "bounded")
+                self.assertEqual(len(presented), control.CANDIDATE_TARGET_LIMIT)
+                self.assertLess(presented, expected)
+                self.assertEqual(set(read["reliance"]["accepted"]), presented)
 
     def test_native_scope_metadata_cannot_route_to_model_device_or_consumer(self):
         self.make_capture(spoof_scope=True)

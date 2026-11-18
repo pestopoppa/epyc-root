@@ -1,0 +1,7 @@
+{
+  "repo_path": "data/vidya/gpu-pool-c5-elementwise-20261118/packet/source/c5-test-backend-ops.cpp",
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "sha256": "8bf54d9d13d17f74d68aa3e23f0be2b96e833a906ec2a20dadfbb29a0829a1ca",
+  "scratch_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/source/c5-test-backend-ops.cpp",
+  "reason": "Reuse existing committed C5 source bytes; do not duplicate the 13422-line source snapshot."
+}

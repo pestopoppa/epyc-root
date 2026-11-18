@@ -19,6 +19,7 @@ CONSUMER_RELPATH = Path("scripts/kernel_rnd/autokernel/loop/belief_context.py")
 SOURCE = "gpu-pool-native"
 MODEL = "Qwen3.6-35B-A3B-Q4_K_M.gguf"
 CONTEXT = {"current_regime": {"model": {"path": MODEL}, "quant": "Q4_K_M", "backend": "gpu"}}
+CANDIDATE_TARGET_LIMIT = 16  # loop_beliefs.TIER_CAPS["target"]
 
 
 def require(condition, detail):
@@ -131,29 +132,41 @@ def check_candidate_reads(belief_context, ledger, out, request, claims, reader_h
         require(state["fresh"] is True and state["head_hash"] == reader_head and state["ledger_path"] == str(ledger),
                 "candidate reader did not check the current scratch ledger")
         checkout_checked = checked_reader_checkout(ready, pinned_snapshot=pinned_snapshot)
-        ids = {c["claim_id"] for c in expected}
+        by_id = {c["claim_id"]: c for c in expected}
         presented = evidence["claim_ids"]
-        require(set(presented) == ids and len(presented) == len(ids)
+        ids = set(presented)
+        reason = exclusion
+        if len(by_id) > CANDIDATE_TARGET_LIMIT and evidence["reasons"] == ["bounded"]:
+            require(0 < len(ids) <= CANDIDATE_TARGET_LIMIT and ids <= by_id.keys()
+                    and evidence["tiers"]["target"] == len(by_id), f"incorrect bounded candidate routing for {name}")
+            reason = "bounded"
+        else:
+            require(ids == by_id.keys(), f"incorrect candidate routing for {name}")
+        require(len(presented) == len(ids)
                 and set(belief_context.reliable_claim_ids(evidence)) == ids
                 and {c["claim_id"] for c in evidence["claims"]} == ids
+                and len(evidence["claims"]) == len(ids)
+                and all(c["source_kind"] == SOURCE and c["run"] == selector["run_id"]
+                        and all(c[key] == selector[key] for key in ("build_sha", "candidate_sha256", "op"))
+                        for c in evidence["claims"])
                 and not (evidence["not_evidence_claim_ids"] or evidence["tried_index"]
                          or any(evidence["flagged"].values())), f"incorrect candidate routing for {name}")
         section = evidence["section"]
         require(evidence["nonempty_target"] == bool(ids) and bool(section) == bool(ids)
-                and evidence["reasons"] == ([exclusion] if exclusion else []),
+                and evidence["reasons"] == ([reason] if reason else []),
                 f"incorrect candidate decision for {name}")
         if ids:
             require(ready["targets"] == [selector] and all(
                 selector[key] in section for key in ("build_sha", "candidate_sha256", "op", "run_id"))
                 and "quant unstated" not in section and "own weights" not in section
-                and all(c["partition"] in section for c in expected), f"candidate text drifted for {name}")
+                and all(by_id[cid]["partition"] in section for cid in ids), f"candidate text drifted for {name}")
         reliance = belief_context.reliance(attempts, presented, evidence["not_evidence_claim_ids"])
         require(reliance["accepted"] == [cid for cid in attempts if cid in ids]
                 and reliance["rejected"] == [{"claim_id": cid, "reason": "not_presented"}
                                              for cid in attempts if cid not in ids],
                 f"incorrect candidate reliance for {name}")
         reads[name] = {"selector": selector, "claims": evidence["claims"], "reliance": reliance,
-                       "reason": exclusion, "section_sha256": evidence["section_sha256"],
+                       "reason": reason, "section_sha256": evidence["section_sha256"],
                        "checkout_checked": checkout_checked}
     return reads
 
@@ -169,8 +182,17 @@ def validate_native_result(capture, capture_sha, record, result_path):
             and grant.get("path") == str(SCRATCH_ROOT / "compute-flags/grants" / (request["row_id"] + ".grant"))
             and isinstance(grant.get("record"), dict)
             and native.get("owned_pid_reaped") is True, "native planning requires an official capture")
-    require([run["op"] for run in runs] == request["selected_ops"]
-            and all(run["rc"] == 0 and run.get("status") == "native_exit_recorded"
+    ops = request["selected_ops"]
+    require(ops and len(ops) == len(set(ops)), "native planning requires unique selected operators")
+    if "seeds" in native:
+        seeds = native["seeds"]
+    else:
+        # Older receipts describe a single block and may omit its top-level seed.
+        seeds = [native.get("seed", runs[0]["seed"])] if runs else []
+    require(isinstance(seeds, list) and seeds and all(type(seed) is int for seed in seeds)
+            and len(seeds) == len(set(seeds)), "native planning requires a unique seed manifest")
+    require([(run["seed"], run["op"]) for run in runs] == [(seed, op) for seed in seeds for op in ops]
+            and all(type(run["seed"]) is int and run["rc"] == 0 and run.get("status") == "native_exit_recorded"
                     and run.get("generated_expected") == run["observed"] > 0 for run in runs)
             and not any(run["failed"] for run in runs), "native planning requires complete terminal invocations")
     raw_result = result_path.read_bytes()
