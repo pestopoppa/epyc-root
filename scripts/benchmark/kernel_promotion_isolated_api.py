@@ -8,7 +8,9 @@ import hashlib
 import json
 import os
 import re
+import socket
 import sys
+import time
 from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import patch
@@ -23,6 +25,11 @@ RESULT_SCHEMA = "epyc.kernel_promotion_isolated_api_observation.v1"
 ROLE_PATTERN = re.compile(r"[a-z][a-z0-9_]{0,63}")
 LOOPBACK_URL = re.compile(r"http://127\.0\.0\.1:([1-9][0-9]{3,4})")
 GENERATION_PATHS = {"/completion", "/v1/chat/completions"}
+TRACE_EVENTS = {
+    "http11.send_request_headers.started": "dispatch",
+    "http11.send_request_body.complete": "sent",
+    "http11.receive_response_headers.complete": "headers",
+}
 require = planner.require
 
 
@@ -163,7 +170,7 @@ def verify_response(body, status, role, outbound):
             "expected exactly one successful upstream generation")
 
 
-def run_isolated_chat(role, url, port, timeout, output, fence, result):
+def run_isolated_chat(role, url, port, timeout, output, fence, result, witness=None):
     import httpx
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
@@ -208,6 +215,17 @@ def run_isolated_chat(role, url, port, timeout, output, fence, result):
                    and (target.scheme, target.host, target.port) == ("http", "127.0.0.1", port))
         row["allowed"] = allowed
         require(allowed, f"isolated API refused HTTP destination {target}")
+        if witness is not None:
+            request_id = len(outbound)
+            generation = request.method == "POST" and target.path in GENERATION_PATHS
+            witness("connect", request_id)
+
+            def trace(name, _info):
+                event = TRACE_EVENTS.get(name)
+                if event == "dispatch" or (event is not None and generation):
+                    witness(event, request_id)
+
+            request.extensions["trace"] = trace
         kwargs["follow_redirects"] = False
         response = send(client, request, **kwargs)
         row["status_code"] = response.status_code
@@ -243,6 +261,7 @@ def main(argv=None):
     parser.add_argument("--port", type=int, help="disambiguate repeated rows for the forced role")
     parser.add_argument("--timeout", type=int, default=30)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--witness-fd", type=int, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     try:
         require(1 <= args.timeout <= 3600, "invalid request timeout")
@@ -274,7 +293,18 @@ def main(argv=None):
         sys.path.insert(0, str(orchestrator))
         url, port = select_endpoint(plan["endpoint_manifest"], args.role, args.port, forbidden_ports(inherited_defaults))
         result["base_url"] = url
-        run_isolated_chat(args.role, url, port, args.timeout, output, fence, result)
+        if args.witness_fd is None:
+            run_isolated_chat(args.role, url, port, args.timeout, output, fence, result)
+        else:
+            with socket.socket(fileno=args.witness_fd) as channel:
+                channel.settimeout(args.timeout)
+
+                def witness(event, request_id):
+                    channel.send(json.dumps([event, request_id, time.monotonic_ns()]).encode())
+                    if event in {"connect", "dispatch"}:
+                        require(channel.recv(16) == b"allow", "hot-stack runner refused upstream dispatch")
+
+                run_isolated_chat(args.role, url, port, args.timeout, output, fence, result, witness)
         result["status"] = "passed"
     except Exception as exc:
         result.update(status="failed", error=f"{type(exc).__name__}: {exc}")

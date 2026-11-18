@@ -3,6 +3,7 @@
 import importlib.util
 import json
 import os
+import socket
 import sys
 import threading
 import time
@@ -362,6 +363,140 @@ def test_execute_preserves_requested_pair_refusal(tmp_path):
     assert (tmp_path / 'COMPLETE').is_file()
 
 
+@pytest.mark.parametrize('outcome', ['pass', 'late', 'scan-failure', 'dispatch-refusal'])
+def test_isolated_api_observes_upstream_generation_and_keeps_raw_capture(tmp_path, monkeypatch, outcome):
+    port = 19520
+    url = f'http://127.0.0.1:{port}'
+    role = 'frontdoor'
+    plan_sha = 'a' * 64
+    cgroup = '0::/rowflow/example@1234'
+    manifest = {'schema': runner.isolated_api.MANIFEST_SCHEMA,
+                'endpoints': [{'base_url': url, 'role': role, 'kind': 'chat'}]}
+    admission = SimpleNamespace(deadline=time.time() + 15, check=lambda: None, env={}, cgroup=cgroup)
+    runtime = runner.Runtime({'endpoint_manifest': manifest}, tmp_path / 'plan.json', tmp_path, admission,
+                             5, 5, plan_sha256=plan_sha)
+    runtime.servers = [SimpleNamespace(pid=100, birth=1000, port=port, image={},
+                                      endpoint={'test': 'chat', 'roles': [role], 'endpoint': url})]
+    worker_proc = tmp_path / 'proc' / '200'
+    worker_proc.mkdir(parents=True)
+    (worker_proc / 'cgroup').write_text(cgroup)
+    monkeypatch.setattr(runner, 'PROC', worker_proc.parent)
+    monkeypatch.setattr(runner.owned, 'birth', lambda pid: 2000 if pid == 200 else None)
+    sampled = threading.Event()
+    headers = threading.Event()
+    checks = []
+    raw = b'{"routed_to":"frontdoor","answer":"ok"}'
+
+    def verify(server):
+        assert server is runtime.servers[0]
+        checks.append(server.pid)
+        if len(checks) == 3 and outcome == 'dispatch-refusal':
+            raise ValueError('listener identity changed before dispatch')
+
+    def sample(server):
+        sampled.set()
+        if outcome == 'late':
+            assert headers.wait(3)
+        if outcome == 'scan-failure':
+            raise ValueError('NUMA policy changed')
+        return {'threads': {100: {'cpus': [0], 'numa_policy': 'bind:0'}}, 'backend': {'kfd_client': False}}
+
+    class Worker:
+        pid = 200
+
+        def __init__(self, command, *, env, stdout, stderr, pass_fds):
+            assert command[command.index('--plan-sha256') + 1] == plan_sha
+            assert command[command.index('--port') + 1] == str(port)
+            output = Path(command[command.index('--output-dir') + 1])
+            fd = os.dup(pass_fds[0])
+            self.returncode = None
+            self.failure = None
+
+            def dispatch():
+                with socket.socket(fileno=fd) as channel:
+                    channel.settimeout(3)
+
+                    def emit(event):
+                        channel.send(json.dumps([event, 1, time.monotonic_ns()]).encode())
+
+                    emit('connect')
+                    assert channel.recv(16) == b'allow'
+                    emit('dispatch')
+                    allowed = channel.recv(16) == b'allow'
+                    assert allowed == (outcome != 'dispatch-refusal')
+                    if allowed:
+                        emit('sent')
+                        assert sampled.wait(3)
+                        if outcome == 'pass':
+                            time.sleep(0.1)
+                        emit('headers')
+                        headers.set()
+                    output.mkdir()
+                    (output / 'response.body').write_bytes(raw if allowed else b'Internal Server Error')
+                    runner.planner.write_new(output / 'result.json', {
+                        'status': 'passed' if allowed else 'failed', 'plan_sha256': plan_sha, 'role': role,
+                        'base_url': url, 'error': 'refused dispatch',
+                        'outbound': [{'method': 'POST', 'path': '/completion'}],
+                    })
+                    self.returncode = 0 if allowed else 1
+
+            def run():
+                try:
+                    dispatch()
+                except BaseException as exc:
+                    self.failure = exc
+                    self.returncode = 1
+
+            self.thread = threading.Thread(target=run, daemon=True)
+            self.thread.start()
+
+        def poll(self):
+            return self.returncode
+
+        def wait(self, timeout):
+            self.thread.join(timeout)
+            assert not self.thread.is_alive()
+            if self.failure is not None:
+                raise self.failure
+            return self.returncode
+
+        def terminate(self):
+            pytest.fail('worker should have completed normally')
+
+    monkeypatch.setattr(runtime, 'verify_identity', verify)
+    monkeypatch.setattr(runtime, 'sample', sample)
+    monkeypatch.setattr(runner.subprocess, 'Popen', Worker)
+    if outcome == 'pass':
+        runtime.isolated_api_smoke(role, port)
+    else:
+        errors = {'late': 'inside isolated API generation', 'scan-failure': 'NUMA policy changed',
+                  'dispatch-refusal': 'refused dispatch'}
+        with pytest.raises(ValueError, match=errors[outcome]):
+            runtime.isolated_api_smoke(role, port)
+    directory = tmp_path / 'isolated-api'
+    observed = runner.planner.read_json(directory / 'during-request.json')['requests']['1']
+    assert bool(observed['samples']) == (outcome == 'pass')
+    assert (directory / 'consumer' / 'response.body').read_bytes() == (
+        b'Internal Server Error' if outcome == 'dispatch-refusal' else raw)
+    result = runner.planner.read_json(directory / 'result.json')
+    assert result['status'] == ('pass' if outcome == 'pass' else 'failed')
+    assert result['worker_pid'] == 200 and result['worker_birth'] == 2000
+    assert result['worker_cgroup'] == cgroup and result['worker_cleanup_proved'] is True
+    assert result['worker_returncode'] == int(outcome == 'dispatch-refusal')
+
+
+def test_isolated_api_refuses_role_without_ready_owned_chat_server(tmp_path):
+    url = 'http://127.0.0.1:19520'
+    manifest = {'schema': runner.isolated_api.MANIFEST_SCHEMA,
+                'endpoints': [{'base_url': url, 'role': 'frontdoor', 'kind': 'chat'}]}
+    runtime = runner.Runtime({'endpoint_manifest': manifest}, tmp_path / 'plan.json', tmp_path,
+                             SimpleNamespace(check=lambda: None), 5, 5)
+    with pytest.raises(ValueError, match='no ready owned chat server'):
+        runtime.isolated_api_smoke('frontdoor', None)
+    assert runner.planner.read_json(tmp_path / 'isolated-api' / 'result.json')['status'] == 'failed'
+    assert not (tmp_path / 'isolated-api' / 'consumer').exists()
+
+
 @pytest.mark.parametrize(('choice_override', 'response_override', 'expected'), [
     ({}, {}, ('complete', 'complete', 'complete')),
     ({'finish_reason': 'length'}, {}, ('incomplete', 'complete', 'complete')),
@@ -396,10 +531,11 @@ def test_embedding_rejects_bad_indices_and_zero_vectors():
         runner.response_check('embedding', request, {'data': [good['data'][0], {'index': 1, 'embedding': [0, 0]}]})
 
 
-@pytest.mark.parametrize(('failed_start', 'proved', 'verdict'), [
-    (False, True, 'pass'), (True, True, 'failed'), (False, False, 'failed'),
+@pytest.mark.parametrize(('failed_start', 'proved', 'api', 'verdict'), [
+    (False, True, False, 'pass'), (True, True, False, 'failed'), (False, False, False, 'failed'),
+    (False, True, True, 'pass'), (True, True, True, 'failed'), (False, False, True, 'failed'),
 ])
-def test_execute_serial_startup_and_seal_only_after_cleanup(tmp_path, failed_start, proved, verdict):
+def test_execute_serial_startup_and_seal_only_after_cleanup(tmp_path, failed_start, proved, api, verdict):
     order = []
     servers = []
     ports = (19520, 19521)
@@ -421,18 +557,30 @@ def test_execute_serial_startup_and_seal_only_after_cleanup(tmp_path, failed_sta
         return {'spawn_unproved': not proved, 'servers': {str(server.port): {'pidfd_exited': True, 'reaped_rc': -15,
                 'port_closed': True, 'kfd_absent': True} for server in servers}}
 
+    def isolated_api_smoke(role, port):
+        assert role == 'frontdoor' and port == ports[0]
+        assert order[-1] == ('smoke', ports[1])
+        order.append(('api',))
+
     runtime = SimpleNamespace(output=tmp_path, plan={'endpoints': endpoints}, servers=servers, start=start,
                               preflight=lambda: order.append(('preflight',)),
                               verify_model_inputs=lambda: order.append(('model_inputs',)),
                               ready=lambda server: order.append(('ready', server.port)) or {},
                               verify_identity=lambda server: order.append(('verify', server.port)),
                               smoke=lambda server, _: order.append(('smoke', server.port)), check=lambda: None,
-                              cleanup=cleanup)
-    assert runner.execute(runtime) == (0 if verdict == 'pass' else 2)
+                              cleanup=cleanup, isolated_api_smoke=isolated_api_smoke)
+    options = {'api_role': 'frontdoor', 'api_port': ports[0]} if api else {}
+    assert runner.execute(runtime, **options) == (0 if verdict == 'pass' else 2)
     assert order[:5] == [('preflight',), ('model_inputs',), ('start', ports[0]), ('ready', ports[0]), ('start', ports[1])]
     assert (('smoke', ports[0]) in order) == (not failed_start)
+    assert (('api',) in order) == (api and not failed_start)
     assert order[-1] == ('cleanup',)
-    assert runner.planner.read_json(tmp_path / 'result.json')['functional_smoke'] == verdict
+    result = runner.planner.read_json(tmp_path / 'result.json')
+    assert result['functional_smoke'] == verdict
+    if api:
+        assert result['isolated_api']['status'] == ('not_run' if failed_start else 'pass')
+    else:
+        assert 'isolated_api' not in result
     if proved:
         manifest = tmp_path / 'MANIFEST.json'
         assert runner.planner.read_json(manifest)['functional_smoke'] == verdict

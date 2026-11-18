@@ -402,8 +402,18 @@ def test_exclusive_self_calibration_checks_live_claim_before_matrix(tmp_path, mo
         runtime.preflight(tmp_path)
 
 
-def test_exclusive_self_calibration_retains_competing_workload_refusal(tmp_path, monkeypatch):
-    k35 = SimpleNamespace(write_json=write_json, collect_process_blockers=lambda: [{"pid": 10}])
+OCR_BLOCKER = {
+    "pid": 3223248,
+    "comm": "llama-server",
+    "args": f"{runner.V10_CPU_BINARY} --alias lightonocr-2-1b -m "
+            "/mnt/raid0/llm/models/LightOnOCR-2-1B-bbox-F16.gguf --port 9003 -t 24 --device none -ngl 0",
+    "reason": "llama workload",
+}
+
+
+@pytest.mark.parametrize("blocker", [OCR_BLOCKER, {"error": "ps failed"}])
+def test_exclusive_self_calibration_retains_competing_workload_refusal(tmp_path, monkeypatch, blocker):
+    k35 = SimpleNamespace(write_json=write_json, collect_process_blockers=lambda: [blocker])
     args = SimpleNamespace(exclusive_self_calibration=True, claim_open=tmp_path / "claim", base_port=19360)
     runtime = runner.Runtime(k35, args)
     runtime.calibration_image = object()
@@ -416,7 +426,30 @@ def test_exclusive_self_calibration_retains_competing_workload_refusal(tmp_path,
     monkeypatch.setattr(runner.subprocess, "run", lambda *_args, **_kwargs: pytest.fail("linkage ran with blockers"))
     with pytest.raises(RuntimeError, match="competing workloads"):
         runtime.preflight(tmp_path)
-    assert runner.read_json(tmp_path / "process-blockers.json") == [{"pid": 10}]
+    assert runner.read_json(tmp_path / "process-blockers.json") == [blocker]
+
+
+@pytest.mark.parametrize("blockers, code", [([OCR_BLOCKER], 75), ([], 0)])
+def test_workload_quiet_check_runs_without_claim_or_model_launch(tmp_path, monkeypatch, blockers, code):
+    k35 = SimpleNamespace(write_json=write_json, collect_process_blockers=lambda: blockers)
+    monkeypatch.setattr(runner, "load_k35", lambda _: k35)
+    monkeypatch.setattr(runner, "validate_inputs", lambda *_: None)
+    monkeypatch.setattr(runner, "verify_claim", lambda *_: pytest.fail("workload check acquired a claim"))
+    monkeypatch.setattr(runner, "execute_plan", lambda *_: pytest.fail("workload check entered inference"))
+    input_path = tmp_path / "plan.json"
+    write_json(input_path, {})
+    output = tmp_path / "check"
+    assert runner.main([
+        "--plan", str(input_path), "--output", str(output), "--k35-sha256", "test",
+        "--production-binary", "production", "--production-sha256", "test",
+        "--candidate-binary", "candidate", "--candidate-sha256", "test",
+        "--kv-mode", "split", "--check-workload-quiet",
+    ]) == code
+    report = output / "process-blockers.json"
+    if blockers:
+        assert runner.read_json(report) == blockers
+    else:
+        assert not report.exists()
 
 
 @pytest.mark.parametrize("defect", ["mixed", "non-v10", "narrow-cpu", "gpu", "drafter"])

@@ -54,17 +54,19 @@ Dedicated cache prewarm, model-content hashing, and architecture/backend-specifi
 
 ## Run the isolated forced-role API smoke
 
-Use this diagnostic from the session that already owns the live isolated candidate listener and its compute grant. It consumes the prepared plan's `endpoint_manifest`. Choose one chat role named in the manifest. If the role has multiple rows, pass its isolated `--port` explicitly.
+Add `--api-role` to the live runner to exercise the real orchestrator `/chat` route after the stack is ready and the endpoint smokes finish. Choose one chat role named in the prepared plan's `endpoint_manifest`. If the role has multiple rows, pass its isolated `--api-port` explicitly.
 
 ```bash
 /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B \
-  scripts/benchmark/kernel_promotion_isolated_api.py \
+  scripts/benchmark/kernel_promotion_hot_stack_runner.py \
   --plan "$scratch/hot-stack-plan/plan.json" \
   --plan-sha256 "$prepared_plan_sha256" \
-  --role frontdoor --port "$isolated_frontdoor_port" \
+  --api-role frontdoor --api-port "$isolated_frontdoor_port" \
   --output-dir "$scratch/forced-api-observation"
 ```
 
-The script mounts the real `/chat` handler in a private in-process FastAPI app with fresh request state and a single allowed loopback destination. The request supplies exactly one `server_urls` entry and forces real direct mode. The script checks that the route constructs exactly that request-sourced backend. The manifest must use canonical `http://127.0.0.1:<port>` origins. Production and default ports are refused across the entire manifest, including auxiliary services, aliases and all launched instances. The app bypasses production startup and MemRL initialization, and uses private runtime paths.
+The runner selects the ready owned listener for the role and starts a private API subprocess in the grant's cleanup cgroup. The subprocess mounts the real `/chat` handler with fresh FastAPI state and a single allowed loopback destination. The request supplies exactly one `server_urls` entry and forces real direct mode. The consumer checks that the route constructs exactly that request-sourced backend. The manifest must use canonical `http://127.0.0.1:<port>` origins. Production and default ports are refused across the entire manifest, including auxiliary services, aliases and all launched instances. The app bypasses production startup and MemRL initialization, and uses private runtime paths.
 
-The new output directory keeps the exact API request body in `request.json`, the received response body in `response.body`, and status, plan digest, destination and observed upstream HTTP calls in `result.json`. A pass requires HTTP 200, direct real mode, the requested role as the sole role in the history, a successful answer, and one successful upstream generation request. Upstream records contain method, URL and HTTP status. Listener ownership, runtime witnessing and teardown belong to the calling session. This diagnostic has observation-only authority.
+The runner approves each upstream connection and dispatch after rechecking listener identity. It uses the HTTP transport's upload-complete and response-headers timestamps to require a complete affinity, NUMA and backend scan inside the upstream generation request. A scan ending after response headers cannot count. A pass also requires HTTP 200, direct real mode, the requested role as the sole role in the history, a successful answer and one successful upstream generation request.
+
+The observation keeps the exact API request body in `isolated-api/consumer/request.json`, any received response in `isolated-api/consumer/response.body`, and the plan digest, destination, upstream calls and API verdict in `isolated-api/consumer/result.json`. The surrounding `isolated-api/` directory records the worker's identity and exit, the generation witness and any runner refusal. The overall seal requires proved teardown of the API subprocess and the entire stack. The diagnostic carries observation-only status.

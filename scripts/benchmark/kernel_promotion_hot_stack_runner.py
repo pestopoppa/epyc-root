@@ -10,8 +10,10 @@ import json
 import math
 import os
 import re
+import select
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 import threading
@@ -30,6 +32,7 @@ sys.path[:0] = [str(Path(__file__).resolve().parent),
 import affinity_guard
 import kernel_promotion_evidence as evidence
 import kernel_promotion_hot_stack as planner
+import kernel_promotion_isolated_api as isolated_api
 import owned
 
 FLAGS = planner.SCRATCH / 'compute-flags'
@@ -455,9 +458,10 @@ class Server:
 
 
 class Runtime:
-    def __init__(self, plan, plan_path, directory, admission, startup_timeout, request_timeout):
+    def __init__(self, plan, plan_path, directory, admission, startup_timeout, request_timeout, *, plan_sha256=None):
         self.plan = plan
         self.plan_path = plan_path
+        self.plan_sha256 = plan_sha256
         self.output = directory
         self.admission = admission
         self.startup_timeout = startup_timeout
@@ -733,6 +737,137 @@ class Runtime:
                           {'status': 'pass' if passed else 'failed', 'ports': ports, 'failures': failures, 'overlap': overlap})
         require(passed, 'paired concurrency requires two successful requests and overlapping complete witness scans')
 
+    def observe_api_worker(self, proc, channel, server, deadline, capture):
+        requests = capture['requests']
+        active = None
+        next_scan = 0
+        while True:
+            self.check()
+            remaining = deadline - time.monotonic()
+            require(remaining > 0, 'isolated API worker exceeded its request deadline')
+            running = proc.poll() is None
+            if select.select([channel], [], [], min(remaining, 0.02) if running else 0)[0]:
+                event, request_id, stamp = json.loads(channel.recv(1024))
+                fields = ('connect', 'dispatch', 'sent', 'headers')
+                require(event in fields and type(request_id) is int and request_id > 0
+                        and type(stamp) is int and capture['start_ns'] <= stamp <= time.monotonic_ns(),
+                        'invalid isolated API trace event')
+                row = requests.setdefault(str(request_id), {'samples': []})
+                position = fields.index(event)
+                previous = fields[position - 1] if position else None
+                require(event not in row and (previous is None or row.get(previous, math.inf) <= stamp),
+                        'out-of-order isolated API trace event')
+                row[event] = stamp
+                if event in {'connect', 'dispatch'}:
+                    try:
+                        self.verify_identity(server)
+                    except Exception as exc:
+                        capture.setdefault('witness_failure', f'{type(exc).__name__}: {exc}')
+                        channel.send(b'deny')
+                    else:
+                        channel.send(b'allow')
+                elif event == 'sent':
+                    require(active is None, 'overlapping generation requests in isolated API smoke')
+                    active = row
+                    next_scan = 0
+                else:
+                    require(active is row, 'isolated API headers do not match the generation request')
+                    row['samples'] = [sample for sample in row['samples'] if sample['end_ns'] <= stamp]
+                    active = None
+            elif not running:
+                return
+            if active is not None and 'witness_failure' not in capture and time.monotonic() >= next_scan:
+                start = time.monotonic_ns()
+                try:
+                    witness = self.sample(server)
+                except Exception as exc:
+                    capture['witness_failure'] = f'{type(exc).__name__}: {exc}'
+                else:
+                    end = time.monotonic_ns()
+                    active['samples'].append({'start_ns': start, 'end_ns': end, 'witness': witness})
+                    next_scan = time.monotonic() + 0.1
+
+    def isolated_api_smoke(self, role, port):
+        directory = self.output / 'isolated-api'
+        directory.mkdir(mode=0o700)
+        capture = {'start_ns': time.monotonic_ns(), 'requests': {}}
+        result = {'status': 'failed', 'role': role, 'requested_port': port}
+        try:
+            self.check()
+            url, selected_port = isolated_api.select_endpoint(self.plan['endpoint_manifest'], role, port, set())
+            matches = [server for server in self.servers if server.port == selected_port
+                       and server.endpoint['test'] == 'chat' and server.endpoint['endpoint'] == url
+                       and server.endpoint['roles'][0] == role]
+            require(len(matches) == 1 and matches[0].image is not None, 'forced role has no ready owned chat server')
+            server = matches[0]
+            result.update(base_url=url, port=selected_port, pid=server.pid, birth=server.birth)
+            self.verify_identity(server)
+            require(planner.is_hash(self.plan_sha256), 'isolated API requires the admitted plan digest')
+            consumer = canonical_file(Path(isolated_api.__file__).resolve())
+            result['consumer_sha256'] = planner.digest(consumer)
+            output = directory / 'consumer'
+            budget = self.timeout(self.request_timeout)
+            require(budget >= 1, 'isolated API has no complete second left in the grant')
+            deadline = time.monotonic() + budget
+            channel, child = socket.socketpair(socket.AF_UNIX, socket.SOCK_DGRAM)
+            with channel, child, (directory / 'consumer.log').open('xb') as log:
+                command = [sys.executable, '-I', '-B', str(consumer), '--plan', str(self.output / 'plan.json'),
+                           '--plan-sha256', self.plan_sha256, '--output-dir', str(output), '--role', role,
+                           '--port', str(selected_port), '--timeout', str(int(budget)),
+                           '--witness-fd', str(child.fileno())]
+                proc = subprocess.Popen(command, env=os.environ | self.admission.env, stdout=log,
+                                        stderr=subprocess.STDOUT, pass_fds=(child.fileno(),))
+                result.update(worker_pid=proc.pid, worker_cleanup_proved=False)
+                try:
+                    child.close()
+                    result['worker_birth'] = owned.birth(proc.pid)
+                    result['worker_cgroup'] = (PROC / str(proc.pid) / 'cgroup').read_text().strip()
+                    require(result['worker_cgroup'] == self.admission.cgroup,
+                            'isolated API worker escaped the Rowflow cleanup cgroup')
+                    self.observe_api_worker(proc, channel, server, deadline, capture)
+                finally:
+                    try:
+                        if proc.poll() is None:
+                            proc.terminate()
+                        result['worker_returncode'] = proc.wait(timeout=2)
+                    except subprocess.TimeoutExpired:
+                        try:
+                            proc.kill()
+                            result['worker_returncode'] = proc.wait(timeout=3)
+                        except BaseException:
+                            self.spawn_unproved = True
+                            raise
+                    except BaseException:
+                        self.spawn_unproved = True
+                        raise
+                    result['worker_cleanup_proved'] = True
+            api_result = planner.read_json(output / 'result.json')
+            require(result['worker_returncode'] == 0 and api_result['status'] == 'passed',
+                    api_result.get('error', 'isolated API consumer failed'))
+            require(api_result['plan_sha256'] == self.plan_sha256 and api_result['role'] == role
+                    and api_result['base_url'] == url, 'isolated API result changed its endpoint binding')
+            require('witness_failure' not in capture, capture.get('witness_failure', ''))
+            generation = [str(index) for index, call in enumerate(api_result['outbound'], 1)
+                          if call['method'] == 'POST' and call['path'] in isolated_api.GENERATION_PATHS]
+            require(len(generation) == 1, 'isolated API did not record exactly one generation')
+            row = capture['requests'].get(generation[0], {})
+            require('headers' in row and row['samples'],
+                    'no complete affinity, NUMA, and backend scan inside isolated API generation request')
+            require(all('dispatch' in capture['requests'].get(str(index), {})
+                        for index in range(1, len(api_result['outbound']) + 1)),
+                    'isolated API outbound call is missing its dispatch identity witness')
+            self.verify_identity(server)
+            result.update(status='pass', generation_request=generation[0])
+        except Exception as exc:
+            result['error'] = f'{type(exc).__name__}: {exc}'
+            raise
+        finally:
+            for row in capture['requests'].values():
+                if 'headers' not in row:
+                    row['samples'] = []
+            planner.write_new(directory / 'during-request.json', capture)
+            planner.write_new(directory / 'result.json', result)
+
     def cleanup(self):
         result = {}
         for sig in (signal.SIGTERM, signal.SIGKILL):
@@ -783,9 +918,10 @@ def seal(output, verdict):
         os.close(fd)
 
 
-def execute(runtime, *, paired_concurrency=False):
+def execute(runtime, *, paired_concurrency=False, api_role=None, api_port=None):
     output = runtime.output
     failure = None
+    api_status = 'not_run'
     try:
         selected = runtime.select_pair() if paired_concurrency else None
         runtime.preflight()
@@ -802,6 +938,10 @@ def execute(runtime, *, paired_concurrency=False):
             runtime.smoke(server, output / str(server.port))
         if selected is not None:
             runtime.paired_smoke(selected)
+        if api_role is not None:
+            api_status = 'failed'
+            runtime.isolated_api_smoke(api_role, api_port)
+            api_status = 'pass'
         runtime.check()
     except Exception as exc:
         failure = f'{type(exc).__name__}: {exc}'
@@ -820,9 +960,12 @@ def execute(runtime, *, paired_concurrency=False):
         except (OSError, ValueError) as exc:
             artifact_failures.append(f'port {server.port}: {exc}')
     verdict = 'pass' if failure is None and not artifact_failures and cleanup_proved(cleanup) else 'failed'
-    planner.write_new(output / 'result.json', {'schema': SCHEMA, 'functional_smoke': verdict, 'failure': failure,
-                                               'artifact_failures': artifact_failures, 'cleanup_proved': cleanup_proved(cleanup),
-                                               'paired_concurrency_requested': paired_concurrency})
+    result = {'schema': SCHEMA, 'functional_smoke': verdict, 'failure': failure,
+              'artifact_failures': artifact_failures, 'cleanup_proved': cleanup_proved(cleanup),
+              'paired_concurrency_requested': paired_concurrency}
+    if api_role is not None:
+        result['isolated_api'] = {'role': api_role, 'requested_port': api_port, 'status': api_status}
+    planner.write_new(output / 'result.json', result)
     if cleanup_proved(cleanup):
         seal(output, verdict)
     return 0 if verdict == 'pass' else 2
@@ -837,7 +980,11 @@ def main(argv=None):
     parser.add_argument('--request-timeout', type=int, default=60)
     parser.add_argument('--paired-concurrency', action='store_true',
                         help='also test one explicitly allowed disjoint endpoint pair')
+    parser.add_argument('--api-role', help='also run the isolated forced-role /chat smoke for this role')
+    parser.add_argument('--api-port', type=int, help='isolated port for the forced role when it has multiple instances')
     args = parser.parse_args(argv)
+    if args.api_port is not None and args.api_role is None:
+        parser.error('--api-port requires --api-role')
     try:
         plan_path = canonical_file(args.plan)
         output = args.output_dir
@@ -858,13 +1005,16 @@ def main(argv=None):
         plan = regenerate(plan, plan_path.parent, output / 'artifact-ledger.json')
         (output / 'plan.json').write_bytes(plan_bytes)
         planner.write_new(output / 'admission.json', admission.witness())
-        planner.write_new(output / 'inputs.json', {'plan_sha256': args.plan_sha256, 'runner_sha256': planner.digest(Path(__file__)),
-                                                   'linkage_sha256': planner.digest(LINKAGE),
-                                                   'paired_concurrency_requested': args.paired_concurrency})
-        runtime = Runtime(plan, plan_path, output, admission, args.startup_timeout, args.request_timeout)
+        inputs = {'plan_sha256': args.plan_sha256, 'runner_sha256': planner.digest(Path(__file__)),
+                  'linkage_sha256': planner.digest(LINKAGE), 'paired_concurrency_requested': args.paired_concurrency}
+        if args.api_role is not None:
+            inputs.update(api_role=args.api_role, api_port=args.api_port)
+        planner.write_new(output / 'inputs.json', inputs)
+        runtime = Runtime(plan, plan_path, output, admission, args.startup_timeout, args.request_timeout,
+                          plan_sha256=args.plan_sha256)
         previous = {sig: signal.signal(sig, lambda signum, _: setattr(runtime, 'interrupted', signum)) for sig in SIGNALS}
         try:
-            return execute(runtime, paired_concurrency=args.paired_concurrency)
+            return execute(runtime, paired_concurrency=args.paired_concurrency, api_role=args.api_role, api_port=args.api_port)
         finally:
             for sig, handler in previous.items():
                 signal.signal(sig, handler)

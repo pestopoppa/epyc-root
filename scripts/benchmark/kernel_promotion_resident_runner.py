@@ -275,6 +275,12 @@ class Runtime:
             raise InterruptedError("resident request window ended")
         return min(configured, remaining)
 
+    def check_process_blockers(self, output):
+        blockers = self.k35.collect_process_blockers()
+        if blockers:
+            self.k35.write_json(output / "process-blockers.json", blockers)
+        return blockers
+
     def preflight(self, output):
         receipt = verify_claim(self.args.claim_open)
         self.timeout(1, receipt)
@@ -293,9 +299,7 @@ class Runtime:
                 raise ValueError("exclusive self-calibration image pins were not validated")
             self.k35.write_json(output / "host.json", verify_calibration_host())
         self.check_contention_matrix(output)
-        blockers = self.k35.collect_process_blockers()
-        if blockers:
-            self.k35.write_json(output / "process-blockers.json", blockers)
+        if self.check_process_blockers(output):
             raise RuntimeError("K35 reports competing workloads")
         for arm in resident_plan.ARMS:
             binary = self.binary(arm)
@@ -886,7 +890,10 @@ def main(argv=None):
     parser.add_argument("--compare-fresh", action="store_true", help="replay the schedule after a complete resident run")
     parser.add_argument("--exclusive-self-calibration", action="store_true",
                         help="permit age-only matrix staleness for the unsealed v10 CPU self-calibration")
-    parser.add_argument("--apply", action="store_true", help="launch only under a verified provider receipt")
+    execution = parser.add_mutually_exclusive_group()
+    execution.add_argument("--apply", action="store_true", help="launch only under a verified provider receipt")
+    execution.add_argument("--check-workload-quiet", action="store_true",
+                           help="check pinned K35 process blockers without launching; exit 75 if blocked")
     args = parser.parse_args(argv)
     if not 1024 <= args.base_port < 65535 or min(args.startup_timeout, args.request_timeout) <= 0:
         parser.error("invalid base port or timeout")
@@ -903,6 +910,12 @@ def main(argv=None):
         validate_inputs(plan, args, runtime)
         if args.evidence_pins is not None:
             validate_evidence_inputs(plan, hashlib.sha256(plan_bytes).hexdigest(), args, runtime)
+        if args.check_workload_quiet:
+            args.output.mkdir(parents=True)
+            if runtime.check_process_blockers(args.output):
+                print(f"K35 reports competing workloads; see {args.output / 'process-blockers.json'}", file=sys.stderr)
+                return 75
+            return 0
         if not args.apply:
             print(f"validated observation-only plan {plan['schedule_sha256']}")
             return 0

@@ -114,3 +114,20 @@ independently parsing the matrix and matching its full topology fingerprint.
 Missing or invalid matrices and changed topology remain failures. This mode
 cannot produce a sealed promotion packet or authorize candidate admission;
 ordinary resident/fresh and hot-stack runs retain strict freshness checks.
+
+
+The 2026-11-18 resident and fresh retries both stopped before inference:
+K35 recorded the LightOnOCR server on port 9003 (captured PID 3223248) as a
+competing workload. Both attempts are filed FAIL; neither supplies calibration
+or parity evidence. The live process snapshot showed CPU affinity 0–191,
+overlapping the requested physical CPUs0–95. Preserve this refusal and arrange
+any serving quiet window through the service owner; a provider claim alone
+does not remove an already-running process.
+
+`--check-workload-quiet` runs the pinned K35 blocker detector without launching
+a server or acquiring a claim, writes `process-blockers.json` when blocked,
+and exits75. It validates the same immutable inputs first. The replacement
+launch packet uses this check before requesting its provider receipt, then
+repeats admission under the live claim to close the intervening race. Its
+failure result retains the blocker records and path. This screen never
+relaxes the claimed preflight or establishes measurement readiness by itself.

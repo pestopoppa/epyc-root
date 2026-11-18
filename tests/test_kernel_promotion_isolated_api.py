@@ -141,6 +141,7 @@ def test_real_chat_route_uses_only_selected_mock_backend(tmp_path):
     fixture = r"""
 import importlib.util
 import json
+import logging
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -154,6 +155,7 @@ sys.path.insert(0, str(orchestrator))
 
 import httpx
 import httpx._client
+from httpcore._trace import Trace
 
 def no_connections(event, args):
     if event == "socket.connect":
@@ -165,11 +167,19 @@ assert {8000, 8080, 8083, 19111} <= isolated.forbidden_ports(["http://localhost:
 
 def fake_server(request):
     assert (request.url.scheme, request.url.host, request.url.port) == ("http", "127.0.0.1", 18600)
+    logger = logging.getLogger("httpcore.http11")
+    with Trace("send_request_headers", logger, request):
+        pass
+    with Trace("send_request_body", logger, request):
+        raw = request.read()
+    with Trace("receive_response_headers", logger, request):
+        return fake_response(request, raw)
+
+def fake_response(request, raw):
     if request.method == "GET":
         assert request.url.path in {"/props", "/slots", "/metrics", "/health"}
         return httpx.Response(404)
     assert request.url.path in isolated.GENERATION_PATHS
-    raw = request.read()
     assert b"Return the single word ok." in raw
     streaming = json.loads(raw).get("stream", False)
     if request.url.path == "/completion":
@@ -187,11 +197,15 @@ def mock_transport(**kwargs):
     return httpx.MockTransport(fake_server)
 
 fence = isolated.SocketFence()
-result = {"outbound": []}
+result = {"outbound": [], "witness_events": []}
+
+def witness(event, request_id):
+    result["witness_events"].append([event, request_id])
+
 with patch.object(httpx, "HTTPTransport", mock_transport), patch.object(
     httpx._client, "HTTPTransport", mock_transport
 ):
-    isolated.run_isolated_chat("frontdoor", url, 18600, 10, output, fence, result)
+    isolated.run_isolated_chat("frontdoor", url, 18600, 10, output, fence, result, witness)
 (output / "test-result.json").write_text(json.dumps(result))
 """
     orchestrator = isolated.planner.ORCHESTRATOR
@@ -208,3 +222,7 @@ with patch.object(httpx, "HTTPTransport", mock_transport), patch.object(
     assert response["routed_to"] == "frontdoor" and response["answer"] == "ok"
     assert observed["server_urls_source"] == "request"
     assert any(row["status_code"] == 200 and row["method"] == "POST" for row in observed["outbound"])
+    for index, row in enumerate(observed["outbound"], 1):
+        events = [event for event, request_id in observed["witness_events"] if request_id == index]
+        assert events == (["connect", "dispatch", "sent", "headers"]
+                          if row["method"] == "POST" else ["connect", "dispatch"])
