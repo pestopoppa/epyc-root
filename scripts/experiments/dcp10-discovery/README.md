@@ -339,3 +339,79 @@ disposable project lock to skip reindexing and keeps every canonical payload
 read-only. The row independently reconciles actual rendered file/line coverage
 with the scorer, retaining empty and failed attempts. Missing tasks remain UNKNOWN.
 Preparation, qualification and official cohort outcomes remain separate.
+
+## GitNexus direct-edge fixture controls
+
+`gitnexus_compare.py` verifies the original lexical request, lexical predictions,
+dispositions and pinned scorer/application bytes. The three selected task IDs and
+checkout roots stay fixed. The fixture seeds go through the existing ColGREP
+result normalization, top-20 retrieval limit, eight-file cap and source-path
+checks. The two graph policies use the same direct-edge rows. The fixture score
+matrix contains the three synthetic arms and keeps one attempt per task and arm
+at discovery and at 2,000, 4,000 and 8,000 estimated tokens. The sealed lexical
+baseline stays outside that matrix.
+
+- Append preserves the complete original order. Eligible cross-file neighbors
+  rank by descending confidence, original seed rank and relative path. Eight
+  original files leave zero append capacity. The report preserves both capacity
+  and eligible new neighbors even when no neighbor fits.
+- Rerank considers direct cross-file edges between original seeds. The highest
+  eligible incident confidence per file controls priority, with original order
+  as the tie break. Original seed spans carry through both arms. An appended
+  file has no discovery line spans.
+- The graph input admits single stored `CodeRelation` edges in either direction
+  with an original seed endpoint. Both endpoint paths must exist as canonical
+  tracked regular files in the pinned checkout. Finite confidence from 0.9
+  through 1 qualifies. Lower confidence supplies zero support. Path escape,
+  invalid confidence, missing files, index or source drift, and transitive
+  evidence fail admission. A rejected graph attempt yields error rows for both
+  graph arms while retaining its seed attempt. An empty valid graph leaves the
+  seed ranking unchanged.
+
+The pinned installed distribution is GitNexus **1.6.1**, under
+`/usr/local/share/npm-global/lib/node_modules/gitnexus` by default. The runner
+hashes `package.json` and the following distributed source files before admitting
+fixtures. An unavailable or different source tree fails the source gate.
+
+| Installed source | Verified interface |
+| --- | --- |
+| `dist/core/lbug/schema.js:18–87,398–402` | Code nodes expose `id` and `filePath`. `CodeRelation` stores `type` and `confidence DOUBLE`. |
+| `dist/core/lbug/pool-adapter.js:179–199,218–231,462–490` | `initLbug` opens the existing database read-only. `executeParameterized` prepares a statement, binds parameters and returns raw rows. |
+| `dist/mcp/local/local-backend.js:395–403,749–770,1664–1717,1728–1734` | The MCP Cypher dispatch formats rows as Markdown. Raw Cypher is available internally. Impact can inject class/constructor/file seeds and synthesize confidence, so it does not qualify as the direct-edge capture. |
+| `dist/core/run-analyze.js:194–208` and `dist/storage/repo-manager.js:16–28,87–104` | Index metadata records `repoPath` and `lastCommit`. The index layout contains `meta.json` and `lbug`. |
+
+The synthetic capture is one JSON document in a separate private directory. Its
+top-level fields are `schema` (`epyc.dcp10.gitnexus-fixture.v1`), `kind`
+(`synthetic`), `pilot_request_sha256`, `lexical_predictions_sha256`,
+`gitnexus_source` (the `source_identity` record), `graph_query_sha256` (the
+exact parameterized statement in the runner), `producer_sha256` (the hashes of
+`gitnexus_compare.py`, `colgrep_compare.py` and `pilot.py`) and `tasks`.
+Admission verifies the producer map against the local source files and records
+it in the result. Each task-ID entry has
+`base` (`root`, `base_commit`, `base_tree`, `query_sha256`), `mock_search` (a mock
+ColGREP response or `{"error": "..."}`) and `graph` (`seed_paths` in admitted rank
+order, `index_sha256`, `edges` and nullable `error`). Each edge supplies
+`source_id`, `source_path`, `target_id`, `target_path`, `relation`, `confidence`
+and integer `depth` 1. Stage synthetic `meta.json` and `lbug` in
+`indexes/<language>` beside the capture. The expected index digest covers that
+directory's exact layout and bytes. The Python test module includes a fixture
+builder.
+
+```bash
+python3 -B -m unittest discover -s scripts/experiments/dcp10-discovery \
+  -p 'test_gitnexus_compare.py' -v
+python3 -I -B scripts/experiments/dcp10-discovery/gitnexus_compare.py \
+  "$pilot_work" "$fixture_dir/capture.json" --capture-sha "$prospective_capture_sha256" \
+  --output "$fixture_dir/result.json"
+```
+
+The report records admitted base and index bindings, edge rows, per-task
+outcomes and synthetic rankings. Fixture packed scores come from the pinned
+scorer's candidate-cost replay. The mock seed also retains its actual pack/render
+trace. A native capture must retain actual graph-arm pack/render provenance
+before scoring. Native execution remains gated on a validated capture bound to
+the actual ColGREP outputs, source, index build and snapshot identities, the
+exact query and its raw stored-edge rows. The existing
+`VB-CONTEXTBENCH-DISCOVERY-WIRE` source task covers the prospective write-side
+carrier for these bindings and outcomes through its shared verifier grade.
+Fixture outputs establish policy conformance only. [Native integration protocol](../../../docs/design/dcp10-gitnexus-controls-protocol-20261118.md)
