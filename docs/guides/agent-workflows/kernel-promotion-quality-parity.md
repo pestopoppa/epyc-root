@@ -59,7 +59,47 @@ Only complete pass/fail observations project. Invalid, incomplete and identity-d
 
 ## Capture both arms under one Rowflow grant
 
+The [prospective request inputs](../../../data/vidya/quality-pack-live-20261118/request_inputs.json) pin 32
+requests from seven preserved source plans. They retain the admitted architect-critic and DFlash production
+policies, the replacement ingest request for `SOUTH` and governing record `E59`, and the original frontdoor
+JSON request whose token streams diverged in the prior isolated capture. The four vision requests retain their
+original PNGs and request bytes. Their strict stop and semantic policies are prospective. Source receipts
+remain in their original records.
+
+Materialize the request bodies, question-pool and scorer digests, model identities, and expected template
+digests under canonical host scratch. The printed SHA-256 binds the materialized file.
+
+```bash
+prepare=scripts/benchmark/kernel_promotion_quality_prepare.py
+inputs="$PWD/data/vidya/quality-pack-live-20261118/request_inputs.json"
+input_pin=e9b8d9d40b88851de2299b8fba372c8e0f5920abd47315747251a87313855914
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B "$prepare" requests \
+  --inputs "$inputs" --inputs-sha256 "$input_pin" \
+  --out "$scratch/prospective-requests.json"
+```
+
+Once both arms have private prepared plans, supply the digest of each plan and a pinned JSON mapping keyed
+by the seven profile IDs. Use the same detached orchestrator checkout for assembly and live execution. The
+assembler checks the frozen production image, regenerates both plans, verifies their exact serving paths and
+model/template pins, and runs the live adapter's configuration preflight before writing the configuration.
+Supply the canonical path to a durable Git checkout containing the capture commit and the canonical path
+to the ratified production freeze JSON.
+
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B "$prepare" config \
+  --inputs "$inputs" --inputs-sha256 "$input_pin" \
+  --production-plan "$production_plan" "$production_pin" \
+  --candidate-plan "$candidate_plan" "$candidate_pin" \
+  --mappings "$mappings" "$mappings_pin" --orchestrator "$pinned_orchestrator" \
+  --source-repository "$capture_repository" --production-attestation "$freeze_attestation" \
+  --capture-commit "$capture_commit" --startup-timeout-s 360 --request-timeout-s 600 \
+  --observation-dir "$scratch/quality-observation" --out "$scratch/quality-capture.json"
+```
+
 Run the live adapter with a prepared configuration and a new private output directory under host scratch.
+For a detached orchestrator checkout, the row launcher imports the capture adapter and sets
+`planner.ORCHESTRATOR` to the same canonical checkout passed to the assembler before calling `main()`.
+The direct invocation below uses the planner's default checkout.
 
 ```bash
 /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B \
