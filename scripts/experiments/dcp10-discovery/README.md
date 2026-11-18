@@ -233,3 +233,109 @@ shards.
   /mnt/raid0/llm/tmp/delegation-context-preassembly \
   --output /mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-cost/replay.json
 ```
+
+## ColGREP admission and mocked comparison
+
+`colgrep_compare.py` uses the three included tasks from the original sealed lexical
+request, in request order. The original lexical predictions are the paired baseline.
+The packet, app source and baseline bytes are checked against their original seals.
+The app's discovery, packing and scoring modules are loaded directly from verified
+source bytes. The current pilot helper has its own digest in the comparison config;
+the original request retains the digest of the producer that wrote that request.
+
+Stage assets in a canonical, caller-owned directory with mode `0700`, outside the
+lexical pilot. The admission CLI expects this layout:
+
+```text
+config.json
+bin/colgrep
+model/
+bases/{python,c,cpp}/colgrep/indices/<one project>/
+    project.json
+    state.json
+    index/metadata.json
+    index/<payload files>
+```
+
+Use `epyc.dcp10.colgrep-comparison.v1` as the config schema. The top-level fields
+are `schema`, `arm`, `pilot_request_sha256`, `lexical_predictions_sha256`,
+`app_revision`, `runner_sha256`, `pilot_helpers_sha256`, `binary_sha256`,
+`model`, `limit`, `max_files`, `budgets`, `alpha`, `timeout_s` and `tasks`.
+The fixed values live in `colgrep_compare.py`. The model binds `id`, `revision`
+and `directory_sha256`. Under `tasks`, each included task ID binds
+`base_commit`, `base_tree`, canonical checkout `root`, `query_sha256`,
+`app_revision`, `binary_sha256`, `model_revision`, `model_directory_sha256`
+and `index_data_sha256`. Compute directory digests with `directory_digest()`
+over the exact staged path and file contents, including hidden files.
+
+```bash
+python3 -I -B scripts/experiments/dcp10-discovery/colgrep_compare.py \
+  "$pilot_work" "$private_assets" --config-sha "$prospective_config_sha256"
+```
+
+This CLI performs admission only and reports `native_execution: disabled`. It
+checks a clean base tree, the native project's recorded checkout root, private
+index layout and sealed payload bytes. These checks establish agreement with the
+supplied config. A newly sealed digest alone cannot establish when or how the
+index was built. The CLI does not open a production index or launch ColGREP.
+Native comparison additionally requires a validated immutable launch and an
+independent binding of its inputs to the index build.
+
+The `compare(..., search=mock_search)` entry point uses a caller-supplied callback
+in an isolated Python process. It supplies prepared argv, exact checkout path,
+private data home and the 10-second timeout value. The original query, 20-hit
+limit, eight-file cap and 2,000/4,000/8,000 estimated-token budgets are fixed.
+It rejects malformed hits, paths outside the root and paths absent from the
+pinned tree's regular files. It measures line bounds on selected source files.
+Failed admission, failed search and empty search each retain their original task
+in the comparison denominator. Each actual render plan records planned and
+rendered modes, rendered file and line spans, charged estimates, reasons and
+content identities. The scorer's packed scopes are computed from candidate costs.
+Actual rendered evidence is available separately in the plan records.
+
+Run the mocked controls against the retained original pilot. Set
+`DCP10_TEST_PILOT` to its canonical path when using a different location.
+
+```bash
+python3 -B -m unittest discover -s scripts/experiments/dcp10-discovery \
+  -p 'test_colgrep_compare.py' -v
+```
+
+The controls use the original sealed cohort and pinned application with synthetic
+binary, model and index files. This preparation establishes no retrieval quality,
+index custody, receipt or completed comparison arm.
+
+## Native isolated ColGREP packet
+
+The [native protocol](../../../docs/design/dcp10-colgrep-native-protocol-20261118.md)
+fixes the same three tasks and original application. `prepare_colgrep_native.py`
+stages the binary, local model and ONNX runtime into a fresh private RAID root,
+hashes model bytes once and seals sources plus the preparation receipt. Its
+default retained root is
+`/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native`.
+The staged `spec.json` is published through `publish_row.py --smoke-now`; only that
+publisher smoke may run the separate qualification fixture in the owner turn.
+Official index construction and retrieval require the allocator row.
+
+After a source repair, refresh the existing source packet without repeating model
+preparation:
+
+```bash
+python3 -I -B scripts/experiments/dcp10-discovery/prepare_colgrep_native.py --refresh-sources
+```
+
+The refresh archives previous source bytes and controls, updates source/receipt
+pins and preserves asset identities and observed outputs. It never clears a
+failure, edits a grant or resumes an official attempt. Runtime checks the
+prospectively sealed receipt and immutable asset metadata; these checks are drift
+guards tied to the original content digest, not a new model-content or capture
+custody proof.
+
+Native init produces chunked vectors. Before sealing, `colgrep_native.py`
+materializes the release's lazy merged arrays using its exact chunk concatenation,
+zero padding, NPY headers and manifest format, then checkpoints SQLite sidecars.
+This deterministic build step adds no model query. Retrieval uses a held
+disposable project lock to skip reindexing and keeps every canonical payload
+read-only. The row independently reconciles actual rendered file/line coverage
+with the scorer, retaining empty and failed attempts. Missing tasks remain UNKNOWN.
+Preparation, qualification and official cohort outcomes remain separate.
