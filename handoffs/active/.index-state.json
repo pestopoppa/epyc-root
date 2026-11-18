@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 532
+      "open": 533
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -2158,7 +2158,7 @@
       "closed": 365,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 5,
+      "open": 6,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2167,7 +2167,7 @@
       },
       "row_id": "INF-48",
       "state": "active",
-      "total": 370,
+      "total": 371,
       "tracks": [
         {
           "blocked": 0,
@@ -2205,14 +2205,14 @@
           "line": 2726,
           "markers": 1,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 2
+          "open": 3
         },
         {
           "blocked": 0,
           "closed": 111,
           "gates": [],
           "guarded": 0,
-          "line": 3115,
+          "line": 3116,
           "markers": 1,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0
@@ -2222,7 +2222,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 3628,
+          "line": 3629,
           "markers": 1,
           "name": "frontier-f6-upstream-publication",
           "open": 0
@@ -2232,7 +2232,7 @@
           "closed": 14,
           "gates": [],
           "guarded": 0,
-          "line": 3723,
+          "line": 3724,
           "markers": 1,
           "name": "llama-cpp-dsa-contribution",
           "open": 0
