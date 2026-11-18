@@ -880,14 +880,18 @@ class Runtime:
         return witness
 
     def request_http(self, server, method, path, body, timeout, request_sent=None, response_started=None,
-                     send_barrier=None):
+                     send_barrier=None, *, wait_for_generation=False, connected_socket=None):
         require(timeout > 0, 'HTTP request has no remaining time')
         deadline = time.monotonic() + timeout
         with_http = http.client.HTTPConnection('127.0.0.1', server.port, timeout=min(timeout, 5))
+        response = None
         try:
             self.verify_identity(server)
             with_http.connect()
             self.verify_identity(server)
+            connection_socket = with_http.sock
+            if connected_socket is not None:
+                connected_socket(connection_socket)
             if send_barrier is not None:
                 send_barrier.wait(timeout=max(0, deadline - time.monotonic()))
                 remaining = deadline - time.monotonic()
@@ -896,20 +900,33 @@ class Runtime:
             with_http.request(method, path, body=body, headers={'Content-Type': 'application/json'})
             if request_sent is not None:
                 request_sent()
+            if wait_for_generation:
+                remaining = deadline - time.monotonic()
+                require(remaining > 0, 'HTTP request has no remaining response time')
+                connection_socket.settimeout(remaining)
             response = with_http.getresponse()
             if response_started is not None:
                 response_started()
             raw = bytearray()
             while True:
-                require(time.monotonic() < deadline and len(raw) <= MAX_RESPONSE, 'HTTP response exceeded deadline or size')
+                remaining = deadline - time.monotonic()
+                require(remaining > 0 and len(raw) <= MAX_RESPONSE, 'HTTP response exceeded deadline or size')
+                if wait_for_generation:
+                    if response.isclosed():
+                        break
+                    connection_socket.settimeout(min(remaining, 5))
                 chunk = response.read1(min(64 * 1024, MAX_RESPONSE + 1 - len(raw)))
                 if not chunk:
                     break
                 raw.extend(chunk)
+            if wait_for_generation:
+                require(response.length in (None, 0), 'HTTP response ended before its declared length')
             if request_sent is None:
                 self.verify_identity(server)
             return response.status, bytes(raw)
         finally:
+            if wait_for_generation and response is not None:
+                response.close()
             with_http.close()
 
     def smoke(self, server, directory, *, send_barrier=None, clock_origin=None, sent=None, peer_sent=None):

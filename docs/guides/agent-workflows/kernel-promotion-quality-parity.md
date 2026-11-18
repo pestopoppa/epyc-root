@@ -56,3 +56,40 @@ python3 scripts/vidya/cli.py ingest quality-pack-comparison --path comparison.js
 ```
 
 Only complete pass/fail observations project. Invalid, incomplete and identity-drift records retain their original outcomes without producing a numeric claim. The shared grader determines the observation's warrant; no comparison outcome supplies promotion authority.
+
+## Capture both arms under one Rowflow grant
+
+Run the live adapter with a prepared configuration and a new private output directory under host scratch.
+
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B \
+  scripts/benchmark/kernel_promotion_quality_capture.py \
+  --config "$scratch/quality-capture.json" \
+  --config-sha256 "$config_pin" \
+  --out "$scratch/quality-observation"
+```
+
+Build the configuration and pin its exact bytes before publication. The schema is `epyc.kernel_quality_live_capture.v1`.
+
+| Field | Required contents |
+| --- | --- |
+| `schema` | `epyc.kernel_quality_live_capture.v1`. |
+| `source_repository` and `capture_source` | Canonical path to a Git repository containing the committed capture adapter, and its `commit`, `tree` and `source_sha256` as in the offline format. The adapter checks the committed file against the executed copy, including for a row snapshot. |
+| `tool_sha256` | Hashes keyed by `runner`, `evidence`, `linkage`, `workload_guard`, `k35` and `comparator`. The adapter's `tool_files()` identifies the installed files. |
+| `production_attestation` | Canonical path to the ratified v10 final freeze JSON. The adapter checks the fixed ratification digest, frozen branch, commit and tree, and the staged binary and hot libraries against the production store. |
+| `arms` | Object with `production` and `candidate` entries. Each provides canonical `plan`, `plan_sha256`, and the offline `runtime` object keyed by shape. The plans must be in distinct private directories and pin the same full Rowflow port and resource assignments. Stage a separate copy of the ratified production image for its plan. The regular planner rejects overlap and hardlinks with the serving tree. Both plans must regenerate exactly with a fresh, topology-matched matrix. |
+| `shapes` | The complete offline serving-shape inventory. The adapter validates the serving path pins against both prepared arms. |
+| `mappings` | One entry per shape ID with integer `canonical_port`, integer `numa_instance`, serving `role` and exact request `path`. Each maps to one planned loopback generation listener in each arm. Multiple profiles can share the same instance when their planned role and generation settings match. |
+| `models` | Object keyed by canonical GGUF path with precomputed `sha256` and five-element `stat` identity (device, inode, size, mtime ns, ctime ns). Include all files resolved from `-m`, `-md` and `--mmproj`, including every split shard on each selected listener. Establish these digest-to-stat bindings before the grant. Live checks compare stat, startup mappings and prepared model identities. Template verification reads template bytes or a GGUF header. |
+| `items` | Prospective offline item fields, omitting `production` and adding the explicit canonical `request_sha256`. Use the actual body sent to each endpoint, including image bytes as PNG or JPEG data URLs in the vision shape's chat requests. |
+| `startup_timeout_s` and `request_timeout_s` | Integer per-listener startup and per-request budgets in seconds, up to 3600 and 1800 respectively, additionally bounded by the live grant. |
+
+Compute the adapter-specific shape digests with `shape_digests(plan, endpoint, shape, artifact_integrity, models)` using the pinned orchestrator's artifact-integrity module. The recipe digest covers the launcher arguments, environment, roles, placement and device after normalizing the isolated executable, library directory, listener port and slot-storage path. The model digest covers the ordered canonical paths and precomputed content digests of target, drafter and projector files. The template digest covers the effective chat template or the `raw-native-prompt.v1` marker for direct native prompts. The endpoint digest covers the exact POST path, canonical JSON body, raw JSON response body and non-streaming mode. The generation-path digest binds those four digests. Sampling, scorer and question-pool pins refer to the predeclared experiment inputs. The full configuration and request pins bind the individual settings, prompts and expected answers.
+
+The row must reserve full-host CPU placement, every isolated plan port, the plan RAM budget and the MI210 when called for by the plans. Capture runs serially by arm and isolated listener. All requests for a DFlash shape run on one owned `-np 1` listener in each arm, with the cap read from each raw response echo. A shape that requires HIP, MTP, a projector or a one-slot DFlash configuration must have a prepared endpoint with those settings. A stale matrix or a plan that lacks one of the prescribed shapes cannot supply this experiment. The adapter is a consumer of prepared plans and does not provision adjusted serving recipes.
+
+The experiment asks whether the two isolated kernels produce exactly matching returned token IDs, content and reasoning for the predeclared requests. It uses the fixed comparator coverage, with at least 32 distinct requests and four DFlash pairs. This is exact agreement for a finite pack. HTTP or custody failure stops collection at the affected request. A production semantic failure or missing production token IDs or completion counts stops the run before candidate capture. The adapter finalizes and checks the production pack and its SHA-256 file before starting the candidate arm. Candidate token or count gaps produce comparator `incomplete` when the recorded comparisons otherwise agree.
+
+The output preserves the original configuration, ordered request pins, prepared plan bytes, admission and workload screens, startup identity, exact sent bodies and raw HTTP response bodies. Each eligible response has a complete placement and backend scan after upload and before response headers, with exact scan timestamps. Each listener has a captured-PID exit, port and KFD cleanup record. The final `comparison.json` is the existing comparator's native record. The surrounding `MANIFEST.json` and `COMPLETE` bind the live evidence after proved cleanup. A sealed failed attempt can retain diagnostics. Require `result.json` status `pass`, `cleanup_proved=true` and a matching seal when checking an observation for successful completion. The exit codes are 0 for pass, 1 for a comparator mismatch and 2 for incomplete or refused capture.
+
+The capture and comparison carry observation-only authority. A row that runs the socket-free fixtures establishes software behavior. A full prospective live observation and its planning-context canary remain separate acceptance evidence.
