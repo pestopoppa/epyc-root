@@ -43,3 +43,16 @@ verdict or promotion authority follow from this control.
 Publisher smoke **PASS** at 2026-11-18T17:45:34Z on CPUs116–119, rc0. This qualifies the separate official structural row; it does not supply native Q38 acceptance. [Original publisher result](publisher-native-result.json) and [PASS receipt](publisher-PASS.json).
 
 [no-belief: prospective software controls and publisher readiness]
+
+The original official allocator run ended rc0 at 2026-11-18T17:46:13Z.
+Its two structural controls reproduced baseline visible0 and candidate visible16,
+with four target exclusions, three refusal controls, zero refusals and zero
+native Q38 acceptances. The [official result](official/RESULT.json),
+[allocator terminal](official/allocator.ended), and both original planner
+receipts are retained under `official/`. This is software-control evidence;
+it leaves live preflight propagation and native Q38 acceptance open.
+
+The scratch reader checkout copy was removed at operator request and replaced
+with a detached Git worktree at the same source commit. Existing original
+receipts retain the ref identities observed during their run; future packets
+must pin detached HEAD and content without freezing shared remote refs.
