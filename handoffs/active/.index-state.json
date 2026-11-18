@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 536
+      "open": 535
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -1202,10 +1202,10 @@
     },
     "kernel-champion-and-promotion.md": {
       "blocked": 2,
-      "closed": 224,
+      "closed": 225,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 28,
+      "open": 27,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1218,7 +1218,7 @@
       "tracks": [
         {
           "blocked": 2,
-          "closed": 181,
+          "closed": 182,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1229,7 +1229,7 @@
           "line": 20,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 25
+          "open": 24
         },
         {
           "blocked": 0,
