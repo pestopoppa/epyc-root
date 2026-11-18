@@ -90,6 +90,16 @@ def prepare_candidate(belief_context, ledger, out, selector, *, pinned_snapshot)
     return belief_context.validate_ready(json.loads(done.stdout))
 
 
+def checked_reader_checkout(answer, *, pinned_snapshot):
+    checked = answer.get("reader_checkout_check")
+    require(checked is (not pinned_snapshot), "reader checkout check did not run as requested")
+    if checked:
+        checkout = answer.get("reader_checkout")
+        require(isinstance(checkout, dict) and checkout.get("current") is True,
+                "native planning requires a current reader checkout")
+    return checked
+
+
 def check_candidate_reads(belief_context, ledger, out, request, claims, reader_head, *, pinned_snapshot):
     identity = request["identity"]
     base = {"scope": "candidate", "build_sha": identity["source"]["commit"],
@@ -118,8 +128,9 @@ def check_candidate_reads(belief_context, ledger, out, request, claims, reader_h
     for name, (selector, expected, exclusion) in selectors.items():
         ready = prepare_candidate(belief_context, ledger, out, selector, pinned_snapshot=pinned_snapshot)
         state, evidence = ready["ledger_state"], ready["evidence"]
-        require(state["head_hash"] == reader_head and state["ledger_path"] == str(ledger),
-                "candidate reader checked another ledger")
+        require(state["fresh"] is True and state["head_hash"] == reader_head and state["ledger_path"] == str(ledger),
+                "candidate reader did not check the current scratch ledger")
+        checkout_checked = checked_reader_checkout(ready, pinned_snapshot=pinned_snapshot)
         ids = {c["claim_id"] for c in expected}
         presented = evidence["claim_ids"]
         require(set(presented) == ids and len(presented) == len(ids)
@@ -143,12 +154,41 @@ def check_candidate_reads(belief_context, ledger, out, request, claims, reader_h
                 f"incorrect candidate reliance for {name}")
         reads[name] = {"selector": selector, "claims": evidence["claims"], "reliance": reliance,
                        "reason": exclusion, "section_sha256": evidence["section_sha256"],
-                       "checkout_checked": ready["reader_checkout_check"]}
+                       "checkout_checked": checkout_checked}
     return reads
 
 
-def check_capture(capture, research, out, *, pinned_snapshot=False):
+def validate_native_result(capture, capture_sha, record, result_path):
+    """Bind the completed producer receipt to the original sealed invocation."""
+    native = record["native"]
+    request = record["capture"]
+    runs = native["runs"]
+    grant = native.get("grant")
+    # Each prepared GPU producer seals the scheduler grant's original path and parsed record.
+    require("synthetic_control" not in native and isinstance(grant, dict) and grant.get("smoke") is False
+            and grant.get("path") == str(SCRATCH_ROOT / "compute-flags/grants" / (request["row_id"] + ".grant"))
+            and isinstance(grant.get("record"), dict)
+            and native.get("owned_pid_reaped") is True, "native planning requires an official capture")
+    require([run["op"] for run in runs] == request["selected_ops"]
+            and all(run["rc"] == 0 and run.get("status") == "native_exit_recorded"
+                    and run.get("generated_expected") == run["observed"] > 0 for run in runs)
+            and not any(run["failed"] for run in runs), "native planning requires complete terminal invocations")
+    raw_result = result_path.read_bytes()
+    result = json.loads(raw_result)
+    expected = {"row_id": request["row_id"], "capture": str(capture), "sha256": capture_sha,
+                "projected": len(runs), "refused": 0, "failed": 0,
+                **{key: sum(run[key] for run in runs) for key in ("observed", "passed", "unsupported")}}
+    require(isinstance(result, dict) and all(type(result.get(key)) is type(value) and result[key] == value
+                                              for key, value in expected.items()),
+            "producer result disagrees with the sealed capture")
+    samples = result.get("resident_samples")
+    require(type(samples) is int and samples >= 2 * len(runs), "producer result lacks qualified residency")
+    return {"path": str(result_path), "sha256": hashlib.sha256(raw_result).hexdigest()}
+
+
+def check_capture(capture, research, out, *, pinned_snapshot=False, native_result=None):
     """Verify strict intake and preserve the candidate facts in an isolated result receipt."""
+    require(native_result is None or not pinned_snapshot, "native planning requires checkout checks")
     capture = capture.resolve(strict=True)
     capture_sha = sha(capture)
     ledger = out / "ledger.jsonl"
@@ -166,6 +206,8 @@ def check_capture(capture, research, out, *, pinned_snapshot=False):
     request = record["capture"]
     runs = record["native"]["runs"]
     require(sha(capture) == capture_sha and len(runs) == count, "sealed input changed or count drifted")
+    native_binding = (validate_native_result(capture, capture_sha, record, native_result.resolve(strict=True))
+                      if native_result is not None else None)
     frames = [json.loads(line)["frame"] for line in ledger.read_text().splitlines()]
     kinds = {}
     for frame in frames:
@@ -214,16 +256,21 @@ def check_capture(capture, research, out, *, pinned_snapshot=False):
             f"GPU-pool reliance was not blocked for {consumer}")
         readers[consumer] = {"ledger_head": state["head_hash"], "model_target": MODEL,
                              "visible_claims": [], "reliance": reliance,
-                             "checkout_checked": ready.answer["reader_checkout_check"]}
+                             "checkout_checked": checked_reader_checkout(ready.answer, pinned_snapshot=pinned_snapshot)}
     candidate_reads = check_candidate_reads(belief_context, ledger, out, request, claims_summary,
                                             readers[belief_context.CONSUMER]["ledger_head"],
                                             pinned_snapshot=pinned_snapshot)
+    require(sha(capture) == capture_sha, "sealed input changed during planning replay")
+    if native_binding is not None:
+        require(sha(Path(native_binding["path"])) == native_binding["sha256"],
+                "producer result changed during planning replay")
     return {
         "schema": "epyc.vidya.gpu_pool_candidate_scope.v1", "status": "passed",
         "scope": "candidate-local observations in the shared planning reader",
         "synthetic_control": record["native"].get("synthetic_control") is True,
         "official_native_acceptance": False, "positive_planning_context": True,
-        "production_consumer_adoption": False, "native_planning_context": False,
+        "production_consumer_adoption": False, "native_planning_context": native_binding is not None,
+        "native_producer_result": native_binding,
         "capture_path": str(capture), "capture_sha256": capture_sha, "row_id": request["row_id"],
         "candidate_identity": request["identity"], "native_grant": record["native"]["grant"],
         "claims": claims_summary, "ingest": report, "retry": retry, "readers": readers,
@@ -242,6 +289,7 @@ def check_capture(capture, research, out, *, pinned_snapshot=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--capture", required=True, type=Path, help="official sealed native belief.json")
+    parser.add_argument("--native-result", type=Path, help="matching producer RESULT.json after its complete check passes")
     parser.add_argument("--research", required=True, type=Path)
     parser.add_argument("--scratch", required=True, type=Path)
     args = parser.parse_args()
@@ -250,7 +298,7 @@ def main():
         parser.error(f"--scratch must be a subdirectory of {SCRATCH_ROOT}")
     scratch.mkdir(parents=True, exist_ok=True)
     out = Path(tempfile.mkdtemp(prefix="gpu-pool-exclusion-", dir=scratch))
-    receipt = check_capture(args.capture, args.research.resolve(), out)
+    receipt = check_capture(args.capture, args.research.resolve(), out, native_result=args.native_result)
     (out / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     print(out)
     return 0

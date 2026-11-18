@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 VIDYA = ROOT / "scripts/vidya"
@@ -158,6 +159,63 @@ class ScopeControls(unittest.TestCase):
         self.make_capture(smoke=True)
         with self.assertRaisesRegex(RuntimeError, "grant.smoke to be false"):
             self.check_capture()
+
+    def test_native_result_must_bind_only_complete_official_terminal_capture(self):
+        self.make_capture()
+        record = json.loads(self.capture.read_text())
+        native = record["native"]
+        result_path = self.out / "RESULT.json"
+        capture_sha = control.sha(self.capture)
+        with self.assertRaisesRegex(RuntimeError, "official capture"):
+            control.validate_native_result(self.capture, capture_sha, record, result_path)
+
+        del native["synthetic_control"]
+        native["grant"]["path"] = str(control.SCRATCH_ROOT / "compute-flags/grants" / (native["row_id"] + ".grant"))
+        native["grant"]["record"] = {"regions": "mi210_0,184-191"}
+        native["owned_pid_reaped"] = True
+        with self.assertRaisesRegex(RuntimeError, "complete terminal invocations"):
+            control.validate_native_result(self.capture, capture_sha, record, result_path)
+
+        # Exercise the result-binding gate in isolation. The full replay separately verifies the seal and raw logs.
+        for run in native["runs"]:
+            run.update(rc=0, status="native_exit_recorded", observed=run["passed"] + 1, failed=[])
+            run["generated_expected"] = run["observed"]
+        result = dict(row_id=native["row_id"], capture=str(self.capture), sha256=capture_sha,
+                      projected=2, refused=0, failed=0, observed=5, passed=3, unsupported=2, resident_samples=4)
+        result_path.write_text(json.dumps(result))
+        self.assertEqual(control.validate_native_result(self.capture, capture_sha, record, result_path),
+                         {"path": str(result_path), "sha256": control.sha(result_path)})
+        for key, value in (("row_id", "foreign"), ("sha256", "0" * 64), ("passed", 5), ("refused", False),
+                           ("resident_samples", 3)):
+            with self.subTest(key=key):
+                result_path.write_text(json.dumps({**result, key: value}))
+                with self.assertRaisesRegex(RuntimeError, "sealed capture|qualified residency"):
+                    control.validate_native_result(self.capture, capture_sha, record, result_path)
+
+    def test_pinned_snapshot_cannot_supply_native_planning_context(self):
+        with self.assertRaisesRegex(RuntimeError, "requires checkout checks"):
+            control.check_capture(self.capture, self.research, self.out, pinned_snapshot=True,
+                                  native_result=self.out / "RESULT.json")
+
+    def test_candidate_reader_refuses_stale_or_unchecked_context_even_with_matching_claim(self):
+        self.make_capture()
+        record = json.loads(self.capture.read_text())
+        claims = [{"claim_id": f"clm_gpu-pool:{record['sha256']}:0", "op": "ROPE"}]
+        ledger = self.out / "ledger.jsonl"
+        head = "a" * 64
+        matching = {"ledger_state": {"head_hash": head, "ledger_path": str(ledger), "fresh": True},
+                    "evidence": {"claim_ids": [claims[0]["claim_id"]]},
+                    "reader_checkout_check": True, "reader_checkout": {"current": True}}
+        for changes, reason in (
+            ({"ledger_state": {**matching["ledger_state"], "fresh": False}}, "current scratch ledger"),
+            ({"reader_checkout_check": False}, "did not run"),
+            ({"reader_checkout": None}, "current reader checkout"),
+            ({"reader_checkout": {"current": False}}, "current reader checkout"),
+        ):
+            with self.subTest(changes=changes), patch.object(control, "prepare_candidate", return_value={**matching, **changes}):
+                with self.assertRaisesRegex(RuntimeError, reason):
+                    control.check_candidate_reads(None, ledger, self.out, record["capture"], claims, head,
+                                                  pinned_snapshot=False)
 
     def test_historical_standalone_record_is_declined(self):
         self.capture.write_text(json.dumps({"schema": native_adapter.NATIVE, "model_free": True, "runs": []}))
