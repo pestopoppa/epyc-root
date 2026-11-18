@@ -1,0 +1,23 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-ak-seat-native-instrument-20261118/launcher.out",
+ "elapsed_s": 15,
+ "ended": "rc=75 time=2026-11-18T16:03:05Z reason=partial-native-incomplete",
+ "engine_sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 240,
+ "first_unit_at": "2026-11-18T16:03:06Z",
+ "id": "vb-ak-seat-native-instrument-20261118",
+ "launcher_sha256": "dbea6a549e0298a9fc52b7c53fc7b9747baf9477f3074dddf1263757c2fc39a0",
+ "measured_busy_fraction": 0.08,
+ "measured_claimed_cpus": 24,
+ "measured_threads": 1.919,
+ "passed_at": "2026-11-18T16:03:06Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "140-143",
+ "residency_evidence": null,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

@@ -1,0 +1,21 @@
+{
+  "_archive_original": {
+    "normalization": "Anonymous model_stat vector labelled as filesystem stat fields; original runtime bytes retained at the native locator. Reconstruct vector in st_dev,st_ino,st_size,st_mtime_ns,st_ctime_ns order.",
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/PINS.json",
+    "sha256": "4d975f8994fc9d9abfb0f96d3c2484fc8d8aae7c474c5122b934f7df8d21e95c"
+  },
+  "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "kernel_server_version": 10303,
+  "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+  "model_sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb",
+  "model_stat_fields": {
+    "st_ctime_ns": 1769627064381075183,
+    "st_dev": 2431,
+    "st_ino": 188775692,
+    "st_mtime_ns": 1765590200108301020,
+    "st_size": 804753824
+  },
+  "opencode_version": "2.2.5",
+  "research_commit": "61b9df9e897430fa9d233b6236d045a4de1e8a09",
+  "root_commit": "d32e0dae3e7d3630446d0e99987ed76da15ea59d"
+}
