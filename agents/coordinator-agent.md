@@ -64,6 +64,21 @@ state rebuilds from bus files alone. Read it; a guardrail below that merely repe
 5. **Dispatch** by task TEXT with a self-contained brief; restate constraints that have live reasons.
 6. **Integrate**: review evidence and diffs, gate, commit.
 
+### FM-2 diagnostic review
+
+When reviewing FM-2 fixed-catalog findings or sequencing FM-2 follow-up work, load the scoped
+diagnostic context before forming the review or task brief:
+
+```bash
+python3 -B /mnt/raid0/llm/views/epyc-root-main/scripts/vidya/coordinator_fm2_context.py
+```
+
+Read `evidence.section` from a `ready` answer and read the owning handoff for task history and
+prerequisites. If the read refuses, retain its reason and pause the FM-2 review until the reader
+recovers. An empty section leaves the diagnosis unavailable. The FM-2 claims describe a single
+judge's code assignments and carry harness context only. Use them to frame diagnostic questions.
+Reliance is limited to `evidence.claim_ids`; task outcomes and accuracy require independent evidence.
+
 ### Auditor and Inference Main provisioning
 
 When either special role is absent or must be instantiated, ask the operator **before any launch**:

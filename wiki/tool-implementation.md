@@ -1170,6 +1170,8 @@ Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-f
 
 - `research/intake_index.yaml` intake-1110#record (MAST) and intake-1127 (AdaMAST) — full dive records, including the mid-dive retraction of the "success/failure oracle required" finding
 - [Fleet Fan-Out Measurement](../handoffs/active/coordination-and-churn-pipeline.md#track-fleet-fanout-measurement) — FM-2, the planned pilot run
+
+2026-11-18 prospective source control: one original trace produced a valid zero-code native judgment with exact source/request/response/grant custody. Strict replay and the scoped `coordination.fm2` shared-reader canary passed as diagnostic `Judged/Located` context, excluded from reliance and unrelated consumers. Actual coordinator consumption remains separate; this establishes no prevalence, accuracy, faithfulness or causal fan-out result. [Native findings](../docs/findings/fm2-native-source-control-20261118.md).
 - [Coordinator role — failure modes and refactor](../handoffs/active/coordination-and-churn-pipeline.md#track-coordinator-role-failure-modes-and-refactor) — R-24, the cross-walk of MAST's 14 modes against our own hand-built failure ledger
 - [`progress/2026-08/2026-08-13-research-intake.md`](../progress/2026-08/2026-08-13-research-intake.md) — session record
 

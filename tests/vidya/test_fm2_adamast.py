@@ -63,9 +63,32 @@ class FM2Test(unittest.TestCase):
         report=json.loads(subprocess.check_output(cmd))
         self.assertEqual((report['rows_projected'],report['frames_emitted'],report['refused']), (1,3,[]))
         if self.root.is_relative_to(Path('/mnt/raid0/llm/tmp')):
-            subprocess.run([sys.executable, str(ROOT/'scripts/experiments/fm2-adamast/belief_canary.py'),
-                            '--receipt', str(self.unit/'receipt.json'), '--scratch', str(self.root)],
-                           check=True, capture_output=True, text=True)
+            receipt_path = subprocess.check_output(
+                [sys.executable, str(ROOT/'scripts/experiments/fm2-adamast/belief_canary.py'),
+                 '--receipt', str(self.unit/'receipt.json'), '--scratch', str(self.root)], text=True
+            ).strip()
+            result = json.loads(Path(receipt_path).read_text())
+            self.assertEqual(result['entrypoint'], 'scripts/vidya/coordinator_fm2_context.py')
+            self.assertIs(result['reliance_eligible'], False)
+            self.assertIs(result['unrelated_consumer_excluded'], True)
+
+    def test_coordinator_context_refuses_corrupt_ledger(self):
+        ledger = self.root/'corrupt.jsonl'
+        ledger.write_text('invalid ledger\n')
+        index = self.root/'index.yaml'
+        index.write_text('[]\n')
+        result = subprocess.run(
+            [sys.executable, str(ROOT/'scripts/vidya/coordinator_fm2_context.py'),
+             '--ledger', str(ledger), '--index', str(index), '--known-good', str(self.root/'known.json'),
+             '--read-log', str(self.root/'reads.jsonl'), '--alarm-state', str(self.root/'alarm-state.json'),
+             '--allow-stale-reader'], capture_output=True, text=True,
+            env=dict(os.environ, ALARM_BACKEND='file', ALARM_FILE_PATH=str(self.root/'alarms.jsonl')),
+        )
+        self.assertEqual(result.returncode, 3, result.stderr)
+        answer = json.loads(result.stdout)
+        self.assertEqual(answer['consumer'], adapter.CONSUMER)
+        self.assertEqual(answer['status'], 'refused')
+        self.assertIsNone(answer['evidence'])
     def test_resealed_diagnosis_mismatch(self):
         p=self.unit/'diagnosis.json'; d=json.loads(p.read_text()); d['diagnoses'][0]['failure_modes']=[{'code':'MAST-1','evidence':'fabricated','confidence':'high','severity':'major'}]; d['diagnoses'][0]['none_apply']=False; dump(p,d); self.seal()
         with self.assertRaises(adapter.ProjectionError): self.rows()

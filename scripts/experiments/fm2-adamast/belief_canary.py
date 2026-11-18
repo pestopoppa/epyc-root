@@ -4,7 +4,9 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -41,13 +43,25 @@ def prepare(consumer):
         alarm_state=out/'alarm-state.json', alarm_config=out/'alarms.jsonl', alarm_api=alarm)
     if answer['status'] != 'ready': raise RuntimeError(str(answer))
     return answer
-answer=prepare(adapter.CONSUMER); e=answer['evidence']
+alarm_config = out/'alarm-config.yaml'
+alarm_config.write_text(f'backend: file\nfile:\n  path: {out / "alarms.jsonl"}\n')
+entrypoint = ROOT/'scripts/vidya/coordinator_fm2_context.py'
+completed = subprocess.run(
+    [sys.executable, '-B', str(entrypoint), '--ledger', str(ledger.path), '--index', str(index),
+     '--known-good', str(out/(adapter.CONSUMER+'.json')), '--read-log', str(out/'reads.jsonl'),
+     '--alarm-state', str(out/'alarm-state.json'), '--alarm-config', str(alarm_config),
+     '--allow-stale-reader'],
+    capture_output=True, text=True, timeout=30, check=True,
+    env=dict(os.environ, ALARM_BACKEND='file', ALARM_FILE_PATH=str(out/'alarms.jsonl')))
+answer = loop_beliefs.validate_ready(json.loads(completed.stdout))
+e = answer['evidence']
 claims=[c for c in e['claims'] if c.get('source_kind') == adapter.SOURCE_KIND]
 native = rows[0]
 expected = {'claim_id': f"clm_{adapter.SOURCE_KIND}:{native['sha256']}",
             'locator': native['path'], 'value': len(native['codes']), 'unit': 'assigned_codes',
             'grade': 'Judged/Located', 'tier': 'harness', 'not_evidence': True}
-if (adapter.native_rows(a.receipt) != rows or len(claims) != 1
+if (answer['consumer'] != adapter.CONSUMER or answer.get('read_log_error')
+    or adapter.native_rows(a.receipt) != rows or len(claims) != 1
     or any(claims[0].get(k) != v for k,v in expected.items())
     or expected['claim_id'] in e['claim_ids'] or expected['claim_id'] not in e['section']
     or adapter.LIMIT not in e['section']):
@@ -55,9 +69,12 @@ if (adapter.native_rows(a.receipt) != rows or len(claims) != 1
 other=prepare('autokernel.planner')
 if any(c.get('source_kind')==adapter.SOURCE_KIND for c in other['evidence']['claims']):
     raise RuntimeError('FM-2 leaked to unrelated consumer')
+(out/'planner-context.txt').write_text(e['section'])
 receipt={'schema':'epyc.fm2.planning-canary.v1','status':'passed','consumer':adapter.CONSUMER,
          'native_receipt_sha256':hashlib.sha256(a.receipt.read_bytes()).hexdigest(),
          'claim_id':claims[0]['claim_id'],'grade':claims[0]['grade'], 'tier':claims[0]['tier'],
+         'entrypoint':str(entrypoint.relative_to(ROOT)), 'entrypoint_sha256':adapter.sha(entrypoint),
+         'reliance_eligible':False, 'section_sha256':e['section_sha256'],
          'unrelated_consumer_excluded':True,'ledger_state_digest':answer['ledger_state_digest'],
          'scope':adapter.LIMIT}
 (out/'receipt.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
