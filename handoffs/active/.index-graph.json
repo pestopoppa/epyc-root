@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T08:00:13Z",
+  "generated_at": "2026-11-18T08:34:51Z",
   "nodes": [
     {
       "age_days": 8,
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 31,
-      "dispatchable": 16,
+      "closed": 34,
+      "dispatchable": 17,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-GPU-LOADCHECK (row 1b); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; C14 fold per INF-65; D6/D7",
-      "open": 16,
+      "open": 17,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
