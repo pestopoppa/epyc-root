@@ -517,7 +517,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 193,
+      "closed": 194,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 39,
@@ -529,7 +529,7 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 234,
+      "total": 235,
       "tracks": [
         {
           "blocked": 1,
@@ -543,7 +543,7 @@
         },
         {
           "blocked": 0,
-          "closed": 25,
+          "closed": 26,
           "gates": [],
           "guarded": 0,
           "line": 365,
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 579,
+          "line": 581,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 845,
+          "line": 847,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 4
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1350,
+          "line": 1352,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1887,
+          "line": 1889,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2649,
+          "line": 2651,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3076,
+          "line": 3078,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3733,
+          "line": 3735,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
