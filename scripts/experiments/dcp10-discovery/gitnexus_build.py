@@ -9,6 +9,7 @@ import os
 import shutil
 import signal
 import stat
+from contextlib import contextmanager
 from pathlib import Path
 from uuid import uuid4
 
@@ -17,6 +18,45 @@ import gitnexus_native as native
 SCHEMA = 'epyc.dcp10.gitnexus-build-request.v1'
 WORKER = Path(__file__).with_name('gitnexus_build_worker.mjs').resolve()
 TIMEOUT = 1800
+
+
+# Shared scratch ancestry is untrusted. Only descriptor-backed Docker mount
+# sources may cross it; capture's stricter path-only custody remains unchanged.
+SHARED_TMP = Path('/mnt/raid0/llm/tmp')
+
+
+def check_build_path(path):
+    if path.resolve(strict=True) != path:
+        raise native.IsolationError('noncanonical build path')
+    for component in (path, *path.parents):
+        info = component.lstat()
+        if component == SHARED_TMP:
+            if info.st_uid != os.geteuid() or not stat.S_ISDIR(info.st_mode):
+                raise native.IsolationError('unexpected shared scratch owner/type')
+            continue
+        if (info.st_uid not in (0, os.geteuid()) or info.st_mode & 0o022
+                or (stat.S_ISREG(info.st_mode) and info.st_nlink != 1)):
+            raise native.IsolationError(f'untrusted build path: {component}')
+
+
+@contextmanager
+def pinned_mounts(paths):
+    """Hold inode references through Docker teardown; never mount mutable ancestry."""
+    descriptors = []
+    try:
+        mounts = {}
+        for path in paths:
+            check_build_path(path)
+            fd = os.open(path, os.O_PATH | os.O_NOFOLLOW | os.O_CLOEXEC)
+            descriptors.append(fd)
+            before, pinned = path.stat(), os.fstat(fd)
+            if (before.st_dev, before.st_ino) != (pinned.st_dev, pinned.st_ino):
+                raise native.IsolationError('mount path changed while pinning')
+            mounts[path] = Path(f'/proc/{os.getpid()}/fd/{fd}')
+        yield mounts
+    finally:
+        for fd in descriptors:
+            os.close(fd)
 
 
 def inventory(root):
@@ -59,7 +99,7 @@ def task_binding(task):
 
 def prepare(assets):
     """Write a fresh prospective request; caller retains its returned SHA-256."""
-    native.check_custody(assets)
+    check_build_path(assets)
     if assets.stat().st_mode & 0o077 or list(assets.iterdir()):
         raise ValueError('build assets must be empty and private')
     native.seal_file(native.NODE, native.NODE_SHA)
@@ -70,16 +110,22 @@ def prepare(assets):
     return write_new(assets / 'build-request.json', request)
 
 
-def launch_config(docker, name, output, base, timeout):
+def launch_config(docker, name, output, base, timeout, pins=None):
     mounts = [(native.graph.SOURCE_ROOT, str(native.graph.SOURCE_ROOT)),
-              (Path(base['root']), base['root']), (native.NODE, '/dcp10/node'), (WORKER, '/dcp10/worker.mjs')]
+              (Path(base['root']), base['root']),
+              (native.NODE.parent, '/dcp10/runtime'), (WORKER.parent, '/dcp10/producer')]
+    pins = pins or {}
+    mounts = [(pins.get(path, path), target) for path, target in mounts]
     command = native.launch_config(docker, name, mounts, timeout)
+    command[-2:] = ['/dcp10/runtime/node', '/dcp10/producer/gitnexus_build_worker.mjs']
+    command = [item.replace(",bind-recursive=readonly", ",bind-recursive=readonly,bind-propagation=rprivate")
+               for item in command]
     for old, new in (('--cpus=1', '--cpus=4'), ('--memory=2g', '--memory=8g'),
                      ('--memory-swap=2g', '--memory-swap=8g'), ('--pids-limit=64', '--pids-limit=256')):
         command[command.index(old)] = new
     if any(char in str(output) for char in ',\n\r"'):
         raise native.IsolationError('unsupported build output path')
-    command[-6:-6] = ['--mount', f'type=bind,src={output},dst=/dcp10/output',
+    command[-6:-6] = ['--mount', f'type=bind,src={pins.get(output, output)},dst=/dcp10/output',
                       '--tmpfs', '/tmp:rw,nosuid,nodev,size=1g',
                       '--tmpfs', '/dcp10/empty-home:rw,nosuid,nodev,size=64m']
     return command
@@ -88,7 +134,7 @@ def launch_config(docker, name, output, base, timeout):
 def build_private_index(assets, request_sha, task_id, remaining):
     """One admitted build. No retries, fallback, source copying or shared writes."""
     remaining(TIMEOUT)
-    native.check_custody(assets / 'build-request.json')
+    check_build_path(assets / 'build-request.json')
     request = native.read_record(assets / 'build-request.json', request_sha, max_bytes=32 * 1024**2)
     tasks = native.original_tasks()
     if task_id not in tasks or set(request.get('tasks', {})) != set(tasks):
@@ -102,7 +148,7 @@ def build_private_index(assets, request_sha, task_id, remaining):
         if request != expected:
             raise ValueError('prospective build source/base/request drift')
         for path in (native.graph.SOURCE_ROOT, native.NODE, WORKER):
-            native.check_custody(path)
+            check_build_path(path)
         native.seal_file(native.NODE, native.NODE_SHA)
         return writer
 
@@ -110,38 +156,17 @@ def build_private_index(assets, request_sha, task_id, remaining):
     language = tasks[task_id]['language']
     output = assets / f'work-{language}'
     output.mkdir(mode=0o700)  # existing/failed attempts cannot be overwritten
-    native.check_custody(output)
+    check_build_path(output)
     base = request['tasks'][task_id]
-    name = f'dcp10-gitnexus-build-{uuid4().hex}'
-    docker = shutil.which('docker')
-    if docker is None or os.geteuid() == 0:
-        raise native.IsolationError('build requires Docker and a non-root caller')
-    timeout = remaining(TIMEOUT)
-    if type(timeout) not in (int, float) or not 0.001 <= timeout <= TIMEOUT:
-        raise ValueError('invalid build time budget')
-    env = {'PATH': '/usr/bin:/bin', 'HOME': '/nonexistent', 'LANG': 'C.UTF-8',
-           'DOCKER_HOST': 'unix:///var/run/docker.sock', 'DOCKER_CONFIG': '/run/dcp10-no-docker-config'}
-    command = launch_config(docker, name, output, base, timeout)
-    previous = signal.signal(signal.SIGTERM, native._stop_on_term)
-    try:
-        result = native.read_bounded(command, env, native.pilot.encode(
-            {'source': str(native.graph.SOURCE_ROOT), 'base': base}).encode(), timeout + 5)
-        if result.returncode or result.stderr:
-            raise native.QueryError('private build failed or emitted diagnostics; no receipt admitted')
-    finally:
-        signal.signal(signal.SIGTERM, previous)
-        try:
-            native.remove_container(docker, name, env)
-        finally:
-            snapshot()
-            remaining(TIMEOUT)
+    command, result = run_isolated(output, base, remaining(TIMEOUT), snapshot)
+    remaining(TIMEOUT)
     index = output / 'index'
     if {path.name for path in output.iterdir()} != {'index'}:
         raise ValueError('unexpected build output')
     if {path.name for path in index.iterdir()} != {'lbug', 'meta.json'}:
         raise ValueError('private build has uncheckpointed sidecars')
     for path in index.iterdir():
-        native.check_custody(path)
+        check_build_path(path)
         if not stat.S_ISREG(path.lstat().st_mode):
             raise ValueError('nonregular build output')
     receipts = assets / 'index-builds'
@@ -162,3 +187,36 @@ def build_private_index(assets, request_sha, task_id, remaining):
     index.rename(indexes / language)
     output.rmdir()
     return receipt_sha
+
+
+def run_isolated(output, base, timeout, verify):
+    """One bounded private writer invocation, shared by native smoke and cohort."""
+    name = f'dcp10-gitnexus-build-{uuid4().hex}'
+    docker = shutil.which('docker')
+    if docker is None or os.geteuid() == 0:
+        raise native.IsolationError('build requires Docker and a non-root caller')
+    if type(timeout) not in (int, float) or not 0.001 <= timeout <= TIMEOUT:
+        raise ValueError('invalid build time budget')
+    env = {'PATH': '/usr/bin:/bin', 'HOME': '/nonexistent', 'LANG': 'C.UTF-8',
+           'DOCKER_HOST': 'unix:///var/run/docker.sock', 'DOCKER_CONFIG': '/run/dcp10-no-docker-config'}
+    previous = signal.signal(signal.SIGTERM, native._stop_on_term)
+    try:
+        with pinned_mounts([native.graph.SOURCE_ROOT, Path(base['root']), native.NODE.parent, WORKER.parent, output]) as pins:
+            # Snapshot after pinning and check the named paths still identify each fd.
+            verify()
+            for path, fdpath in pins.items():
+                current, pinned = path.stat(), fdpath.stat()
+                if (current.st_dev, current.st_ino) != (pinned.st_dev, pinned.st_ino):
+                    raise native.IsolationError('source changed after mount pinning')
+            command = launch_config(docker, name, output, base, timeout, pins)
+            try:
+                result = native.read_bounded(command, env, native.pilot.encode(
+                    {'source': str(native.graph.SOURCE_ROOT), 'base': base}).encode(), timeout + 5)
+            finally:
+                native.remove_container(docker, name, env)
+        if result.returncode or result.stderr:
+            raise native.QueryError(f'private build rc={result.returncode}; diagnostics={result.stderr[-2048:]!r}; no receipt admitted')
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+        verify()
+    return command, result

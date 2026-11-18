@@ -110,3 +110,23 @@ qualification must resolve that explicitly rather than suppressing diagnostics.
 No private index has been built by these controls, and no graph score or
 retrieval-quality result is claimed. The existing
 `VB-CONTEXTBENCH-DISCOVERY-WIRE` source covers this producer.
+
+## Allocator build qualification (2026-11-18)
+
+`gitnexus_build_row.py` is an **unqualified candidate**, not an admitted launcher.
+Its publisher smoke stopped before worker startup three times (Docker rc 125):
+recursive mount propagation syntax, then descriptor-backed file/output mounts.
+`dcp10-gitnexus-build-20261118` is not published and its lineage is parked under
+the three-failure rule. Do not retry it or reset its failure count. Native ABI,
+unused-extension handling, graph integrity and checkpointing remain untested.
+See `docs/research/dcp10-gitnexus-build-qualification-20261118.json` for original
+paths/hashes and the failed-qualification verdict.
+
+The candidate holds descriptor-backed mounts through teardown to resist parent
+rename, while preserving the original in-container base identities. The exact
+source-checked adapter variant omits VECTOR installation (no embedding arm),
+sets a 1 GiB database buffer and four query threads. Installed source is never
+modified and all diagnostics still reject receipts. These are offline controls;
+the capture helper's strict path-only custody and existing source-admission
+refusals remain. A safe Docker mount transport requires an offline redesign
+before any new native qualification decision.

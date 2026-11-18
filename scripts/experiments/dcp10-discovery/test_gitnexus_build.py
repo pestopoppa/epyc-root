@@ -2,7 +2,7 @@
 import subprocess
 import tempfile
 import unittest
-from contextlib import ExitStack
+from contextlib import ExitStack, nullcontext
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,7 +25,8 @@ class BuildControls(unittest.TestCase):
             (build, 'producer_identity', lambda: {'builder': 'source'}),
             (build, 'inventory', lambda _: {'module': 'pinned'}),
             (build.native, 'writer_identity', lambda: {'version': 'pinned'}),
-            (build.native, 'check_custody', lambda _: None),
+            (build, 'check_build_path', lambda _: None),
+            (build, 'pinned_mounts', lambda _: nullcontext({})),
             (build.native, 'seal_file', lambda *_: None),
             (build.os, 'geteuid', lambda: 1000),
             (build.shutil, 'which', lambda _: '/usr/bin/docker'),
@@ -63,6 +64,7 @@ class BuildControls(unittest.TestCase):
         self.assertTrue(all(command.index(option) < image for option in ('--tmpfs', '--mount')))
         mounts = [command[i + 1] for i, option in enumerate(command) if option == '--mount']
         self.assertEqual(sum('readonly' not in item for item in mounts), 1)
+        self.assertTrue(all('bind-propagation=rprivate' in item for item in mounts if 'readonly' in item))
         self.assertTrue(any('dst=/original/base,readonly' in item for item in mounts))
         self.assertFalse((self.assets / 'work-python').exists())
 
@@ -74,7 +76,7 @@ class BuildControls(unittest.TestCase):
         self.assertFalse((self.assets / 'index-builds').exists())
 
     def test_timeout_cleanup_and_post_snapshot(self):
-        with patch.object(build, 'inventory', side_effect=[{'module': 'pinned'}, {'module': 'changed'}]), \
+        with patch.object(build, 'inventory', side_effect=[{'module': 'pinned'}, {'module': 'pinned'}, {'module': 'changed'}]), \
              patch.object(build.native, 'read_bounded', side_effect=build.native.QueryError('timeout')), \
              self.assertRaisesRegex(ValueError, 'source/base/request drift'):
             build.build_private_index(self.assets, self.request_sha, 'original', lambda cap: cap)
@@ -119,6 +121,30 @@ class SourceControls(unittest.TestCase):
             (root / 'outside').symlink_to('/etc/passwd')
             with self.assertRaisesRegex(ValueError, 'escapes'):
                 build.inventory(root)
+
+    def test_descriptor_mount_survives_ancestor_rename(self):
+        with tempfile.TemporaryDirectory() as name:
+            parent = Path(name) / 'owned'
+            parent.mkdir(mode=0o700)
+            target = parent / 'data'
+            target.write_bytes(b'original')
+            with patch.object(build, 'check_build_path'), build.pinned_mounts([target]) as pins:
+                parent.rename(Path(name) / 'moved')
+                parent.mkdir()
+                target.write_bytes(b'replacement')
+                self.assertEqual(pins[target].read_bytes(), b'original')
+            self.assertFalse(pins[target].exists())
+
+    def test_custody_still_refuses_untrusted_leaf_and_symlink(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            root.chmod(0o777)
+            with self.assertRaises(build.native.IsolationError):
+                build.check_build_path(root)
+            root.chmod(0o700)
+            (root / 'link').symlink_to('/etc/passwd')
+            with self.assertRaises(build.native.IsolationError):
+                build.check_build_path(root / 'link')
 
     def test_worker_syntax(self):
         subprocess.run([build.native.NODE, '--check', build.WORKER], check=True, timeout=10)
