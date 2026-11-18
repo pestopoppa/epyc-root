@@ -1,0 +1,6 @@
+{
+  "phase": "precondition",
+  "reason": "FAIL: contention matrix is STALE (live topology hash=560d489b or file age > 30 days).\n      Run: python scripts/server/contention_matrix.py",
+  "status": "refused",
+  "unit_id": "vb-v9-8-lifecycle-native-20261118-r2"
+}

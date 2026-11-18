@@ -1,0 +1,65 @@
+{
+  "row": "vb-v9-8-lifecycle-native-20261118-r2",
+  "status": "source_pinned_repair_prepared_awaiting_production_matrix_recapture",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/row.spec.json",
+  "packet_source_manifest_sha256": "656df7fded96b3f620e0dc93d72339fd505eb456817a26ce61080c072da40c44",
+  "original_source_manifest_sha256": "8da6b23d9803ac2317132f212344a34b9dd3659f71ad56de02c0f441518842b9",
+  "changed_or_new_paths": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/job.py": "e22f24cc179d157017fce866765539e504c0bcf3d39eb315f1d739c4903a9736",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/launch.sh": "2bf1e6034257a238ce2ebb088c9236fe70a5be0b5a6ad3515c793785aacfc1ee",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/row.spec.json": "8b52419fc878f9181d6ea7a71b7d538e7c3d88fd117f97cf0660e55b9e480395",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/README.md": "ac83080d37a1b26a19491c13035fe0e25ce7d6de782964091e98a7f9f5128c38",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/test_native_packet.py": "b9e358804ab56235f9c0f51e4cebb239e7df5c47deca0826fc514ab778ac1af9",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/SOURCE.sha256": "656df7fded96b3f620e0dc93d72339fd505eb456817a26ce61080c072da40c44",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/original-SOURCE.sha256": "8da6b23d9803ac2317132f212344a34b9dd3659f71ad56de02c0f441518842b9",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/fixtures/original-preflight/capture.json": "5737361f1c2ca08a0f123a9ea38f2b0d86b81f19912c1fbae5eb2a1d64a2bba8",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/fixtures/original-preflight/fresh-fallback.json": "b9f6efbe71775df4065f62ce3414e9abced3fe7522d5607bd974abc4fc18f599",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/fixtures/original-preflight/contention-matrix.txt": "a582e5ac064331c0be9e9032d5d8391247aa1efb2314a4daf661b0beeea01913",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/matrix-refresh/SPEC.md": "2d4e8ab54f3bc06012e4421758d12472174d591291ff0a1bd13200273af6e4ce"
+  },
+  "unchanged_copied_source_sha256": {
+    "plan.json": "0e1d2452f6142580042037c82ce6a69da870be33eb9a9f4a25e9c124a878fda2",
+    "cohorts.json": "85cb533597e5dd9adc97807d04d7a4f40c75f1064fdff40b631fd6e707323a2f",
+    "pins.json": "588f8a1fa701ca4da87def1520299cd281965627bca17d38e274488f8f314932",
+    "model.sha256": "79b0c3d6573b679ab733716df4be920f831130a19572f8f2e733999c220bb5d5",
+    "sources/root/scripts/benchmark/kernel_promotion_resident_runner.py": "23b1c15cc09934aab6e66bad4e3006ce6a20537342b489dabd5672d23905a2ae",
+    "sources/root/scripts/benchmark/kernel_promotion_evidence.py": "c2ba36da3f1f4fdbfb51030562b4bff2719924360253c90a5b08e8962f97e6bd",
+    "sources/root/scripts/vidya/adapters/kernel_promotion_lifecycle.py": "e3c8d6ad034c1d58b122a577c4c08dea0a46fbbffb8eb6d2ee1c1d25f2bec72f"
+  },
+  "original_evidence": {
+    "primary-failure.json": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/primary-failure.json",
+    "RESULT.json": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/RESULT.json",
+    "resident/capture.json.original-bytes.json": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/resident/capture.json.original-bytes.json",
+    "resident/fresh-fallback.json": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/resident/fresh-fallback.json",
+    "resident/contention-matrix.yaml": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/resident/contention-matrix.yaml",
+    "claim-3f1ea83fa7b64591b4ed923ed07b6fc3.close.json": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/claim-3f1ea83fa7b64591b4ed923ed07b6fc3.close.json",
+    "vb-v9-8-lifecycle-native-20261118.ended": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/native-wiring-failures-20261118/vb-v9-8-lifecycle-native-20261118/vb-v9-8-lifecycle-native-20261118.ended"
+  },
+  "current_matrix": {
+    "canonical_path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/contention_matrix.yaml",
+    "sha256": "092880eb3ddeb322afe16a251453b5ac11cbf492ddcecb21c5b85a552270100f",
+    "topology_hash": "560d489bb6df16b9",
+    "measured_at": "2026-09-24T18:51:53.131277+00:00",
+    "mtime": "2026-10-03T04:41:08.460749492Z",
+    "validator_exit": 2,
+    "matrix_pin_created": false,
+    "observed_available_copies": "All named canonical/worktree copies matched the archived stale digest."
+  },
+  "external_prerequisite": "Production owner must measure the approved healthy live lineup in the operator-authorized quiet window with the canonical full-matrix producer, validate and install the bytes, then arrange the authorized stop/drain boundary required for the whole-host lifecycle grant. No live-stack-dependent keeper prerequisite row was created.",
+  "production_owner_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/matrix-refresh/SPEC.md",
+  "validation": {
+    "focused_tests_passed": 144,
+    "manifest_and_shell_syntax": "PASS",
+    "original_archive_regression": "PASS; phase=preflight with stale matrix reason before sealing",
+    "positive_fixtures": "PASS for recent bound matrix and exact witness",
+    "tamper_controls": "PASS for old producer stamp with fresh mtime, unbound matrix and captured/current byte drift",
+    "live_admission": "bind and precondition rc1 with explicit stale matrix reason; no bind created and success predicate rc1",
+    "precondition_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-repair-20261118/packet/out/PREFLIGHT.json",
+    "no_model_dryrun": "PASS; publisher smoke precondition branch also passed"
+  },
+  "blast_radius": "Scratch-only launcher/spec/tests; no source changes. GitNexus risk unavailable because lane has no indexed repository.",
+  "publisher_smoke_run": false,
+  "published": false,
+  "benchmark_run": false,
+  "repo_edits": false
+}

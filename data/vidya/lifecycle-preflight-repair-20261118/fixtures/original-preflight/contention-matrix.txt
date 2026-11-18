@@ -1,0 +1,2 @@
+FAIL: contention matrix is STALE (live topology hash=560d489b or file age > 30 days).
+      Run: python scripts/server/contention_matrix.py
