@@ -615,6 +615,7 @@ _FILE_SOURCES = (
     "quality-pack-comparison", "qwen4exp-cpu-loader-diagnostic", "kernel-promotion-lifecycle",
     "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "tool-selector-events", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
     "hsf5p-microbench", "v11-gate-bench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",
+    "fm4-gate-acceptance",
 )
 
 

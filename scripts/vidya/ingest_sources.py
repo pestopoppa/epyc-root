@@ -654,6 +654,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "per-stratum PROXY recall and p95 latency; explicit file only; unsealed producer log, "
                 "no true-recall or promotion warrant",
            task="VB-TOOL-SELECTOR-WIRE"),
+    Source("fm4-gate-acceptance", "fm4_gate_acceptance",
+           lambda p: importlib.import_module("adapters.fm4_gate_acceptance").units(p),
+           note="Prospective caller-selected gate observations; revalidated execution evidence, "
+                "not authenticated task outcomes or historical accuracy",
+           task="VB-FM4-ORACLE-WIRE"),
     Source("fused-decode-div", "fused_decode_div",
            lambda p: importlib.import_module("adapters.fused_decode_div").units(p),
            note="FD-DIV-1a epyc.fd_div_1a.smoke_receipt.v1 (one claim per decided smoke, byte identity "
