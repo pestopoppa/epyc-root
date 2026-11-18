@@ -1,0 +1,255 @@
+{
+  "schema": "epyc.vidya.architect_critic_slice_filing.v1",
+  "row": "handoff-vidya-quality-pack-architect-critic-20261118",
+  "rc": 0,
+  "scheduler_end_line": "rc=0 time=2026-11-18T00:45:54Z reason=complete",
+  "verdict": "pass",
+  "original_decision_rule": "Can the isolated architect-critic CPU profile capture four predetermined requests per arm against v10 and C13 with exact input, output, embedded MTP cap 4 and process custody? Stop after eight raw responses and verified cleanup, or on STOP, deadline, identity, startup, response or cleanup failure. The four-CPU publisher smoke captures one v10 no-spec native completion on a pinned Qwen3-0.6B Q8_0 with 45 second startup and 30 second request bounds. Record the deployed MI210 DFlash2 distinction and retain the frontdoor JSON mismatch in the broad-pack record.",
+  "scope": "isolated architect-critic-cpu-mtp input capture",
+  "arm_order": [
+    "production",
+    "candidate"
+  ],
+  "request_count_per_arm": 4,
+  "response_count": 8,
+  "cpus": [
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "scheduler_grant": "regions=72-95 start=2026-11-18T00:41Z end=2026-11-18T01:11Z holds=q3",
+  "capture_recipe": {
+    "model": "Qwen3.8-27B-Q8_0.gguf",
+    "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "chat_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "recipe_sha256": "39284efa828cc7d1b7df557a2eb7bfecc8b8d58303b9ae0c10a97c9f97e376f6",
+    "plan_sha256": "61aa74d218b11c96a5e05626465d15e348f7988cb768713c709537eadc989244",
+    "capture_runner_sha256": "484f9405ceb2fce251925e33dd3a17962319a9339e4aa3e2a0a00ca0e4dac67d",
+    "question_pool_sha256": "0d3bcde02e767b281031345fcbcd299e28de167cf5c51a50c806cad459d3da1a",
+    "endpoint": "/v1/chat/completions",
+    "native_mtp_cap": 4,
+    "slots": 1,
+    "allocated_cpus": 24,
+    "reasoning_effort": "medium",
+    "compiled_serving_spec_enabled": true,
+    "compiled_serving_device": "MI210",
+    "compiled_serving_spec_type": "draft-dflash",
+    "compiled_serving_draft_cap": 7,
+    "compiled_serving_slots": 4
+  },
+  "pinned_runtime": {
+    "production": {
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "binary_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "build_manifest_sha256": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2",
+      "mapped_library_count": 6
+    },
+    "candidate": {
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "binary_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "build_manifest_sha256": "f77db04733a8c85d520dd09cef13c2312212a25745dcfed95978cb0e4fab384b",
+      "mapped_library_count": 6
+    }
+  },
+  "bank_sha256": "c48c17514a7fa4d3eb46bb6111c1cebf22261fb17e5f0c408a1ee3ad6ca90e41",
+  "candidate_sha256": "a07872b3561a31a92218d8b7667a2eb189c2d85aceff5db672d6bca202290ac7",
+  "bank_pin_order": {
+    "production_cleanup_write_utc": "2026-11-18T00:44:36.060446379Z",
+    "bank_capture_write_utc": "2026-11-18T00:44:36.065446423Z",
+    "bank_pin_write_utc": "2026-11-18T00:44:36.066446431Z",
+    "candidate_server_log_creation_utc": "2026-11-18T00:44:36.118446880Z",
+    "candidate_cleanup_write_utc": "2026-11-18T00:45:49.551087178Z",
+    "candidate_capture_write_utc": "2026-11-18T00:45:49.606087662Z",
+    "result_write_utc": "2026-11-18T00:45:49.607087670Z",
+    "runner_order": "The pinned runner writes and fsyncs the v10 bank and pin, then verifies the bank against the computed digest before opening the candidate log and launching C13. It rechecks the bank and plan after C13 cleanup."
+  },
+  "raw_derived_comparisons": [
+    {
+      "id": "architect-critic-json",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": false,
+      "reasoning_content_equal": true,
+      "token_ids_equal": false,
+      "completion_tokens": [
+        128,
+        128
+      ],
+      "finish_reason": [
+        "length",
+        "length"
+      ],
+      "mtp_draft_tokens": [
+        161,
+        162
+      ],
+      "mtp_accepted_draft_tokens": [
+        85,
+        85
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    },
+    {
+      "id": "architect-critic-code",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": false,
+      "reasoning_content_equal": true,
+      "token_ids_equal": false,
+      "completion_tokens": [
+        82,
+        84
+      ],
+      "finish_reason": [
+        "stop",
+        "stop"
+      ],
+      "mtp_draft_tokens": [
+        88,
+        84
+      ],
+      "mtp_accepted_draft_tokens": [
+        60,
+        63
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    },
+    {
+      "id": "architect-critic-reasoning",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": false,
+      "reasoning_content_equal": false,
+      "token_ids_equal": false,
+      "completion_tokens": [
+        128,
+        128
+      ],
+      "finish_reason": [
+        "length",
+        "length"
+      ],
+      "mtp_draft_tokens": [
+        144,
+        147
+      ],
+      "mtp_accepted_draft_tokens": [
+        91,
+        90
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    },
+    {
+      "id": "architect-critic-long-prose",
+      "request_bytes_equal": true,
+      "rendered_prompt_equal": true,
+      "response_bytes_equal": false,
+      "content_equal": true,
+      "reasoning_content_equal": true,
+      "token_ids_equal": true,
+      "completion_tokens": [
+        32,
+        32
+      ],
+      "finish_reason": [
+        "length",
+        "length"
+      ],
+      "mtp_draft_tokens": [
+        31,
+        31
+      ],
+      "mtp_accepted_draft_tokens": [
+        23,
+        23
+      ],
+      "http_fingerprints": [
+        "b10303-ffc1bac82",
+        "b0-unknown"
+      ]
+    }
+  ],
+  "cleanup": {
+    "production": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 3124304,
+      "port_closed": true,
+      "listener": "127.0.0.1:19476"
+    },
+    "candidate": {
+      "dead": true,
+      "exit_status": 0,
+      "pid": 3148119,
+      "port_closed": true,
+      "listener": "127.0.0.1:19476"
+    }
+  },
+  "prior_frontdoor_json_mismatch": true,
+  "broad_pack_status": "incomplete",
+  "quality_transfer_authorized": false,
+  "promotion_authorized": false,
+  "files_sha256": {
+    "RESULT.json": "a0c3cba0228c9ee7156f5b36a323e0fe5aa6a98b25804ce2e3a8f0eb9f5d6331",
+    "native/banked-capture.json": "c48c17514a7fa4d3eb46bb6111c1cebf22261fb17e5f0c408a1ee3ad6ca90e41",
+    "native/banked-capture.sha256": "dbe87bebb89db3fece2f8b562853ebcb0c00076eb2174901bc1d45e751396449",
+    "native/candidate-capture.json": "a07872b3561a31a92218d8b7667a2eb189c2d85aceff5db672d6bca202290ac7",
+    "native/candidate/architect-critic-code.request.json": "6b9bd9a50433e20f07ae2f8325b39381fcbf4bbf6d6c0fbbb8e72f5be28aae1a",
+    "native/candidate/architect-critic-code.response.json": "c49b9445210f2166044d5bb669787733e647b71a5274055888bc8124fba29083",
+    "native/candidate/architect-critic-json.request.json": "99dded36548a1851169055e07e059d0a4ca0022745e2c55b32185dac6d1178a4",
+    "native/candidate/architect-critic-json.response.json": "97023c55c86c86c8dc19bb93a36ea1247a6354e8fe6af0ddb60f6d50e31de976",
+    "native/candidate/architect-critic-long-prose.request.json": "2217783a9dd819bcc1843b521cddbce44bd57deb9939e6fcc47a4d1bd1f025a7",
+    "native/candidate/architect-critic-long-prose.response.json": "3ab9bc670886a6c8f3e9b0aca70ae1d7527c64d8bb8744513c5d024ae8ed25b0",
+    "native/candidate/architect-critic-reasoning.request.json": "6c4421d2bc23b910ebf73a4ec3db8d77247d412ece21e446ee478ca74d317f0e",
+    "native/candidate/architect-critic-reasoning.response.json": "c1dc77599789b59ee1a3736b6c09bffb6fbb7d962910f5fcd88fe59004b7e24c",
+    "native/candidate/cleanup.json": "8bea4d864d32561c5a641bd75cf53f7951195d96262c34d9941de8bbf722b670",
+    "native/candidate/server.json": "fe117efc645721df8af1aec687a3cfe98426313c9480c1e7e1de0850bb9b2a6c",
+    "native/candidate/server.log": "0aa36245cdfe7700d2f67d105ff9df63885c15d37adb0b228c7bec9258c4d975",
+    "native/production/architect-critic-code.request.json": "6b9bd9a50433e20f07ae2f8325b39381fcbf4bbf6d6c0fbbb8e72f5be28aae1a",
+    "native/production/architect-critic-code.response.json": "2dfb918d2eae3ed78e1e40b48cdec8194ef89a19dc21a5969dddb63b86176efb",
+    "native/production/architect-critic-json.request.json": "99dded36548a1851169055e07e059d0a4ca0022745e2c55b32185dac6d1178a4",
+    "native/production/architect-critic-json.response.json": "75d683a0b8f0130be957ff51a6993fae9635bf2fabafcf1b916a1b65e272756c",
+    "native/production/architect-critic-long-prose.request.json": "2217783a9dd819bcc1843b521cddbce44bd57deb9939e6fcc47a4d1bd1f025a7",
+    "native/production/architect-critic-long-prose.response.json": "8e6397d27051f754b0b3c249b083fceb4d13982379c996f4434e4d652d20ea99",
+    "native/production/architect-critic-reasoning.request.json": "6c4421d2bc23b910ebf73a4ec3db8d77247d412ece21e446ee478ca74d317f0e",
+    "native/production/architect-critic-reasoning.response.json": "52601be7a6055b2526167878ed8b804308fac3915f927af4dd0ae1dd1f46cfab",
+    "native/production/cleanup.json": "fea4749a85144a2da2074b77ba2abdc2d5e4a10b5b259023ed2ddc0120966724",
+    "native/production/server.json": "b85224f88fc633cd37b46c2e3c946066511f91724767e4d8f64568c173f782f2",
+    "native/production/server.log": "3d19d70a4bcf3023bd501f11c6d710dcabf2cb7072e72707c04c3aa8a23512b6",
+    "native/scheduler.grant": "e08d5961d8f6213bdb5f65ddf0e4d7b3814cba6d6224be4bbad41d84db4a2c9b",
+    "scheduler.ended": "698a059e8c7f4289c284f47ccaf1aea9e9f50f7a7cb18ae052fe71307be7d0ad"
+  }
+}

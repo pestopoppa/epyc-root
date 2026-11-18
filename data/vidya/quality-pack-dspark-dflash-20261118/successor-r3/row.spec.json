@@ -1,0 +1,33 @@
+{
+  "id": "handoff-vidya-quality-pack-dspark-dflash-20261118-r3",
+  "owner": "handoff-vidya-belief-substrate",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-DSPARK-DFLASH",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "kind": "compute",
+  "estimate_s": 1700,
+  "min_window_s": 2250,
+  "max_window_s": 2700,
+  "ram_gib": 64,
+  "first_progress_s": 100,
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r3-20261118/row-launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r3-20261118",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r3-20261118/out/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r3-20261118/smoke_predicate.py",
+  "decision_rule": "Capture four fixed native /completion cap-0/cap-7 pairs per runtime against v10 and C13 on one allocator-selected 24-CPU quarter with Qwen3.8-27B-Q8_0 and its matching Q8_0 DFlash2 sidecar. Require eight raw requests per single-slot runtime, echoed caps, native draft and accept counters, split f16 KV, pinned runtime/model identities, live same-PID CPU affinity and mapped runtime custody per request, sealed production bytes before candidate launch and captured-PID, listener cleanup. Stop after sixteen raw responses and verified cleanup or at STOP, deadline or first identity, startup, response, telemetry or cleanup error. The v10 small-model CPU no-spec smoke proves native publisher custody only. Preserve retirement of historical DeepSeek 0731 DSpark, earlier frontdoor mismatch and incomplete broad coverage.",
+  "verdict_by": "agent",
+  "keep": [
+    "out/**",
+    "requests/**",
+    "*.py",
+    "*.json",
+    "*.jinja",
+    "*.sh",
+    "*.md",
+    "SOURCE.sha256"
+  ],
+  "priority_rank": 41
+}

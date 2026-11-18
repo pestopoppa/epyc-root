@@ -1,0 +1,105 @@
+{
+  "schema": "epyc.failed-attempt-receipt.v1",
+  "source": "/mnt/raid0/llm/tmp/vidya-belief-substrate/dspark-dflash-r2-20261118",
+  "captured_at": "2026-11-18T01:54:21.469774+00:00",
+  "files": {
+    "out/native/production/cleanup.json": {
+      "bytes": 62,
+      "sha256": "47b84b63f99305b7d9faf9595267adc2353336316436bffc3ff6af6da12b4219"
+    },
+    "out/native/production/dflash2-code-cap0.request-custody.json": {
+      "bytes": 1350,
+      "sha256": "f3aa9ac4fc8b45549a613475d831837f1cb1418f352ad499d2510d1222c6be2f"
+    },
+    "out/native/production/dflash2-code-cap0.request.json": {
+      "bytes": 378,
+      "sha256": "9e7ef24c37adbfd2d077399e1b2f547c828a2384967b9ee6e6a8c5b8753c4f45"
+    },
+    "out/native/production/dflash2-code-cap0.response.json": {
+      "bytes": 3028,
+      "sha256": "237aeaa6b11604f23cca3f798b6c90b512072777e494743dec8011b870919aa1"
+    },
+    "out/native/production/dflash2-code-cap7.request-custody.json": {
+      "bytes": 1350,
+      "sha256": "6b47362f0a099faf3cd9e8e6dea1c67dc8bde7effb2569058018309642db040b"
+    },
+    "out/native/production/dflash2-code-cap7.request.json": {
+      "bytes": 378,
+      "sha256": "c45179ddfbe304c4d0f534296e7c1ef8afe2b5ce117a9610f6352be76191dfd8"
+    },
+    "out/native/production/dflash2-code-cap7.response.json": {
+      "bytes": 3063,
+      "sha256": "e67eac937ce6fc5ad5fb17571153c1fdea3daa3aabdef68560edcee87e4ce840"
+    },
+    "out/native/production/dflash2-json-cap0.request-custody.json": {
+      "bytes": 1350,
+      "sha256": "8f4d48efefa37a16545d0670b4abb0c1bf938d5a0f8a9d7576a4101cf7ec11b5"
+    },
+    "out/native/production/dflash2-json-cap0.request.json": {
+      "bytes": 283,
+      "sha256": "2f29a289d363a19d839b09898a88d43e6f0dec15778dd427f2c0ee83727e44f1"
+    },
+    "out/native/production/dflash2-json-cap0.response.json": {
+      "bytes": 2931,
+      "sha256": "7cb2ee3d5db7ba977d20bb2a57bc6c4dcb268ccb44ee02285698c9400fb8a98a"
+    },
+    "out/native/production/dflash2-json-cap7.request-custody.json": {
+      "bytes": 1350,
+      "sha256": "6398cb8af8644f0fac07ff0342fdb62fa4cc349ac96a13dbe25787dcbc9392e1"
+    },
+    "out/native/production/dflash2-json-cap7.request.json": {
+      "bytes": 283,
+      "sha256": "e78bd9fb454645500d9bb4a07602ff14f4d3fb40b89f54ad8cae38ed937e3e63"
+    },
+    "out/native/production/dflash2-json-cap7.response.json": {
+      "bytes": 2972,
+      "sha256": "d096bbca2cc52cc7283c8ff0413b44223e5e65b43adc24d7b259a71985c50d67"
+    },
+    "out/native/production/dflash2-reasoning-cap0.request-custody.json": {
+      "bytes": 1350,
+      "sha256": "e45ab12e59fc0e8316d4a74bc0f54476cf8504c839f0b780700323a458fe3385"
+    },
+    "out/native/production/dflash2-reasoning-cap0.request.json": {
+      "bytes": 6617,
+      "sha256": "c032585900af99b849c92925fed538766399fefd348d986129337b0a8d77eb39"
+    },
+    "out/native/production/server.json": {
+      "bytes": 5680,
+      "sha256": "8309e6582099d5fd042ce5d9ce9554e5795759873769aefefadbb09853be7d18"
+    },
+    "out/native/production/server.log": {
+      "bytes": 9059,
+      "sha256": "beb99a59dae2dedfa1f813e655c4d385bd3f56a35cbe3bd5598b1fa58c1596a7"
+    },
+    "out/native/scheduler.grant": {
+      "bytes": 69,
+      "sha256": "a542b9cc47b0c4e6456770406ce97df01eeca3c60d8b75e47190466615f4088c"
+    },
+    "publication.log": {
+      "bytes": 1413,
+      "sha256": "d8f30f1694eba718c05595cb9832ad8d5735301bb4b5349220071c4e26570f9b"
+    },
+    "scheduler-alerts.jsonl": {
+      "bytes": 1029,
+      "sha256": "abcb09f6c59819183318a828a1ab22a9b3530c4783a941daaee2e52d328d9f9c"
+    },
+    "scheduler.ended": {
+      "bytes": 229,
+      "sha256": "42704a89134fdf4666c9319f2f7e94c0a3124c3a51f0f22a9c9fd1fde6ad642f"
+    },
+    "filing-verdict.json": {
+      "bytes": 3726,
+      "sha256": "2adbf3040aaa4f75a69bfcbd608e41f706288518e8912af36404b454387dcc4b"
+    }
+  },
+  "total_bytes": 47950,
+  "notes": "Original incomplete attempt; no RESULT.json; never quality evidence.",
+  "archive_envelopes": {
+    "out/native/production/server.json": {
+      "envelope": "data/vidya/quality-pack-dspark-dflash-20261118/r2-full-attempt/out/native/production/server.json.original-bytes.json",
+      "original_sha256": "8309e6582099d5fd042ce5d9ce9554e5795759873769aefefadbb09853be7d18",
+      "envelope_sha256": "12f91f2a8dd295f3b5466e7c3ed07fc01927c315f3e6c87d5f4fe0149240d9f1"
+    }
+  },
+  "archive_note": "Nanosecond stat witnesses triggered the account-number scanner. Original bytes remain unchanged inside base64 envelopes; decode envelope before replaying the original SOURCE.sha256. Live published packets are unchanged."
+}
