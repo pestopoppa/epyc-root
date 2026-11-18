@@ -1,0 +1,15 @@
+{
+  "files": {
+    "gpu_counter.py": "1f34fb48243a26f8e51d0f9c9c361f295a406d5b31532ce29e6270e68d760b07",
+    "native.py": "cab477455c466ade81cbef80b68d422623d14d773b7815810fdfdb3ff49e5b69",
+    "observation.py": "01d47dbcae99f1708b4cd7f87a99ff4272860c77a54a59568d92e2e63c65a48d",
+    "reader-manifest.json": "755b5fe72fa5bc257e00e880bb0df1bcca8e56b5b3f704fb2d083ff1663dc634",
+    "reader.py": "e13c7e300b4fc1034d941b6847daa6e0f68a34380311c65e49384a3a4ae565aa",
+    "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33",
+    "weights.sha256": "d2b888ca9b4025a17878efae16a3b3f594cd01f6da0f3b782c3117f88071d1af",
+    "weights.stat.after": "b29ca8de7cbbe378f8916c944477061c29cb613df72418a45762c3fa0534de77",
+    "weights.stat.before": "b29ca8de7cbbe378f8916c944477061c29cb613df72418a45762c3fa0534de77"
+  },
+  "reader_revision": "4c799f872115ec712362fdc6e104b7d4731c3b80",
+  "research_commit": "26d89b6ea20f21675d9cc4bc07a8db11ec42199e"
+}
