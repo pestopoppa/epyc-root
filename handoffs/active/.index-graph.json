@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T10:12:04Z",
+  "generated_at": "2026-11-18T10:22:24Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 416,
-      "dispatchable": 110,
+      "dispatchable": 111,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 111,
+      "open": 112,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2397,7 +2397,7 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 42,
+      "closed": 43,
       "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
@@ -3649,14 +3649,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 92,
+      "dispatchable": 93,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-18",
       "next_action": "Run CM-2..CM-5 per-request tool selection (base: probe/codemode-ab); then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 110,
+      "open": 111,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3708,18 +3708,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 13,
           "gates": [],
           "line": 391,
           "name": "repl-turn-efficiency",
-          "open": 12,
+          "open": 13,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 777,
+          "line": 778,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3732,7 +3732,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1543,
+          "line": 1544,
           "name": "harness-improvement-loop",
           "open": 18,
           "readiness": "blocked"
@@ -3745,7 +3745,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2219,
+          "line": 2220,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3766,7 +3766,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2302,
+          "line": 2303,
           "name": "repl-embedding-retrieval",
           "open": 20,
           "readiness": "blocked"
@@ -3781,7 +3781,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2750,
+          "line": 2751,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3792,7 +3792,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3618,
+          "line": 3619,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

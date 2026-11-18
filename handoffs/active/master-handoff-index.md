@@ -125,10 +125,10 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 15 | 536 | 49 | 2026-11-03 |
 | pipeline-integration | 1 | 1 | 0 | 2026-11-17 |
-| research-evaluation | 4 | 213 | 4 | 2026-11-03 |
+| research-evaluation | 4 | 214 | 4 | 2026-11-03 |
 | reviewer-control-plane | 1 | 18 | 8 | 2026-11-03 |
 | routing-and-optimization | 9 | 463 | 16 | 2026-11-05 |
-| user-facing-harness | 2 | 99 | 18 | 2026-10-03 |
+| user-facing-harness | 2 | 100 | 18 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
