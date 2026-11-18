@@ -2,6 +2,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "coordination"))
 import session_oracle as so  # noqa: E402
 
@@ -158,3 +160,143 @@ def test_refinement_never_overrides_signal_verdicts(tmp_path):
     with p.open("a") as fh:
         fh.write(json.dumps(_asst(HB)) + "\n")
     assert so.assess(p)["verdict"] == "success"
+
+
+def _write_session(path, lines):
+    path.write_text("\n".join(json.dumps(line) for line in lines) + "\n")
+    return path
+
+
+def _delegation(tool="Agent", *, status="completed", error=False, tool_id="dispatch", agent_id="child"):
+    call = _asst({"type": "tool_use", "name": tool, "id": tool_id, "input": {}})
+    result = {"sessionId": "s", "type": "user", "toolUseResult": {"agentId": agent_id, "status": status},
+              "message": {"content": [{"type": "tool_result", "tool_use_id": tool_id, "is_error": error,
+                                       "content": [{"type": "text", "text": "Success. All tests passed."}]}]}}
+    return call, result
+
+
+def _child(tmp_path):
+    child = tmp_path / "s" / "subagents" / "agent-child.jsonl"
+    child.parent.mkdir(parents=True)
+    _write_session(child, [dict(_asst(HB), agentId="child", isSidechain=True)])
+    return child, tmp_path / "s.jsonl"
+
+
+@pytest.mark.parametrize(("status", "error", "outcome", "verdict"), [
+    ("async_launched", False, None, "delivered_no_outcome"),
+    ("running", False, None, "delivered_no_outcome"),
+    ("completed", False, None, "delivered_no_outcome"),
+    ("success", False, "success", "success"),
+    ("success", True, "failure", "failure"),
+    ("failed", False, "failure", "failure"),
+])
+def test_parent_status_and_tool_error(tmp_path, status, error, outcome, verdict):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation(status=status, error=error))
+    row = so.assess(child)
+    assert row["verdict"] == verdict
+    assert row["signals"]["local_verdict"] == "delivered_no_outcome"
+    assert row["signals"]["end"] == "handback"
+    assert row["signals"]["parent_join"] == "matched"
+    assert row["signals"]["parent_result"] == {
+        "path": str(parent), "session_id": "s", "agent_id": "child", "tool_use_id": "dispatch",
+        "status": status, "is_error": error, "outcome": outcome,
+    }
+
+
+def test_async_launch_cannot_claim_success(tmp_path):
+    child, parent = _child(tmp_path)
+    call, result = _delegation(status="async_launched")
+    result["toolUseResult"]["outcome"] = "success"
+    _write_session(parent, [call, result])
+    assert so.assess(child)["verdict"] == "delivered_no_outcome"
+
+
+def test_malformed_parent_labels_remain_without_outcome(tmp_path):
+    child, parent = _child(tmp_path)
+    call, result = _delegation(status=["success"])
+    result["toolUseResult"]["outcome"] = {"success": True}
+    _write_session(parent, [call, result])
+    row = so.assess(child)
+    assert row["verdict"] == "delivered_no_outcome"
+    assert row["signals"]["parent_result"]["status"] is None
+
+
+@pytest.mark.parametrize("mutation", ["session", "call_session", "tool_id", "agent_id", "name", "multiple_blocks",
+                                      "no_metadata", "sidechain"])
+def test_parent_result_must_match_structured_identity(tmp_path, mutation):
+    child, parent = _child(tmp_path)
+    call, result = _delegation(status="success")
+    if mutation == "session":
+        call["sessionId"] = result["sessionId"] = "unrelated"
+    elif mutation == "call_session":
+        call["sessionId"] = "unrelated"
+    elif mutation == "tool_id":
+        result["message"]["content"][0]["tool_use_id"] = "other-dispatch"
+    elif mutation == "agent_id":
+        result["toolUseResult"]["agentId"] = "other-child"
+    elif mutation == "name":
+        call["message"]["content"][0]["name"] = "Read"
+    elif mutation == "multiple_blocks":
+        result["message"]["content"].append({"type": "tool_result", "tool_use_id": "other-dispatch"})
+    elif mutation == "no_metadata":
+        result.pop("toolUseResult")
+        result["message"]["content"][0]["is_error"] = True
+    elif mutation == "sidechain":
+        call["isSidechain"] = result["isSidechain"] = True
+    _write_session(parent, [call, result])
+    row = so.assess(child)
+    assert row["verdict"] == "delivered_no_outcome"
+    assert row["signals"]["parent_join"] == "missing"
+    assert "parent_result" not in row["signals"]
+
+
+def test_missing_parent_and_conflicting_results(tmp_path):
+    child, parent = _child(tmp_path)
+    assert so.assess(child)["signals"]["parent_join"] == "missing"
+    delegation = _delegation(tool="Task", status="success")
+    _write_session(parent, [*delegation, *delegation])
+    assert so.assess(child)["verdict"] == "success"  # Duplicate logs carry identical evidence.
+    _write_session(parent, [*delegation, *_delegation(status="failed", tool_id="resume")])
+    row = so.assess(child)
+    assert row["verdict"] == "delivered_no_outcome"
+    assert row["signals"]["parent_join"] == "ambiguous"
+    assert "parent_result" not in row["signals"]
+
+
+@pytest.mark.parametrize(("calls", "expected"), [
+    ([PASS, COMMIT], "success"), ([FAIL], "failure"), ([COMMIT], "partial"),
+])
+def test_parent_result_preserves_local_outcome(tmp_path, calls, expected):
+    child, parent = _child(tmp_path)
+    records = [json.loads(line) for line in _build(tmp_path, calls).read_text().splitlines()]
+    _write_session(child, [dict(record, sessionId="s", agentId="child") for record in records])
+    _write_session(parent, _delegation(status="failed" if expected == "success" else "success"))
+    joined = so.assess(child)
+    assert joined["verdict"] == expected
+    assert joined == so.assess(child, join_parent=False)
+
+
+def test_local_only_replay_preserves_launch_verdict(tmp_path):
+    child, parent = _child(tmp_path)
+    _write_session(parent, _delegation(status="async_launched"))
+    parent_cache = {}
+    baseline = so.assess(child, parent_cache=parent_cache, join_parent=False)
+    assert parent_cache == {}
+    assert baseline["verdict"] == "delivered_no_outcome"
+    assert baseline["signals"]["end"] == "handback"
+
+    joined = so.assess(child, parent_cache=parent_cache)
+    assert joined["signals"].pop("parent_join") == "matched"
+    assert joined["signals"].pop("parent_result")["outcome"] is None
+    assert joined == baseline
+
+
+def test_cli_explicit_parent(tmp_path, capsys):
+    child, parent = _child(tmp_path)
+    parent = parent.with_name("relocated.jsonl")
+    _write_session(parent, _delegation(status="success"))
+    assert so.main(["--parent", str(parent), "--files", str(child)]) == 0
+    row = json.loads(capsys.readouterr().out)
+    assert row["verdict"] == "success"
+    assert row["signals"]["parent_result"]["path"] == str(parent)

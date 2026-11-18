@@ -47,6 +47,14 @@ success): the session carries no outcome signal, but how it ended is observable.
                         final report.
   unknown               none of the above (e.g. no assistant records at all).
 ``signals.end`` records the observed ending (handback|text|tool|api_error|none).
+
+For otherwise-unknown Claude subagents, a matching parent Agent/Task result can
+supply an explicit outcome. A structured tool error or failure status means
+failure. An explicit success status means success. Launch and completion report
+delivery alone leave the local completion verdict in place. ``signals.parent_join``
+records matched, missing, or ambiguous evidence, and ``signals.parent_result``
+records the source path, session ID, tool-use ID, child ID, status, error flag,
+and explicit outcome.
 """
 import argparse
 import json
@@ -157,6 +165,80 @@ def _completion(records):
     return "unknown", end
 
 
+def _parent_agent_results(path):
+    """Index structured Agent/Task results by (session ID, agent ID)."""
+    calls = set()
+    results = {}
+    for r in _iter_json(path, {"malformed_lines": 0}):
+        if r.get("isSidechain") or r.get("agentId"):
+            continue
+        sid, msg = r.get("sessionId"), r.get("message")
+        if not isinstance(sid, str) or not sid or not isinstance(msg, dict):
+            continue
+        content = msg.get("content")
+        if not isinstance(content, list):
+            continue
+        if r.get("type") == "assistant":
+            for b in content:
+                if (isinstance(b, dict) and b.get("type") == "tool_use"
+                        and b.get("name") in ("Agent", "Task") and isinstance(b.get("id"), str)):
+                    calls.add((sid, b["id"]))
+        metadata = r.get("toolUseResult")
+        if r.get("type") != "user" or not isinstance(metadata, dict):
+            continue
+        aid = metadata.get("agentId")
+        if not isinstance(aid, str) or not aid:
+            continue
+        # Record-level metadata cannot be attributed to one of several results.
+        blocks = [b for b in content if isinstance(b, dict) and b.get("type") == "tool_result"]
+        if len(blocks) != 1:
+            continue
+        block = blocks[0]
+        tool_id = block.get("tool_use_id")
+        if not isinstance(tool_id, str) or not tool_id or (sid, tool_id) not in calls:
+            continue
+        status = metadata.get("status")
+        is_error = block.get("is_error") is True
+        labels = (status, metadata.get("outcome"))
+        if is_error or any(label in ("failed", "failure", "error") for label in labels):
+            outcome = "failure"
+        elif status not in ("async_launched", "running") and any(
+                label in ("success", "succeeded") for label in labels):
+            outcome = "success"
+        else:
+            outcome = None
+        evidence = {"path": str(path), "session_id": sid, "agent_id": aid, "tool_use_id": tool_id,
+                    "status": status if isinstance(status, str) else None, "is_error": is_error,
+                    "outcome": outcome}
+        key = (sid, aid)
+        if results.setdefault(key, evidence) != evidence:
+            results[key] = None  # Conflicting evidence or multiple distinct calls for one child.
+    return results
+
+
+def _join_parent(path, records, sid, parent_path, parent_cache):
+    if not isinstance(sid, str) or not sid or not path.stem.startswith("agent-"):
+        return None, None
+    aid = path.stem.removeprefix("agent-")
+    if not any(r.get("agentId") == aid and r.get("sessionId") == sid for r in records):
+        return None, None
+    if parent_path is None:
+        if path.parent.name != "subagents" or path.parent.parent.name != sid:
+            return "missing", None
+        parent_path = path.parent.parent.with_name(f"{sid}.jsonl")
+    if parent_path not in parent_cache:
+        try:
+            parent_cache[parent_path] = _parent_agent_results(parent_path)
+        except OSError:
+            parent_cache[parent_path] = {}
+    results = parent_cache[parent_path]
+    key = (sid, aid)
+    if key not in results:
+        return "missing", None
+    evidence = results[key]
+    return ("matched", evidence) if evidence is not None else ("ambiguous", None)
+
+
 def _codex_events(records):
     pending = {}
     order = []
@@ -251,7 +333,9 @@ def _detect(path):
     return "claude", None
 
 
-def assess(path):
+def assess(path, *, parent_path=None, parent_cache=None, join_parent=True):
+    """Assess a transcript. Disable the parent join for a local-only replay."""
+    path = Path(path)
     stats = {"malformed_lines": 0}
     harness, sid = _detect(path)
     records = list(_iter_json(path, stats))
@@ -265,11 +349,22 @@ def assess(path):
         events = _codex_events(records)
     verdict, sig, sha, pushed = judge(events)
     sig["malformed_lines"] = stats["malformed_lines"]
+    can_join = harness == "claude" and verdict == "unknown"
     if harness == "claude":
         refined, sig["end"] = _completion(records)
-        if verdict == "unknown":
+        if can_join:
             verdict = refined
-    return {"session_id": sid or Path(path).stem, "path": str(path), "harness": harness,
+    sig["local_verdict"] = verdict
+    if join_parent and can_join:
+        disposition, evidence = _join_parent(
+            path, records, sid, Path(parent_path) if parent_path is not None else None,
+            {} if parent_cache is None else parent_cache)
+        if disposition:
+            sig["parent_join"] = disposition
+        if evidence is not None:
+            sig["parent_result"] = evidence
+            verdict = evidence["outcome"] or verdict
+    return {"session_id": sid or path.stem, "path": str(path), "harness": harness,
             "verdict": verdict, "signals": sig, "last_commit_sha": sha,
             "pushed": pushed, "schema": SCHEMA}
 
@@ -279,6 +374,7 @@ def main(argv=None):
     ap.add_argument("--files", nargs="+")
     ap.add_argument("--root", default=str(Path.home() / ".claude/projects/-workspace"))
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--parent", type=Path, help="use this parent transcript for subagent joins")
     ap.add_argument("--out")
     a = ap.parse_args(argv)
     if a.files:
@@ -288,10 +384,11 @@ def main(argv=None):
     if a.limit:
         paths = paths[:a.limit]
     out = open(a.out, "w", encoding="utf-8") if a.out else sys.stdout
+    parent_cache = {}
     try:
         for p in paths:
             try:
-                row = assess(p)
+                row = assess(p, parent_path=a.parent, parent_cache=parent_cache)
             except OSError as e:
                 print(f"skip {p}: {e}", file=sys.stderr)
                 continue
