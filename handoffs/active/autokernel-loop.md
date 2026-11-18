@@ -7505,11 +7505,12 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
         step (R21-6), never merge-by-default.
   - [x] All 13 seeds from the two sweeps injected into the live hypothesis inbox
         (operator-authorized) ✅ 2026-08-31. The loop elects on its own schedule.
-  - [ ] Decide the upstream-rebase cadence for the experimental branch (filed 2026-08-31): the
+  - [x] Decide the upstream-rebase cadence for the experimental branch (filed 2026-08-31): the
         tree is ~260 commits behind upstream since the freeze; today's posture is
         port-as-hypothesis only (each upstream kernel change enters as an inbox seed, never a
         blind rebase). Either ratify that posture as the standing answer or set a periodic
         delta-sweep cadence (e.g. per upstream release, reusing sweep (b)'s method).
+        OPERATOR DECISION 2026-11-18: port-as-hypothesis is the standing answer (no periodic delta-sweep, no blind rebase): an upstream change is ported only when a box needs it, gated on its own instrument; CH-35 and CH-36 stay gated on theirs. Census on C14: artifacts/analysis/ch32-upstream-census-c14-20261118.md. ✅ 2026-11-18 [no-belief: operator decision]
 - [x] **OP-34 RESOLVED 2026-08-31** (minted as OP-32; renumbered 2026-09-01 — the queue reconciliation reassigned OP-32 to the uniform-IQ4_XS decision and this lane's third minted ID was missed) — operator: "pre-authorize run 22 if all boundary steps are green." The boundary driver launches run 22 iff the exact all-green conjunction holds (run 21 dead · flag A/B clean exit either verdict · all three dec-b* calibrations written · serving bundle sealed · final-champion --dry-run verified); any single non-green holds for morning. ✅ 2026-08-31
 - [x] ~~**R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-6 stale by event (boundary 2026-08-31 22:00Z passed; driver scripts/benchmark/boundary_20260831.sh exists; later runs 22-30 superseded it))
       `scripts/benchmark/boundary_20260831.sh` (research lane; being written + stub-tested by the

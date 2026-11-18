@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T23:42:27Z",
+  "generated_at": "2026-11-18T23:45:10Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1392,15 +1392,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 849,
-      "dispatchable": 126,
+      "closed": 850,
+      "dispatchable": 125,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-18",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 127,
+      "open": 126,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1474,7 +1474,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "dispatchable": 16,
+          "dispatchable": 15,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-06#agent-collab-rnd-harness",
@@ -1483,7 +1483,7 @@
           ],
           "line": 6431,
           "name": "autokernel-rebuild-program",
-          "open": 16,
+          "open": 15,
           "readiness": "blocked"
         },
         {
@@ -1498,7 +1498,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9648,
+          "line": 9649,
           "name": "autokernel-unified-surface-program",
           "open": 55,
           "readiness": "blocked"
@@ -1511,7 +1511,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14014,
+          "line": 14015,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14226,
+          "line": 14227,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 15,
           "readiness": "blocked"
@@ -1904,7 +1904,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 624,
+          "line": 625,
           "name": "attention-matching-kv-compaction",
           "open": 1,
           "readiness": "ready"
@@ -1913,7 +1913,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 996,
+          "line": 997,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1922,7 +1922,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1612,
+          "line": 1613,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1931,7 +1931,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1759,
+          "line": 1760,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -1942,15 +1942,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 225,
-      "dispatchable": 27,
+      "closed": 226,
+      "dispatchable": 26,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-18",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 29,
+      "open": 28,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1984,7 +1984,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 24,
+          "dispatchable": 23,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1993,14 +1993,14 @@
           ],
           "line": 20,
           "name": "autokernel-champion-aggregate",
-          "open": 26,
+          "open": 25,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1759,
+          "line": 1762,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2009,7 +2009,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1883,
+          "line": 1886,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2018,7 +2018,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2215,
+          "line": 2218,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2027,7 +2027,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2354,
+          "line": 2357,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2036,7 +2036,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2916,
+          "line": 2919,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2048,7 +2048,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3054,
+          "line": 3057,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2060,7 +2060,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3061,
+          "line": 3064,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2312,26 +2312,24 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [
-        "INF-06",
         "INF-06#autokernel-rebuild-program",
         "INF-06#autokernel-unified-surface-program",
         "INF-50#dflash2-block-drafter-experimental-build",
-        "INF-65",
         "INF-65#autokernel-champion-aggregate",
         "INF-77",
         "INF-82#autokernel-cross-workload-keep-gate",
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 130,
-      "dispatchable": 62,
+      "closed": 131,
+      "dispatchable": 61,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-18",
       "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
-      "open": 63,
+      "open": 62,
       "priority": 0.0021,
       "priority_basis": {
         "campaign": 0,
@@ -2348,12 +2346,12 @@
             "INF-06",
             "INF-65"
           ],
-          "dispatchable": 1,
+          "dispatchable": 0,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 1,
-          "readiness": "blocked"
+          "open": 0,
+          "readiness": "no_open"
         },
         {
           "blocked_by": [
@@ -2367,7 +2365,7 @@
             "INF-06#autokernel-rebuild-program",
             "INF-65#autokernel-champion-aggregate"
           ],
-          "line": 27,
+          "line": 28,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 9,
           "readiness": "blocked"
@@ -2390,7 +2388,7 @@
             "RTG-58#kv-unified-stack-rollout",
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
-          "line": 956,
+          "line": 957,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 53,
           "readiness": "blocked"
