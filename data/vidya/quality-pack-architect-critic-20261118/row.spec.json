@@ -1,0 +1,30 @@
+{
+  "id": "handoff-vidya-quality-pack-architect-critic-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118/row-launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "shape": "quarter",
+  "ram_gib": 48,
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118/out/RESULT.json",
+  "result_format": "json",
+  "estimate_s": 1200,
+  "min_window_s": 1500,
+  "priority_rank": 38,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-ARCHITECT-CRITIC",
+  "dryrun_native_result": true,
+  "first_progress_s": 100,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/architect-critic-20261118/smoke_predicate.py",
+  "decision_rule": "Can the isolated architect-critic CPU profile capture four predetermined requests per arm against v10 and C13 with exact input, output, embedded MTP cap 4 and process custody? Stop after eight raw responses and verified cleanup, or on STOP, deadline, identity, startup, response or cleanup failure. The four-CPU publisher smoke captures one v10 no-spec native completion on a pinned Qwen3-0.6B Q8_0 with 45 second startup and 30 second request bounds. Record the deployed MI210 DFlash2 distinction and retain the frontdoor JSON mismatch in the broad-pack record.",
+  "verdict_by": "agent",
+  "keep": [
+    "out/**",
+    "*.py",
+    "*.json",
+    "*.md",
+    "*.sh",
+    "SOURCE.sha256"
+  ]
+}

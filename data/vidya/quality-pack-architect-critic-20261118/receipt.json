@@ -1,0 +1,202 @@
+{
+  "at": "2026-11-18T00:43:16.441611+00:00",
+  "broad_pack_status": "incomplete",
+  "chat_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "files_sha256": {
+    "SOURCE.sha256": "d64716d6fd003d56806969290ab230dc7026b75556dc27f923df78167db302d5",
+    "capture.py": "484f9405ceb2fce251925e33dd3a17962319a9339e4aa3e2a0a00ca0e4dac67d",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "make_plan.py": "764820afa5cbe90141505f15fb6d8b20ec42b1bfd2344d7f470724a95729ad19",
+    "model-gguf-head.json": "404e65408e61e56100056280c06d646646cddffd637df439a35f3e020d6514f6",
+    "model-hash-receipt.json": "be89e5e3383e051aff93b9bdad4110dc625aaef1719605ab90705b1277a0dd3a",
+    "plan.json": "61aa74d218b11c96a5e05626465d15e348f7988cb768713c709537eadc989244",
+    "publication.log": "f5d9bb573703cc62cb6b825e24f227271df3b51013ee421318b52d0c050aa6ac",
+    "row-launch.sh": "1f34f771aaabc205be73ba50be60352676e2b4b7fff42603089651efec1ef6cc",
+    "row.spec.json": "a694d89baf10f314386445b95091ddfe5ce6a24b5673ba4221044251ed00028e",
+    "smoke-PASS.json": "b6e8e2f238719ab11dc455c84b9e3f8ac48c5e935e04f7bb6275e87660b18a4d",
+    "smoke-launcher.out": "6e27288e7ce853ba7cd6b3129f7be5d09d0f039eca38ef9bbd71f45720804ba6",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "smoke-native/banked-capture.json": "85785d40672b5c44bf5c0aba6a86b1e45c0ccc9bacc640536377c16bbda06853",
+    "smoke-native/banked-capture.sha256": "74e5906d6d7ca1142f8cdee3db56223f61ae1db2495549dad0539525bbbdefdf",
+    "smoke-native/production/cleanup.json": "4b96434649a49dda20a5fdf177b74db20acb849cac9c3ab4a9a7316714e9c2b8",
+    "smoke-native/production/native-smoke.request.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "smoke-native/production/native-smoke.response.json": "c645f68ec2459733686f831c16c81b387457a15abb46fe8e071848bbee18da42",
+    "smoke-native/production/server.json": "869e5ebd8370f03b23b11c5c03529458eca3882d752c7e7e4dba741f84056a86",
+    "smoke-native/production/server.log": "86aa58bc4a294a33e6fcf75f7b251bb5dbb096cd39f30beeaf3e76cb9647812e",
+    "smoke-native/scheduler.grant": "7796cad565916efd667eca296eaca99c4e0e1fe4c03656f1016d4dcee90ed938",
+    "smoke-result.json": "1fe9a7bd33c99fd1a1d872b32ce9a167a23150fb8fdab3503cdeb99c190c2bf5",
+    "smoke_predicate.py": "8f04d753c958c3172c50f2397fcd811daebac6d04c10aa4e44330d052719ed67"
+  },
+  "full_job_complete": false,
+  "full_request_count_per_arm": 4,
+  "gitnexus": {
+    "changed_scope": "new isolated packet",
+    "reason": "worktree has no GitNexus index",
+    "status": "unavailable"
+  },
+  "kernel_images": {
+    "candidate": {
+      "binary_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "build_manifest_sha256": "f77db04733a8c85d520dd09cef13c2312212a25745dcfed95978cb0e4fab384b",
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "kernel_tree": "e6dc8715fa3374406b38de48571e8700bded094f"
+    },
+    "production": {
+      "binary_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "build_manifest_sha256": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2",
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "kernel_tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d"
+    }
+  },
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "native_capture_task": "VB-V9-8-QUALITY-PACK-ARCHITECT-CRITIC",
+  "original_bytes_envelopes": {
+    "model-gguf-head.json": "model-gguf-head.json.original-bytes.json",
+    "model-hash-receipt.json": "model-hash-receipt.json.original-bytes.json",
+    "plan.json": "plan.json.original-bytes.json",
+    "smoke-native/banked-capture.json": "smoke-native/banked-capture.json.original-bytes.json",
+    "smoke-result.json": "smoke-result.json.original-bytes.json"
+  },
+  "prior_frontdoor_json_mismatch": {
+    "completion_tokens": [
+      8,
+      13
+    ],
+    "content_equal": false,
+    "id": "json",
+    "token_ids_equal": false
+  },
+  "prior_frontdoor_receipt_sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+  "profile": "architect-critic-cpu-mtp",
+  "profile_provenance": {
+    "compiled_serving_binary": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "compiled_serving_chat_template_kwargs": {
+      "enable_thinking": true,
+      "reasoning_effort": "medium"
+    },
+    "compiled_serving_context_tokens": 393216,
+    "compiled_serving_device": "ROCm0",
+    "compiled_serving_endpoint": "http://localhost:8083",
+    "compiled_serving_role": "architect_critic",
+    "compiled_serving_slots": 4,
+    "compiled_serving_spec": {
+      "disabled_by": null,
+      "draft_max": 7,
+      "draft_min": null,
+      "draft_model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "draft_p_min": null,
+      "draft_p_split": null,
+      "enabled": true,
+      "n_gpu_layers_draft": 99,
+      "ngram_mod_n_match": null,
+      "ngram_mod_n_max": null,
+      "ngram_mod_n_min": null,
+      "threads_draft": null,
+      "type": "draft-dflash"
+    },
+    "isolated_mtp_gguf_head_sha256": "404e65408e61e56100056280c06d646646cddffd637df439a35f3e020d6514f6",
+    "isolated_mtp_source": "orchestration/model_registry.yaml:roles.qwen38_27b_q8_local.drafters.mtp",
+    "isolated_mtp_witness": {
+      "draft_max": 4,
+      "draft_model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "evidence": [
+        "artifacts/architect-bench-gpu-20260814/mtp_nmax_sweep_20260819/",
+        "artifacts/np_context_kvu_study_20260924/q38_27b_q8_depth/"
+      ],
+      "spec_type": "draft-mtp"
+    },
+    "registry_commit": "12afe2858f9dbd4691447926d6cf1864de64348c",
+    "registry_model": "Qwen3.8-27B-Q8_0",
+    "registry_model_architecture": "qwen35",
+    "registry_role": "architect_critic",
+    "sources_sha256": {
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml": "14dcd1ef4c08ca824561e9daa9c7bb71785a080c909accca0ea450fed0f6b8c0",
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml": "9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79",
+      "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/.claude/skills/kernel-promotion/scripts/quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    }
+  },
+  "promotion_authorized": false,
+  "publication": {
+    "book_s": 1500,
+    "cpu_region": "any-cpu-quarter",
+    "estimate_s": 1200,
+    "gib": 48,
+    "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-architect-critic-20261118.json",
+    "manifest_sha256": "48755dc8c48a65bdd10ac8203c143875b39565d7fa06598d09f18fdd77a385a2",
+    "min_window_s": 1500,
+    "port": 19476,
+    "published_at": "2026-11-18T00:42:18Z",
+    "status": "PUBLISHED",
+    "window_s": 1800
+  },
+  "quality_transfer_authorized": false,
+  "question_pool_sha256": "0d3bcde02e767b281031345fcbcd299e28de167cf5c51a50c806cad459d3da1a",
+  "recipe": {
+    "args": [
+      "--device",
+      "none",
+      "-ngl",
+      "0",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-fa",
+      "on",
+      "--no-warmup",
+      "-np",
+      "1",
+      "-m",
+      "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "-c",
+      "4096",
+      "-b",
+      "512",
+      "-ub",
+      "512",
+      "--cache-ram",
+      "0",
+      "--jinja",
+      "--chat-template-file",
+      "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+      "--spec-type",
+      "draft-mtp",
+      "--spec-draft-n-max",
+      "4"
+    ],
+    "endpoint": "/v1/chat/completions",
+    "mtp_cap": 4,
+    "request_s": 105,
+    "startup_s": 240
+  },
+  "recipe_sha256": "39284efa828cc7d1b7df557a2eb7bfecc8b8d58303b9ae0c10a97c9f97e376f6",
+  "row_id": "handoff-vidya-quality-pack-architect-critic-20261118",
+  "schema": "epyc.vidya.quality_pack_architect_critic_preparation.v1",
+  "scope": "isolated bounded architect-critic CPU/MTP slice",
+  "smoke": {
+    "captured_process_dead": true,
+    "completion_tokens": 8,
+    "cpus": [
+      116,
+      117,
+      118,
+      119
+    ],
+    "listener_closed": true,
+    "model": "Qwen3-0.6B Q8_0",
+    "passed_at": "2026-11-18T00:42:18Z",
+    "request_sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "response_sha256": "c645f68ec2459733686f831c16c81b387457a15abb46fe8e071848bbee18da42",
+    "status": "PASS",
+    "units": 1
+  },
+  "task": "VB-V9-8-QUALITY-PACK-ARCHITECT-PREP",
+  "validation": [
+    "model digest matched registry and filesystem identity remained stable",
+    "GGUF qwen35.nextn_predict_layers and NextN tensors confirmed",
+    "content-bound v10 and C13 CPU runtime preflight",
+    "source manifest, shell syntax and Python AST",
+    "four distinct fixed architect-critic prompts",
+    "publisher native smoke predicate"
+  ]
+}
