@@ -50,4 +50,21 @@ The two connections rendezvous after listener identity checks and immediately be
 
 `paired-concurrency/pair.json` records the selected endpoints and matrix row. Per-port directories retain the request, response, HTTP status, and witness scans. Their timestamps share a monotonic origin, and `paired-concurrency/result.json` identifies the overlapping scans or records failures. `result.json` records whether the diagnostic was requested. Missing overlap fails the run, and the seal requires verified cleanup of the entire stack. The output carries observation-only status. Exact output parity requires separately bound reference captures.
 
-Dedicated cache prewarm, model-content hashing, architecture/backend-specific cases, and forced-role orchestration through an isolated API remain separate work. The plan retains its prewarm target declarations. The orchestrator's quarter-stack smoke still uses its production defaults.
+Dedicated cache prewarm, model-content hashing, and architecture/backend-specific cases remain separate work. The plan retains its prewarm target declarations.
+
+## Run the isolated forced-role API smoke
+
+Use this diagnostic from the session that already owns the live isolated candidate listener and its compute grant. It consumes the prepared plan's `endpoint_manifest`. Choose one chat role named in the manifest. If the role has multiple rows, pass its isolated `--port` explicitly.
+
+```bash
+/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B \
+  scripts/benchmark/kernel_promotion_isolated_api.py \
+  --plan "$scratch/hot-stack-plan/plan.json" \
+  --plan-sha256 "$prepared_plan_sha256" \
+  --role frontdoor --port "$isolated_frontdoor_port" \
+  --output-dir "$scratch/forced-api-observation"
+```
+
+The script mounts the real `/chat` handler in a private in-process FastAPI app with fresh request state and a single allowed loopback destination. The request supplies exactly one `server_urls` entry and forces real direct mode. The script checks that the route constructs exactly that request-sourced backend. The manifest must use canonical `http://127.0.0.1:<port>` origins. Production and default ports are refused across the entire manifest, including auxiliary services, aliases and all launched instances. The app bypasses production startup and MemRL initialization, and uses private runtime paths.
+
+The new output directory keeps the exact API request body in `request.json`, the received response body in `response.body`, and status, plan digest, destination and observed upstream HTTP calls in `result.json`. A pass requires HTTP 200, direct real mode, the requested role as the sole role in the history, a successful answer, and one successful upstream generation request. Upstream records contain method, URL and HTTP status. Listener ownership, runtime witnessing and teardown belong to the calling session. This diagnostic has observation-only authority.
