@@ -32,7 +32,10 @@ DEFAULTS = {
     # G2
     "session_token_ceiling": 15_000_000,   # cumulative total_tokens of ONE thread (cached input included)
     "lease_s": 5400,                       # one turn's wall clock (worker_runner's lease)
-    "max_resumes": 12,                     # continue-resumes per slug per rolling 24 h
+    "max_resumes": 12,                     # continue-resumes per slug per rolling 24 h (launched spawns only)
+    "noop_park_turns": 2,                  # consecutive no-effect turns before a no-progress park (R3)
+    "spawn_refused_park": 3,               # consecutive identical SpawnRefused reasons -> spawn-config-invalid park (R1)
+    "auto_unpark_max_per_day": 2,          # guard-park auto-unparks per slug per rolling 24 h (R2/R5)
     "unknown_reset_backoff_s": 6 * 3600,   # only when neither the error text nor budget.json gives resets_at
     # G4
     "context_rotate_tokens": 60_000,
@@ -169,7 +172,7 @@ def rollout_usage(session_id, root=CODEX_SESSIONS) -> dict | None:
 
 # ---------------------------------------------------------------- G2 budget, lease, resumes, quota
 def park(e: dict, reason: str, now_iso: str) -> None:
-    e["parked"] = {"reason": reason, "at": now_iso}
+    e["parked"] = {"reason": reason, "at": now_iso, "wrapup": e.get("last_wrapup")}
 
 
 def is_parked(e: dict) -> bool:
@@ -196,7 +199,7 @@ def resume_verdict(e: dict, now: float, conf=None) -> tuple[bool, str]:
     conf = conf or DEFAULTS
     if is_parked(e):
         return False, f"parked: {e['parked'].get('reason')}"
-    if int(e.get("noop_turns") or 0) >= 1:
+    if int(e.get("noop_turns") or 0) >= int(conf.get("noop_park_turns", DEFAULTS["noop_park_turns"])):
         return False, f"no progress evidence: last {e.get('noop_turns')} turn(s) landed no tick, row or filing"
     recent = [t for t in e.get("resume_ts") or [] if now - t < 86400]
     if len(recent) >= int(conf["max_resumes"]):
@@ -205,7 +208,33 @@ def resume_verdict(e: dict, now: float, conf=None) -> tuple[bool, str]:
 
 
 def note_resume(e: dict, now: float) -> None:
+    """Count one continue-resume. Call only after the spawn actually launched (R1: refusals are not resumes)."""
     e["resume_ts"] = [t for t in e.get("resume_ts") or [] if now - t < 86400] + [now]
+
+
+AUTO_UNPARK_REASONS = ("no progress evidence", "max_resumes", "thread token ceiling")
+
+
+def auto_unpark_eligible(e: dict, now: float, conf=None) -> bool:
+    """R2/R5 guardrails: a GUARD park whose wait can end, never an operator or spawn-config-invalid park, and under
+    auto_unpark_max_per_day in a rolling 24 h."""
+    conf = conf or DEFAULTS
+    reason = str((e.get("parked") or {}).get("reason") or "")
+    if not reason or "operator" in reason or reason.startswith("spawn-config-invalid"):
+        return False
+    if not reason.startswith(AUTO_UNPARK_REASONS):
+        return False
+    recent = [t for t in e.get("auto_unparks") or [] if now - t < 86400]
+    return len(recent) < int(conf.get("auto_unpark_max_per_day", DEFAULTS["auto_unpark_max_per_day"]))
+
+
+def auto_unpark(e: dict, now: float) -> None:
+    """Unpark and charge the per-slug 24 h limit; a token-ceiling park restarts on a FRESH thread."""
+    ceiling = str(e["parked"].get("reason") or "").startswith("thread token ceiling")
+    unpark(e)
+    e["auto_unparks"] = [t for t in e.get("auto_unparks") or [] if now - t < 86400] + [now]
+    if ceiling:
+        e["fresh_next"] = True
 
 
 def kill_pid(pid: int) -> bool:
