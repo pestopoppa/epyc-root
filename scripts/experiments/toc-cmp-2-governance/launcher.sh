@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-D=/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2/packet
-R=/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2
-ID=toc-cmp-2-governance-20261117
+D=/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2-r2/packet
+R=/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2-r2
+ID=toc-cmp-2-governance-20261118-r2
 # Smoke mode returns after one native pair and a verified private-server exit.
 exec /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh \
   --id "$ID" --class cpu --role bench --gpu-quiet none --no-fold-siblings \

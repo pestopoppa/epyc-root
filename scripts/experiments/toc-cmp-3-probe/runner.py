@@ -10,8 +10,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3')
-ROW_ID = 'toc-cmp-3-contract-20261117'
+SCRATCH = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2')
+ROW_ID = 'toc-cmp-3-contract-20261118-r2'
 CANDIDATE = SCRATCH / 'candidate'
 spec = importlib.util.spec_from_file_location('cmp2_vendor', HERE / 'cmp2_runner.py')
 base = importlib.util.module_from_spec(spec)

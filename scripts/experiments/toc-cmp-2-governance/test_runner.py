@@ -172,6 +172,7 @@ def test_dryrun_is_one_pair_with_owned_server_cleanup(tmp_path, monkeypatch, sto
     monkeypatch.setattr(runner, "server_identity", lambda *_: {"pid": fake_server.pid})
     monkeypatch.setattr(runner, "owns_listener", lambda pid: pid == fake_server.pid)
     monkeypatch.setattr(runner.os, "sched_getaffinity", lambda _: {0, 1, 2, 3})
+    monkeypatch.setattr(runner.os, "sched_setaffinity", lambda *_: None)
     monkeypatch.setattr(runner.signal, "signal", lambda *_: None)
     monkeypatch.setattr(runner.subprocess, "Popen", lambda *_args, **_kwargs: fake_server)
     monkeypatch.setattr(runner.subprocess, "run", lambda *_args, **_kwargs: type("Proof", (), {"stdout": "linkage ok"})())
@@ -190,3 +191,65 @@ def test_dryrun_is_one_pair_with_owned_server_cleanup(tmp_path, monkeypatch, sto
     assert not list(tmp_path.rglob("RESULT.json"))
     monkeypatch.setattr(sys, "argv", ["runner.py", "smoke"])
     assert runner.main() == int(fail_before_pair)
+
+
+@pytest.mark.parametrize("allocated,threads,expected", [
+    ({0, 1, 2, 3, 96, 97, 98, 99}, "4", [0, 1, 2, 3]),
+    ({0, 1, 2, 3}, "4", [0, 1, 2, 3]),
+    ({96, 97, 98, 99}, "4", [96, 97, 98, 99]),
+    ({0, 1, 2, 96, 97, 98}, "4", None),
+    ({0, 1, 2, 3}, "3", None),
+])
+def test_grant_affinity_binding(monkeypatch, allocated, threads, expected):
+    current = set(allocated)
+    def bind(_pid, cpus):
+        nonlocal current
+        assert set(cpus) <= current
+        current = set(cpus)
+    monkeypatch.setenv("FILLER_THREADS", threads)
+    monkeypatch.setattr(runner.os, "sched_getaffinity", lambda _: current)
+    monkeypatch.setattr(runner.os, "sched_setaffinity", bind)
+    if expected is None:
+        with pytest.raises(ValueError):
+            runner.bind_four_cores()
+    else:
+        assert runner.bind_four_cores() == expected
+        assert current == set(expected)
+
+
+def test_bound_affinity_is_inherited_by_subprocess():
+    import os
+    import subprocess
+
+    allocated = sorted(os.sched_getaffinity(0))
+    if len({cpu % 96 for cpu in allocated}) < 4:
+        pytest.skip("host does not expose four physical cores")
+    script = '''
+import importlib.util, json, os, subprocess, sys
+spec = importlib.util.spec_from_file_location("cmp2", sys.argv[1])
+runner = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(runner)
+allocated = set(os.sched_getaffinity(0))
+selected = runner.bind_four_cores()
+child = json.loads(subprocess.check_output([sys.executable, "-c", "import json,os; print(json.dumps(sorted(os.sched_getaffinity(0))))"]))
+assert child == selected and set(child) <= allocated and len(child) == 4
+'''
+    subprocess.run([sys.executable, "-c", script, str(HERE / "runner.py")],
+                   env={**os.environ, "FILLER_THREADS": "4"}, check=True)
+
+
+@pytest.mark.parametrize("seconds, expected", [(300, 180), (29, 29)])
+def test_request_timeout_respects_request_and_run_bounds(tmp_path, monkeypatch, seconds, expected):
+    seen = []
+    monkeypatch.setattr(runner, "remaining", lambda _: seconds)
+
+    def fail_http(path, timeout, body):
+        seen.append((path, timeout))
+        raise TimeoutError("transport timed out")
+
+    monkeypatch.setattr(runner, "http", fail_http)
+    capture = runner.Capture(tmp_path, "test")
+    with pytest.raises(TimeoutError):
+        capture.attempt({"unit": "unit"}, 0, {}, CASE, 123)
+    assert seen == [("/v1/chat/completions", expected)]
+    assert json.loads((tmp_path / "unit.0.error.json").read_text())["error"] == "TimeoutError: transport timed out"

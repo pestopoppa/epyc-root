@@ -174,3 +174,27 @@ else:
     result = subprocess.run([str(probe.live.PYTHON), "-B", "-c", script, str(probe.HERE / "trial.py"), str(tmp_path)],
                             cwd=tmp_path, env=env, text=True, capture_output=True, timeout=25)
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("allocated,threads,expected", [
+    ({0, 1, 2, 3, 96, 97, 98, 99}, "4", [0, 1, 2, 3]),
+    ({0, 1, 2, 3}, "4", [0, 1, 2, 3]),
+    ({96, 97, 98, 99}, "4", [96, 97, 98, 99]),
+    ({0, 1, 2, 96, 97, 98}, "4", None),
+    ({0, 1, 2, 3}, "3", None),
+])
+def test_grant_affinity_binding(probe, monkeypatch, allocated, threads, expected):
+    current = set(allocated)
+    def bind(_pid, cpus):
+        nonlocal current
+        assert set(cpus) <= current
+        current = set(cpus)
+    monkeypatch.setenv("FILLER_THREADS", threads)
+    monkeypatch.setattr(probe.live.os, "sched_getaffinity", lambda _: current)
+    monkeypatch.setattr(probe.live.os, "sched_setaffinity", bind)
+    if expected is None:
+        with pytest.raises(ValueError):
+            probe.live.bind_four_cores()
+    else:
+        assert probe.live.bind_four_cores() == expected
+        assert current == set(expected)

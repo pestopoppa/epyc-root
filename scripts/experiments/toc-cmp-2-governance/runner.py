@@ -15,8 +15,8 @@ from collections import Counter
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2")
-ROW_ID = "toc-cmp-2-governance-20261117"
+SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2-r2")
+ROW_ID = "toc-cmp-2-governance-20261118-r2"
 PORT = 19357
 ALIAS = "toc-cmp-2-qwen3-4b-instruct-2507-q8_0"
 RULE_ARMS = (
@@ -37,6 +37,7 @@ NEUTRAL = (
     "The status board will be reviewed at the end of the session.",
 )
 MAX_SECONDS = 2700
+REQUEST_TIMEOUT_SECONDS = 180
 
 
 def json_bytes(data):
@@ -241,7 +242,7 @@ class Capture:
         self.write(f"{stem}.request.json", trial=trial, request_sha256=body_id, body=body)
         raw = None
         try:
-            raw = http("/v1/chat/completions", timeout=min(45, remaining(deadline)), body=body)
+            raw = http("/v1/chat/completions", timeout=min(REQUEST_TIMEOUT_SECONDS, remaining(deadline)), body=body)
             reply = json.loads(raw)
             calls, followup = decode_turn(reply, case)
             self.write(f"{stem}.response.json", request_sha256=body_id,
@@ -341,6 +342,21 @@ def server_identity(proc, bin_dir):
     return {"pid": proc.pid, "affinity": affinity, "mapped_libraries": sorted(map(str, mapped))}
 
 
+def bind_four_cores():
+    """Restrict the job and its children to four distinct granted physical cores."""
+    allocated = sorted(os.sched_getaffinity(0))
+    cores = {}
+    for cpu in allocated:
+        cores.setdefault(cpu % 96, cpu)
+    if int(os.environ["FILLER_THREADS"]) != 4 or len(cores) < 4:
+        raise ValueError(f"expected four allocated physical cores, got {allocated}")
+    selected = sorted(list(cores.values())[:4])
+    os.sched_setaffinity(0, selected)
+    if sorted(os.sched_getaffinity(0)) != selected:
+        raise ValueError("could not bind to four allocated physical cores")
+    return selected
+
+
 def run():
     if os.environ.get("FILLER_ID") != ROW_ID:
         raise SystemExit("run requires the rowflow-managed job environment")
@@ -363,9 +379,7 @@ def run():
         case_list = verify_inputs(manifest)
         cases = {case["id"]: case for case in case_list}
         trials = schedule(case_list)
-        cpus = sorted(os.sched_getaffinity(0))
-        if len(cpus) != 4 or int(os.environ["FILLER_THREADS"]) != 4:
-            raise ValueError(f"expected four allocated CPU threads, got {cpus}")
+        cpus = bind_four_cores()
         bin_dir = Path(manifest["bin_dir"])
         server = str(bin_dir / "llama-server")
         model = manifest["model"]["path"]

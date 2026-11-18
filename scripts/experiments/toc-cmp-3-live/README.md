@@ -20,3 +20,12 @@ probe validates each declared UTF-8 digest against the exact character span in t
 token counts include the brief where present. The row reports literal custody, exact-match answer grades,
 and the elapsed time of each arm. The two tasks give each arm two observations. The source record stays
 available in REPL context throughout the task, so answer grades also reflect direct re-reads of the source.
+
+CPU-grant repair (2026-11-18): the successor row id ends in `20261118-r2`,
+and its scratch root has the suffix `-r2`. The job restricts itself and its
+children to four distinct physical cores within the inherited grant; it
+accepts either four threads or their eight-thread SMT expansion and keeps
+four inference threads. Insufficient physical cores are refused. The
+failed predecessors supply no behavioral evidence. See TOC-CMP-2r in the
+[owning handoff](../../../handoffs/active/context-and-token-economy.md) for
+preserved evidence, successor rows and qualification status.

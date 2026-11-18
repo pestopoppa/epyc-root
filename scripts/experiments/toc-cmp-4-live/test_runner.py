@@ -3,6 +3,7 @@ import os
 import subprocess
 
 import pytest
+import runner as cpu_runner
 from runner import (
     ENDPOINT,
     HERE,
@@ -354,3 +355,27 @@ def test_prior_runs_of_voided_points_are_kept_and_made_ineligible(tmp_path):
     assert runs[-1]["correct"] is None
     assert runs[-1]["valid"] is True
     assert summary["coverage_complete"] is False
+
+
+@pytest.mark.parametrize("allocated,threads,expected", [
+    ({0, 1, 2, 3, 96, 97, 98, 99}, "4", [0, 1, 2, 3]),
+    ({0, 1, 2, 3}, "4", [0, 1, 2, 3]),
+    ({96, 97, 98, 99}, "4", [96, 97, 98, 99]),
+    ({0, 1, 2, 96, 97, 98}, "4", None),
+    ({0, 1, 2, 3}, "3", None),
+])
+def test_grant_affinity_binding(monkeypatch, allocated, threads, expected):
+    current = set(allocated)
+    def bind(_pid, cpus):
+        nonlocal current
+        assert set(cpus) <= current
+        current = set(cpus)
+    monkeypatch.setenv("FILLER_THREADS", threads)
+    monkeypatch.setattr(cpu_runner.os, "sched_getaffinity", lambda _: current)
+    monkeypatch.setattr(cpu_runner.os, "sched_setaffinity", bind)
+    if expected is None:
+        with pytest.raises(ValueError):
+            cpu_runner.bind_four_cores()
+    else:
+        assert cpu_runner.bind_four_cores() == expected
+        assert current == set(expected)

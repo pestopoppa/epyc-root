@@ -9,8 +9,8 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-SCRATCH = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3')
-CMP2 = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2/packet')
+SCRATCH = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-r2')
+CMP2 = Path('/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp2-r2/packet')
 ORCH = Path('/mnt/raid0/llm/epyc-orchestrator')
 BASE = '12afe2858f9dbd4691447926d6cf1864de64348c'
 PATCH = ROOT / 'scripts/experiments/toc-cmp-3-contract/orchestrator.patch'

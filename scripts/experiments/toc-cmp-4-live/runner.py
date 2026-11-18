@@ -21,7 +21,7 @@ from pathlib import Path
 from analysis import calculate_baps
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp4")
+SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp4-r2")
 SOURCE = SCRATCH / "source"
 PYTHON = Path("/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python")
 SOURCE_SHA = "12afe2858f9dbd4691447926d6cf1864de64348c"
@@ -33,7 +33,7 @@ SERVER_SHA = "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c"
 TEMPLATE_SHA = "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551"
 TEMPLATE = MODEL.parent / "chat-templates/sha256" / f"{TEMPLATE_SHA}.jinja"
 LINKAGE = Path("/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh")
-ROW = "toc-cmp-4-pilot96-20261117"
+ROW = "toc-cmp-4-pilot96-20261118-r2"
 PORT = 19359
 ENDPOINT = f"http://127.0.0.1:{PORT}"
 NSLOTS = 4
@@ -300,6 +300,21 @@ def graph_env(row, attempt, key):
     return env
 
 
+def bind_four_cores():
+    """Restrict the job and its children to four distinct granted physical cores."""
+    allocated = sorted(os.sched_getaffinity(0))
+    cores = {}
+    for cpu in allocated:
+        cores.setdefault(cpu % 96, cpu)
+    if int(os.environ["FILLER_THREADS"]) != 4 or len(cores) < 4:
+        raise ValueError(f"expected four allocated physical cores, got {allocated}")
+    selected = sorted(list(cores.values())[:4])
+    os.sched_setaffinity(0, selected)
+    if sorted(os.sched_getaffinity(0)) != selected:
+        raise ValueError("could not bind to four allocated physical cores")
+    return selected
+
+
 def run():
     if os.environ.get("FILLER_ID") != ROW:
         raise ValueError("rowflow grant/smoke environment required")
@@ -318,9 +333,9 @@ def run():
     schedule = runner.build_schedule(draw["points"][:PILOT_POINTS], repeats=REPEATS, seed=draw["seed"])
     if len(schedule) != PLANNED:
         raise ValueError("frozen pilot does not have 96 runs")
-    cpus = sorted(os.sched_getaffinity(0))
-    threads = int(os.environ["FILLER_THREADS"])
-    if threads != 4 or len(cpus) != 4 or not file_port_available() or port_proof.listen_inodes(PORT):
+    cpus = bind_four_cores()
+    threads = 4
+    if not file_port_available() or port_proof.listen_inodes(PORT):
         raise ValueError("expected four allocated threads and an unused private frontdoor port")
     deadline = int(os.environ["FILLER_DEADLINE"])
     argv = server_argv(threads)

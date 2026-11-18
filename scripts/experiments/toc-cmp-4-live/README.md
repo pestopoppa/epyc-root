@@ -30,3 +30,12 @@ The registered first eight points are all early. The pilot uses three arms and f
 - BAPS counts blocked or error actions on numeric turns `b+1` through `b+5` for boundary turn `b`. A pure successful log re-read stays in the denominator. Mixed tool or error turns retain their observed blocked or error classification.
 
 The pilot reports base BAPS, paired-difference dispersion, and per-run wall time. It cannot assess variance in unsampled strata or support an arm-effect claim.
+
+CPU-grant repair (2026-11-18): the successor row id ends in `20261118-r2`,
+and its scratch root has the suffix `-r2`. The job restricts itself and its
+children to four distinct physical cores within the inherited grant; it
+accepts either four threads or their eight-thread SMT expansion and keeps
+four inference threads. Insufficient physical cores are refused. The
+failed predecessors supply no behavioral evidence. See TOC-CMP-2r in the
+[owning handoff](../../../handoffs/active/context-and-token-economy.md) for
+preserved evidence, successor rows and qualification status.

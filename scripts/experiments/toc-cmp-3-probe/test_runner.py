@@ -49,3 +49,27 @@ def test_predicates_preserve_unknown_and_sibling_headroom(runner):
     result = runner.base.score(case, ['protected', 'sibling'], [[], []])
     assert result['outcome'] == 'no_sibling_headroom'
     assert not result['protected_attempt']
+
+
+@pytest.mark.parametrize("allocated,threads,expected", [
+    ({0, 1, 2, 3, 96, 97, 98, 99}, "4", [0, 1, 2, 3]),
+    ({0, 1, 2, 3}, "4", [0, 1, 2, 3]),
+    ({96, 97, 98, 99}, "4", [96, 97, 98, 99]),
+    ({0, 1, 2, 96, 97, 98}, "4", None),
+    ({0, 1, 2, 3}, "3", None),
+])
+def test_grant_affinity_binding(runner, monkeypatch, allocated, threads, expected):
+    current = set(allocated)
+    def bind(_pid, cpus):
+        nonlocal current
+        assert set(cpus) <= current
+        current = set(cpus)
+    monkeypatch.setenv("FILLER_THREADS", threads)
+    monkeypatch.setattr(runner.base.os, "sched_getaffinity", lambda _: current)
+    monkeypatch.setattr(runner.base.os, "sched_setaffinity", bind)
+    if expected is None:
+        with pytest.raises(ValueError):
+            runner.base.bind_four_cores()
+    else:
+        assert runner.base.bind_four_cores() == expected
+        assert current == set(expected)

@@ -18,9 +18,9 @@ from pathlib import Path
 import cmp4_runner as live
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = live.SCRATCH.parent / "cmp3-live"
+SCRATCH = live.SCRATCH.parent / "cmp3-live-r2"
 SOURCE = SCRATCH / "source"
-ROW = "toc-cmp-3-live-20261118"
+ROW = "toc-cmp-3-live-20261118-r2"
 PORT = 19368
 ENDPOINT = f"http://127.0.0.1:{PORT}"
 ARMS = ("baseline_summary_only", "contract_summary_only", "contract_verbatim_manifest")
@@ -256,9 +256,9 @@ def run():
     cases = {case["id"]: case for case in live.read_json(HERE / "cases.json")}
     rows = schedule(list(cases.values()))
     attempts = [rows[1]] if dry else rows
-    cpus = sorted(os.sched_getaffinity(0))
-    threads = int(os.environ["FILLER_THREADS"])
-    if threads != 4 or len(cpus) != 4 or not live.file_port_available(PORT):
+    cpus = live.bind_four_cores()
+    threads = 4
+    if not live.file_port_available(PORT):
         raise ValueError("expected four allocated threads and an unused private port")
     sys.path.insert(0, str(SOURCE))
     from scripts.benchmark import own_port_proof

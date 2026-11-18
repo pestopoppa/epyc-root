@@ -36,6 +36,15 @@ Read the effect descriptively against the full-history and absent controls. Dist
 
 ## Row and native capture
 
-The finite schedule uses four allocated CPU threads and a private loopback server from production kernel store CPU build 10303 tied to `ffc1bac82`. Estimate 1800 seconds and stop after the 120 bounded requests, first infrastructure or identity failure, STOP, allocator deadline or 2700 seconds, whichever comes first. It starts no extra requests after the deadline and makes no automatic retries. The publisher smoke uses the same server and schedule's first native pair, then exits voluntarily and writes a qualified `SMOKE.json` after server cleanup. It writes this receipt and the raw pair only under the publisher dry-run directory. The launcher uses the installed rowflow grant engine.
+The finite schedule uses four allocated CPU threads and a private loopback server from production kernel store CPU build 10303 tied to `ffc1bac82`. Estimate 1800 seconds and stop after the 120 bounded requests, first infrastructure or identity failure, STOP, allocator deadline or 2700 seconds, whichever comes first. Each completion has a 180-second transport timeout, capped by the remaining run deadline; a timeout stops the run as an infrastructure failure without a retry. The prior 45-second ceiling cancelled a four-core smoke request before it returned; the captured run does not establish its completion time. It starts no extra requests after the deadline and makes no automatic retries. The publisher smoke uses the same server and schedule's first native pair, then exits voluntarily and writes a qualified `SMOKE.json` after server cleanup. It writes this receipt and the raw pair only under the publisher dry-run directory. The launcher uses the installed rowflow grant engine.
 
 The scratch packet retains the pre-grant weight digest and stat identity, build manifest digests, registry, runner and launcher digests, exact frozen inputs, planned matrix, model endpoint identity, mapped libraries, CPU affinity, each full request and raw response or error, wire digests, pair outcomes and process-exit state. `RESULT.json` indicates full capture. `PARTIAL.json` indicates a stopped or unverified run and retains unknown counts. Each original record carries an explicit unknown protocol and a self-hash. The native source is enrolled for prospective observation projection and a planning-context canary under VB-TOC-CMP2-GOVERNANCE-WIRE.
+
+CPU-grant repair (2026-11-18): the successor row id ends in `20261118-r2`,
+and its scratch root has the suffix `-r2`. The job restricts itself and its
+children to four distinct physical cores within the inherited grant; it
+accepts either four threads or their eight-thread SMT expansion and keeps
+four inference threads. Insufficient physical cores are refused. The
+failed predecessors supply no behavioral evidence. See TOC-CMP-2r in the
+[owning handoff](../../../handoffs/active/context-and-token-economy.md) for
+preserved evidence, successor rows and qualification status.

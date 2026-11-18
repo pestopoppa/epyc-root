@@ -11,7 +11,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 CMP4 = HERE.parent / "toc-cmp-4-live"
 PATCH = HERE.parent / "toc-cmp-3-contract/orchestrator.patch"
-SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-live")
+SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cmp3-live-r2")
 SOURCE = SCRATCH / "source"
 ORCH = Path("/mnt/raid0/llm/epyc-orchestrator")
 PATCH_SHA = "1b679a01e14e631ea58e6bcfe94f15e59195245b2309aab072d0bbfaaffaa0c3"
