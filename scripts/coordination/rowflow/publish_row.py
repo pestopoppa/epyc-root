@@ -594,20 +594,33 @@ def preflight(spec, flags, rerun=False):
             _warn(spec, f"preflight: --precond-cmd {out}; not judged (the gate admits a timed-out precond too)")
 
 
-def smoke_regions(lane, regions, flags):
+def smoke_cpus_of(spec):
+    """D9 2026-11-18 SMOKE-CPUS: the spec's optional smoke_cpus (an int SMOKE_CPUS..SMOKE_CPUS_MAX), default SMOKE_CPUS.
+    Big-model smokes should test plumbing only (latency pre-check plus one answered request), not the full workload;
+    widen with smoke_cpus only when even plumbing cannot finish on 4 cores."""
+    v = spec.get("smoke_cpus")
+    if v is None:
+        return rf.SMOKE_CPUS
+    rf.need(isinstance(v, int) and not isinstance(v, bool) and rf.SMOKE_CPUS <= v <= rf.SMOKE_CPUS_MAX,
+            f"smoke_cpus {v!r} must be an integer {rf.SMOKE_CPUS}..{rf.SMOKE_CPUS_MAX}. FIX: smoke plumbing only (latency "
+            "pre-check plus one answered request); widen only when that cannot finish on 4 cores")
+    return v
+
+
+def smoke_regions(lane, regions, flags, n=None):
     """Where an immediate (--smoke-now) smoke runs: GPU rows on their own regions, CPU rows on 4 genuinely free cores of
     the keeper's snapshot (rowflow.host_snapshot: region-lock, open grants, live smokes). None = nothing free now."""
     if lane == "gpu":
         return regions
     _, free, _ = rf.host_snapshot(flags)
-    return rf.pick_smoke_cpus(free)
+    return rf.pick_smoke_cpus(free, n or rf.SMOKE_CPUS)
 
 
 def queue_cpu_smoke(flags, rid, spec, smoke_s, why=""):
     """Operator 2026-11-05: the smoke is a keeper-scheduled filler. Unpublish until PASS and queue it; the allocator
-    places it in the next free slot. Queued is not a failure."""
+    places it in the next free slot. Queued is not a failure. `cpus` = the spec's smoke_cpus (D9 2026-11-18)."""
     unpublish(flags, rid)
-    rf.atomic_json(rf.smoke_queued_path(flags, rid), {"id": rid, "smoke_s": smoke_s, "cpus": rf.SMOKE_CPUS, "spec": spec,
+    rf.atomic_json(rf.smoke_queued_path(flags, rid), {"id": rid, "smoke_s": smoke_s, "cpus": smoke_cpus_of(spec), "spec": spec,
                                                       "queued_at": rf.now_iso()})
     print(f"queued for smoke{why}; the keeper runs it in the next free slot; your row becomes ready on PASS "
           f"(status: {rf.dry_dir(flags, rid)}/launcher.out) — move to your next task ({rid})")
@@ -963,8 +976,15 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     if busy:
         raise rf.Refused(f"smoke already in flight for {spec.get('id')}: {busy}; republishing now would unpublish the live row. "
                          "Wait for its verdict (or stop that smoke), then publish again")
+    want = smoke_cpus_of(spec)   # refused before anything is published
     row = rf.publish(spec, flags, source=source)
     rid = row["id"]
+    if want > rf.SMOKE_CPUS:
+        held = int(rf.contract_of(row, flags=flags).get("held") or 0)
+        if want > held:
+            unpublish(flags, rid)
+            raise rf.Refused(f"smoke_cpus {want} exceeds the row's own contract width ({held} cores); a smoke never runs wider "
+                             "than its row. FIX: lower smoke_cpus (plumbing only: latency pre-check plus one answered request)")
     retire_old_verdicts(flags, rid)
     supersede_prior_attempts(flags, rid)
     smoke_s = int(row.get("first_progress_s") or spec.get("first_progress_s") or spec.get("smoke_timeout_s") or SMOKE_TIMEOUT_S)
@@ -977,7 +997,7 @@ def publish_smoked(spec, flags, source, queue_cpu=False):
     if spec.get("lane") != "gpu" and queue_cpu:
         queue_cpu_smoke(flags, rid, spec, smoke_s)
         return None
-    regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags)
+    regions = smoke_regions(spec.get("lane"), spec.get("regions") or "mi210_0,184-191", flags, want)
     if not regions:
         queue_cpu_smoke(flags, rid, spec, smoke_s, " (no free cores right now)")
         return None

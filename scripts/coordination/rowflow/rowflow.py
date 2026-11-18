@@ -4693,6 +4693,7 @@ def host_snapshot(flags, grants=None, rl=None):
 
 # ---------------------------------------------------------------- keeper-scheduled smokes (operator 2026-11-05)
 SMOKE_CPUS = 4
+SMOKE_CPUS_MAX = 24   # D9 2026-11-18: spec smoke_cpus range is SMOKE_CPUS..SMOKE_CPUS_MAX; MAX may take a whole free quarter
 # SMOKE POCKETS (pipeline audit 2026-11-10 #5, operator scope "Scheduling model"): per quarter, the 4 SMT siblings of its
 # last 4 physical cores (q0 c20-23 -> t116-119, q1 t140-143, q2 t164-167). A whole-quarter grant never runs on them
 # (grant_cpus: a-(a+23),(a+96)-(a+111)), so a pocket costs a quarter booking nothing; sub-quarter rows lose the one 4-core
@@ -4774,7 +4775,16 @@ def pick_smoke_cpus(free, n=SMOKE_CPUS, timing_q=frozenset()):
     (timing_q: quarters a bench/timing grant holds cores of) is never used - its siblings would perturb the measurement;
     an idle pocket's quarter first (the smoke then has the physical cores to itself). With every pocket busy or beside
     timing, or a wider smoke: n physical cores (+ siblings) of a PARTLY used quarter, never a whole free one, never the
-    MI210 host threads. None when nothing fits (SMOKE-WAIT)."""
+    MI210 host threads. None when nothing fits (SMOKE-WAIT).
+    D9 2026-11-18 SMOKE-CPUS: a row's spec may request smoke_cpus (SMOKE_CPUS..SMOKE_CPUS_MAX); a request of
+    SMOKE_CPUS_MAX alone may take a whole FREE quarter (q0-q2 first; q3 only when every one of its cores is free here -
+    the caller removes Q3_GUARD while a GPU row is queued)."""
+    if n >= SMOKE_CPUS_MAX:
+        for q in sorted(QUARTERS, key=lambda q: (q == "q3", q)):
+            cs = qcores(q)
+            if cs <= free and {f"t{int(c[1:]) + 96}" for c in cs} - {f"t{k}" for k in GPU_HOST_THREADS} - POCKET_TOKENS <= free:
+                return cpu_ranges(sorted(int(c[1:]) for c in cs))
+        return None
     if n <= SMOKE_CPUS:
         best = None
         for q in QUARTERS:
@@ -4801,10 +4811,16 @@ def pick_smoke_cpus(free, n=SMOKE_CPUS, timing_q=frozenset()):
     return cpu_ranges(best[1]) if best else None
 
 
-def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), timing_q=frozenset()):
-    """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets n free cores, and its smoke starts
-    detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated in place. No free cores is
-    WAIT (logged), never a failure. Returns the placed (rid, cpus)."""
+def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=frozenset(), timing_q=frozenset(),
+                 drain_reserved=frozenset(), gpu_queued=False, demand_reserved=frozenset()):
+    """Every queued CPU smoke (dryrun/<id>/SMOKE-QUEUED.json, oldest first) gets its record's `cpus` (default n) free
+    cores, and its smoke starts detached through publish_row.py --run-smoke (the same dryrun_run path). `free` is updated
+    in place. No free cores is WAIT (logged), never a failure. Returns the placed (rid, cpus).
+    D9 2026-11-18 SMOKE-CPUS: a wider-than-SMOKE_CPUS smoke never takes drain_reserved tokens (the regions of the row the
+    planner is draining for - a smoke never pre-empts or delays a real grant); with gpu_queued no smoke takes q3's cores
+    88-95 / SMT 184-191 (GPU-Q3-GUARD). demand_reserved (the options of grantable/armed rows that fit the free set this
+    tick) is likewise never taken by a wide smoke: a waiting row's quarter stays its own. 4-core pocket smokes unchanged."""
+    drain_reserved = frozenset(expand(set(drain_reserved)) | expand(set(demand_reserved)))
     placed = []
     qs = sorted(glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")),
                 key=lambda p: ((load_json(p) or {}).get("queued_at") or "", p))   # FIFO: pockets make order moot
@@ -4822,7 +4838,12 @@ def place_smokes(flags, free, log=print, dry=False, n=SMOKE_CPUS, reserved=froze
         if gt and GPU not in free:   # a /dev/kfd-capable smoke queues behind every GPU holder (exclusive grants first)
             log(f"SMOKE-WAIT {rid}: its job can touch the GPU and gpu-quiet is held; stays queued (not a failure)")
             continue
-        cpus = pick_smoke_cpus(free - reserved, want, timing_q)
+        avail = set(free) - set(reserved)
+        if want > SMOKE_CPUS:
+            avail -= drain_reserved
+        if gpu_queued:
+            avail -= Q3_GUARD | {"q3"}
+        cpus = pick_smoke_cpus(avail, want, timing_q)
         if not cpus:
             log(f"SMOKE-WAIT {rid}: every smoke pocket is busy or beside a timing grant and no partly used quarter has "
                 f"{want} free cores; stays queued (not a failure)")
@@ -5200,7 +5221,23 @@ def allocate(flags, keeper_log=None, log=print, dry=False):
             if glob.glob(os.path.join(flags, "dryrun", "*", "SMOKE-QUEUED.json")):
                 log(f"SMOKE-WAIT quiet-host drain {qh_drain}: no pocket smoke starts until it is granted (not a failure)")
         else:
-            placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows))
+            # D9 2026-11-18 SMOKE-CPUS: a wide smoke never takes the regions of a row being drained for
+            d_res = set()
+            for c in cands:
+                if c["id"] in drain_prev:
+                    for o in c["options"]:
+                        d_res |= set(o)
+            # coordinator 2026-11-18: nor any option of a grantable/armed row that fits the free set this tick
+            efree = expand(set(free))
+            dem = set()
+            for c in cands:
+                for o in c["options"]:
+                    eo = expand(set(o))
+                    if eo <= efree:
+                        dem |= eo
+            placed_smokes = place_smokes(flags, free, log, dry=dry, timing_q=timing_quarters(flags, grants, allrows),
+                                         drain_reserved=frozenset(d_res), gpu_queued=gpu_queued,
+                                         demand_reserved=frozenset(dem))
     quiet_ok = quiet_ok_now(flags)
     if quiet_ok:
         smoke_live = quiet_host_smoke_live(flags, placed_smokes)
