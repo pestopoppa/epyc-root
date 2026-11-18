@@ -75,7 +75,8 @@ read -r seal _ < <(sha256sum "$p/packet/request.json")
 timeout 90 "$app/.venv/bin/python" -I -B "$pilot" "$p" run --request-sha "$seal" --output "$p/pilot"
 ```
 
-The independent checker uses only Python finite-set arithmetic and the recorded pack plans; it does not import the application scorer:
+The independent checker uses Python finite-set arithmetic and the recorded pack plans. It also
+checks the disposition ledger against the score denominator and includes failed and empty attempts.
 
 ```bash
 python3 -I -B scripts/experiments/dcp10-discovery/verify_pilot.py "$p"
@@ -121,3 +122,48 @@ The [source review](../../../docs/research/dcp10-packer-custody-review-20261118.
 behavioral difference. The original refusal, local evidence hashes, source-backed inputs, and
 independent check stay in the owner scratch directory. This run establishes no verified score
 receipt or full-cohort result.
+
+## Second lexical shard
+
+DCP-10-P2 took the second SHA-256 rank in each original stratum, with the same app, release,
+search, scoring, and pack-budget pins. The question was whether the original instrumentation
+and zero packed overlap would recur on the next three preselected tasks. A single task can
+move a macro fraction by 33 percentage points. The rule was to stop after the three selected
+attempts or at 90 seconds, with no substitutions.
+
+| Stratum | Instance ID | Base repository and commit |
+| --- | --- | --- |
+| Lite Python | `SWE-Bench-Pro__python__maintenance__bugfix__739b23db` | `ansible/ansible` at `252685092cacdd0f8b485ed6f105ec7acc29c7a4` |
+| Full C | `Multi-SWE-Bench__c__maintenance__bugfix__0dde5323` | `ponylang/ponyc` at `764110c805d8020f5202c60ffed2b2570caf792a` |
+| Full C++ | `Multi-SWE-Bench__cpp__maintenance__bugfix__2c49ef99` | `fmtlib/fmt` at `c03f55ec3a0511611fa7f0537f858544a0ed03bd` |
+
+For replay, start with a fresh private scratch directory `p` and prepare the same dataset and
+companion inputs and detached app as above. Set `prior` to the original `packet/request.json`.
+`select` verifies the released inputs and predecessor task identities before listing the next
+checkouts in language, URL, commit, and task ID order.
+
+```bash
+PYTHONPATH="$p/deps" python3.14 -B "$pilot" "$p" select --previous-request "$prior" > "$p/selected.tsv"
+```
+
+Fetch each listed commit by exact SHA into its bare cache and add its detached linked worktree
+at `"$p/bases/$language"` before preparing the packet. An existing bare cache can serve more
+than one linked worktree. `prepare` seals the predecessor request digest and selection rank
+alongside the usual source, disposition, and dataset identities.
+
+```bash
+PYTHONPATH="$p/deps" python3.14 -B "$pilot" "$p" prepare --previous-request "$prior"
+sha256sum "$p/packet/request.json" > "$p/REQUEST.sha256"
+read -r seal _ < "$p/REQUEST.sha256"
+timeout 90 "$app/.venv/bin/python" -I -B "$pilot" "$p" run --request-sha "$seal" --output "$p/pilot"
+python3 -I -B scripts/experiments/dcp10-discovery/verify_pilot.py "$p"
+```
+
+All three tasks had resolved gold and returned eight files each in a 5.469-second run. Macro file
+recall, precision, and F1 at discovery were 0.177778, 0.083333, and 0.111888. Discovery line
+metrics and all packed metrics were zero. Actual pack plans had zero file inclusions at 2,000,
+one at 4,000, and three at 8,000 estimated tokens. Independent recomputation reconciled 12
+task-scope counts, 24 macro metric values, and all actual entry modes and budgets. These three
+tasks provide a local diagnostic and share the original custody and packer identity limitations.
+The original artifacts are at `/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-shard2`.
+[Retained shard metadata](../../../docs/research/dcp10-lexical-shard2-results-20261118.json)

@@ -77,13 +77,11 @@ def check_read_scope(root):
             raise ValueError(f"checkout contains a symlink escaping the root: {path.relative_to(root)}")
 
 
-def prepare(work):
+def load_cohorts(work):
     import pyarrow.parquet as pq
-    from src.contextbench_score import ScoringInputError, normalize_relative_path
 
     upstream = work / "source/upstream"
     check_worktree(upstream, UPSTREAM_REV)
-    check_worktree(work / "app", APP_REV)
     datasets = {}
     for name, (leaf, expected, count) in DATASETS.items():
         path = work / "source" / f"{name}.parquet"
@@ -97,6 +95,56 @@ def prepare(work):
             raise ValueError(f"dataset ID count differs: {name}")
         datasets[name] = rows
 
+    full_by_id = {row["instance_id"]: row for row in datasets["full"]}
+    if any(full_by_id.get(row["instance_id"]) != row for row in datasets["lite"]):
+        raise ValueError("Lite pilot inputs differ from their full-release rows")
+    return datasets
+
+
+def select_shard(datasets, previous_request):
+    rank = 1
+    previous_by_language = {}
+    selection_seal = {}
+    if previous_request is not None:
+        prior_bytes = previous_request.read_bytes()
+        prior = json.loads(prior_bytes)
+        if (prior["schema"] != "epyc.dcp10.lexical-pilot.v1" or prior["app_revision"] != APP_REV
+                or prior["hf_rev"] != HF_REV or prior["upstream_git_rev"] != UPSTREAM_REV
+                or prior["dataset_hashes"] != {name: spec[1] for name, spec in DATASETS.items()}
+                or (prior["arm"], prior["limit"], prior["max_files"], tuple(prior["budgets"]))
+                != (ARM, LIMIT, MAX_FILES, BUDGETS)):
+            raise ValueError("previous request uses different pinned inputs or settings")
+        rank = prior.get("selection_rank", 1) + 1
+        if rank < 2:
+            raise ValueError("invalid prior selection rank")
+        previous_by_language = {task["language"]: task for task in prior["selected"]}
+        if set(previous_by_language) != set(STRATA) or len(prior["selected"]) != len(STRATA):
+            raise ValueError("previous request does not contain the same strata")
+        selection_seal = {"selection_rank": rank, "previous_request_sha256": sha256(prior_bytes).hexdigest()}
+
+    selected = {}
+    for language, dataset in STRATA.items():
+        rows = sorted((row for row in datasets[dataset] if row["language"] == language),
+                      key=lambda row: (sha256(row["instance_id"].encode()).digest(), row["instance_id"]))
+        if len(rows) < rank:
+            raise ValueError(f"selection rank {rank} exceeds {language} stratum")
+        if previous_by_language:
+            predecessor = rows[rank - 2]
+            prior_task = previous_by_language[language]
+            if (prior_task["task_id"], prior_task["base_commit"], prior_task["dataset"]) != (
+                    predecessor["instance_id"], predecessor["base_commit"], dataset):
+                raise ValueError(f"previous request does not match rank {rank - 1}: {language}")
+        selected[language] = (rows[rank - 1], len(rows))
+    return selected, selection_seal
+
+
+def prepare(work, previous_request):
+    from src.contextbench_score import ScoringInputError, normalize_relative_path
+
+    check_worktree(work / "app", APP_REV)
+    datasets = load_cohorts(work)
+    selected_rows, selection_seal = select_shard(datasets, previous_request)
+
     def raw_gold(row):
         return json.loads(row["gold_context"])
 
@@ -105,9 +153,6 @@ def prepare(work):
                 if item["file"].startswith("/workspace/") and item["file"].count("/") == 2}
 
     full = datasets["full"]
-    full_by_id = {r["instance_id"]: r for r in full}
-    if any(full_by_id.get(r["instance_id"]) != r for r in datasets["lite"]):
-        raise ValueError("Lite pilot inputs differ from their full-release rows")
     audit = {
         "empty_gold_ids": sorted(r["instance_id"] for r in full if not raw_gold(r)),
         "workspace_bare_paths_by_id": {
@@ -118,8 +163,7 @@ def prepare(work):
     }
     selected, tasks, decisions = [], [], []
     for lang, dataset in STRATA.items():
-        rows = [r for r in datasets[dataset] if r["language"] == lang]
-        row = min(rows, key=lambda r: sha256(r["instance_id"].encode()).hexdigest())
+        row, stratum_size = selected_rows[lang]
         root = work / "bases" / lang
         check_worktree(root, row["base_commit"])
         repo = row["repo"]
@@ -154,7 +198,7 @@ def prepare(work):
         tasks.append({"instance_id": task_id, "gold_context": spans})
         decisions.append({"task_id": task_id, "disposition": disposition, "evidence_paths": paths})
         selected.append({
-            "task_id": task_id, "dataset": dataset, "stratum_size": len(rows),
+            "task_id": task_id, "dataset": dataset, "stratum_size": stratum_size,
             "language": lang, "repo_url": row["repo_url"], "base_commit": row["base_commit"],
             "query": row["problem_statement"], "missing_gold_paths": missing,
         })
@@ -179,6 +223,7 @@ def prepare(work):
         )},
         "producer_sha256": digest(Path(__file__)),
         "selected": selected,
+        **selection_seal,
     })
 
 
@@ -323,7 +368,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("work", type=Path)
     subcommands = parser.add_subparsers(dest="command", required=True)
-    subcommands.add_parser("prepare")
+    for command in ("select", "prepare"):
+        subcommands.add_parser(command).add_argument("--previous-request", type=Path)
     execute = subcommands.add_parser("run")
     execute.add_argument("--request-sha", required=True)
     execute.add_argument("--output", required=True, type=Path)
@@ -333,8 +379,12 @@ def main():
     if parent.st_uid != os.geteuid() or stat.S_IMODE(parent.st_mode) & 0o077:
         raise ValueError("pilot work directory must be owned and private")
     sys.path.insert(0, str(work / "app"))
-    if args.command == "prepare":
-        prepare(work)
+    if args.command == "select":
+        selected, _ = select_shard(load_cohorts(work), args.previous_request)
+        for language, (row, _) in selected.items():
+            print(language, row["repo_url"], row["base_commit"], row["instance_id"], sep="\t")
+    elif args.command == "prepare":
+        prepare(work, args.previous_request)
     else:
         output = args.output.resolve()
         if output.parent != work:

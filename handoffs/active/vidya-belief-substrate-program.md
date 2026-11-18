@@ -51,6 +51,8 @@ Autopilot stays on operator HOLD (never start it); campaign goal is the orchestr
 - The AK one-shot planner proof of 2026-11-08 (`/mnt/raid0/llm/tmp/ak-planner-proof-20261108`: read non-empty, 16 usable, planner abstained) is tracked as AK-PLANNER-RELIANCE-PROOF in `autokernel-loop.md`.
 - The `GNX-REINDEX-1` receipt is declined (custody, not a measurement) and is no longer a next action.
 
+- [ ] **VB-TB-SEMANTICS-WIRE — Project prospective thinking-budget request semantics through the existing measurement carrier.** Producer `scripts/experiments/thinking-budget-semantics/` must bind the fixed prompt and three predeclared request bodies, native response bytes and reasoning/content/finish/usage fields, source/model/template/runtime custody, allocator scope, original failures and captured-PID cleanup at write time. Distinguish omitted budget, positive budget and disabled-thinking template control; presence or absence of reasoning is not a token-cap or historical hybrid-SSM regression proof. Use the existing carrier and `claim_tuple.grade()` with refusal controls and a recipient planning-context canary before declaring the loop wired. No new ladder, production enablement or retrospective measurement warrant. [no-belief: prospective source-wiring task]
+
 ## Objective
 
 Build the claim-level epistemic substrate the audit verified as EPYC's genuine gap: typed
