@@ -33,9 +33,19 @@ disabled checkout freshness check; `validation.log` preserves the original run.
 
 KVU19's new prospective build uses detached worktrees at the original commit;
 all 3,291 source archive file/link entries matched the Git archive. The new
-artifacts must be independently pinned after the build completes, rather than
-claimed equivalent to the missing original libraries. The private packet still
-needs adaptation, preflight and publisher smoke. Its prior 13 MiB residency
+build completed with exit 0; its native receipt pins the harness and eight ggml
+libraries independently of the missing original binaries. Finalization verified
+289 files. The first publication attempt exposed an unexpanded completion-check
+variable; the repaired check correctly refuses completion without a result.
+The first smoke then stopped before harness launch because its producer parsed
+the scheduler epoch deadline as ISO. The repaired producer accepts integer epoch seconds and timezone-aware ISO
+deadlines and uses isolated native directories for each smoke attempt. Three
+valid and seven invalid offline deadline controls passed. Finalization again
+verified 289 pins. The publisher accepted the repaired packet but queued its
+smoke because the GPU was busy; this is not a smoke PASS. Original failure
+receipts and the queued packet remain under `kvu19-build/`;
+`kvu19-publication.json` records qualification without claiming readiness. Native
+acceptance still requires the full authored capture, strict ingest and planning canary. Its prior 13 MiB residency
 result remains below the publisher's 64 MiB requirement. The preserved build
 scripts are under `kvu19-build/`; the readiness receipt names the external
 completion event and retained code/source worktrees.

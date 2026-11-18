@@ -1,0 +1,38 @@
+{
+ "id": "handoff-vidya-kvu19a2-wire-20261117-r2",
+ "queued_at": "2026-11-18T00:00:13Z",
+ "regions": "mi210_0,184-191",
+ "smoke_s": 120,
+ "spec": {
+  "decision_rule": "QUESTION: do five fresh exact-input launches per arm and case yield identical bytes on gfx90a? This new source-bound paired build is distinct from the earlier build. Stop on answer after all 20 launches; stop on STOP/deadline or failed custody; missing output or residency is UNKNOWN. Smoke is one real case80/base launch on four granted CPUs; no speed or promotion claim.",
+  "dryrun_native_result": true,
+  "estimate_s": 2100,
+  "first_progress_s": 120,
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-KVU19A2-WIRE",
+  "id": "handoff-vidya-kvu19a2-wire-20261117-r2",
+  "keep": [
+   "run-output/**",
+   "*.py",
+   "*.json",
+   "*.md",
+   "*.sh"
+  ],
+  "kind": "compute",
+  "lane": "gpu",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/row-launch.sh",
+  "min_window_s": 2100,
+  "owner": "handoff-vidya-belief-substrate",
+  "priority_rank": 30,
+  "publish_warnings": [
+   "vidya-belief-substrate-program.md:131: untestable prose prerequisite: 'after the frozen 20-launch matrix and native sidecar; stop-on-futility on STOP/deadline or failed custody, recording mis'"
+  ],
+  "ram_gib": 8,
+  "regions": "mi210_0,184-191",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/run-output/result.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet",
+  "shape": "gpu-q3",
+  "smoke_predicate": "/usr/bin/python3 /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/smoke_predicate.py",
+  "verdict_by": "agent"
+ }
+}

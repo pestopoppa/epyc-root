@@ -1,7 +1,7 @@
 {
-  "recorded_at": "2026-11-17T23:49:05.036389+00:00",
+  "recorded_at": "2026-11-18T00:00:45.738758+00:00",
   "row_id": "handoff-vidya-kvu19a2-wire-20261117-r2",
-  "status": "prospective build resumed under CPU region claim; awaiting terminal event",
+  "status": "repaired successor published; smoke queued because GPU is busy, NOT PASS",
   "readiness": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-readiness.json",
   "commands": [
     {
@@ -18,9 +18,9 @@
   "terminal_link_target": "terminal/kvu19-build-20261117.json",
   "build_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-receipt.json",
   "finalization_command": "/usr/bin/python3 /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/finalize.py",
-  "finalization_rc": null,
-  "publication_command": null,
-  "publication_rc": null,
+  "finalization_rc": 0,
+  "publication_command": "python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/spec.json --smoke-now",
+  "publication_rc": 0,
   "prior_smoke": {
     "status": "residency refused",
     "artifact": "FAIL-1.json",
@@ -29,10 +29,11 @@
     "row_id": "handoff-vidya-kvu19a2-wire-20261104"
   },
   "limitations": [
-    "Build completion has not been observed after the restart. The dispatcher is registered for the terminal file.",
-    "No preflight, smoke, benchmark, grant, or arm was run."
+    "Build artifacts belong to a new prospective build; no equivalence to missing historical binaries is asserted.",
+    "Native repeatability, strict ingest and actual planning-context acceptance remain open.",
+    "Prior 13MiB residency refusal is retained; no floor bypass or padding authorized."
   ],
-  "next_action": "On the registered terminal event, require success and run the finalizer, then publish with --smoke-now. On failure, diagnose the recorded exit/log before a further build attempt. Preserve genuine residency enforcement.",
+  "next_action": "Keeper runs the queued GPU smoke at the next gap. Consume native PASS or FAIL, repair actual failures within the lineage limit, and file the full original authored result only after a real granted matrix. Do not republish unchanged queued packets.",
   "publication_receipt": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/gpu-pool-candidate-scope-20261117/kvu19-publication.json",
   "agent_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-ready-agent.json",
   "recovery": {
@@ -53,7 +54,7 @@
     "region_build_log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/region-build.log",
     "awaiting_registration": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/kvu19-build-20261117.json",
     "durable_wrapper": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-build/build-wrapper.sh",
-    "terminal_exit_code": null,
+    "terminal_exit_code": 0,
     "in_flight_wrapper_sha256": "892bbbc7d45325d77d3cc72bc8f9ec5cebee1e5376de91bebe5a7fa46c2aae14",
     "durable_wrapper_sha256": "3eb120ac03bdf102eb359d346af0b909efd2c50125dd9b36b7a271000450eb85",
     "durable_wrapper_revision": "Future-copy strict shell mode with lock failure captured for the terminal receipt. The in-flight wrapper was left untouched."
@@ -64,5 +65,34 @@
     "The build receipt does not exist.",
     "Candidate build log ends at 41% while compiling HIP objects. Targeted checks found no explicit compiler or wrapper error in the inspected logs.",
     "Captured wrapper PID 1175960, region-lock PID 1175975 and notifier PID 1245878 were absent at inspection. The notifier log was empty. The build exit code and termination cause are unknown."
-  ]
+  ],
+  "build_terminal_archive": "kvu19-build/build-terminal.json",
+  "build_receipt_archive": "kvu19-build/build-receipt.json",
+  "finalization": {
+    "files_verified": 289,
+    "artifacts_verified": 9,
+    "gpu_launched": false
+  },
+  "publication_attempts": [
+    {
+      "exit_code": 2,
+      "disposition": "preflight refusal before native launch",
+      "cause": "unexpanded $result in parsed engine completion command; /usr/bin/test -s with no operand succeeds although official result does not exist",
+      "remedy": "repair successor launcher completion command and refresh original source pins before retry; do not force --rerun"
+    },
+    {
+      "exit_code": 2,
+      "disposition": "smoke FAIL before harness launch",
+      "cause": "producer parsed scheduler epoch deadline as ISO timestamp",
+      "receipt": "kvu19-build/smoke-attempt1-FAIL-1.json",
+      "native_output": false
+    },
+    {
+      "exit_code": 0,
+      "disposition": "GPU-SMOKE-QUEUED",
+      "receipt": "kvu19-build/GPU-SMOKE-QUEUED.json",
+      "smoke_pass": false
+    }
+  ],
+  "deadline_repair": "kvu19-build/completion-repair-2.json"
 }

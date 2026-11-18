@@ -1,0 +1,13 @@
+{
+  "task": "kvu19-successor-build",
+  "state": "success",
+  "exit_code": 0,
+  "wrapper_pid": 1356571,
+  "region_lock_pid": 1356574,
+  "finished_at": "2026-11-17T23:51:27.090520+00:00",
+  "build_receipt": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/build-receipt.json",
+  "log": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/region-build.log",
+  "cpu_claim": "48-51",
+  "role": "build",
+  "root_code": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-root-code"
+}
