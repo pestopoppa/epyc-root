@@ -14,8 +14,9 @@ What is projected, per stratum (role, variant, mode, k_min, k_max, tool-count bu
   ``mode == "full"`` sends every tool so recall there is vacuous and is not emitted.
 * ``tool_picker_elapsed_ms_p95`` -- nearest-rank p95 of ``elapsed_ms`` over the selection rows.
 
-Not inferred: the log carries no picker version, ``delta``, ``family_cap`` or ``full_list_max``; only
-``k_min``/``k_max`` are observed and they are part of the stratum key. An outcome with no selection row
+Era and config: selection rows written since orchestrator ``a2790c82`` carry ``picker_version``, ``delta``,
+``family_cap`` and ``full_list_max``; they are read into the stratum key (a version or config change never
+pools). Rows from an older producer lack them and read as ``unknown`` -- never invented. An outcome with no selection row
 (role unknown) is counted and excluded; a selection with no outcome is counted and is unknown, never a
 miss. Shadow rows are tallied in ``extra`` only (they are logged beside the applied pick, never applied).
 The log is unsealed producer output: category CANDIDATE, protocol_id empty, ``ClaimTuple.grade()`` is
@@ -42,6 +43,7 @@ MAX_BYTES = 64 * 1024 * 1024
 _SEL = ("request_id", "conversation", "variant", "role", "mode", "rung", "n_tools_in", "n_tools_out", "k_min",
         "k_max", "k_effective", "selected", "sent", "scores_top16", "elapsed_ms")
 _OUT = ("request_id", "conversation", "called", "called_not_selected", "proxy_recall")
+_CFG = ("delta", "family_cap", "full_list_max")
 _MODES = {"narrow", "full", "core_search"}
 
 
@@ -102,6 +104,10 @@ def _check_selection(r: dict) -> None:
         _bad("selection identity/mode malformed")
     if not all(type(r[k]) is int and r[k] >= 0 for k in ("n_tools_in", "n_tools_out", "k_min", "k_max", "k_effective")):
         _bad("selection counts malformed")
+    if "picker_version" in r and not (isinstance(r["picker_version"], str) and r["picker_version"]):
+        _bad("selection picker_version malformed")
+    if any(k in r and not (_num(r[k]) and r[k] >= 0) for k in _CFG):
+        _bad("selection config fields malformed")
     if not _num(r["elapsed_ms"]) or r["elapsed_ms"] < 0 or not _strs(r["selected"]) or not _strs(r["sent"]):
         _bad("selection latency/sets malformed")
     if not isinstance(r["scores_top16"], list) or not all(
@@ -154,7 +160,8 @@ def native_rows(path: str | Path) -> tuple[dict, ...]:
     orphans = sorted(set(outs) - set(sel))
     strata: dict[tuple, dict] = {}
     for rid, s in sel.items():
-        key = (s["role"], s["variant"], s["mode"], s["k_min"], s["k_max"], _bucket(s["n_tools_in"]))
+        key = (s["role"], s["variant"], s["mode"], s["k_min"], s["k_max"], _bucket(s["n_tools_in"]),
+               s.get("picker_version", "unknown"), *(s.get(k, "unknown") for k in _CFG))
         st = strata.setdefault(key, {"lat": [], "calls": 0, "cns": 0, "recall_requests": 0, "selections": 0,
                                      "no_outcome": 0, "no_call": 0, "top1": [], "rungs": {}, "ts": [], "rids": []})
         st["selections"] += 1
@@ -178,10 +185,11 @@ def native_rows(path: str | Path) -> tuple[dict, ...]:
     out = []
     for key in sorted(strata):
         st = strata[key]
-        role, variant, mode, kmin, kmax, bucket = key
+        role, variant, mode, kmin, kmax, bucket, pver, delta, fcap, flmax = key
         base = {"path": str(path), "sha256": digest,
                 "stratum": {"role": role, "variant": variant, "mode": mode, "k_min": kmin, "k_max": kmax,
-                            "tool_count_bucket": bucket},
+                            "tool_count_bucket": bucket, "picker_version": pver, "delta": delta,
+                            "family_cap": fcap, "full_list_max": flmax},
                 "counts": {"selections": st["selections"], "recall_requests": st["recall_requests"],
                            "calls": st["calls"], "called_not_selected": st["cns"],
                            "selections_without_outcome": st["no_outcome"], "outcomes_without_call": st["no_call"],
@@ -209,7 +217,8 @@ def project(native: Any) -> ClaimTuple:
     s, c, metric, v = native["stratum"], native["counts"], native["metric"], native["value"]
     date = datetime.datetime.fromtimestamp(native["last_ts"], tz=datetime.timezone.utc).date().isoformat()
     scope = (f"role {s['role']}, variant {s['variant']}, mode {s['mode']}, k {s['k_min']}-{s['k_max']}, "
-             f"tools-in bucket {s['tool_count_bucket']}")
+             f"tools-in bucket {s['tool_count_bucket']}, picker {s['picker_version']}, delta {s['delta']}, "
+             f"family_cap {s['family_cap']}, full_list_max {s['full_list_max']}")
     if metric == RECALL:
         unit, direction, reps = "ratio", "higher_better", c["recall_requests"]
         basis = "requests with at least one tool call; denominator excludes no-call and unjoined requests"
@@ -233,7 +242,8 @@ def project(native: Any) -> ClaimTuple:
         observation={"outcome_native": f"{metric}={v:.4f}" if metric == RECALL else f"{metric}={v:.2f}"},
         extra={"adapter": ADAPTER_ID, "stratum": s, "counts": c, "rungs": native["rungs"],
                "top1_score_mean": native["top1_score_mean"], "first_ts": native["first_ts"], "last_ts": native["last_ts"],
-               "picker_version": "unknown", "unlogged_config": ["delta", "family_cap", "full_list_max"],
+               "picker_version": s["picker_version"],
+               "unlogged_config": [k for k in _CFG if s[k] == "unknown"],
                "limitation": "unsealed producer log; proxy recall is not true recall; no promotion or default-on warrant"})
 
 
