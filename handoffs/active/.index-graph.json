@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T09:05:13Z",
+  "generated_at": "2026-11-18T09:39:14Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1344,14 +1344,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 416,
-      "dispatchable": 109,
+      "dispatchable": 110,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-18",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 110,
+      "open": 111,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -2397,15 +2397,15 @@
       "blocked_by": [
         "INF-65"
       ],
-      "closed": 37,
-      "dispatchable": 16,
+      "closed": 39,
+      "dispatchable": 18,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "v11-promotion-checklist.md",
       "id": "INF-83",
       "last_advanced": "2026-11-18",
       "next_action": "Run V11-C13-GPU-LOADCHECK (row 1b); flip llguidance default at promotion (D2); carry C13 CAS into V11 log; C14 fold per INF-65; D6/D7",
-      "open": 16,
+      "open": 18,
       "priority": 0.0307,
       "priority_basis": {
         "campaign": 0,
@@ -3649,14 +3649,14 @@
       "blocked": 18,
       "blocked_by": [],
       "closed": 239,
-      "dispatchable": 90,
+      "dispatchable": 92,
       "domain": "user-facing-harness",
       "guarded": 0,
       "handoff": "harness-program.md",
       "id": "UFH-01",
       "last_advanced": "2026-11-18",
       "next_action": "Run CM-2..CM-5 per-request tool selection (base: probe/codemode-ab); then UFH-TE-2 dispatch guard, HIL-RE-1",
-      "open": 108,
+      "open": 110,
       "priority": 0.9364,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-usage-prov1-r4-20261025: harness fix: validation result is FAIL (g",
@@ -3708,18 +3708,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 10,
+          "dispatchable": 12,
           "gates": [],
           "line": 391,
           "name": "repl-turn-efficiency",
-          "open": 10,
+          "open": 12,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 775,
+          "line": 777,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3732,7 +3732,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1541,
+          "line": 1543,
           "name": "harness-improvement-loop",
           "open": 18,
           "readiness": "blocked"
@@ -3745,7 +3745,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2217,
+          "line": 2219,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3766,7 +3766,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2300,
+          "line": 2302,
           "name": "repl-embedding-retrieval",
           "open": 20,
           "readiness": "blocked"
@@ -3781,7 +3781,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2748,
+          "line": 2750,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3792,7 +3792,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3616,
+          "line": 3618,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"

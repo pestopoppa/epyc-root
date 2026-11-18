@@ -4,7 +4,7 @@
       "blocked": 49,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 534
+      "open": 536
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 212
+      "open": 213
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -34,7 +34,7 @@
       "blocked": 18,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 97
+      "open": 99
     }
   },
   "duplicates": {},
@@ -1069,7 +1069,7 @@
       "closed": 239,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 90,
+      "open": 92,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1078,7 +1078,7 @@
       },
       "row_id": "UFH-01",
       "state": "active",
-      "total": 347,
+      "total": 349,
       "tracks": [
         {
           "blocked": 12,
@@ -1107,14 +1107,14 @@
           "line": 391,
           "markers": 1,
           "name": "repl-turn-efficiency",
-          "open": 10
+          "open": 12
         },
         {
           "blocked": 0,
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 775,
+          "line": 777,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1541,
+          "line": 1543,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 14
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2217,
+          "line": 2219,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2300,
+          "line": 2302,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 18
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2748,
+          "line": 2750,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3616,
+          "line": 3618,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -2564,10 +2564,10 @@
     },
     "v11-promotion-checklist.md": {
       "blocked": 0,
-      "closed": 37,
+      "closed": 39,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 16,
+      "open": 18,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2576,14 +2576,14 @@
       },
       "row_id": "INF-83",
       "state": "active",
-      "total": 53
+      "total": 57
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
       "closed": 416,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 109,
+      "open": 110,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 526
+      "total": 527
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
