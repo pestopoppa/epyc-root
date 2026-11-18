@@ -200,12 +200,23 @@ FANOUT_LINE = ("Working mode: FAN OUT - your own thread only reviews, integrates
 NO_POLL_LINE = ("NEVER wait in this turn: no sleep, no polling of grants/dry-run/queue files, no wait_agent/status loops; the "
                 "dispatcher resumes you on the event (grant end, dry-run result, or a file you registered under "
                 "handoff-sessions/<slug>/awaiting/).")
-#: Operator ruling 1 (2026-11-02): the only three points at which a turn may end.
-TURN_END_LINE = ("A turn ends ONLY at one of: (a) a row is published (publish_row.py smoke PASS); (b) every remaining task is "
-                 "blocked only by rows you already readied; (c) the handoff is done. Never end a turn in the middle of making "
-                 "an inference task ready - finish making it ready, then persist. A new prerequisite or blocker you discover is "
-                 "work for THIS turn: do it now (fan out subagents); never stop at listing prerequisites or at \"not yet a "
-                 "runnable row\".")
+#: D9 fix 3 (2026-11-18, supersedes operator ruling 1 of 2026-11-02): result-first turn contract.
+TURN_END_LINE = ("Result-first turn: at the START name ONE result-bearing task - one whose done-when is a measured verdict, a "
+                 "merged code change with passing tests, or a filed row result (a published row whose smoke PASSes counts "
+                 "for an inference task) - and state its done-when in one line. Stop when it is met, or when it proves "
+                 "impossible (say why in one line). If no result-bearing task is possible right now, say why and stop: that "
+                 "is a legitimate turn end, not a failure. Do not manufacture tickable work: preparation, custody, wiring or "
+                 "bookkeeping ticks are not progress. Open at most 2 new `- [ ]` boxes per turn (wrapup.py refuses more).")
+#: D9 fix 2: the session reads compiled state, not the programme.
+READ_LINE = ("Read `handoff-sessions/<slug>/STATE.md` in the flags dir FIRST (compiled per spawn, <=3 kB: Status/HOLD, the "
+             "open boxes for this turn, your last results, the event). Get one box's full text with `python3 "
+             "scripts/coordination/handoff_sessions.py box show <slug> <BOX-ID>`. Do NOT read the full handoff unless "
+             "STATE.md lacks something you need, and then only the lines you need (`rg -n`). Read budget: no more than ~40 kB "
+             "of handoff/governance text per turn. If the Status line or a HOLD block freezes a box, report it blocked.")
+#: D9 fix 4: evidence is addressed, never copied.
+EVIDENCE_LINE = ("Evidence: cite by repo path + git object (commit/blob sha) or SHA-256 of an existing file; never copy source "
+                 "trees, logs, binaries or another repo's files into packets/evidence dirs (wrapup.py refuses duplicate "
+                 "blobs and files over 2000 lines).")
 #: Operator ruling 2 (2026-11-02): the worker persist is light; index files are regenerated centrally (index_regen.py).
 PERSIST_LINE = ("Persist = wrapup.py only: it ticks your boxes with the evidence sha, appends your progress file, commits your "
                 "paths (plus beliefs/wiki notes only if you produced findings) and pushes, then writes report.json. Never run "
@@ -214,27 +225,40 @@ PERSIST_LINE = ("Persist = wrapup.py only: it ticks your boxes with the evidence
 
 BOX_LINE = ("Every turn names the box id it advances (report.json `box`), or it is not a turn. If that box is blocked (by a "
             "rule, a reboot or another session), say so in one line and move to the next unblocked box in the same turn. "
-            "Turns that only record notes or assessments are not allowed.")
+            "A turn that finds no result-bearing task says why in one line and stops.")
 
 
 REPORT_LINE = (
     BOX_LINE + "\n"
-    "Spend this turn on the task itself (code, launcher, row, fix, result). Do not write status notes, progress prose, "
-    "re-verifications of finished work, audits of your own bookkeeping, or messages about the pipeline. A turn whose only output "
-    "is bookkeeping is a wasted turn.\n"
-    "Progress = a box in YOUR handoff ticked with its evidence. Finish existing boxes before adding new ones. Add a box only when "
-    "a task you are doing genuinely splits, or a result creates a follow-up the operator would need to act on. When a result "
-    "lands, tick its box in the same turn.\n"
+    "Spend this turn on the one result-bearing task (code with tests, a measured verdict, a filed row result). Do not write "
+    "status notes, re-verifications of finished work or messages about the pipeline; they are not results, and neither are "
+    "ticks of preparation boxes.\n"
+    "Progress = a box in YOUR handoff ticked with a verdict or number as evidence, or an owned row result filed. Finish "
+    "existing boxes before adding new ones; at most 2 new boxes per turn, only when a result creates a follow-up. When a "
+    "result lands, tick its box in the same turn.\n"
     "Report next=done ONLY after the completion wrap-up has LANDED: extract findings to docs, `git mv` the handoff to "
     "handoffs/completed/, delete its domain-index row, then land (never index_state.py; the central writer regenerates). "
     "The dispatcher retires you only once the file is gone from handoffs/active/ on origin/main.\n"
-    "LAST INSTRUCTION: work through this handoff's tasks in priority order (non-inference: do it; inference: make it ready = "
+    "LAST INSTRUCTION: pick the highest-priority result-bearing task (non-inference: do it; inference: make it ready = "
     "launcher + publish_row.py, whose smoke IS the dry run on 4 CPUs and the only compute you run yourself - it must PASS; "
-    "long benchmark runs go through rows). " + TURN_END_LINE + " " + PERSIST_LINE + " Your wrap-up JSON (-> report.json) "
+    "long benchmark runs go through rows). " + TURN_END_LINE + " " + EVIDENCE_LINE + " " + PERSIST_LINE + " Your wrap-up JSON (-> report.json) "
     "MUST carry `box` (the box id this turn advanced), `next_step` (one line: the exact next action - it is your checkpoint when the dispatcher rotates you to a fresh thread) and `next`: \"non-inference\" | \"inference\" | \"blocked\" | \"done\" (the handoff's next task) and, when next is "
     "\"blocked\", `blocked_by`: [<row ids>] - every remaining task waits on those rows and each is already readied (dry-run "
     "PASS, armed, granted or running). You are resumed at once unless next=blocked on readied rows (then when one ends or FAILs "
     "its dry run) or next=done with no open box left (the handoff closes).")
+
+
+def fanout_line(e) -> str:
+    """D9 fix 3: Codex exec has no subagents - the fan-out instruction is dead text there (and teaches that instructions
+    are decorative). Claude/opencode sessions keep it."""
+    return "" if (e or {}).get("engine", "codex") == "codex" else FANOUT_LINE
+
+
+def working_mode_block(e) -> str:
+    f = fanout_line(e)
+    return (f"## Working mode: fan out (operator rule)\n{f}\n" if f else
+            "## Working mode: single thread (codex exec has no subagents)\nDo the one result-bearing task yourself; never "
+            "re-verify what the scripts (wrapup.py, file_result.py, publish_row.py) already guarantee.\n")
 
 
 def lane_line(slug):
@@ -343,10 +367,10 @@ def brief_text(slug: str, e: dict, flags: str) -> str:
             goal = open(os.path.join(flags, f"GOAL-{GENERALIST}.md"), errors="replace").read()
         except OSError:
             goal = "(GOAL-codex-gen.md missing)"
-        return (goal + f"\n\n## Managed-session contract (dispatcher)\n{FANOUT_LINE}\n{TURN_END_LINE}\n{PERSIST_LINE}\n{lane_line(slug)}\n"
+        return (goal + f"\n\n## Managed-session contract (dispatcher)\n{fanout_line(e)}\n{TURN_END_LINE}\n{PERSIST_LINE}\n{lane_line(slug)}\n"
                 f"Your backlog: `{flags}/BACKLOG-{GENERALIST}.md`; rows/tasks labelled 'yours' are yours. Wrap up with ONE JSON -> "
                 f"`python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (slug {GENERALIST}); its "
-                f"`WRAPPED <sha>` is your LAST line. One turn = ALL ready items, via sub-agents; never a one-item turn.\n")
+                f"`WRAPPED <sha>` is your LAST line. " + ("One turn = ALL ready items, via sub-agents; never a one-item turn.\n" if fanout_line(e) else "One turn = one result-bearing item.\n"))
     rows = ", ".join(f"`{x}`" for x in (e.get("row_ids") or [])) or "(none listed)"
     hrows = ", ".join(f"`{x}`" for x in (e.get("handoff_rows") or [])) or "(none)"
     return f"""# HANDOFF-{slug} — session-per-handoff brief (ws58 pilot, operator-approved 2026-11-01)
@@ -355,8 +379,10 @@ You are the ONE session that owns `{e['handoff']}` (engine {e.get('engine', 'cod
 record; you are a cache. Its READY rows and tasks moved to you from the generalist workers. Everything you need is in
 this brief and on disk/origin/main — you may have no transcript of earlier turns; never assume one.
 
-## Working mode: fan out (operator rule, binding on every engine)
-{FANOUT_LINE}
+{working_mode_block(e)}
+## Read state first (D9)
+{READ_LINE.replace('<slug>', slug)} State file: `{session_state_path(flags, slug)}`.
+{EVIDENCE_LINE}
 
 ## Where things are
 - **Your lane worktree: `{lane_dir(slug)}` on branch `{lane_branch(slug)}`** — your cwd and the ONLY place you edit and
@@ -374,8 +400,8 @@ this brief and on disk/origin/main — you may have no transcript of earlier tur
   (section *Session per handoff*).
 
 ## Row lifecycle (you drive every step yourself)
-**The loop (operator 2026-11-02).** Work this handoff's tasks in order: fan out subagents for the code, prep and analysis
-tasks; make every inference task ready (launcher, then `publish_row.py`, whose built-in smoke IS the dry run on 4 CPUs and must PASS); tick boxes as results land. Your BACKLOG file is
+**The loop (operator 2026-11-02).** Work this handoff's tasks in order: one result-bearing task per turn (code, prep and analysis
+tasks included); make every inference task ready (launcher, then `publish_row.py`, whose built-in smoke IS the dry run on 4 CPUs and must PASS); tick boxes as results land. Your BACKLOG file is
 context (rows, open boxes, your handoff's rank), not an order.
 
 1. Write a spec JSON (id, owner, launcher, lane cpu|gpu, result_path, result_format, decision_rule, estimate_s,
@@ -411,7 +437,6 @@ context (rows, open boxes, your handoff's rank), not an order.
   for new work until that sha is on origin/main. A run-end event counts as consumed ONLY when `filing-done/<id>.FILED`
   exists (DSH-2; `file_result.py` touches it).
 - When your context is large, persist at the next allowed turn end and also say `FRESH-SESSION-REQUESTED`.
-- {TURN_END_LINE}
 - {PERSIST_LINE}
 - **Pause rule**: you are paused ONLY when every remaining task in the handoff waits on rows you already readied (dry-run
   PASS, armed, granted or running): report `next: blocked` + `blocked_by`. The dispatcher verifies each id in rowflow; a
@@ -515,7 +540,7 @@ def end_prompt(slug, e, flags, rid, endfile, delta="", filing=None):
         tail = open(outp, errors="replace").read().strip().splitlines()[-1][:400]
     except (OSError, IndexError):
         pass
-    return f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {FANOUT_LINE} {lane_line(slug)}
+    return f"""[{VERSION}] Run end in your handoff {e.get('handoff') or 'codex-gen backlog'}: row `{rid}`. {fanout_line(e)} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}1. The handoff is {e['handoff']} in your lane; the state above is current.
 2. Facts: end file {endfile}: `{endline}` (rc={rc}); launcher end line: `{tail}`; manifest {mp or '(none)'} (schema {m.get('schema', 'epyc.row.v3')});
    result_path: {m.get('result_path')}; decision_rule: {json.dumps(m.get('decision_rule'))[:800]}.
@@ -537,7 +562,7 @@ def delta_block(delta):
 
 
 def idle_prompt(slug, e, flags, delta=""):
-    return f"""[{VERSION}] Continue your handoff {e.get('handoff') or 'codex-gen backlog'}. {FANOUT_LINE} {lane_line(slug)}
+    return f"""[{VERSION}] Continue your handoff {e.get('handoff') or 'codex-gen backlog'}. {fanout_line(e)} {lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Take the next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
 `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line.
@@ -545,9 +570,8 @@ LAST line.
 
 
 def continue_prompt(slug, e, flags, why="", delta=""):
-    return f"""[{VERSION}] go on: {why or 'the next task in your handoff'}. Your handoff {e.get('handoff') or 'codex-gen backlog'} has open work;
-fan independent items out to sub-agents and land them before persisting. {TURN_END_LINE} {FANOUT_LINE}
-{lane_line(slug)}
+    return f"""[{VERSION}] go on: {why or 'the next task in your handoff'}. Your handoff {e.get('handoff') or 'codex-gen backlog'} has open work.
+{fanout_line(e)}{lane_line(slug)}
 {delta_block(delta).replace('{flags}', flags).replace('<slug>', slug)}Next task per {flags}/briefs/HANDOFF-{slug}.md. Wrap up with ONE JSON ->
 `python3 -I {WRAPUP} --json <file> --lane {lane_dir(slug)}` (CAF-2); its `WRAPPED <sha>` is your
 LAST line.
@@ -889,14 +913,29 @@ def landed_ticks(sha, repo=None) -> int:
     return sum(1 for l in r.stdout.splitlines() if re.match(r"^\+\s*- \[x\]", l, re.I)) if r.returncode == 0 else 0
 
 
+def landed_result_ticks(sha, repo=None) -> int:
+    """D9 fix 3: the landed ticks whose line carries a verdict or a number (tg.result_tick)."""
+    if not sha or not re.fullmatch(r"[0-9a-f]{7,40}", str(sha)):
+        return 0
+    r = subprocess.run(["git", "-C", repo or ROOT, "show", "--format=", sha, "--", "handoffs/"], capture_output=True, text=True)
+    return sum(1 for l in r.stdout.splitlines() if re.match(r"^\+\s*- \[x\]", l, re.I) and tg.result_tick(l[1:])) if r.returncode == 0 else 0
+
+
 def turn_effect(flags, slug, e, rep=None) -> str:
     """What the turn COMPLETED (operator 2026-11-02): a landed tick, a published row or a filing. A commit alone is not an
     effect. '' = no effect."""
     since = _parse(e.get("last_resume") or "") - 1
     out = []
     n = landed_ticks(e.get("last_wrapup")) if e.get("last_wrapup") and landed(e.get("last_wrapup")) else 0
-    if n:
-        out.append(f"{n} landed tick(s) in {str(e.get('last_wrapup'))[:9]}")
+    if n:  # D9 fix 3: prep ticks are not progress - a tick counts only with a verdict/number, or an owned filed result
+        r = landed_result_ticks(e.get("last_wrapup"))
+        if r:
+            out.append(f"{n} landed tick(s) in {str(e.get('last_wrapup'))[:9]} ({r} with a verdict/number)")
+        elif turn_result(flags, slug, e):
+            out.append(f"{n} landed tick(s) in {str(e.get('last_wrapup'))[:9]} with an owned filed result")
+        else:
+            log(flags, f"PREP-TICKS {slug}: {n} landed tick(s) in {str(e.get('last_wrapup'))[:9]} carry no verdict/number and "
+                       f"no owned result was filed - not counted as progress")
     for pat, name in (("ready/*.json", "row(s) published"), ("filing-done/*.FILED", "filing(s)")):
         new = [p for p in glob.glob(os.path.join(flags, pat)) if os.path.getmtime(p) >= since]
         if new:
@@ -1516,7 +1555,7 @@ def awaiting_prompt(slug, e, flags, data):
     lines = "\n".join(f"- {d.get('path')} ({d.get('note') or 'no note'})" for d in items)
     return f"""[{VERSION}] {len(items)} file(s) you were waiting for now exist:
 {lines}
-{FANOUT_LINE} {lane_line(slug)}
+{fanout_line(e)} {lane_line(slug)}
 Consume ALL of them in this one turn and continue your task. {TURN_END_LINE} Then persist; print `WRAPPED <sha>` as your LAST line.
 {REPORT_LINE}"""
 
@@ -1646,7 +1685,8 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             if not effect:  # unlanded progress in a clean lane is landed HERE at zero token cost, then counted
                 landed_now = land_lane(e.get("cwd") or "")
                 if landed_now:
-                    n = sum(landed_ticks(x) for x in landed_now)
+                    n = sum(landed_result_ticks(x) for x in landed_now) or (
+                        sum(landed_ticks(x) for x in landed_now) if turn_result(flags, slug, e) else 0)  # D9 fix 3
                     e["last_wrapup"] = e.get("last_wrapup") or landed_now[-1]
                     log(flags, f"LANDED-BY-DISPATCHER {slug}: {len(landed_now)} commit(s) from a clean lane, {n} tick(s)")
                     if n:
@@ -2216,6 +2256,244 @@ def unpark_cmd(flags, reg, slug) -> int:
     return 0
 
 
+# ---------------------------------------------------------------- D9 fix 2: compiled per-session state (STATE.md)
+STATE_MAX_BYTES = 3072
+STATE_MAX_BOXES = 8
+BOX_FIRST_MAX = 170
+_BOX_RX = re.compile(r"^(\s*)- \[( |x|X)\] (.*)$")
+_BOX_ID_RX = re.compile(r"^(?:\*\*)?([A-Z][A-Z0-9]*(?:[-._][A-Za-z0-9]+)+)")
+_ID_IN_TEXT_RX = re.compile(r"\b[A-Z][A-Z0-9]*(?:[-.][A-Za-z0-9]+)+\b")
+_STATUS_RX = re.compile(r"^\s*(\*\*Status\*\*\s*:|Status\s*:)")
+_HOLD_RX = re.compile(r"\bHOLD\b")
+
+
+def session_state_path(flags, slug):
+    return os.path.join(flags, "handoff-sessions", slug, "STATE.md")
+
+
+def handoff_boxes(text: str) -> list[dict]:
+    """Every checkbox of a handoff: {id, open, line (1-based), first, full}. `full` = the box line plus its indented
+    continuation lines; `id` = the leading (bold) token like VB-FM4-ORACLE-WIRE, or None."""
+    lines, out = text.splitlines(), []
+    for i, ln in enumerate(lines):
+        m = _BOX_RX.match(ln)
+        if not m:
+            continue
+        ind, body = len(m.group(1)), m.group(3)
+        idm = _BOX_ID_RX.match(body)
+        full = [ln]
+        for nxt in lines[i + 1:]:
+            if not nxt.strip() or len(nxt) - len(nxt.lstrip()) <= ind:
+                break
+            full.append(nxt)
+        title = re.match(r"^\*\*(.+?)\*\*", body)
+        first = (title.group(1) if title else body).strip()
+        out.append({"id": idm.group(1) if idm else None, "open": m.group(2) == " ", "line": i + 1,
+                    "first": first if len(first) <= BOX_FIRST_MAX else first[:BOX_FIRST_MAX - 1] + "…", "full": "\n".join(full)})
+    return out
+
+
+def box_show(text: str, box_id: str) -> str | None:
+    """Full text of ONE box by id (first open match, else first match)."""
+    hits = [b for b in handoff_boxes(text) if b["id"] == box_id]
+    hits.sort(key=lambda b: not b["open"])
+    return hits[0]["full"] if hits else None
+
+
+def status_and_hold(text: str) -> tuple[str, str]:
+    """(Status line, first HOLD block) verbatim. A HOLD block is a run of `>` lines, or a non-box `**...` / heading line
+    paragraph, whose text names HOLD as a banner (within its first 60 chars)."""
+    lines = text.splitlines()
+    status = next((ln.strip() for ln in lines if _STATUS_RX.match(ln)), "")
+    i = 0
+    while i < len(lines):
+        ln = lines[i]
+        if ln.lstrip().startswith(">"):
+            j = i
+            while j < len(lines) and lines[j].lstrip().startswith(">"):
+                j += 1
+            block = "\n".join(lines[i:j])
+            if _HOLD_RX.search(block):
+                return status, block
+            i = j
+            continue
+        if (ln.startswith("**") or ln.startswith("#")) and not _BOX_RX.match(ln) and _HOLD_RX.search(ln[:60]):
+            j = i + 1
+            while j < len(lines) and lines[j].strip() and not lines[j].startswith("#") and not _BOX_RX.match(lines[j]):
+                j += 1
+            return status, "\n".join(lines[i:j])
+        i += 1
+    return status, ""
+
+
+def _named_ids(flags, e, ev) -> list[str]:
+    """Box ids the triggering event/row names: the row id and its manifest handoff_task, then the checkpoint box."""
+    texts = []
+    if ev:
+        texts.append(json.dumps(ev))
+        if ev.get("rid"):
+            texts.append(str(manifest_for(flags, ev["rid"])[1].get("handoff_task") or ""))
+    for src in (e.get("checkpoint") or {}, e.get("last_report") or {}):
+        if src.get("box"):
+            texts.append(str(src["box"]))
+    return [m for t in texts for m in _ID_IN_TEXT_RX.findall(t)]
+
+
+def last_results(flags, slug, e, n=3) -> list[tuple[str, str]]:
+    """The last n results FILED for rows owned by this slug: (row id, verdict)."""
+    rec = []
+    for p in glob.glob(os.path.join(flags, "filing-done", "*.FILED")):
+        rid = os.path.basename(p)[:-len(".FILED")]
+        try:
+            rec.append((os.path.getmtime(p), rid, p))
+        except OSError:
+            pass
+    out = []
+    for _, rid, p in sorted(rec, reverse=True):
+        if len(out) >= n:
+            break
+        if not row_owned(flags, rid, slug, e):
+            continue
+        v = bg.load_json(os.path.join(flags, "filing-done", f"{rid}.verdict.json"))
+        vv = v.get("verdict") if isinstance(v, dict) else None
+        if isinstance(vv, dict):
+            vv = vv.get("verdict") or vv.get("result") or vv.get("status")
+        verdict = str(vv)[:60] if vv else ""
+        if not verdict:
+            try:
+                verdict = open(p, errors="replace").read(200).strip().splitlines()[0][:100]
+            except (OSError, IndexError):
+                verdict = "filed"
+        out.append((rid, verdict))
+    return out
+
+
+def _strip_id(first: str, bid: str) -> str:
+    return re.sub(rf"^{re.escape(bid)}\s*[—:-]+\s*", "", first) or first
+
+
+def _event_text(ev) -> str:
+    if not ev:
+        return "(none: continue/idle turn)"
+    keep = {k: ev.get(k) for k in ("kind", "rid", "end") if ev.get(k)}
+    rel = ev.get("related") or {}
+    if isinstance(rel, dict) and rel.get("handoff_task"):
+        keep["handoff_task"] = rel["handoff_task"]
+    return json.dumps(keep or ev, sort_keys=True)[:400]
+
+
+def compile_state(flags, slug, e, ev, text: str) -> str:
+    """D9 fix 2: <= STATE_MAX_BYTES of state for ONE turn: Status + HOLD verbatim, up to 8 open boxes (event-named first),
+    last 3 owned results, the current event."""
+    status, hold = status_and_hold(text)
+    boxes = [b for b in handoff_boxes(text) if b["open"]]
+    named = _named_ids(flags, e, ev)
+    pri = [b for nid in dict.fromkeys(named) for b in boxes if b["id"] == nid]
+    rest = [b for b in boxes if b not in pri]
+    chosen = (pri + rest)[:STATE_MAX_BOXES]
+    results = last_results(flags, slug, e)
+    evtxt = _event_text(ev)
+
+    def render(bx, evt, hd):
+        parts = [f"# STATE {slug} ({now_iso()})", f"handoff: {e.get('handoff')}", status or "Status: (no Status line)"]
+        if hd:
+            parts += ["HOLD (verbatim; boxes under it are frozen):", hd]
+        parts.append(f"Open boxes ({len(bx)} of {len(boxes)}; full text: `handoff_sessions.py box show {slug} <ID>`):")
+        parts += [f"- {b['id']}: {_strip_id(b['first'], b['id'])}" if b["id"] else f"- line {b['line']}: {b['first']}"
+                  for b in bx] or ["- (none)"]
+        parts.append("Last results: " + ("; ".join(f"{r} = {v}" for r, v in results) if results else "(none filed)"))
+        parts.append(f"Event: {evt}")
+        parts.append("Read budget: ~40 kB of handoff/governance text per turn; do not read the full handoff unless this lacks something.")
+        return "\n".join(parts) + "\n"
+
+    out = render(chosen, evtxt, hold)
+    while len(out.encode()) > STATE_MAX_BYTES and chosen:
+        chosen = chosen[:-1]
+        out = render(chosen, evtxt, hold)
+    if len(out.encode()) > STATE_MAX_BYTES:
+        out = render(chosen, evtxt[:120], hold)
+    if len(out.encode()) > STATE_MAX_BYTES:  # a HOLD longer than the budget: keep its head, point at the file
+        room = STATE_MAX_BYTES - len(render(chosen, evtxt[:120], "").encode()) - 80
+        out = render(chosen, evtxt[:120], hold.encode()[:max(0, room)].decode(errors="ignore") + " …[HOLD truncated; see handoff]")
+    return out
+
+
+def write_state(flags, slug, e, ev, lane=None) -> str | None:
+    """Compile STATE.md at a spawn; never blocks the spawn. Returns the path or None."""
+    if not e.get("handoff"):
+        return None
+    hp = next((p for p in (os.path.join(lane or "", e["handoff"]) if lane else None, os.path.join(ROOT, e["handoff"]))
+               if p and os.path.isfile(p)), None)
+    if not hp:
+        return None
+    try:
+        text = open(hp, errors="replace").read()
+        p = session_state_path(flags, slug)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        bg.write_atomic(p, compile_state(flags, slug, e, ev, text))
+        return p
+    except OSError as ex:
+        log(flags, f"STATE-FAILED {slug}: {ex}")
+        return None
+
+
+def box_show_cmd(flags, reg, slug, box_id, out=None) -> int:
+    out = out or sys.stdout
+    e = (reg.get("sessions") or {}).get(slug)
+    if not e or not e.get("handoff"):
+        print(f"no registered session with a handoff: {slug}", file=sys.stderr)
+        return 2
+    for base in (e.get("cwd"), ROOT):
+        p = os.path.join(base, e["handoff"]) if base else None
+        if p and os.path.isfile(p):
+            txt = box_show(open(p, errors="replace").read(), box_id)
+            if txt is not None:
+                print(txt, file=out)
+                return 0
+    print(f"box {box_id} not found in {e['handoff']}", file=sys.stderr)
+    return 1
+
+
+def state_lead(flags, slug) -> str:
+    return (f"[{VERSION}] Read {session_state_path(flags, slug)} FIRST (compiled state, <=3 kB). One box in full: `python3 "
+            f"scripts/coordination/handoff_sessions.py box show {slug} <BOX-ID>`. Do not read the full handoff unless STATE.md "
+            f"lacks something; read budget ~40 kB of handoff/governance text per turn.\n")
+
+
+# ---------------------------------------------------------------- D9 fix 1: pre-spawn thread ceiling check
+CEILING_FRESH_FRACTION = 0.8
+
+
+def thread_tokens(e) -> int | None:
+    """Cumulative total_tokens of the session's thread (same source as lease_verdict: the Codex rollout)."""
+    if e.get("engine", "codex") != "codex" or not e.get("session_id"):
+        return None
+    u = tg.rollout_usage(e.get("session_id"))
+    return int(u["total_tokens"]) if u and u.get("total_tokens") is not None else None
+
+
+def fresh_instead_of_resume(flags, slug, e) -> bool:
+    """A resume of a thread already at >= 80% of session_token_ceiling replays it into the G2 kill (477M of 1,233M tokens
+    went to four doomed replays): mark it for a FRESH start from the checkpoint instead. True when it did."""
+    if e.get("fresh_next") or not e.get("session_id"):
+        return False
+    n = thread_tokens(e)
+    ceiling = int(tg.cfg(load(reg_path(flags), {})).get("session_token_ceiling") or tg.DEFAULTS["session_token_ceiling"])
+    if n is None or n < CEILING_FRESH_FRACTION * ceiling:
+        return False
+    if not e.get("checkpoint"):
+        rep = None
+        try:
+            rep = json.load(open(report_path(flags, slug)))
+        except (OSError, ValueError):
+            pass
+        e["checkpoint"] = tg.checkpoint_from(rep if isinstance(rep, dict) else None, e)
+    e["fresh_next"] = True
+    e["rotated_from"] = {"session_id": e.get("session_id"), "thread_tokens": n, "at": now_iso()}
+    log(flags, f"FRESH-INSTEAD-OF-RESUME {slug}: thread at {n} tokens (ceiling {ceiling})")
+    return True
+
+
 def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if gate_held(flags, slug, e):  # operator gate: never spawned or resumed, whatever path got here
         return False
@@ -2223,6 +2501,8 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     if alerts:  # every launch/resume carries the owner's unhandled row alerts; acked only by the owner's own ack line
         prompt = rf_notify.alerts_block(alerts, flags) + prompt
         e["alerts_injected"] = [a["key"] for a in alerts]
+    if not fresh:  # D9 fix 1: never resume a thread already near the token ceiling
+        fresh_instead_of_resume(flags, slug, e)
     if not fresh and e.get("fresh_next"):  # event/push resumes must honour a pending rotation too (2026-11-17:
         fresh = True                        # they replayed a 115M-token thread straight into the G2 ceiling kill)
         prompt = brief_text(slug, e, flags) + "\n" + tg.checkpoint_block(e.pop("checkpoint", None)) + prompt
@@ -2246,6 +2526,10 @@ def _go(flags, slug, e, prompt, runner, ev, fresh=False):
     e["head_at_resume"] = r.stdout.strip() if r.returncode == 0 else None
     if sync == "merge-conflict":
         prompt = (f"[{VERSION}] FIRST: `git -C {lane} merge origin/main` conflicts; resolve it in your lane, commit, then continue.\n") + prompt
+    if write_state(flags, slug, e, ev or e.get("pending_event"), lane):  # D9 fix 2
+        prompt = state_lead(flags, slug) + prompt
+    if e.get("engine", "codex") == "codex":  # D9 fix 3: no fan-out text reaches codex exec, whatever template built it
+        prompt = prompt.replace(FANOUT_LINE, "")
     prompt = scratch_lead(flags, slug, e) + prompt + "\n" + SCRATCH_LINE + "\n"
     try:
         pid, out = launch(flags, slug, e, prompt, fresh=fresh, runner=runner)
@@ -2305,8 +2589,9 @@ def guard_plan(flags, reg, now=None, repo=None, catalog=None, budget=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark", "gate", "preflight-restart"])
+    ap.add_argument("cmd", choices=["compile-check", "brief", "start", "dispatch", "status", "transfer", "rank", "pretty", "pane-status", "unpark", "gate", "preflight-restart", "box"])
     ap.add_argument("slug", nargs="?")
+    ap.add_argument("rest", nargs="*", help="box: `box show <slug> <BOX-ID>`")
     ap.add_argument("--flags", default=FLAGS)
     ap.add_argument("--loop", action="store_true")
     ap.add_argument("--interval", type=int, default=60)
@@ -2328,6 +2613,10 @@ def main(argv=None):
     if a.cmd == "pane-status":
         return pane_status(a.flags, a.slug)
     reg = load(reg_path(a.flags), {"sessions": {}})
+    if a.cmd == "box":  # D9 fix 2: one box's full text, so a session never needs the whole handoff
+        if a.slug != "show" or len(a.rest) != 2:
+            ap.error("usage: box show <slug> <BOX-ID>")
+        return box_show_cmd(a.flags, reg, *a.rest)
     if a.cmd == "preflight-restart":  # REQUIRED before any dispatcher restart; non-zero = do not restart
         fails = tg.restart_failures(reg, tg.load_budget(a.flags), time.time(), ROOT, tg.codex_catalog())
         for f in fails:

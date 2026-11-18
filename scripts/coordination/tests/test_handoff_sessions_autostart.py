@@ -813,7 +813,8 @@ class NoopLogTests(_DSHBase):
             reg, _ = self.dispatch()
         self.assertEqual(self.calls, [], "a hard park holds across passes until unpark")
         # a landed tick is an effect: turn_effect counts it
-        with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed", return_value=True):
+        with patch.object(hs, "landed_ticks", lambda sha, repo=None: 2), patch.object(hs, "landed_result_ticks", lambda sha, repo=None: 2), \
+                patch.object(hs, "landed", return_value=True):
             self.assertIn("2 landed tick(s)", hs.turn_effect(self.flags, "alpha", {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}))
         self.assertEqual(hs.turn_effect(self.flags, "alpha", {"last_wrapup": None, "last_resume": "2099-01-01T00:00:00Z"}), "", "a commit alone is not an effect")
 

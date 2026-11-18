@@ -280,6 +280,18 @@ def belief_result(line: str) -> bool:
     return bool(_VERDICT_RX.search(_NOISE_RX.sub(" ", _BELIEF_RX.sub(" ", line))))
 
 
+def result_tick(line: str) -> bool:
+    """D9 fix 3: a ticked line is PROGRESS only when it carries a verdict or a number. A `[belief:` line is graded by
+    belief_result; any other line by the same verdict/number pattern with dates, shas and bold ids stripped."""
+    if _BELIEF_RX.search(line):
+        return belief_result(line)
+    return bool(_VERDICT_RX.search(_NOISE_RX.sub(" ", line)))
+
+
+#: D9 fix 3: at most this many net new `- [ ]` boxes per wrap-up commit (wrapup.py refuses more).
+MAX_NEW_BOXES_PER_TURN = 2
+
+
 def wrapup_progress(diff_text: str) -> dict:
     """D9 net progress of ONE wrap-up commit's handoff diff (`git show --format= <sha> -- handoffs/`).
     closed = real open->ticked flips: added tick lines beyond the ticked lines the commit removed (an edited or moved

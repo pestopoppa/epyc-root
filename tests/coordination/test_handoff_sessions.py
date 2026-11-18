@@ -523,3 +523,120 @@ def test_unpark_refused_then_lifted_with_ratification(tmp_path):
     log = (F / "handoff-sessions.log").read_text()
     assert "GATE-LIFTED h0" in log and "UNPARK h0 (operator)" in log
     assert hs.main(["unpark", "h1", "--flags", str(F)]) == 0  # ungated unpark unchanged
+
+
+# ---------------------------------------------------------------- D9 waste fixes (2026-11-18)
+def _event_resume(tmp_path, monkeypatch, total_tokens):
+    F, calls, runner = _setup(tmp_path, n=1, cap=2)
+    monkeypatch.setattr(hs.tg, "rollout_usage", lambda sid, *a, **k: {"total_tokens": total_tokens, "last_input": 1000})
+    hs.dispatch_once(str(F), runner, seed=True)
+    _manifest(F, "h0-row-v3")
+    (F / "grants" / "h0-row-v3.ended").write_text("rc=0")
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert calls, "event did not spawn the owner"
+    return F, calls, reg
+
+
+def test_resume_over_ceiling_starts_fresh_never_resumes(tmp_path, monkeypatch):
+    """D9 fix 1: a thread already over session_token_ceiling is never resumed; a FRESH thread starts from the checkpoint."""
+    F, calls, reg = _event_resume(tmp_path, monkeypatch, 20_000_000)
+    cmd, prompt = calls[-1]
+    assert "resume" not in cmd and "sid0" not in cmd, cmd
+    assert "Checkpoint from your previous thread" in prompt and "h0-row-v3" in prompt
+    assert "FRESH-INSTEAD-OF-RESUME h0: thread at 20000000 tokens" in (F / "handoff-sessions.log").read_text()
+
+
+def test_resume_at_80pct_of_ceiling_starts_fresh(tmp_path, monkeypatch):
+    F, calls, _ = _event_resume(tmp_path, monkeypatch, 12_000_000)  # 80% of the 15M default
+    assert "resume" not in calls[-1][0]
+
+
+def test_resume_under_ceiling_still_resumes(tmp_path, monkeypatch):
+    F, calls, _ = _event_resume(tmp_path, monkeypatch, 1_000_000)
+    assert "resume" in calls[-1][0] and "sid0" in calls[-1][0]
+    assert "FRESH-INSTEAD-OF-RESUME" not in (F / "handoff-sessions.log").read_text()
+
+
+def test_fanout_absent_from_codex_spawn_prompts(tmp_path, monkeypatch):
+    """D9 fix 3: codex exec has no subagents; no fan-out text reaches a codex prompt (brief or resume)."""
+    _, calls, _ = _event_resume(tmp_path, monkeypatch, 20_000_000)  # fresh: brief + event prompt
+    _, prompt = calls[-1]
+    assert "FAN OUT" not in prompt and "concurrent subagents" not in prompt
+    assert "result-bearing task" in prompt
+    assert "is a wasted turn" not in prompt and "turn ends ONLY at" not in prompt
+
+
+HOLD = ("> **⛔ HOLD — OPERATOR GATE (2026-11-18).** No v11 prep work until the operator ratifies.\n"
+        "> Do not publish, unpark, or dispatch anything that works these boxes.")
+
+
+def _big_handoff(n=400):
+    boxes = "\n".join(f"- [ ] **BIG-{i} — task number {i}.** " + ("lorem ipsum dolor sit amet " * 60) for i in range(n))
+    return f"# Big\n\n{HOLD}\n\n**Status**: active (on HOLD)\n\n## Tasks\n\n- [x] **BIG-DONE — done.** ✅ 2026-11-01\n{boxes}\n"
+
+
+def test_state_md_under_3kb_with_hold_verbatim(tmp_path):
+    """D9 fix 2: STATE.md stays <= 3 kB on a large handoff; the HOLD block is verbatim; event-named boxes come first."""
+    F, _, _ = _setup(tmp_path, n=1)
+    text = _big_handoff()
+    assert len(text) > 400_000
+    e = {"handoff": "handoffs/active/big.md", "engine": "codex"}
+    out = hs.compile_state(str(F), "big", e, {"rid": "big-row-BIG-377", "kind": "end"}, text)
+    assert len(out.encode()) <= hs.STATE_MAX_BYTES, len(out.encode())
+    assert HOLD in out
+    assert "**Status**: active (on HOLD)" in out
+    boxes = [ln for ln in out.splitlines() if ln.startswith("- BIG-")]
+    assert boxes and boxes[0].startswith("- BIG-377:"), boxes[:2]
+    assert "BIG-DONE" not in out and len(boxes) <= hs.STATE_MAX_BOXES
+    assert "big-row-BIG-377" in out
+
+
+def test_state_md_written_at_spawn(tmp_path):
+    F, calls, runner = _setup(tmp_path, n=1)
+    lane = tmp_path / "lane"
+    (lane / "handoffs" / "active").mkdir(parents=True)
+    (lane / "handoffs" / "active" / "h0.md").write_text(_big_handoff(20))
+    p = hs.write_state(str(F), "h0", {"handoff": "handoffs/active/h0.md"}, None, str(lane))
+    assert p == str(F / "handoff-sessions" / "h0" / "STATE.md")
+    assert Path(p).stat().st_size <= hs.STATE_MAX_BYTES and "BIG-0" in Path(p).read_text()
+
+
+def test_box_show_returns_the_right_box(tmp_path, capsys):
+    F, _, _ = _setup(tmp_path, n=1)
+    lane = tmp_path / "lane"
+    (lane / "handoffs" / "active").mkdir(parents=True)
+    (lane / "handoffs" / "active" / "h0.md").write_text(
+        "# H\n\n- [ ] **A-1 — first.** body one\n  - sub detail of A-1\n- [ ] **A-2 — second.** body two\n  continuation of A-2\n\nprose\n")
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["cwd"] = str(lane)
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    assert hs.main(["box", "show", "h0", "A-2", "--flags", str(F)]) == 0
+    out = capsys.readouterr().out
+    assert out == "- [ ] **A-2 — second.** body two\n  continuation of A-2\n"
+    assert hs.main(["box", "show", "h0", "A-1", "--flags", str(F)]) == 0
+    assert "sub detail of A-1" in capsys.readouterr().out
+    assert hs.main(["box", "show", "h0", "A-9", "--flags", str(F)]) == 1
+
+
+def test_prep_tick_not_counted_as_progress(tmp_path, monkeypatch):
+    """D9 fix 3: landed ticks without a verdict/number and without an owned filed result are not an effect."""
+    F, _, _ = _setup(tmp_path, n=1)
+    e = {"last_wrapup": "abc1234", "last_resume": hs.now_iso()}
+    monkeypatch.setattr(hs, "landed_ticks", lambda sha, repo=None: 2)
+    monkeypatch.setattr(hs, "landed_result_ticks", lambda sha, repo=None: 0)
+    monkeypatch.setattr(hs, "turn_result", lambda flags, slug, e: False)
+    assert hs.turn_effect(str(F), "h0", e) == ""
+    assert "PREP-TICKS h0: 2 landed tick(s)" in (F / "handoff-sessions.log").read_text()
+    monkeypatch.setattr(hs, "turn_result", lambda flags, slug, e: True)
+    assert "owned filed result" in hs.turn_effect(str(F), "h0", e)
+    monkeypatch.setattr(hs, "turn_result", lambda flags, slug, e: False)
+    monkeypatch.setattr(hs, "landed_result_ticks", lambda sha, repo=None: 1)
+    assert "1 with a verdict/number" in hs.turn_effect(str(F), "h0", e)
+
+
+def test_result_tick_grading():
+    t = hs.tg.result_tick
+    assert t("- [x] **X-1 — bench.** 41.2 tok/s vs 39.0 ✅ 2026-11-18 [belief: clm_abc]")
+    assert t("- [x] **X-2 — gate.** PASS 12/12 ✅ 2026-11-18 [no-belief: diag]")
+    assert not t("- [x] **X-3 — prepare launcher.** wired and published ✅ 2026-11-18 [belief: cc]")
+    assert not t("- [x] **X-4 — custody packet.** sealed at 83c110265331 ✅ 2026-11-18 [no-belief: prep]")

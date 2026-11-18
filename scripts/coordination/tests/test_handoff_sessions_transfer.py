@@ -200,16 +200,17 @@ class FanoutPolicyTests(unittest.TestCase):
     """Operator rule 2026-11-01: every launched session carries the subagent fan-out policy explicitly."""
 
     def test_brief_and_prompts_carry_fanout(self):
+        """D9 fix 3: the fan-out line reaches claude/opencode sessions only; codex exec has no subagents."""
         import tempfile
-        e = {"handoff": "handoffs/active/x.md", "engine": "codex", "row_ids": ["r1"], "row_patterns": [], "handoff_rows": ["INF-1"]}
         flags = tempfile.mkdtemp()
-        for name, text in (("brief", hs.brief_text("x", e, flags)), ("end", hs.end_prompt("x", e, flags, "r1", flags + "/r1.ended")),
-                           ("idle", hs.idle_prompt("x", e, flags)), ("continue", hs.continue_prompt("x", e, flags, "why"))):
-            self.assertIn("FAN OUT", text, name)
-            self.assertIn("at most 2 concurrent subagents", text, name)
-            self.assertIn("OPERATING_CONSTRAINTS.md", text, name)
-            self.assertIn(hs.REPORT_LINE, text, name)
-        self.assertIn("## Working mode: fan out", hs.brief_text("x", e, flags))
+        for engine, has in (("claude", True), ("opencode", True), ("codex", False)):
+            e = {"handoff": "handoffs/active/x.md", "engine": engine, "row_ids": ["r1"], "row_patterns": [], "handoff_rows": ["INF-1"]}
+            for name, text in (("brief", hs.brief_text("x", e, flags)), ("end", hs.end_prompt("x", e, flags, "r1", flags + "/r1.ended")),
+                               ("idle", hs.idle_prompt("x", e, flags)), ("continue", hs.continue_prompt("x", e, flags, "why"))):
+                self.assertEqual("FAN OUT" in text, has, f"{engine}/{name}")
+                self.assertEqual("concurrent subagents" in text, has, f"{engine}/{name}")
+                self.assertIn(hs.REPORT_LINE, text, name)
+            self.assertEqual("## Working mode: fan out" in hs.brief_text("x", e, flags), has, engine)
 
 
 

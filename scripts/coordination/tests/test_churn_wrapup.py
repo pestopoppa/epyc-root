@@ -241,5 +241,48 @@ class WrapupTests(unittest.TestCase):
         self.assertTrue(open(os.path.join(os.path.dirname(report), logs[0])).read().strip().endswith(f"WRAPPED {sha}"))
 
 
+    # ------------------------------------------------------------ D9 waste fixes (2026-11-18)
+    def _assert_refused(self, rc, err, needle):
+        self.assertEqual(rc, 1)
+        self.assertIn(needle, err)
+        self.assertEqual(_git(self.lane, "rev-parse", "HEAD"), _git(self.lane, "rev-parse", "origin/main"))
+
+    def _add_boxes(self, n):
+        p = os.path.join(self.lane, "handoffs/active/demo.md")
+        with open(p, "a") as fh:
+            for i in range(n):
+                fh.write(f"- [ ] **N-{i} — new follow-up {i}.** later\n")
+        return "handoffs/active/demo.md"
+
+    def test_box_cap_refuses_more_than_two_new_boxes(self):
+        rel = self._add_boxes(3)
+        rc, out, err = self._run(dict(self.rec, paths=["notes.md", rel]))
+        self._assert_refused(rc, err, "box cap: this wrap-up adds 3 net new open")
+
+    def test_box_cap_allows_two_new_boxes_plus_ticks(self):
+        rel = self._add_boxes(2)
+        rc, out, err = self._run(dict(self.rec, paths=["notes.md", rel]))
+        self.assertEqual(rc, 0, err + out)
+
+    def test_duplicate_blob_in_packet_refused(self):
+        body = "".join(f"line {i}\n" for i in range(10))
+        paths = []
+        for d in ("data/vidya/x/packet/a", "data/vidya/x/packet/b"):
+            os.makedirs(os.path.join(self.lane, d))
+            with open(os.path.join(self.lane, d, "src.cpp"), "w") as fh:
+                fh.write(body)
+            paths.append(f"{d}/src.cpp")
+        rc, out, err = self._run(dict(self.rec, paths=["notes.md", *paths]))
+        self._assert_refused(rc, err, "evidence-by-SHA guard refused")
+        self.assertIn("identical content", err)
+
+    def test_huge_evidence_file_refused(self):
+        os.makedirs(os.path.join(self.lane, "evidence"))
+        with open(os.path.join(self.lane, "evidence/log.txt"), "w") as fh:
+            fh.write("".join(f"{i}\n" for i in range(2500)))
+        rc, out, err = self._run(dict(self.rec, paths=["notes.md", "evidence/log.txt"]))
+        self._assert_refused(rc, err, "adds 2500 lines > 2000")
+
+
 if __name__ == "__main__":
     unittest.main()

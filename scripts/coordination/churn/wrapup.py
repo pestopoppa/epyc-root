@@ -203,6 +203,66 @@ def push_with_retry(lane: str, slug: str) -> None:
 
 
 # --------------------------------------------------------------------- 6. commit
+def _load_sibling(name: str, path: str):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    return mod
+
+
+_BLOAT_PATH = os.path.join(os.path.dirname(os.path.dirname(_HERE)), "hooks", "check_commit_bloat.py")
+
+
+def _bloat_hint() -> str:
+    try:
+        return _load_sibling("check_commit_bloat", _BLOAT_PATH).HINT
+    except (OSError, ImportError):
+        return "Cite evidence by repo path + git object/SHA-256; never copy files into packets."
+
+
+def bloat_errors(lane: str) -> list[str]:
+    """D9 fix 4: run scripts/hooks/check_commit_bloat.py's own rules (duplicate blobs > 2 lines, files > 2000 lines,
+    evidence/packet volume) on the lane's staged index, in-process, so a refusal is reported before `git commit`."""
+    try:
+        cb = _load_sibling("check_commit_bloat", _BLOAT_PATH)
+    except (OSError, ImportError) as ex:
+        log("bloat", f"check_commit_bloat unavailable ({ex}); the commit hook still applies")
+        return []
+    cb._git = lambda *a: _git(lane, *a).stdout  # bind the hook's reader to the lane (its own module copy)
+    return cb.check(cb.staged())
+
+
+#: D9 fix 3: at most this many net new `- [ ]` boxes per wrap-up (mirrors token_guards.MAX_NEW_BOXES_PER_TURN).
+MAX_NEW_BOXES = 2
+_OPEN_DIFF_RX = re.compile(r"^[-+]\s*[-*] \[ \]")
+_TICK_DIFF_RX = re.compile(r"^[-+]\s*[-*] \[[xX]\]")
+
+
+def new_open_boxes(lane: str) -> int:
+    """Net new open boxes the wrap-up would land under handoffs/: the lane's handoffs/ (committed + working tree) vs
+    origin/main. A tick flips -[ ]/+[x] and nets to zero; a moved/edited open box nets to zero."""
+    diff = _git(lane, "diff", "origin/main", "--", "handoffs/").stdout
+    add_o = rem_o = add_x = rem_x = 0
+    for l in diff.splitlines():
+        if l.startswith(("+++", "---")):
+            continue
+        if _OPEN_DIFF_RX.match(l):
+            add_o, rem_o = (add_o + 1, rem_o) if l[0] == "+" else (add_o, rem_o + 1)
+        elif _TICK_DIFF_RX.match(l):
+            add_x, rem_x = (add_x + 1, rem_x) if l[0] == "+" else (add_x, rem_x + 1)
+    closed = max(0, add_x - rem_x)
+    return max(0, add_o - max(0, rem_o - closed))
+
+
+def check_box_cap(lane: str) -> None:
+    n = new_open_boxes(lane)
+    if n > MAX_NEW_BOXES:
+        raise WrapupError(f"box cap: this wrap-up adds {n} net new open `- [ ]` boxes to handoffs/ (max {MAX_NEW_BOXES} per "
+                          f"turn, D9). Keep at most {MAX_NEW_BOXES}: fold the rest into one follow-ups: line in progress_md, "
+                          f"remove them from the handoff, then re-run wrapup.py")
+
+
 def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) -> str:
     junk = [l[3:] for l in _git(lane, "status", "--porcelain", "--untracked-files=all", "--", "artifacts/").stdout.splitlines() if l.startswith("??")]
     if junk:
@@ -211,6 +271,9 @@ def commit(lane: str, pathspec: list[str], message: str, trailers: list[str]) ->
     _ok(_git(lane, "add", "--", *pathspec), "git add")
     if not _git(lane, "diff", "--cached", "--quiet").returncode:
         raise WrapupError("nothing staged under the pathspec")
+    bloat = bloat_errors(lane)
+    if bloat:
+        raise WrapupError("D9 evidence-by-SHA guard refused the commit: " + "; ".join(bloat) + ". " + _bloat_hint())
     text = message.rstrip() + ("\n\n" + "\n".join(trailers) if trailers else "") + "\n"
     r = subprocess.run(["git", "-C", lane, "commit", "-q", "-F", "-", "--", *pathspec], input=text,
                        capture_output=True, text=True, timeout=600,
@@ -286,6 +349,7 @@ def run(rec: dict, lane: str, flags: str, dry_run: bool) -> int:
     hits = resolve_ticks(lane, rec["ticks"], rec["paths"])
     for (f, i, ln), t in zip(hits, rec["ticks"]):
         log("resolve", f"{os.path.relpath(f, lane)}:{i + 1} <- {t!r}")
+    check_box_cap(lane)
     prog = progress_target(lane, slug, now)
     pathspec = sorted((set(rec["paths"]) | {prog} | {os.path.relpath(h[0], lane) for h in hits}) - set(GENERATED))
     if dry_run:
