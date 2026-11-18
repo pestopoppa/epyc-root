@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T07:21:20Z",
+  "generated_at": "2026-11-18T07:26:05Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1383,7 +1383,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 1,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 848,
@@ -1392,7 +1392,7 @@
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-18",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense in-process defect; greedy A/A bisect r3 (smoke queued); GDN-SHARE-1",
       "open": 127,
       "priority": 0.896,
