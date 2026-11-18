@@ -2564,7 +2564,7 @@
     },
     "v11-promotion-checklist.md": {
       "blocked": 0,
-      "closed": 50,
+      "closed": 51,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 19,
@@ -2576,7 +2576,7 @@
       },
       "row_id": "INF-83",
       "state": "active",
-      "total": 69
+      "total": 70
     },
     "vidya-belief-substrate-program.md": {
       "blocked": 1,
