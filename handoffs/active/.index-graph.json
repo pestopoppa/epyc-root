@@ -707,10 +707,10 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-17T23:52:07Z",
+  "generated_at": "2026-11-18T00:02:48Z",
   "nodes": [
     {
-      "age_days": 7,
+      "age_days": 8,
       "blocked": 1,
       "blocked_by": [],
       "closed": 132,
@@ -1054,7 +1054,7 @@
       ]
     },
     {
-      "age_days": 13,
+      "age_days": 14,
       "blocked": 0,
       "blocked_by": [],
       "closed": 67,
@@ -1142,7 +1142,7 @@
       ]
     },
     {
-      "age_days": 7,
+      "age_days": 8,
       "blocked": 0,
       "blocked_by": [],
       "closed": 121,
@@ -1218,7 +1218,7 @@
       ]
     },
     {
-      "age_days": 14,
+      "age_days": 15,
       "blocked": 2,
       "blocked_by": [],
       "closed": 215,
@@ -1340,10 +1340,10 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 389,
+      "closed": 390,
       "dispatchable": 101,
       "domain": "research-evaluation",
       "guarded": 0,
@@ -1383,7 +1383,7 @@
       "track": "vidya belief substrate program"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 847,
@@ -1547,7 +1547,7 @@
       ]
     },
     {
-      "age_days": 4,
+      "age_days": 5,
       "blocked": 1,
       "blocked_by": [],
       "closed": 237,
@@ -1667,7 +1667,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "EVL-47",
@@ -1785,7 +1785,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 2,
       "blocked_by": [],
       "closed": 129,
@@ -1852,7 +1852,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 1,
       "blocked_by": [],
       "closed": 107,
@@ -1933,7 +1933,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 220,
@@ -2062,7 +2062,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 153,
@@ -2153,7 +2153,7 @@
       ]
     },
     {
-      "age_days": 6,
+      "age_days": 7,
       "blocked": 1,
       "blocked_by": [
         "INF-48",
@@ -2194,7 +2194,7 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 14,
+      "age_days": 15,
       "blocked": 41,
       "blocked_by": [],
       "closed": 120,
@@ -2244,7 +2244,7 @@
       ]
     },
     {
-      "age_days": 10,
+      "age_days": 11,
       "blocked": 0,
       "blocked_by": [],
       "closed": 70,
@@ -2303,7 +2303,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [
         "INF-06",
@@ -2392,7 +2392,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2418,7 +2418,7 @@
       "track": "v11 promotion checklist"
     },
     {
-      "age_days": 10,
+      "age_days": 11,
       "blocked": 0,
       "blocked_by": [
         "INF-65"
@@ -2444,7 +2444,7 @@
       "track": "workspace-58 champion calibration"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "INF-83"
@@ -2470,7 +2470,7 @@
       "track": "hybrid checkpoint prompt-reuse exposure"
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 22,
@@ -2494,7 +2494,7 @@
       "track": "dispatch placement telemetry"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [],
       "closed": 149,
@@ -2591,7 +2591,7 @@
       ]
     },
     {
-      "age_days": 14,
+      "age_days": 15,
       "blocked": 8,
       "blocked_by": [],
       "closed": 100,
@@ -2691,7 +2691,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 2,
       "blocked_by": [],
       "closed": 293,
@@ -2920,7 +2920,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 157,
@@ -3033,7 +3033,7 @@
       ]
     },
     {
-      "age_days": 8,
+      "age_days": 9,
       "blocked": 1,
       "blocked_by": [],
       "closed": 181,
@@ -3177,7 +3177,7 @@
       ]
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 0,
       "blocked_by": [
         "RTG-34"
@@ -3203,7 +3203,7 @@
       "track": "churn pipeline"
     },
     {
-      "age_days": 0,
+      "age_days": 1,
       "blocked": 1,
       "blocked_by": [],
       "closed": 310,
@@ -3298,7 +3298,7 @@
       ]
     },
     {
-      "age_days": 1,
+      "age_days": 2,
       "blocked": 0,
       "blocked_by": [],
       "closed": 344,
@@ -3454,7 +3454,7 @@
       ]
     },
     {
-      "age_days": 12,
+      "age_days": 13,
       "blocked": 1,
       "blocked_by": [],
       "closed": 121,
@@ -3570,7 +3570,7 @@
       ]
     },
     {
-      "age_days": 11,
+      "age_days": 12,
       "blocked": 9,
       "blocked_by": [],
       "closed": 414,
@@ -3645,7 +3645,7 @@
       ]
     },
     {
-      "age_days": 10,
+      "age_days": 11,
       "blocked": 18,
       "blocked_by": [],
       "closed": 238,
@@ -3800,7 +3800,7 @@
       ]
     },
     {
-      "age_days": 45,
+      "age_days": 46,
       "blocked": 0,
       "blocked_by": [],
       "closed": 2,
