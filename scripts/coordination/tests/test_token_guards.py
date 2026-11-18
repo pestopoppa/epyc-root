@@ -45,6 +45,19 @@ class G1ModelEffort(unittest.TestCase):
         with self.assertRaises(tg.SpawnRefused):
             tg.resolve_spawn("opencode", {}, "", (), tg.DEFAULTS, None)  # no opencode default
 
+    def test_prose_effort_header_is_ignored_not_refused(self):
+        text = "# H\n**Effort**: M1–M2 ~half day · M3–M4 ~1–2 days\n"
+        r = tg.resolve_spawn("codex", {}, text, (), tg.DEFAULTS, CAT)
+        self.assertEqual(r["effort"], "medium")
+        self.assertEqual(r["source"]["effort"], "default")
+        self.assertTrue(r["source"]["handoff_ignored_effort"].lower().startswith("m1"))
+        r = tg.resolve_spawn("codex", {"effort": "high"}, text, (), tg.DEFAULTS, CAT)
+        self.assertEqual((r["effort"], r["source"]["effort"]), ("high", "registry"))
+        r = tg.resolve_spawn("codex", {"effort": "low"}, "# H\n**Effort**: medium\n", (), tg.DEFAULTS, CAT)
+        self.assertEqual((r["effort"], r["source"]["effort"]), ("medium", "handoff"))
+        with self.assertRaises(tg.SpawnRefused):
+            tg.resolve_spawn("codex", {}, text, [{"id": "r1", "effort": "m1"}], tg.DEFAULTS, CAT)
+
     def test_engine_cmd_pins_model_effort_and_plan_mode(self):
         fresh = hs.engine_cmd("codex", None, True, "gpt-6-luna", "low")
         resume = hs.engine_cmd("codex", "T1", False, "gpt-6-luna", "low")

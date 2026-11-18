@@ -102,6 +102,12 @@ def resolve_spawn(engine: str, entry: dict, handoff_text: str = "", row_decls=()
     layers += [("handoff", declared(handoff_text)), ("registry", {"model": entry.get("model"), "effort": entry.get("effort")}),
                ("default", {"model": (conf.get("default_model") or {}).get(engine), "effort": (conf.get("default_effort") or {}).get(engine)})]
     for name, d in layers:
+        if name == "handoff":  # header prose (e.g. "M1-M2 ~half day") is a size estimate, not a setting: ignore, never refuse
+            d = dict(d)
+            if d.get("effort") and str(d["effort"]).lower() not in EFFORTS:
+                src["handoff_ignored_effort"] = str(d.pop("effort"))
+            if engine == "codex" and catalog is not None and d.get("model") and str(d["model"]) not in catalog:
+                src["handoff_ignored_model"] = str(d.pop("model"))
         if model is None and d.get("model"):
             model, src["model"] = str(d["model"]), name
         if effort is None and d.get("effort"):
