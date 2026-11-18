@@ -28,7 +28,7 @@
       "blocked": 17,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 460
+      "open": 463
     },
     "user-facing-harness-index.md": {
       "blocked": 18,
@@ -504,7 +504,7 @@
       "closed": 68,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 16,
+      "open": 19,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-100",
       "state": "active",
-      "total": 84
+      "total": 87
     },
     "context-and-token-economy.md": {
       "blocked": 2,
