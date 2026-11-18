@@ -5711,7 +5711,7 @@ arms beat 1 worker on **both** wall-clock and token cost at matched completion, 
 coordination tier was only ~11% of compute. The cost driver these sources identify is discarded
 work, not width — which is what FM-5 measures.
 
-- [ ] **FM-2 — AdaMAST fixed-catalog grading pilot.** Stage 1 (now): `adamast judge --taxonomy
+- [ ] **FM-2 — AdaMAST fixed-catalog grading pilot.** [inference] Stage 1 (now): `adamast judge --taxonomy
   adamast/core/mast.json` over a stratified sample of Codex rollouts and Claude transcripts, one LLM
   call per trace, no oracle required — the pipeline is deliberately outcome-blind
   (`outcome_blind_trace()` strips `outcome`/`final_gate_status` before the judge ever sees a trace).
@@ -5727,6 +5727,7 @@ work, not width — which is what FM-5 measures.
   should not be expected to fit our traces as well as one induced on them. Do not trust the repo's
   built-in agreement gate (four personas of one model, Fleiss κ, no human) as validation; build a small
   human-graded set if a faithfulness number is ever needed. Cross-walk (absorbs R-24): map the MAST 14 failure modes onto the F-series ledger as part of the taxonomy file, so graded traces and the coordinator failure ledger share one vocabulary.
+- [x] **FM-2-PREP — Freeze the stratified sample, finish the local judge launcher, and publish the Stage-1 row with a passing smoke.** Execution prerequisite split from FM-2; the parent remains open until native grades are filed and the descriptive prevalence report is complete. Producer `scripts/experiments/fm2-adamast/`; prepared inputs and runtime pins live under `/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/`. The prospective source enrollment is `VB-FM2-ADAMAST-WIRE`; no faithfulness or accuracy claim follows from completing this prerequisite. Published `fm2-adamast-20261118` on 2026-11-18: publisher **SMOKE PASS** on CPUs 164-167, isolated native progress, rc=75/partial-native-incomplete (the smoke did not complete the pilot). Frozen 23 traces / 8 strata, manifest seal `22db18ff41088a8ab3f461e68dbcedc5f4529413746afcc98b458136fc3d7893`; approved Qwen3.8-27B Q8_0 and CPU v10 10303/ffc1bac82 pinned before publication. Six synthetic transport/regression tests pass. Runtime reads prepared inputs only, journals one request per trace with retries disabled, and retains native grant/CPU/mapped-library identities. Spec `/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/spec.json`; native result `out/results.jsonl` and `out/summary.json` under that root. File those outputs when the row ends; do not treat this smoke as prevalence or crosswalk validation. ✅ 2026-11-18 [no-belief: launcher qualification and tooling controls; native grading results pending]
 - **[declined: ws58 2026-11-03 content-review: unbounded — needs paired serial/fan-out task pairs that no row produces]** **FM-3 — Breadth-vs-synthesis diagnostic.** Apply the four-bucket split from intake-1109 Appendix
   B (fan-out-right/single-right, single-right/fan-out-wrong, both-right, both-wrong) to FM-1's output
   once paired serial/fan-out task pairs exist, to answer: does fan-out win by surfacing more candidates,

@@ -1,0 +1,5 @@
+# 2026-11-18 — handoff coordination-and-churn-pipeline
+
+## 12:20Z — Finish FM-2 pilot preparation and publish its real four-core smoke-qualified inference row
+
+FM-2-PREP: published fm2-adamast-20261118 with publisher SMOKE PASS on CPUs 164-167 (rc=75, partial-native-incomplete). Frozen 23 Claude/Codex traces across 8 strata; model hash, CPU v10 image and linkage verified before grant. New isolated launcher performs one local judge request per trace, preserves exact wire bytes and original CPU/grant/runtime identities, separates smoke output, and reports failure denominators and Wilson intervals. All 6 transport/regression controls pass. Registered prospective source wiring VB-FM2-ADAMAST-WIRE; projection/canary remain open. Full pilot results are pending at /mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/out/{results.jsonl,summary.json}; FM-2 remains open. Five supplied stale row alerts acknowledged after file_result.py returned already-FILED for both R1a rows; no repeat run or stop needed. WS-4 live spike requires an idle interactive Claude TUI. Next independent box: FM-4 parent-session outcome joins.
