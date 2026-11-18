@@ -262,6 +262,34 @@ def response_check(kind, request, result):
                     and any(item['embedding']) for item in embeddings), 'embedding returned malformed or zero vectors')
 
 
+def chat_comparability(body, response):
+    """Classify the evidence available from one captured chat response."""
+    choices = response.get('choices')
+    choice = (choices[0] if isinstance(choices, list) and len(choices) == 1
+              and isinstance(choices[0], dict) else {})
+    index = choice.get('index')
+    message = choice.get('message')
+    finish = choice.get('finish_reason')
+    usage = response.get('usage')
+    count = usage.get('completion_tokens') if isinstance(usage, dict) else None
+    limit = body['max_tokens']
+    if type(count) is not int or not 0 < count <= limit:
+        count = None
+    timings = response.get('timings')
+    timing_count = timings.get('predicted_n') if isinstance(timings, dict) else None
+    completion = (count is not None and type(index) is int and index == 0 and 'error' not in response
+                  and ('timings' not in response or type(timing_count) is int and timing_count == count)
+                  and (finish == 'stop' or finish == 'length' and count == limit))
+    _, content, ids = evidence.parity_values(body, response, count)
+    has_content = (isinstance(message, dict) and message.get('role') == 'assistant'
+                   and content is not None and bool(content.strip()))
+    return {'status': 'comparable' if completion and has_content and ids is not None else 'diagnostic_incomplete',
+            'completion': 'complete' if completion else 'incomplete',
+            'completion_tokens': count,
+            'content': 'complete' if has_content else 'incomplete',
+            'token_ids': 'complete' if ids is not None else 'incomplete'}
+
+
 def listeners(port):
     hits = {}
     for table in (PROC / 'net/tcp', PROC / 'net/tcp6'):
@@ -574,7 +602,11 @@ class Runtime:
             raise outcome['failure']
         require(during, 'no complete affinity, NUMA, and backend scan inside request')
         require(status == 200, f'endpoint returned HTTP {status}')
-        response_check(kind, body, json.loads(raw, object_pairs_hook=planner.unique_keys))
+        result = json.loads(raw, object_pairs_hook=planner.unique_keys)
+        if kind == 'chat':
+            planner.write_new(directory / 'response-comparability.json',
+                              chat_comparability(body, result if isinstance(result, dict) else {}))
+        response_check(kind, body, result)
 
     def cleanup(self):
         result = {}

@@ -179,12 +179,41 @@ def test_smoke_requires_complete_request_time_witness(tmp_path, monkeypatch, bef
     server = SimpleNamespace(endpoint=endpoint)
     if before_headers:
         runtime.smoke(server, tmp_path)
+        assert runner.planner.read_json(tmp_path / 'response-comparability.json') == {
+            'status': 'diagnostic_incomplete', 'completion': 'incomplete', 'completion_tokens': None,
+            'content': 'complete', 'token_ids': 'incomplete',
+        }
     else:
         with pytest.raises(ValueError, match='inside request'):
             runtime.smoke(server, tmp_path)
+        assert not (tmp_path / 'response-comparability.json').exists()
     observations = runner.planner.read_json(tmp_path / 'during-request.json')
     assert bool(observations['samples']) == before_headers
     assert (tmp_path / 'response.raw.json').read_bytes() == raw
+
+
+@pytest.mark.parametrize(('choice_override', 'response_override', 'expected'), [
+    ({}, {}, ('complete', 'complete', 'complete')),
+    ({'finish_reason': 'length'}, {}, ('incomplete', 'complete', 'complete')),
+    ({'finish_reason': 'length'}, {'usage': {'completion_tokens': 64}, 'tokens': list(range(64))},
+     ('complete', 'complete', 'complete')),
+    ({}, {'usage': {'completion_tokens': True}}, ('incomplete', 'complete', 'incomplete')),
+    ({}, {'timings': {'predicted_n': 3}}, ('incomplete', 'complete', 'complete')),
+    ({}, {'tokens': None}, ('complete', 'complete', 'incomplete')),
+    ({}, {'tokens': [4]}, ('complete', 'complete', 'incomplete')),
+    ({}, {'tokens': [4, False]}, ('complete', 'complete', 'incomplete')),
+    ({}, {'tokens': [4, -1]}, ('complete', 'complete', 'incomplete')),
+    ({'message': {'role': 'assistant', 'reasoning_content': 'thinking'}}, {},
+     ('complete', 'incomplete', 'complete')),
+    ({}, {'choices': []}, ('incomplete', 'incomplete', 'complete')),
+])
+def test_chat_comparability_requires_a_complete_exact_capture(choice_override, response_override, expected):
+    choice = {'index': 0, 'finish_reason': 'stop', 'message': {'role': 'assistant', 'content': 'text'}}
+    response = {'choices': [choice | choice_override], 'usage': {'completion_tokens': 2}, 'tokens': [4, 7]}
+    report = runner.chat_comparability(runner.chat_body(), response | response_override)
+    assert tuple(report[field] for field in ('completion', 'content', 'token_ids')) == expected
+    assert report['status'] == ('comparable' if all(field == 'complete' for field in expected)
+                                else 'diagnostic_incomplete')
 
 
 def test_embedding_rejects_bad_indices_and_zero_vectors():

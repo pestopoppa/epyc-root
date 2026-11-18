@@ -894,8 +894,8 @@ def main(argv=None):
         parser.error("--apply requires an absolute --claim-open path")
     if args.compare_fresh and (args.fresh_only or args.evidence_pins is None):
         parser.error("--compare-fresh requires evidence pins and the paired resident lifecycle")
-    if args.exclusive_self_calibration and (args.evidence_pins is not None or args.fresh_only):
-        parser.error("--exclusive-self-calibration requires an unsealed paired resident diagnostic")
+    if args.exclusive_self_calibration and args.evidence_pins is not None:
+        parser.error("--exclusive-self-calibration requires an unsealed diagnostic")
     try:
         plan_bytes = args.plan.read_bytes()
         plan = json.loads(plan_bytes, object_pairs_hook=resident_plan._unique_object)
