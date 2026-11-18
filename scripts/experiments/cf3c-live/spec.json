@@ -1,0 +1,31 @@
+{
+  "id": "cf3c-pilot-20261118",
+  "owner": "h-delegation-context-preassembly",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "0-3",
+  "priority_rank": 55,
+  "admission_class": "diagnostic",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c/native/RESULT.json",
+  "result_format": "json",
+  "ram_gib": 52,
+  "budget_gib": 2,
+  "estimate_s": 3600,
+  "min_window_s": 3300,
+  "max_window_s": 3600,
+  "resumable": false,
+  "first_progress_s": 420,
+  "unit_key": "unit",
+  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c/packet/runner.py smoke",
+  "decision_rule": "completed >= 18",
+  "handoff_task": "context-and-token-economy.md:CF-3c-P1",
+  "keep": [
+    "native/**",
+    "packet/**",
+    "prepared/**",
+    "source/**"
+  ],
+  "notes": "Fixed diagnostic continuation replay. Smoke proves all six arms render on the pinned server and one A0 native completion arrives. No adoption inference."
+}
