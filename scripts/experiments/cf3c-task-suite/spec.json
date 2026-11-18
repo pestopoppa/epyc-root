@@ -1,14 +1,16 @@
 {
-  "id": "cf3c-task-suite-20261118",
+  "id": "cf3c-task-suite-r2-20261118",
+  "lineage": "cf3c-task-suite",
+  "supersedes": "cf3c-task-suite-20261118",
   "owner": "h-delegation-context-preassembly",
   "kind": "compute",
   "lane": "cpu",
   "regions": "0-3",
   "priority_rank": 57,
   "admission_class": "diagnostic",
-  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite/packet/launcher.sh",
-  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite",
-  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite/native/RESULT.json",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite-r2/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite-r2",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite-r2/native/RESULT.json",
   "result_format": "json",
   "ram_gib": 52,
   "budget_gib": 4,
@@ -18,9 +20,9 @@
   "resumable": false,
   "first_progress_s": 660,
   "unit_key": "unit",
-  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite/packet/runner.py smoke",
+  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite-r2/packet/runner.py smoke",
   "decision_rule": "completed >= 24",
   "handoff_task": "context-and-token-economy.md:CF-3c-T2",
-  "keep": ["native/**", "packet/**", "source/**"],
-  "notes": "Four frozen text tasks on the native graph across six CF-3c arms. Four allocated CPU cores, private loopback port 19382. The coverage predicate counts observed task outcomes including budget exhaustion and carries no accuracy adoption threshold."
+  "keep": ["native/**", "packet/**", "source/**", "prior-failed-attempt/**"],
+  "notes": "Instrument-repair successor to cf3c-task-suite-20261118, using its complete frozen shard and seed schedule. Retain the original failed candidate separately. Four allocated CPU cores, private loopback port 19382. The coverage predicate counts observed task outcomes including budget exhaustion and carries no accuracy adoption threshold."
 }

@@ -189,15 +189,30 @@ def guarded_wire_hooks(attempt, seed, failures, wire, call_context, prompts):
                 if call["call_kind"] == "graph_turn":
                     from src.security.control_tokens import neutralise_control_tokens
 
-                    selected = prompts[primary_call_key(call)]["block"]
+                    selected = neutralise_control_tokens(
+                        prompts[primary_call_key(call)]["block"]
+                    )
                     messages = body.get("messages") or []
                     candidates = [body.get("prompt")] + [
                         m.get("content") for m in messages
                     ]
-                    if selected and not any(
-                        isinstance(text, str)
-                        and neutralise_control_tokens(selected) in text
+                    if not selected or any(
+                        isinstance(text, str) and selected in text
                         for text in candidates
+                    ):
+                        return
+                    # The pinned chat adapter strips outer user-content whitespace.
+                    # A history block at the end of the prompt loses its final newline.
+                    trimmed = selected.rstrip()
+                    if (
+                        request.url.path != "/v1/chat/completions"
+                        or not trimmed
+                        or not any(
+                            m.get("role") == "user"
+                            and isinstance(m.get("content"), str)
+                            and m["content"].endswith("\n\n" + trimmed)
+                            for m in messages
+                        )
                     ):
                         raise ValueError("selected history missing from native request")
         except (ValueError, KeyError, TypeError) as exc:

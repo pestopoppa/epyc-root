@@ -1,0 +1,159 @@
+{
+  "adoption_margin_resolved": false,
+  "attempted": 7,
+  "by_arm": {
+    "A0": {
+      "accuracy": 1.0,
+      "accuracy_denominator": 1,
+      "attempted": 2,
+      "correct": 1,
+      "cost_complete_tasks": 1,
+      "give_up_proxy": 0,
+      "no_answer": 0,
+      "observed": 1,
+      "planned": 4,
+      "policy_active": 0,
+      "retrieval_calls": 0,
+      "status_counts": {
+        "UNKNOWN": 1,
+        "graded": 1
+      },
+      "terminal_states": {
+        "finished": 1
+      },
+      "tokens_observed_lower_bound": 6523,
+      "tokens_per_complete_cost_task": 2742.0,
+      "wall_s_per_observed_task": 89.74271706701256
+    },
+    "A1-k12": {
+      "accuracy": 1.0,
+      "accuracy_denominator": 1,
+      "attempted": 1,
+      "correct": 1,
+      "cost_complete_tasks": 1,
+      "give_up_proxy": 0,
+      "no_answer": 0,
+      "observed": 1,
+      "planned": 4,
+      "policy_active": 0,
+      "retrieval_calls": 0,
+      "status_counts": {
+        "graded": 1
+      },
+      "terminal_states": {
+        "finished": 1
+      },
+      "tokens_observed_lower_bound": 2742,
+      "tokens_per_complete_cost_task": 2742.0,
+      "wall_s_per_observed_task": 82.31954144197516
+    },
+    "A1-k4": {
+      "accuracy": 1.0,
+      "accuracy_denominator": 1,
+      "attempted": 1,
+      "correct": 1,
+      "cost_complete_tasks": 1,
+      "give_up_proxy": 0,
+      "no_answer": 0,
+      "observed": 1,
+      "planned": 4,
+      "policy_active": 0,
+      "retrieval_calls": 0,
+      "status_counts": {
+        "graded": 1
+      },
+      "terminal_states": {
+        "finished": 1
+      },
+      "tokens_observed_lower_bound": 2742,
+      "tokens_per_complete_cost_task": 2742.0,
+      "wall_s_per_observed_task": 75.11001332302112
+    },
+    "A1-k8": {
+      "accuracy": 1.0,
+      "accuracy_denominator": 1,
+      "attempted": 1,
+      "correct": 1,
+      "cost_complete_tasks": 1,
+      "give_up_proxy": 0,
+      "no_answer": 0,
+      "observed": 1,
+      "planned": 4,
+      "policy_active": 0,
+      "retrieval_calls": 0,
+      "status_counts": {
+        "graded": 1
+      },
+      "terminal_states": {
+        "finished": 1
+      },
+      "tokens_observed_lower_bound": 2742,
+      "tokens_per_complete_cost_task": 2742.0,
+      "wall_s_per_observed_task": 82.06643820099998
+    },
+    "A2": {
+      "accuracy": 1.0,
+      "accuracy_denominator": 1,
+      "attempted": 1,
+      "correct": 1,
+      "cost_complete_tasks": 1,
+      "give_up_proxy": 0,
+      "no_answer": 0,
+      "observed": 1,
+      "planned": 4,
+      "policy_active": 0,
+      "retrieval_calls": 0,
+      "status_counts": {
+        "graded": 1
+      },
+      "terminal_states": {
+        "finished": 1
+      },
+      "tokens_observed_lower_bound": 2742,
+      "tokens_per_complete_cost_task": 2742.0,
+      "wall_s_per_observed_task": 83.76853864407167
+    },
+    "A3": {
+      "accuracy": 1.0,
+      "accuracy_denominator": 1,
+      "attempted": 1,
+      "correct": 1,
+      "cost_complete_tasks": 1,
+      "give_up_proxy": 0,
+      "no_answer": 0,
+      "observed": 1,
+      "planned": 4,
+      "policy_active": 0,
+      "retrieval_calls": 0,
+      "status_counts": {
+        "graded": 1
+      },
+      "terminal_states": {
+        "finished": 1
+      },
+      "tokens_observed_lower_bound": 2742,
+      "tokens_per_complete_cost_task": 2742.0,
+      "wall_s_per_observed_task": 81.13026135205291
+    }
+  },
+  "category": "CANDIDATE",
+  "completed": 6,
+  "coverage_complete": false,
+  "error": "ValueError: ValueError: native graph child failed: rc=1",
+  "instrument_class": "bench",
+  "interpretation": "FAILED-RUN: 6 < 24 coverage; partial first-task inactive-policy observations do not rank arms. Retain separately from repaired-instrument outcomes.",
+  "official_rc": 1,
+  "official_result_absent_at_filing": true,
+  "packet_sha256": "171175913de806e0108415da816fde03624923c2de8952dfff990ac61c6262d8",
+  "planned": 24,
+  "raw_partial_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite-r2/prior-failed-attempt/native/PARTIAL.json",
+  "raw_partial_sha256": "5ae7ad2971a1b4cf6a962cc93f991a705ebae461629725ade2eb83413eecc471",
+  "row": "cf3c-task-suite-20261118",
+  "scaling_futility": false,
+  "schema": "epyc.cf3c.suite.native.v1",
+  "server_exited": true,
+  "source": "12afe2858f9dbd4691447926d6cf1864de64348c",
+  "unattempted": 17,
+  "unit": "longcot_mini_18/r0/A0",
+  "unknown": 1
+}

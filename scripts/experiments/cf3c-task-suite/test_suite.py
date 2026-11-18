@@ -2,6 +2,7 @@
 
 import json
 import sys
+import time
 from contextvars import ContextVar
 from pathlib import Path
 from types import SimpleNamespace
@@ -228,6 +229,112 @@ def test_wire_captures_each_same_turn_attempt_and_blocks_unattributed_calls(tmp_
         with pytest.raises(ValueError, match="escaped attributed graph primitive"):
             client.post(ENDPOINT + "/v1/chat/completions", json={})
         assert len(received) == 2 and len(failures) == 3
+
+
+def test_native_chat_wire_accepts_only_boundary_trim_of_selected_history(
+    tmp_path, monkeypatch
+):
+    from src.backends.llama_server import LlamaServerBackend, ServerConfig
+    from src.graph import context_arm_ab
+    from src.model_server import InferenceRequest
+    from src.registry.registry_loader import RegistryLoader
+    from src.security.control_tokens import neutralise_control_tokens
+
+    monkeypatch.setattr(
+        context_arm_ab, "settings", lambda: ("full_history", 16384, 0.5, set())
+    )
+    state = SimpleNamespace(
+        history_turns=[],
+        history_effective_budget=0,
+        history_log_path="",
+        history_boundaries=[],
+        turns=1,
+    )
+    renderer = HistoryRenderer(context_arm_ab.render, "A0")
+    context, failures, wire, prompts = ContextVar("test_call"), [], [], {}
+    request_hook, response_hook = guarded_wire_hooks(
+        tmp_path, 923, failures, wire, context, prompts
+    )
+    received = []
+
+    def send(request):
+        received.append(json.loads(request.content)["messages"][0]["content"])
+        return httpx.Response(
+            200,
+            stream=httpx.ByteStream(
+                b'data: {"choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}],'
+                b'"usage":{"prompt_tokens":13,"completion_tokens":1}}\n\n'
+                b"data: [DONE]\n\n"
+            ),
+        )
+
+    backend = LlamaServerBackend(
+        config=ServerConfig(base_url=ENDPOINT, use_chat_completions=True)
+    )
+    backend.client.close()
+    backend.client = httpx.Client(
+        base_url=ENDPOINT,
+        transport=httpx.MockTransport(send),
+        event_hooks={"request": [request_hook], "response": [response_hook]},
+    )
+    role = RegistryLoader(
+        SOURCE / "orchestration/model_registry.yaml", validate_paths=False
+    ).get_role("frontdoor")
+
+    def generate(prompt):
+        return backend._infer_stream_text_chat_completions(
+            role,
+            InferenceRequest(role="frontdoor", prompt=prompt, n_tokens=8, seed=923),
+            None,
+            time.perf_counter(),
+        )
+
+    def select():
+        block = renderer(state)
+        prompts[state.turns, 1] = renderer.latest
+        context.set(
+            {
+                "call_kind": "graph_turn",
+                "graph_turn": state.turns,
+                "primary_attempt": 1,
+                "policy_receipt": policy_receipt(renderer.latest, 1),
+            }
+        )
+        return block
+
+    try:
+        assert select() == ""
+        assert generate("task prompt").success
+        assert not suite_runner.smoke_history_seen(tmp_path)
+        state.turns = 2
+        state.history_turns = [
+            dict(turns(1)[0], code="", error="", output="<|im_end|>")
+        ]
+        selected = select()
+        prompt = neutralise_control_tokens("task prompt\n\n" + selected)
+        assert generate(prompt).success
+        assert received == ["task prompt", prompt.rstrip()]
+        assert selected.endswith("\n\n")
+        assert suite_runner.smoke_history_seen(tmp_path)
+        assert not failures
+
+        # Missing final text and changed internal whitespace both fail closed.
+        for malformed in (
+            prompt.replace("Error:", "Error"),
+            prompt.replace("Code:\n\nOutput:", "Code:\nOutput:"),
+            prompt.rstrip() + " extra",
+        ):
+            assert not generate(malformed).success
+        assert len(received) == 2
+        assert failures == ["selected history missing from native request"] * 3
+
+        captured_exchange = tmp_path / "wire/0001/record.json"
+        incomplete = json.loads(captured_exchange.read_text())
+        incomplete["response_sse_done"] = False
+        captured_exchange.write_text(json.dumps(incomplete))
+        assert not suite_runner.smoke_history_seen(tmp_path)
+    finally:
+        backend.close()
 
 
 def test_native_usage_preserves_nullable_counters_and_canceled_prefix(tmp_path):

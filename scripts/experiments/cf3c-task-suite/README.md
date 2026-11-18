@@ -55,8 +55,22 @@ build and template. It hashes packet files and the small serving
 artifacts. Model custody uses the retained SHA-256 receipt and file
 identity, so preparation does not rehash the GGUF. The resulting scratch
 packet is read-only. The launcher uses its `spec.json`, four allocated
-physical cores, 52 GiB RAM and private port 19382. Publisher smoke
-qualifies the instrument outside the official cells.
+physical cores, 52 GiB RAM and private port 19382. Publisher smoke runs the
+LongCoT and oversized tasks in A0 outside the official cells. It requires a
+completed LongCoT generation exchange on graph turn 2 or later with nonempty
+selected history verified on the wire and server-reported prompt and
+completion tokens. If a later exchange reaches the wall cap, LongCoT
+retains its `NA` outcome and the interrupted exchange retains its incomplete
+usage. The oversized task must exhaust the native context budget before
+generation. The smoke confirms server exit and establishes instrument readiness.
+
+The r2 instrument repair preserves the complete original shard schedule and
+uses a separate scratch root. The original candidate stopped at task 06
+when its custody guard rejected the trailing whitespace removed by native
+chat serialization. Its outcomes and two failed qualification attempts
+remain in the same lineage. The new shard repeats tasks and seeds exposed
+in the failed official run and in qualification. Each run reports its own
+outcomes, and the original task-06 UNKNOWN remains in the original record.
 
 The experiment caps each task at 18 graph turns, 384 completion
 tokens per call, 16,384 context tokens and 420 wall seconds. Native graph

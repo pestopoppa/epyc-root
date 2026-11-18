@@ -17,7 +17,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import cmp4_runner as live
-from graph_trial import ENDPOINT, completed_wire, partial_wire_usage, read_wire
+from graph_trial import ENDPOINT, completed_wire, partial_wire_usage, read_wire, sha
 from prepare import (
     ARMS,
     BASE,
@@ -357,11 +357,34 @@ def summarize(schedule, results):
     }
 
 
+def smoke_history_seen(folder):
+    """Require a completed generation after the graph sent nonempty selected history."""
+    for record in read_wire(folder):
+        receipt = record.get("policy_receipt")
+        if (
+            record["call_kind"] != "graph_turn"
+            or record["graph_turn"] < 2
+            or not receipt
+            or receipt["selected_history_sha256"] == sha("")
+        ):
+            continue
+        try:
+            usage = completed_wire(folder, record)
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+        if (
+            usage["prompt_tokens"] is not None
+            and usage["completion_tokens"] is not None
+        ):
+            return True
+    return False
+
+
 def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
     cpus = live.bind_four_cores()
     if not live.file_port_available(PORT) or owner.listen_inodes(PORT):
         raise ValueError("private listener port is unavailable")
-    smoke_cases = {COVERAGE_CASES[0], COVERAGE_CASES[-1]}
+    smoke_cases = {COVERAGE_CASES[1], COVERAGE_CASES[-1]}
     schedule = (
         [r for r in coverage if r["arm"] == "A0" and r["case"] in smoke_cases]
         if dry
@@ -497,16 +520,20 @@ def run_window(out, dry, inputs, owner, score, cases, inventory, coverage):
         "unit": results[-1]["unit"] if results else None,
     }
     if dry:
-        early = next((r for r in results if r["case"] == COVERAGE_CASES[0]), None)
+        multi_turn = next((r for r in results if r["case"] == COVERAGE_CASES[1]), None)
         oversized = next((r for r in results if r["case"] == COVERAGE_CASES[-1]), None)
+        report["selected_history_exchange_complete"] = bool(
+            error is None
+            and multi_turn
+            and smoke_history_seen(Path(multi_turn["attempt"]))
+        )
         report["qualified"] = bool(
             exited
             and error is None
-            and early
+            and multi_turn
             and oversized
-            and early["status"] in {"graded", "grade_unavailable", "NA"}
-            and early["wire_requests"] > 0
-            and early["usage_complete"]["total_tokens"]
+            and multi_turn["status"] in {"graded", "grade_unavailable", "NA"}
+            and report["selected_history_exchange_complete"]
             and oversized["status"] == "NA"
             and oversized["native_result"]["pre_generation_budget_exhausted"]
         )

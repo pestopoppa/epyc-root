@@ -11,7 +11,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite")
+SCRATCH = Path("/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-suite-r2")
 SOURCE = SCRATCH / "source"
 ORCH = Path("/mnt/raid0/llm/epyc-orchestrator")
 PYTHON = ORCH / ".venv/bin/python"
@@ -55,7 +55,7 @@ SERVING = (
     "template_sha256",
     "build_sha256",
 )
-ROW = "cf3c-task-suite-20261118"
+ROW = "cf3c-task-suite-r2-20261118"
 PORT = 19382
 MAX_TURNS = 18
 MAX_COMPLETION_TOKENS = 384
