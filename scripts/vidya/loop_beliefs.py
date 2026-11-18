@@ -1081,6 +1081,14 @@ def _task_observation(consumer: str, task_id: str, source: Mapping[str, Any],
             and _KPF17_ID_RE.fullmatch(identity)
             and _KPF17_LOCATOR_RE.fullmatch(_str(source.get("locator")))):
         return {"mechanism_id": _KPF17_METRIC}
+    if ((consumer, task_id) == ("autokernel.nemo_fixture_range_join", "VB-NEMO-RANGE-JOIN-WIRE")
+            and source.get("source_kind") == "nemo-range-join"
+            and source.get("title") == evidence.get("metric") == "fixture_range_join_replay"
+            and provenance.get("method") == "vidya.adapters.nemo_range_join/v1"
+            and re.fullmatch(r"nemo-range-join:[0-9a-f]{64}", identity)
+            and re.fullmatch(r"/.+#sha256=[0-9a-f]{64}", _str(source.get("locator")))
+            and _str(source.get("locator")).endswith("#sha256=" + identity.rsplit(":", 1)[1])):
+        return {}
     if (consumer, task_id) == _P5_TASK:
         kind = _str(source.get("source_kind"))
         route = _P5_TASK_SOURCES.get(kind)

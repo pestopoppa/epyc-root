@@ -1,0 +1,17 @@
+{
+  "files": {
+    "/mnt/raid0/llm/tmp/akagg/filing-20261105/nemo-sdk-roctx-marker-compare-r2-20261105/RESULT.json": "7d6db4dea6dfed738f1fc2f223a9d9333630e86d4ec4f2bb486da781971fff1e",
+    "/mnt/raid0/llm/tmp/akagg/filing-20261105/nemo-sdk-roctx-marker-compare-r2-20261105/nemo-fixture-clock-join-20261105/fixture_clock_join.py": "a44ca3cc0a22b9d24e3597fccafe0aafc031168b148f92c38c167b125cd5e4b3",
+    "/mnt/raid0/llm/tmp/akagg/filing-20261105/nemo-sdk-roctx-marker-compare-r2-20261105/nemo-marker-csv-adapter-20261105/marker_csv.py": "3630ad137abe4b0574554d103d724fa7b45bce6c46871d389bcda4f4c6979ff4",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/docs/reference/autokernel/nemo-fixture-range-join-20261105/audit.py": "b29252b752b37738467d83e350a8f7d233753770cf794675c1f1f429abc4346d",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/adapters/nemo_range_join.py": "232febb6ab9a507a2fd55fadbaf7bb45de3f8e0e0deaa2beed43b7147ec3a0c4",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/canary/nemo_range_context.py": "5557c12246943eba7c41cdf9459b3f399c51b891a7ece0311a15ceb365910b6c",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/cli.py": "a04bf22a28ba81e7f240a1cd8bb05f4e4b58848f31f9b0ee474a444e1a3660ad",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/ingest_sources.py": "9d84b767ef82ec17e3d334f8b6eecace424214997887c6cdfeee038774a2e709",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/nemo_range_replay.py": "39def83a87df088a3a3f2fb8f4e7063a6f5288fbc6a04dceed9d2ca15d9ddc0f"
+  },
+  "schema": "nemo.range.source-pins.v1",
+  "scope": "source identity only; original capture custody UNKNOWN",
+  "snapshot": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/source",
+  "source_manifest_sha256": "2bdffaac2dcc83891b7779bf2800f0d857a972e601853ef3b92b02b10a9c041d"
+}

@@ -323,3 +323,11 @@ Existing VB-NEMO-RANGE-JOIN-WIRE lacked a checkbox, so publisher refused its exa
 ## 21:27Z — State the exact NEMO readiness inference stop contract for publisher admission.
 
 Publisher admission requires the explicit stop-on-answer / stop-on-futility grammar. The existing finite 80-run/480-join question now states those rules and futility-only gate class. No native qualification has run yet; source packet remains prepared for immediate owner publication.
+
+## 21:33Z — Implement strict prospective retained-fixture replay capture and publish its task-scoped native canary.
+
+Completed NEMO replay preparation and published vb-nemo-range-wire-20261118 after publisher smoke PASS at21:32:17Z, rc0, actual CPUs140–143. All80 retained fixture runs and480 joins rederived; one scoped Judged/Located diagnostic/three frames/refused0, exact task displayed1, wrong task/consumer/model displayed0, four refusal controls passed. Original grant bytes, relative grant copy, source-role identities, 320-file prepared input manifest, mode distinction and incremental UNKNOWN partials retained. Fixed missing adapter authority and invalid applicability=None after two preserved qualification failures. No tests ran outside publisher smoke. GitNexus index/impact unavailable; changes are one opt-in task route, new source and CLI registration. Astropy duplicate run-end consumed as NOOP already FILED. Original capture/clock/server/GPU limits remain UNKNOWN; official native replay/parent acceptance stay open.
+
+## 21:34Z — Implement strict prospective retained-fixture replay capture and publish its task-scoped native canary.
+
+Completion retry after D9 hook refused the 4115-line raw native replay copy. Replaced that copy with its original retained path, SHA-256 and byte count; row keep policy preserves the exact native source. Existing readiness tick and original publisher evidence remain intact. No requalification or official acceptance claimed.
