@@ -1,6 +1,7 @@
 """R18-D A/A adapter: synthetic producer-boundary controls (never a real GPU run or planner canary)."""
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -91,9 +92,16 @@ def fake_policy(tmp_path_factory):
     loop.mkdir(parents=True)
     (loop.parent / "__init__.py").write_text("")
     (loop / "__init__.py").write_text("")
-    src = subprocess.run(["git", "-C", "/workspace/repos/epyc-inference-research", "show",
-                          "origin/main:scripts/kernel_rnd/autokernel/loop/clock_policy.py"],
-                         capture_output=True, text=True, check=True).stdout
+    research = os.environ.get("AUTOKERNEL_R18D_RESEARCH", "/workspace/repos/epyc-inference-research")
+    rel = "scripts/kernel_rnd/autokernel/loop/clock_policy.py"
+    res = subprocess.run(["git", "-C", research, "show", f"origin/main:{rel}"], capture_output=True, text=True)
+    if res.returncode != 0 or not res.stdout:
+        p = Path(research) / rel
+        if not p.is_file():
+            pytest.skip(f"research clock_policy.py not resolvable at {research} (set AUTOKERNEL_R18D_RESEARCH)")
+        src = p.read_text()
+    else:
+        src = res.stdout
     (loop / "clock_policy.py").write_text(src)
     (loop / "gpu_clock_policy.json").write_text(json.dumps(_POLICY))
     for m in [m for m in sys.modules if m.startswith("autokernel")]:

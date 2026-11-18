@@ -107,6 +107,7 @@ jobs:
         # The vidya adapters and their ladder: pure projection, no hardware.
         env:
           KV_QUANT_TEST_RESEARCH_ROOT: ${{ github.workspace }}/.ci-research-producers
+          GPU_POOL_CONTROL_RESEARCH: ${{ github.workspace }}/.ci-research-producers
           EXL3_TEST_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/kernel_rnd/exl3/evidence.py
           EVIDENCE_DURABILITY_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/validate/check_evidence_durability.py
           EPYC_ORCHESTRATOR_SOURCE_ROOT: ${{ github.workspace }}/.ci-orchestrator-producer

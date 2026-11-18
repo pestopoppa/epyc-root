@@ -22,6 +22,9 @@ class ScopeControls(unittest.TestCase):
     def setUp(self):
         self.out = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.research = Path(os.environ.get("GPU_POOL_CONTROL_RESEARCH", "/workspace/repos/epyc-inference-research")).resolve()
+        if not (self.research / "scripts/kernel_rnd/autokernel/loop/belief_context.py").is_file():
+            self.skipTest(f"research producer root missing belief_context.py: {self.research} "
+                          "(set GPU_POOL_CONTROL_RESEARCH)")
         self.capture = self.out / "belief.json"
 
     def make_capture(self, *, smoke=False, spoof_scope=False):

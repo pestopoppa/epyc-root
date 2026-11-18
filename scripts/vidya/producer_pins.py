@@ -90,6 +90,14 @@ EXEMPT = {
     **{("dtap_crm_pair", name): "digest of immutable captured custody (producer harness copy, provider, lock, receipt) "
                               "reopened from the sealed source manifest and the run's own bytes, never main's"
        for name in ("PRODUCER_SHA256", "PROVIDER_SHA256", "LOCK_SHA256", "RECEIPT_SHA256")},
+    ("autokernel_r234_sweep", "PROBE_SHA"): "digest of the probe input recorded in each request's sealed input "
+                                            "packet; the reader compares the run's own packet, never main's",
+    **{("autokernel_r234_sweep", name): "digest of a /mnt/raid0 binary or model GGUF recorded in each request's "
+                                       "sealed input packet, not a file on a repo main"
+       for name in ("HIP_SHA", "MODEL_SHA", "DRAFT_SHA")},
+    ("r231_eof_capture", "CLI_SHA"): "digest of the captured llama-cli build artifact, not a file on a repo main",
+    ("r231_eof_capture", "PINSET_SHA"): "digest of the prospectively filed input/custody pin set (canonical JSON of "
+                                        "the record's own pins), not a file on a repo main",
     ("oolong", "VENDORED_SHA256"): "vendored upstream file, pinned on purpose",
     ("qwen4exp_quality", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",
     ("weight_handoff", "READER_SHA256"): "in-tree reader (this repo), changes ride with the adapter commit",
