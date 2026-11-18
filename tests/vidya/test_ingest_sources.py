@@ -370,6 +370,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "p5-sphinx-scorer",  # Original evidence, CLI and refusal controls: test_p5_sphinx_scorer.py.
         "p5-astropy-scorer",  # Original evidence, CLI and refusal controls: test_p5_astropy_scorer.py.
         "tool-selector-events",  # Synthetic rows, refusals, CLI ingest and planning canary: test_tool_selector_events.py.
+        "monty-lane",  # Synthetic rows, refusals, CLI ingest and planning canary: test_monty_lane.py.
         "fm4-gate-acceptance",  # Dedicated adapter tests: test_fm4_gate_acceptance.py.
         # Structured fold_gate v4 producer, strict per-library verifier projection and CLI dispatch:
         # test_champion_fold_gate_adapter.py.

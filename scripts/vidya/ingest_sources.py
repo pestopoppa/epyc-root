@@ -675,6 +675,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
                 "per-stratum PROXY recall and p95 latency; explicit file only; unsealed producer log, "
                 "no true-recall or promotion warrant",
            task="VB-TOOL-SELECTOR-WIRE"),
+    Source("monty-lane", "monty_lane",
+           lambda p: importlib.import_module("adapters.monty_lane").units(p),
+           note="orchestrator Monty REPL lane telemetry (one row per cell); per-role route share, fallback share of "
+                "screened-in cells and p95 total_ms; explicit file only; unsealed producer log, diagnostic of the "
+                "lane not task success",
+           task="VB-MONTY-LANE-WIRE"),
     Source("fm2-adamast", "fm2_adamast",
            lambda p: importlib.import_module("adapters.fm2_adamast").units(p),
            note="Prospective single-judge native diagnostic; explicit receipt only",

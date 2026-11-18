@@ -613,7 +613,7 @@ _FILE_SOURCES = (
     "ak-width-dimension", "ak-width-cells-cpu",
     "moe-routing", "exp01-proxy-capture", "mi210-paired-raw", "gpu-pool-native", "r231-eof-capture",
     "quality-pack-comparison", "qwen4exp-cpu-loader-diagnostic", "kernel-promotion-lifecycle",
-    "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "p5-sphinx-scorer", "p5-astropy-scorer", "tool-selector-events", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
+    "gpu-cpu-noise", "launch-affinity", "ch18-merge-trial", "p5-sphinx-scorer", "p5-astropy-scorer", "tool-selector-events", "monty-lane", "q38-serving-gate", "fused-decode-div", "champion-fold-gate", "calendar-overrun", "floor-registry", "weight-handoff",
     "q38p4-greedy-parity",
     "hsf5p-microbench", "v11-gate-bench", "m4-cpu-recipe-speed", "c6-q4-microbench", "inf66-r2364",
     "fm4-gate-acceptance", "fm2-adamast", "thinking-budget-semantics", "nemo-range-join",

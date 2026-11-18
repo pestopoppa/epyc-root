@@ -107,6 +107,30 @@ def test_malformed_rows_refuse_the_file(tmp_path, mutate):
         ad.native_rows(write(tmp_path / "e.jsonl", rows))
 
 
+CFG = {"picker_version": "hardened-c1-v1", "delta": 0.05, "family_cap": 3, "full_list_max": 40}
+
+
+def test_config_fields_are_read_and_split_strata(tmp_path):
+    r = [{**sel("a0"), **CFG}, out("a0", ["a"], []), {**sel("a1"), **CFG, "delta": 0.1}, out("a1", ["a"], ["z"]),
+         sel("old"), out("old", ["a"], [])]
+    rows = ad.native_rows(write(tmp_path / "e.jsonl", r))
+    new = by_metric(rows, ad.RECALL, delta=0.05)
+    assert new["stratum"]["picker_version"] == "hardened-c1-v1" and new["value"] == 1.0
+    assert by_metric(rows, ad.RECALL, delta=0.1)["value"] == 0.5
+    old = by_metric(rows, ad.RECALL, picker_version="unknown")
+    t_new, t_old = ad.project(new), ad.project(old)
+    assert t_new.extra["picker_version"] == "hardened-c1-v1" and t_new.extra["unlogged_config"] == []
+    assert t_old.extra["picker_version"] == "unknown" and t_old.extra["unlogged_config"] == list(ad._CFG)
+    assert "picker hardened-c1-v1" in t_new.claim
+    assert claim_tuple.grade(t_new)[:2] == ("Judged", "Located")
+
+
+@pytest.mark.parametrize("bad", [{"picker_version": ""}, {"delta": -1}, {"family_cap": "3"}])
+def test_malformed_config_fields_refuse(tmp_path, bad):
+    with pytest.raises(ProjectionError):
+        ad.native_rows(write(tmp_path / "e.jsonl", [{**sel("a"), **CFG, **bad}]))
+
+
 def test_garbage_and_duplicate_keys_refuse(tmp_path):
     p = tmp_path / "e.jsonl"
     p.write_text("not json\n")
