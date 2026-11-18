@@ -70,6 +70,7 @@ def test_non_live_invocation_never_reads_plan(tmp_path, monkeypatch):
     assert result['cleanup_proved'] is True
     assert result['completed_pairs'] == []
     assert result['complete_matrix'] is False
+    assert 'acquisition_started_at' not in result
     assert 'real grant' in result['failure']
 
 
@@ -124,3 +125,37 @@ def test_hip_phase_allows_only_owned_current_birth_kfd_workload(tmp_path, monkey
     monkeypatch.setattr(capture.runner.owned, 'birth', lambda pid: 124)
     with pytest.raises(ValueError, match='foreign KFD workloads.*17'):
         runtime.verify_kfd_clients()
+
+
+def test_acquisition_interval_rejects_missing_malformed_reversed_and_future():
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 11, 18, 12, tzinfo=timezone.utc)
+    valid = {'acquisition_started_at': '2026-11-18T10:00:00+00:00',
+             'acquisition_finished_at': '2026-11-18T11:00:00+00:00'}
+    assert capture.acquisition_interval(valid, now)[0].hour == 10
+    for value in ({}, valid | {'acquisition_started_at': 'bad'},
+                  valid | {'acquisition_started_at': '2026-11-18T12:01:00+00:00'},
+                  valid | {'acquisition_finished_at': '2026-11-18T13:00:00+00:00'},
+                  valid | {'acquisition_started_at': '2026-11-18T10:00:00'}):
+        with pytest.raises(ValueError):
+            capture.acquisition_interval(value, now)
+
+
+def test_admitted_failure_records_bounds_through_cleanup(tmp_path, monkeypatch):
+    monkeypatch.setattr(capture.acquisition, 'require_live_grant', lambda *args: None)
+    def refuse(*args):
+        raise ValueError('fixture refusal')
+    monkeypatch.setattr(capture, 'read_prepared', refuse)
+    result = capture.capture(tmp_path, 'cpu', 'row', tmp_path)
+    assert result['status'] == 'failed' and result['cleanup_proved'] is True
+    assert capture.acquisition_interval(result)[0] <= capture.acquisition_interval(result)[1]
+
+
+def test_emitter_timestamp_is_original_capture_start():
+    times = {'acquisition_started_at': '2026-01-01T00:00:00+00:00',
+             'acquisition_finished_at': '2026-01-01T00:01:00+00:00'}
+    assert capture.stamp_acquisition_start('measured_at: "later"\npairs: []\n', times) == (
+        'measured_at: "2026-01-01T00:00:00+00:00"\npairs: []\n')
+    with pytest.raises(ValueError):
+        capture.stamp_acquisition_start('pairs: []\n', times)

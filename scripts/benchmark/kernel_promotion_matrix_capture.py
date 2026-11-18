@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+from datetime import datetime, timezone
 import os
 from pathlib import Path
 import re
@@ -281,6 +283,28 @@ def validate_full(path, plan, matrix, config, contention):
             'host_health': matrix.read_matrix_host_health(path)}
 
 
+def acquisition_interval(result, now=None):
+    """Validate original conservative UTC bounds; never manufacture capture time."""
+    try:
+        start = datetime.fromisoformat(result['acquisition_started_at'])
+        end = datetime.fromisoformat(result['acquisition_finished_at'])
+        require(start.tzinfo is not None and end.tzinfo is not None, 'capture times require timezone')
+        start, end = start.astimezone(timezone.utc), end.astimezone(timezone.utc)
+        require(start <= end <= (now or datetime.now(timezone.utc)), 'capture time is reversed or future')
+        return start, end
+    except (KeyError, TypeError, OverflowError) as exc:
+        raise ValueError('capture times missing or malformed') from exc
+
+
+def stamp_acquisition_start(emitted, result):
+    acquisition_interval(result)
+    emitted, count = re.subn(r'^measured_at: .*$',
+                             'measured_at: ' + json.dumps(result['acquisition_started_at']),
+                             emitted, flags=re.MULTILINE)
+    require(count == 1, 'canonical emitter must provide exactly one measurement time')
+    return emitted
+
+
 def capture(packet, phase, row_id, directory):
     result = {'schema': SCHEMA, 'unit_id': row_id, 'attempt_id': directory.name, 'status': 'failed',
               'phase': phase, 'phase_scope': SCOPE[phase], 'authority': 'isolated_observation', 'completed_pairs': [],
@@ -290,6 +314,8 @@ def capture(packet, phase, row_id, directory):
     records = []
     try:
         acquisition.require_live_grant(row_id, os.environ)
+        # A conservative wall-clock bound for every following measured cell.
+        result['acquisition_started_at'] = datetime.now(timezone.utc).isoformat()
         path, digest, plan, matrix, config, contention = read_prepared(packet, phase)
         result.update(
             prepared_plan={'path': str(path), 'sha256': digest},
@@ -348,6 +374,13 @@ def capture(packet, phase, row_id, directory):
             for sig, handler in handlers.items():
                 signal.signal(sig, handler)
 
+    if 'acquisition_started_at' in result:
+        result['acquisition_finished_at'] = datetime.now(timezone.utc).isoformat()
+        try:
+            acquisition_interval(result)
+        except ValueError as exc:
+            result.update(status='failed', failure=f'{type(exc).__name__}: {exc}')
+
     if result['status'] == 'captured' and phase == 'full':
         output = directory / 'contention_matrix.yaml'
         try:
@@ -357,10 +390,12 @@ def capture(packet, phase, row_id, directory):
                 field = 'llama_server_path' if backend == 'cpu' else 'hip_llama_server_path'
                 provenance[field] = image['binary']
                 provenance[f'{backend}_binary_sha256'] = image['binary_sha256']
+            emitted = matrix._emit_yaml(records, topology_hash=plan['topology_hash'],
+                                        binary=provenance, host=health['hostname'], host_health=health,
+                                        preserve_sections=matrix._carry_forward_sections(source))
+            emitted = stamp_acquisition_start(emitted, result)
             with output.open('x') as stream:
-                stream.write(matrix._emit_yaml(records, topology_hash=plan['topology_hash'],
-                             binary=provenance, host=health['hostname'], host_health=health,
-                             preserve_sections=matrix._carry_forward_sections(source)))
+                stream.write(emitted)
             result['matrix'] = validate_full(output, plan, matrix, config, contention)
             result['complete_matrix'] = True
         except (OSError, ValueError, subprocess.SubprocessError) as exc:

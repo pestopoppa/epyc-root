@@ -120,3 +120,19 @@ Supply a successful native acquisition's retained packet and a trusted `RESULT.j
 The exporter checks the result pin and attempt inventory, the frozen producer and prepared plan, and the source matrix bytes and topology. It matches the exact CPU instances and their image and model witnesses, replays the solo and parallel request records, and requires cleanup to account for both captured PID and birth identities. Failed acquisitions and missing or inconsistent captures are refused.
 
 The output is a single `private-matrix-diagnostic.json` record with `observation_only` authority. It links to the native capture by digest. Timing values stay in the original capture. The export is offline and unsealed, with no keeper admission or server launches. Live hot-stack admission and pair selection still require a fresh contention matrix. Routing, timing acceptance and promotion retain their existing gates.
+
+
+## Configured-primary full matrix capture time
+
+The six-pair producer `kernel_promotion_matrix_capture.py` records timezone-aware
+`acquisition_started_at` and `acquisition_finished_at` around admission, requests,
+and cleanup in each native phase result. Its full-mode YAML uses the original
+start bound as `measured_at`, so emission cannot refresh the observation.
+`acquisition_interval()` rejects missing, malformed, reversed, and future bounds.
+
+CPU and HIP phases are separate observations. There is currently no offline
+merger or admission of their results as a complete matrix. Any future exporter
+must pin both native result files, preserve and validate their original time bounds,
+use the oldest start as its measurement time, replay their raw evidence and
+custody, and enforce the canonical freshness gate without changing production.
+Older captures lacking the bounds cannot establish this freshness.
