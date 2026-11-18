@@ -81,6 +81,7 @@ A new incident class = a new scenario in `tests/replay/scenarios.py`, never a ne
 
 ## Job-side rules (each bought by an incident; dates in the skill's incident ledger)
 
+- fold-build rows must write VERSION.txt + SHA256SUMS + PROVENANCE.md into each store (re-anchor find_store_build requires them)
 - **Derive CPUs and thread counts from the granted affinity**, never hardcode a CPU list, and set the CPU-backend
   thread count explicitly (`-t`, `GGML_N_THREADS`, `OMP_NUM_THREADS`): under `taskset` ggml still defaults to 192
   threads (H8b correctness took 16 min per pass, 2026-11-06). `job_fence.py` sets the thread env from
