@@ -707,7 +707,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-18T11:38:24Z",
+  "generated_at": "2026-11-18T11:43:49Z",
   "nodes": [
     {
       "age_days": 8,
@@ -1673,15 +1673,15 @@
         "EVL-47",
         "INF-48#rocm-verify-profile-backend"
       ],
-      "closed": 365,
-      "dispatchable": 7,
+      "closed": 366,
+      "dispatchable": 6,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "rocm-kernel-authoring.md",
       "id": "INF-48",
       "last_advanced": "2026-11-18",
       "next_action": "RKA-VERIFY-TILE GPU + A3B48-E2E rows; C6-CONTROLLER-PROOF (r7 if queued) then LIVE-1 wiring; race-eqv with 7/7 fixtures; GATEUP-PROBE",
-      "open": 7,
+      "open": 6,
       "priority": 0.8728,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): RVP-RACE-1 \u2014 Measure whether the correctness gate can see a race at all (intake-2557#recor",
@@ -1735,7 +1735,7 @@
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 1569,
+          "line": 1570,
           "name": "agentic-rocm-kernel-authoring",
           "open": 0,
           "readiness": "no_open"
@@ -1745,21 +1745,21 @@
             "EVL-47",
             "INF-48#rocm-verify-profile-backend"
           ],
-          "dispatchable": 4,
+          "dispatchable": 3,
           "gates": [
             "INF-48#rocm-verify-profile-backend",
             "EVL-47"
           ],
-          "line": 2726,
+          "line": 2727,
           "name": "mi210-q8-dequant-gemv-roofline",
-          "open": 4,
+          "open": 3,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3119,
+          "line": 3121,
           "name": "gemma-challenge-kernel-techniques-v7",
           "open": 0,
           "readiness": "no_open"
@@ -1768,7 +1768,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3632,
+          "line": 3634,
           "name": "frontier-f6-upstream-publication",
           "open": 0,
           "readiness": "no_open"
@@ -1777,7 +1777,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3727,
+          "line": 3729,
           "name": "llama-cpp-dsa-contribution",
           "open": 0,
           "readiness": "no_open"
@@ -1937,14 +1937,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 222,
-      "dispatchable": 30,
+      "dispatchable": 31,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "kernel-champion-and-promotion.md",
       "id": "INF-65",
       "last_advanced": "2026-11-18",
       "next_action": "C14 = C13 + FA-ALLMASK fix (FOLD_READY) + q8_1 fix, after q81 r4 passes; farows verify-quiet row; C12 CPU KEEP provisional",
-      "open": 31,
+      "open": 32,
       "priority": 0.9075,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): CH-26b - re-measure the DS41-1017 noise floor on 49550eda5 before any DS41 judgement: `gat",
@@ -1978,7 +1978,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-50#dflash2-block-drafter-experimental-build"
           ],
-          "dispatchable": 27,
+          "dispatchable": 28,
           "gates": [
             "INF-06#autokernel-research-loop",
             "INF-50#dflash2-block-drafter-experimental-build",
@@ -1987,14 +1987,14 @@
           ],
           "line": 18,
           "name": "autokernel-champion-aggregate",
-          "open": 28,
+          "open": 29,
           "readiness": "blocked"
         },
         {
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1730,
+          "line": 1732,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2003,7 +2003,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1854,
+          "line": 1856,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -2012,7 +2012,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2184,
+          "line": 2186,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2021,7 +2021,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2323,
+          "line": 2325,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 1,
           "readiness": "ready"
@@ -2030,7 +2030,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2885,
+          "line": 2887,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2042,7 +2042,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3023,
+          "line": 3025,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2054,7 +2054,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3030,
+          "line": 3032,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
