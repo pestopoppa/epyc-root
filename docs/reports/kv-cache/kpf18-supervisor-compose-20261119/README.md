@@ -400,3 +400,44 @@ Revision identities (SHA-256):
 - `execution_binding.py`: `62dc983a38fcb28c0ec0be9cc11f6e5429c550d29b7e67ec5e67a35b7c56042e`
 - `test_execution_binding.py`: `b2c869ebfb01e2ddbef86e249ee649c0cc80c204613ad1227468235e96f8dff5`
 - `install.py`: `2684eed635727f9ccfa03ccad6a02932bfb1d5c15c74a6bdfa9dac767445c6a4`
+
+
+## 2026-11-19 — publisher smoke gate entry restriction and routing regression
+
+Current v3 smoke binding now wraps the retained gate entry before its parser
+can dispatch another command. It admits only item3 and an explicit option set;
+preparation, argv output, resume, CPU mode, duplicate/abbreviated/equals-form
+options and other gate commands refuse entry. The server must match explicit
+execution custody; argv and prompt-set inputs must already exist in the source
+inventory. Entry rechecks current admission, reserve and output routing. Full
+mode retains its original gate entry. This narrows command dispatch, not every
+possible server-side write or launch-prefix behavior.
+
+The installed-driver child now traverses the real retained gate parser and
+execution loop, with private prepared-input identities, inert server/request
+peers and a fixture context builder. The real smoke action writes its request
+record; the real loop writes run_meta.json and two completion markers under
+the admitted publisher directory. Device acquisition, native preflight and
+process launch are fixture substitutes; this is not actual publisher smoke.
+Negative controls cover alternate commands, write options, changed inputs and
+STOP before entry.
+
+15 binding tests, 25 admission tests, 12 successor tests and six supervisor
+Binding tests PASS (58 total), using unittest discover with their respective
+patterns and `-k Binding` for test_supervisor.py. Unrestricted discovery also
+attempts the historical Supervisor class and errors at setup because original
+R9 evidence_view.py is unavailable; the successor does not claim that suite.
+GitNexus reports this lane unindexed; its required indexing wrapper refused
+CPU admission. Manual impact inspection confines the change to the opt-in
+smoke binding and its model-free fixture.
+
+Next: integrate current admission into non-dry driver enrollment/preload entry
+before attempting actual publisher smoke. Historical guard.tests_and_enrollment
+and retained preload custody still execute before gate.main on a native smoke
+run; full-run RowflowContext also remains historical. Direct launch remains
+disabled, no persistent installation changed, no native/GPU verdict or parent
+KPF-18 completion is claimed. [no-belief: model-free software regression tests]
+
+Source identities (SHA-256):
+- `execution_binding.py`: `e7224011cde45fa46f737b5d10b0a973dbaef96045472ad84f695fde1d4f1a16`
+- `test_execution_binding.py`: `1ad96938cf3c2af7d70923bfc48f6c23524790ec2cba7ee80f729bcc0fe3e0c2`

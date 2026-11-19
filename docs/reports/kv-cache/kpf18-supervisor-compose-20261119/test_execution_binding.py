@@ -29,7 +29,7 @@ class CurrentGuard(unittest.TestCase):
                         output_reserve=NS(check=lambda *a: True, owned_bytes=lambda p: 0),
                         shutil=NS(disk_usage=lambda p: NS(free=1024**4)))
         self.driver = NS(guard=self.guard, OUT=self.result.parent,
-                         item3=object(), item3_smoke=object())
+                         item3=object(), item3_smoke=object(), gate=NS(main=lambda: 23))
         self.captured = self.gate.capture(self.seal)
         argv = patch.object(sys, 'argv', ['driver.py', '--out', str(self.result.parent)])
         argv.start(); self.addCleanup(argv.stop)
@@ -58,6 +58,39 @@ class CurrentGuard(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'provider lost'): self.guard.boundary()
         Path(self.config['stop_file']).touch()
         with self.assertRaisesRegex(ValueError, 'STOP'): self.guard.boundary()
+
+    def smoke_argv(self):
+        inputs = []
+        for option, leaf in (('--argv-file', 'argv.txt'), ('--prompt-set', 'prompts.jsonl')):
+            path = self.root / leaf
+            path.write_text('prepared fixture input\n')
+            self.seal['sources'][str(path)] = sha(path)
+            inputs.extend([option, str(path)])
+        return ['driver.py', 'item3', '--out', str(self.result.parent),
+                '--fork-bin', str(self.native), *inputs]
+
+    def test_smoke_entry_refuses_other_commands_writes_and_changed_inputs(self):
+        argv = self.smoke_argv()
+        _, bind = self.prepare(); bind(self.driver)
+        with patch.object(sys, 'argv', argv):
+            self.assertEqual(self.driver.gate.main(), 23)
+        for extra in (['--build-prompt-set'], ['--argv-out', '/foreign'],
+                      ['--resume'], ['--cpu'], ['--out', '/foreign'],
+                      ['--fork-bin', '/foreign'], ['--out=/foreign']):
+            with self.subTest(extra=extra), patch.object(sys, 'argv', argv + extra):
+                with self.assertRaises(ValueError): self.driver.gate.main()
+        with patch.object(sys, 'argv', [argv[0], 'make-argv-file', *argv[2:]]):
+            with self.assertRaisesRegex(ValueError, 'requires item3'): self.driver.gate.main()
+        with patch.object(sys, 'argv', argv):
+            Path(argv[-1]).write_text('drift')
+            with self.assertRaisesRegex(ValueError, 'source drift'): self.driver.gate.main()
+
+    def test_smoke_entry_rechecks_stop_before_gate_side_effects(self):
+        argv = self.smoke_argv()
+        _, bind = self.prepare(); bind(self.driver)
+        Path(self.config['stop_file']).touch()
+        with patch.object(sys, 'argv', argv):
+            with self.assertRaisesRegex(ValueError, 'STOP'): self.driver.gate.main()
 
     def test_official_mode_keeps_full_item_selection(self):
         # Selection is sealed configuration, never an environment switch.
@@ -153,6 +186,12 @@ class CurrentGuard(unittest.TestCase):
 def worker():
     fixture = fixtures.PublisherSmokeAdmission(); fixture.setUp()
     try:
+        prepared = []
+        for option, leaf in (('--argv-file', 'argv.txt'), ('--prompt-set', 'prompts.jsonl')):
+            path = fixture.root / leaf
+            path.write_text('prepared fixture input\n')
+            fixture.seal['sources'][str(path)] = sha(path)
+            prepared.extend([option, str(path)])
         execution = dict(fixture.config, sources=fixture.seal['sources'])
         destination = fixture.root / 'installed'
         seal = install.install(destination, binding_revision=install.REVISION,
@@ -214,6 +253,32 @@ def worker():
                         try: action()
                         except FileExistsError: pass
                         else: raise AssertionError('overwrote output')
+                    # Actual gate parser and execution loop write run metadata,
+                    # step markers and the real smoke request to admitted output.
+                    # Only native/context peers are inert; gate.main is unpatched.
+                    path.unlink()
+                    def build_ctx(args, items):
+                        assert items == [3]
+                        args.no_device_claim = 'private model-free fixture'
+                        ctx.args = args
+                        ctx.host = 'fixture'
+                        ctx.own_children = []
+                        ctx.open_runs = []
+                        ctx.preempted = False
+                        return ctx, [], []
+                    with patch.object(sys, 'argv', ['gate.py', 'item3', '--out', str(driver.OUT),
+                                      '--fork-bin', str(fixture.native), *prepared]), \
+                         patch.object(driver.gate, 'build_ctx', side_effect=build_ctx), \
+                         patch.object(driver.gate, 'print_plan'), \
+                         patch.object(driver.gate, 'Server', return_value=srv), \
+                         patch.object(driver.gate, 'start_steps', return_value=[]), \
+                         patch.object(driver.gate, 'stop_step', return_value=driver.gate.Step('fixture stop', 0, None)), \
+                         patch.object(driver.gate, 'G', return_value={'trunk': list(range(40))}), \
+                         patch.object(driver.guard.shutil, 'disk_usage', return_value=NS(free=1024**4)):
+                        assert driver.gate.main() == 0
+                    assert json.loads((driver.OUT / 'run_meta.json').read_text())['items'] == [3]
+                    assert json.loads(path.read_text())['first_request_ok'] is True
+                    assert len(list((driver.OUT / 'done').iterdir())) == 2
                     Path(fixture.config['stop_file']).touch()
                     try: driver.guard.ContextBoundary(context).check_boundary()
                     except ValueError as error: assert 'STOP' in str(error)
