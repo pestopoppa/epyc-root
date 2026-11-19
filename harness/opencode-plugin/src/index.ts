@@ -24,8 +24,10 @@
 import type { Hooks, Plugin, PluginModule } from "@opencode-ai/plugin"
 import { applyChatParams, parseOptions, PLUGIN_ID, stampToolArgs, type EpycOptions } from "./lib.ts"
 import { createTurnCapture } from "./turn-capture.ts"
+import { createDispatchCapture } from "./dispatch-capture.ts"
 
 export const server: Plugin = async (_input, rawOptions) => {
+  const dispatchCapture = createDispatchCapture(process.env.EPYC_DISPATCH_CAPTURE_LOG)
   const turnCapture = createTurnCapture(_input.client, process.env.EPYC_TURN_CAPTURE_LOG)
   let opts: EpycOptions | undefined
   let configError: Error | undefined
@@ -62,10 +64,15 @@ export const server: Plugin = async (_input, rawOptions) => {
   }
 
   const hooks: Hooks = {
+    "chat.message": async (input, output) => {
+      if (configError || !opts) return
+      await dispatchCapture.request(input, output)
+    },
     event: async ({ event }) => {
       // `session.status: idle` is an ordinary turn boundary, not session end;
       // keep its observed lineage until explicit deletion or the idle TTL.
       if (configError || !opts) return
+      await dispatchCapture.event(event)
       if (event.type === "session.status" && event.properties.status.type === "idle") {
         // Read native session state asynchronously; never hold up handback or call a model.
         void turnCapture.idle(event.properties.sessionID)
