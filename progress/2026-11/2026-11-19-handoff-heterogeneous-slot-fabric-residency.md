@@ -173,3 +173,7 @@ Duplicate run-end kpf18-g3-preload-entry-qual-20261105 already has a pass verdic
 ## 04:01Z — Consume replayed sealed-ELF child run-end; existing verdict and receipt already satisfy filing.
 
 Dispatcher replay of `kvu-kpf17-sealed-elf-child-20261105`: no new result-bearing task exists for this event. Existing verdict is PASS, rc0, five of five owned same-UID child controls, and the `.FILED` receipt already exists. KPF-17.SEALED-ELF-CHILD was previously completed. Evidence: `docs/reports/kv-cache/kpf17-sealed-elf-child-result-20261105/RESULT.json` at commit `293a7491c192e5aa5c42d1f845ce7b1afd463206`; native result SHA-256 `2f4835b60c0c94c15f7673c93e5ddda34a20a34ec732807699650f0410d74a81`. No new tick, experiment or custody claim. Preserve the pending KPF-18.0d publisher outcome checkpoint.
+
+## 04:03Z — Consume replayed extended-receipts run-end; verdict, receipt and completed box already exist.
+
+Duplicate run-end for `kpf60-checked-extended-receipts-20261105`: existing verdict PASS and `.FILED` receipt predate this event; KPF-60.GPU-X-EXTENDED-RECEIPTS is already complete. No new result-bearing filing remains and no box was reticked. Existing evidence: `docs/reports/kv-cache/kpf60-checked-extended-receipts-result-20261105/RESULT.json` at commit `293a7491c192e5aa5c42d1f845ce7b1afd463206`; native result SHA-256 `33c50fee82bb6c93ea0499ff72474cdadb6373e2cbf38950c71dfad05246eff9`. Scope remains isolated arithmetic, with no native cache, writer parity, GPU, transfer, byte-count or calibration conclusion. Preserve pending GPU publisher outcome checkpoint.
