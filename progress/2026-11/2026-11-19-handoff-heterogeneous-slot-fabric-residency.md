@@ -421,3 +421,7 @@ Duplicate run-end event for `kpf191-drafter-impact-8952-20261105-r2-q`: existing
 ## 05:37Z — Consume already-filed KPF-41 direct-vector impact run-end event
 
 Duplicate run-end event for `kpf41-direct-vec-impact-8952a0f-20261104-r5-q`: verdict and FILED receipt already exist from 2026-11-05, and the KPF-41 handoff records rc=1 INCONCLUSIVE. Guard denied before native analysis; exact denial reason was not retained. Native result contains only partial source references (SHA-256 `7312e6ccdfd070e20f9c33581bedbc7a46c7f405d73579ec605ebb364147c35e`), so the decision rule cannot PASS; no risk or edit-clearance claim follows. Successor r10 already filed all four native impacts and nonpartial scan_complete PASS. No retry, re-filing or checkbox completion warranted. Preserve pending backend GPU publisher checkpoint.
+
+## 05:38Z — Consume already-filed KPF-18.2 component-impact run-end event
+
+Duplicate run-end for `kpf182-component-impact-8952-20261105-r3-q`: verdict, FILED receipt and handoff filing already exist from 2026-11-05. Existing verdict INCONCLUSIVE is consistent with rc=1 and partial source-reference scan only (SHA-256 `ee3531a1443409fe1133d0ff7654e2c4a0982ea0fb53d921027dd22766f4b801`); required native impacts and nonpartial scan_complete absent. Guard refused before analyze. Successor `-q2-sq3` already filed PASS for both native impacts. No new filing, retry or box completion warranted; component parity remains unproven. Preserve pending backend GPU publisher checkpoint.
