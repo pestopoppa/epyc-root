@@ -810,6 +810,7 @@ Global constraints:
     incomplete or changed evidence. The feature remains opt-in so existing campaigns do not acquire a new
     receipt dependency merely by upgrading the loop.
 - [ ] **AKX-P2d — floors for every production workload** at its production-optimal recipe, n ≥ 24 plus an interval, carrying `unit`.
+  - 2026-11-19 (autokernel) **W2 GPU floor CALIBRATED** (`ak-akx-p2d-w2-floor-gpu-20261119`, C14 GPU store, Qwen3-VL-30B-A3B Q4_K_M + mmproj, quiet: foreign p95 1.35%): 24 pairs / 48 launches, launch CV 1.92%, sd(ln) 0.020 [0.016, 0.028]; serving floor 0.84%, screen floor 3.92%. Remaining: W3 CPU (2-instance row queued). [belief: cc]
   - 2026-11-19 (autokernel) **W1 GPU floor CALIBRATED** (`ak-akx-p2d-w1-floor-gpu-20261119`, C14 GPU store, 27B Q8_0 + DFlash2 np1, quiet: foreign p95 0.9%): 24 pairs / 48 launches, launch CV 3.83%, sd(ln) 0.058 [0.045, 0.082]; serving floor 2.46%, screen floor 11.4%. Floors now: W1 (GPU) and W5 (CPU, 3.84/4.15% contended upper bound); W2 GPU and W3 CPU rows pending; W4/W6 retired. [belief: cc]
   - Owner: AutoKernel (adopted; loop work only, no AK loop launch -- compute via granted rowflow rows). Action: ADOPT. Next: Draft floor-campaign manifest per workload on C7r recipes; dispatch via granted windows (no loop launch) (AutoKernel triage 2026-11-07, ruling A; `/mnt/raid0/llm/tmp/akx-triage-20261107/TRIAGE.md`) [no-belief: ownership routing]
   - This is **benchmark-window compute** and is scheduled as calibration debt under OP-41 rules. Missing floors keep rows pending.
