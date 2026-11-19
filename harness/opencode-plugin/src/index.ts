@@ -23,8 +23,10 @@
  */
 import type { Hooks, Plugin, PluginModule } from "@opencode-ai/plugin"
 import { applyChatParams, parseOptions, PLUGIN_ID, stampToolArgs, type EpycOptions } from "./lib.ts"
+import { createTurnCapture } from "./turn-capture.ts"
 
 export const server: Plugin = async (_input, rawOptions) => {
+  const turnCapture = createTurnCapture(_input.client, process.env.EPYC_TURN_CAPTURE_LOG)
   let opts: EpycOptions | undefined
   let configError: Error | undefined
   try {
@@ -64,6 +66,11 @@ export const server: Plugin = async (_input, rawOptions) => {
       // `session.status: idle` is an ordinary turn boundary, not session end;
       // keep its observed lineage until explicit deletion or the idle TTL.
       if (configError || !opts) return
+      if (event.type === "session.status" && event.properties.status.type === "idle") {
+        // Read native session state asynchronously; never hold up handback or call a model.
+        void turnCapture.idle(event.properties.sessionID)
+        return
+      }
       if (event.type === "session.compacted") {
         // TOC-WRITER-HOOKS-1: the shell compacted the session itself (bus event, payload
         // {sessionID}, published once per completed compaction at the audited pin). Forward it

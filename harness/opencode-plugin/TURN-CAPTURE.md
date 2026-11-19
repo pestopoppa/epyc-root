@@ -1,0 +1,39 @@
+# HS-TD-2 native turn capture
+
+Set `EPYC_TURN_CAPTURE_LOG` to an absolute JSONL sink path before starting
+OpenCode with this plugin. Create its parent directory first. The capture is
+off when this variable is absent; the shipped configuration does not enable it.
+The opt-in sink contains native user text and tool evidence: select a private
+directory. Newly created files use mode 0600; existing files retain their mode.
+
+On `session.status: idle`, the plugin asynchronously reads at most 100 native
+messages through `client.session.messages`, with a five-second abort signal.
+It records the latest completed non-summary assistant message and the user
+identified by its native `parentID`, retaining sibling tool messages from that
+request. It never guesses a parent from proximity. Missing parents and native
+turn errors have explicit statuses; payloads over 128 KiB become `oversize`
+metadata records. No correctness label is inferred from handback.
+
+Four reads may be pending, with no queue. Busy-session duplicate events are
+ignored; excess reads warn and drop. Successful writes suppress duplicate final
+message IDs in a bounded 256-session process-local cache. Restart, cache eviction,
+sink errors and event races mean this is best-effort capture, not an exhaustive
+session census. Downstream consumers must deduplicate by session/turn ID and
+must not infer a complete denominator from this stream alone. The SDK message
+limit bounds message count, not HTTP response bytes or individual part size.
+
+The hook makes no model calls, holds no inference grant, and changes no answer,
+permission or routing decision. This is a native input producer for the later
+HS-TD-4-backed judge, not a replacement `decision_receipt.v1` implementation.
+HS-TD-2 real-session cost/agreement acceptance remains open. Judge execution
+requires a qualified row; a session capture alone is not measurement evidence.
+
+API basis: `/mnt/raid0/llm/harness/opencode` commit
+`350c726aa8b6b11eb9242040bc5eb7ae837fbf8a`,
+`packages/plugin/src/index.ts` (`PluginInput.client`),
+`packages/sdk/js/src/gen/sdk.gen.ts` (`Session.messages`) and
+`packages/sdk/js/src/gen/types.gen.ts` (`AssistantMessage`, `SessionMessagesData`).
+No upstream source has been copied into the lane.
+
+Offline validation: `node --test harness/opencode-plugin/test/*.test.ts`.
+Focused capture and hook tests use mocked native SDK reads and perform no inference.
