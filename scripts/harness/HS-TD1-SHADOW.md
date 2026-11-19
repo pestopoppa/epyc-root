@@ -67,11 +67,23 @@ payload, including request/tool/message/call IDs when supplied by the shell.
 Each record has a locally generated `capture_id`; it is never a native event ID.
 
 Permission events deliberately have `turn_id: null`, `status: unjoined`.
-A later offline join must resolve the native assistant message's `parentID` to
-the captured user request, and pair a reply with its exact permission request ID.
+The collector also retains native `message.updated` assistant records with their
+exact `parentID`. `harness/opencode-plugin/src/dispatch-join.ts` exports
+`joinDispatchEvents(rows)` for an offline, finite capture window. It resolves the
+permission's `tool.messageID` through that assistant's `parentID` to exactly one
+captured pre-dispatch user request in the same session. Replies pair only through
+their exact `requestID`. Native payloads and all supporting capture IDs survive
+in `hs_td1.policy_join.v1` records; these are **tool-permission** records, not
+`dispatch_observation.v1` turn verdicts and not inputs accepted by the replay CLI.
+`once`/`always` map to permissive and `reject` to restrictive for that permission
+only; asked/updated events never supply an allow. Missing parents, requests or
+tool call IDs, conflicting assistant parents, duplicate request/reply records,
+cross-session identities and unsupported reply values remain explicit unknowns.
+Consistent repeated assistant updates may share the same parent. Older native
+events without tool identity remain unknown rather than receiving a guessed join.
 Never assign the most recent user request or turn a tool permission into a
 turn-wide verdict. Preserve unresolved joins, missing events and absent policy
-coverage as unknown. No new replay input is manufactured by this producer.
+coverage as unknown. No new replay input is manufactured by this producer or join.
 
 At the audited shell commit `350c726aa8b6b11eb9242040bc5eb7ae837fbf8a`,
 `packages/opencode/src/session/prompt.ts` invokes `chat.message` before persisting

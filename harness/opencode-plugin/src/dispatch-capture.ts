@@ -56,6 +56,13 @@ export function createDispatchCapture(sink: string | undefined,
         session_id: input.sessionID, turn_id: message.id, native: output })
     },
     event(event: { type: string; properties?: Record<string, any> }) {
+      if (sink && event.type === "message.updated") {
+        const info = event.properties?.info
+        if (info?.role !== "assistant" || !nonempty(info.sessionID) ||
+            !nonempty(info.id) || !nonempty(info.parentID)) return
+        return record({ kind: "assistant_parent", status: "captured",
+          session_id: info.sessionID, turn_id: null, native: event })
+      }
       if (!sink || !TYPES.has(event.type) || !nonempty(event.properties?.sessionID)) return
       // Permission requests identify a tool/assistant message, not the user turn.
       // Preserve native IDs and the exact reply; never guess via the latest request.

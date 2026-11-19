@@ -64,6 +64,22 @@ test("bad request identities and unrelated native events never create records", 
   })
 })
 
+test("native assistant parent updates retain exact lineage for offline permission joins", async () => {
+  await scratch(async dir => {
+    const path = join(dir, "native.jsonl")
+    const capture = createDispatchCapture(path)
+    const event = { type: "message.updated", properties: { info: {
+      id: "assistant1", parentID: "u1", sessionID: "s", role: "assistant" } } }
+    await capture.event(event)
+    await capture.event({ ...event, properties: { info: { ...event.properties.info, role: "user" } } })
+    const records = await rows(path)
+    assert.equal(records.length, 1)
+    assert.equal(records[0].kind, "assistant_parent")
+    assert.equal(records[0].turn_id, null)
+    assert.deepEqual(records[0].native, event)
+  })
+})
+
 test("oversize requests remain explicit unknown metadata, with no partial private content", async () => {
   await scratch(async dir => {
     const path = join(dir, "native.jsonl")
