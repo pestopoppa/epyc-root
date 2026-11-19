@@ -644,15 +644,14 @@ def test_result_tick_grading():
     assert not t("- [x] **X-4 — custody packet.** sealed at 83c110265331 ✅ 2026-11-18 [no-belief: prep]")
 
 
-def test_r5_idle_slot_unparks_continue_session_without_event(tmp_path, monkeypatch):
+def test_r5_idle_slot_never_unparks_without_event(tmp_path, monkeypatch):
     F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=1)
     monkeypatch.setattr(hs, "decide", lambda flags, slug, e, repo, allrows=None: ("continue", "next=work"))
     reg = json.loads((F / "handoff-sessions.json").read_text())
-    reg["sessions"]["codex-gen"]["auto_unparks"] = [hs.time.time()] * 2  # sink's cap spent: only h0 under test
+    reg["sessions"]["codex-gen"]["auto_unparks"] = [hs.time.time()] * 2
     (F / "handoff-sessions.json").write_text(json.dumps(reg))
     reg, _ = hs.dispatch_once(str(F), runner)
-    assert not hs.tg.is_parked(reg["sessions"]["h0"]), "idle slot + next=continue -> unpark without an event"
-    assert "AUTO-UNPARK h0: idle slot: no queued event; session next=continue" in (F / "handoff-sessions.log").read_text()
+    assert hs.tg.is_parked(reg["sessions"]["h0"]), "event-only: no queued event -> stays parked"
 
 
 def test_r5_idle_slot_respects_cap_without_event(tmp_path, monkeypatch):

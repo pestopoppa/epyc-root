@@ -1986,21 +1986,15 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             work += [(((-1, (-1, 0)) if hkey(h["handoff"]) in unowned else (1, rank(h["handoff"], h.get("slug") or "", i))), None, h)
                      for i, h in enumerate(cands) if reg.get("auto_start", True) or hkey(h["handoff"]) in unowned]
         if live < cap and not work:  # R5: idle slot, no unparked candidate -> unpark the top-ranked eligible parked slug
-            # D9 2026-11-19: an idle slot also takes a parked session with NO queued event when its own next is
-            # `continue` - else no-progress parks never resume while the slot idles. Still bounded by the per-slug
-            # 2-fruitless-unparks/24 h cap (auto_unpark_eligible); a session with an event outranks one without.
-            def _idle_why(slug, e):
-                w = auto_unpark_why(st, slug, e, now, lcache, new_only=False)
-                if w:
-                    return w
-                return "no queued event; session next=continue" if (e.get("_work") or ("",))[0] == "continue" else None
-            idle = sorted(((0 if auto_unpark_why(st, slug, e, now, lcache, new_only=False) else 1, rank(e.get("handoff"), slug, 0)), slug)
-                          for slug, e in S.items()
+            # D9 2026-11-19 (operator, "Event-only"): an idle slot wakes ONLY a parked session that has a queued event.
+            # The no-event wake (c160f8d59) made 11 turns, 8 NOOP, 0 results in its first hour: prep loops on
+            # compute-blocked boxes. Event-driven turns carry the value; an idle slot with no event stays idle.
+            idle = sorted((rank(e.get("handoff"), slug, 0), slug) for slug, e in S.items()
                           if e.get("status") not in ("done", "retired") and tg.is_parked(e) and tg.auto_unpark_eligible(e, now, gc)
-                          and _idle_why(slug, e))
+                          and auto_unpark_why(st, slug, e, now, lcache, new_only=False))
             if idle:
                 slug = idle[0][1]
-                do_auto_unpark(flags, slug, S[slug], now, "idle slot: " + _idle_why(slug, S[slug]))
+                do_auto_unpark(flags, slug, S[slug], now, "idle slot: " + auto_unpark_why(st, slug, S[slug], now, lcache, new_only=False))
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
             if h is not None:
