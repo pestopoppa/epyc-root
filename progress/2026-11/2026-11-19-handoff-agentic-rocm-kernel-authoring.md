@@ -223,3 +223,7 @@ Filed `c6-admission-live-proof-r11` **inconclusive (FUTILITY_CARRIER)**: job rc=
 ## 17:52Z — File c6-admission-live-proof-r12 diagnostic typed refusal
 
 `c6-admission-live-proof-r12`: **PASS as diagnostic DROP**, `C6_ITERATION_C6SplitPolicyRefusal`; failed leg `precision_equivalence`, zero admission records. Trace and validation passed, with KFD present and 1,403,559,936 B peak VRAM. The refusal precedes sealing a successful new C6 correctness receipt; do not infer candidate admission or successful receipt reopening. The controller proof box remains open pending evidence for its receipt-reopening condition. Result SHA-256 `ae42d37b71fc6eba0d6343b945170abd7dc1f6ca5972e47bf4a1713c2ba626c0`. [belief: cc]
+
+## 18:04Z — Assess r12 C6 receipt reopening boundary
+
+The r12 typed `C6SplitPolicyRefusal` was raised while evaluating candidate outputs, before `_validate_c6_correctness_receipt` runs in the split execution path. This establishes that a newly produced successful C6 correctness receipt was not reopened in that iteration; it does not establish whether both historical native PASS receipts were reopened elsewhere. The controller proof box remains open. Execution closure `gpu_source_evidence.py` SHA-256 `57d846611a4fe9148164775449d668b20adeddc28bec74a9c0e723793d307f21` binds the source; result SHA-256 `ae42d37b71fc6eba0d6343b945170abd7dc1f6ca5972e47bf4a1713c2ba626c0`. [belief: cc]
