@@ -104,8 +104,20 @@ def prepare(seal, admission, captured):
                     name = values.get(option)
                     if name not in seal['sources'] or not Path(name).is_file():
                         raise ValueError('publisher smoke requires sealed prepared inputs')
+                # Retained DEFAULT_PREFIX pins CPUs 184-191. A publisher
+                # smoke must inherit its admitted four-CPU mask; even a sealed
+                # server path does not constrain an arbitrary prefix executable.
+                if values.get('--launch-prefix', '') != '':
+                    raise ValueError('publisher smoke launch prefix must be empty')
                 boundary()
-                return gate_main()
+                original_argv = sys.argv
+                try:
+                    sys.argv = list(original_argv)
+                    if '--launch-prefix' not in values:
+                        sys.argv.extend(['--launch-prefix', ''])
+                    return gate_main()
+                finally:
+                    sys.argv = original_argv
             driver.gate.main = smoke_main
         def sealed_input(name, expected=None):
             path = Path(name)

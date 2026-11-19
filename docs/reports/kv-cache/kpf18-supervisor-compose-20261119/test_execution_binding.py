@@ -86,6 +86,50 @@ class CurrentGuard(unittest.TestCase):
             Path(argv[-1]).write_text('drift')
             with self.assertRaisesRegex(ValueError, 'source drift'): self.driver.gate.main()
 
+    def test_smoke_launch_inherits_admitted_affinity_without_gate_default(self):
+        argv = self.smoke_argv()
+        observed = []
+        def gate_main():
+            # The retained parser otherwise supplies numactl/taskset 184-191.
+            args = sys.argv[1:]
+            index = args.index('--launch-prefix')
+            observed.append(args[index + 1])
+            return 23
+        self.driver.gate.main = gate_main
+        _, bind = self.prepare(); bind(self.driver)
+        for extra in ([], ['--launch-prefix', '']):
+            with self.subTest(extra=extra), patch.object(sys, 'argv', argv + extra):
+                caller_argv = sys.argv
+                self.assertEqual(self.driver.gate.main(), 23)
+                self.assertIs(sys.argv, caller_argv)
+                self.assertEqual(sys.argv, argv + extra)
+        self.assertEqual(observed, ['', ''])
+
+    def test_smoke_launch_refuses_prefix_before_gate_entry(self):
+        argv = self.smoke_argv()
+        called = []
+        self.driver.gate.main = lambda: called.append(True)
+        _, bind = self.prepare(); bind(self.driver)
+        for prefix in ('taskset -c 184-191', '/bin/sh -c true',
+                       '/usr/bin/env LD_PRELOAD=/foreign.so', ' '):
+            with self.subTest(prefix=prefix), patch.object(
+                    sys, 'argv', argv + ['--launch-prefix', prefix]):
+                with self.assertRaisesRegex(ValueError, 'launch prefix'):
+                    self.driver.gate.main()
+        self.assertEqual(called, [])
+
+    def test_smoke_launch_restores_argv_after_gate_failure(self):
+        argv = self.smoke_argv()
+        def gate_main():
+            self.assertEqual(sys.argv[-2:], ['--launch-prefix', ''])
+            raise RuntimeError('gate failed')
+        self.driver.gate.main = gate_main
+        _, bind = self.prepare(); bind(self.driver)
+        with patch.object(sys, 'argv', argv):
+            with self.assertRaisesRegex(RuntimeError, 'gate failed'):
+                self.driver.gate.main()
+            self.assertIs(sys.argv, argv)
+
     def test_smoke_entry_rechecks_stop_before_gate_side_effects(self):
         argv = self.smoke_argv()
         _, bind = self.prepare(); bind(self.driver)
@@ -260,6 +304,7 @@ def worker():
                     path.unlink()
                     def build_ctx(args, items):
                         assert items == [3]
+                        assert args.launch_prefix == ''  # real retained parser, no CPU expansion
                         args.no_device_claim = 'private model-free fixture'
                         ctx.args = args
                         ctx.host = 'fixture'

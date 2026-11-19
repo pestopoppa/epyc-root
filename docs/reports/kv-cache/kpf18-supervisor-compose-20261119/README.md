@@ -541,3 +541,43 @@ status/impact unavailable because this sparse lane has no index; this revision
 changes only independent qualification tests and this report. No new native
 source or measurement producer was introduced. Bus drain rejected the handoff
 slug because it has no roster id; no other session's outbox was used.
+
+
+### 2026-11-19 — Smoke launch prefix preserves admitted affinity
+
+Found a real launch-path defect while preparing publisher smoke: the retained
+parser defaults to `numactl --membind=3 -- taskset -c 184-191` and Server.full_cmd
+prepends the parsed prefix to the server argv. Omitting --launch-prefix could
+expand a four-CPU smoke's inherited affinity. An arbitrary supplied prefix could
+also execute a different program before the sealed server. Source: retained
+`/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/vendor/kpf18_gate.native.py`,
+DEFAULT_PREFIX, build_ctx and Server.full_cmd (source seal retained by installer).
+
+The opt-in current publisher-smoke wrapper now refuses every nonempty launch
+prefix before gate entry and explicitly supplies an empty prefix when omitted.
+The child inherits the admitted process affinity; no extra wrapper executable is
+introduced. Caller sys.argv is restored on success and failure. Official entry
+is unchanged. Three new regressions reproduced the defect before the fix; the
+installed real-driver/parser control now also asserts the parsed prefix is empty.
+
+PASS: 18 binding tests, 25 admission tests, 8 prerequisite tests, 4 non-dry entry
+tests, 12 successor tests and 6 supervisor Binding tests (73 total). Commands are
+the preceding documented unittest commands, with the same file selection.
+`git diff --check` PASS. This is model-free software qualification, with inert
+native/context peers in the installed integration. No actual CPU-affinity or
+GPU measurement, publisher smoke, native lifecycle, or full-run RowflowContext
+qualification is claimed. Persistent installation was not updated.
+
+Evidence SHA-256:
+- execution_binding.py: `275066df227c2a99110fe540b14f53975bcba895f5711dd646e3c0ae71dd2789`
+- test_execution_binding.py: `22264015037f1805fff9a391904b2cb2a2cc01b6aa2536b561c2de03d759f9e3`
+
+Input recovery: no matching framing bytes in 8 framing-containing small JSON
+candidates under the targeted KPF18 roots, or 19,984 small result-name JSON files
+under /mnt/raid0/llm/tmp. This search does not prove the bytes are absent from
+other stores or git object databases. No historical pins or acceptance receipts
+were changed. Actual publisher smoke remains dependent on exact framing recovery.
+Next independent work: qualify the full-run RowflowContext adapter against current
+official grant/output admission with model-free controls. GitNexus status and
+prepare impact unavailable because this sparse lane is unindexed; manual upstream
+inspection limits the change to current publisher-smoke entry and its tests.
