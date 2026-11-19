@@ -199,3 +199,7 @@ INF48-LIVE-1: C6-26 executable corpus change is in the separate epyc-inference-r
 ## 13:10Z — Determine whether C6-26 can be completed in the authorized worktree
 
 INF48-LIVE-1 remains blocked by the instruction limiting edits to the root lane: the executable C6-26 corpus belongs to epyc-inference-research. INF48-C6-CONTROLLER-PROOF awaits qualified r9; INF48-FOLD-PLAN depends on C6 completion. Acknowledged r9 smoke failure after its later smoke passed, and r6 idle/ended alerts after its run ended and verdict was filed. Other mailbox alerts remain unhandled.
+
+## 13:47Z — File C14 dispatch reprofile result
+
+Filed `ak-c14-c6-dispatch-reprofile-20261119` **inconclusive** (rc=0): C14 store identity check stopped the run before any C14 cases or trace; seven checksum mismatches cover llama-bench, test-backend-ops, libggml-hip, libggml, libggml-base, libggml-cpu and libllama-bench-impl. No C14 baseline or dispatch re-pin is warranted. Production v10 had MUL_MAT 1073/1139 passed, 66 failed, 326 unsupported; FLASH_ATTN_EXT 2868/2868, ROPE 428/428, RMS_NORM 21/21 and SET_ROWS 159/159 passed. v10 dispatch trace SHA-256 `66954db9ee3a44b447081b96b0b6c0b7bbb6362d7c676e69aba49065ef5a2e`; native results SHA-256 `ea53416e500a3799ccea210eb35581b77c2750cb2e26bb68981be2efd0f6944f`. Filing receipt and detailed verdict under compute-flags/filing-done. Controller proof remains open; r9 is armed. [belief: cc]
