@@ -193,3 +193,7 @@ KPF-18-G3-CANCEL-ORDER full result PASS, rc=0: corrected parser accepted 1/1 ord
 ## 04:10Z — Consume duplicate sealed-ELF-loader run-end event
 
 Duplicate dispatcher run-end for `kvu-kpf17-sealed-elf-loader-20261105`: no new result-bearing work. Full native record reports PASS, smoke=false, four successful private ELF/same-process controls; the existing KPF-17.SEALED-ELF-LOADER box already records full rc0 PASS with its retained result. `file_result.py --no-reclaim` returned NOOP because its FILED receipt already exists. Preserved existing verdict, evidence and checkbox; parent KPF-17 remains open. No native ggml, cross-process, build-identity or whole-chain claim. [no-belief: duplicate event acknowledgement; no new finding]
+
+## 04:11Z — File full seven-control synthetic admission qualification verdict
+
+KPF-18-G3-ADMISSION: filed `kvu-kpf18-g3-admission-integrated-20261105` PASS (rc=0, 7/7 synthetic controls). Evidence: `/mnt/raid0/llm/tmp/kvu/kpf18-g3-admission-integrated-20261105/out/full-attempt/RESULT.json`, SHA-256 `261d19b5fc3a433abc6a9fff322c747981922fc6ce479e28fd01f7c97c52719c`. Replaced pending-controls note in the already checked box; no new checkbox. Candidate remains disabled; no live-provider or GPU conclusion. [no-belief: synthetic qualification only]
