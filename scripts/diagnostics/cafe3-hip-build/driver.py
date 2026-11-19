@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -81,10 +82,21 @@ def validate(record):
         found = set()
         for line in linkage.splitlines():
             if line.strip().startswith(('libggml', 'libllama')):
-                target = Path(line.split(' => ')[1].split()[0]).resolve(strict=True)
-                if target.parent != run / 'build/bin' or str(target) not in record['files']:
+                fields = line.strip().split()
+                name = re.fullmatch(r'(lib(?:ggml|llama)[\w-]*\.so)(?:\.[0-9]+)*', fields[0])
+                if name is None or len(fields) != 4 or fields[1] != '=>' or not Path(fields[2]).is_absolute():
+                    raise ValueError('malformed library linkage')
+                target = Path(fields[2]).resolve(strict=True)
+                bindir = run / 'build/bin'
+                if target.parent != bindir or str(target) not in record['files']:
                     raise ValueError('nonlocal/unbound library')
-                found.add(line.strip().split()[0])
+                # Version suffixes are allowed only for the exact local component:
+                # both the SONAME and the build alias must identify this hashed file.
+                if (re.fullmatch(re.escape(name[1]) + r'(?:\.[0-9]+)*', target.name) is None or
+                        (bindir / fields[0]).resolve(strict=True) != target or
+                        (bindir / name[1]).resolve(strict=True) != target):
+                    raise ValueError('library identity mismatch')
+                found.add(name[1])
         if not {'libllama.so', 'libggml.so', 'libggml-base.so', 'libggml-cpu.so', 'libggml-hip.so', 'libllama-server-impl.so'} <= found:
             raise ValueError('missing required libraries')
 

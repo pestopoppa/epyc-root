@@ -210,9 +210,9 @@ class BuildReceiptTest(unittest.TestCase):
             (run / 'build/bin').mkdir(parents=True)
             exe = run / 'build/bin/llama-server'
             exe.write_bytes(b'fixture')
-            (run / 'build/CMakeCache.txt').write_text('GGML_HIP:BOOL=OFF\nGGML_BACKEND_DL:BOOL=OFF\n')
+            (run / 'build/CMakeCache.txt').write_text('GGML_HIP:BOOL=OFF\nGGML_BACKEND_DL:BOOL=OFF\nLLAMA_BUILD_UI:BOOL=OFF\nLLAMA_USE_PREBUILT_UI:BOOL=OFF\n')
             linkage = []
-            for name in ('libllama.so', 'libggml.so', 'libggml-base.so', 'libggml-cpu.so'):
+            for name in ('libllama.so', 'libggml.so', 'libggml-base.so', 'libggml-cpu.so', 'libllama-server-impl.so'):
                 path = exe.parent / name
                 path.write_bytes(name.encode())
                 linkage.append(f'{name} => {path} (0x0)')

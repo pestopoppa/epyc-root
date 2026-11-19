@@ -76,3 +76,29 @@ performs no GPU model execution. Full build and native P9 remain outstanding.
 df2-cafe3-full-cpu-build-r2-20261119: publisher smoke PASS on cores 164–167, rc75 after validated first progress; /mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe3-full-cpu-build-r2-20261119/PASS.json SHA-256 7069f0ed6928b7533f10daa0af9606c7aee4ead2226d0ea84fad3266ee5f30c3.
 
 [no-belief: compiled publisher smoke only]
+
+## Versioned SONAME identity repair (2026-11-19)
+
+CPU and HIP validators accept numeric SONAME suffixes such as `.so.0` and
+`.so.0.0.1`. Each linkage entry must resolve inside that run's `build/bin`,
+remain explicitly hash-bound in the receipt, and match both its local SONAME
+and unversioned component alias. The resolved file must retain the same
+component name (with only numeric version suffixes). Other suffixes and
+malformed linkage are refused. Backend, marker, server implementation,
+HIP exports/gfx90a and source bindings remain mandatory.
+
+Validation: **23 focused tests PASS** (10 CPU build/supervisor/full-binding,
+2 HIP, 11 launch-context). The full-binding suite includes 24 CPU/HIP subcases:
+major/full numeric versions pass; missing components, external targets and
+symlinks, missing hashes, tampering, wrong components, mismatched aliases or
+SONAMEs, suffix lookalikes and malformed lines refuse. Subprocess metadata
+is mocked; files, symlinks, linkage and SHA-256 validation are real. Updated
+the launch-context receipt fixture to include existing server-library/UI
+requirements. This establishes validator behavior, not a native build or P9
+verdict. Existing sealed packets are unchanged; replacement publication must
+bind the repaired driver hashes.
+
+- `scripts/diagnostics/cafe3-build/driver.py` SHA-256 `4205a4af38aee964aa20ca217cf4897095144922d5c5b1bb319d1f5f33dc89b0`
+- `scripts/diagnostics/cafe3-hip-build/driver.py` SHA-256 `6d209ff939a063c2a0746040e9e84d43da37987be5b83617f5f514645b6d2b7e`
+- `scripts/diagnostics/cafe3-build/test_full_binding.py` SHA-256 `5db77f5146c06f4c7b3ccfb530a35ce000736d32f9681aa9504fd23d4488e004`
+- `scripts/diagnostics/cafe3-adaptive/test_launch_context.py` SHA-256 `b9d8e067292bc3ec07dc05d8794da67756c17b74554551bf08f3c7528ce852fb`
