@@ -87,3 +87,29 @@ including the unfixed/fixed IQK regression and Clang modes object. Receipt
 `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-r2-20261119/PASS.json`; SHA-256 `be8b840486700e1056881439b1f78492749a6ec54681aacb99789247e7874c32`.
 This supersedes the queued-smoke checkpoint above; full-build and native verdicts
 remain separate.
+
+R2 full-build verdict (2026-11-19)
+----------------------------------
+
+`df2-cafe4-modes-hip-build-r2-20261119`: **FAIL** under its published
+build-only rule; scheduled rc1 at 04:47:51Z, no `RESULT.json`.
+The executable reached 100% build completion; all six modes/control markers
+and local llama/ggml linkage are present. The validator requires
+`iqk_convert_repack` in `nm -D`, but that symbol is not exported (other IQK
+implementation symbols are). It also requires `ggml_backend_hip_reg`, whereas
+this HIP library exports `ggml_backend_cuda_reg` and contains `gfx90a`.
+These incompatible symbol checks prevent qualification; they do not establish
+a missing kernel implementation. Next repair: use actual compiled IQK and
+HIP registration exports, with regression coverage for both checks, then
+publish replacement qualification before GPU native controls. Production stays
+frozen. No native rollback, fault, residency or performance verdict.
+
+Existing evidence, referenced in place:
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/build.log`, SHA-256 `95540dc26a66124daa50758d9063c36d3bfe7c2f0178ffdced1f3c46cdb2a447`.
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/linkage.log`, SHA-256 `a31777c88fb0e6b46dcf11f90cef0d4c763a6f89b031dc7b4127604481f91a54`.
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/build/bin/libggml-cpu.so.0.16.0`, SHA-256 `85be7fe5eece79b06cd4bf663dacebaae06aab1024f5d31bd460b2ab187e25ef`.
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119/runs/build-u1p_cu6z/build/bin/libggml-hip.so.0.16.0`, SHA-256 `a62bb2bd2bafe9e2dc21d2499ba03987cc5accb547f1c0b11a9b11334d9b7836`.
+- `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-hip-build-r2-20261119.ended`, SHA-256 `ce9047e174ba7d0ede9b061ef8e73a1d1a17ca81e01a70e51a0bfec824a9f632`.
+
+Filing record: `/mnt/raid0/llm/tmp/compute-flags/filing-done/df2-cafe4-modes-hip-build-r2-20261119.verdict.json`.
+[no-belief: build qualification failure only; no native measurement]
