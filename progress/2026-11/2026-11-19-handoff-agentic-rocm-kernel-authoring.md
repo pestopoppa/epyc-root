@@ -123,3 +123,7 @@ Filed rka-a3b-n4-step-gpu-20261118 (rc=0): FUTILITY under the preregistered rule
 ## 04:32Z — File c6-admission-live-proof-r8 result
 
 Filed c6-admission-live-proof-r8 (launcher rc=0): FUTILITY_CARRIER; validate and GPU trace passed, but the supervised controller reached the native C6 oracle and exited with untyped EvidenceProducerError, with zero admission records. The existing handoff records the inconclusive verdict; box remains open. Result SHA-256 5b7f21ddf0498445e2d2a9e6a2c3cd72c97113fd5a34b7a8b1c6c5daf414f177. Filed missing receipt. [belief: cc]
+
+## 04:33Z — File A3B n4 trace GPU row result
+
+Filed rka-a3b-n4-trace-gpu-20261118 (rc=0): INCONCLUSIVE by preregistered coverage rule, with trace coverage 0.670 and 0.667 below 0.70 in both repetitions. Test-backend-ops passed 27 cases; trace and timing records show GPU residency. Existing handoff records the result and subsequent completed follow-up. Result SHA-256 d9494b3e2d778e240169c1514daee32d9b8a58958bbd3c11bfe2f4bb9873fb38; filed missing receipt. [belief: cc]
