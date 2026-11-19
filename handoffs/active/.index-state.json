@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 462
+      "open": 463
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -501,10 +501,10 @@
     },
     "churn-pipeline.md": {
       "blocked": 0,
-      "closed": 74,
+      "closed": 80,
       "guarded": 0,
-      "last_advanced": "2026-11-18",
-      "open": 25,
+      "last_advanced": "2026-11-19",
+      "open": 26,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -513,7 +513,7 @@
       },
       "row_id": "RTG-100",
       "state": "active",
-      "total": 99
+      "total": 106
     },
     "context-and-token-economy.md": {
       "blocked": 2,
@@ -2052,7 +2052,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 210,
+          "line": 211,
           "markers": 1,
           "name": "iqk-iquant-enablement",
           "open": 5
@@ -2062,7 +2062,7 @@
           "closed": 20,
           "gates": [],
           "guarded": 0,
-          "line": 656,
+          "line": 657,
           "markers": 1,
           "name": "tq3-quantization-evaluation",
           "open": 3
@@ -2874,7 +2874,7 @@
       "id": "RTG-100",
       "index": "routing-and-optimization-index.md",
       "line": 18,
-      "next_action": "Make PROD-KERNEL-HOOK-NOT-LIVE live in /workspace, then AUTONOMY-DIGEST-REVIEW and the HITL-R4/R6/R8 D9 package",
+      "next_action": "Ship PLACEMENT-DECLARE-ONLY-COST-BASED, then KEEPER-RESIDENT-TENANT-ACCOUNTING and AUTONOMY-DIGEST-REVIEW",
       "track": "churn pipeline"
     },
     "RTG-22": {
