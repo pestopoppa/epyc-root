@@ -261,3 +261,7 @@ KPF-27d duplicate run-end consumed: `file_result.py kpf27d-impact-326f-successor
 ## 04:40Z — Consume already-filed kpf30-impact-8952-20261104-r8 run-end; filing tool returned NOOP.
 
 KPF-30.PHASE-IMPACT: duplicate r8 event, already filed INCONCLUSIVE (rc1); `file_result.py kpf30-impact-8952-20261104-r8 --no-reclaim` returned NOOP, receipt exists. Native result contains only source_reference_scan status=partial: 0/6 native impacts, no scan_complete. Evidence: `/mnt/raid0/llm/tmp/kvfork/kpf30-impact-8952-20261104-r8/out/results.jsonl`, SHA-256 `13ba60498fd97d58f9369d7bfa3587cd78b803ee56ba3acb536701fce44abeb8`. Existing verdict attributes failure to native analyze abort; no edit clearance follows. The handoff box is already checked; no box reopened, no new tick or replay. No new result-bearing task arises from this consumed event.
+
+## 04:41Z — Consume duplicate server-impact run-end; existing filing acknowledged by file_result.py NOOP.
+
+KPF-62.5 duplicate event `kpf625-server-impact-8952-20261105`: filing tool returned NOOP, already FILED. Existing rc1 verdict is INCONCLUSIVE: partial source-reference scan only, 0/3 native impacts, no scan_complete. Evidence: `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf625-server-impact-8952-20261105/out/results.jsonl`, SHA-256 `374d6ac0687270f2a328d9673aa699ed1b69a083f5ea33993ef56f482fc420b0`. Handoff already records the later successor PASS; server wiring remains open. No result-bearing task arises from this consumed event; no rerun, new row, or preparation tick.
