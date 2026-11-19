@@ -41,3 +41,22 @@ is claimed. Parent CAFE-4 remains open. Result path:
 `/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r5-20261119/RESULT.json`.
 Existing CAFE-4 source registration applies; this producer is not belief-wired.
 [no-belief: tested runner and queued row publication only]
+
+Delivered smoke qualification (2026-11-19)
+-----------------------------------------
+
+Publisher smoke **PASS** at 21:47:17Z, one unit, engine STOP rc75 after
+11 seconds, placement `mi210_0,184-191`. Row is grantable; do not republish.
+The retained native smoke receipt records model and all six expected local
+libraries mapped, plus two distinct live child KFD samples, each reporting
+**37,525,798,912 VRAM bytes**. This qualifies mapping/residency only; scheduled
+widths 2/3 and explicit fault controls remain pending under the unchanged gate.
+
+Evidence retained in place:
+
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-native-hip-r5-20261119/PASS.json`
+  SHA-256 `43eb991c8fe58f4856ea46a8ffd3a9b62d8a51765d8d681c77febb05ad8ad447`.
+- `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-native-hip-r5-20261119/native-attempts/attempt-totzpi9j/native-result.json`
+  SHA-256 `b8551e496a86dada7a78fa464896f52c4e292f827d297e4f4395e463a869baeb`.
+
+[no-belief: native smoke qualification only; no rollback verdict]
