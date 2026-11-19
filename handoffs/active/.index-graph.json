@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T22:14:03Z",
+  "generated_at": "2026-11-19T22:24:32Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1335,14 +1335,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 485,
-      "dispatchable": 117,
+      "dispatchable": 118,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 118,
+      "open": 119,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 788,
+          "line": 789,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
