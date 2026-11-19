@@ -86,7 +86,9 @@ def register_exploration_tools(server, read_roots, *, core=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--orchestrator-root", required=True, type=Path)
-    parser.add_argument("--read-root", action="append", required=True, type=Path)
+    roots = parser.add_mutually_exclusive_group(required=True)
+    roots.add_argument("--read-root", action="append", type=Path)
+    roots.add_argument("--actor-root", type=Path, help="bind actor exploration calls to this root")
     args = parser.parse_args()
     checkout = args.orchestrator_root.resolve(strict=True)
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -95,7 +97,11 @@ def main():
 
     if Path(mcp_server.__file__).resolve() != checkout / "src/mcp_server.py":
         raise RuntimeError("MCP server did not load from the declared checkout")
-    register_exploration_tools(mcp_server.mcp, args.read_root)
+    if args.actor_root is not None:
+        from scripts.harness.hs4_p6_actor_mcp import register_actor_tools
+        register_actor_tools(mcp_server.mcp, args.actor_root)
+    else:
+        register_exploration_tools(mcp_server.mcp, args.read_root)
     mcp_server._get_plugin_loader()
     mcp_server.mcp.run(transport="stdio")
 

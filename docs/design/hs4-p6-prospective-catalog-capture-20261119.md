@@ -125,3 +125,47 @@ The tested core is `epyc-orchestrator` commit
 `a6f65249f4ca2190efbca897b2a6d506c7441799`, path
 `src/repl_environment/exploration_core.py`, blob
 `faecdb52803243a7076c2b3dedfa5e847253f14a`.
+
+
+## Fixed-root actor request adapter
+
+The isolated launcher accepts `--actor-root /absolute/worktree` instead of
+`--read-root`. This explicitly selects four actor-facing exploration names:
+`read_range`, `grep`, `outline`, `code_search`. Their requests omit `root`;
+optional `session_id` remains a stamp and grants no authority. Unknown arguments,
+including root overrides, are refused by the live tool schema. Profiling tools
+remain owned by the existing actor server; this option does not reconfigure it.
+
+`scripts/harness/hs4_p6_actor_mcp.py` delegates reads, outlines and per-file regex
+matching to `exploration_core`. Its directory adapter defaults grep to `path="."`,
+`max_hits=40`, `context=0`, uses case-sensitive regexes, and renders
+`file:line: text` hits. Caps are 80 hits, 3 context lines, 240 characters per
+rendered source line, 4096 discovered entries, 16 MiB charged attempted reads and
+4 MiB per file. It skips hidden entries, links, nonregular files, oversized files
+and NUL-containing files. Truncated scans and skipped entries report incomplete
+coverage. It stops at the hit cap and reports a lower bound if work remains.
+Patterns are validated even for empty directories. Directory enumeration is not
+a stable snapshot; no global corpus or read scope is added.
+
+Actor-shaped search requests retain default k=6 and maximum k=10, and receive
+text with paths/ranges and the explicit `[root-lexical]` engine label. This differs
+from semantic ColGREP; the adapter does not claim semantic equivalence.
+
+The tests use real FastMCP calls for request schemas, stamps, directory/default
+arguments, traversal/symlink refusal, bounded outputs, special-file handling and
+invalid regex errors. Three differential controls load the native actor module
+from `HS4_P6_RESEARCH_ROOT` (default canonical research checkout) without copying
+its source: normal read headers/numbered rows, single-file grep output and simple
+Python outline definition locations. Actor source reference: research commit
+`a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2`, path
+`scripts/kernel_rnd/autokernel/loop/actor_tools_mcp.py`, blob
+`7462c41697e324b302c96bbb82a0b00ff9c6fc70`. Missing dependencies/checkouts cause
+skips, which are not a qualification pass.
+
+These controls establish the tested request/output contracts, not full actor
+migration acceptance. Shared outline parsing differs from the actor's C/C++
+heuristic; shared read/outline do not currently implement the actor's explicit
+binary-input refusal. Error transport and some clamp/continuation notices also
+differ. No claim that the entire native actor suite passes is made. Production
+catalogs/configs are unchanged; full actor qualification and the live catalog
+gate still precede any active integration.
