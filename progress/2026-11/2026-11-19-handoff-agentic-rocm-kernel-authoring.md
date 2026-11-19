@@ -59,3 +59,7 @@ C4-7 replayed run-end acknowledged: full run rc=0, COLLECTED_ALL, nine counters 
 ## 02:41Z — Acknowledge replayed TSAN r2 run-end with previously filed race findings
 
 TSAN r2 replayed run-end acknowledged: rc=78 gpu-fence-vacuous; results show nine reports in MUL_MAT and MUL_MAT_ID, timeouts in MUL_MAT and FLASH_ATTN_EXT, and zero reports with rc=0 for SOFT_MAX, ADD and MUL. The existing handoff records the race findings and later fix verification; this partial run does not establish a clean pass. Results SHA-256 d564f18db37bf8c9013487223264c969dfc8989839619974dd01fc8b85234604. FILED receipt restored. [no-belief: previously filed row findings]
+
+## 02:42Z — Acknowledge replayed C10 GEMM-down build result
+
+C10 GEMM-down build replayed end acknowledged: previously filed BUILD_OK, configure rc=0, build rc=0, source 7bcf6218bc4849dd47276078d1dd052e77e17fe1. results.jsonl SHA-256 10e6312aff244b520231a03694679cf28832a69772af2d2f8b9b69688cc9a95e. AITER-PORT-1 was subsequently completed by prefill and quality results; FILED receipt restored. [no-belief: previously filed build result]
