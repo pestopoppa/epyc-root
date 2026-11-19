@@ -305,3 +305,7 @@ Duplicate event `hsf3-adjacency-impact-3a09-20261105`: rc1, partial source-refer
 ## 04:53Z — Consume already-filed counter-impact completion without duplicate verdict or retry
 
 Duplicate event `hsf3-counter-impact-c5d1-20261105`: rc1, partial source-reference scan only, no native progress impact or scan_complete partial=false. Existing operator verdict is INCONCLUSIVE; RESULT SHA-256 `fc19a9fa0776f1ada7264ae2dcd7cfb2fe4144e3e3ebf2ac29ed86d8afc20564`. Filing helper returned NOOP (FILED already exists). HSF-3 remains open; no new result, tick, source edit or distribution claim. Existing successor is recorded in the handoff; this consumed event warrants no replay.
+
+## 04:55Z — Consume duplicate kpf131 q2 run-end; existing verdict and FILED receipt already satisfy filing
+
+Duplicate dispatcher run-end for `kpf131-native-binding-impact-a1f0-r5-20261105-q2`: no new result-bearing task. The native result path is absent; the pre-existing verdict is INCONCLUSIVE (rc=1, infrastructure refusal), already acknowledged by its FILED receipt and recorded under KPF-17.4D-NATIVE-IMPACT-RETRY. Existing verdict evidence: `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf131-native-binding-impact-a1f0-r5-20261105-q2.verdict.json`, SHA-256 `4888a435856cd3b28666088412489d3434f757bb48b4ca6d4d29a069f5e9bb5b`. Preserved the prior filing and open parent; no new result, tick, or retry. Resume the prior GPU qualification checkpoint.
