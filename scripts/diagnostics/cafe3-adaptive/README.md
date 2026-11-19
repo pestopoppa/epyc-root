@@ -403,6 +403,39 @@ sealing, qualified full-build receipts, mapping/HIP residency verification,
 multi-arm scheduling and a P9 grader remain necessary before native publication.
 [no-belief: source implementation and mocked process-boundary controls only]
 
+### Sealed multi-arm execution (2026-11-19)
+
+`multi_arm.py SCHEDULE SHA256 RESULT` executes the bound protocol's ordered
+whole-arm schedule inside one grant, using `native_runner.run` for each arm.
+It is a capture driver, not a P9 grader. Schedule JSON has exactly `schema`
+(`epyc.cafe3.schedule.v1`), `protocol` (`{path, sha256}`), and `launches`.
+Each launch has exactly `context` (`{path, sha256}`), `log`, `process`, and
+`requests` (absolute new output paths). Launch order must match protocol `arms`.
+The protocol must contain adaptive plus every static width from zero through
+the adaptive cap (1..64); this prevents omitting a possible best static arm.
+
+All contexts and request settings are validated before any model process starts;
+the supervisor revalidates each at launch. Only `arm`, `run` and `journal` may
+differ between manifests. In particular models, build, backend, grant,
+placement, CLI and protocol must match. Run identities and all output paths are
+unique. Outputs must have canonical existing parents and must not exist,
+including dangling symlinks. No weight hashes are computed by this driver.
+
+The exclusive fsynced `epyc.cafe3.schedule-capture.v1` JSONL retains the schedule
+digest, sequential ordering, per-arm context and hashes of completed captures.
+Adaptive completion requires a nonempty journal. Static arms do not instantiate
+the adaptive lifecycle and have no adaptive journal requirement. A failed arm
+stops the schedule, records the error and preserves earlier/partial outputs;
+reruns cannot overwrite them. Every record remains `UNASSESSED`.
+
+**11 model-free schedule tests PASS**, including late preflight refusal before
+any launch, incomplete protocols, unreaped children, output collisions, missing
+adaptive journals and interrupted schedules. The native processes are mocked;
+these tests do not establish round correctness, identity, residency or speed.
+The fixed whole-arm order is explicit and does not establish immunity to time
+drift. Native input sealing, qualified publication and the request/round P9
+grader remain outstanding. No inference was run for this implementation.
+
 ### Bound protocol request execution (2026-11-19)
 
 Add `--requests ABSOLUTE_JSONL_PATH` to the supervisor CLI to enable the trusted
