@@ -43,3 +43,7 @@ Dispatched afc-v3c-q38_flash-tools-medium-20261111 already has its 2026-11-12 ve
 ## 03:40Z — Duplicate Flash aggressive run-end already acknowledged
 
 Dispatched afc-v3c-q38_flash-tools-aggressive-20261111 already has its 2026-11-12 verdict and FILED receipt; AFC-V3C-PROD-TOOLS is complete. Filing left unchanged; no result-bearing task completed and no boxes ticked. Existing checkpoint remains: NIB2-77 needs the original exact 16-path approval roster, NIB2-94 operator token rotation, NIB2-98/NIB2-102/LR-8 owning-session runtime actions, NIB2-83 a genuine post-E17 cohort, and GAP-POOL-1/NI-IDLE-REFILL-WATCHER keeper or gate edits prohibited to this lane. No readied-row dependency exists, so next=blocked does not apply.
+
+## 03:41Z — Resolve NIB2-77 exact approval roster; dispatched AFC medium event already filed
+
+Dispatched afc-v3-q36_35b-tools-medium-20261111 already has its 2026-11-11 verdict and FILED receipt; AFC-P5.E3-Q36-TOOLS-V3 is complete. Filing left unchanged. NIB2-77 bounded search of surviving disk-triage-20261109 and disk-reclaim-20261104 text records did not establish the original exact 16-path approval roster; no trees removed and no box ticked. No result-bearing task available: exact approval roster, operator token rotation, owning-session runtime/canary boundaries, qualifying post-E17 cohort, or keeper/gate changes forbidden to this lane are required. No readied-row dependency exists.
