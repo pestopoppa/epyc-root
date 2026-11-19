@@ -516,7 +516,9 @@ def test_unpark_refused_then_lifted_with_ratification(tmp_path):
     assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
     _ratify(F, "h0", by="")  # missing key: rejected
     assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
-    _ratify(F, "h0")
+    _ratify(F, "h0")  # a release without allow_unpark lifts nothing (3e9f5aa71)
+    assert hs.main(["unpark", "h0", "--flags", str(F)]) == 3
+    _ratify(F, "h0", allow_unpark=True)
     assert hs.main(["unpark", "h0", "--flags", str(F)]) == 0
     e = json.loads((F / "handoff-sessions.json").read_text())["sessions"]["h0"]
     assert not hs.tg.is_gated(e) and not hs.tg.is_parked(e)
@@ -640,3 +642,42 @@ def test_result_tick_grading():
     assert t("- [x] **X-2 — gate.** PASS 12/12 ✅ 2026-11-18 [no-belief: diag]")
     assert not t("- [x] **X-3 — prepare launcher.** wired and published ✅ 2026-11-18 [belief: cc]")
     assert not t("- [x] **X-4 — custody packet.** sealed at 83c110265331 ✅ 2026-11-18 [no-belief: prep]")
+
+
+def test_r5_idle_slot_unparks_continue_session_without_event(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=1)
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, repo, allrows=None: ("continue", "next=work"))
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["codex-gen"]["auto_unparks"] = [hs.time.time()] * 2  # sink's cap spent: only h0 under test
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert not hs.tg.is_parked(reg["sessions"]["h0"]), "idle slot + next=continue -> unpark without an event"
+    assert "AUTO-UNPARK h0: idle slot: no queued event; session next=continue" in (F / "handoff-sessions.log").read_text()
+
+
+def test_r5_idle_slot_respects_cap_without_event(tmp_path, monkeypatch):
+    F, calls, runner = _parked_setup(tmp_path, monkeypatch, n=1)
+    monkeypatch.setattr(hs, "decide", lambda flags, slug, e, repo, allrows=None: ("continue", "next=work"))
+    reg = json.loads((F / "handoff-sessions.json").read_text())
+    reg["sessions"]["h0"]["auto_unparks"] = [hs.time.time(), hs.time.time()]
+    (F / "handoff-sessions.json").write_text(json.dumps(reg))
+    reg, _ = hs.dispatch_once(str(F), runner)
+    assert hs.tg.is_parked(reg["sessions"]["h0"])
+
+
+def test_purge_drops_filed_event_on_handoffless_sink(tmp_path):
+    F = tmp_path
+    (F / "filing-done").mkdir()
+    (F / "filing-done" / "r1.FILED").write_text("FILED r1: PASS rc=0")
+    st = {"queue": [{"slug": "sink", "rid": "r1", "kind": "run-end", "end": "x"},
+                    {"slug": "sink", "rid": "r2", "kind": "run-end", "end": "x"}]}
+    n = hs.purge_filed_events(str(F), st, {"sink": {"engine": "codex"}})
+    assert n == 1 and [ev["rid"] for ev in st["queue"]] == ["r2"]
+
+
+def test_resume_stall_ignores_events_on_held_parks(tmp_path):
+    F = tmp_path
+    gated = {"parked": {"reason": "operator-gate: operator hold"}, "operator_gate": True}
+    st = {"queue": [{"slug": "g", "rid": "r", "kind": "run-end"}]}
+    hs.start_watchdog(str(F), st, hs.time.time(), {"g": gated})
+    assert "RESUME-STALL" not in ((F / "handoff-sessions.log").read_text() if (F / "handoff-sessions.log").exists() else "")

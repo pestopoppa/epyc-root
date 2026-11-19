@@ -1116,10 +1116,11 @@ def purge_filed_events(flags, st, S):
     for ev in st.get("queue") or []:
         e = S.get(ev.get("slug"))
         rid = ev.get("rid") or ""
-        if ev.get("kind") == "run-end" and e and rid and filed(flags, rid) and result_recorded(rid, handoff_text(e, cache)):
+        sink = bool(e) and not e.get("handoff")  # D9 2026-11-19: a handoff-less sink (codex-gen) has no doc to update
+        if ev.get("kind") == "run-end" and e and rid and filed(flags, rid) and (sink or result_recorded(rid, handoff_text(e, cache))):
             mark_delivered(st, rid)
-            log(flags, f"EVENT-STALE-DROP {rid} -> {ev['slug']}: filed and already referenced in "
-                       f"{os.path.basename(str(e.get('handoff')))}; no turn")
+            where = "handoff-less sink session" if sink else f"already referenced in {os.path.basename(str(e.get('handoff')))}"
+            log(flags, f"EVENT-STALE-DROP {rid} -> {ev['slug']}: filed; {where}; no turn")
             n += 1
             continue
         keep.append(ev)
@@ -1446,9 +1447,14 @@ def start_watchdog(flags, st, now, sessions=None):
                    f"the starts are not converting - check the real-row gate and the briefs")
         st["watchdog_alarm"] = now
     last = max([_parse(e.get("last_resume") or "") for e in (sessions or {}).values()] or [0])
-    if st.get("queue") and now - last >= RESUME_STALL_S and now - st.get("resume_stall_alarm", 0) >= RESUME_STALL_S:
-        log(flags, f"RESUME-STALL 0 RESUME events in the last {RESUME_STALL_S // 60} min while {len(st.get('queue') or [])} event(s) are queued"
-                   f" - check the dispatcher (cap, lanes)")
+    # D9 2026-11-19: count only events a session can act on; events held by a park that cannot auto-lift
+    # (operator gate, spent cap) are expected to wait and must not raise a stall alarm.
+    S_ = sessions or {}
+    actionable = [ev for ev in st.get("queue") or [] if not (ev.get("slug") in S_ and tg.is_parked(S_[ev["slug"]])
+                                                            and not tg.auto_unpark_eligible(S_[ev["slug"]], now))]
+    if actionable and now - last >= RESUME_STALL_S and now - st.get("resume_stall_alarm", 0) >= RESUME_STALL_S:
+        log(flags, f"RESUME-STALL 0 RESUME events in the last {RESUME_STALL_S // 60} min while {len(actionable)} actionable event(s) are queued"
+                   f" ({len(st.get('queue') or [])} total) - check the dispatcher (cap, lanes)")
         st["resume_stall_alarm"] = now
     return st["watchdog"]
 
@@ -1980,12 +1986,21 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
             work += [(((-1, (-1, 0)) if hkey(h["handoff"]) in unowned else (1, rank(h["handoff"], h.get("slug") or "", i))), None, h)
                      for i, h in enumerate(cands) if reg.get("auto_start", True) or hkey(h["handoff"]) in unowned]
         if live < cap and not work:  # R5: idle slot, no unparked candidate -> unpark the top-ranked eligible parked slug
-            idle = sorted((rank(e.get("handoff"), slug, 0), slug) for slug, e in S.items()
+            # D9 2026-11-19: an idle slot also takes a parked session with NO queued event when its own next is
+            # `continue` - else no-progress parks never resume while the slot idles. Still bounded by the per-slug
+            # 2-fruitless-unparks/24 h cap (auto_unpark_eligible); a session with an event outranks one without.
+            def _idle_why(slug, e):
+                w = auto_unpark_why(st, slug, e, now, lcache, new_only=False)
+                if w:
+                    return w
+                return "no queued event; session next=continue" if (e.get("_work") or ("",))[0] == "continue" else None
+            idle = sorted(((0 if auto_unpark_why(st, slug, e, now, lcache, new_only=False) else 1, rank(e.get("handoff"), slug, 0)), slug)
+                          for slug, e in S.items()
                           if e.get("status") not in ("done", "retired") and tg.is_parked(e) and tg.auto_unpark_eligible(e, now, gc)
-                          and auto_unpark_why(st, slug, e, now, lcache, new_only=False))
+                          and _idle_why(slug, e))
             if idle:
                 slug = idle[0][1]
-                do_auto_unpark(flags, slug, S[slug], now, "idle slot: " + auto_unpark_why(st, slug, S[slug], now, lcache, new_only=False))
+                do_auto_unpark(flags, slug, S[slug], now, "idle slot: " + _idle_why(slug, S[slug]))
         started = []
         for _, slug, h in sorted(work, key=lambda w: w[0]):
             if h is not None:
