@@ -11,3 +11,4 @@ for TEST_SOURCE in test_controller.cpp test_round_lifecycle.cpp; do
     "$TEST_BIN"
 done
 python3 "$HERE/test_native_port.py"
+python3 "$HERE/test_server_port.py"

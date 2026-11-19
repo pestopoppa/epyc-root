@@ -179,3 +179,44 @@ Current SHA-256 bindings (supersede the historical lifecycle/runner hashes):
 Next: connect this port to request/sequence lifecycle in a fresh full experimental
 server, add the durable write-time sink, and register that producer before any
 native execution. No native observation producer exists in this source port.
+
+
+Server completion/cancellation source port (2026-11-19)
+-------------------------------------------------------
+
+`server_port.server_context(source)` transforms the pinned v10
+`tools/server/server-context.cpp`, failing closed if any expected anchor drifts.
+A slot may hold an assigned `round_lifecycle` through `cafe3_rounds`. Request
+setup must call `begin` before attaching it. Empty pointers preserve legacy
+behavior. The port calls `finish(0,0)` after target-only sampler acceptance,
+and `finish(n_draft, ids.size()-1)` after both final target/draft KV removals.
+Shortened proposals cancel through the existing lifecycle guard. Checkpoint
+replay and context shifts cancel explicitly. Shared-batch decode failure/retry
+and speculative batch-processing failure cancel pending slot samples. Release
+cancels, erases the sequence and detaches the pointer before slot reset; repeated
+release remains harmless. Writer failure propagates and prevents policy training.
+
+**2/2 targeted tests PASS**, including a strict-warning C++17 ASan/UBSan executable
+using the actual transformed slot methods and actual lifecycle: target-only
+confidence-plus-target timing 50+10=60 us, width-one completion, duplicate finish,
+shortened proposals, cancellation, release/reused ids, off/unattached paths and
+writer failure. Tests also assert completion/cancellation placement in the full
+transformed native source and reject anchor drift. Full generated server
+translation-unit C++17 syntax checking PASS against the v10 headers. Generated
+scratch file: `/mnt/raid0/llm/tmp/df2/cafe3-server-completion-20261119/server-context.cpp`.
+Production source commit: `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`.
+
+This completes the source-level feedback seam only. Request assignment does
+not yet construct or attach a lifecycle, and server draft setup does not yet
+install prepare/select callbacks. No durable native sink exists; no native
+observations were produced and no full executable, identity, speed or P9 verdict
+is claimed. Next implement request-scoped attachment and confidence preparation/
+selection, then the durable sink and its source registration before native
+execution. Full experimental builds and P9 must go through published rows.
+
+SHA-256 bindings:
+- `server_port.py`: `a32a9938ad21adae476e306df3b4260294ad5fb390e7da739ec70c83fd0393de`
+- `test_server_port.py`: `e38bfa403244d620a819c8fa20b92006242fdca8e92420866960d315ef442f41`
+- `run_tests.sh`: `8b991d866a77367c0c43a6e635810955c4f91f801b1ec0adbdefededcf3d7d21`
+
+[no-belief: compiled server source port and model-free tests only]
