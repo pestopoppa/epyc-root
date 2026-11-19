@@ -48,10 +48,11 @@ def test_generated_patch_has_both_modes_and_same_matrix():
     patch = d.patch_sources(sources(), config())
     assert patch == d.patch_sources(sources(), config())
     assert patch.count("GGML_TYPE_Q4_K, GGML_TYPE_F32, 512, n, 256") == 2
-    assert patch.count("for (int n = 4; n <= 9; ++n)") == 28
+    assert patch.count("for (int n = 4; n <= max_n; ++n)") == 28
 
 
-def test_generated_matrix_compiles_and_covers_each_cell(tmp_path):
+@pytest.mark.parametrize("path,max_width,count", [("MMVQ", 8, 70), ("MMQ", 9, 84)])
+def test_generated_matrix_compiles_and_covers_each_cell(tmp_path, path, max_width, count):
     patch = d.patch_sources(sources(), config())
     # Compile the exact added matrix and evaluate all (type,m,n,k) tuples.
     additions = [line[1:] for line in patch.splitlines() if line.startswith("+") and not line.startswith("+++")]
@@ -60,6 +61,8 @@ def test_generated_matrix_compiles_and_covers_each_cell(tmp_path):
     cases = "\n".join(additions[start + 1:end])
     code = r'''
 #include <array>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <set>
 #include <tuple>
@@ -76,17 +79,17 @@ struct test_mul_mat : test_case {
 int main() {
     std::vector<std::unique_ptr<test_case>> test_cases;
 ''' + cases + r'''
-    for (int t = 1; t <= 7; ++t) for (int n = 4; n <= 9; ++n) {
+    for (int t = 1; t <= 7; ++t) for (int n = 4; n <= max_n; ++n) {
         if (!cells.count({t,512,n,256}) || !cells.count({t,1024,n,512})) return 1;
     }
-    return cells.size() == 84 ? 0 : 2;
+    return cells.size() == CELL_COUNT ? 0 : 2;
 }
 '''
     source = tmp_path / "matrix.cpp"
-    source.write_text(code)
+    source.write_text(code.replace("MAX_WIDTH", str(max_width)).replace("CELL_COUNT", str(count)))
     exe = tmp_path / "matrix"
     subprocess.run(["c++", "-std=c++17", str(source), "-o", str(exe)], check=True)
-    subprocess.run([str(exe)], check=True)
+    subprocess.run([str(exe)], env=dict(os.environ, GGML_LB1C_PATH=path), check=True)
 
 
 @pytest.fixture(scope="module")
@@ -106,6 +109,7 @@ def host(tmp_path_factory):
 #define GGML_LOG_INFO(...) fprintf(stderr, __VA_ARGS__)
 enum { GGML_TYPE_F32, ''' + types + r''' };
 const int GGML_CUDA_CC_CDNA2 = 0x90a;
+const int MMVQ_MAX_BATCH_SIZE = 8;
 struct tensor { int type; long long ne[4]; bool contiguous = true; };
 bool ggml_is_contiguous(const tensor * t) { return t->contiguous; }
 const char * ggml_type_name(int) { return "q4_K"; }
@@ -127,6 +131,7 @@ int main(int argc, char ** argv) {
     if (!strcmp(scenario, "arch")) cc = 0x942;
     if (!strcmp(scenario, "wave")) wave = 32;
     if (!strcmp(scenario, "width")) width = 10;
+    if (!strcmp(scenario, "nine")) width = 9;
     if (!strcmp(scenario, "padding")) padding = true;
     if (!strcmp(scenario, "type")) a.type = GGML_TYPE_F32;
     if (!strcmp(scenario, "input")) b.type = GGML_TYPE_Q4_K;
@@ -174,3 +179,9 @@ def test_invalid_direct_requests_never_fall_back(host, scenario, path):
 def test_invalid_override_refuses(host, path):
     run = subprocess.run([str(host), "valid"], env=dict(os.environ, GGML_LB1C_PATH=path), capture_output=True)
     assert run.returncode == 7
+
+
+@pytest.mark.parametrize("path,rc", [("MMVQ", 7), ("MMQ", 0)])
+def test_native_width_nine_boundary(host, path, rc):
+    run = subprocess.run([str(host), "nine"], env=dict(os.environ, GGML_LB1C_PATH=path), capture_output=True)
+    assert run.returncode == rc

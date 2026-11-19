@@ -2,8 +2,8 @@
 """Generate a source-bound experimental LB1c patch; never edit a kernel tree.
 
 Input shapes are (output rows m, reduction k) from a committed DS41/Q38FN
-shape inventory. Both kernels receive every type/shape/width in test and perf
-mode. This only generates source: build, residency, correctness and timings
+shape inventory. Both kernels receive every type/shape in test and perf
+mode; MMVQ covers widths 4-8 and MMQ 4-9 (native v10 MMVQ limit is 8). This only generates source: build, residency, correctness and timings
 still require a published row. The diagnostic override must never be promoted.
 """
 import argparse
@@ -26,6 +26,7 @@ HOOK = r'''
         GGML_ASSERT(strcmp(path, "MMVQ") == 0 || strcmp(path, "MMQ") == 0);
         GGML_ASSERT(cc == GGML_CUDA_CC_CDNA2 && warp_size == 64);
         GGML_ASSERT(!bad_padding_clear && ne11 >= 4 && ne11 <= 9);
+        GGML_ASSERT(strcmp(path, "MMQ") == 0 || ne11 <= MMVQ_MAX_BATCH_SIZE);
         GGML_ASSERT(src1->type == GGML_TYPE_F32 && dst->type == GGML_TYPE_F32);
         GGML_ASSERT(ggml_is_contiguous(src0) && ggml_is_contiguous(src1) && ggml_is_contiguous(dst));
         GGML_ASSERT(src0->ne[2] == 1 && src0->ne[3] == 1);
@@ -84,9 +85,10 @@ def patch_sources(sources, config):
     # An opt-in early return replaces the default shape population in BOTH
     # correctness and perf mode. No model loading or hashing occurs in a grant.
     cases = "\n    if (getenv(\"GGML_LB1C_PATH\")) {\n"
+    cases += '        const int max_n = strcmp(getenv("GGML_LB1C_PATH"), "MMVQ") == 0 ? 8 : 9;\n'
     for m, k in cells:
         for t in TYPES:
-            cases += f"        for (int n = 4; n <= 9; ++n) test_cases.emplace_back(new test_mul_mat(GGML_TYPE_{t}, GGML_TYPE_F32, {m}, n, {k}, {{1, 1}}, {{1, 1}}));\n"
+            cases += f"        for (int n = 4; n <= max_n; ++n) test_cases.emplace_back(new test_mul_mat(GGML_TYPE_{t}, GGML_TYPE_F32, {m}, n, {k}, {{1, 1}}, {{1, 1}}));\n"
     cases += "        return test_cases;\n    }\n"
     for mode in ("eval", "perf"):
         anchor = (f"static std::vector<std::unique_ptr<test_case>> make_test_cases_{mode}() {{\n"
@@ -116,7 +118,10 @@ def main():
         "config": config, "patch_sha256": hashlib.sha256(patch.encode()).hexdigest(),
         "source_sha256": {p: hashlib.sha256(s.encode()).hexdigest() for p, s in sources.items()},
         "types": TYPES, "widths": list(range(4, 10)), "paths": ["MMVQ", "MMQ"],
-        "cells_per_path": len(validate(config)) * len(TYPES) * 6,
+        "supported_widths": {"MMVQ": list(range(4, 9)), "MMQ": list(range(4, 10))},
+        "unsupported": {"MMVQ": {"9": "v10 MMVQ_MAX_BATCH_SIZE=8; native extension required"}},
+        "cells_per_path": {"MMVQ": len(validate(config)) * len(TYPES) * 5,
+                           "MMQ": len(validate(config)) * len(TYPES) * 6},
         "execution": "not_run", "diagnostic_only": True,
     }, indent=2) + "\n")
 

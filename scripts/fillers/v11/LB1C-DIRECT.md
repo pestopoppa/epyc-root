@@ -4,7 +4,11 @@
 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, without changing any source tree.
 The patch adds an opt-in `GGML_LB1C_PATH=MMVQ|MMQ` dispatch override and
 replaces the backend test's default population in both `test` and `perf` modes
-with the same seven quant types, widths 4–9, and supplied `(m,k)` shapes.
+with seven quant types and supplied `(m,k)` shapes. MMVQ covers widths 4–8;
+MMQ covers 4–9. V10 has `MMVQ_MAX_BATCH_SIZE=8` and no width-9
+instantiation. The manifest records that unsupported cell, and forced width-9
+MMVQ refuses. Completing the original width-4–9 crossover gate requires a
+native width-9 extension; do not infer a crossover from this partial matrix.
 Here `m` is output rows and `k` is the reduction dimension.
 
 Supply a JSON config with `lane` equal to `DS41` or `Q38FN`, a `shape_source`
