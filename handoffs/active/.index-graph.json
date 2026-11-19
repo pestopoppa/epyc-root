@@ -369,7 +369,7 @@
       "from": "INF-65",
       "kind": "ref",
       "to": "INF-59",
-      "weight": 3
+      "weight": 4
     },
     {
       "from": "INF-65",
@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T21:42:24Z",
+  "generated_at": "2026-11-19T21:50:02Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1891,7 +1891,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1032,
+          "line": 1033,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1900,7 +1900,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1648,
+          "line": 1649,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1909,7 +1909,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1795,
+          "line": 1796,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -1978,7 +1978,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1776,
+          "line": 1777,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -1987,7 +1987,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1900,
+          "line": 1901,
           "name": "cpu-fused-decoder-blocks",
           "open": 2,
           "readiness": "ready"
@@ -1996,7 +1996,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2232,
+          "line": 2233,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2005,7 +2005,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2371,
+          "line": 2372,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2014,7 +2014,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2933,
+          "line": 2934,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2026,7 +2026,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3071,
+          "line": 3072,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2038,7 +2038,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3078,
+          "line": 3079,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
