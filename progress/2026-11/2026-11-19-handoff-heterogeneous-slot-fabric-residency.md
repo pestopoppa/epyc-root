@@ -125,3 +125,7 @@ Duplicate run-end delivery for `kvu-kpf131-native-grid-20261105`: no new result-
 ## 03:43Z — Consume duplicate supervisor qualification run-end; existing PASS and FILED receipt already acknowledge this result.
 
 Duplicate dispatcher delivery for `kpf41-r4-supervisor-qual-20261105`; no new result to file. Existing verdict and `.FILED` receipt date to 2026-11-05T03:11Z. The filed PASS cites native result SHA-256 `32f660abc3b79b1a3e0f2dac8ea4bf2e738b0d7213e90ec1ddd52604c515a25d` and covers source-bound synthetic owned-grandchild pidfd cleanup plus four exact marker controls including wrong-type and suffix rejection. No rerun, new finding or parent KPF-41 completion; GPU/backend qualification remains separate. Next action remains consuming the pending r2 publisher smoke event.
+
+## 03:44Z — Consume duplicate grid-binding run-end; existing PASS, receipt and completed box already record the result.
+
+Duplicate dispatcher event `kvu-kpf131-grid-binding-20261105`: no new result-bearing task. Verdict and `.FILED` receipt already date to 2026-11-05T02:50Z, and KPF-13.1-GRID-BINDING is checked. Existing PASS references native result SHA-256 `9570c743d43798ee4da403a8b0d794b70b23865fcee63f21e7439efdf324f028`: two entries per case, one grid per entry, honest second cells 0,1 at positions 0,1, empty mutant second grid, zero child exits, cleanup and stable executable/five DSOs. This is fixture ordering only. No re-filing, new tick, rerun or live task-binding claim. Pending backend GPU publisher event remains the next action.
