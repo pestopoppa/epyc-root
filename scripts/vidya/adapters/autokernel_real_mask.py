@@ -23,6 +23,12 @@ PROPOSITION = ("For the sixteen captured DS41 raw-plus-compressed top-k F16 mask
                "three internally stable output repetitions, and bit-identical output rows.")
 # Reviewed source bytes, populated at source integration; never execute archived code.
 PRODUCERS = {'probe-source.cpp': 'eca6a1acd105e41548265ee6afc3359360273b005877ba1a2d3321b77774f5cb', 'verifier-source.py': '17fae6d96855db42a2b13f0e9e81786abb1b9acbe6a472edd7dcaf4bf278dd06', 'reference-source.py': 'ad028c93bccd49e227c2aa78466c7170421cd4e84d632d9d6af38f78591d55bf', 'capture-source.py': 'f1f82191be9d0bbdc1f90aec7852111315d7d51d20340ac1b8f977c0937395c6'}
+# Reviewed as complete source sets; never mix revisions. The original set stays accepted for
+# the sealed Oct-31 records. The second set differs only in reference-source.py: research
+# f19e05a5e (AK-TOOL-ANSI-ONE-STRIP) swapped cpu_fa_reference.py's private ANSI regex
+# r"\x1b\[[0-9;]*m" for the identical shared tool_output.strip_ansi (3-line diff, no other change).
+PRODUCER_SETS = (PRODUCERS, {**PRODUCERS, "reference-source.py":
+    "f0f4a98f88b7533a04b08d10d97f3dbbd395cbafcb1ad13796b417d48730308f"})
 
 
 def canonical(value):
@@ -143,8 +149,8 @@ def read_record(path):
     files = {item["name"]: pin(archive, item) for item in record["pins"]}
     pins = {item["name"]: item for item in record["pins"]}
     require(all(pins.get(item["name"]) == item for item in request["pins"]), "original request readset changed")
-    require(bool(PRODUCERS) and all(digest(files[name]) == sha for name, sha in PRODUCERS.items()),
-            "unreviewed verifier/capture/probe source bytes")
+    require(any(all(digest(files[name]) == sha for name, sha in producers.items())
+                for producers in PRODUCER_SETS), "unreviewed verifier/capture/probe source bytes")
     manifest = decode(files["capture-capture-manifest.json"])
     require(manifest == request["capture_manifest"] and manifest["verifier_schema"] == SCHEMA
             and manifest["decided_proposition"] == proposition and manifest["evidence_mode"] == mode
