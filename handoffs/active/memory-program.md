@@ -1817,7 +1817,7 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
 
 #### 2026-09-07 — memory-service surface + the BEAM/Tulving retrieval arm (research-intake)
 
-- [ ] **UTM-B1 — Register the already-built read surface as a model-facing `ms.search` / `ms.expand`
+- [x] **UTM-B1 — Register the already-built read surface as a model-facing `ms.search` / `ms.expand`** — DONE 2026-11-19 (operator chose MCP and REPL): orchestrator `51734a46`, flags `trace_navigation_tools` (default off) and `trace_navigation_cross_session` (default off); every call scoped to the caller's session (`src/trace/scoped.py`), MCP registration gated in `mcp_server.py` (stdio MCP reads the flag at startup), REPL `ms_search`/`ms_expand` via the shared tool broker (child lane included), picker- and stub-indexed. [no-belief: source and tests, no measurement] —
       tool** (`intake-1316#record`). `src/trace/navigation.py` already IS an ms-shaped read surface
       (`search_records`, `search_conversation`, `get_records`, `get_conversation`, allowlisted
       `read_file`, pure RRF k=60) with no ingest, no schema mutation and no embedding call. **The
