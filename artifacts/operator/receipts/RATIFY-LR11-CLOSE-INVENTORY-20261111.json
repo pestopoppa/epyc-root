@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-LR11-CLOSE-INVENTORY-20261111",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_lr11_close_inventory_20261111.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

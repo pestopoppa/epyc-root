@@ -1,0 +1,1776 @@
+{
+  "extractor": "cc-extract/v1",
+  "false_positives": [
+    0,
+    6,
+    15,
+    19,
+    25,
+    29,
+    30,
+    32,
+    33,
+    44,
+    45,
+    51,
+    53,
+    56,
+    58,
+    62,
+    67,
+    69,
+    73,
+    79,
+    82,
+    85,
+    88,
+    92,
+    93,
+    95,
+    99,
+    106,
+    111,
+    115,
+    116,
+    117,
+    119
+  ],
+  "items": [
+    {
+      "best_sentence": "Actual GLM c463 CPU and canonical ef811 GPU inputs resolve and both original owner dry runs exit0 (0.44s), with sol-medium actors and derived scheduler.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-unified-surface-program.md",
+      "idx": 0,
+      "proposed": true,
+      "score": 2,
+      "start": 503,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **AKU-12a",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-unified-surface-program.md",
+      "idx": 1,
+      "proposed": false,
+      "score": 0,
+      "start": 3786,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **Shared-source target switching and all-eight-target serial startup**: ✅ 2026-09-10.",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-unified-surface-program.md",
+      "idx": 2,
+      "proposed": false,
+      "score": 0,
+      "start": 471,
+      "tick": true
+    },
+    {
+      "best_sentence": "Original controller PID1380863 / exec21102 exited 0; five source/build/correctness/A-B iterations, no keeps.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-unified-surface-program.md",
+      "idx": 3,
+      "proposed": true,
+      "score": 3,
+      "start": 561,
+      "tick": true
+    },
+    {
+      "best_sentence": "`/mnt/raid0/llm/tmp/backlog-schedule-20261004.md`; :8083 stays parked until the backlog is exhausted (operator's",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "idx": 4,
+      "proposed": false,
+      "score": 0,
+      "start": 40,
+      "tick": null
+    },
+    {
+      "best_sentence": "`/mnt/raid0/llm/tmp/q38fn-transfer-20261003/run2.log`): vs champion `90c12df42`, COR `053c3bd82` gives Q38FN uniform pp256 −4.4% (inconclusive) and pp5 −7.2% (slower 3/3), but the held-keep tip `b3e0b0902` (anchor-gen-017) gives pp256 **−29.4% [−38.6, −20.2]** (UD n=1: −40.6%); decode +2–10% unresol",
+      "features": [
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "idx": 5,
+      "proposed": true,
+      "score": 7,
+      "start": 1031,
+      "tick": true
+    },
+    {
+      "best_sentence": "Before DS41 opts in, disposition the 27 un-ledgered commits its working branch carries over the champion (ledger, fold through G0, or drop), so folding does not carry unmeasured commits into the champion.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "idx": 6,
+      "proposed": true,
+      "score": 3,
+      "start": 1113,
+      "tick": true
+    },
+    {
+      "best_sentence": "DS41 `attn_q_b` 1280×32768 at N=1, EXL3_K4 (donor VBMI native) 120.3 µs ≈ 174 GB/s-equivalent vs IQ4_XS 55.3 µs ≈ 403 GB/s and Q4_K 46.1 µs ≈ 512 GB/s; the best EXL3 variant (K2 swizzled) still trails IQ4_XS on most shapes.",
+      "features": [
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/exl3-cpu-mi210-implementation.md",
+      "idx": 7,
+      "proposed": true,
+      "score": 3,
+      "start": 126,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/iqk-iquant-enablement.md",
+      "idx": 8,
+      "proposed": false,
+      "score": null,
+      "start": 88,
+      "tick": false
+    },
+    {
+      "best_sentence": "> **Pivot queue addition (2026-07-27, operator-directed)**: [gpu-cot-scaffold-sidecar.md](gpu-cot-scaffold-sidecar.md) **REOPENED",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/CURRENT-CAMPAIGN.md",
+      "idx": 9,
+      "proposed": false,
+      "score": 0,
+      "start": 280,
+      "tick": null
+    },
+    {
+      "best_sentence": "GPQA-48-class scale, single MI210 sidecar",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 10,
+      "proposed": false,
+      "score": 0,
+      "start": 7,
+      "tick": null
+    },
+    {
+      "best_sentence": "- [x] **G3 prerequisite",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 11,
+      "proposed": false,
+      "score": 0,
+      "start": 9,
+      "tick": true
+    },
+    {
+      "best_sentence": "v3 preserved the sealed 48-item input/scorer and imported the valid v2 rows without regeneration: receiver-nothink `25/48` (all 48 imported), Qwable-prefix `42/48` (5 imported + 43 fresh).",
+      "features": [
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 12,
+      "proposed": false,
+      "score": 1,
+      "start": 24,
+      "tick": true
+    },
+    {
+      "best_sentence": "Artifact: `/mnt/raid0/llm/tmp/cot-g1/g3_20260728/runs/g3-gpqa-20260728T070247Z-manual2/`.",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 13,
+      "proposed": false,
+      "score": 0,
+      "start": 28,
+      "tick": null
+    },
+    {
+      "best_sentence": "**The verdict is DISTRIBUTION-CONDITIONAL, not \"dead.\"** The full arc: single-shot scaffold FALSIFIED on **code** (both strength regimes, transplanted reasoning ≠ transplanted capability) → self-debug/recursive **loop weak on code** (4% rescue, RL-ceiling arXiv:2504.13837) → **literature reads as a ",
+      "features": [
+        "verdict",
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 14,
+      "proposed": true,
+      "score": 10,
+      "start": 58,
+      "tick": null
+    },
+    {
+      "best_sentence": "re-run on a harder code set (nothink pass ~40–70%, e.g. code_hard tier-3 / HumanEval+/MBPP+ hard, ~25–40 q);",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 15,
+      "proposed": true,
+      "score": 2,
+      "start": 148,
+      "tick": null
+    },
+    {
+      "best_sentence": "- **Verdict: G1-(i) survives (a scaffold beats the cheap baseline)",
+      "features": [
+        "outcome",
+        "delta",
+        "plumbing"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 16,
+      "proposed": false,
+      "score": 1,
+      "start": 160,
+      "tick": null
+    },
+    {
+      "best_sentence": "**NET VERDICT (both slices):** the lane's load-bearing claim",
+      "features": [
+        "verdict",
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 17,
+      "proposed": true,
+      "score": 5,
+      "start": 186,
+      "tick": null
+    },
+    {
+      "best_sentence": "GenRM best-of-N on cruxeval, ready to run.",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gpu-cot-scaffold-sidecar.md",
+      "idx": 18,
+      "proposed": false,
+      "score": 0,
+      "start": 240,
+      "tick": null
+    },
+    {
+      "best_sentence": "Validation: focused unittest passed (`5` tests), `diff --check` clean, record-only and `--strict` preflights wrote `ok` reports with zero blockers/host warnings at `/mnt/raid0/llm/tmp/cpu-bench-clean-preflight-20260717T100919Z-record/preflight.json` and `/mnt/raid0/llm/tmp/cpu-bench-clean-preflight-",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 19,
+      "proposed": true,
+      "score": 3,
+      "start": 449,
+      "tick": true
+    },
+    {
+      "best_sentence": "- **Evidence**: the audit REPORT;",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "idx": 20,
+      "proposed": false,
+      "score": 0,
+      "start": 766,
+      "tick": null
+    },
+    {
+      "best_sentence": "Two IQ3_XXS shared-expert cases exceeded the 5e-4 NMSE cap and were applied with `--anchor-exceeds-generic` (anchor-relative acceptance, a known low-bit lead): `shexp_down` n=2 = 5.96e-4, `shexp_gate_up` n=4 = 5.22e-4. - Input-identity checks PASS: DS41 348/348, Q38FN 32/32, 0 mismatches. - New anch",
+      "features": [
+        "verdict",
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "idx": 21,
+      "proposed": true,
+      "score": 9,
+      "start": 1147,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/non-inference-backlog.md",
+      "idx": 22,
+      "proposed": false,
+      "score": null,
+      "start": 386,
+      "tick": false
+    },
+    {
+      "best_sentence": "27B planner quality investigation on the freed GPU: replay fixed DS41 planning contexts through qwen3.8-27b vs deepseek/gpt-6.1-sol with a neutral critic; separate capability from harness (compaction, effort not reaching the server, same-family critic). ✅ 2026-09-30 - Post-C76 the 27B went 0/5 (2 cr",
+      "features": [
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "idx": 23,
+      "proposed": true,
+      "score": 7,
+      "start": 869,
+      "tick": true
+    },
+    {
+      "best_sentence": "Gate 3's divergence is winner's curse on positive noise draws, not a proxy that fails to transfer, so there is no cheaper per-keep serving confirm: a confirm is one more A/B. - The floor drives everything (DS41-C92): at 4.533% a real +2% effect is almost never admissible by any rule; at 1.876% most ",
+      "features": [
+        "outcome",
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "idx": 24,
+      "proposed": true,
+      "score": 6,
+      "start": 920,
+      "tick": true
+    },
+    {
+      "best_sentence": "it already guards per-pair (`mixed_metric_basis: false` on the clean half-machine T=16 pair, where C2@8 462.8 beats C1@16 327.0 by 29.3% on a consistent trimmed basis).",
+      "features": [
+        "outcome",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 25,
+      "proposed": true,
+      "score": 5,
+      "start": 718,
+      "tick": true
+    },
+    {
+      "best_sentence": "**Candidates replayed** (rescue / of 26 moved >5% / worst move): pctile-10 5/5, 18, +148% · pctile-20 5/5, 21, +93% · plateau-50 5/5, 20, +186% · plateau-80 5/5, 14, +164% · **decouple 5/5, 0, 0%**.",
+      "features": [
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 26,
+      "proposed": true,
+      "score": 4,
+      "start": 689,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 27,
+      "proposed": false,
+      "score": null,
+      "start": 823,
+      "tick": false
+    },
+    {
+      "best_sentence": "E5 DOES have absence-inferred fields; census done ✅ 2026-08-11 (`mainA`).** Answering the rider at `handoffs/active/autopilot-sequential-allocation.md` (`f272bb4e`), which measured the era label being inferred from a MISSING question ledger on ~61% of 1372 autopilot journal rows and asked whether E5",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 28,
+      "proposed": true,
+      "score": 2,
+      "start": 824,
+      "tick": true
+    },
+    {
+      "best_sentence": "prepared post-release, adversarially reviewed, **verdict: do not present for a token**.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 29,
+      "proposed": true,
+      "score": 2,
+      "start": 739,
+      "tick": true
+    },
+    {
+      "best_sentence": "**(d)** the refused backfill deserves a stronger refusal than \"ungated\": of the 191 pre-registered cell manifests, **≥138 are correct at registration** (all added in `b294daa04f` @ 2026-07-23T16:30:41Z, inside the E6 window) and 16 more are dropped-W3 cells that will never execute, so a blanket rewr",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 30,
+      "proposed": true,
+      "score": 2,
+      "start": 747,
+      "tick": true
+    },
+    {
+      "best_sentence": "Tests landed in `tests/unit/test_eval_batch_serving_evaltower_window.py`; validation passed with `uv run pytest -q tests/unit/test_eval_batch_serving_activation_window.py tests/unit/test_eval_batch_serving_evaltower_window.py` (`12 passed`), `uv run ruff check scripts/benchmark/eval_batch_serving_ev",
+      "features": [
+        "outcome",
+        "plumbing"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/batched-decode-measurement.md",
+      "idx": 31,
+      "proposed": false,
+      "score": 1,
+      "start": 148,
+      "tick": true
+    },
+    {
+      "best_sentence": "keep confirmed/critic-approved, drop contaminated eras) + `build_triage_set.py` (intake index -> classification set); train the CPU-feasible triage baseline now (BGE embedding + small MLP, routing-classifier stack reused)",
+      "features": [
+        "outcome",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/frontier-f3-data-flywheel.md",
+      "idx": 32,
+      "proposed": true,
+      "score": 3,
+      "start": 22,
+      "tick": true
+    },
+    {
+      "best_sentence": "`tests/unit/test_dataset_builders.py` passed 3.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/frontier-f3-data-flywheel.md",
+      "idx": 33,
+      "proposed": true,
+      "score": 3,
+      "start": 162,
+      "tick": null
+    },
+    {
+      "best_sentence": "all PASS with real tallies on `ef81196d5`: G1 `test-backend-ops -o SSM_SCAN -b ROCm0` 7/7 OK (incl.",
+      "features": [
+        "verdict",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-champion-aggregate.md",
+      "idx": 34,
+      "proposed": true,
+      "score": 4,
+      "start": 581,
+      "tick": true
+    },
+    {
+      "best_sentence": "`verify_ggml_linkage.sh` **PASS** before the serving gate; dispatch **observed** (`llama-bench -v` + `GGML_SCHED_DEBUG=2`: 27,516 nodes, SSM_SCAN=0, SSM_CONV 576 + GATED_DELTA_NET 576 all on ROCm0, CPU holds only 12 GET_ROWS); tg128 vs anchor-gen-021 **+0.052%** (20 pairs, floor 0.638%, not decisive",
+      "features": [
+        "verdict",
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-unified-surface-program.md",
+      "idx": 35,
+      "proposed": true,
+      "score": 6,
+      "start": 1290,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **GC-0",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/glm52-reviewer-capability-gates.md",
+      "idx": 36,
+      "proposed": false,
+      "score": 0,
+      "start": 170,
+      "tick": true
+    },
+    {
+      "best_sentence": "**2026-07-16/17 stale-binary evidence:** artifact integrity closed, short CPU smoke passed (`READY`), 4K/8K traces and a true >64K run recorded `glm-dsa`, `indexer.top_k` metadata/override, expected NextN-tail skipping, and `Lightning Indexer enabled`; true >64K processed `65969` prompt tokens at `6",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 37,
+      "proposed": true,
+      "score": 6,
+      "start": 406,
+      "tick": true
+    },
+    {
+      "best_sentence": "**Decision gate replacement**: GLM-5.2 now loads coherently, the landed DSA path processed a stale-binary true >64K prompt with `Lightning Indexer enabled` (`/mnt/raid0/llm/tmp/glm52-dsa-true64k-probe-20260717T0125/`), and current-source `3dee86a5a` smokes prove GLM cache/runtime wiring (`/mnt/raid0",
+      "features": [
+        "outcome",
+        "plumbing"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/llama-cpp-dsa-contribution.md",
+      "idx": 38,
+      "proposed": false,
+      "score": 0,
+      "start": 110,
+      "tick": null
+    },
+    {
+      "best_sentence": ">   (`/mnt/raid0/llm/tmp/gpu-block-27b-20261003/RUNBOOK.md`: DEPLOY-EC-2 lease and credit, Q38-T7, KVU-16b, B4g, B4i).",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/CURRENT-CAMPAIGN.md",
+      "idx": 39,
+      "proposed": false,
+      "score": 0,
+      "start": 56,
+      "tick": null
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 40,
+      "proposed": false,
+      "score": null,
+      "start": 250,
+      "tick": false
+    },
+    {
+      "best_sentence": "OFF wins on :8083's shape; the stack change is UFH14-B4j. v10 defaults `cache_idle_slots` ON: with `--cache-ram` + `--kv-unified`, every idle slot is saved to RAM and cleared from the KV pool as soon as any new task starts (server-context.cpp:2469-2483).",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 41,
+      "proposed": true,
+      "score": 3,
+      "start": 284,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **UFH14-B6c",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 42,
+      "proposed": false,
+      "score": 0,
+      "start": 412,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 43,
+      "proposed": false,
+      "score": null,
+      "start": 461,
+      "tick": false
+    },
+    {
+      "best_sentence": "It runs in the coordinated GPU block after ~18:15Z. - **PASSED LIVE 2026-10-04 ~02:49-02:50Z (workspace-ec)**, :8083 at production flags (`slots_debug_env: null`): call 2 `kv_admission.cache_credit_source == \"fp_history\"`, `cache_credited_tokens` 18,829 vs server `timings.cache_n` 22,178 (ratio 0.84",
+      "features": [
+        "verdict",
+        "outcome",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/kv-unified-stack-rollout.md",
+      "idx": 44,
+      "proposed": true,
+      "score": 7,
+      "start": 100,
+      "tick": true
+    },
+    {
+      "best_sentence": "It runs in the coordinated GPU block after ~18:15Z. - **PASSED LIVE 2026-10-04 ~02:49-02:50Z (workspace-ec)**, :8083 at production flags (`slots_debug_env: null`): call 2 `kv_admission.cache_credit_source == \"fp_history\"`, `cache_credited_tokens` 18,829 vs server `timings.cache_n` 22,178 (ratio 0.84",
+      "features": [
+        "verdict",
+        "outcome",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/kv-unified-stack-rollout.md",
+      "idx": 45,
+      "proposed": true,
+      "score": 7,
+      "start": 136,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/kv-unified-stack-rollout.md",
+      "idx": 46,
+      "proposed": false,
+      "score": null,
+      "start": 219,
+      "tick": false
+    },
+    {
+      "best_sentence": "The offline paired re-score (`analysis/q38t7-rescore/RESCORE.md`, no inference) gives **PASS**: phase A has 0 drafting regressions out of 24 (class-equal 24/24, byte-identical 19/24); ground truth is 4/5 in both arms with the same answers; phase B/C are 12/12 OK under `inf70-degeneracy.v2`. - Run #2",
+      "features": [
+        "verdict",
+        "outcome",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/qwen38-27b-replace-qwen36.md",
+      "idx": 47,
+      "proposed": true,
+      "score": 8,
+      "start": 133,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/vidya-belief-substrate-program.md",
+      "idx": 48,
+      "proposed": false,
+      "score": null,
+      "start": 2227,
+      "tick": false
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-champion-aggregate.md",
+      "idx": 49,
+      "proposed": false,
+      "score": null,
+      "start": 145,
+      "tick": false
+    },
+    {
+      "best_sentence": "C = champion `kernels/builds/gpu-20260929-90c12df42` (b10308-90c12df42). - Arms: P C P on :8197, host threads `-t 8` on cores 72-79, membind 3. - Every arm was checked for KFD VRAM residency, its own `libggml-hip` mapped, placement OK, and `/props` build_info. - pp/tg tok/s: P 886.9/39.01, C 884.4/3",
+      "features": [
+        "verdict",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-champion-aggregate.md",
+      "idx": 50,
+      "proposed": true,
+      "score": 4,
+      "start": 675,
+      "tick": true
+    },
+    {
+      "best_sentence": "every check (device by KFD VRAM ≥ 1 GB, per-thread placement re-checked after the probe, `/props`, a paused-mode watcher, the summary) is an `ab_probe.py` subcommand that prints what it saw;",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-champion-aggregate.md",
+      "idx": 51,
+      "proposed": true,
+      "score": 2,
+      "start": 705,
+      "tick": true
+    },
+    {
+      "best_sentence": "C = champion `kernels/builds/gpu-20260929-90c12df42` (b10308-90c12df42). - Arms: P C P on :8197, host threads `-t 8` on cores 72-79, membind 3. - Every arm was checked for KFD VRAM residency, its own `libggml-hip` mapped, placement OK, and `/props` build_info. - pp/tg tok/s: P 886.9/39.01, C 884.4/3",
+      "features": [
+        "verdict",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-champion-aggregate.md",
+      "idx": 52,
+      "proposed": true,
+      "score": 4,
+      "start": 716,
+      "tick": true
+    },
+    {
+      "best_sentence": "On this build `test_speculative.py` passed **9/9** (7 existing + the 2 new n_probs tests, 61.5 s;",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "idx": 53,
+      "proposed": true,
+      "score": 6,
+      "start": 126,
+      "tick": true
+    },
+    {
+      "best_sentence": "NOT significant**; direction consistently favors Q4 by ~5.7pp across all three suites (aime 76.7 vs 70.0; gpqa-prefix 88.2 vs 82.4).",
+      "features": [
+        "verdict",
+        "outcome",
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/architect-model-selection-bench.md",
+      "idx": 54,
+      "proposed": true,
+      "score": 9,
+      "start": 216,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] 2026-09-26T10:55:35Z run ingested ✅ 2026-09-26 (operator-authorized): 24 readbw claims, 72 frames, via an isolated root `/mnt/raid0/llm/tmp/inf70-ingest-ds41scope` (symlink to the corpus run; the ingest does not dedupe, so the full corpus was not re-walked).",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/vidya-belief-substrate-program.md",
+      "idx": 55,
+      "proposed": false,
+      "score": 0,
+      "start": 1969,
+      "tick": true
+    },
+    {
+      "best_sentence": "Three completion calls to :8074 (14:51, 14:54, 14:58Z; one streamed) were refused with 503 `lock_unavailable` after the 180 s region-admission timeout, blockers `['autokernel-cpu']`.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 56,
+      "proposed": true,
+      "score": 2,
+      "start": 356,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 57,
+      "proposed": false,
+      "score": null,
+      "start": 448,
+      "tick": false
+    },
+    {
+      "best_sentence": "Full `tests/unit` on the integration branch: 15979 passed, 0 failed, 57 skipped (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`; main had 19 failing before).",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 58,
+      "proposed": true,
+      "score": 3,
+      "start": 455,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/routing-intelligence.md",
+      "idx": 59,
+      "proposed": false,
+      "score": null,
+      "start": 250,
+      "tick": false
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": false,
+      "handoff": "handoffs/active/stack-change-governance-pipeline.md",
+      "idx": 60,
+      "proposed": false,
+      "score": null,
+      "start": 130,
+      "tick": false
+    },
+    {
+      "best_sentence": "build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds ",
+      "features": [
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/cpu-decode-roofline-program.md",
+      "idx": 61,
+      "proposed": true,
+      "score": 7,
+      "start": 3866,
+      "tick": true
+    },
+    {
+      "best_sentence": "**Validation**: ruff + `tests/unit/test_irt_scorer.py` and `tests/unit/test_graph_router_action_space.py` (`15 passed`); real artifact smoke over 2,000 rows from `orchestration/repl_memory/training_data.npz` wrote `/mnt/raid0/llm/tmp/irt_prompt_scores_smoke.npz` with 8 actions, Platt params, and pro",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/learned-routing-controller.md",
+      "idx": 62,
+      "proposed": true,
+      "score": 3,
+      "start": 520,
+      "tick": true
+    },
+    {
+      "best_sentence": "**K24.4:** paired quiet production-vs-current-v7 CPU rerun at `/mnt/raid0/llm/tmp/k24-paired-quiet-20260717T074502Z/` measured frontdoor `8.5756 -> 8.3491 t/s` (`-2.64%`), architect `3.6477 -> 3.5364 t/s` (`-3.05%`), and ingest `9.7992 -> 9.8971 t/s` (`+1.00%`).",
+      "features": [
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 63,
+      "proposed": true,
+      "score": 4,
+      "start": 408,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **K25.2a forced draft-tree e2e attempt falsified ✅ 2026-07-17**: sidecar artifact `/mnt/raid0/llm/tmp/k25-mmvq-drafttree-e2e-20260717T101243Z/` launched widths `3..8` against Qwen3.6-27B Q8 + MTP Q8, but every step logged `returning 0 greedy tokens`;",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 64,
+      "proposed": true,
+      "score": 3,
+      "start": 416,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **K25.2c accepted draft-tree route proof ✅ 2026-07-17**: manual external-draft server artifact `/mnt/raid0/llm/tmp/k25-mmvq-route-external-only-20260717T211050Z/` pinned experimental `LD_LIBRARY_PATH`, enabled `GGML_CUDA_LOG_MMVQ_ROUTE=1`, and generated accepted draft-tree traffic (`draft_n=12",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 65,
+      "proposed": true,
+      "score": 2,
+      "start": 418,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **K25.1 low-level route/correctness proof ✅ 2026-07-17**: sidecar artifact `/mnt/raid0/llm/tmp/k25-mmvq-verify-width-20260717-a/` used experimental `LD_LIBRARY_PATH` and ROCm0 `test-backend-ops` + `rocprofv2` on Q8_0 `MUL_MAT` for `n=1..8`.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 66,
+      "proposed": true,
+      "score": 2,
+      "start": 414,
+      "tick": true
+    },
+    {
+      "best_sentence": "Pinned `test-backend-ops` smoke at `/mnt/raid0/llm/tmp/k25-route-log-smoke-20260717T102617Z/` proves `n=1` logs `use_mmvq=1` + `route=MMVQ`, and `n=4` logs `use_mmvq=0` + `route=MMQ`; all rows supported.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 67,
+      "proposed": true,
+      "score": 2,
+      "start": 417,
+      "tick": true
+    },
+    {
+      "best_sentence": "`llama-bench` decode: `f16/f16 100.013 t/s`, `bf16/f16 12.936`, `f16/bf16 12.885`, `bf16/bf16 80.896`.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 68,
+      "proposed": true,
+      "score": 2,
+      "start": 419,
+      "tick": true
+    },
+    {
+      "best_sentence": "Qwen3-4B Q8 still favors old iqk opt-in (`9.14` vs `8.90 t/s`).",
+      "features": [
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 69,
+      "proposed": true,
+      "score": 3,
+      "start": 423,
+      "tick": true
+    },
+    {
+      "best_sentence": "generic Q8_0 8x8 opt-in retired; optimized path deferred ✅ 2026-07-17**: official upstream `ggml-org/llama.cpp` `origin/master` at `635cdd5f` no longer carries the selectable Q8_0 8x8 repack/gemv/gemm route, and K27.1 measured the local generic scalar path as a regression when explicitly enabled.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 70,
+      "proposed": true,
+      "score": 2,
+      "start": 422,
+      "tick": true
+    },
+    {
+      "best_sentence": "Current default placement recovered versus K24.4 by `+141.6%` prod frontdoor, `+141.6%` prod architect, `+101.1%` prod ingest, `+146.4%` v7 frontdoor, `+158.7%` v7 architect, and `+100.4%` v7 ingest.",
+      "features": [
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 71,
+      "proposed": true,
+      "score": 3,
+      "start": 448,
+      "tick": true
+    },
+    {
+      "best_sentence": "Architect Qwen3.5-122B rows use CPU native `draft-mtp`, same-file NEXTN, `-np 2`, `q4_0/f16` KV, `--mlock`, `--jinja`, request `chat_template_kwargs.enable_thinking=false`, and no `-md`; rows passed at prompt/decode: `837 tok -> 23.53 t/s`, `203/205` draft accepted (`/mnt/raid0/llm/tmp/k35-arch-inge",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 72,
+      "proposed": true,
+      "score": 6,
+      "start": 454,
+      "tick": true
+    },
+    {
+      "best_sentence": "Frontdoor rows passed at prompt/decode: `1861 tok -> 98.04 t/s` (`/mnt/raid0/llm/tmp/k35-frontdoor-gpu-smoke-20260717T1207Z/`), `8005 -> 93.56 t/s` (`/mnt/raid0/llm/tmp/k35-frontdoor-worker-8k-20260717T1212Z/`), `14534 -> 88.84 t/s`, and `28534 -> 79.63 t/s` (`/mnt/raid0/llm/tmp/k35-frontdoor-deep-2",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 73,
+      "proposed": true,
+      "score": 6,
+      "start": 453,
+      "tick": true
+    },
+    {
+      "best_sentence": "Decode held `100.55 t/s` at 2K, `95.56 t/s` at 8K, and `77.67 t/s` at 32K; all rows passed the 512-token completion floor, cleanup blockers were empty, and post-run ROCm showed no KFD PIDs.",
+      "features": [
+        "outcome",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 74,
+      "proposed": true,
+      "score": 5,
+      "start": 488,
+      "tick": true
+    },
+    {
+      "best_sentence": "After-request resident memory: frontdoor 2K/8K/32K `1.37/1.38/1.40 GiB` host RSS plus `55/55/56%` MI210 VRAM; worker 2K/8K `17.48/17.74 GiB`; architect 2K/8K `75.56/76.46 GiB`; ingest 2K/8K/32K `45.84/46.11/46.35 GiB`.",
+      "features": [
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 75,
+      "proposed": true,
+      "score": 3,
+      "start": 459,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **K35.12 MiniCPM-o service policy gate ✅ 2026-07-17**: frontdoor+MiniCPM-o MI210 co-residency smoke passed at `/mnt/raid0/llm/tmp/k35-minicpm-frontdoor-coresidency-20260717T191849Z/`.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 76,
+      "proposed": true,
+      "score": 2,
+      "start": 465,
+      "tick": true
+    },
+    {
+      "best_sentence": "Frontdoor alone decoded `101.68` and `101.84 t/s`; frontdoor with MiniCPM-o resident but idle decoded `101.89` and `101.86 t/s`; concurrent active MiniCPM-o vision decode dropped frontdoor to `80.16` and `80.34 t/s` while MiniCPM-o decoded `90.49` and `90.23 t/s`.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 77,
+      "proposed": true,
+      "score": 2,
+      "start": 487,
+      "tick": true
+    },
+    {
+      "best_sentence": "The realistic `--reasoning off` lane passed the four fixed OCR/chart fixtures on CPU (`4/4`, `11.98-14.13 t/s`) and MI210 (`4/4`, `110.81-122.18 t/s`, about `11%` VRAM) in `/mnt/raid0/llm/tmp/k35-minicpm-o45-reasoning-off-20260717T1911Z/summary.json`.",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 78,
+      "proposed": true,
+      "score": 6,
+      "start": 464,
+      "tick": true
+    },
+    {
+      "best_sentence": "Frontdoor alone averaged `96.33 t/s`; frontdoor with MiniCPM-o resident but idle averaged `96.48 t/s`; active overlap averaged `94.77 t/s` frontdoor and `85.22 t/s` MiniCPM-o; all `8/8` active fixture/context pairs passed; cleanup blockers were empty.",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 79,
+      "proposed": true,
+      "score": 6,
+      "start": 490,
+      "tick": true
+    },
+    {
+      "best_sentence": "This closes the Qwen3-VL-8B candidate A/B; extra vision-candidate A/Bs are paused unless a specific fixture/role-gap fix is identified, and any reopened probe must append to the scoreboard. - [x] **K35.10a latest-tip default-image repeat ✅ 2026-07-19**: `data/gpu-mi210/k35_qwen3vl8_mi210_default_ima",
+      "features": [
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 80,
+      "proposed": true,
+      "score": 7,
+      "start": 462,
+      "tick": true
+    },
+    {
+      "best_sentence": "Artifact `/mnt/raid0/llm/tmp/k35-supergemma4-candidate-20260717T193120Z/summary.json` shows SuperGemma4-26B multimodal Q8_0 + F16 projector passed the four fixed OCR/chart fixtures on CPU (`4/4`, decode `25.58-31.76 t/s`, about `26.4 GiB` PSS) and MI210 (`4/4`, decode `80.35-83.87 t/s`, about `42%` ",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 81,
+      "proposed": true,
+      "score": 6,
+      "start": 491,
+      "tick": true
+    },
+    {
+      "best_sentence": "Live fixture artifact `/mnt/raid0/llm/tmp/k35-vision-escalation-live-smoke-20260718T1225Z/summary.json` passed `4/4` fixed OCR/chart fixtures (`7500`, `43.36`, `Tanzania`, `CS00012465`), with short-answer decode `115.22-127.35 t/s` and prompt eval `731.92-884.41 t/s`.",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 82,
+      "proposed": true,
+      "score": 6,
+      "start": 476,
+      "tick": true
+    },
+    {
+      "best_sentence": "`worker_vision` passed `4/4` (`7500`, `43.36`, `Tanzania`, `CS00012465`) with decode `16.91-21.32 t/s` and `6.05 GiB` RSS before cleanup.",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 83,
+      "proposed": true,
+      "score": 6,
+      "start": 460,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **K35.4 production vision release-smoke scope ✅ 2026-07-17**: current production vision roles passed a bounded v7 release smoke at `/mnt/raid0/llm/tmp/k35-vision-release-smoke-20260717T125719Z/summary.json`.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 84,
+      "proposed": true,
+      "score": 2,
+      "start": 456,
+      "tick": true
+    },
+    {
+      "best_sentence": "Match Flywheel's reported single-hop / multi-hop split if the question pool supports it. - **Variance band**: per Flywheel README, ~1 pp run-to-run variance from LLM non-determinism is the noise floor.",
+      "features": [
+        "outcome",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/internal-kb-rag.md",
+      "idx": 85,
+      "proposed": true,
+      "score": 5,
+      "start": 79,
+      "tick": true
+    },
+    {
+      "best_sentence": "Operational note: the fresh index build is CPU-heavy under ONNX Runtime, not CPU-light.",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/internal-kb-rag.md",
+      "idx": 86,
+      "proposed": false,
+      "score": 0,
+      "start": 423,
+      "tick": null
+    },
+    {
+      "best_sentence": "- [x] **UFH14-B2.** ✅ 2026-10-03 (workspace-ec)",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 87,
+      "proposed": false,
+      "score": 0,
+      "start": 196,
+      "tick": true
+    },
+    {
+      "best_sentence": "All 17 pool-exhaustion episodes in the 8083 log were four ~45-55k contexts filling the 196k pool, and `logs/orchestrator.log` holds zero `SharedKVPoolAdmission` queue lines: the load never passed through the gate.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/kv-unified-stack-rollout.md",
+      "idx": 88,
+      "proposed": true,
+      "score": 3,
+      "start": 460,
+      "tick": true
+    },
+    {
+      "best_sentence": "`tests/unit/test_core_v2_select.py` passed 6/6.",
+      "features": [
+        "outcome",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "idx": 89,
+      "proposed": true,
+      "score": 4,
+      "start": 70,
+      "tick": true
+    },
+    {
+      "best_sentence": "**NEGATIVE, rejected.** Candidate `experimental/mmq-jcap-20260927` (`36e83c0f2`, per-type J cap, static gate PASS: hot-loop spill reloads 431→0).",
+      "features": [
+        "verdict",
+        "outcome",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-research-loop.md",
+      "idx": 90,
+      "proposed": true,
+      "score": 7,
+      "start": 5589,
+      "tick": true
+    },
+    {
+      "best_sentence": null,
+      "features": [],
+      "gate": "unticked",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-research-loop.md",
+      "idx": 91,
+      "proposed": false,
+      "score": null,
+      "start": 5598,
+      "tick": false
+    },
+    {
+      "best_sentence": "Smoke PASS ×3 through the loop's own invocation (`/mnt/raid0/llm/tmp/oab2-smoke/smoke.sh`: orch:auto → frontdoor REPL, 15.8 s, 2 turns), and again after the 14:40:38Z reload.",
+      "features": [
+        "verdict",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "idx": 92,
+      "proposed": true,
+      "score": 5,
+      "start": 121,
+      "tick": true
+    },
+    {
+      "best_sentence": "First operational demo `/mnt/raid0/llm/tmp/odl-paddleocr-vl-demo-20260717T200212Z/model_gated_row_set.json` wrote/scored `18/18` pages, captured one `peg-native` model error as an empty prediction, and reported median decode `485.30 t/s`, median page latency `2918.78 ms`, text-block edit distance `0",
+      "features": [
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 93,
+      "proposed": true,
+      "score": 3,
+      "start": 493,
+      "tick": true
+    },
+    {
+      "best_sentence": "Live artifact `/mnt/raid0/llm/tmp/odl-paddleocr-vl-htmltables-20260717T201106Z/model_gated_row_set.json` completed `18/18` pages with no model errors and improved reading-order edit distance to `0.285753`, but emitted zero HTML `<table>` tags, kept table TEDS at `0.0`, worsened text-block edit dista",
+      "features": [
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 94,
+      "proposed": true,
+      "score": 6,
+      "start": 494,
+      "tick": true
+    },
+    {
+      "best_sentence": "Existing default PaddleOCR predictions were copied and rescored without inference at `/mnt/raid0/llm/tmp/odl-paddleocr-vl-postprocess-rescore-20260717T211432Z/postprocess_rescore_summary.json`: only `2/18` files changed; table TEDS improved `0.0 -> 0.058333` and structure-only TEDS `0.0 -> 0.066667`",
+      "features": [
+        "outcome",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 95,
+      "proposed": true,
+      "score": 4,
+      "start": 496,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **ODL-011 integrate and test the non-coref Ekimetrics arm ✅ 2026-08-13**: registered SC/BI/ICC/DCC in `odl_bench` (`intrinsic.py`, research `f24b8aa9` + `cd329746`); upstream MIT provenance pinned (intake-580, FMRE/RC excluded per license + contract);",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/opendataloader-pipeline-integration.md",
+      "idx": 96,
+      "proposed": false,
+      "score": 0,
+      "start": 50,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] Bench LiteParse-local vs OpenDataLoader-local vs pdftotext on a representative born-digital corpus: reading order, table fidelity, speed, and JVM-free deploy footprint.",
+      "features": [
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/opendataloader-pipeline-integration.md",
+      "idx": 97,
+      "proposed": false,
+      "score": 1,
+      "start": 55,
+      "tick": true
+    },
+    {
+      "best_sentence": "Step simulation vs measured DFlash2 (3.20 tok/step): +1.4–2.4% optimistic, −1.0 to −2.6% after overlap (DFlash2 accepted length already tracks lookup coverage, Spearman 0.68;",
+      "features": [
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "idx": 98,
+      "proposed": true,
+      "score": 3,
+      "start": 224,
+      "tick": true
+    },
+    {
+      "best_sentence": "Artifact `/mnt/raid0/llm/tmp/paddleocr-vl-first-smoke-20260717T194332Z/summary.json` passed digit OCR (`7500`, `484.36 t/s`) and invoice markdown extraction (`489.82 t/s`); the narrow receipt QA prompt failed because it emitted broad OCR text under a 96-token cap.",
+      "features": [
+        "outcome",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 99,
+      "proposed": true,
+      "score": 5,
+      "start": 492,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **W1",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "idx": 100,
+      "proposed": false,
+      "score": 0,
+      "start": 324,
+      "tick": true
+    },
+    {
+      "best_sentence": "Experimental-v7 HIP evidence used the local `build-hip/bin` server with pinned `LD_LIBRARY_PATH`, q8 KV, reasoning off, and fresh sequential servers: short exact tasks passed `5/6` on both no-spec and native MTP, but no-spec was faster (`124.77` vs `109.28 t/s`, MTP accepted `30/30`); long repetitiv",
+      "features": [
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "idx": 101,
+      "proposed": true,
+      "score": 7,
+      "start": 204,
+      "tick": true
+    },
+    {
+      "best_sentence": "H1 transfer falsifier EXECUTED (H1-first, operator-approved) ✅ 2026-09-01.** **H1 CONFIRMED in substance: the +17.9% headline is ne11=1-concentrated and collapses on production serving shapes.** Champion `9e18beb0` vs frozen v9, 20 pairs/surface, all four effects decisive on bootstrap-calibrated flo",
+      "features": [
+        "verdict",
+        "outcome",
+        "qty",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/autokernel-rebuild-program.md",
+      "idx": 102,
+      "proposed": true,
+      "score": 9,
+      "start": 1069,
+      "tick": true
+    },
+    {
+      "best_sentence": "and none is timed; the \"<1 ms MLP / 10-50 ms KNN\" figures in docs are claims.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/routing-intelligence.md",
+      "idx": 103,
+      "proposed": true,
+      "score": 2,
+      "start": 41,
+      "tick": true
+    },
+    {
+      "best_sentence": "Next step: the resume pass (`/mnt/raid0/llm/tmp/sequencer-8d/run_ri18_resume_pause.sh`, per-item resume, no",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/routing-intelligence.md",
+      "idx": 104,
+      "proposed": false,
+      "score": 0,
+      "start": 189,
+      "tick": null
+    },
+    {
+      "best_sentence": "production `:8083` was relaunched again on v10 under `architect_critic` (PID 1677674, /health ok, VRAM-resident) by the restore step of the champion GPU A/B (`autokernel-champion-aggregate.md` V6R-4d.2).",
+      "features": [
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md",
+      "idx": 105,
+      "proposed": false,
+      "score": 1,
+      "start": 264,
+      "tick": true
+    },
+    {
+      "best_sentence": "It is the instrument for KVU-15/16 (decode vs pool fill) and Q38-T7 (DFlash2 acceptance on organic traffic).",
+      "features": [
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/kv-unified-stack-rollout.md",
+      "idx": 106,
+      "proposed": true,
+      "score": 2,
+      "start": 470,
+      "tick": true
+    },
+    {
+      "best_sentence": "~~2.8x RT~~ **CORRECTED 2026-07-31 by first local measurement** (LibriSpeech test-clean, n=100): **WER 2.35%** (lower=better) · **xRT is length-dependent and the single figure was meaningless**",
+      "features": [
+        "verdict",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/multimodal-pipeline.md",
+      "idx": 107,
+      "proposed": true,
+      "score": 5,
+      "start": 103,
+      "tick": null
+    },
+    {
+      "best_sentence": "Qwen3-ASR is DROPPED.** `whisper.cpp large-v3-turbo f16` on the MI210 wins outright: WER **3.37 %** (corrected 2026-10-20: the originally written 2.35 % is the faster-whisper int8 CPU arm of `/mnt/raid0/llm/tmp/stt_wer_results.json`, 44/1870; the whisper.cpp greedy GPU arm is 63/1870 = 3.37 %, CI [2",
+      "features": [
+        "verdict",
+        "outcome",
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/multimodal-pipeline.md",
+      "idx": 108,
+      "proposed": true,
+      "score": 9,
+      "start": 304,
+      "tick": true
+    },
+    {
+      "best_sentence": "Scaled by params (9.5/7.66, weights 19.0 GB) the 9B lands ~49.6 GB of 63.98 GB, ~22% headroom, so **4-bit QLoRA is retired for the ~2k-token/step shape**",
+      "features": [
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/frontier-f3-data-flywheel.md",
+      "idx": 109,
+      "proposed": true,
+      "score": 3,
+      "start": 45,
+      "tick": true
+    },
+    {
+      "best_sentence": "Decode: depth 2 `87.76 t/s` (`492/666` accepted), depth 3 `76.38 t/s` (`492/812` accepted), depth 4 `84.40 t/s` (`494/734` accepted).",
+      "features": [
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "idx": 110,
+      "proposed": true,
+      "score": 3,
+      "start": 208,
+      "tick": true
+    },
+    {
+      "best_sentence": "Live calls: the four 02:49–02:51Z :8083 passthrough records in `logs/serving_calls/serving_calls.jsonl` carry the new `serving_params` block. - Review fixes against workspace-89's proposal: `doomed` was overstated ~2.5x and is now judged against one prefill of the UNCACHED tokens; a sample-cache evi",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/agentic-serving-harness-fixes.md",
+      "idx": 111,
+      "proposed": true,
+      "score": 2,
+      "start": 139,
+      "tick": true
+    },
+    {
+      "best_sentence": "Results: `pp2048 2349.46 ± 1.11 t/s`, `pp8192 1750.72 ± 0.41 t/s`, `tg1024 38.37 ± 0.01 t/s`; post-run ROCm showed `0%` VRAM and no KFD PIDs.",
+      "features": [
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/tq3-quantization-evaluation.md",
+      "idx": 112,
+      "proposed": true,
+      "score": 2,
+      "start": 194,
+      "tick": true
+    },
+    {
+      "best_sentence": "Production server-path artifacts live in `/mnt/raid0/llm/tmp/v7-spec-server-ab-20260716T155208Z/summary.json` and `/mnt/raid0/llm/tmp/v7-ingest-server-ab-20260716T155557Z/summary.json`: frontdoor `draft-mtp` prod `34.599352 t/s` vs v7 `33.866551` (`-2.12%`) with matched measured draft acceptance (`2",
+      "features": [
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 113,
+      "proposed": true,
+      "score": 4,
+      "start": 398,
+      "tick": true
+    },
+    {
+      "best_sentence": "HIP-visible v7 default on CPU role regressed to roughly `34-39 t/s` and touched ROCm despite `-ngl 0`; device-hidden/default restored parity.",
+      "features": [
+        "outcome",
+        "qty"
+      ],
+      "gate": "pass",
+      "gold": true,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 114,
+      "proposed": true,
+      "score": 5,
+      "start": 395,
+      "tick": true
+    },
+    {
+      "best_sentence": "Result: endpoint=`chat`, errors=`0`; v6 MMLU-Pro `73/200=36.5%`, GPQA `50/195=25.6%`; v7 candidate `8e5c555ab` MMLU-Pro `73/200=36.5%`, GPQA `50/195=25.6%`; comparator `PASS`, deltas `+0.0%` on both suites versus the `-5pp` threshold.",
+      "features": [
+        "verdict",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 115,
+      "proposed": true,
+      "score": 7,
+      "start": 131,
+      "tick": true
+    },
+    {
+      "best_sentence": "All six production families passed: frontdoor `Qwen3.6`, worker_general `Gemma4+assistant draft` with `ngram-mod,draft-mtp`, architect `Qwen3.5-122B`, ingest_long_context `Qwen3-Next`, worker_vision `Qwen2.5-VL+mmproj`, and vision_escalation `Qwen3-VL+mmproj`.",
+      "features": [
+        "outcome"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 116,
+      "proposed": true,
+      "score": 2,
+      "start": 397,
+      "tick": true
+    },
+    {
+      "best_sentence": "Short-context full-instance recheck at `/mnt/raid0/llm/tmp/v7-worker-general-shortctx-recheck-20260717T112435Z/` reproduced the historical healthy band: two 520-token requests with 8-token prompts decoded at `76.02 t/s` (`454/631` accepted) and `116.96 t/s` (`487/776` accepted).",
+      "features": [
+        "qty",
+        "frac"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/gemma-challenge-kernel-techniques-v7.md",
+      "idx": 117,
+      "proposed": true,
+      "score": 3,
+      "start": 452,
+      "tick": true
+    },
+    {
+      "best_sentence": "- [x] **W1-b.",
+      "features": [],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/numa-topology-cutover-resume-20260730.md",
+      "idx": 118,
+      "proposed": false,
+      "score": 0,
+      "start": 1566,
+      "tick": true
+    },
+    {
+      "best_sentence": "Uniform IQ4_XS vs UD-IQ4_XS on the champion, 3 rounds: pp5 **+24.1%** [+17.3, +28.7] and pp256 **+34.0%** [+26.8, +36.1] (faster 3/3), tg128 +11.4% inconclusive;",
+      "features": [
+        "outcome",
+        "qty",
+        "frac",
+        "delta"
+      ],
+      "gate": "pass",
+      "gold": false,
+      "handoff": "handoffs/active/cpu-decode-roofline-program.md",
+      "idx": 119,
+      "proposed": true,
+      "score": 7,
+      "start": 3858,
+      "tick": true
+    }
+  ],
+  "missed_gold": [
+    12,
+    16,
+    38,
+    91
+  ],
+  "n_gold": 54,
+  "n_items": 120,
+  "n_proposed": 83,
+  "pass": true,
+  "precision": 0.6024,
+  "recall": 0.9259,
+  "threshold": 2,
+  "true_positives": 50
+}

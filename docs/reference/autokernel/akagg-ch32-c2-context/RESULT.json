@@ -1,0 +1,29 @@
+{
+  "enum_evidence": {
+    "COMMON_DECISION_TYPE_GRANITE_SWITCH": {
+      "absent_c5_and_c1": true,
+      "c2_source_and_patch_context_reference": true,
+      "introduced_by": "23f7aabc16c72f6f707dba227251c35d7bd1ed96",
+      "present_c2_parent_and_c2": true
+    },
+    "COMMON_DECISION_TYPE_LFM2_D1_OMNI": {
+      "absent_c5_and_c1": true,
+      "c2_source_and_patch_context_reference": true,
+      "introduced_by": "a657f7e981ff8764d2ccce1e74ec3c7e9bf2cfa2",
+      "present_c2_parent_and_c2": true
+    },
+    "COMMON_DECISION_TYPE_VLLM_D3": {
+      "absent_c5_and_c1": true,
+      "c2_source_and_patch_context_reference": true,
+      "introduced_by": "efe3626b119ff81033e309c3ba07a770bef2c546",
+      "present_c2_parent_and_c2": true
+    }
+  },
+  "revisions": {
+    "c1": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+    "c2": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+    "c5": "c72ec82f5417bb2937310326120f149b665e8400"
+  },
+  "schema": "akagg.ch32.c2-decision-context.v1",
+  "scope": "Unchanged C2 decision source references these preexisting types. Equivalent source or a modified port is required; whole upstream commits and behavioral compatibility are not proven minimal."
+}

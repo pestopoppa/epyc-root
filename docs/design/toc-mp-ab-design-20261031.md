@@ -32,6 +32,22 @@ lists the code they need.
 
 ## 1. TOC-MP-2: context budget C and the arm set
 
+**TOC-CMP-3 candidate extension (2026-11-17).** The source-pinned candidate under
+[`scripts/experiments/toc-cmp-3-contract/`](../../scripts/experiments/toc-cmp-3-contract/)
+adds a separately default-off execution-brief and pinned-governance contract to the
+existing renderer, plus `verbatim_manifest` omission accounting. This is an experimental
+patch against the orchestrator, not a change to the running stack. The six brief fields
+are verbatim task, current intent, plan, completion requirements, artifacts and pointers.
+Pinned governance is kept outside folded history and re-injected verbatim; the preservation
+check proves literal custody, not semantic compliance. The manifest declares omitted
+source spans rather than claiming that a summary retains their meaning.
+
+The bounded [candidate comparison](../../scripts/experiments/toc-cmp-3-probe/README.md)
+uses fixed-summary fixtures with the actual candidate renderer. It separates rendered
+text retention from attempted-call behavior. It does not replace the live-trajectory
+A/B, the TOC-CMP-4 pre-registration, or their sample requirements below. Existing arm
+names and flag-off behavior remain the control configuration.
+
 **C = 16,384 tokens**, the same for every arm and every backbone (A/B-C), recorded in each
 trajectory's `final` event as `context_budget_tokens`. It is a harness-side cap on the rendered
 prompt, well inside the served window (frontdoor `:8070` is 65,536 per slot; the served `n_ctx`

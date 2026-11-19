@@ -1,0 +1,36 @@
+{
+  "official_acceptance": false,
+  "preserved_failure": {
+    "path": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-build/smoke-attempt1-FAIL-1.json",
+    "sha256": "70754f248f3ff898a00748682cee234c4ecbb6327f59abc814b166457c94f975"
+  },
+  "preserved_launcher_log": {
+    "path": "data/vidya/gpu-pool-candidate-scope-20261117/kvu19-build/smoke-attempt1-launcher.out",
+    "sha256": "03f67ff53cd886b66d8e99c4acfd6c80aabb050c56267629637a5bb82a0d4120"
+  },
+  "publication": {
+    "queued_at": "2026-11-18T00:00:13Z",
+    "republished": false,
+    "status_at_review": "prior-repair-already-queued"
+  },
+  "repair_verified": {
+    "accepted_deadline_controls": 3,
+    "artifact_sha256": {
+      "finalize.py": "2aa0f3401270d267d36012d362f03f4f4468e83ce70145eb9df6e829aa962595",
+      "kvu19a2_repeat_rootbuild.py": "736630cbc7de74d0f67a2433737c97ab89db476d47b1acff35ff70b9263a75f4",
+      "pins.json": "c4d5d63d05193384834ac5a23c15a396f7d04bbd71e6e5c16ff21df22d3ba49e",
+      "smoke_predicate.py": "fa99ccfdb8a4a43302e007dd4aaf886ab5ec607e14e2825c698b06cc3a033a9b",
+      "source-pins.json": "e398f5fc1a3aa8b32e43c6d501bf95cb4c19fd900710dbfadf3e31613a4b8db4"
+    },
+    "native_residency_gate_changed": false,
+    "rejected_deadline_controls": 7,
+    "smoke_output_relative_to_attempt_result_parent": "kvu19a2-native-smoke/smoke-case80-base-r1/out_80.bin"
+  },
+  "reported_failure": "old ISO-only deadline parser rejected the scheduler's Unix epoch seconds before GPU launch",
+  "row_id": "handoff-vidya-kvu19a2-wire-20261117-r2",
+  "schema": "epyc.vidya.publisher-smoke-repair-review.v1",
+  "terminal_registrations": {
+    "FAIL": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/kvu19-successor-smoke-fail.json",
+    "PASS": "/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/vidya-belief-substrate/awaiting/kvu19-successor-smoke-pass.json"
+  }
+}

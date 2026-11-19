@@ -108,7 +108,7 @@ Document the closure scope explicitly in the closure block when the gate is deci
 
 ## Source References
 
-- [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate, bounded 2–3 sessions, gates on schema-hallucination > 20% and call-count > 5× baseline, "Does NOT block `internal-kb-rag.md`" header
+- [`sliders-local-validation.md`](../handoffs/active/knowledge-pipelines.md#track-sliders-local-validation) — Phase 0 falsification gate, bounded 2–3 sessions, gates on schema-hallucination > 20% and call-count > 5× baseline, "Does NOT block `internal-kb-rag.md`" header
 - [intake-494](https://arxiv.org/abs/2604.22294) SLIDERS (Joshi/Shethia/Dao/Lam, Stanford OVAL/Genie, submitted 2026-04-24) — credibility 4 (Stanford major-lab signal +1, within-12mo +1, code released +1, peer-review pending +1, no independent corroboration 0); +6.6 pp avg over union of baselines on existing benchmarks; +~19 pp WikiCeleb100; +~32/~50 pp FinQ100 (abstract-vs-README discrepancy unresolved at intake date); GPT-4.1 hard-wired adoption blocker (Tier 2b); per-query reconciliation cost-heavy by construction
 - [`research/intake_index.yaml`](../research/intake_index.yaml) intake-494 — full Tier 2b critique enumerating frontier-API-only architecture, headline-number disagreement, schema-hallucination as #1 LLM-to-SQL production failure, long-context relational reasoning underprediction (arxiv:2510.03611), single-source results, per-document amortization caveat
 - [intake-710/711](https://arxiv.org/abs/2606.09821) OKF — Open Knowledge Format v0.1 (Google Cloud): markdown+YAML-frontmatter knowledge bundles as a structured-knowledge / compilation-vs-retrieval alternative; 5/6 conventions already in the KB, only `schema_version` stamp + permissive-consumption contract adopted (now in [`wiki/SCHEMA.md`](SCHEMA.md) ## Conformance, 2026-06-20)
@@ -118,6 +118,27 @@ Document the closure scope explicitly in the closure block when the gate is deci
 
 **Confidence: judged** (intake analysis, no compute); no measurement exists for the one new element.
 
-- **Retrieval over compaction is prior art, not a new technique.** The Mainplane pointer-only hand-off keeps the full transcript searchable and drops the summary; MemGPT, Cursor dynamic context discovery, Claude Code and OpenClaw already keep transcripts searchable beside a summary, and our REPL already emits read_file/peek pointers. The only new element is dropping the summary, and its evidence is n=1 hand-off cost with no accuracy measurement. Stage 4 files TOC-MP-1..4 plus monitor notes rather than an adoption. ([progress 2026-10-30](../progress/2026-10/2026-10-30.md); [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md))
+- **Retrieval over compaction is prior art, not a new technique.** The Mainplane pointer-only hand-off keeps the full transcript searchable and drops the summary; MemGPT, Cursor dynamic context discovery, Claude Code and OpenClaw already keep transcripts searchable beside a summary, and our REPL already emits read_file/peek pointers. The only new element is dropping the summary, and its evidence is n=1 hand-off cost with no accuracy measurement. Stage 4 files TOC-MP-1..4 plus monitor notes rather than an adoption. ([progress 2026-10-30](../progress/2026-10/2026-10-30.md); [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity))
 
-Sources: [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [repl-session-memory-maturity](../handoffs/active/repl-session-memory-maturity.md) · [tool-output-compression](../handoffs/active/tool-output-compression.md)
+Sources: [2026-10-30 progress](../progress/2026-10/2026-10-30.md) · [repl-session-memory-maturity](../handoffs/active/memory-program.md#track-repl-session-memory-maturity) · [tool-output-compression](../handoffs/active/context-and-token-economy.md#track-tool-output-compression)
+
+## Compiled Update — 2026-11-07 (SLIDERS answered, ODL-011 declined, ODL-013 re-run authorised)
+
+**Confidence: verified** (tick and decision text in the knowledge-pipelines handoff; no new measurement)
+
+- **SLIDERS Phase 0 is on: "evaluate now, low-priority filler"** (operator E4, 2026-11-07), answering the K7-precondition decision. Box 0.4 (`data/sliders_validation/04_phase0_verdict.md`) is the open work item: clone stanford-oval/sliders into scratch, catalogue every GPT-4.1 call site, substitute the local OpenAI-compatible coder endpoint, run FinQ5 end to end, then write the verdict. Non-inference prep runs first. No verdict exists yet.
+- **ODL-011 declined (operator).** Intrinsic chunk scores cannot gate alone, the routing default is unchanged, and the arm needs an LLM judge plus a RAG answer-correctness endpoint with no current consumer. Re-file only if the ODL-013 P-DOCPARSE-1 verdict leads to a routing change.
+- **ODL-013 re-run authorised (operator E2 "Ratify + Re-run")**: row `pip04-odl013-rerun-r2-20261107`, four arms on the 200-PDF corpus. The default stays unchanged until the decision-capable gate closes.
+- **Unlimited-OCR default is quant-compliant**: `Unlimited-OCR-Q5_K_M-outq8.gguf` re-hashed to the recorded SHA-256 `b4c9ba49...c926e2`; 155 tensors, only `output.weight` changed Q6_K to Q8_0, 154 byte-identical to the Q5_K_M source.
+
+Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md)
+
+## Compiled Update — 2026-11-09 (SLIDERS client timeout, KB index cutover)
+
+**Confidence: verified** (handoff notes and job logs; no SLIDERS gate recorded, n = 0)
+
+- **SLIDERS on a local model measures its own timeouts first.** The released client hard-codes a 200 s request timeout and issues up to 16 concurrent calls; against a 2-slot server the requests expire in the queue (76 abandoned in r3's first question, 5,516 s, 100 LLM calls, 0 SQL executions, answer `[Error] Request timed out.` recorded as `ok`). The r4 row patches the timeout to 3,600 s on both import paths, uses 4 slots and counts `[Error]` answers as `fail`. Any FB5 gate read from r3 would have been a timeout rate, not a schema-hallucination rate.
+- **A re-arm must reassess, not copy.** r3 was r2's spec verbatim (one quarter, about 13 h); the operator objected. See the `inference-backlog-scheduling` skill, section 4.
+- **KB RAG default moved to `index-qd-v2`** (orchestrator `b4e25aa1`, rebuild row PASS). The shared orchestrator clone's local `main` still read `index-qd-v1` (62 commits behind), so `PIP04-KB-INDEX-BREAK` stays open until that clone is fast-forwarded and the update hook fails loudly.
+
+Sources: [knowledge-pipelines](../handoffs/active/knowledge-pipelines.md) · [inference-backlog-scheduling skill](../.claude/skills/inference-backlog-scheduling/SKILL.md)

@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "The native same-C5 A/A sealed receipt rederives; canonical autokernel-serving ingest emitted 15 frames for five claims, including two steps estimates with their estimator strings; steps_projected=2 and refusals=[]; no performance decision follows.",
+  "tick_text": "sealed capture 5e835e05a215372fe5895e8122dd0807a4f4a82f5476251d12e27c0db76aa4f0; steps_projected=2, refusals=0; estimator predicted_n_minus_draft_n_accepted, descriptive only; [belief: clm_legacy-serving-steps:5e835e05a215372fe5895e8122dd0807a4f4a82f5476251d12e27c0db76aa4f0:anchor]",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T07:19:07+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:11:34Z reason=complete",
+ "filed_at": "2026-11-04T07:19:07+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-SL2-STEPS-LIVE",
+ "id": "vb-sl2-steps-r1-20261103",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-sl2-steps-r1-20261103.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "vidya-belief-substrate-program",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "The native same-C5 A/A sealed receipt rederives; canonical autokernel-serving ingest emitted 15 frames for five claims, including two steps estimates with their estimator strings; steps_projected=2 and refusals=[]; no performance decision follows.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-sl2-steps-r1-20261103/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-sl2-steps-r1-20261103",
+ "row_verdict": "pass",
+ "rule": "capture only: one serving.compare A/A (same C5 image both arms, no floor, decisive None) so the sealed belief_capture carries target_sample_steps_est; no performance or best-recipe claim. Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "7d1094c578de639a04991245e2295547b9827c10b261958efb3b66b590e8ec78",
+  "result": "pass",
+  "status": "filed"
+ }
+}

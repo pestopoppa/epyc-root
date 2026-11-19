@@ -1,0 +1,65 @@
+{
+  "target": {
+    "id": "Function:src/api/routes/health.py:_runtime_selected_backend_urls",
+    "name": "_runtime_selected_backend_urls",
+    "type": "Function",
+    "filePath": "src/api/routes/health.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 3,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 1,
+    "processes_affected": 0,
+    "modules_affected": 1
+  },
+  "byDepthCounts": {
+    "1": 1,
+    "2": 1,
+    "3": 1
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Routes",
+      "hits": 2,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Function:src/api/routes/health.py:_probe_core_backends",
+        "name": "_probe_core_backends",
+        "filePath": "src/api/routes/health.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "Function:src/api/routes/health.py:health",
+        "name": "health",
+        "filePath": "src/api/routes/health.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "Function:src/api/routes/health.py:serving_calls_health",
+        "name": "serving_calls_health",
+        "filePath": "src/api/routes/health.py",
+        "relationType": "CALLS",
+        "confidence": 0.53,
+        "processes": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "build_receipt_sha256": "6427d8c1fa491950c6f9c5f7566e3e2bc49c32ad6a750cac4fe7afbb76141b75",
+  "libraries": {
+    "libggml-base.so": {
+      "filename": "libggml-base.so.0.16.0",
+      "sha256": "f04422b31125b5b5f8015ae3ddcbe5c5cfe02fb3f3bbcb8f8db65165f0e751db"
+    },
+    "libggml-cpu.so": {
+      "filename": "libggml-cpu.so.0.16.0",
+      "sha256": "8d828d324197fafcc61bdeafd6d192f97e94c53855a108d7549506fb85f9344f"
+    },
+    "libggml-hip.so": {
+      "filename": "libggml-hip.so.0.16.0",
+      "sha256": "eed7ded2f0d0301ac2f56ee70839f7288bf92035bb7a1b6f2018616809c5c546"
+    },
+    "libggml.so": {
+      "filename": "libggml.so.0.16.0",
+      "sha256": "a1a07250661047e3fba33b1c7588fa5f84f5701cd5f76c6f337e5d1a4b2382a0"
+    }
+  },
+  "parent_source": "84d0a31603d495377dee24e1159bbbf02f1e2f21",
+  "schema": "kpf174d.ggml-custody.v1",
+  "source_commit": "6ec877068936588b6d63dbba5842bbd540b92031"
+}

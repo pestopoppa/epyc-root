@@ -1,0 +1,7 @@
+rc=2 time=2026-11-03T16:36:46Z reason=job-rc-2:exited
+job_id=inf22-m4-q38-recipe-r1-20261102
+owner=codex-inf22-m4
+step=job-run
+estimated_wall_s=7200
+started=2026-11-03T16:36:43Z
+regions=0-95

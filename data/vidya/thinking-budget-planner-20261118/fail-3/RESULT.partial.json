@@ -1,0 +1,15 @@
+{
+  "cpus": [
+    140,
+    141,
+    142,
+    143
+  ],
+  "id": "vb-tb-semantics-native-planner-20261118",
+  "mode": "publisher-smoke",
+  "native_rows": 0,
+  "pins_sha256": "2cd231c8954ea8ebb83555734c552bb81d60fbc4eb0a0d4a10853398e8cb0b86",
+  "refusal": "FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/publisher-smoke-47k2iohj/exact/actor-replies/belief-receipts.jsonl'",
+  "refusal_count": 1,
+  "status": "UNKNOWN"
+}

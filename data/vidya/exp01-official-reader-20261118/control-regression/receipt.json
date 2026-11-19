@@ -1,0 +1,99 @@
+{
+  "as_of": "2026-11-18T15:40:24Z",
+  "campaign_history_snapshot_sha256": "986ae5f15273c589098c10b74dd5d9112d6a299b12e3b6f0ec77f51b666ab3f8",
+  "campaign_store": "/mnt/raid0/llm/autokernel/proof-q38fn-r6-20261112",
+  "claims": [
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2KT-1",
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2XXS-1",
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ4KT-1",
+    "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-Q4KM-1"
+  ],
+  "control_only": true,
+  "entry": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "filing": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/run-filings/2026-11-04/vidya-exp01-proxy-wire-20261104",
+  "frames": 12,
+  "history_recalled": 3,
+  "history_rendered": {
+    "mechanism": "akm-cpu-q6k-x4t-weight-prefetch",
+    "stale": true,
+    "status": "scope_blocked"
+  },
+  "mode": "capture-control",
+  "negative_targets": [
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/brf-exp01/models/Qwen3.6-35B-A3B-IQ2_KT.gguf"
+    },
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/brf-exp01/models/Qwen3.6-35B-A3B-IQ2_XXS.gguf"
+    },
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/brf-exp01/models/Qwen3.6-35B-A3B-IQ4_KT.gguf"
+    },
+    {
+      "backend": "gpu",
+      "model": "/mnt/raid0/llm/tmp/brf-exp01/models/Qwen3.6-35B-A3B-Q4_K_M.gguf"
+    },
+    {
+      "backend": "cpu",
+      "model": "unrelated-model.gguf"
+    }
+  ],
+  "official_native_acceptance": "pending",
+  "original_official_r3_pre_hook": true,
+  "original_results_sha256": "932167c2afe3a134383b459a4afd010eee43ed962201e1483d67d105e32d3af3",
+  "proposal_reliance": [
+    {
+      "accepted": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2KT-1"
+      ],
+      "declared": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2KT-1"
+      ],
+      "rejected": []
+    },
+    {
+      "accepted": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2XXS-1"
+      ],
+      "declared": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ2XXS-1"
+      ],
+      "rejected": []
+    },
+    {
+      "accepted": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ4KT-1"
+      ],
+      "declared": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-IQ4KT-1"
+      ],
+      "rejected": []
+    },
+    {
+      "accepted": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-Q4KM-1"
+      ],
+      "declared": [
+        "clm_exp01-capture:a23caa3d7310473391b222cecb156a66:speed-Q4KM-1"
+      ],
+      "rejected": []
+    }
+  ],
+  "reader_checkout": {
+    "current": true,
+    "error": null,
+    "head": "6f5cf4b45ea023a20546f4d27256487217b71f90",
+    "origin_main": "6f5cf4b45ea023a20546f4d27256487217b71f90",
+    "root": "/mnt/raid0/llm/views/epyc-root-main"
+  },
+  "refused": 0,
+  "rendered_excerpt_sha256": "51eda4634ce5321a619cf27c0bb67b690ac9d3ae23eb6e70dd27ee2dfbcd1de5",
+  "rows": 4,
+  "schema": "epyc.vidya.exp01_planning_canary.v3",
+  "scratch_ledger": true,
+  "status": "passed",
+  "stop": "AgentPlanner._proposal_from_agent intercepted before backend execution"
+}

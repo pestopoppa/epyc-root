@@ -1,0 +1,94 @@
+{
+  "row": "dcp10-colgrep-native-20261118",
+  "rc": 0,
+  "decision_rule": "completed >= 3",
+  "rule_verdict": "pass",
+  "comparison_verdict": "invalid",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native/native/RESULT.json",
+  "result_sha256": "f4ba555150a489036d8b79de3f26dc8b92f9074ec60efdddd82204ec1d8fc0e6",
+  "result": {
+    "comparison_valid": false,
+    "completed": 3,
+    "observed": [
+      {
+        "status": "error",
+        "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+      },
+      {
+        "status": "error",
+        "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+      },
+      {
+        "status": "error",
+        "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+      }
+    ],
+    "outputs_sha256": {
+      "actual-colgrep-scopes.json": "1414bf0d66cd597224cf9feabbe6031e82b93694fc82515b5230854f3d103d0b",
+      "c-attempt.json": "e24722380a8de4fcb98cddf742b233cb4f116fa25f3102ed13c7ceffad666402",
+      "cpp-attempt.json": "61f09d375c527f8430ae624447e18a1738ec5d1edf4e48f1d97104cbdf279c51",
+      "python-attempt.json": "75daa97e07335298e382b1cea9eae5b52e286130b2301c6239bf11f29636b86b",
+      "score.json": "d03f9dcaa05d56eeb3aac3203b33b4a3f7a040561f0b1970c902eacf3565aab5"
+    },
+    "reconciled": true,
+    "row": "dcp10-colgrep-native-20261118",
+    "stop_reason": null,
+    "unknown": []
+  },
+  "attempts": {
+    "python": {
+      "evidence": {
+        "error": "isolated ColGREP exited 1: \ud83e\udd16 Model: /dcp10/model\n\ud83d\udcc2 Building index...\n\ud83d\udcc2 cuDNN not found, encoding will use CPU.\n\nthread 'colgrep-encode' (16) panicked at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/thread/scoped.rs:203:46:\nfailed to spawn thread: Os { code: 11, kind: WouldBlock, message: \"Resource temporarily unavailable\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: Encode stage thread panicked",
+        "stage": "build",
+        "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+      },
+      "prediction": {
+        "arm": "task-root-colgrep",
+        "pack_candidates": [],
+        "pred_files": [],
+        "pred_spans": [],
+        "status": "error",
+        "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+      },
+      "task_id": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3",
+      "unit": "SWE-Bench-Verified__python__maintenance__bugfix__cb2c6ff3"
+    },
+    "c": {
+      "evidence": {
+        "error": "isolated ColGREP exited 1: \ud83e\udd16 Model: /dcp10/model\n\ud83d\udcc2 Building index...\n\ud83d\udcc2 cuDNN not found, encoding will use CPU.\n\nthread 'colgrep-encode' (16) panicked at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/thread/scoped.rs:203:46:\nfailed to spawn thread: Os { code: 11, kind: WouldBlock, message: \"Resource temporarily unavailable\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: Encode stage thread panicked",
+        "stage": "build",
+        "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+      },
+      "prediction": {
+        "arm": "task-root-colgrep",
+        "pack_candidates": [],
+        "pred_files": [],
+        "pred_spans": [],
+        "status": "error",
+        "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+      },
+      "task_id": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4",
+      "unit": "Multi-SWE-Bench__c__maintenance__bugfix__2687f1e4"
+    },
+    "cpp": {
+      "evidence": {
+        "error": "isolated ColGREP exited 1: \ud83e\udd16 Model: /dcp10/model\n\ud83d\udcc2 Building index...\n\ud83d\udcc2 cuDNN not found, encoding will use CPU.\n\nthread 'colgrep-encode' (16) panicked at /rustc/e408947bfd200af42db322daf0fadfe7e26d3bd1/library/std/src/thread/scoped.rs:203:46:\nfailed to spawn thread: Os { code: 11, kind: WouldBlock, message: \"Resource temporarily unavailable\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: Encode stage thread panicked",
+        "stage": "build",
+        "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+      },
+      "prediction": {
+        "arm": "task-root-colgrep",
+        "pack_candidates": [],
+        "pred_files": [],
+        "pred_spans": [],
+        "status": "error",
+        "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+      },
+      "task_id": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a",
+      "unit": "Multi-SWE-Bench__cpp__maintenance__bugfix__1ec2c84a"
+    }
+  },
+  "interpretation": "All three original task attempts failed at index build with thread spawn EAGAIN. Failure/empty denominators are retained as zero overlap, not evidence of retrieval quality. The completion predicate passes, but comparison_valid is false. No index/search comparison or population quality claim. Native graph scoring remains gated on admitted seed outputs.",
+  "followup": "Prepare bounded runtime thread pools and prospectively qualify a new infrastructure-fix revision; preserve original errors without replacements. Existing score-custody and source-admission refusals persist.",
+  "belief_source": "Existing VB-CONTEXTBENCH-DISCOVERY-WIRE; committed conclusion only, no reconstructed measurement warrant."
+}

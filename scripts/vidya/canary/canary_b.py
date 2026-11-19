@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import sys
+import re
 sys.dont_write_bytecode = True
 import time
 import traceback
@@ -28,7 +29,7 @@ ORCH = Path(os.environ["CANARY_ORCH_SOURCE"]).resolve()
 DATA = Path("/mnt/raid0/llm/epyc-orchestrator")
 CANON_LEDGER = Path("/mnt/raid0/llm/state/vidya/ledger.jsonl")
 SCR_STATE = BASE / "state" / "B-autopilot"
-TELEMETRY = Path("/mnt/raid0/llm/tmp/seeding_batch_telemetry.jsonl")
+TELEMETRY = Path("/mnt/raid0/llm/epyc-orchestrator/orchestration/seeding_batch_telemetry.jsonl")  # LOOP-SAFETY C3 default
 
 
 def sha(p: Path) -> str | None:
@@ -74,6 +75,7 @@ for stale in ("alarm_state.B.json",):
 # ---------------------------------------------------------------- guard + launcher env
 sys.path.insert(0, str(HARNESS))
 import canary_guard  # noqa: E402
+import canary_b_frontier as cbf  # noqa: E402
 
 canary_guard.install()
 os.chdir(COPIES)
@@ -174,9 +176,54 @@ class HashOnlyEmbedder:
         pass
 
 
+EMBED_URL = os.environ.get("CANARY_EMBED_URL")  # canary-owned BGE llama-server, 127.0.0.1:>=10000
+EMBED_ERRORS: list[str] = []
+
+
+class LiveBgeEmbedder:
+    """Query embeddings from the canary-owned BGE-large llama-server (POST /embedding, cls pooling).
+    Same wire and L2 normalisation as TaskEmbedder._generate_embedding_http; raises (never degrades
+    to hash) on any failure, a wrong dimension, or a degenerate vector."""
+
+    def __init__(self, url, dim):
+        self.url, self.dim, self.calls = url.rstrip("/"), dim, 0
+
+    def embed_text(self, text, side=None):
+        import urllib.request
+        import numpy as np
+        req = urllib.request.Request(self.url + "/embedding", method="POST",
+                                     data=json.dumps({"content": str(text)}).encode(),
+                                     headers={"Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                data = json.loads(r.read())
+            if isinstance(data, list):
+                data = data[0]
+            emb = data["embedding"] if "embedding" in data else data["data"][0]["embedding"]
+            vec = np.asarray(emb[0] if emb and isinstance(emb[0], list) else emb, dtype=np.float32)
+            norm = float(np.linalg.norm(vec))
+            if vec.shape != (self.dim,) or not np.isfinite(norm) or norm == 0.0:
+                raise ValueError(f"degenerate embedding shape={vec.shape} norm={norm}")
+            self.calls += 1
+            return vec / norm
+        except Exception as exc:
+            EMBED_ERRORS.append(repr(exc)[:200])
+            raise
+
+    def close(self):
+        pass
+
+
+if EMBED_URL:
+    _embedder = LiveBgeEmbedder(EMBED_URL, _ss_mod.LEGACY_EMBEDDING_DIM)
+else:
+    _embedder = HashOnlyEmbedder(_ss_mod.LEGACY_EMBEDDING_DIM)
+
+
 strategy_store = guarded("strategy_store", lambda: ap.StrategyStore(
-    path=dst_ss, embedder=HashOnlyEmbedder(_ss_mod.LEGACY_EMBEDDING_DIM)))
+    path=dst_ss, embedder=_embedder))
 summary["notes"].append(
+    ("StrategyStore opened on a COPY with the LIVE BGE embedder " + str(EMBED_URL)) if EMBED_URL else
     "StrategyStore opened on a COPY (B-copies/strategies) with a hash-fallback embedder; the daemon "
     "would embed the 4 _PLANNER_STRATEGY_HINT_QUERIES via BGE (llama-server :8090 or "
     "llama-embedding) = inference, forbidden here, so semantic retrieval ranks are NOT reproduced.")
@@ -386,7 +433,7 @@ sec["higher_tier_pressure"] = guarded("higher_tier", lambda: ap._build_higher_ti
 sec["eval_coverage_pressure"] = guarded("eval_cov", lambda: ap._build_eval_coverage_pressure(
     journal, w8_candidate_generation_active=w8), "")
 sec["outcome_progress_pressure"] = guarded("outcome_progress",
-                                           lambda: ap._build_outcome_progress_pressure(), "")
+                                           lambda: ap._build_outcome_progress_pressure(journal.journal_dir), "")
 kvq = guarded("vidya_kvq", lambda: ap._build_vidya_kvq_context(), {"text": "(blocked)"})
 sec["vidya_kvq_evidence_block"] = kvq["text"]
 sec["pareto_summary"] = archive.summary_text(tier=ap.DEFAULT_FRONTIER_TIER)
@@ -532,21 +579,78 @@ summary["finished"] = time.time()
 print("prompt_chars", len(prompt), "belief", summary["belief"].get("status"),
       summary["belief"].get("reason"), "blocked", len(canary_guard.BLOCKED))
 
-# Hash-only embedding cannot reproduce semantic ranking: observations are not a pass.
+# Verdict. Hash-only embedding cannot reproduce semantic ranking: observations are not a pass.
 lines = prompt.splitlines()
 keep = any("1472" in "\n".join(lines[max(0,i-4):i+5]) and
            "2.025" in "\n".join(lines[max(0,i-4):i+5]) and
            "ingest_triviality_guard" in "\n".join(lines[max(0,i-4):i+5])
            for i in range(len(lines)) if "1472" in lines[i])
-result = {"loop": "B", "status": "UNKNOWN",
-          "reason": "hash-only embedder cannot reproduce semantic ranking",
+# Known conclusions (re-pinned 2026-11-07; see README "Known conclusions"). Trial 1472 is NOT a
+# keep (journal: keep_revert_decision=excluded, reproduction_confirmed) and predates the ratified
+# epoch fence pareto_exclude_before_ts=2026-08-10T16:23Z, so its absence is correct; it is kept
+# as an observation only. Gating: (1) the fence-surviving journal insight that numeric_trial went
+# 0+/N- across trials including 1500; (2) the strategy-store convention row "toolrunner backend
+# and REPL extraction fix" bound live (retrieved through the embedder: the semantic-ranking pin).
+numeric_insight = re.search(r"numeric_trial \(\w+ confidence, 0\+/\d+- across trials \[[^\]]*\b1500\b",
+                            prompt) is not None
+convention_row = any("toolrunner backend and REPL extraction fix" in ln and "bind=live" in ln
+                     for ln in lines)
+known = numeric_insight and convention_row
+frontier = archive.frontier_size(ap.DEFAULT_FRONTIER_TIER)
+frontier_section = bool(str(sec.get("pareto_summary") or "").strip()) and sec.get("pareto_geometry") is not None and "pareto_summary" not in (summary.get("errors") or {})
+unchanged = {"baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
+             "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
+             "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
+
+
+def _render_frontier_channels(rows, scratch):
+    """Real orchestrator path, synthetic journal: journal -> era-fenced archive -> the planner's
+    frontier channels. Writes only under CANARY_SCRATCH (allowed by canary_guard)."""
+    scratch.mkdir(parents=True, exist_ok=True)
+    (scratch / "autopilot_journal.jsonl").write_text(
+        "".join(json.dumps(r) + "\n" for r in rows))
+    j = ap.ExperimentJournal(journal_dir=scratch)
+    st = {"pareto_exclude_before_ts": _exclude_ts or cbf.FENCE_TS_DEFAULT}
+    dts, df, ex = ap._archive_epoch_params_from_state(st)
+    pl = ap._journal_archive_payload_for_authority(
+        j, deinflate_before_ts=dts, deinflate_factor=df, exclude_before_ts=ex,
+        objective_policy=ap._live_objective_policy_from_state(st))
+    arch, _ = ap._startup_archive_from_current_era_payload(st, pl)
+    tier = ap.DEFAULT_FRONTIER_TIER
+    pg = arch.geometry_text(tier=tier) + "\n" + arch.stepping_stones_text(tier=tier, limit=8)
+    return {"pareto_summary": arch.summary_text(tier=tier), "pareto_geometry": pg,
+            "insights_structured": j.insights_structured_text(
+                n=ap.PLANNER_STRUCTURED_INSIGHTS_LIMIT, exclude_bug_corrupted=True)}
+
+
+_fence = _exclude_ts or cbf.FENCE_TS_DEFAULT
+frontier_controls = cbf.run_controls(_render_frontier_channels, BASE / "B-frontier-control", _fence)
+frontier_result = cbf.frontier_verdict(
+    (asdict(e) for e in entries), sec, frontier_controls, _fence)
+
+result = {"loop": "B", "live_embedder": bool(EMBED_URL),
           "observed_1472_keep_with_numbers": keep,
-          "observed_frontier_count": archive.frontier_size(ap.DEFAULT_FRONTIER_TIER),
+          "observed_numeric_trial_insight": numeric_insight, "observed_toolrunner_convention": convention_row,
+          "observed_frontier_count": frontier, "frontier_section_assembled": frontier_section,
           "assembly_errors": sorted((summary.get("errors") or {})),
-          "belief_ready": belief_ready is not None,
-          "baseline_sha256": summary["pre"]["baseline_sha256"],
-          "baseline_unchanged": summary["pre"]["baseline_sha256"] == summary["post"]["baseline_sha256"],
-          "canonical_ledger_unchanged": summary["pre"]["canonical_ledger_sha256"] == summary["post"]["canonical_ledger_sha256"],
-          "telemetry_unchanged": summary["pre"]["telemetry_sha256"] == summary["post"]["telemetry_sha256"]}
+          "embed_calls": getattr(_embedder, "calls", 0), "embed_errors": EMBED_ERRORS[:3],
+          "belief_ready": belief_ready is not None, "frontier_assertion": frontier_result,
+          "baseline_sha256": summary["pre"]["baseline_sha256"], **unchanged}
+if not EMBED_URL:
+    result.update(status="UNKNOWN", reason="hash-only embedder cannot reproduce semantic ranking")
+    code = 2
+elif EMBED_ERRORS or result["embed_calls"] == 0 or not all(unchanged.values()) or summary.get("errors") \
+        or not result["belief_ready"]:
+    result.update(status="UNKNOWN", reason="live embedder failed/unused, belief reader not ready, assembly error, or protected state changed")
+    code = 2
+elif frontier_result["status"] in (cbf.CONTROL_FAILED,):
+    result.update(status="UNKNOWN", reason="frontier assertion untrusted: " + frontier_result["reason"])
+    code = 2
+elif known and frontier_section and frontier_result["status"] != cbf.FAIL:
+    result.update(status="PASS", reason="numeric_trial 0+/N- insight (incl. 1500) and the live toolrunner convention row present; frontier section assembled (T1 count recorded; empty is the intended post-rebase state)")
+    code = 0
+else:
+    result.update(status="FAIL", reason="known conclusion missing or real frontier keep absent: numeric_insight=%s convention_row=%s frontier_section=%s frontier_assertion=%s" % (numeric_insight, convention_row, frontier_section, frontier_result["status"]))
+    code = 1
 print("CANARY_RESULT:", json.dumps(result))
-sys.exit(2)
+sys.exit(code)

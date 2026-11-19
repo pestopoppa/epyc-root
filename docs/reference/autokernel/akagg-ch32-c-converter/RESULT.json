@@ -1,0 +1,17 @@
+{
+  "evidence": {
+    "c1_patch_uses_guess_registry": true,
+    "c2_uses_registration_and_guess_false": true,
+    "prerequisite_ancestor_of_c1": true,
+    "registry_and_guess_absent_from_c5": true,
+    "registry_and_guess_introduced_by_prerequisite": true
+  },
+  "revisions": {
+    "c1": "a4cb4c61fd9d9c2066c7c1747821d3d65b8943bd",
+    "c2": "7e3eeee0480902c90cbdff172f407dc063cf0770",
+    "c5": "c72ec82f5417bb2937310326120f149b665e8400",
+    "converter_registry_introducer": "6e62ba538478202094edc6c100c782719e310aa3"
+  },
+  "schema": "akagg.ch32.c-converter.v1",
+  "scope": "Unchanged converter source requires equivalent registry and guess behavior. Full-commit minimality, conversion success and runtime compatibility unproved."
+}

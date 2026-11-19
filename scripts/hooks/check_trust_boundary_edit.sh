@@ -2,7 +2,7 @@
 set -euo pipefail
 # Hook: PreToolUse → Write | Edit
 #
-# Rider R7 (handoffs/active/session-bus-thin-dispatcher.md §Rider) — authority
+# Rider R7 (handoffs/active/coordination-and-churn-pipeline.md §Rider) — authority
 # containment for the trust boundary.
 #
 # TWO LAYERS, deliberately different in strictness:

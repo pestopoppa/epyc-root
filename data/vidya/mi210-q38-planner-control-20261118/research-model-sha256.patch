@@ -1,0 +1,12 @@
+--- a/scripts/kernel_rnd/autokernel/loop/belief_context.py
++++ b/scripts/kernel_rnd/autokernel/loop/belief_context.py
+@@ -202,7 +202,9 @@
+     regime = context.get("current_regime") or {}
+     model = regime.get("model") or {}
+     backend = str(regime.get("backend") or "").lower()
++    model_sha256 = model.get("sha256") if isinstance(model, Mapping) else None
+     return {"model_path": str(model.get("path") or "") if isinstance(model, Mapping) else "",
++            **({"model_sha256": model_sha256} if model_sha256 is not None else {}),
+             "quant": regime.get("quant") or "", "backend": backend,
+             "device": DEVICE_BY_BACKEND.get(backend, ""),
+             "surface": regime.get("measurement_surface") or "",

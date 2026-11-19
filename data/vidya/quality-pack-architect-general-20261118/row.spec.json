@@ -1,0 +1,33 @@
+{
+  "id": "handoff-vidya-quality-pack-architect-general-hip-20261118",
+  "owner": "handoff-vidya-belief-substrate",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-ARCHITECT-GENERAL",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "shape": "gpu",
+  "kind": "compute",
+  "estimate_s": 1700,
+  "min_window_s": 2250,
+  "max_window_s": 2700,
+  "ram_gib": 112,
+  "first_progress_s": 120,
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-20261118/row-launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-20261118",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-20261118/out/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-20261118/smoke_predicate.py",
+  "decision_rule": "Capture four fixed native responses per arm on the one-MI210 Qwen3.8-Flash-Next UD-IQ4_XS text-only no-spec slice, with 24 layers on HIP, f16 KV, context 4096 and one slot. Stop after eight exact captures, two distinct in-window samples per request proving the pinned HIP objects, KFD PID and nonzero VRAM on the pinned MI210, sealed production bank before candidate launch, and captured-PID plus listener and KFD cleanup. Stop on STOP, deadline, or first identity, startup, response, residency or cleanup failure. Publisher smoke is one v10 CPU small-model no-spec response on four threads and proves CPU smoke custody. The observed deployment is a distinct CPU/MTP recipe. Retain the prior frontdoor JSON mismatch and the incomplete broad-pack status.",
+  "verdict_by": "agent",
+  "keep": [
+    "out/**",
+    "requests/**",
+    "*.py",
+    "*.json",
+    "*.jinja",
+    "*.sh",
+    "*.md",
+    "SOURCE.sha256"
+  ],
+  "priority_rank": 38
+}

@@ -1,0 +1,8 @@
+{
+  "argv": [
+    "bash",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed/scripts/vidya/install_sync_hook.sh"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed",
+  "exit": 0
+}

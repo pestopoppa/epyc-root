@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T16:11:20Z reason=complete
+job_id=g3-v10-v4-mi210-r5-20261104
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=7200
+started=2026-11-04T16:10:37Z
+regions=mi210_0,184-191

@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T14:20:43Z reason=complete
+job_id=cafe2-v10-verify-cost-build-r2-20261104
+owner=h-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T14:20:19Z
+regions=24-47

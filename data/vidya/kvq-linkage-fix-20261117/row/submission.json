@@ -1,0 +1,18 @@
+{
+  "row_id": "vidya-kvq-v10-sweep-20261117-r2",
+  "state": "prepared-unpublished",
+  "publish_spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate-program/vidya-kvq-v10-sweep-20261117-r2/spec.json",
+  "publish_spec_sha256": "6321cddcfa09cb67ac9ca6ae563b38a342e65a9bd8054ed3b63733278de5fcf9",
+  "worktree": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvq-ready/research",
+  "worktree_base": "99301fa149af86a6f9743d2b0405c9234ba39586",
+  "guard": {
+    "exit": 5,
+    "output": "process blocker: llama-server"
+  },
+  "preflight": "Existing source, kernel, model and repeated binary linkage witnesses passed. Current prepared model and source closure check passed using metadata only.",
+  "controls": [
+    "Matches pinned metadata and reuses the saved digest without opening model bytes",
+    "Refuses a same-size edit with restored mtime, a missing file, and a substituted symlink",
+    "Smoke marker requires a valid closing identity witness"
+  ]
+}

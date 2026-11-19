@@ -1,0 +1,50 @@
+{
+  "target": {
+    "id": "Method:src/llama-kv-cache.cpp:state_write_data#2",
+    "name": "state_write_data",
+    "type": "Method",
+    "filePath": "src/llama-kv-cache.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 2,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 2,
+    "processes_affected": 0,
+    "modules_affected": 1
+  },
+  "byDepthCounts": {
+    "1": 2
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Cluster_1191",
+      "hits": 2,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Method:src/llama-kv-cache.cpp:chunk_export#4",
+        "name": "chunk_export",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Method:src/llama-kv-cache.cpp:state_write#3",
+        "name": "state_write",
+        "filePath": "src/llama-kv-cache.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}

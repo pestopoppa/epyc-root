@@ -1,0 +1,43 @@
+commit 8f26e4f3a46cb79a09ed796b82f16daed3ecda63
+Author:     pestopoppa <daniele.pinna@gmail.com>
+AuthorDate: Mon Nov 2 13:44:39 2026 +0000
+Commit:     pestopoppa <daniele.pinna@gmail.com>
+CommitDate: Mon Nov 2 13:44:39 2026 +0000
+
+    R22-5: add experimental boundary case corpus
+
+diff --git a/tests/test-backend-ops.cpp b/tests/test-backend-ops.cpp
+index b44bb46a74..91ae455d6b 100644
+--- a/tests/test-backend-ops.cpp
++++ b/tests/test-backend-ops.cpp
+@@ -11792,7 +11792,29 @@ static bool test_backend(ggml_backend_t backend, ggml_backend_dev_t dev, test_mo
+ 
+     std::vector<std::unique_ptr<test_case>> test_cases;
+ 
+-    if (test_file_path == nullptr) {
++    // R22-5: a named, isolated corpus; old binaries cannot claim this marker.
++    const char * case_set = getenv("AUTOKERNEL_BOUNDARY_CASE_SET");
++    if (case_set && strcmp(case_set, "r22-5-v1") == 0 && mode == MODE_TEST && test_file_path == nullptr) {
++        for (ggml_type type : {GGML_TYPE_F32, GGML_TYPE_Q8_0}) {
++            for (int64_t length : {33, 127, 128, 129, 512, 1023, 1024, 2047, 2048}) {
++                // Probe both the output-row and token axes, with aligned quantized K.
++                test_cases.emplace_back(new test_mul_mat(type, GGML_TYPE_F32, length, 1, 256, {1, 1}, {1, 1}));
++                test_cases.emplace_back(new test_mul_mat(type, GGML_TYPE_F32, 32, length, 256, {1, 1}, {1, 1}));
++                test_cases.emplace_back(new test_mul_mat_id(type, GGML_TYPE_F32, 4, 2, false, length, 1, 256));
++                test_cases.emplace_back(new test_mul_mat_id(type, GGML_TYPE_F32, 4, 2, false, 32, length, 256));
++            }
++        }
++        for (int64_t length : {33, 127, 128, 129, 512, 1023, 1024, 2047, 2048}) {
++            test_cases.emplace_back(new test_gated_delta_net(GGML_TYPE_F32, 4, 64, length, 1));
++            test_cases.emplace_back(new test_rms_norm(GGML_TYPE_F32, {length, 2, 1, 1}));
++            test_cases.emplace_back(new test_rms_norm_mul_add(GGML_TYPE_F32, {length, 2, 1, 1}));
++            test_cases.emplace_back(new test_flash_attn_ext(64, 64, 4, {1, 1}, length, 1));
++        }
++        fprintf(stderr, "AUTOKERNEL_BOUNDARY_CASE_SET=r22-5-v1 cases=108\n");
++    } else if (case_set) {
++        fprintf(stderr, "Unsupported AUTOKERNEL_BOUNDARY_CASE_SET or mode\n");
++        return false;
++    } else if (test_file_path == nullptr) {
+         switch (mode) {
+         case MODE_TEST:
+         case MODE_GRAD:

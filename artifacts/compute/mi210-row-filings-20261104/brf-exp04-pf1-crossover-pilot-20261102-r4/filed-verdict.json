@@ -1,0 +1,45 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "evidence_sha256": {
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/attempt-summary.json": "2ce67412cc40c92ca9147312ed788f4731058d14aff4fb14c0d23ff1f4d3550b",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/end.txt": "84065be7a3237823c59df2c6be24f76db75ab51d55232e88365a8427c9c416e5",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/manifest.json": "bba06945ee9ad884a7aa760fb4e7b54c1600af446cfd8569d07a057d4347e774",
+   "artifacts/compute/mi210-row-filings-20261104/brf-exp04-pf1-crossover-pilot-20261102-r4/native-result.json": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b"
+  },
+  "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+  "rationale": "Original archived summary: REVISE harness; 2/8 valid units despite all capture records, six GPU/control RUN failures. No valid control ratios or expansion gate. Later shared result not attributable; no negative PF1 verdict.",
+  "tick_text": "",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T07:10:03+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-03T09:33:14Z reason=complete",
+ "filed_at": "2026-11-04T07:10:03+00:00",
+ "filed_by": "handoff-fable5-window2-findings-05c-mi210-lever",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:PF1-EXP04",
+ "id": "brf-exp04-pf1-crossover-pilot-20261102-r4",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp04-pf1-crossover-pilot-20261102-r4.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Original archived summary: REVISE harness; 2/8 valid units despite all capture records, six GPU/control RUN failures. No valid control ratios or expansion gate. Later shared result not attributable; no negative PF1 verdict.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp04/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "brf-exp04-pf1-crossover-pilot-20261102-r4",
+ "row_verdict": "inconclusive",
+ "rule": "EXP-04 pilot (exploratory/decision-support). Read out/summary.json (PILOT-COMPLETE.json). EXPAND to the full PF1 L x -ub matrix (r=5, CIs, reversed-order replicate) if every A1/A2 unit proves HIP residency (KFD pid + VRAM sampled in-window, mapped libggml-hip = v10 store), A1-disabled/A0 median within +-10% at both L, capture completeness 1.0; REVISE if the control diverges or capture is incomplete; INCONCLUSIVE otherwise. Early stops (answer/futility/cap) are operational decisions, never PF1 gate results; the 2K/8K screen never yields a negative PF1 verdict.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "1a7c113f37a26a7bcd138c9ce8b8cc2862e1614adb99384682554e3c4e86993b",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

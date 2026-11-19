@@ -1,0 +1,871 @@
+{
+  "schema": "sr6.raw-candidate-corpus.v1",
+  "status": "CANDIDATE_NOT_TOKENIZED_NOT_EXPOSURE_CLEARED",
+  "limitations": [
+    "Exact prompt hashes were checked against only prior-sr6-diagnostic-hashes.json and copyspec-p1-exclusions.json. Global exposure history and semantic near-duplicates are not established.",
+    "Git author metadata is attribution, not independent proof of human authorship.",
+    "These 2023 upstream technical examples are convenient, narrowly scoped sources, not representative samples. The prose task is rewriting source prose, not an independently collected user conversation.",
+    "Rendering, tokenizer IDs, repeated 5-gram fractions, workload partition and all runtime/predeclaration seals are not yet verified."
+  ],
+  "known_inventory_files": [
+    "prior-sr6-diagnostic-hashes.json",
+    "copyspec-p1-exclusions.json"
+  ],
+  "prompts": [
+    {
+      "id": "code_00",
+      "class": "code",
+      "window": "w1",
+      "seed": 110200,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic void ggml_graph_compute_helper(std::vector<uint8_t> & buf, ggml_cgraph * graph, int n_threads) {\n    struct ggml_cplan plan = ggml_graph_plan(graph, n_threads);\n\n    if (plan.work_size > 0) {\n        buf.resize(plan.work_size);\n        plan.work_data = buf.data();\n    }\n\n    ggml_graph_compute(graph, &plan);\n}\n\nstatic struct ggml_tensor * randomize_tensor(\n    struct ggml_tensor * tensor, int ndims, const int64_t ne[], float fmin, float fmax\n) {\n    switch (ndims) {\n        case 1:\n            for (int i0 = 0; i0 < ne[0]; i0++) {\n                ((float *)tensor->data)[i0] = frand()*(fmax - fmin) + fmin;\n            }\n            break;\n```",
+      "prompt_sha256": "32046929846a090ca585a677b5e174739f0057f7327143c33d218b23c92ff837",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/baby-llama/baby-llama.cpp",
+        "git_blob": "e7d2ad592e4c978bd164d49f664b09151a8bf227",
+        "file_sha256": "5e65a303f1b214c0b795587069c02eb834839414b6e0759aae571ca7a25ace9d",
+        "line_start": 21,
+        "line_end": 40,
+        "author_attribution": "Georgi Gerganov|2023-12-21T23:20:49+02:00|afefa319f1f59b002dfa0d1ef407a2c74bd9770b"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_01",
+      "class": "code",
+      "window": "w1",
+      "seed": 110201,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nint main(int argc, char ** argv) {\n    gpt_params params;\n\n    if (argc == 1 || argv[1][0] == '-') {\n        printf(\"usage: %s MODEL_PATH [N_KV_MAX] [IS_PP_SHARED] [NGL] [MMQ] <PP> <TG> <PL>\\n\" , argv[0]);\n        printf(\"  <PP>, <TG> and PL are comma-separated lists of numbers without spaces\\n\\n\");\n        printf(\"  example: %s ggml-model-f16.gguf 2048 0 999 0 128,256,512 128,256 1,2,4,8,16,32\\n\\n\", argv[0]);\n        return 1 ;\n    }\n\n    int n_kv_max     = 2048;\n    int is_pp_shared = 0;\n    int n_gpu_layers = 0;\n    int mmq          = 0;\n\n    std::vector<int> n_pp = { 128, 256, 512, 1024, 2048, 3584, 7680, };\n    std::vector<int> n_tg = { 128, 256, };\n    std::vector<int> n_pl = { 1, 2, 4, 8, 16, 32, };\n    //std::vector<int> n_pl = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, };\n\n```",
+      "prompt_sha256": "e85a2d16de56e7d4f0ead6d6a66680cabcaed6524216f4a9f589abfa78d82321",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/batched-bench/batched-bench.cpp",
+        "git_blob": "57596ed9860507978334417f18565a2d675a3dce",
+        "file_sha256": "08fa3082054850d2dd66d416f368e1917a4a1df720cd3ef29387f4ca94ea10ff",
+        "line_start": 31,
+        "line_end": 50,
+        "author_attribution": "Georgi Gerganov|2023-12-01T10:51:24+02:00|ef47ec18da469423c276b683dd9b5741cee7023e"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_02",
+      "class": "code",
+      "window": "w1",
+      "seed": 110202,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nint main(int argc, char ** argv) {\n    gpt_params params;\n\n    if (argc == 1 || argv[1][0] == '-') {\n        printf(\"usage: %s MODEL_PATH [PROMPT] [PARALLEL] [LEN] [NGL]\\n\" , argv[0]);\n        return 1 ;\n    }\n\n    // number of parallel batches\n    int n_parallel = 1;\n\n    // total length of the sequences including the prompt\n    int n_len = 32;\n\n    // number of layers to offload to the GPU\n    int n_gpu_layers = 0;\n\n    if (argc >= 2) {\n        params.model = argv[1];\n    }\n```",
+      "prompt_sha256": "e2f0fa8740e65f5c998d1c81b0616a794e9ecbf9031c5ba3c8685b5b216fde9e",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/batched/batched.cpp",
+        "git_blob": "22a4265df77c09b2c393677711c061e8feaa1f18",
+        "file_sha256": "0681e515412b2747d0c5d8269a3302c98d36ada820a78c368996ce39171897f6",
+        "line_start": 10,
+        "line_end": 29,
+        "author_attribution": "Georgi Gerganov|2023-10-24T16:48:37+03:00|2b4ea35e56792064598e922e46d081e02bc96b94"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_03",
+      "class": "code",
+      "window": "w1",
+      "seed": 110203,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic bool is_at_eob(const beam_search_callback_data & callback_data, const llama_token * tokens, size_t n_tokens) {\n    return n_tokens && tokens[n_tokens-1] == llama_token_eos(llama_get_model(callback_data.ctx));\n}\n\n// Function matching type llama_beam_search_callback_fn_t.\n// Custom callback example is called each time the beams lengths increase:\n//  * Show progress by printing ',' following by number of convergent beam tokens if any.\n//  * When all beams converge to a common prefix, they are made available in beams_state.beams[0].\n//    This is also called when the stop condition is met.\n//    Collect tokens into std::vector<llama_token> response which is pointed to by callback_data.\nstatic void beam_search_callback(void * callback_data_ptr, llama_beams_state beams_state) {\n    auto& callback_data = *static_cast<beam_search_callback_data*>(callback_data_ptr);\n    // Mark beams as EOS as needed.\n    for (size_t i = 0 ; i < beams_state.n_beams ; ++i) {\n        llama_beam_view& beam_view = beams_state.beam_views[i];\n        if (!beam_view.eob && is_at_eob(callback_data, beam_view.tokens, beam_view.n_tokens)) {\n            beam_view.eob = true;\n        }\n    }\n    printf(\",\");  // Show progress\n```",
+      "prompt_sha256": "75ff886ca77803a3358d3536ed47d2431c97740851a1ad65a2ad78e9edee2fe1",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/beam-search/beam-search.cpp",
+        "git_blob": "679b382e19b4e0bc34b50e0704d3ccd85dddbab3",
+        "file_sha256": "f1238de9958d03c244e36b87dd6be75ddf7fcd87cfd0867d7b313e8a9aa7e2d3",
+        "line_start": 49,
+        "line_end": 68,
+        "author_attribution": "Marcus Dunn|2023-10-23T12:40:03-07:00|5be6c803fa5378f62a1590f3ad8c6b64c7c0c2ce"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_04",
+      "class": "code",
+      "window": "w1",
+      "seed": 110204,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic void ggml_graph_compute_helper(std::vector<uint8_t> & buf, ggml_cgraph * graph, int n_threads) {\n    struct ggml_cplan plan = ggml_graph_plan(graph, n_threads);\n\n    if (plan.work_size > 0) {\n        buf.resize(plan.work_size);\n        plan.work_data = buf.data();\n    }\n\n    ggml_graph_compute(graph, &plan);\n}\n\nstatic float tensor_sum_elements(const ggml_tensor * tensor) {\n    double sum = 0;\n    if (tensor->type == GGML_TYPE_F32) {\n        for (int j = 0; j < tensor->ne[1]; j++) {\n            for (int k = 0; k < tensor->ne[0]; k++) {\n                sum += ((float *) tensor->data)[j*tensor->ne[0] + k];\n            }\n        }\n    }\n```",
+      "prompt_sha256": "be304e13261bb417a411bcb9e0dba35449c7e7c5f3360cac93ae046fbb42277d",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/benchmark/benchmark-matmult.cpp",
+        "git_blob": "434e1d6bd509eaa155a58890f393a8d224575923",
+        "file_sha256": "64850eb1bc3b120c08ffbc4956b5626d6badb1833a87de5757196cf7f551cf94",
+        "line_start": 23,
+        "line_end": 42,
+        "author_attribution": "LostRuins|2023-12-14T20:13:33+08:00|20a68a7030ee06e8eb7eb8e24ae4ac52dc17803f"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_05",
+      "class": "code",
+      "window": "w2",
+      "seed": 110205,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic void malloc_weights(TransformerWeights* w, Config* p, bool shared_weights) {\n    // we calloc instead of malloc to keep valgrind happy\n    w->token_embedding_table = new float[p->vocab_size * p->dim]();\n    printf(\"[%s:AK] Allocating [%d] x [%d] = [%d] float space for w->token_embedding_table\\n\",__func__,p->vocab_size , p->dim, p->vocab_size * p->dim);\n\n    w->rms_att_weight = new float[p->n_layers * p->dim]();\n    printf(\"[%s:AK] Allocating [%d] x [%d] = [%d] float space for w->rms_att_weight\\n\",__func__,p->n_layers, p->dim, p->n_layers * p->dim);\n\n    w->rms_ffn_weight = new float[p->n_layers * p->dim]();\n    printf(\"[%s:AK] Allocating [%d] x [%d] = [%d] float space for w->rms_ffn_weight\\n\",__func__,p->n_layers , p->dim, p->n_layers * p->dim);\n\n    w->wq = new float[p->n_layers * p->dim * p->dim]();\n    printf(\"[%s:AK] Allocating [%d] x [%d] x [%d] = [%d] float space for w->wq\\n\",__func__,p->n_layers, p->dim, p->dim, p->n_layers * p->dim * p->dim);\n\n    w->wk = new float[p->n_layers * p->dim * p->dim]();\n    printf(\"[%s:AK] Allocating [%d] x [%d] x [%d] = [%d] float space for w->wk\\n\",__func__,p->n_layers, p->dim, p->dim, p->n_layers * p->dim * p->dim);\n\n    w->wv = new float[p->n_layers * p->dim * p->dim]();\n    printf(\"[%s:AK] Allocating [%d] x [%d] x [%d] = [%d] float space for w->wv\\n\",__func__, p->n_layers, p->dim, p->dim, p->n_layers * p->dim * p->dim);\n\n```",
+      "prompt_sha256": "8aade496818ea5a8aa583be63a15fbfac68151f3415de9c7c4dce6b822df4577",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/convert-llama2c-to-ggml/convert-llama2c-to-ggml.cpp",
+        "git_blob": "4d41e17793f4309fcb26de49604929909c1b8aa4",
+        "file_sha256": "bacb0132f2b2c86fafd87cccdbbe71f2af4792ef57d9b53f5a5aaf6c4f7f5289",
+        "line_start": 118,
+        "line_end": 137,
+        "author_attribution": "slaren|2023-12-14T16:52:08+01:00|cafcd4f89500b8afef722cdb08088eceb8a22572"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_06",
+      "class": "code",
+      "window": "w2",
+      "seed": 110206,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nint main(int argc, char ** argv) {\n    gpt_params params;\n\n    if (!gpt_params_parse(argc, argv, params)) {\n        return 1;\n    }\n\n    params.embedding = true;\n\n    print_build_info();\n\n    if (params.seed == LLAMA_DEFAULT_SEED) {\n        params.seed = time(NULL);\n    }\n\n    fprintf(stderr, \"%s: seed  = %u\\n\", __func__, params.seed);\n\n    std::mt19937 rng(params.seed);\n    if (params.random_prompt) {\n        params.prompt = gpt_random_prompt(rng);\n```",
+      "prompt_sha256": "215022418c40a5f9eb5f983a4d263eba9a8f36d83707ba8b48983d1a7db23beb",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/embedding/embedding.cpp",
+        "git_blob": "3295cd2400ac3d25280dc61f450b693c1c4bfb20",
+        "file_sha256": "5faa30a4144f364818466ae7e8d5a72c047cc732b0178a9fa52895d849c9d74f",
+        "line_start": 10,
+        "line_end": 29,
+        "author_attribution": "cebtenzzre|2023-11-02T02:50:16-04:00|b12fa0d1c13596869c512f49a526b979c94787cc"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_07",
+      "class": "code",
+      "window": "w2",
+      "seed": 110207,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\n    void seek(size_t offset, int whence) {\n#ifdef _WIN32\n        int ret = _fseeki64(fp, (__int64) offset, whence);\n#else\n        int ret = std::fseek(fp, (long) offset, whence);\n#endif\n        GGML_ASSERT(ret == 0); // same\n    }\n\n    void read_raw(void * ptr, size_t size) {\n        if (size == 0) {\n            return;\n        }\n        errno = 0;\n        std::size_t ret = std::fread(ptr, size, 1, fp);\n        if (ferror(fp)) {\n            die_fmt(\"read error: %s\", strerror(errno));\n        }\n        if (ret != 1) {\n            die(\"unexpectedly reached end of file\");\n```",
+      "prompt_sha256": "943740516744f4a7155acfd34f09ea5978d1d4915004279556c596e416cec72a",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/export-lora/export-lora.cpp",
+        "git_blob": "58fbe204d3bbbde40a8dbe43810bb8e64502bcb2",
+        "file_sha256": "f1b3ee7ebe10d1368bda0203e0b301ffcd9b9dc973d69289f6fed1a8e9ab849a",
+        "line_start": 59,
+        "line_end": 78,
+        "author_attribution": "Georgi Gerganov|2023-12-21T23:20:49+02:00|afefa319f1f59b002dfa0d1ef407a2c74bd9770b"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_08",
+      "class": "code",
+      "window": "w2",
+      "seed": 110208,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic void print_params(struct my_llama_hparams * params) {\n    printf(\"%s: n_vocab               : %u\\n\", __func__, params->n_vocab);\n    printf(\"%s: n_ctx                 : %u\\n\", __func__, params->n_ctx);\n    printf(\"%s: n_embd                : %u\\n\", __func__, params->n_embd);\n    printf(\"%s: n_ff                  : %u\\n\", __func__, params->n_ff);\n    printf(\"%s: n_head                : %u\\n\", __func__, params->n_head);\n    printf(\"%s: n_head_kv             : %u\\n\", __func__, params->n_head_kv);\n    printf(\"%s: n_layer               : %u\\n\", __func__, params->n_layer);\n    printf(\"%s: norm_rms_eps          : %f\\n\", __func__, params->f_norm_rms_eps);\n    printf(\"%s: rope_freq_base        : %f\\n\", __func__, params->rope_freq_base);\n    printf(\"%s: rope_freq_scale       : %f\\n\", __func__, params->rope_freq_scale);\n}\n\nstatic void print_lora_params(struct my_llama_lora_hparams * params) {\n    printf(\"%s: n_rank_attention_norm : %u\\n\", __func__, params->n_rank_attention_norm);\n    printf(\"%s: n_rank_wq             : %u\\n\", __func__, params->n_rank_wq);\n    printf(\"%s: n_rank_wk             : %u\\n\", __func__, params->n_rank_wk);\n    printf(\"%s: n_rank_wv             : %u\\n\", __func__, params->n_rank_wv);\n    printf(\"%s: n_rank_wo             : %u\\n\", __func__, params->n_rank_wo);\n    printf(\"%s: n_rank_ffn_norm       : %u\\n\", __func__, params->n_rank_ffn_norm);\n```",
+      "prompt_sha256": "5bd4fe867a6b32dff7c5ecb3393d5daa94da17e51416cd55f4a15f4de059a5b7",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/finetune/finetune.cpp",
+        "git_blob": "e0520f64ca4bbdecc302cc340b4273f1533bbaf3",
+        "file_sha256": "e7c83bd48169f6aa6d283828a7f68e0af1288b62e39524fabec5fc2df7b81d78",
+        "line_start": 198,
+        "line_end": 217,
+        "author_attribution": "Daniel Bevenius|2023-12-27T15:16:55+01:00|879b690a9e1eb1ab0a29b58236fc76978fb4d902"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_09",
+      "class": "code",
+      "window": "w2",
+      "seed": 110209,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic bool gguf_ex_write(const std::string & fname) {\n    struct gguf_context * ctx = gguf_init_empty();\n\n    gguf_set_val_u8  (ctx, \"some.parameter.uint8\",    0x12);\n    gguf_set_val_i8  (ctx, \"some.parameter.int8\",    -0x13);\n    gguf_set_val_u16 (ctx, \"some.parameter.uint16\",   0x1234);\n    gguf_set_val_i16 (ctx, \"some.parameter.int16\",   -0x1235);\n    gguf_set_val_u32 (ctx, \"some.parameter.uint32\",   0x12345678);\n    gguf_set_val_i32 (ctx, \"some.parameter.int32\",   -0x12345679);\n    gguf_set_val_f32 (ctx, \"some.parameter.float32\",  0.123456789f);\n    gguf_set_val_u64 (ctx, \"some.parameter.uint64\",   0x123456789abcdef0ull);\n    gguf_set_val_i64 (ctx, \"some.parameter.int64\",   -0x123456789abcdef1ll);\n    gguf_set_val_f64 (ctx, \"some.parameter.float64\",  0.1234567890123456789);\n    gguf_set_val_bool(ctx, \"some.parameter.bool\",     true);\n    gguf_set_val_str (ctx, \"some.parameter.string\",   \"hello world\");\n\n    gguf_set_arr_data(ctx, \"some.parameter.arr.i16\", GGUF_TYPE_INT16,   std::vector<int16_t>{ 1, 2, 3, 4, }.data(), 4);\n    gguf_set_arr_data(ctx, \"some.parameter.arr.f32\", GGUF_TYPE_FLOAT32, std::vector<float>{ 3.145f, 2.718f, 1.414f, }.data(), 3);\n    gguf_set_arr_str (ctx, \"some.parameter.arr.str\",                    std::vector<const char *>{ \"hello\", \"world\", \"!\" }.data(), 3);\n\n```",
+      "prompt_sha256": "c8bd8c0b55005e4a97b9f2961a25811d27f82cbfb7a6ed1210bc1d710790d16f",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/gguf/gguf.cpp",
+        "git_blob": "e67be4fb2995ec27744d301fe31e36d87d0b3738",
+        "file_sha256": "06f47c697bb64499f5033f2a4afceefd636ce9a8923b3e1ea8e5b01fa1124d7c",
+        "line_start": 22,
+        "line_end": 41,
+        "author_attribution": "Georgi Gerganov|2023-12-21T23:07:58+02:00|32259b2dade6f6856739bf7ba0a4ff7b474dc760"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_10",
+      "class": "code",
+      "window": "w3",
+      "seed": 110210,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic void sigint_handler(int signo) {\n    if (signo == SIGINT) {\n        if (!is_interacting) {\n            is_interacting = true;\n        } else {\n            console::cleanup();\n            printf(\"\\n\");\n            llama_print_timings(*g_ctx);\n            write_logfile(*g_ctx, *g_params, *g_model, *g_input_tokens, g_output_ss->str(), *g_output_tokens);\n            _exit(130);\n        }\n    }\n}\n#endif\n\nint main(int argc, char ** argv) {\n    gpt_params params;\n    llama_sampling_params & sparams = params.sparams;\n    g_params = &params;\n\n```",
+      "prompt_sha256": "3408637115a3e369afd38cfd0963a4d9c1d8ad5a20361dd9b39ce417139eb551",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/infill/infill.cpp",
+        "git_blob": "4a7827876e2151a0ceba42f95e7319aa2668c746",
+        "file_sha256": "0124e19d5aafca0b12fe334d9474eb59032c7e6a88dd7575ddd09c23e7184890",
+        "line_start": 89,
+        "line_end": 108,
+        "author_attribution": "Seb C|2023-11-21T00:26:59+10:30|881800d1f083c39431cef288347082be516d1c80"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_11",
+      "class": "code",
+      "window": "w3",
+      "seed": 110211,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic void print_usage(int /* argc */, char ** argv) {\n    printf(\"usage: %s [options]\\n\", argv[0]);\n    printf(\"\\n\");\n    printf(\"options:\\n\");\n    printf(\"  -h, --help\\n\");\n    printf(\"  -m, --model <filename>            (default: %s)\\n\", join(cmd_params_defaults.model, \",\").c_str());\n    printf(\"  -p, --n-prompt <n>                (default: %s)\\n\", join(cmd_params_defaults.n_prompt, \",\").c_str());\n    printf(\"  -n, --n-gen <n>                   (default: %s)\\n\", join(cmd_params_defaults.n_gen, \",\").c_str());\n    printf(\"  -b, --batch-size <n>              (default: %s)\\n\", join(cmd_params_defaults.n_batch, \",\").c_str());\n    printf(\"  -ctk <t>, --cache-type-k <t>      (default: %s)\\n\", join(transform_to_str(cmd_params_defaults.type_k, ggml_type_name), \",\").c_str());\n    printf(\"  -ctv <t>, --cache-type-v <t>      (default: %s)\\n\", join(transform_to_str(cmd_params_defaults.type_v, ggml_type_name), \",\").c_str());\n    printf(\"  -t, --threads <n>                 (default: %s)\\n\", join(cmd_params_defaults.n_threads, \",\").c_str());\n    printf(\"  -ngl, --n-gpu-layers <n>          (default: %s)\\n\", join(cmd_params_defaults.n_gpu_layers, \",\").c_str());\n    printf(\"  -mg, --main-gpu <i>               (default: %s)\\n\", join(cmd_params_defaults.main_gpu, \",\").c_str());\n    printf(\"  -mmq, --mul-mat-q <0|1>           (default: %s)\\n\", join(cmd_params_defaults.mul_mat_q, \",\").c_str());\n    printf(\"  -ts, --tensor_split <ts0/ts1/..>               \\n\");\n    printf(\"  -r, --repetitions <n>             (default: %d)\\n\", cmd_params_defaults.reps);\n    printf(\"  -o, --output <csv|json|md|sql>    (default: %s)\\n\", cmd_params_defaults.output_format == CSV ? \"csv\" : cmd_params_defaults.output_format == JSON ? \"json\" : cmd_params_defaults.output_format == MARKDOWN ? \"md\" : \"sql\");\n    printf(\"  -v, --verbose                     (default: %s)\\n\", cmd_params_defaults.verbose ? \"1\" : \"0\");\n    printf(\"\\n\");\n```",
+      "prompt_sha256": "6796a6dd1fa97a6a8f4b5ee968f08b5e4abb85ea9803029da7bba0d5041ccf95",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llama-bench/llama-bench.cpp",
+        "git_blob": "6617c050ddfec7fb5e1baab713578316bf6f62ac",
+        "file_sha256": "21d77f8eb925e888477437b57cf4442781b3ad9feb492efe15a7466e41175378",
+        "line_start": 165,
+        "line_end": 184,
+        "author_attribution": "Georgi Gerganov|2023-12-07T13:03:17+02:00|bcc0eb4591bec5ec02fad3f2bdcb1b265052ea56"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_12",
+      "class": "code",
+      "window": "w3",
+      "seed": 110212,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic int get_key_idx(const gguf_context * ctx, const char * key) {\n    int i = gguf_find_key(ctx, key);\n    if (i == -1) {\n        fprintf(stderr, \"key %s not found in file\\n\", key);\n        throw std::runtime_error(format(\"Missing required key: %s\", key));\n    }\n\n    return i;\n}\n\nstatic uint32_t get_u32(const gguf_context * ctx, const std::string & key) {\n    const int i = get_key_idx(ctx, key.c_str());\n\n    return gguf_get_val_u32(ctx, i);\n}\n\nstatic float get_f32(const gguf_context * ctx, const std::string & key) {\n    const int i = get_key_idx(ctx, key.c_str());\n\n    return gguf_get_val_f32(ctx, i);\n```",
+      "prompt_sha256": "4b383d8934b90667f06d7127fbd57596204531b2685c9bcc89e1890e39d17e1a",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llava/clip.cpp",
+        "git_blob": "cfb79e78940a753d449b50de5e83a759db66707e",
+        "file_sha256": "510681365eaf04879594dbd25006bbb2a9b79be6050e04fc29305e633bb3193b",
+        "line_start": 97,
+        "line_end": 116,
+        "author_attribution": "Georgi Gerganov|2023-12-30T23:24:42+02:00|9fbda719de18a9400a064c28759c39d55d687d3e"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_13",
+      "class": "code",
+      "window": "w3",
+      "seed": 110213,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic bool eval_tokens(struct llama_context * ctx_llama, std::vector<llama_token> tokens, int n_batch, int * n_past) {\n    int N = (int) tokens.size();\n    for (int i = 0; i < N; i += n_batch) {\n        int n_eval = (int) tokens.size() - i;\n        if (n_eval > n_batch) {\n            n_eval = n_batch;\n        }\n        if (llama_decode(ctx_llama, llama_batch_get_one(&tokens[i], n_eval, *n_past, 0))) {\n            fprintf(stderr, \"%s : failed to eval. token %d/%d (batch size %d, n_past %d)\\n\", __func__, i, N, n_batch, *n_past);\n            return false;\n        }\n        *n_past += n_eval;\n    }\n    return true;\n}\n\nstatic bool eval_id(struct llama_context * ctx_llama, int id, int * n_past) {\n    std::vector<llama_token> tokens;\n    tokens.push_back(id);\n    return eval_tokens(ctx_llama, tokens, 1, n_past);\n```",
+      "prompt_sha256": "2e792a3fb4ee9e7f82343aab9e24d757bf1d2988e79902495bd74abb22e83722",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llava/llava-cli.cpp",
+        "git_blob": "502b788b14aba2f70e51348c86d2eb28105aff1a",
+        "file_sha256": "378581f7272eb269e36efa87d2d79dc3dcfaf33a91991a874f8a0128d3a6530a",
+        "line_start": 13,
+        "line_end": 32,
+        "author_attribution": "Justine Tunney|2023-12-29T06:38:38-08:00|4af4801566bc262a38fb77f51edf278ac323c2bd"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "code_14",
+      "class": "code",
+      "window": "w3",
+      "seed": 110214,
+      "prompt": "Review the following upstream C++ excerpt. Identify a concrete correctness risk or invariant, and propose a focused test. State what cannot be inferred without its callers.\n\n```cpp\nstatic bool encode_image_with_clip(clip_ctx * ctx_clip, int n_threads, const clip_image_u8 * img, float * image_embd, int * n_img_pos) {\n    clip_image_f32 * img_res = clip_image_f32_init();\n    if (!clip_image_preprocess(ctx_clip, img, img_res, /*pad2square =*/ true)) {\n        fprintf(stderr, \"%s: unable to preprocess image\\n\", __func__);\n        clip_image_f32_free(img_res);\n        return false;\n    }\n\n    *n_img_pos = clip_n_patches(ctx_clip);\n\n    const int64_t t_img_enc_start_us = ggml_time_us();\n    bool encoded = clip_image_encode(ctx_clip, n_threads, img_res, image_embd);\n    clip_image_f32_free(img_res);\n    if (!encoded) {\n        fprintf(stderr, \"Unable to encode image\\n\");\n\n        return false;\n    }\n\n    const int64_t t_img_enc_end_us = ggml_time_us();\n```",
+      "prompt_sha256": "64357a5c1b8a493b2220c4e83daa2c7558fe2b45aff14f3e9a5861eab3c1e9ab",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llava/llava.cpp",
+        "git_blob": "d42e7582e8c66d23e93b02df50167a401933f7fd",
+        "file_sha256": "1a4cc5b14a0ad1e494e61256ba3ef0cf2f1e06490dda5f894762e7e6e669d44d",
+        "line_start": 12,
+        "line_end": 31,
+        "author_attribution": "Georgi Gerganov|2023-12-30T23:24:42+02:00|9fbda719de18a9400a064c28759c39d55d687d3e"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_00",
+      "class": "rag",
+      "window": "w1",
+      "seed": 110300,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\nBLIS is a portable software framework for high-performance BLAS-like dense linear algebra libraries. It has received awards and recognition, including the 2023 James H. Wilkinson Prize for Numerical Software and the 2020 SIAM Activity Group on Supercomputing Best Paper Prize. BLIS provides a new BLAS-like API and a compatibility layer for traditional BLAS routine calls. It offers features such as object-based API, typed API, BLAS and CBLAS compatibility layers.",
+      "prompt_sha256": "8939f80600ad8a6f2ba0c33c6fe2e74decf5ce04e0a00dcf07527721b18d3187",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "docs/BLIS.md",
+        "git_blob": "0bcd6eeef18fa1f8ba2ce978efbff15dfcd95522",
+        "file_sha256": "49bf3a20a9c6710cd9d89cb2d49d47958e2b0a5467292d9c11fc62bb582e2fa3",
+        "line_start": 4,
+        "line_end": 4,
+        "author_attribution": "uint256_t|2023-10-12T22:36:16+09:00|9e24cc6e2e589d405bd1720c400f5b0b9d0ca3ee"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_01",
+      "class": "rag",
+      "window": "w1",
+      "seed": 110301,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n## Verifying that the CPU is not oversaturated\nllama accepts a `-t N` (or `--threads N`) parameter. It's extremely important that this parameter is not too large. If your token generation is extremely slow, try setting this number to 1. If this significantly improves your token generation speed, then your CPU is being oversaturated and you need to explicitly set this parameter to the number of the physical CPU cores on your machine (even if you utilize a GPU). If in doubt, start with 1 and double the amount until you hit a performance bottleneck, then scale the number down.",
+      "prompt_sha256": "65d119fc85c481f42acbf06b7b68e668c650cfe2794e2efcab21de6573c6bf35",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "docs/token_generation_performance_tips.md",
+        "git_blob": "d7e863dff5c01b9eee4d6d55839da0860752735d",
+        "file_sha256": "33031ddc5e8c15d0f902166d18e3adeacef1f57868684683d5f6b2e732e8225b",
+        "line_start": 19,
+        "line_end": 20,
+        "author_attribution": "Richard Kiss|2023-11-11T22:04:58-08:00|532dd74e38c29e16ea1cfc4e7eedb4f2fab3f3cd"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_02",
+      "class": "rag",
+      "window": "w1",
+      "seed": 110302,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n- `prompt not shared` - each batch has a separate prompt of size `PP` (i.e. `N_KV = B*(PP + TG)`)\n- `prompt is shared` - there is a common prompt of size `PP` used by all batches (i.e. `N_KV = PP + B*TG`)",
+      "prompt_sha256": "362e966e985bd52bb9276b12fe0fbb31594244bc825740637ef5263f4b93f8fd",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/batched-bench/README.md",
+        "git_blob": "34b343f66d6b95184ef45ddb678765282e19770c",
+        "file_sha256": "d65cf66c136f5cc42686b654ef12e0114684b1ca7c0d050325c2ce56c9ce1aaa",
+        "line_start": 9,
+        "line_end": 10,
+        "author_attribution": "Georgi Gerganov|2023-10-11T21:25:33+03:00|8c70a5ff25964f0a81e20d142a2f5ac5baff22fc"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_03",
+      "class": "rag",
+      "window": "w1",
+      "seed": 110303,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n# finetune LORA adapter\n./bin/finetune \\\n        --model-base open-llama-3b-v2-q8_0.gguf \\\n        --checkpoint-in  chk-lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.gguf \\\n        --checkpoint-out chk-lora-open-llama-3b-v2-q8_0-shakespeare-ITERATION.gguf \\\n        --lora-out lora-open-llama-3b-v2-q8_0-shakespeare-ITERATION.bin \\\n        --train-data \"shakespeare.txt\" \\\n        --save-every 10 \\\n        --threads 6 --adam-iter 30 --batch 4 --ctx 64 \\\n        --use-checkpointing",
+      "prompt_sha256": "8317d3a70b53684bce4992954a5de0dcc4dc226713802cb92a4acfa2e181f577",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/finetune/README.md",
+        "git_blob": "a2a2c12814bdddc8bc5824459b76ab7272ef4e2d",
+        "file_sha256": "97264a67d8107f42242ad436a96145942589b3714770e217657fe561d111ba56",
+        "line_start": 9,
+        "line_end": 18,
+        "author_attribution": "Galunid|2023-11-20T19:30:00+01:00|0b871f1a04ef60e114bbe43004fd9c21114e802d"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_04",
+      "class": "rag",
+      "window": "w1",
+      "seed": 110304,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n-   `-m FNAME, --model FNAME`: Specify the path to the LLaMA model file (e.g., `models/7B/ggml-model.bin`).\n-   `-i, --interactive`: Run the program in interactive mode, allowing you to provide input directly and receive real-time responses.\n-   `-n N, --n-predict N`: Set the number of tokens to predict when generating text. Adjusting this value can influence the length of the generated text.\n-   `-c N, --ctx-size N`: Set the size of the prompt context. The default is 512, but LLaMA models were built with a context of 2048, which will provide better results for longer input/inference.",
+      "prompt_sha256": "4615bfcfbfaa776f5117d81dc105cc78a9718c86e76dc7504fd646d40f3f3d49",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/infill/README.md",
+        "git_blob": "8c97f719b00a03f134d7fa2b9e2a18dbef05b839",
+        "file_sha256": "4ba5b8c16c0350809ea05580aa29b32cb1ba5a8e83a5da293d319afcfda15e27",
+        "line_start": 14,
+        "line_end": 17,
+        "author_attribution": "vvhg1|2023-10-02T09:42:02+02:00|c97f01c362ac102c6994edb80008f8608539553a"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_05",
+      "class": "rag",
+      "window": "w2",
+      "seed": 110305,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\nThe jeopardy test can be used to compare the fact knowledge of different models and compare them to each other. This is in contrast to some other tests, which test logical deduction, creativity, writing skills, etc.",
+      "prompt_sha256": "2e7fc38631e2fb94bd9d3599ca2e9ab371e5a3fea27fb8d3d6891e55168f2516",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/jeopardy/README.md",
+        "git_blob": "ffa13cbf349b281ec82373d8bb497678c8c93e4d",
+        "file_sha256": "31d9975ab20e827ce59a95c185ef31d57ad738da19fdd528f4ff5b1e58d2d5e7",
+        "line_start": 5,
+        "line_end": 5,
+        "author_attribution": "pudepiedj|2023-10-06T14:16:38+01:00|a8777ad84e00cda0399e827cdf971e2c3fab1da2"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_06",
+      "class": "rag",
+      "window": "w2",
+      "seed": 110306,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n1. [Syntax](#syntax)\n2. [Examples](#examples)\n    1. [Text generation with different models](#text-generation-with-different-models)\n    2. [Prompt processing with different batch sizes](#prompt-processing-with-different-batch-sizes)\n    3. [Different numbers of threads](#different-numbers-of-threads)\n    4. [Different numbers of layers offloaded to the GPU](#different-numbers-of-layers-offloaded-to-the-gpu)\n3. [Output formats](#output-formats)\n    1. [Markdown](#markdown)\n    2. [CSV](#csv)\n    3. [JSON](#json)\n    4. [SQL](#sql)",
+      "prompt_sha256": "56c41759dcb43d6fe996fbe6e0ddfa5ab7d61eede1cd20503f598333f4f1a7af",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llama-bench/README.md",
+        "git_blob": "d02824bfa8d2fceeb032364cb2de3b1725150e41",
+        "file_sha256": "0814d6a9b6f6e4de71a220c2663ede61c68f78ae4c17afe012b9479474bd1126",
+        "line_start": 7,
+        "line_end": 17,
+        "author_attribution": "slaren|2023-09-23T21:48:24+02:00|c091cdfb24621710c617ea85c92fcd347d0bf340"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_07",
+      "class": "rag",
+      "window": "w2",
+      "seed": 110307,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\nThe key parameters for lookup decoding are `ngram_min`, `ngram_max` and `n_draft`. The first two determine the size of the ngrams to search for in the prompt for a match. The latter specifies how many subsequent tokens to draft if a match is found.",
+      "prompt_sha256": "d5252c483850d127ad97a19d8ced1137716862b4da23757824be61219599be57",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/lookup/README.md",
+        "git_blob": "5bfb0de9360414aa92c9375ad3352099ecd87e6f",
+        "file_sha256": "f19fefe04b81aa2b7281d7e8525f5d3851d1f799553ca3b0caee2873513910f6",
+        "line_start": 7,
+        "line_end": 7,
+        "author_attribution": "LeonEricsson|2023-12-22T17:05:56+01:00|7082d24cec35e9ce9147535a2224dfc67ee0a78c"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_08",
+      "class": "rag",
+      "window": "w2",
+      "seed": 110308,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\nBecause this example is \"outside of the source tree\", it is important to first build/install llama.cpp using CMake. An example is provided here, but please see the [llama.cpp build instructions](../..) for more detailed build instructions.",
+      "prompt_sha256": "9012c49c16290d1a514cbb94174de881dba5f845f79027270cfa8394930807be",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/main-cmake-pkg/README.md",
+        "git_blob": "6d665f28fe9bd051cebccb22a890471e480bceb7",
+        "file_sha256": "3eb9fcc0aa67a8e247adc67363f03df3d7a9712ed25fddf9481552088b4eb986",
+        "line_start": 7,
+        "line_end": 7,
+        "author_attribution": "bandoti|2023-09-14T14:04:40-03:00|990a5e226a1a0ac858abe3aa7e5f3b000d4fa665"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_09",
+      "class": "rag",
+      "window": "w2",
+      "seed": 110309,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n1. [Quick Start](#quick-start)\n2. [Common Options](#common-options)\n3. [Input Prompts](#input-prompts)\n4. [Interaction](#interaction)\n5. [Context Management](#context-management)\n6. [Generation Flags](#generation-flags)\n7. [Performance Tuning and Memory Options](#performance-tuning-and-memory-options)\n8. [Additional Options](#additional-options)",
+      "prompt_sha256": "8db76591e25115adc54f42dffa4008376e159999996612ee3c8abf67a1938a70",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/main/README.md",
+        "git_blob": "c7997f66569a56400db66b75d1e56d4dc5eae7f0",
+        "file_sha256": "703c1c42900ddf2c826c0d6409c0cd06f0944a4b9bb47476c3a8f9703effd982",
+        "line_start": 7,
+        "line_end": 14,
+        "author_attribution": "Richard Kiss|2023-11-11T22:04:58-08:00|532dd74e38c29e16ea1cfc4e7eedb4f2fab3f3cd"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_10",
+      "class": "rag",
+      "window": "w3",
+      "seed": 110310,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n`prompt`: Provide the prompt for this completion as a string or as an array of strings or numbers representing tokens. Internally, the prompt is compared to the previous completion and only the \"unseen\" suffix is evaluated. If the prompt is a string or an array with the first element given as a string, a `bos` token is inserted in the front like `main` does.",
+      "prompt_sha256": "04204bb648c26d859c94ee321725f1fb21c5252308a5b0dbd4c3ef8cef46d49d",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/server/README.md",
+        "git_blob": "718a7e0649b62b15f91185379543e57c085bf0db",
+        "file_sha256": "ee87524706a231207db6aadd386fc2e4c5620d4ba106028b0ee14417101ce342",
+        "line_start": 117,
+        "line_end": 117,
+        "author_attribution": "Karthik Sethuraman|2023-12-29T06:22:10-08:00|b93edd22f55d3e5268263c3edcdae1818505c078"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_11",
+      "class": "rag",
+      "window": "w3",
+      "seed": 110311,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n# train\n./bin/train-text-from-scratch \\\n        --vocab-model ../models/ggml-vocab-llama.gguf \\\n        --ctx 64 --embd 256 --head 8 --layer 16 \\\n        --checkpoint-in  chk-shakespeare-256x16-LATEST.gguf \\\n        --checkpoint-out chk-shakespeare-256x16-ITERATION.gguf \\\n        --model-out ggml-shakespeare-256x16-f32-ITERATION.gguf \\\n        --train-data \"shakespeare.txt\" \\\n        -t 6 -b 16 --seed 1 --adam-iter 256 \\\n        --no-checkpointing",
+      "prompt_sha256": "7842e80c872bde19fd36ad7349925c193d4522b45163972fcdf3732592efb731",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/train-text-from-scratch/README.md",
+        "git_blob": "1b3454069e9a38a55fb34eebd1dd25be05a05a57",
+        "file_sha256": "df12ffdb574d941c948712367370e6ff053698c86bc20a2af60ded50b7d71fa1",
+        "line_start": 9,
+        "line_end": 18,
+        "author_attribution": "xaedes|2023-09-28T20:40:11+02:00|0e76a8992c8200237bbc6471a53fb8796b3872f7"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_12",
+      "class": "rag",
+      "window": "w3",
+      "seed": 110312,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n- `PP` - prompt tokens per batch\n- `TG` - generated tokens per batch\n- `B` - number of batches\n- `N_KV` - required KV cache size\n- `T_PP` - prompt processing time (i.e. time to first token)\n- `S_PP` - prompt processing speed (`(B*PP)/T_PP` or `PP/T_PP`)\n- `T_TG` - time to generate all batches\n- `S_TG` - text generation speed (`(B*TG)/T_TG`)\n- `T` - total time\n- `S` - total speed (i.e. all tokens / total time)",
+      "prompt_sha256": "93ac3dea3ff29eeb8df351b0c05912fd146c4b93fe3e42796d2bc445d41fe60f",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/batched-bench/README.md",
+        "git_blob": "34b343f66d6b95184ef45ddb678765282e19770c",
+        "file_sha256": "d65cf66c136f5cc42686b654ef12e0114684b1ca7c0d050325c2ce56c9ce1aaa",
+        "line_start": 27,
+        "line_end": 36,
+        "author_attribution": "Georgi Gerganov|2023-10-11T21:25:33+03:00|8c70a5ff25964f0a81e20d142a2f5ac5baff22fc"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_13",
+      "class": "rag",
+      "window": "w3",
+      "seed": 110313,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n**Only llama based models are supported!** The output files will be saved every N iterations (config with `--save-every N`).\nThe pattern 'ITERATION' in the output filenames will be replaced with the iteration number and with 'LATEST' for the latest output.\nSo in above example after 10 iterations these files will be written:\n- chk-lora-open-llama-3b-v2-q8_0-shakespeare-10.gguf\n- chk-lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.gguf\n- lora-open-llama-3b-v2-q8_0-shakespeare-10.bin\n- lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.bin",
+      "prompt_sha256": "c1d3eb0a45870224fc6bb829bd8542afdf813e96d041c24c7de5dee8e606900b",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/finetune/README.md",
+        "git_blob": "a2a2c12814bdddc8bc5824459b76ab7272ef4e2d",
+        "file_sha256": "97264a67d8107f42242ad436a96145942589b3714770e217657fe561d111ba56",
+        "line_start": 24,
+        "line_end": 30,
+        "author_attribution": "Galunid|2023-11-20T19:30:00+01:00|0b871f1a04ef60e114bbe43004fd9c21114e802d"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "rag_14",
+      "class": "rag",
+      "window": "w3",
+      "seed": 110314,
+      "prompt": "Using only the supplied documentation excerpt, explain its main operational guidance and cite the sentence that supports your answer. State any relevant limitation present in the text.\n\n-   `--in-prefix PROMPT_BEFORE_CURSOR`: Provide the prefix directly as a command-line option.\n-   `--in-suffix PROMPT_AFTER_CURSOR`: Provide the suffix directly as a command-line option.\n-   `--interactive-first`: Run the program in interactive mode and wait for input right away. (More on this below.)",
+      "prompt_sha256": "dcc5cd0288e170b0ab9f610880d8fa9c1e710c8e4d58455969d8cf36d85faea4",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/infill/README.md",
+        "git_blob": "8c97f719b00a03f134d7fa2b9e2a18dbef05b839",
+        "file_sha256": "4ba5b8c16c0350809ea05580aa29b32cb1ba5a8e83a5da293d319afcfda15e27",
+        "line_start": 23,
+        "line_end": 25,
+        "author_attribution": "vvhg1|2023-10-02T09:42:02+02:00|c97f01c362ac102c6994edb80008f8608539553a"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_00",
+      "class": "prose",
+      "window": "w1",
+      "seed": 110400,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\noptions:\n  -h, --help\n  -m, --model <filename>            (default: models/7B/ggml-model-q4_0.gguf)\n  -p, --n-prompt <n>                (default: 512)\n  -n, --n-gen <n>                   (default: 128)\n  -b, --batch-size <n>              (default: 512)\n  --memory-f32 <0|1>                (default: 0)\n  -t, --threads <n>                 (default: 16)\n  -ngl N, --n-gpu-layers <n>        (default: 99)\n  -mg i, --main-gpu <i>             (default: 0)\n  -mmq, --mul-mat-q <0|1>           (default: 1)\n  -ts, --tensor_split <ts0/ts1/..>\n  -r, --repetitions <n>             (default: 5)\n  -o, --output <csv|json|md|sql>    (default: md)\n  -v, --verbose                     (default: 0)",
+      "prompt_sha256": "fb893545ce8b7a660dc4d04b7ac54b39c89ab8b8837ec1cdfd281c6f849de64c",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llama-bench/README.md",
+        "git_blob": "d02824bfa8d2fceeb032364cb2de3b1725150e41",
+        "file_sha256": "0814d6a9b6f6e4de71a220c2663ede61c68f78ae4c17afe012b9479474bd1126",
+        "line_start": 24,
+        "line_end": 38,
+        "author_attribution": "slaren|2023-09-23T21:48:24+02:00|c091cdfb24621710c617ea85c92fcd347d0bf340"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_01",
+      "class": "prose",
+      "window": "w1",
+      "seed": 110401,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nWhen hardware acceleration libraries are used (e.g. CUBlas, Metal, CLBlast, etc.), CMake must be able to locate the associated CMake package. In the example below, when building _main-cmake-pkg_ notice the `CMAKE_PREFIX_PATH` includes the Llama CMake package location _in addition to_ the CLBlast package—which was used when compiling _llama.cpp_.",
+      "prompt_sha256": "0ff60c83f6977aba1a2b81ebbff45cd3f376a68f5078378ffc67e2a617f853da",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/main-cmake-pkg/README.md",
+        "git_blob": "6d665f28fe9bd051cebccb22a890471e480bceb7",
+        "file_sha256": "3eb9fcc0aa67a8e247adc67363f03df3d7a9712ed25fddf9481552088b4eb986",
+        "line_start": 11,
+        "line_end": 11,
+        "author_attribution": "bandoti|2023-09-14T14:04:40-03:00|990a5e226a1a0ac858abe3aa7e5f3b000d4fa665"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_02",
+      "class": "prose",
+      "window": "w1",
+      "seed": 110402,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\n-   `-m FNAME, --model FNAME`: Specify the path to the LLaMA model file (e.g., `models/7B/ggml-model.bin`).\n-   `-i, --interactive`: Run the program in interactive mode, allowing you to provide input directly and receive real-time responses.\n-   `-ins, --instruct`: Run the program in instruction mode, which is particularly useful when working with Alpaca models.\n-   `-n N, --n-predict N`: Set the number of tokens to predict when generating text. Adjusting this value can influence the length of the generated text.\n-   `-c N, --ctx-size N`: Set the size of the prompt context. The default is 512, but LLaMA models were built with a context of 2048, which will provide better results for longer input/inference.",
+      "prompt_sha256": "b2c8e8ab567045471cfdf7aa3e4ffe26ccb397f983c25b16b98f3fdf113a9e80",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/main/README.md",
+        "git_blob": "c7997f66569a56400db66b75d1e56d4dc5eae7f0",
+        "file_sha256": "703c1c42900ddf2c826c0d6409c0cd06f0944a4b9bb47476c3a8f9703effd982",
+        "line_start": 69,
+        "line_end": 73,
+        "author_attribution": "Richard Kiss|2023-11-11T22:04:58-08:00|532dd74e38c29e16ea1cfc4e7eedb4f2fab3f3cd"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_03",
+      "class": "prose",
+      "window": "w1",
+      "seed": 110403,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\n`n_predict`: Set the maximum number of tokens to predict when generating text. **Note:** May exceed the set limit slightly if the last token is a partial multibyte character. When 0, no tokens will be generated but the prompt is evaluated into the cache. (default: -1, -1 = infinity).",
+      "prompt_sha256": "3837c59ed13104d45de3d79f6f8ffe31cb58e308113f277d59449a0f8faaf901",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/server/README.md",
+        "git_blob": "718a7e0649b62b15f91185379543e57c085bf0db",
+        "file_sha256": "ee87524706a231207db6aadd386fc2e4c5620d4ba106028b0ee14417101ce342",
+        "line_start": 127,
+        "line_end": 127,
+        "author_attribution": "Karthik Sethuraman|2023-12-29T06:22:10-08:00|b93edd22f55d3e5268263c3edcdae1818505c078"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_04",
+      "class": "prose",
+      "window": "w1",
+      "seed": 110404,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nOutput files will be saved every N iterations (config with `--save-every N`).\nThe pattern \"ITERATION\" in the output filenames will be replaced with the iteration number and \"LATEST\" for the latest output.",
+      "prompt_sha256": "f80cd00723d268b1f87320095544a5027c865b90ba90c5c6a139095a99c317ed",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/train-text-from-scratch/README.md",
+        "git_blob": "1b3454069e9a38a55fb34eebd1dd25be05a05a57",
+        "file_sha256": "df12ffdb574d941c948712367370e6ff053698c86bc20a2af60ded50b7d71fa1",
+        "line_start": 24,
+        "line_end": 25,
+        "author_attribution": "xaedes|2023-09-28T20:40:11+02:00|0e76a8992c8200237bbc6471a53fb8796b3872f7"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_05",
+      "class": "prose",
+      "window": "w2",
+      "seed": 110405,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nAfter 10 more iterations:\n- chk-lora-open-llama-3b-v2-q8_0-shakespeare-20.gguf\n- chk-lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.gguf\n- lora-open-llama-3b-v2-q8_0-shakespeare-20.bin\n- lora-open-llama-3b-v2-q8_0-shakespeare-LATEST.bin",
+      "prompt_sha256": "1f1c0df4936dcc2503ada9cf01e265eadd030d832ebfbb234d09b46b9711e081",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/finetune/README.md",
+        "git_blob": "a2a2c12814bdddc8bc5824459b76ab7272ef4e2d",
+        "file_sha256": "97264a67d8107f42242ad436a96145942589b3714770e217657fe561d111ba56",
+        "line_start": 32,
+        "line_end": 36,
+        "author_attribution": "Galunid|2023-11-20T19:30:00+01:00|0b871f1a04ef60e114bbe43004fd9c21114e802d"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_06",
+      "class": "prose",
+      "window": "w2",
+      "seed": 110406,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nThe `infill` program offers a seamless way to interact with LLaMA models, allowing users to receive real-time infill suggestions. The interactive mode can be triggered using `--interactive`, and `--interactive-first`",
+      "prompt_sha256": "7f2f1a70bf8cae9617ef94a3a3d3951322ba9a5896ceaefbbb18401b65cead97",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/infill/README.md",
+        "git_blob": "8c97f719b00a03f134d7fa2b9e2a18dbef05b839",
+        "file_sha256": "4ba5b8c16c0350809ea05580aa29b32cb1ba5a8e83a5da293d319afcfda15e27",
+        "line_start": 29,
+        "line_end": 29,
+        "author_attribution": "vvhg1|2023-10-02T09:42:02+02:00|c97f01c362ac102c6994edb80008f8608539553a"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_07",
+      "class": "prose",
+      "window": "w2",
+      "seed": 110407,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nWith the exception of `-r`, `-o` and `-v`, all options can be specified multiple times to run multiple tests. Each pp and tg test is run with all combinations of the specified options. To specify multiple values for an option, the values can be separated by commas (e.g. `-n 16,32`), or the option can be specified multiple times (e.g. `-n 16 -n 32`).",
+      "prompt_sha256": "a4607d56b93f63d5603da238c3aa81d664f39644de3ad1a7d0eee17aad718dd7",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llama-bench/README.md",
+        "git_blob": "d02824bfa8d2fceeb032364cb2de3b1725150e41",
+        "file_sha256": "0814d6a9b6f6e4de71a220c2663ede61c68f78ae4c17afe012b9479474bd1126",
+        "line_start": 48,
+        "line_end": 48,
+        "author_attribution": "slaren|2023-09-23T21:48:24+02:00|c091cdfb24621710c617ea85c92fcd347d0bf340"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_08",
+      "class": "prose",
+      "window": "w2",
+      "seed": 110408,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\n-   `--prompt PROMPT`: Provide a prompt directly as a command-line option.\n-   `--file FNAME`: Provide a file containing a prompt or multiple prompts.\n-   `--interactive-first`: Run the program in interactive mode and wait for input right away. (More on this below.)\n-   `--random-prompt`: Start with a randomized prompt.",
+      "prompt_sha256": "ef0c034ce07d7b89d6b949198d0f761d7cdc7d70b0e0ff32a53628859b162d1d",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/main/README.md",
+        "git_blob": "c7997f66569a56400db66b75d1e56d4dc5eae7f0",
+        "file_sha256": "703c1c42900ddf2c826c0d6409c0cd06f0944a4b9bb47476c3a8f9703effd982",
+        "line_start": 79,
+        "line_end": 82,
+        "author_attribution": "Richard Kiss|2023-11-11T22:04:58-08:00|532dd74e38c29e16ea1cfc4e7eedb4f2fab3f3cd"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_09",
+      "class": "prose",
+      "window": "w2",
+      "seed": 110409,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\n`n_keep`: Specify the number of tokens from the prompt to retain when the context size is exceeded and tokens need to be discarded.\n    By default, this value is set to 0 (meaning no tokens are kept). Use `-1` to retain all tokens from the prompt.",
+      "prompt_sha256": "dc40eea5fcd809970187cf578e4bd885af15c69d8f2d4efd41a7688870dae94c",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/server/README.md",
+        "git_blob": "718a7e0649b62b15f91185379543e57c085bf0db",
+        "file_sha256": "ee87524706a231207db6aadd386fc2e4c5620d4ba106028b0ee14417101ce342",
+        "line_start": 129,
+        "line_end": 130,
+        "author_attribution": "Karthik Sethuraman|2023-12-29T06:22:10-08:00|b93edd22f55d3e5268263c3edcdae1818505c078"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_10",
+      "class": "prose",
+      "window": "w3",
+      "seed": 110410,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nCheckpoint files (`--checkpoint-in FN`, `--checkpoint-out FN`) store the training process. When the input checkpoint file does not exist, it will begin finetuning a new randomly initialized adapter.",
+      "prompt_sha256": "45d6593958a66201c71a70be10323664c8a01ea04927a5bc1eb408ce16d1f86b",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/finetune/README.md",
+        "git_blob": "a2a2c12814bdddc8bc5824459b76ab7272ef4e2d",
+        "file_sha256": "97264a67d8107f42242ad436a96145942589b3714770e217657fe561d111ba56",
+        "line_start": 38,
+        "line_end": 38,
+        "author_attribution": "Galunid|2023-11-20T19:30:00+01:00|0b871f1a04ef60e114bbe43004fd9c21114e802d"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_11",
+      "class": "prose",
+      "window": "w3",
+      "seed": 110411,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\n-   `-i, --interactive`: Run the program in interactive mode, allowing users to get real time code suggestions from model.\n-   `--interactive-first`: Run the program in interactive mode and immediately wait for user input before starting the text generation.\n-   `--color`: Enable colorized output to differentiate visually distinguishing between prompts, user input, and generated text.",
+      "prompt_sha256": "861625b3958120036b7a865bc754009883be8e359f061350bd325983c5d6454a",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/infill/README.md",
+        "git_blob": "8c97f719b00a03f134d7fa2b9e2a18dbef05b839",
+        "file_sha256": "4ba5b8c16c0350809ea05580aa29b32cb1ba5a8e83a5da293d319afcfda15e27",
+        "line_start": 33,
+        "line_end": 35,
+        "author_attribution": "vvhg1|2023-10-02T09:42:02+02:00|c97f01c362ac102c6994edb80008f8608539553a"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_12",
+      "class": "prose",
+      "window": "w3",
+      "seed": 110412,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nEach test is repeated the number of times given by `-r`, and the results are averaged. The results are given in average tokens per second (t/s) and standard deviation. Some output formats (e.g. json) also include the individual results of each repetition.",
+      "prompt_sha256": "142379643f76a913f686e59c30c6628a83acfa9cc1c1a435edca58736bb47f12",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/llama-bench/README.md",
+        "git_blob": "d02824bfa8d2fceeb032364cb2de3b1725150e41",
+        "file_sha256": "0814d6a9b6f6e4de71a220c2663ede61c68f78ae4c17afe012b9479474bd1126",
+        "line_start": 50,
+        "line_end": 50,
+        "author_attribution": "slaren|2023-09-23T21:48:24+02:00|c091cdfb24621710c617ea85c92fcd347d0bf340"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_13",
+      "class": "prose",
+      "window": "w3",
+      "seed": 110413,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\nThe `main` program offers a seamless way to interact with LLaMA models, allowing users to engage in real-time conversations or provide instructions for specific tasks. The interactive mode can be triggered using various options, including `--interactive`, `--interactive-first`, and `--instruct`.",
+      "prompt_sha256": "dbf20aa1f0f07aea6ab106833e75581548226d776685789df34dda668b3b341b",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/main/README.md",
+        "git_blob": "c7997f66569a56400db66b75d1e56d4dc5eae7f0",
+        "file_sha256": "703c1c42900ddf2c826c0d6409c0cd06f0944a4b9bb47476c3a8f9703effd982",
+        "line_start": 86,
+        "line_end": 86,
+        "author_attribution": "Richard Kiss|2023-11-11T22:04:58-08:00|532dd74e38c29e16ea1cfc4e7eedb4f2fab3f3cd"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    },
+    {
+      "id": "prose_14",
+      "class": "prose",
+      "window": "w3",
+      "seed": 110414,
+      "prompt": "Rewrite the following technical prose as a clear explanation for an experienced engineer who is new to this topic. Preserve the original meaning and do not add unsupported claims.\n\n`stop`: Specify a JSON array of stopping strings.\n    These words will not be included in the completion, so make sure to add them to the prompt for the next iteration (default: []).",
+      "prompt_sha256": "197868b796903c20e3abe4e0db9f77107d05695875a287509833aae7b0121dd2",
+      "source": {
+        "repository": "llama.cpp",
+        "revision": "edd1ab7bc34c10a780ee7f9a4499f7689cdad36d",
+        "path": "examples/server/README.md",
+        "git_blob": "718a7e0649b62b15f91185379543e57c085bf0db",
+        "file_sha256": "ee87524706a231207db6aadd386fc2e4c5620d4ba106028b0ee14417101ce342",
+        "line_start": 134,
+        "line_end": 135,
+        "author_attribution": "Karthik Sethuraman|2023-12-29T06:22:10-08:00|b93edd22f55d3e5268263c3edcdae1818505c078"
+      },
+      "source_kind": "upstream_git_human_authorship_not_independently_verified"
+    }
+  ]
+}

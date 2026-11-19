@@ -1,0 +1,1321 @@
+#!/usr/bin/env python3
+"""P-BENCH-3 single-server -np sweep for batched/slot decode.
+
+This harness launches one llama-server instance per cell, sends a fixed
+question batch with bounded client concurrency, and records aggregate decode
+throughput plus per-stream latency. It intentionally avoids the orchestrator
+role path so E1 can test the serving primitive before E2 tests the eval driver.
+
+PRIMARY METRIC (operator ruling 2026-07-30): tasks/hour is ONLY an autopilot
+metric. Every model/instance number here is reported and RANKED in tok/s —
+``aggregate_decode_tps`` (sum of the per-stream decode rates, from llama.cpp's
+own predicted_n/predicted_ms, never wall clock) with ``per_stream_decode_tps``
+(what one request sees) reported alongside it. ``tasks_per_hour`` is still
+computed and persisted as a secondary/diagnostic quantity so historical
+comparisons survive, but it ranks nothing: the tested prompts are not a
+representative task ensemble and the number is not comparable across
+--n-predict caps (a 64-token cap yields ~4x the tasks/hour of a 256-token cap
+on identical hardware, by construction). p50/p95 latency is unaffected.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import json
+import math
+import os
+import random
+import re
+import signal
+import socket
+import statistics
+import subprocess
+import threading
+import time
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_REGISTRY = REPO_ROOT / "orchestration" / "model_registry.yaml"
+DEFAULT_QUESTION_POOL = REPO_ROOT / "benchmarks" / "prompts" / "question_pool.jsonl"
+DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "batched_decode"
+DEFAULT_LLAMA_SERVER = Path("/mnt/raid0/llm/llama.cpp/build/bin/llama-server")
+DEFAULT_MODEL_KEYS = ("qwen36_q8_0", "qwen36_27b_q8")
+DEFAULT_NP_LEVELS = (1, 2, 4, 8, 16)
+MAX_DECISION_GRADE_UPTIME_SECONDS = 7 * 24 * 60 * 60
+DEFAULT_ENV = {
+    "OMP_PROC_BIND": "spread",
+    "OMP_PLACES": "cores",
+    "OMP_WAIT_POLICY": "active",
+    "OMP_DYNAMIC": "false",
+    "KMP_BLOCKTIME": "10",
+}
+LLVM20_LIBDIR = Path("/usr/lib/llvm-20/lib")
+REQUIRED_NUMA_BALANCING = "0"
+
+
+@dataclass(frozen=True)
+class ModelSpec:
+    label: str
+    path: Path
+    registry_key: str | None = None
+    quant: str | None = None
+    architecture: str | None = None
+
+
+@dataclass(frozen=True)
+class PromptSpec:
+    qid: str
+    suite: str
+    tier: int | None
+    prompt: str
+
+
+@dataclass
+class RequestResult:
+    model: str
+    np_level: int
+    request_index: int
+    qid: str
+    suite: str
+    success: bool
+    latency_ms: float
+    predicted_tokens: int
+    prompt_tokens: int
+    predicted_tps: float
+    # predicted_ms is llama.cpp's own decode duration for this request, taken
+    # verbatim from the response "timings" block. Retained (2026-07-30) because
+    # the primary metric is a decode rate and must come from the server's
+    # timings, never from a client wall clock and never derived back out of
+    # predicted_tokens / predicted_per_second.
+    predicted_ms: float = 0.0
+    # Which client stream (pool worker) issued this request. A stream is a
+    # SERIAL sequence of requests, so its decode seconds do not overlap, while
+    # different streams decode concurrently — that is what makes
+    # sum(per-stream rate) the system-wide aggregate. -1 = unassigned.
+    stream_id: int = -1
+    http_status: int | None = None
+    error: str = ""
+    request_sha256: str = ""
+    response: dict[str, Any] | None = None
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def parse_csv_ints(raw: str) -> list[int]:
+    values = [int(part.strip()) for part in raw.split(",") if part.strip()]
+    if not values or any(value <= 0 for value in values):
+        raise argparse.ArgumentTypeError("expected comma-separated positive integers")
+    return values
+
+
+def percentile(values: list[float], q: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+    idx = math.ceil(q * len(ordered)) - 1
+    return ordered[max(0, min(idx, len(ordered) - 1))]
+
+
+def read_yaml(path: Path) -> dict[str, Any]:
+    if yaml is None:
+        raise RuntimeError("PyYAML is required to load model registry defaults")
+    with path.open("r", encoding="utf-8") as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, dict):
+        raise RuntimeError(f"registry did not parse as a mapping: {path}")
+    return data
+
+
+def registry_entry(registry: dict[str, Any], key: str) -> dict[str, Any] | None:
+    entry = registry.get(key)
+    if isinstance(entry, dict):
+        return entry
+    for section_name in ("roles", "models", "model_catalog"):
+        section = registry.get(section_name)
+        if isinstance(section, dict):
+            entry = section.get(key)
+            if isinstance(entry, dict):
+                return entry
+    return None
+
+
+def load_model_specs(
+    registry_path: Path,
+    model_keys: list[str],
+    model_overrides: list[str],
+) -> list[ModelSpec]:
+    specs: list[ModelSpec] = []
+    if model_keys:
+        registry = read_yaml(registry_path)
+        for key in model_keys:
+            entry = registry_entry(registry, key)
+            if entry is None:
+                raise RuntimeError(f"registry key not found or invalid: {key}")
+            model = entry.get("model")
+            if not isinstance(model, dict):
+                raise RuntimeError(f"registry key has no model mapping: {key}")
+            raw_path = model.get("path")
+            if not isinstance(raw_path, str) or not raw_path:
+                raise RuntimeError(f"registry key has no model.path: {key}")
+            specs.append(
+                ModelSpec(
+                    label=key,
+                    path=Path(raw_path),
+                    registry_key=key,
+                    quant=str(model.get("quant") or "") or None,
+                    architecture=str(model.get("architecture") or "") or None,
+                )
+            )
+
+    for raw in model_overrides:
+        if "=" in raw:
+            label, path = raw.split("=", 1)
+        elif ":" in raw:
+            label, path = raw.split(":", 1)
+        else:
+            raise argparse.ArgumentTypeError(
+                "--model must use label=/path/to/model.gguf or label:/path/to/model.gguf"
+            )
+        label = label.strip()
+        path = path.strip()
+        if not label or not path:
+            raise argparse.ArgumentTypeError("--model label and path must be non-empty")
+        specs.append(ModelSpec(label=label, path=Path(path)))
+
+    if not specs:
+        raise RuntimeError("no models selected")
+
+    for spec in specs:
+        if not spec.path.exists():
+            raise FileNotFoundError(f"{spec.label}: model file not found: {spec.path}")
+    return specs
+
+
+def load_prompt_batch(
+    path: Path,
+    *,
+    limit: int,
+    seed: int,
+    tier: int | None,
+    suites: set[str],
+) -> list[PromptSpec]:
+    prompts: list[PromptSpec] = []
+    with path.open("r", encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if row.get("__pool_metadata__"):
+                continue
+            prompt = row.get("prompt")
+            if not isinstance(prompt, str) or not prompt.strip():
+                continue
+            if row.get("image_path"):
+                continue
+            row_tier = row.get("tier")
+            if tier is not None and row_tier != tier:
+                continue
+            suite = str(row.get("suite") or "unknown")
+            if suites and suite not in suites:
+                continue
+            context = row.get("context")
+            full_prompt = f"{context}\n\n{prompt}" if isinstance(context, str) and context else prompt
+            prompts.append(
+                PromptSpec(
+                    qid=str(row.get("id") or f"row-{len(prompts)}"),
+                    suite=suite,
+                    tier=row_tier if isinstance(row_tier, int) else None,
+                    prompt=full_prompt,
+                )
+            )
+    if len(prompts) < limit:
+        raise RuntimeError(f"only {len(prompts)} prompts matched filters, need {limit}")
+    rng = random.Random(seed)
+    selected = rng.sample(prompts, limit)
+    return selected
+
+
+def run_capture(cmd: list[str], timeout: float = 10.0) -> str:
+    try:
+        proc = subprocess.run(
+            cmd,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=timeout,
+        )
+        return proc.stdout.strip()
+    except Exception as exc:
+        return f"ERROR: {exc}"
+
+
+def collect_attestation() -> dict[str, Any]:
+    governors = sorted(
+        {
+            path.read_text(encoding="utf-8").strip()
+            for path in Path("/sys/devices/system/cpu").glob("cpu*/cpufreq/scaling_governor")
+            if path.exists()
+        }
+    )
+    numa_balancing_path = Path("/proc/sys/kernel/numa_balancing")
+    uptime_seconds = None
+    try:
+        uptime_seconds = float(Path("/proc/uptime").read_text(encoding="utf-8").split()[0])
+    except Exception:
+        pass
+    return {
+        "created_at": utc_now(),
+        "host": socket.gethostname(),
+        "kernel": run_capture(["uname", "-a"]),
+        "lscpu_summary": run_capture(["lscpu"]),
+        "loadavg": Path("/proc/loadavg").read_text(encoding="utf-8").strip(),
+        "uptime_seconds": uptime_seconds,
+        "numa_balancing": (
+            numa_balancing_path.read_text(encoding="utf-8").strip()
+            if numa_balancing_path.exists()
+            else None
+        ),
+        "scaling_governors": governors,
+        "meminfo_head": "\n".join(Path("/proc/meminfo").read_text(encoding="utf-8").splitlines()[:8]),
+        "existing_llama_processes": find_llama_processes(),
+    }
+
+
+def host_health_warnings(attestation: dict[str, Any]) -> list[str]:
+    warnings: list[str] = []
+    uptime = attestation.get("uptime_seconds")
+    if isinstance(uptime, (int, float)) and uptime > MAX_DECISION_GRADE_UPTIME_SECONDS:
+        warnings.append(
+            "uptime exceeds 1 week; MEASUREMENT.md P-BENCH-1/P-BENCH-3 policy requires reboot "
+            "before decision-grade claims"
+        )
+    numa_balancing = attestation.get("numa_balancing")
+    if numa_balancing != REQUIRED_NUMA_BALANCING:
+        warnings.append(
+            f"kernel.numa_balancing={numa_balancing!r}; expected {REQUIRED_NUMA_BALANCING!r} "
+            "for canonical NUMA-interleave CPU benchmarking"
+        )
+    existing = attestation.get("existing_llama_processes")
+    if existing:
+        warnings.append("existing llama processes present during attestation")
+    return warnings
+
+
+LLAMA_BINARY_NAMES = frozenset({"llama-server", "llama-bench", "llama-cli"})
+
+
+def _executable_basename(pid: str) -> str | None:
+    """Resolve a pid to the basename of the binary it is ACTUALLY running.
+
+    /proc/<pid>/exe is the authoritative answer and is what makes this
+    cpuset-of-processes check correct in both directions:
+      * a real cell instance launched as `taskset -c … numactl … llama-server`
+        has argv[0] == "taskset", but taskset/numactl exec INTO llama-server,
+        so exe resolves to llama-server and it is still caught;
+      * an agent shell whose command line merely MENTIONS llama-server (a bus
+        relay quoting the binary name, a grep, an editor) resolves to zsh/bash
+        and is correctly ignored.
+    Returns None when the link is unreadable (foreign uid, or the process
+    exited between ps and this read).
+    """
+    try:
+        return os.path.basename(os.readlink(f"/proc/{pid}/exe"))
+    except OSError:
+        return None
+
+
+def find_llama_processes() -> list[dict[str, str]]:
+    """Live llama-family processes, identified by EXECUTABLE, never by cmdline.
+
+    Matching the whole `ps args` string was a false-positive generator: on
+    2026-07-29 a coordinator bus relay whose message text quoted
+    "llama-server" put that string into a zsh command line and tripped the
+    P-BENCH-3 clean-runtime gate, refusing an E5 Stage-B launch on an
+    otherwise-empty host. The same matcher backs the PER-CELL host-health
+    gate, so the same accident mid-run would have failed a cell outright.
+    """
+    rows: list[dict[str, str]] = []
+    ps = run_capture(["ps", "-eo", "pid=,args="])
+    for line in ps.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        pid, _, args = stripped.partition(" ")
+        if "earlyoom" in args:
+            continue
+        exe = _executable_basename(pid)
+        if exe is not None:
+            if exe in LLAMA_BINARY_NAMES:
+                rows.append({"pid": pid, "args": args})
+            continue
+        # Unreadable /proc/<pid>/exe: fall back to argv[0] only. Deliberately
+        # NOT the full arg string — a cmdline that merely mentions the binary
+        # is the exact false positive this function exists to avoid. A wrapper
+        # (taskset/numactl) whose exe we cannot read is not attributable to us
+        # anyway, since our own children are always readable.
+        argv0 = args.split(" ", 1)[0]
+        if os.path.basename(argv0) in LLAMA_BINARY_NAMES:
+            rows.append({"pid": pid, "args": args})
+    return rows
+
+
+def ensure_clean_runtime() -> None:
+    existing = find_llama_processes()
+    if existing:
+        formatted = "\n".join(f"  {row['pid']} {row['args']}" for row in existing)
+        raise RuntimeError(f"existing llama processes would contaminate P-BENCH-3:\n{formatted}")
+
+
+def http_json(method: str, url: str, payload: dict[str, Any] | None, timeout: float) -> tuple[int, dict[str, Any]]:
+    data = None
+    headers = {"Content-Type": "application/json"}
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        raw = resp.read()
+        if not raw:
+            return resp.status, {}
+        return resp.status, json.loads(raw.decode("utf-8"))
+
+
+def wait_for_health(port: int, timeout_s: float, proc: subprocess.Popen[str]) -> None:
+    deadline = time.monotonic() + timeout_s
+    last_error = ""
+    while time.monotonic() < deadline:
+        if proc.poll() is not None:
+            raise RuntimeError(f"server exited before health check passed, rc={proc.returncode}")
+        try:
+            status, _ = http_json("GET", f"http://127.0.0.1:{port}/health", None, timeout=5.0)
+            if status == 200:
+                return
+            last_error = f"HTTP {status}"
+        except Exception as exc:
+            last_error = str(exc)
+        time.sleep(2.0)
+    raise TimeoutError(f"server on port {port} did not become healthy: {last_error}")
+
+
+def build_env(role_label: str, binary: Path) -> dict[str, str]:
+    env = os.environ.copy()
+    # Per-image ggml first: the original default points into a frozen CPU tree.
+    env["LD_LIBRARY_PATH"] = f"{binary.resolve().parent}:/opt/rocm/lib:{LLVM20_LIBDIR}"
+    env.update(DEFAULT_ENV)
+    if "27b" in role_label.lower():
+        # Mirrors the orchestrator arch-class note: dense Q8 stays on default v5.
+        pass
+    return env
+
+
+def build_server_command(
+    *,
+    binary: Path,
+    model: ModelSpec,
+    port: int,
+    np_level: int,
+    threads: int,
+    context_size: int,
+    ubatch_size: int,
+    kv_type: str,
+    flash_attn: bool,
+    jinja: bool,
+    mlock: bool,
+    extra_args: list[str],
+) -> list[str]:
+    cmd = [
+        "numactl",
+        "--interleave=all",
+        "--",
+        "taskset",
+        "-c",
+        ",".join(str(cpu) for cpu in sorted(os.sched_getaffinity(0))),
+        str(binary),
+        "-m",
+        str(model.path),
+        "--host",
+        "127.0.0.1",
+        "--port",
+        str(port),
+        "-np",
+        str(np_level),
+        "-c",
+        str(context_size),
+        "-t",
+        str(threads),
+        "-ub",
+        str(ubatch_size),
+        "-ctk",
+        kv_type,
+        "-ctv",
+        kv_type,
+        "--log-colors",
+        "off",
+    ]
+    if flash_attn:
+        cmd.extend(["--flash-attn", "on"])
+    if jinja:
+        cmd.append("--jinja")
+    if mlock:
+        cmd.append("--mlock")
+    cmd.extend(extra_args)
+    return cmd
+
+
+def start_server(cmd: list[str], env: dict[str, str], log_path: Path) -> subprocess.Popen[str]:
+    # Shared watcher establishes cgroup custody before this process is started.
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'm4_cpu_ownership'))
+    import owned
+    log_fh = log_path.open("w", encoding="utf-8")
+    try:
+        proc, fd, stamp = owned.spawn(cmd, env=env, stdout=log_fh, stderr=subprocess.STDOUT,
+                                      registry=env['M4_SERVER_PID_REGISTRY'])
+        proc._m4_pidfd, proc._m4_birth, proc._m4_log = fd, stamp, log_fh
+        return proc
+    except BaseException:
+        log_fh.close()
+        raise
+
+
+def stop_server(proc: subprocess.Popen[str], timeout_s: float = 30.0) -> dict[str, Any]:
+    import owned
+    try:
+        owned.stop(proc, proc._m4_pidfd, proc._m4_birth)
+        return {'pid': proc.pid, 'birth': proc._m4_birth, 'returncode': proc.returncode, 'ps_verified_dead': True}
+    finally:
+        os.close(proc._m4_pidfd)
+        proc._m4_log.close()
+
+
+def send_completion(
+    *,
+    port: int,
+    prompt: PromptSpec,
+    request_index: int,
+    model_label: str,
+    np_level: int,
+    n_predict: int,
+    timeout_s: float,
+) -> RequestResult:
+    payload = {
+        "prompt": prompt.prompt,
+        "n_predict": n_predict,
+        "temperature": 0.0,
+        "cache_prompt": False,
+        "stream": False,
+    }
+    request_sha256 = hashlib.sha256(json.dumps(payload).encode("utf-8")).hexdigest()
+    start = time.perf_counter()
+    try:
+        status, data = http_json(
+            "POST",
+            f"http://127.0.0.1:{port}/completion",
+            payload,
+            timeout=timeout_s,
+        )
+        latency_ms = (time.perf_counter() - start) * 1000.0
+        timings = data.get("timings", {}) if isinstance(data, dict) else {}
+        return RequestResult(
+            model=model_label,
+            np_level=np_level,
+            request_index=request_index,
+            qid=prompt.qid,
+            suite=prompt.suite,
+            success=status == 200,
+            latency_ms=latency_ms,
+            predicted_tokens=int(timings.get("predicted_n") or 0),
+            prompt_tokens=int(timings.get("prompt_n") or 0),
+            predicted_tps=float(timings.get("predicted_per_second") or 0.0),
+            predicted_ms=float(timings.get("predicted_ms") or 0.0),
+            http_status=status,
+            error="" if status == 200 else f"HTTP {status}",
+            request_sha256=request_sha256, response=data,
+        )
+    except urllib.error.HTTPError as exc:
+        latency_ms = (time.perf_counter() - start) * 1000.0
+        return RequestResult(
+            model=model_label,
+            np_level=np_level,
+            request_index=request_index,
+            qid=prompt.qid,
+            suite=prompt.suite,
+            success=False,
+            latency_ms=latency_ms,
+            predicted_tokens=0,
+            prompt_tokens=0,
+            predicted_tps=0.0,
+            http_status=exc.code,
+            error=f"HTTP {exc.code}", request_sha256=request_sha256,
+        )
+    except Exception as exc:
+        latency_ms = (time.perf_counter() - start) * 1000.0
+        return RequestResult(
+            model=model_label,
+            np_level=np_level,
+            request_index=request_index,
+            qid=prompt.qid,
+            suite=prompt.suite,
+            success=False,
+            latency_ms=latency_ms,
+            predicted_tokens=0,
+            prompt_tokens=0,
+            predicted_tps=0.0,
+            error=str(exc), request_sha256=request_sha256,
+        )
+
+
+def measure_stream_ttft(port: int, prompt: PromptSpec, timeout_s: float) -> float:
+    payload = {
+        "prompt": prompt.prompt,
+        "n_predict": 1,
+        "temperature": 0.0,
+        "cache_prompt": False,
+        "stream": True,
+    }
+    req = urllib.request.Request(
+        f"http://127.0.0.1:{port}/completion",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    start = time.perf_counter()
+    with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+        for raw_line in resp:
+            line = raw_line.decode("utf-8", errors="replace").strip()
+            if line.startswith("data:"):
+                return (time.perf_counter() - start) * 1000.0
+    return 0.0
+
+
+def run_prompt_batch(
+    *,
+    port: int,
+    model: ModelSpec,
+    np_level: int,
+    prompts: list[PromptSpec],
+    n_predict: int,
+    request_timeout_s: float,
+    requests_path: Path,
+) -> tuple[list[RequestResult], float]:
+    results: list[RequestResult] = []
+    # Stable 0..np_level-1 stream ids, one per pool worker thread. The pool has
+    # exactly np_level workers and each worker runs its requests serially, so a
+    # worker IS a client stream: its decode seconds never overlap with its own,
+    # and overlap fully with the other streams'. summarize_cell needs that
+    # grouping to sum per-stream decode rates into the system-wide aggregate
+    # (operator ruling 2026-07-30).
+    stream_ids: dict[int, int] = {}
+    stream_lock = threading.Lock()
+
+    def dispatch(prompt: PromptSpec, index: int) -> RequestResult:
+        ident = threading.get_ident()
+        with stream_lock:
+            stream_id = stream_ids.setdefault(ident, len(stream_ids))
+        result = send_completion(
+            port=port,
+            prompt=prompt,
+            request_index=index,
+            model_label=model.label,
+            np_level=np_level,
+            n_predict=n_predict,
+            timeout_s=request_timeout_s,
+        )
+        result.stream_id = stream_id
+        return result
+
+    start = time.perf_counter()
+    with ThreadPoolExecutor(max_workers=np_level) as pool:
+        futures = [
+            pool.submit(dispatch, prompt, index)
+            for index, prompt in enumerate(prompts)
+        ]
+        with requests_path.open("a", encoding="utf-8") as fh:
+            for future in as_completed(futures):
+                result = future.result()
+                results.append(result)
+                fh.write(json.dumps(asdict(result), sort_keys=True) + "\n")
+                fh.flush()
+    wall_s = time.perf_counter() - start
+    results.sort(key=lambda item: item.request_index)
+    return results, wall_s
+
+
+def summarize_cell(
+    *,
+    model: ModelSpec,
+    np_level: int,
+    results: list[RequestResult],
+    wall_s: float,
+    ttft_ms: float,
+    server_pid: int,
+    server_command: list[str],
+) -> dict[str, Any]:
+    successes = [result for result in results if result.success]
+    latencies = [result.latency_ms for result in successes]
+    per_tps = [result.predicted_tps for result in successes if result.predicted_tps > 0]
+    total_predicted = sum(result.predicted_tokens for result in successes)
+    total_prompt = sum(result.prompt_tokens for result in successes)
+    total = len(results)
+    success_count = len(successes)
+    # PRIMARY metric inputs (operator ruling 2026-07-30): decode rate from
+    # llama.cpp's own predicted_n / predicted_ms, grouped by client stream.
+    # A request is excluded from BOTH numerator and denominator when either
+    # number is missing or non-positive, so the ratio stays self-consistent.
+    decode_tokens = 0
+    decode_seconds = 0.0
+    stream_decode: dict[int, list[float]] = {}
+    for result in successes:
+        if result.predicted_tokens <= 0 or result.predicted_ms <= 0:
+            continue
+        decode_tokens += int(result.predicted_tokens)
+        decode_seconds += float(result.predicted_ms) / 1000.0
+        bucket = stream_decode.setdefault(int(result.stream_id), [0.0, 0.0])
+        bucket[0] += float(result.predicted_tokens)
+        bucket[1] += float(result.predicted_ms) / 1000.0
+    stream_decode_tps = {
+        stream: tokens / seconds
+        for stream, (tokens, seconds) in sorted(stream_decode.items())
+        if seconds > 0
+    }
+    # aggregate = SUM of the per-stream decode rates (system-wide throughput);
+    # per_stream = decode tokens / decode seconds over all requests, i.e. the
+    # token-weighted mean PER-SLOT rate — what one request sees. Both are
+    # reported; neither substitutes for the other.
+    aggregate_decode_tps = sum(stream_decode_tps.values())
+    per_stream_decode_tps = (decode_tokens / decode_seconds) if decode_seconds > 0 else 0.0
+    return {
+        "timestamp": utc_now(),
+        "protocol_id": "P-BENCH-3",
+        "model": model.label,
+        "registry_key": model.registry_key,
+        "model_path": str(model.path),
+        "quant": model.quant,
+        "architecture": model.architecture,
+        "np": np_level,
+        "server_pid": server_pid,
+        "server_command": server_command,
+        "total_count": total,
+        "success_count": success_count,
+        "error_rate": ((total - success_count) / total) if total else 1.0,
+        "wall_seconds": wall_s,
+        # ---- PRIMARY metric (operator ruling 2026-07-30) --------------------
+        # tok/s from llama.cpp's own predicted_n / predicted_ms. NEVER wall
+        # clock. aggregate = system-wide (sum of per-stream decode rates);
+        # per_stream = what one request sees. Both are reported because a
+        # single number hides the latency/throughput trade.
+        "aggregate_decode_tps": aggregate_decode_tps,
+        "per_stream_decode_tps": per_stream_decode_tps,
+        "decode_tokens_total": decode_tokens,
+        "decode_seconds_total": decode_seconds,
+        "decode_stream_count": len(stream_decode_tps),
+        # ---- SECONDARY / DIAGNOSTIC ----------------------------------------
+        # tasks/hour is ONLY an autopilot metric (operator ruling 2026-07-30):
+        # for a focused model/instance benchmark the prompts are not a
+        # representative ensemble and the number is not comparable across
+        # --n-predict caps. KEPT and still persisted so historical comparisons
+        # remain possible, but it ranks nothing (see build_recommendations).
+        "tasks_per_hour": (success_count / wall_s * 3600.0) if wall_s > 0 else 0.0,
+        # decoded tokens / TOTAL WALL TIME (includes model load, prefill,
+        # queueing, idle gaps) — a wall-clock throughput, NOT a decode rate, and
+        # it reads systematically LOW versus one. Renamed 2026-07-29 from
+        # "aggregate_predicted_tps", which invited exactly that misreading;
+        # historical result files keep the old key and are append-only, so
+        # readers must accept both. Diagnostic only.
+        "aggregate_wallclock_tps": (total_predicted / wall_s) if wall_s > 0 else 0.0,
+        "predicted_tokens_total": total_predicted,
+        "prompt_tokens_total": total_prompt,
+        "per_request_tps_mean": statistics.mean(per_tps) if per_tps else 0.0,
+        "per_request_tps_stdev": statistics.stdev(per_tps) if len(per_tps) > 1 else 0.0,
+        "p50_latency_ms": percentile(latencies, 0.50),
+        "p95_latency_ms": percentile(latencies, 0.95),
+        "ttft_ms": ttft_ms,
+    }
+
+
+def write_csv_row(path: Path, row: dict[str, Any]) -> None:
+    fields = [
+        "timestamp",
+        "protocol_id",
+        "model",
+        "registry_key",
+        "np",
+        "success_count",
+        "total_count",
+        "error_rate",
+        "wall_seconds",
+        # PRIMARY (tok/s) first — operator ruling 2026-07-30.
+        "aggregate_decode_tps",
+        "per_stream_decode_tps",
+        # raw inputs, so both rates stay re-derivable from summary.csv alone
+        "decode_tokens_total",
+        "decode_seconds_total",
+        "decode_stream_count",
+        # SECONDARY / DIAGNOSTIC: autopilot-only tasks/hour, and a wall-clock
+        # token rate that includes load/prefill/idle — see summarize_cell().
+        "tasks_per_hour",
+        "aggregate_wallclock_tps",
+        "predicted_tokens_total",
+        "prompt_tokens_total",
+        "per_request_tps_mean",
+        "per_request_tps_stdev",
+        "p50_latency_ms",
+        "p95_latency_ms",
+        "ttft_ms",
+        "model_path",
+    ]
+    exists = path.exists()
+    with path.open("a", newline="", encoding="utf-8") as fh:
+        writer = csv.DictWriter(fh, fieldnames=fields)
+        if not exists:
+            writer.writeheader()
+        writer.writerow({field: row.get(field) for field in fields})
+
+
+def write_jsonl(path: Path, row: dict[str, Any]) -> None:
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps(row, sort_keys=True) + "\n")
+
+
+# Own-PID residency cadence. A 1 s cadence let a sub-second request batch (a warm
+# 1-prompt/16-token qualification, 0.9 s) fall between two samples and fail the
+# in-batch requirement (inf22-m4-aa-np4-r7 publish smoke, 2026-11-03). Every sample
+# must still be valid and at least one must land inside the batch; only the density rises.
+RESIDENCY_SAMPLE_INTERVAL_S = 0.1
+
+
+def residency_paths(trust, plan_cell):
+    """Qualification may use sealed synthetic fixtures or actual GPU sysfs.
+
+    Both qualification modes remain non-projectable. Live plans can only use
+    the actual process KFD directory, actual /proc maps, and sysfs device file.
+    """
+    device = Path(plan_cell.get('device_vram_path', ''))
+    if not device.is_absolute():
+        raise RuntimeError('planned device VRAM path missing')
+    fixture_keys = {'fixture_kfd_root', 'fixture_maps_path'}
+    present = fixture_keys & plan_cell.keys()
+    if present:
+        if not trust.qualification_only or present != fixture_keys:
+            raise RuntimeError('partial or live synthetic hardware refused')
+        def fixture_path(name):
+            path = Path(plan_cell[name]).resolve(strict=True)
+            if trust.capture_root not in path.parents:
+                raise RuntimeError('fixture path outside independently bound capture root')
+            return path
+        return fixture_path('fixture_kfd_root'), fixture_path('fixture_maps_path'), fixture_path('device_vram_path')
+    if Path('/sys') not in device.resolve(strict=True).parents:
+        raise RuntimeError('non-sysfs device path refused')
+    return Path('/sys/class/kfd/kfd/proc'), None, device
+
+
+def run_cell(
+    *,
+    model: ModelSpec,
+    np_level: int,
+    prompts: list[PromptSpec],
+    args: argparse.Namespace,
+    output_dir: Path,
+    cell_index: int,
+) -> dict[str, Any]:
+    port = args.port_base + cell_index
+    log_path = output_dir / "logs" / f"{model.label}-np{np_level}.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    command = build_server_command(
+        binary=args.llama_server,
+        model=model,
+        port=port,
+        np_level=np_level,
+        threads=args.threads,
+        context_size=args.context_size,
+        ubatch_size=args.ubatch_size,
+        kv_type=args.kv_type,
+        flash_attn=not args.no_flash_attn,
+        jinja=not args.no_jinja,
+        mlock=not args.no_mlock,
+        extra_args=args.extra_server_arg,
+    )
+    if args.dry_run:
+        return {
+            "timestamp": utc_now(),
+            "protocol_id": "P-BENCH-3",
+            "model": model.label,
+            "registry_key": model.registry_key,
+            "model_path": str(model.path),
+            "np": np_level,
+            "server_command": command,
+            "dry_run": True,
+        }
+
+    # The enrollment module is code-owned; an empty enrollment refuses before launch.
+    import write_capture
+    key = os.environ.get('M4_PLAN_CELL', '')
+    actual_env = build_env(model.label, args.llama_server)
+    trust, plan_cell, grant_bytes = write_capture.preflight(key, command, actual_env, model.path.resolve(), np_level, args.question_pool.resolve())
+    if not plan_cell.get('kfd_vram_file') or '/' in plan_cell['kfd_vram_file']:
+        raise RuntimeError('planned device-specific KFD VRAM file missing')
+    kfd_root, fixture_maps, device_vram_path = residency_paths(trust, plan_cell)
+    proc: subprocess.Popen[str] | None = None
+    row = None
+    process = None
+    mapped = None
+    stop_result: dict[str, Any] | None = None
+    try:
+        proc = start_server(command, actual_env, log_path)
+        stat = Path(f'/proc/{proc.pid}/stat').read_text().rsplit(')', 1)[1].split()
+        process = {'pid': proc.pid, 'start_ticks': int(stat[19])}
+        wait_for_health(port, args.startup_timeout, proc)
+        owner = subprocess.run(['ss', '-ltnp', f'sport = :{port}'], capture_output=True, text=True, check=True)
+        if f'pid={proc.pid},' not in owner.stdout:
+            raise RuntimeError('health port is not owned by the captured server PID')
+        maps_path = fixture_maps if fixture_maps is not None else Path(f"/proc/{proc.pid}/maps")
+        maps = maps_path.read_text().splitlines()
+        ggml = [line for line in maps if "libggml" in line]
+        prefix = str(args.llama_server.resolve().parent) + "/"
+        if not ggml or any(not line.split()[-1].startswith(prefix) for line in ggml):
+            raise RuntimeError("live ggml maps do not exclusively name the candidate image")
+        mapped = {}
+        for line in ggml:
+            path = Path(line.split()[-1]).resolve(strict=True)
+            with path.open('rb') as fh:
+                mapped[str(path)] = hashlib.file_digest(fh, 'sha256').hexdigest()
+        if mapped != plan_cell.get('ggml'):
+            raise RuntimeError('mapped ggml differs from enrolled image')
+        (output_dir / f"ggml-maps-{cell_index}.txt").write_text("\n".join(ggml) + "\n")
+        kfd = kfd_root
+        vram_limit = plan_cell['vram_limit_bytes']
+        own_vram = int((kfd / str(proc.pid) / plan_cell['kfd_vram_file']).read_text())
+        device_vram = int(device_vram_path.read_text())
+        if vram_limit <= 0 or own_vram <= 0 or own_vram > vram_limit or device_vram <= 0 or len(list(kfd.iterdir())) < 1:
+            raise RuntimeError('GPU residency/VRAM limit unproven before warmup')
+        warmup_prompts = prompts[: args.warmup_prompts]
+        if warmup_prompts:
+            warmup_path = output_dir / "warmup_requests.jsonl"
+            run_prompt_batch(
+                port=port,
+                model=model,
+                np_level=np_level,
+                prompts=warmup_prompts,
+                n_predict=min(args.n_predict, args.warmup_n_predict),
+                request_timeout_s=args.request_timeout,
+                requests_path=warmup_path,
+            )
+        ttft_ms = measure_stream_ttft(port, prompts[0], args.request_timeout) if args.measure_ttft else 0.0
+        requests_path = output_dir / "requests.jsonl"
+        samples: list[dict[str, Any]] = []
+        sample_stop = threading.Event()
+        sample_ready = threading.Event()
+        vram_limit = plan_cell['vram_limit_bytes']
+        if vram_limit <= 0:
+            raise RuntimeError('reviewed own-process VRAM ceiling missing')
+        def sample_residency() -> None:
+            while not sample_stop.is_set():
+                kfd = kfd_root
+                try:
+                    own = int((kfd / str(proc.pid) / plan_cell['kfd_vram_file']).read_text())
+                    device = int(device_vram_path.read_text())
+                    samples.append({'timestamp': utc_now(), 'timestamp_ns': time.time_ns(), 'pid': proc.pid, 'device': plan_cell['device'], 'own_vram_bytes': own,
+                                    'device_vram_bytes': device, 'kfd_process_count': len(list(kfd.iterdir()))})
+                    if own > vram_limit:
+                        signal.pidfd_send_signal(proc._m4_pidfd, signal.SIGTERM)
+                        sample_stop.set()
+                except (OSError, ValueError):
+                    samples.append({'timestamp': utc_now(), 'pid': proc.pid, 'error': 'unreadable residency'})
+                sample_ready.set()
+                sample_stop.wait(RESIDENCY_SAMPLE_INTERVAL_S)
+        sampler = threading.Thread(target=sample_residency, daemon=True)
+        sampler.start()
+        if not sample_ready.wait(5) or not samples or samples[0].get('own_vram_bytes',0) <= 0 or samples[0].get('device_vram_bytes',0) <= 0 or samples[0].get('kfd_process_count',0) < 1 or samples[0].get('own_vram_bytes',0) > vram_limit:
+            sample_stop.set(); sampler.join(timeout=5)
+            raise RuntimeError('GPU residency unproven before request batch')
+        batch_start_ns = time.time_ns()
+        try:
+            results, wall_s = run_prompt_batch(
+                port=port, model=model, np_level=np_level, prompts=prompts,
+                n_predict=args.n_predict, request_timeout_s=args.request_timeout,
+                requests_path=requests_path,
+            )
+        finally:
+            batch_end_ns = time.time_ns()
+            sample_stop.set(); sampler.join(timeout=5)
+        if not any(batch_start_ns <= s.get('timestamp_ns', 0) <= batch_end_ns for s in samples):
+            raise RuntimeError('no own-PID GPU residency sample inside request batch')
+        if sampler.is_alive() or not samples or any(s.get('own_vram_bytes', 0) <= 0 or s.get('own_vram_bytes', 0) > vram_limit or s.get('device_vram_bytes', 0) <= 0 or s.get('kfd_process_count', 0) < 1 for s in samples):
+            raise RuntimeError('GPU residency unproven during request batch')
+        row = summarize_cell(
+            model=model,
+            np_level=np_level,
+            results=results,
+            wall_s=wall_s,
+            ttft_ms=ttft_ms,
+            server_pid=proc.pid,
+            server_command=command,
+        )
+        row["server_log"] = str(log_path)
+        row['request_batch_start_ns'] = batch_start_ns
+        row['request_batch_end_ns'] = batch_end_ns
+        row['gpu_residency_during'] = samples
+        row['ggml_maps'] = str(output_dir / f"ggml-maps-{cell_index}.txt")
+        return row
+    finally:
+        if proc is not None:
+            stop_result = stop_server(proc)
+            if row is not None:
+                write_capture.write(trust=trust, cell=plan_cell, key=key, row=row,
+                    requests_path=(output_dir / 'requests.jsonl').resolve(),
+                    output_path=(output_dir / f'capture-v2-{cell_index}.json').resolve(),
+                    process=process, mapped=mapped,
+                    cleanup={'owned_pid_dead': stop_result['ps_verified_dead'], 'start_ticks': process['start_ticks']}, grant_bytes=grant_bytes, env=actual_env)
+            write_jsonl(
+                output_dir / "events.jsonl",
+                {
+                    "timestamp": utc_now(),
+                    "event": "server_stopped",
+                    "model": model.label,
+                    "np": np_level,
+                    "port": port,
+                    "result": stop_result,
+                },
+            )
+
+
+def row_throughput_tps(row: dict[str, Any]) -> float:
+    """PRIMARY ranking metric: aggregate decode throughput in tok/s.
+
+    Operator ruling 2026-07-30: model/instance benchmarks rank in tok/s, never
+    tasks/hour. Reader tolerance for append-only data: prefer the new
+    decode-rate key, then fall back to the wall-clock token rate under BOTH its
+    current name and its pre-2026-07-29 name, so summaries recorded before this
+    change stay rankable. Which basis was used is reported per model.
+    """
+    value = float(row.get("aggregate_decode_tps") or 0.0)
+    if value > 0:
+        return value
+    for legacy_key in ("aggregate_wallclock_tps", "aggregate_predicted_tps"):
+        value = float(row.get(legacy_key) or 0.0)
+        if value > 0:
+            return value
+    return 0.0
+
+
+def row_throughput_basis(row: dict[str, Any]) -> str:
+    """Which number row_throughput_tps returned: 'decode' or 'wallclock_fallback'."""
+    if float(row.get("aggregate_decode_tps") or 0.0) > 0:
+        return "decode"
+    for legacy_key in ("aggregate_wallclock_tps", "aggregate_predicted_tps"):
+        if float(row.get(legacy_key) or 0.0) > 0:
+            return "wallclock_fallback"
+    return "none"
+
+
+def build_recommendations(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_model: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        if row.get("dry_run"):
+            continue
+        by_model.setdefault(str(row["model"]), []).append(row)
+    recommendations: list[dict[str, Any]] = []
+    for model, model_rows in sorted(by_model.items()):
+        successful = [row for row in model_rows if row.get("success_count", 0) > 0]
+        if not successful:
+            recommendations.append({"model": model, "status": "no_successful_cells"})
+            continue
+        # best-np and the 95%-of-peak saturation knee are DECISIONS: they rank
+        # on aggregate decode tok/s (operator ruling 2026-07-30), never on
+        # tasks/hour. The tasks/hour numbers ride along, clearly labelled
+        # secondary, so no historical comparison loses its reference point.
+        best = max(successful, key=row_throughput_tps)
+        best_rate = row_throughput_tps(best)
+        saturation = min(
+            (
+                row
+                for row in successful
+                if best_rate > 0 and row_throughput_tps(row) >= 0.95 * best_rate
+            ),
+            key=lambda row: int(row["np"]),
+        )
+        recommendations.append(
+            {
+                "model": model,
+                "status": "ok",
+                "metric": "aggregate_decode_tps",
+                "best_np": best["np"],
+                "best_decode_tps": round(best_rate, 3),
+                "best_per_stream_decode_tps": round(
+                    float(best.get("per_stream_decode_tps") or 0.0), 3
+                ),
+                "saturation_np_95pct": saturation["np"],
+                "saturation_decode_tps": round(row_throughput_tps(saturation), 3),
+                "saturation_per_stream_decode_tps": round(
+                    float(saturation.get("per_stream_decode_tps") or 0.0), 3
+                ),
+                "throughput_basis": {
+                    "best": row_throughput_basis(best),
+                    "saturation": row_throughput_basis(saturation),
+                },
+                "mixed_throughput_basis": (
+                    row_throughput_basis(best) != row_throughput_basis(saturation)
+                ),
+                "best_p95_latency_ms": round(float(best.get("p95_latency_ms") or 0.0), 1),
+                "saturation_p95_latency_ms": round(float(saturation.get("p95_latency_ms") or 0.0), 1),
+                # secondary / diagnostic (operator ruling 2026-07-30)
+                "best_tasks_per_hour": round(float(best.get("tasks_per_hour") or 0.0), 3),
+                "saturation_tasks_per_hour": round(
+                    float(saturation.get("tasks_per_hour") or 0.0), 3
+                ),
+            }
+        )
+    return recommendations
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-id", default=f"e1-pbench3-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}")
+    parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
+    parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
+    parser.add_argument("--model-key", action="append", default=[])
+    parser.add_argument("--model", action="append", default=[], help="label=/abs/model.gguf override; can repeat")
+    parser.add_argument("--question-pool", type=Path, default=DEFAULT_QUESTION_POOL)
+    parser.add_argument("--prompt-limit", type=int, default=43)
+    parser.add_argument("--prompt-seed", type=int, default=42)
+    parser.add_argument("--tier", type=int, default=1)
+    parser.add_argument("--suites", default="", help="optional comma-separated suite filter")
+    parser.add_argument("--np-levels", type=parse_csv_ints, default=list(DEFAULT_NP_LEVELS))
+    parser.add_argument("--llama-server", type=Path, default=DEFAULT_LLAMA_SERVER)
+    parser.add_argument("--threads", type=int, default=96)
+    parser.add_argument("--context-size", type=int, default=32768)
+    parser.add_argument("--ubatch-size", type=int, default=8192)
+    parser.add_argument("--kv-type", default="q8_0")
+    parser.add_argument("--n-predict", type=int, default=256)
+    parser.add_argument("--warmup-prompts", type=int, default=2)
+    parser.add_argument("--warmup-n-predict", type=int, default=32)
+    parser.add_argument("--startup-timeout", type=float, default=900.0)
+    parser.add_argument("--request-timeout", type=float, default=900.0)
+    parser.add_argument("--port-base", type=int, default=18070)
+    parser.add_argument("--extra-server-arg", action="append", default=[])
+    parser.add_argument("--no-flash-attn", action="store_true")
+    parser.add_argument("--no-jinja", action="store_true")
+    parser.add_argument("--no-mlock", action="store_true")
+    parser.add_argument("--no-ttft", dest="measure_ttft", action="store_false")
+    parser.set_defaults(measure_ttft=True)
+    parser.add_argument("--skip-clean-check", action="store_true")
+    parser.add_argument(
+        "--allow-host-health-warning",
+        action="store_true",
+        help="run despite host-health warnings; manifest marks the run non-decision-grade",
+    )
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+    if args.prompt_limit <= 0:
+        parser.error("--prompt-limit must be positive")
+    if args.n_predict <= 0:
+        parser.error("--n-predict must be positive")
+    if args.warmup_prompts < 0:
+        parser.error("--warmup-prompts must be non-negative")
+    if not args.model_key and not args.model:
+        args.model_key = list(DEFAULT_MODEL_KEYS)
+    return args
+
+
+def main() -> int:
+    def interrupted(signum: int, _frame: Any) -> None:
+        raise SystemExit(f"interrupted by signal {signum}")
+    signal.signal(signal.SIGTERM, interrupted)
+    signal.signal(signal.SIGINT, interrupted)
+    args = parse_args()
+    if not args.llama_server.exists():
+        raise FileNotFoundError(f"llama-server binary not found: {args.llama_server}")
+    if not args.skip_clean_check and not args.dry_run:
+        ensure_clean_runtime()
+
+    suites = {suite.strip() for suite in args.suites.split(",") if suite.strip()}
+    models = load_model_specs(args.registry, args.model_key, args.model)
+    prompts = load_prompt_batch(
+        args.question_pool,
+        limit=args.prompt_limit,
+        seed=args.prompt_seed,
+        tier=args.tier,
+        suites=suites,
+    )
+    attestation = collect_attestation()
+    health_warnings = host_health_warnings(attestation)
+    decision_grade = not health_warnings
+    if health_warnings and not (args.allow_host_health_warning or args.dry_run):
+        formatted = "\n".join(f"- {warning}" for warning in health_warnings)
+        raise RuntimeError(
+            "host-health preconditions failed; refusing decision-grade P-BENCH-3 run.\n"
+            f"{formatted}\n"
+            "Use --allow-host-health-warning only for exploratory/non-gating data."
+        )
+
+    output_dir = args.output_root / args.run_id
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    prompt_path = output_dir / "selected_prompts.jsonl"
+    with prompt_path.open("w", encoding="utf-8") as fh:
+        for prompt in prompts:
+            fh.write(json.dumps(asdict(prompt), sort_keys=True) + "\n")
+
+    manifest = {
+        "run_id": args.run_id,
+        "created_at": utc_now(),
+        "protocol_id": "P-BENCH-3",
+        "output_dir": str(output_dir),
+        "args": {
+            key: str(value) if isinstance(value, Path) else value
+            for key, value in vars(args).items()
+            if key not in {"extra_server_arg"}
+        }
+        | {"extra_server_arg": args.extra_server_arg},
+        "models": [asdict(model) | {"path": str(model.path)} for model in models],
+        "prompt_batch": {
+            "path": str(prompt_path),
+            "source": str(args.question_pool),
+            "limit": args.prompt_limit,
+            "seed": args.prompt_seed,
+            "tier": args.tier,
+            "suites": sorted(suites),
+            "qids": [prompt.qid for prompt in prompts],
+        },
+        "attestation": attestation,
+        "host_health_warnings": health_warnings,
+        "decision_grade": decision_grade,
+    }
+    (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+
+    summary_rows: list[dict[str, Any]] = []
+    cell_index = 0
+    for model in models:
+        for np_level in args.np_levels:
+            print(f"[{utc_now()}] model={model.label} np={np_level}", flush=True)
+            try:
+                row = run_cell(
+                    model=model,
+                    np_level=np_level,
+                    prompts=prompts,
+                    args=args,
+                    output_dir=output_dir,
+                    cell_index=cell_index,
+                )
+            except Exception as exc:
+                row = {
+                    "timestamp": utc_now(),
+                    "protocol_id": "P-BENCH-3",
+                    "model": model.label,
+                    "registry_key": model.registry_key,
+                    "model_path": str(model.path),
+                    "quant": model.quant,
+                    "architecture": model.architecture,
+                    "np": np_level,
+                    "total_count": args.prompt_limit,
+                    "success_count": 0,
+                    "error_rate": 1.0,
+                    "wall_seconds": 0.0,
+                    # PRIMARY (tok/s) zeroed explicitly so a failed cell can
+                    # never be mistaken for "metric absent, fall back".
+                    "aggregate_decode_tps": 0.0,
+                    "per_stream_decode_tps": 0.0,
+                    "decode_tokens_total": 0,
+                    "decode_seconds_total": 0.0,
+                    "decode_stream_count": 0,
+                    # secondary / diagnostic (operator ruling 2026-07-30)
+                    "tasks_per_hour": 0.0,
+                    "aggregate_wallclock_tps": 0.0,
+                    "predicted_tokens_total": 0,
+                    "prompt_tokens_total": 0,
+                    "per_request_tps_mean": 0.0,
+                    "per_request_tps_stdev": 0.0,
+                    "p50_latency_ms": 0.0,
+                    "p95_latency_ms": 0.0,
+                    "ttft_ms": 0.0,
+                    "cell_error": str(exc),
+                }
+                write_jsonl(
+                    output_dir / "events.jsonl",
+                    {
+                        "timestamp": utc_now(),
+                        "event": "cell_failed",
+                        "model": model.label,
+                        "np": np_level,
+                        "error": str(exc),
+                    },
+                )
+            cell_index += 1
+            # The V2 writer emitted its independently bound record only after
+            # teardown; retain native failures without a legacy self-attested tuple.
+            if not args.dry_run and row.get('cell_error'):
+                write_jsonl(output_dir / "cells.jsonl", row)
+                raise RuntimeError(f"native cell failed: {row['cell_error']}")
+            summary_rows.append(row)
+            write_jsonl(output_dir / "cells.jsonl", row)
+            write_csv_row(output_dir / "summary.csv", row)
+            if args.dry_run:
+                print("  dry-run command:", " ".join(str(part) for part in row["server_command"]), flush=True)
+            else:
+                # tok/s leads (operator ruling 2026-07-30); the wall-clock rate
+                # and tasks/hour trail, explicitly labelled secondary.
+                print(
+                    "  decode tok/s agg={:.2f} per-stream={:.2f} p95={:.0f}ms err={:.1%}"
+                    " | secondary tasks/hour={:.2f} wallclock_tps={:.2f}".format(
+                        row_throughput_tps(row),
+                        float(row.get("per_stream_decode_tps") or 0.0),
+                        float(row.get("p95_latency_ms") or 0.0),
+                        float(row.get("error_rate") or 0.0),
+                        float(row.get("tasks_per_hour") or 0.0),
+                        # prefer the new key; fall back to the old one so rows
+                        # loaded from historical (append-only) results still read
+                        float(
+                            row.get("aggregate_wallclock_tps")
+                            or row.get("aggregate_predicted_tps")
+                            or 0.0
+                        ),
+                    ),
+                    flush=True,
+                )
+
+    recommendations = {
+        "created_at": utc_now(),
+        "protocol_id": "P-BENCH-3",
+        "summary_csv": str(output_dir / "summary.csv"),
+        # Operator ruling 2026-07-30: tasks/hour is ONLY an autopilot metric;
+        # model/instance benchmarks report and rank in tok/s. tasks/hour is
+        # still persisted below as a secondary/diagnostic number.
+        "primary_metric": "aggregate_decode_tps",
+        "secondary_metrics": [
+            "per_stream_decode_tps",
+            "tasks_per_hour",
+            "aggregate_wallclock_tps",
+        ],
+        "recommendations": build_recommendations(summary_rows),
+    }
+    (output_dir / "recommendations.json").write_text(
+        json.dumps(recommendations, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    print(f"wrote {output_dir}", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except KeyboardInterrupt:
+        raise SystemExit(130)

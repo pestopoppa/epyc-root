@@ -69,9 +69,21 @@ for target in "$@"; do
         audit "CRITICAL" "refused guarded delete: $target"
         exit 1
     fi
-    dest="$TRASH_ROOT/$(date +%Y%m%d-%H%M%S)-$(basename "$target")"
+    # Entry name: <trash time>-<8 hex of the source's full path>-<basename>[-N]. The time prefix is what
+    # trash-sweep.sh ages by; the path hash keeps same-basename files from different dirs apart; the
+    # counter covers the same source path trashed twice in one second. An existing entry is NEVER
+    # overwritten (INF-22, 2026-11-07: three a3b-C.bin trashed within one second collapsed onto one name
+    # and two were lost; `mv` onto an existing dir also silently moves INTO it).
+    stamp="$(date +%Y%m%d-%H%M%S)"
+    phash="$(printf '%s' "$(resolve_real "$target")" | sha256sum | cut -c1-8)"
+    dest="$TRASH_ROOT/$stamp-$phash-$(basename "$target")"
+    n=0
+    while [ -e "$dest" ] || [ -L "$dest" ]; do
+        n=$((n + 1)); dest="$TRASH_ROOT/$stamp-$phash-$(basename "$target")-$n"
+        [ "$n" -lt 1000 ] || { echo "REFUSED: cannot find a free trash name for $target" >&2; audit "ERROR" "trash name exhausted: $target"; exit 1; }
+    done
     size="$(du -sb "$target" 2>/dev/null | cut -f1 || echo unknown)"
-    if mv "$target" "$dest"; then
+    if mv -T "$target" "$dest"; then
         echo "trashed: $target -> $dest ($size bytes)"
         audit "INFO" "trashed $target -> $dest size=$size"
     else

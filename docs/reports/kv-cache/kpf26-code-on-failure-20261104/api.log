@@ -1,0 +1,14 @@
+INFO:     Started server process [1021530]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18079 (Press CTRL+C to quit)
+Knowledge tools unavailable: search_arxiv, search_papers, search_wikipedia, get_wikipedia_article, search_books. Install with: pip install -e '.[knowledge]'
+INFO:     127.0.0.1:42796 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42802 - "GET /health HTTP/1.1" 200 OK
+KV pool admission: http://127.0.0.1:18979 own=0 observed=0 pool=98304, 1 queued ahead; request of 4543 tokens queued (not dispatched)
+KV pool admission: http://127.0.0.1:18979 own=4041 observed=0 pool=98304, 2 queued ahead; request of 4377 tokens queued (not dispatched)
+INFO:     127.0.0.1:50460 - "POST /chat HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1021530]

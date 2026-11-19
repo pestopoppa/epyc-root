@@ -1,0 +1,30 @@
+{
+  "id": "cf3c-binding-probe-v1-r2-20261119",
+  "lineage": "cf3c-binding",
+  "owner": "h-tool-output-compression",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "0-3",
+  "priority_rank": 57,
+  "admission_class": "diagnostic",
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-binding-probe-v1-r2/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-binding-probe-v1-r2",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-binding-probe-v1-r2/native/RESULT.json",
+  "result_format": "json",
+  "ram_gib": 52,
+  "budget_gib": 4,
+  "estimate_s": 10800,
+  "min_window_s": 10500,
+  "max_window_s": 10800,
+  "resumable": false,
+  "first_progress_s": 660,
+  "unit_key": "unit",
+  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B /mnt/raid0/llm/tmp/delegation-context-preassembly/cf3c-binding-probe-v1-r2/packet/runner.py smoke",
+  "decision_rule": "completed == 24",
+  "handoff_task": "context-and-token-economy.md:CF-3c-B2",
+  "keep": [
+    "native/**",
+    "packet/**"
+  ],
+  "notes": "Separate fixed four-task binding cohort, 24 cells. Qwen3.6-35B-A3B-MTP Q8_0, v10 CPU receipt. Smoke runs only the fixed ungraded recovery-control-v1, requires active first A1-k12 native request and source-written log return witness, independently of correctness. Stop on custody/transport/STOP/deadline failure or after 24 cells; no extension or adoption. Original source-pool extension remains idle."
+}

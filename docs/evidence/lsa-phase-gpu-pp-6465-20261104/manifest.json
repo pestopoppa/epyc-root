@@ -1,0 +1,64 @@
+{
+  "schema": "lsa-candidate-timing-manifest-v1",
+  "rows": [
+    {
+      "id": "banked-speed-pp-300-pca-native-light",
+      "split": "retained-pp-reconstruction"
+    }
+  ],
+  "arms": [
+    "pca-native-light-phase-gpu"
+  ],
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "map": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/native-map-validation-r2/pca.lsamap",
+  "map_sha256": "8f280922d41ea2f8209cc6b800b827f1e2d82785d1989c9a55e0ce0c276856b7",
+  "source_commit": "2aceed42bf1e3273e1a8feef12fa91dfe57d2e6b",
+  "source_parent": "69aaf507afe82b06bb16dec01f443c392441c9ad",
+  "prompt_sha256": "fb48ddcb1520003d34ffc9d85c1426408cdf3ab4ac250f6bbb0bf4013d00fe9a",
+  "prompt_n": 6465,
+  "selection_capacity": 4612,
+  "server_options": [
+    "-np",
+    "1",
+    "-c",
+    "8192",
+    "-t",
+    "8",
+    "-tb",
+    "8",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "-ctk",
+    "q8_0",
+    "-ctv",
+    "q8_0",
+    "-ngl",
+    "all",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off",
+    "--device",
+    "ROCm0",
+    "--kv-unified",
+    "--no-mmap",
+    "--cache-ram",
+    "65536",
+    "--jinja",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja"
+  ],
+  "baseline": "GPU thirty retained C5 PP responses 9244.815\u201316152.835 ms; original token IDs not recorded",
+  "scope": "One candidate-only source-reconstructed 6465-token GPU PP prompt. Retained C5 30-arm prompt_ms envelope reused without dense rerun. Original token IDs and server np/context/spec settings differ, so no causal speedup claim.",
+  "retained_baseline_prompt_ms_range": [
+    9244.815,
+    16152.835
+  ],
+  "timing_kind": "host_elapsed",
+  "model_full_sha256_prior_receipt": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/progress/evidence/kvu16a-load-result-20261102/model-receipt.json",
+  "model_full_sha256_prior_receipt_sha256": "42d05e6400e73d4618a84ec739bee0d00d62f3d4509f01b7534e38efbc74b078",
+  "model_identity_basis": "prior full SHA256 receipt plus unchanged dev/ino/size/mtime_ns/ctime_ns and 64KiB edges"
+}

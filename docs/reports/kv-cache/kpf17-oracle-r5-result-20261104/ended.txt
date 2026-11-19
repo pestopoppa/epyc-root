@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T20:47:01Z reason=disk-floor
+job_id=kvfork17-oracle-test-r5-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T20:46:59Z
+regions=0-23

@@ -1,0 +1,13 @@
+# FM-8 serial-collapse hardening proposal
+
+The exact proposed diff is [fm8-serial-collapse.patch](fm8-serial-collapse.patch), SHA-256 `85ad0bd1f1bd73c19cf37fee89267ad6fe455fdbe4dfbe68db7dabdaf68ba096`. It is an incremental diff against `dc82987e73d66b6445368aca775f6246f2b87949`: the original hook and registration landed with D9 acknowledgement in `c8dfb38c3`. It changes only those two files and does not modify the existing registration. `git apply --check proposed/fm8-serial-collapse/fm8-serial-collapse.patch` passed against that base.
+
+The detector ignores duplicate task IDs within a session without consuming intervening dispatches, and deduplicates historical boundaries by task ID when deriving the streak while preserving the last boundary for width calculation; requires `hook_event_name` to be `PostToolUse` and `tool_response.interrupted` to be false, and requires a zero integer exit code if one is present; accepts only a direct simple invocation with the three exact options; and parses the positive threshold inside the warn-only exception handler. Paired tests cover each change, the default warning, dispatch width, cross-session isolation and malformed input. The hook retains exit 0 on errors.
+
+Validation: the two proposed files were materialized independently under `/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm8` and `python3 -m pytest -q /mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm8/tests/hooks/test_check_serial_collapse.py` passed (11 tests). GitNexus status and impact could not run: this worktree is not indexed; static blast radius is the hook and its tests, plus any future hook registration.
+
+[Claude Code hooks reference](https://code.claude.com/docs/en/hooks#posttooluse) says PostToolUse follows a successful tool call, distinguishes PostToolUseFailure, and describes the Bash response fields `stdout`, `stderr`, `interrupted`, and `isImage`; an exit code is not guaranteed. The tests use that response shape and mutate it to a failure event, interruption, missing status, and explicit nonzero exit. No local payload fixtures were found in the searched hook/test directories. The success interpretation relies on the documented event semantics, not independently observed live payloads.
+
+Compatibility limit: shell wrappers, chained commands, absolute paths, and alternate option forms are deliberately ignored. Task IDs must be unique per session. This is a warning heuristic, not proof that a task completed.
+
+Protected landing of this revised patch, including any registration in `.claude/settings.json`, still requires a **new D9 acknowledgement for the revised patch**. No protected files were changed by this proposal.

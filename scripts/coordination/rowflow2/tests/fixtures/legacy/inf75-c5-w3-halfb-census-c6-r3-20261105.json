@@ -1,0 +1,23 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "INF-75 AKX-P0d W3 half-B structural instrumented census on champion candidate C6 729599d69 (CPU build buildcpu llama-server sha256 ef395837ec07..., LD_PRELOAD l",
+ "estimate_s": 1500,
+ "gib": 128,
+ "handoff_task": "handoffs/active/kernel-champion-and-promotion.md:AKX-P0d-W3-HALFB-C6",
+ "id": "inf75-c5-w3-halfb-census-c6-r3-20261105",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/c6-w3-halfb-census-20261105/launch.sh"
+ },
+ "min_window_s": 1800,
+ "owner": "kernel-champion-and-promotion",
+ "priority_rank": 38.0,
+ "published_at": "2026-11-05T16:45:50Z",
+ "regions": "mi210_0,48-95,144-191",
+ "schema": "epyc.row.v3",
+ "shape": "multi-quarter(2)",
+ "shape_override": "operator: Daniele 2026-11-05: canonical INF-75 half-B placement (llama-server -t 48 on 48-95,144-191, matching the C5 census); the gate's OMP_NUM_THREADS=1 reading is the Python helper",
+ "stop_file": "/mnt/raid0/llm/tmp/c6-w3-halfb-census-20261105/STOP",
+ "supersedes": "inf75-c5-w3-halfb-census-c6-r2-20261105",
+ "window_s": 2100
+}

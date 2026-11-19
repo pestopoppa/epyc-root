@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=1 before any official query result. Original poller stdout proves OSError errno98 Address already in use in the pre-server plain socket bind check. Linkage check passed; no results.jsonl or run-summary was emitted. No measurement or warrant is reconstructed. Whether TIME_WAIT or another listener caused the kernel refusal is not established. Successor must use SO_REUSEADDR and retain owned-listener checks. Evidence docs/reports/repl-shadow-gnx-v2-20261104/gs-query-first-attempt.",
+  "verdict": "fail"
+ },
+ "at": "2026-11-04T07:41:45+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=1 time=2026-11-04T07:37:14Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-04T07:41:45+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/harness-program.md:REPL-EMB-2.11-QUERY",
+ "id": "ufh12-gs-frozen-query-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/ufh12-gs-frozen-query-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-agentic-serving-harness-fixes",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "rc=1 before any official query result. Original poller stdout proves OSError errno98 Address already in use in the pre-server plain socket bind check. Linkage check passed; no results.jsonl or run-summary was emitted. No measurement or warrant is reconstructed. Whether TIME_WAIT or another listener caused the kernel refusal is not established. Successor must use SO_REUSEADDR and retain owned-listener checks. Evidence docs/reports/repl-shadow-gnx-v2-20261104/gs-query-first-attempt.",
+ "result_exists": false,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-frozen-query/results.jsonl",
+ "root_cause_family": null,
+ "row": "ufh12-gs-frozen-query-20261104",
+ "row_verdict": "fail",
+ "rule": "Descriptive scoped transfer diagnostic, not full G-S, quality or production representative: require 500/500 fixed 2.2 query rows successful on both private stores and both models, matching prepublication content pins and cleanup, with per-query token lengths and top-5/top-10 cosine percentiles and threshold counts [0.1,0.3,0.4,0.6,0.7,0.75,0.85,0.9]. Report all 500 denominator and any failure/not-run rows; rc75/partial is incomplete, rc2/failed rows is failed. Compare BGE and EG2 distributions without interpreting cross-model similarity as retrieval quality. No organic query or adoption claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "fail",
+  "status": "filed"
+ }
+}

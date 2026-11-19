@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ufh12-shadow-gnx-v2-20261104/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T07:15:59Z reason=exited",
+ "engine_sha256": "af46a9fc763086760335f4ac5b0d3df4b8d106db977c0fb2a7f6e30d7e7f4945",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T07:16:01Z",
+ "id": "codex-ufh12-shadow-gnx-v2-20261104",
+ "launcher_sha256": "99d2147872c3955b7ae74d6b4982bf650e771d4f4cb01143824a681cb8e2bb56",
+ "passed_at": "2026-11-04T07:16:01Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/successor-v2/out/results.jsonl",
+ "units": 0,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

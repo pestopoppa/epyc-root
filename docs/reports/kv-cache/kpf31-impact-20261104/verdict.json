@@ -1,0 +1,5 @@
+{
+  "verdict": "inconclusive",
+  "rationale": "rc1: GitNexus analyze terminated after repeated parser timeout and cumulative-budget/respawn exhaustion, ending native Napi::Error. results.jsonl contains only status=partial source_reference_scan; zero native upstream risk-resolved impact outputs for find_slot, apply_ubatch or llama_kv_cells. Preliminary references do not satisfy the decision rule. KPF31 is folded into KPF32; no risk clearance or allocator completion tick. Native outputs and source identity preserved under docs/reports/kv-cache/kpf31-impact-20261104.",
+  "filed_by": "h-heterogeneous-slot-fabric-residency"
+}

@@ -1,0 +1,30 @@
+[region-lock] acquiring gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] as role='bench' (timeout_s=600.0) …
+[region-lock] waiting 0.0s for gpu-quiet (gpu_quiet.lock) as role='bench' tag='local-launch-cpu-55k': held by pid 3535243 mode=exclusive role=bench-gpu tag=local-launch-gpu age=892s | hw: card2 busy=100% vram=37.0/64.0GiB; kfd_procs=1
+[region-lock] waiting 5.0s for gpu-quiet (gpu_quiet.lock) as role='bench' tag='local-launch-cpu-55k': held by pid 3535243 mode=exclusive role=bench-gpu tag=local-launch-gpu age=897s | hw: card2 busy=100% vram=37.0/64.0GiB; kfd_procs=1
+[region-lock] waiting 10.1s for gpu-quiet (gpu_quiet.lock) as role='bench' tag='local-launch-cpu-55k': held by pid 3535243 mode=exclusive role=bench-gpu tag=local-launch-gpu age=902s | hw: card2 busy=100% vram=37.0/64.0GiB; kfd_procs=1
+[region-lock] waiting 15.1s for gpu-quiet (gpu_quiet.lock) as role='bench' tag='local-launch-cpu-55k': held by pid 3535243 mode=exclusive role=bench-gpu tag=local-launch-gpu age=907s | hw: card2 busy=100% vram=37.0/64.0GiB; kfd_procs=1
+[region-lock] held gpu-quiet shared + regions ['q0', 'q1', 'q2', 'q3'] after 17.9s wait; running: python3 /workspace/artifacts/compute/local-launch-optimization-20261106/harness.py --phase cpu --only cpu_champ_t48_50k,cpu_champ_t96_50k,cpu_champ_t48_np1_50k,cpu_champ_t48_nomtp_50k --no-evict
+[15:00:35] cpu_champ_t48_50k: launching taskset ... :18074
+[15:00:49] cpu_champ_t48_50k: warmup n_predict=16
+[15:00:51] cpu_champ_t48_50k: measured request 1/2 (cache_prompt=False)
+[15:06:46] cpu_champ_t48_50k: measured request 2/2 (cache_prompt=True)
+[15:07:12] cpu_champ_t48_50k: done ok=True elapsed=397.3s
+[15:07:12] {"arm": "cpu_champ_t48_50k", "ok": true, "tok_s": [14.291834572461443], "acceptance": {"alpha": 0.61233, "accepted": 139, "generated": 227}}
+[15:07:12] cpu_champ_t96_50k: launching taskset ... :18074
+[15:07:25] cpu_champ_t96_50k: warmup n_predict=16
+[15:07:26] cpu_champ_t96_50k: measured request 1/2 (cache_prompt=False)
+[15:13:40] cpu_champ_t96_50k: measured request 2/2 (cache_prompt=True)
+[15:13:59] cpu_champ_t96_50k: done ok=True elapsed=406.9s
+[15:13:59] {"arm": "cpu_champ_t96_50k", "ok": true, "tok_s": [16.048784292051764], "acceptance": {"alpha": 0.75238, "accepted": 79, "generated": 105}}
+[15:13:59] cpu_champ_t48_np1_50k: launching taskset ... :18074
+[15:14:10] cpu_champ_t48_np1_50k: warmup n_predict=16
+[15:14:11] cpu_champ_t48_np1_50k: measured request 1/2 (cache_prompt=False)
+[15:19:59] cpu_champ_t48_np1_50k: measured request 2/2 (cache_prompt=True)
+[15:20:22] cpu_champ_t48_np1_50k: done ok=True elapsed=383.4s
+[15:20:22] {"arm": "cpu_champ_t48_np1_50k", "ok": true, "tok_s": [14.875450352806752], "acceptance": {"alpha": 0.65865, "accepted": 137, "generated": 208}}
+[15:20:22] cpu_champ_t48_nomtp_50k: launching taskset ... :18074
+[15:20:35] cpu_champ_t48_nomtp_50k: warmup n_predict=16
+[15:20:36] cpu_champ_t48_nomtp_50k: measured request 1/2 (cache_prompt=False)
+[15:26:03] cpu_champ_t48_nomtp_50k: measured request 2/2 (cache_prompt=True)
+[15:26:28] cpu_champ_t48_nomtp_50k: done ok=True elapsed=365.2s
+[15:26:28] {"arm": "cpu_champ_t48_nomtp_50k", "ok": true, "tok_s": [15.065692958064767], "acceptance": null}

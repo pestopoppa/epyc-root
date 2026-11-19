@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T12:06:53Z reason=direct-run
+job_id=lsa-wip-cpu-compile-v2-20261104
+owner=lsa-screen
+step=job-run
+estimated_wall_s=1800
+started=2026-11-04T12:06:36Z
+regions=q0

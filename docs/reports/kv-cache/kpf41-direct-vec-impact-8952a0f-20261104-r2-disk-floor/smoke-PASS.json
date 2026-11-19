@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf41-direct-vec-impact-8952a0f-20261104-r2/launcher.out",
+ "elapsed_s": 5,
+ "ended": "rc=75 time=2026-11-04T20:14:24Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-04T20:14:26Z",
+ "id": "kpf41-direct-vec-impact-8952a0f-20261104-r2",
+ "launcher_sha256": "ae85e3a27341aa03ddbcb6cf79535a6806dd8013a6c963c955603f56064f7932",
+ "passed_at": "2026-11-04T20:14:26Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/kpf41-direct-vec-impact-8952a0f-20261104-r2/native-attempts/attempt-kb_qtl_a/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

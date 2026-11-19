@@ -1,0 +1,52 @@
+{
+ "decision_rule": "At exact detached candidate 8952a0f693fb923918157eb25117641b74766230 capture seven native source-bound upstream impacts and full verbose skipped-file coverage. Stop immediately with OWNER_WARNING on any HIGH/CRITICAL; stop on ambiguity, parser failure, source drift, missing graph binding, STOP or deadline. Partial source-reference smoke is first progress only; success requires scan_complete partial=false. No inference or edit-safety claim for skipped files.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-RS-1",
+ "id": "kpf-rs1-impact-8952-20261104-r2",
+ "keep": [
+  "out/**",
+  "identity.json",
+  "job.py",
+  "source_integrity.py",
+  "test_source_integrity.py",
+  "launch.sh",
+  "spec.json",
+  "README.md",
+  "gitnexus-guard.py",
+  "source/**",
+  "out/results.jsonl"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/rs1-successor-20261104/launch.sh",
+  "sha256": "58c704a07765e133e2077416e04a38e66ced86f6077b0a54de604033770a6136"
+ },
+ "lineage": "kpf-rs1-impact-8952",
+ "min_window_s": 7200,
+ "notes": "Fresh-ID successor to the ended rc=75 disk-floor attempt. Same detached candidate and unchanged seven-symbol decision rule. Own source/ is a detached git worktree; 150 GiB floor enforced by publisher. Model-free static impact only; no inference or edit authorization.",
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:1396: untestable prose prerequisite: 'after checkpoint restore and fork (intake-2574#record, intake-2591#record).** On an experimental champion-derived branch'"
+ ],
+ "published_at": "2026-11-04T19:27:17Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/rs1-successor-20261104/spec.json",
+ "regions": "0-95",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/rs1-successor-20261104/out/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/rs1-successor-20261104",
+ "shape": "host",
+ "stop_file": "$D/STOP",
+ "supersedes": "kpf-rs1-impact-8952-20261104",
+ "window_s": 8940,
+ "workdir": "$D"
+}

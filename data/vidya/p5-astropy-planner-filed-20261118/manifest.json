@@ -1,0 +1,60 @@
+{
+ "book_s": 225,
+ "budget_gib": 1.0,
+ "busy_fraction": 0.25,
+ "decision_rule": "Does the original pinned Astropy case project all 30 named statuses, with 90 frames and no refusals, to the exact scorer consumer and task context? Require all 30 eligible, both arms visible within normal context caps, scope controls each zero, and altered raw report refused with zero frames. Stop on answer or first refusal, STOP or the earlier grant deadline or 300-second cap.",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-P5-ASTROPY-PLANNER-ACCEPTANCE",
+ "id": "vb-p5-astropy-planner-acceptance-20261118",
+ "keep": [
+  "*.sha256",
+  "*.py",
+  "*.sh",
+  "*.json",
+  "source/**",
+  "official/**",
+  "official-*/**",
+  "publisher_smoke-*/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/launch.sh",
+  "sha256": "39162911266e0683ab721c0a179562b247d0bdff0c27ac6850ac9f8f7971ee49"
+ },
+ "min_window_s": 120,
+ "notes": "Model-free source-pinned reader build replay, four effective CPUs within one grant. Execute the actual isolated ingest and task context for the exact fixed case. Publisher smoke retains the same diagnostic in a distinct output. No model or scorer execution.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-18T20:06:36Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T20:06:36Z",
+  "session": "01a1f03e-a9b0-7eb2-bf78-26b2407b7f10",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -I -B /mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/job.py complete cdf3013191c03c12d77fa089a78262574ef50e2d19338985499269c275fcde14",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row/STOP",
+ "verdict_by": "agent",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/astropy-project-20261118/row"
+}

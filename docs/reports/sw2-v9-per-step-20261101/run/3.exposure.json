@@ -1,0 +1,1 @@
+{"epoch": 1793584723.3937829, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 128, "prompt": "The painter chose a bright color for the", "speculative.n_max": 7, "temperature": 0.0, "top_k": 1}, "request_sha256": "a15672b08669148390fa3a1288582aa3cd297bd4e33f004617b39e4744b9bf54", "server_session": "1793584722606892247", "slot_requested": 0}

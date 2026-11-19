@@ -1,0 +1,24 @@
+{
+  "schema": "sr6.mtp-width-prospective.v1",
+  "status": "prospective; no computation or result",
+  "target_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "target": "Qwen3.6-35B-A3B-MTP-Q8_0",
+  "kernel": "production-consolidated-v10 cpu pinned by RUNTIME-INPUTS.sha256",
+  "prompt_manifest_sha256": "3cda64879d67ffcf7a1960aa0b526d9f21cef8bfc3440a88c56032479cf14e2e",
+  "arms": {
+    "A0": 4,
+    "B3": 3,
+    "A0_repeat": 4
+  },
+  "block_prompt_classes": [
+    "code",
+    "rag",
+    "prose"
+  ],
+  "blocks": 5,
+  "per_block_order": "rotate [A0,B3,A0_repeat] left by block index",
+  "request": "greedy, seed 42, cache_prompt false, distinct 15 real code/RAG/prose prompts; 128 generated token cap; fresh server per block/arm",
+  "measurement": "sum predicted_n divided by sum predicted_ms x 1000, higher is better; A/A floor is maximum absolute paired percentage change over blocks; separate class and aggregate",
+  "diagnostic_rule": "Require all 45 responses in one grant, matching template hashes, full server/source/placement and request evidence; report token identity on 15 matched B3/A0 pairs, native aggregate and class throughput and within-window A/A floor. Missing or interrupted records yield UNKNOWN, with no redraw or pooling grants. This is an observational diagnostic on draft-mtp alone and greedy sampling, not confirmation of the old composed-arm/production-sampling +9.8%, registry or deployment authority.",
+  "scope": "Private server; no production process changes; GPU quiet exclusive and whole physical CPU host. Full-model feasibility and total duration are unmeasured."
+}

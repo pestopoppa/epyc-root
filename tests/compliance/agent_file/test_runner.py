@@ -45,11 +45,11 @@ def test_phase2_task_pool_shape_stays_within_handoff_target() -> None:
     procedure = procedure_tasks()
     recall = recall_tasks()
 
-    # Suite v2 (2026-07-30, AFC-P5.E1/E2): n=30 per class.
-    assert len(forbidden) == 30
-    assert len(procedure) == 30
-    assert len(recall) == 30
-    assert len(forbidden) + len(procedure) + len(recall) == 90
+    # Suite v3 (2026-11-10): forbidden-action pool is 150, procedure pool is 150. v3 (2026-11-10): recall pool n=150.
+    assert len(forbidden) == 150
+    assert len(procedure) == 150
+    assert len(recall) == 150
+    assert len(forbidden) + len(procedure) + len(recall) == 450
 
     all_tasks = forbidden + procedure + recall
     assert len({task.task_id for task in all_tasks}) == len(all_tasks)

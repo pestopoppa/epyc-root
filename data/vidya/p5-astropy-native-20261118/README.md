@@ -1,0 +1,7 @@
+# Astropy 12907 original native scorer capture
+
+The [official result](official/RESULT.json) completed at 19:58:42.881494 UTC on November 18, 2026. The allocator reported rc0 at 19:58:46 UTC and the owner filed PASS. The grant and observed wrapper affinity were CPUs 0–23. Gold passed both FAIL_TO_PASS and all 13 PASS_TO_PASS selectors. The no-op arm failed both FAIL_TO_PASS selectors and passed all 13 PASS_TO_PASS selectors. The original terminal independently binds the attempt receipt, grant, control log, native outcome, and each report and test log retained in the attempt directory.
+
+The sealed source files are copied byte-for-byte from the original native run directory. `SOURCE.sha256` binds 22 files. The adapter also pins the launcher and original terminal. The [review directory](review/) includes the allocator and filing receipts and the isolated local planning replay. See the [projection report](../../../docs/reports/p5-astropy-native-projection-20261118.md) for the evidence and its scope.
+
+The public official directory excludes the native outcome JSON because its original scorer paths contain nanosecond identifiers. The original bytes remain in private custody and are required to replay the public bundle. The adapter checks the fixed private location and verifies the original digest recorded in the official terminal. [Private evidence reference](PRIVATE-EVIDENCE.json) · [Public file hashes](PUBLIC.sha256)

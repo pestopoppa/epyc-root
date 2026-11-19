@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc=75 reason=disk-floor after two seconds; no RESULT.json exists and no native ingest or planner canary verdict was produced. Published decision rule therefore yields UNKNOWN; neither proposition visibility nor harness isolation was assessed. Keep all acceptance boxes open.",
+  "tick_text": null,
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T16:47:03+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T16:24:48Z reason=disk-floor",
+ "filed_at": "2026-11-04T16:47:03+00:00",
+ "filed_by": "agent",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+ "id": "vb-ak-wire-canary-r3-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-ak-wire-canary-r3-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc=75 reason=disk-floor after two seconds; no RESULT.json exists and no native ingest or planner canary verdict was produced. Published decision rule therefore yields UNKNOWN; neither proposition visibility nor harness isolation was assessed. Keep all acceptance boxes open.",
+ "result_exists": false,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-ak-wire-canary-r3-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "PASS iff status=PASS, prepare_status=ready, ingest_refused=0, rows_projected>0, proposition_visible=true, harness_matrix_visible=true, harness_excluded_from_claim_ids=true and canonical_unchanged=true. FAIL on a ready unchanged canary missing any required proposition, harness isolation or ingest condition; UNKNOWN on exception, refusal or canonical change. Model-free verifier finding only; no timing or quality claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

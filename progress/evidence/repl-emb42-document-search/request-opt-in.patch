@@ -1,0 +1,67 @@
+--- a/src/api/models/requests.py
++++ b/src/api/models/requests.py
+@@ -454,6 +454,11 @@
+         "context_pulls gains a `search` block. Requires context_bundle. Default off: the "
+         "bundle's prompt and API are byte-identical to before.",
+     )
++    document_search: bool = Field(
++        default=False,
++        description="Experimental hybrid document search; requires force_mode=repl and "
++        "a successfully parsed document. Cannot be combined with context_bundle.",
++    )
+     scouts: ScoutsSpec | None = Field(
+         default=None,
+         description=(
+@@ -475,6 +480,10 @@
+     @model_validator(mode="after")
+     def _validate_context_bundle(self):
+         """INF-78 OAB-7: a bundle is validated at the door (422), and only the REPL reads it."""
++        if self.document_search and self.force_mode != "repl":
++            raise ValueError("document_search requires force_mode='repl'")
++        if self.document_search and self.context_bundle is not None:
++            raise ValueError("document_search cannot be combined with context_bundle")
+         if self.context_bundle is None:
+             if "context_print_cap_bytes" in self.model_fields_set:
+                 raise ValueError("context_print_cap_bytes requires context_bundle")
+--- a/src/api/routes/chat_pipeline/repl_executor.py
++++ b/src/api/routes/chat_pipeline/repl_executor.py
+@@ -425,6 +425,7 @@
+         repl = DocumentREPLEnvironment(
+             context=combined_context,
+             document_context=doc_context,
++            document_search_enabled=bool(getattr(request, "document_search", False)),
+             llm_primitives=primitives,
+             tool_registry=state.tool_registry,
+             script_registry=state.script_registry,
+--- a/src/api/routes/chat.py
++++ b/src/api/routes/chat.py
+@@ -815,7 +815,7 @@
+     start_time = time.perf_counter()
+ 
+     # Stage 0: zero-cost local resolution for deterministic prompts.
+-    if features().script_interception:
++    if features().script_interception and not request.document_search:
+         interception = try_intercept(request.prompt)
+         if interception.matched:
+             elapsed = time.perf_counter() - start_time
+@@ -839,6 +839,10 @@
+ 
+     # Stage 2: Input formalization
+     _preprocess(request, state, routing)
++    if request.document_search and not (
++        routing.document_result and routing.document_result.document_result
++    ):
++        raise HTTPException(status_code=422, detail="document_search requires a successfully parsed document")
+ 
+     # Stage 3: Mock mode (early return)
+     if routing.use_mock:
+@@ -1397,6 +1401,9 @@
+         raise HTTPException(
+             status_code=422, detail="context_bundle not supported on /chat/stream"
+         )
++    # Neither streaming implementation attaches the document-search environment.
++    if request.document_search:
++        raise HTTPException(status_code=422, detail="document_search not supported on /chat/stream")
+     # Unified streaming path — reuses pipeline stages from _handle_chat()
+     if features().unified_streaming:
+         from src.api.routes.chat_pipeline.stream_adapter import generate_stream

@@ -1,0 +1,34 @@
+{
+  "schema": "epyc.row.v3",
+  "id": "kpf18-g3-residency-correlation-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-G3-RESIDENCY-CORRELATION-QUAL",
+  "lane": "cpu",
+  "shape": "quarter",
+  "regions": "any-cpu-quarter",
+  "gib": 1,
+  "budget_gib": 1.0,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "window_s": 660,
+  "first_progress_s": 30,
+  "ports": [],
+  "priority_rank": 47.0,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-residency-correlation-qual-20261105",
+  "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-residency-correlation-qual-20261105",
+  "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-residency-correlation-qual-20261105/STOP",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-residency-correlation-qual-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-residency-correlation-qual-20261105/launch.sh",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+    "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+  },
+  "keep": [
+    "**"
+  ],
+  "decision_rule": "All eighteen original/private-corrected synthetic correlation outcomes must match declared expectations with identical pre/post source seals; stop on mismatch, STOP, signal, source drift or deadline. Standalone helper only, no integrated or live residency claim.",
+  "notes": "PREPARED_UNEXECUTED. No tests/smoke/publication. Distinct correlation helper seam; no candidate modification. Publisher smoke provides scoped qualification.",
+  "launcher_sha256": "747b2d0aa93e4ba753a839672e21bbe17b388e6e6081c65b2e200048afae774d"
+}

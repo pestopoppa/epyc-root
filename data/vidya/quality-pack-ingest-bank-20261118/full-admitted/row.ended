@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T02:25:24Z reason=complete
+job_id=handoff-vidya-quality-pack-ingest-bank-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=500
+started=2026-11-18T02:21:43Z
+regions=72-95

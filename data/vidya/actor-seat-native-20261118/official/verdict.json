@@ -1,0 +1,51 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "rc0 official native call complete on CPUs72-95; original v10 /props names vidya-seat, build b10303-ffc1bac82 and n_ctx8192; exact variable bundle/prompt and shared call-id metrics pass writer strict replay with 1 joined observation, 3 frames, refused=0. Owned actor/server cleanup and port-free all true. Metrics retain schema_valid=false and repair_ran=true: source custody acceptance only, no valid task-answer, quality, timing comparison, canonical research adoption or campaign acceptance. Durable original bytes and allocator/result binding in data/vidya/actor-seat-native-20261118/official/.",
+  "verdict": "pass"
+ },
+ "answer": null,
+ "at": "2026-11-18T16:11:50+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T16:03:44Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-ak-seat-native-instrument-20261118.ended",
+ "filed_at": "2026-11-18T16:11:50+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-SEAT-NATIVE-INSTRUMENT",
+ "id": "vb-ak-seat-native-instrument-20261118",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-ak-seat-native-instrument-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "rc0 official native call complete on CPUs72-95; original v10 /props names vidya-seat, build b10303-ffc1bac82 and n_ctx8192; exact variable bundle/prompt and shared call-id metrics pass writer strict replay with 1 joined observation, 3 frames, refused=0. Owned actor/server cleanup and port-free all true. Metrics retain schema_valid=false and repair_ran=true: source custody acceptance only, no valid task-answer, quality, timing comparison, canonical research adoption or campaign acceptance. Durable original bytes and allocator/result binding in data/vidya/actor-seat-native-20261118/official/.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-ak-seat-native-instrument-20261118",
+ "row_verdict": "pass",
+ "rule": "Stop on answer after one direct, prospective OpenCode variable-context call against v10 CPU Qwen3-0.6B Q8_0 seals exact owned server identity, original props and offered prompt and bundle bytes, and a shared call-ID metrics sibling with strict reader replay at refused=0 and clean process and port teardown. Stop on futility on the first source, identity, native, join or cleanup failure, STOP or deadline, retaining source bytes and partial status. A separate four-CPU publisher smoke replays this instrument end to end. The official run books a CPU quarter. This is a one-call source-custody control.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 74,
+  "input": 324291661,
+  "output": 1348595,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 325640256,
+  "tokens_per_task": 4400544.0
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "15370d41bf8acaa48d9d3bd9ffc8b0e6982ed82ecce91ab46d5950e85c824adb",
+  "result": "pass",
+  "status": "filed"
+ }
+}

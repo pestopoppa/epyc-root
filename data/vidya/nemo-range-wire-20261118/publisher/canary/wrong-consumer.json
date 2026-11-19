@@ -1,0 +1,109 @@
+{
+  "schema": "epyc.vidya.loop_beliefs.v1",
+  "consumer": "other.consumer",
+  "as_of": "2026-11-18T21:32:15.723939Z",
+  "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/ledger.jsonl",
+  "policy": {
+    "use": "planner-context",
+    "floor": "Judged/Located",
+    "standard": "DV"
+  },
+  "known_good_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/wrong-consumer.known-good.json",
+  "status": "ready",
+  "reason": null,
+  "detail": "",
+  "tier_emptied": [],
+  "tier_emptied_alarm": {
+    "key": "belief-target-tier-emptied.other.consumer",
+    "action": null,
+    "error": "ModuleNotFoundError: No module named 'session_bus'"
+  },
+  "targets": [
+    {
+      "scope": "task",
+      "task_id": "VB-NEMO-RANGE-JOIN-WIRE"
+    }
+  ],
+  "ledger_state": {
+    "schema": "epyc.vidya.ledger_state.v1",
+    "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/ledger.jsonl",
+    "frame_count": 3,
+    "head_seq": 2,
+    "head_hash": "sha256:42dd186edbf28f7d6e3df374235325ecc55c81cd8cf8c8b6934c49019bfffc9e",
+    "verified_at": "2026-11-18T21:32:13Z",
+    "fresh": true,
+    "freshness": {
+      "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/nemo-range-wire-20261118/publisher_smoke-iwt_ew22/canary/index.yaml",
+      "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "index_max_id": 0,
+      "synced_max_id": 0,
+      "last_sync": "2026-11-18T21:32:13Z",
+      "was_fresh": true,
+      "sync_action": "already-fresh",
+      "frames_emitted": 0,
+      "sync_seconds": null,
+      "sources": []
+    }
+  },
+  "ledger_state_digest": "sha256:94f67f90f9101936d1fe8795e11f23e9d7d677bc5fbe49b603c43883aa88215c",
+  "evidence": {
+    "status": "omitted",
+    "reasons": [
+      "no_applicable_claims"
+    ],
+    "frontier": 3,
+    "as_of": "2026-11-18T21:32:15.723939Z",
+    "claim_ids": [],
+    "contested_claim_ids": [],
+    "withdrawn_claim_ids": [],
+    "refuted_claim_ids": [],
+    "host_claim_ids": [],
+    "not_evidence_claim_ids": [],
+    "claims": [],
+    "flagged": {
+      "contested": [],
+      "withdrawn": [],
+      "refuted": []
+    },
+    "tiers": {
+      "knob": 0,
+      "target": 0,
+      "lineup": 0,
+      "sibling": 0,
+      "host": 0,
+      "harness": 0
+    },
+    "tiers_shown": {
+      "knob": 0,
+      "target": 0,
+      "lineup": 0,
+      "sibling": 0,
+      "host": 0,
+      "harness": 0
+    },
+    "nonempty_target": false,
+    "empty_targets": [
+      "task:VB-NEMO-RANGE-JOIN-WIRE"
+    ],
+    "banner": "No beliefs are scoped to task VB-NEMO-RANGE-JOIN-WIRE.",
+    "tried_index": [],
+    "tried_index_count": 0,
+    "runs": [],
+    "omitted": [],
+    "omitted_count": 0,
+    "section": "",
+    "section_sha256": "",
+    "section_bytes": 0
+  },
+  "banner": "No beliefs are scoped to task VB-NEMO-RANGE-JOIN-WIRE.",
+  "flag_counts": {
+    "contested": 0,
+    "withdrawn": 0
+  },
+  "known_good_error": null,
+  "alarm": {
+    "cleared": {
+      "error": "ModuleNotFoundError: No module named 'session_bus'"
+    }
+  }
+}

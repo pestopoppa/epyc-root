@@ -38,6 +38,33 @@ test("module shape matches OpenCode's path-plugin loader", () => {
   assert.equal((plugin as any).tui, undefined)
 })
 
+test("opt-in idle capture starts a bounded native read without awaiting it", async () => {
+  const previous = process.env.EPYC_TURN_CAPTURE_LOG
+  let resolve: (result: any) => void = () => {}
+  let calls = 0
+  process.env.EPYC_TURN_CAPTURE_LOG = "/unused"
+  try {
+    const client = { session: { messages: (options: any) => {
+      calls++
+      assert.equal(options.path.id, "s")
+      return new Promise(r => { resolve = r })
+    } } }
+    const hooks = await server({ client } as any, { userId: "u1" }) as AnyHooks
+    await hooks.event?.({ event: { type: "session.status", properties: {
+      sessionID: "s", status: { type: "busy" },
+    } } }, {})
+    assert.equal(calls, 0)
+    await hooks.event?.({ event: { type: "session.status", properties: {
+      sessionID: "s", status: { type: "idle" },
+    } } }, {})
+    assert.equal(calls, 1, "hook returned while native read remains unresolved")
+  } finally {
+    resolve({ data: [] })
+    if (previous === undefined) delete process.env.EPYC_TURN_CAPTURE_LOG
+    else process.env.EPYC_TURN_CAPTURE_LOG = previous
+  }
+})
+
 test("event hook releases only deleted sessions through the control-only request", async () => {
   const hooks = (await server(fakeInput, { userId: "u1" })) as AnyHooks
   const previousFetch = globalThis.fetch

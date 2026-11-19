@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T07:17:05Z reason=complete
+job_id=codex-ufh12-shadow-gnx-v2-20261104
+owner=handoff-repl-embedding-retrieval
+step=job-run
+estimated_wall_s=900
+started=2026-11-04T07:16:56Z
+regions=0-95

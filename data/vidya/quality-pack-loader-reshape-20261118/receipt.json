@@ -1,0 +1,197 @@
+{
+  "schema": "epyc.vidya.prospective_source_archive.v1",
+  "source_scratch": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-reshape-20261118",
+  "archives": {
+    "README.md": {
+      "archive": "README.md",
+      "original_sha256": "debb14e2f7fef2fafd4d4498fabb65ac089e296be8d867bae22873ef57045edf",
+      "archive_sha256": "debb14e2f7fef2fafd4d4498fabb65ac089e296be8d867bae22873ef57045edf"
+    },
+    "SOURCE.sha256": {
+      "archive": "SOURCE.sha256",
+      "original_sha256": "f7ab27273ae198912873b639e0496ed03b3b702b65d0644b0ec48586595658e0",
+      "archive_sha256": "f7ab27273ae198912873b639e0496ed03b3b702b65d0644b0ec48586595658e0"
+    },
+    "base-plan.json": {
+      "archive": "base-plan.json.original-bytes.json",
+      "original_sha256": "51ca3cdd63fea358a53449151f1174751ac857431663f7745791cd0f317b0e23",
+      "archive_sha256": "b07e136a644b294e8d0ebd77c94cf64eb2ca588438bd9cc181c50280e07afbb5"
+    },
+    "capture.py": {
+      "archive": "capture.py",
+      "original_sha256": "0b63f8f3f3c47a8dbc824afff03a185a373b443f1aa8756b9764b135d6099850",
+      "archive_sha256": "0b63f8f3f3c47a8dbc824afff03a185a373b443f1aa8756b9764b135d6099850"
+    },
+    "chat-template.jinja": {
+      "archive": "chat-template.jinja",
+      "original_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+      "archive_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "complete.py": {
+      "archive": "complete.py",
+      "original_sha256": "b77a54cfb656035127bc8beffd0cc7868efd14e85cebda77c695cc5be32cd036",
+      "archive_sha256": "b77a54cfb656035127bc8beffd0cc7868efd14e85cebda77c695cc5be32cd036"
+    },
+    "cpu-plan.original-bytes.json": {
+      "archive": "cpu-plan.original-bytes.json.original-bytes.json",
+      "original_sha256": "2fcc3042164e97cb9eef7a03dcd55719b0506a9eaf510938f3ea2bd62dc1b9bd",
+      "archive_sha256": "afb38d2f3e2c6080e1dafe15d8c3b08d757138a32591e3664009125ccef93bc2"
+    },
+    "cpu_native.py": {
+      "archive": "cpu_native.py.original-bytes.json",
+      "original_sha256": "efd50344bed70378412d3271557f7922e32d01b74d9c2b7a7b5a0d8c24f07d69",
+      "archive_sha256": "a247f13183c680b82787d66b0587b79b526d82c5ee032281445c7f24245a5d42"
+    },
+    "frontdoor-full-receipt.json": {
+      "archive": "frontdoor-full-receipt.json.original-bytes.json",
+      "original_sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+      "archive_sha256": "d41dae52336a7b21bcac9b0cae34ef89510205d2c3e8f7e72108f7c47d08efe2"
+    },
+    "loader-reshape-witness.json": {
+      "archive": "loader-reshape-witness.json.original-bytes.json",
+      "original_sha256": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3",
+      "archive_sha256": "4486058718ba5bba1ed2eb413a62594c4880a2761c6b76dab4763336a7fee2e8"
+    },
+    "make_plan.py": {
+      "archive": "make_plan.py",
+      "original_sha256": "50d25d81fd7ed3d5632f144ecd74bc1e4597f0f1387c8bc787bed4c7ab9b526b",
+      "archive_sha256": "50d25d81fd7ed3d5632f144ecd74bc1e4597f0f1387c8bc787bed4c7ab9b526b"
+    },
+    "model-hash-receipt.json": {
+      "archive": "model-hash-receipt.json.original-bytes.json",
+      "original_sha256": "f07d999ec84134b63bc4d836a9ed038f7f046534589834c4dd5ef3e386d89163",
+      "archive_sha256": "ff52acac38461b1e0fd611ae12d397642f6bb6d013e22dc8decabb3462bcb8ce"
+    },
+    "offline-validation.log": {
+      "archive": "offline-validation.log",
+      "original_sha256": "155a673db5454461f33c1cf0a392a67ddcc3518a4c620ee2918067e5695b3ba0",
+      "archive_sha256": "155a673db5454461f33c1cf0a392a67ddcc3518a4c620ee2918067e5695b3ba0"
+    },
+    "offline_checks.py": {
+      "archive": "offline_checks.py",
+      "original_sha256": "8514b86978e50c9d44321f85df31751369db4d7930842f4227d158b5506f01ee",
+      "archive_sha256": "8514b86978e50c9d44321f85df31751369db4d7930842f4227d158b5506f01ee"
+    },
+    "plan.json": {
+      "archive": "plan.json.original-bytes.json",
+      "original_sha256": "320462354167cdc270420dc6a16122543764ee6e581c2fb958af1b08d14a82cd",
+      "archive_sha256": "a9944e3fb0a6fac7692a91e7ed723ead68828d5ab25feebb65f9a34ab38323a9"
+    },
+    "quality_parity.py": {
+      "archive": "quality_parity.py",
+      "original_sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d",
+      "archive_sha256": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    },
+    "requests/native-smoke.json": {
+      "archive": "requests/native-smoke.json.original-bytes.json",
+      "original_sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+      "archive_sha256": "c877e3a6e6293f186380bb304bac41f352ff8a5416d67f33a82560e9a34957fe"
+    },
+    "requests/qwen4exp-loader-cpu-json.json": {
+      "archive": "requests/qwen4exp-loader-cpu-json.json.original-bytes.json",
+      "original_sha256": "2728aa9f31671e774558c3aa5f835f65bea52fbb96958a1945552deeeb820cee",
+      "archive_sha256": "7acd978095e583911d53d637b784b056b9a3af1ae2300a718458b39219db8629"
+    },
+    "result.json": {
+      "archive": "result.json.original-bytes.json",
+      "original_sha256": "d47d6f448d003de80869d6a453bc2ed6d8e1f60fc4600857ee25f092c1dae0c2",
+      "archive_sha256": "1f39b26723ed673e7cfdd81e197a90545bbb7fe091f5a49c02a297c6eaeb586e"
+    },
+    "row-launch.sh": {
+      "archive": "row-launch.sh",
+      "original_sha256": "dc44a2e7c057d335be9b13c940a98ccd6c07e1ed50b01c26daf5424ba0ba401b",
+      "archive_sha256": "dc44a2e7c057d335be9b13c940a98ccd6c07e1ed50b01c26daf5424ba0ba401b"
+    },
+    "row.spec.json": {
+      "archive": "row.spec.json.original-bytes.json",
+      "original_sha256": "db0a2a1841390789f45fd27cc3fa5a0594882828887f41e2dfdd1839c02ffe6d",
+      "archive_sha256": "8adf02d60faaf28fbc3a62d338955f251b10f851ad7b6d820adc8daa17261604"
+    },
+    "smoke-model-plan.original-bytes.json": {
+      "archive": "smoke-model-plan.original-bytes.json.original-bytes.json",
+      "original_sha256": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+      "archive_sha256": "e19fe43ed7d34a8e1e2ce404e191ceebea54aaa5d08c388bbf79f55a3528433f"
+    },
+    "smoke_predicate.py": {
+      "archive": "smoke_predicate.py",
+      "original_sha256": "112d33c52f55c789e39686b7322eb1dfb4333b46e32321d3543af2bf5a6899dd",
+      "archive_sha256": "112d33c52f55c789e39686b7322eb1dfb4333b46e32321d3543af2bf5a6899dd"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-loader-reshape-cpu-20261118.json": {
+      "archive": "publication/0-handoff-vidya-quality-pack-loader-reshape-cpu-20261118.json.original-bytes.json",
+      "original_sha256": "8175e091a4e6daea92f3b00281a2fc4e2d37cd3dc2a18d3cf77f5d404804e871",
+      "archive_sha256": "7c9d463cbc9ea42dacfdca94de3cf53a7507b22b12c8f3374b5fe1eb0f5d58e5"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/PASS.json": {
+      "archive": "publication/1-PASS.json.original-bytes.json",
+      "original_sha256": "e5f87b6237b10830a4114079dba8b5d8e05e81ee6e6b23a21765db418be302a4",
+      "archive_sha256": "c7421988851ada15cc53b24824b25b0e2a47dc7a7e9d9fd5e8297fd5cbebc829"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native-result.json": {
+      "archive": "publication/2-native-result.json.original-bytes.json",
+      "original_sha256": "8ebf72448d78b3448720e9b9d870d108f4ed2835c07f6812ef519152c49c8b69",
+      "archive_sha256": "0dc6fb77c15876a41b5fbbc3cf0b82f8cc2cbdf27391d9d29121f069bd51a1b3"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/SMOKE-EXITED.json": {
+      "archive": "publication/3-SMOKE-EXITED.json.original-bytes.json",
+      "original_sha256": "9a3cec6ff5d0903875daa7c67865cf86e7b545ebedf005979bd1ed305547fc6a",
+      "archive_sha256": "28abd328e3b623d959c09c337c7ebd5e7750515c429cfbda41c3c4bedd3ab27a"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/unpublished.json": {
+      "archive": "publication/4-unpublished.json.original-bytes.json",
+      "original_sha256": "98ae59e680d73d4d500bde98c0d4b305a50ff5279584164d3b75a2fbc7f4c1b0",
+      "archive_sha256": "f92634d7859a60f685b924bb9e915b6cd46542228c4d4fb12d61ec20e4bba7fd"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/launcher.out": {
+      "archive": "publication/5-launcher.out.original-bytes.json",
+      "original_sha256": "acc4b2493be91b11f2da037b7352657b263830bb7dd8ec72f056478bb0d764aa",
+      "archive_sha256": "168ec89e68ebfcdca009894c34c4b3dd772de6a208b9d6b2088085b5895dd6c3"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/state/handoff-vidya-quality-pack-loader-reshape-cpu-20261118.fenced-job.out": {
+      "archive": "publication/6-handoff-vidya-quality-pack-loader-reshape-cpu-20261118.fenced-job.out.original-bytes.json",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "c61373e7263b49f2730b84bb81798937f8c13475213704a2636439d927416f74"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native/banked-capture.json": {
+      "archive": "publication/7-banked-capture.json.original-bytes.json",
+      "original_sha256": "cf84478248f9dc8f070aa8a84e50636796517ccf069371557a3ebb8d580b441d",
+      "archive_sha256": "127324537854bd9b3a97c339fca3e436f7ac133d5f3bd0eb0c28285c8ef0c6bb"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native/production/server.json": {
+      "archive": "publication/8-server.json.original-bytes.json",
+      "original_sha256": "5168e58aa639e9bef2932b60211daf1c4e4a4d760d15f3dec9127b4d39645d4c",
+      "archive_sha256": "26416e3b9baafac4ea4e334da7bd61f2aefcd0421ba6ee16668490495ab9fb68"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native/production/cleanup.json": {
+      "archive": "publication/9-cleanup.json.original-bytes.json",
+      "original_sha256": "45f3cf49929b3a82066a92617eca342db210f57523a474241ae5e87d284bb517",
+      "archive_sha256": "632acb328b44eec30a90e55037668f2b7048eed0b571929c1f28806f56988a6d"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native/production/server.log": {
+      "archive": "publication/10-server.log.original-bytes.json",
+      "original_sha256": "9d032d078931176263d342a5beec15b87ed0f3c69356f7757d9a06d39d922e96",
+      "archive_sha256": "aba8b35c418eece798a7b1dce85b6fbef4b3979c642a847d591e9373285c332d"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native/production/native-smoke.request.json": {
+      "archive": "publication/11-native-smoke.request.json.original-bytes.json",
+      "original_sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+      "archive_sha256": "c877e3a6e6293f186380bb304bac41f352ff8a5416d67f33a82560e9a34957fe"
+    },
+    "publication//mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-loader-reshape-cpu-20261118/native-attempts/attempt-rxucfp7i/native/production/native-smoke.response.json": {
+      "archive": "publication/12-native-smoke.response.json.original-bytes.json",
+      "original_sha256": "ce44371208c3e43e0b86b2019b9e0131796d6405da9c28ce1ec78bab52aa586c",
+      "archive_sha256": "5cedd62099f14c90432f1c210b65984d35cb9b7054167c6ddd755db8a21c55ca"
+    }
+  },
+  "native_full_capture_complete": false,
+  "broad_pack_sealed": false,
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false,
+  "publisher": {
+    "row": "handoff-vidya-quality-pack-loader-reshape-cpu-20261118",
+    "status": "SMOKE PASS; PUBLISHED",
+    "cpus": "116-119",
+    "ended_at": "2026-11-18T02:29:28Z",
+    "scope": "one genuine small-model v10 CPU no-spec completion; readiness only"
+  }
+}

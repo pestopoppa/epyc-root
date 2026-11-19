@@ -1,0 +1,24 @@
+0.00.037.165 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.037.283 I srv          init: The UI is disabled
+0.00.037.284 I srv          init: Use --ui/--no-ui (or deprecated --webui/--no-webui) to enable/disable
+0.00.037.368 W srv  llama_server: -----------------
+0.00.037.369 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.037.369 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.037.369 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.037.369 W srv  llama_server: -----------------
+0.00.038.565 I srv    load_model: loading model '/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/mi210-big-model-and-acceleration-roadmap/q38p4-v4/qwen3-0.6b-bf16.gguf'
+0.00.448.788 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.727.296 I srv    load_model: GPU-ZOS-2: LLAMA_ZOS2 lazy-save=0 greedy-fast=0 overlap-process=0
+0.00.727.300 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 8192, kv_unified = 'false'
+0.00.732.316 I srv  llama_server: model loaded
+0.00.732.322 I srv  llama_server: listening on http://127.0.0.1:19433
+0.01.024.997 I slot get_availabl: id  0 | task -1 | selected slot by LRU, t_last = -1
+0.01.025.034 I slot launch_slot_: id  0 | task 0 | processing task, is_child = 0
+0.01.163.648 I srv  prefill_budg: prefill-budget: iter 1: decode_rows = 0 (slots 0), prompt = 2048 (slots 1), budget = 0, t_iter = 138.5 ms, kv_pos = 2048, ms/tok = 0.068
+0.01.395.056 I srv  prefill_budg: prefill-budget: iter 2: decode_rows = 0 (slots 0), prompt = 2048 (slots 1), budget = 0, t_iter = 230.9 ms, kv_pos = 4096, ms/tok = 0.090
+0.02.020.336 I slot print_timing: id  0 | task 0 | prompt eval time =     369.99 ms /  4096 tokens (    0.09 ms per token, 11070.63 tokens per second)
+0.02.020.340 I slot print_timing: id  0 | task 0 |        eval time =     625.29 ms /   128 tokens (    4.89 ms per token,   204.70 tokens per second)
+0.02.020.340 I slot print_timing: id  0 | task 0 |       total time =     995.28 ms /  4224 tokens
+0.02.020.344 I slot print_timing: id  0 | task 0 |    graphs reused =        127
+0.02.020.513 I slot      release: id  0 | task 0 | stop processing: n_tokens = 4223, truncated = 0
+0.02.050.641 I srv    operator(): operator(): cleaning up before exit...

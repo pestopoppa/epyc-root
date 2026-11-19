@@ -1,0 +1,42 @@
+{
+ "decision_rule": "Build isolated 2aceed42 phase candidate from verified 69 CPU objects, recompiling changed header consumers; source/model free, stop on defect or deadline.",
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1200,
+ "first_progress_s": 300,
+ "gib": 16,
+ "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+ "id": "lsa-phase-cpu-build-20261104",
+ "keep": [
+  "results.jsonl",
+  "artifacts.sha256",
+  "seed-receipt.json",
+  "out"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/launch.sh",
+  "sha256": "2e4660544042122c6aa2793060c400016e493dea71f6116f80f67d83019ef710"
+ },
+ "min_window_s": 1200,
+ "owner": "lsa-screen",
+ "ports": [],
+ "priority_rank": 10.0,
+ "publish_warnings": [
+  "long-context-program.md:1805: class non-inference (advisory-regex) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T17:02:12Z",
+ "published_from": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/results.jsonl",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build/STOP",
+ "unit_key": "unit",
+ "window_s": 1740,
+ "workdir": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/timing-phase-088/cpu-build"
+}

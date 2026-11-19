@@ -1,0 +1,13 @@
+{
+  "source_commit": "088a77bd6ce5fac1ad3bf397912d884ae62b909e",
+  "source_manifest_sha256": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1",
+  "base_build_receipt_sha256": "5117a1d9abca9f97450053b3bd127c919af72618da0cfc6a44b35dbbfd612eff",
+  "artifact_sha256_list": "85fa97f9764dd54c4804a943b2d3fc5b63afbf848dc3f813a51f37296537c481",
+  "compile_commands_sha256": "d5fcfca2dc8b37a0766d04e875ffc788638791fe5bd28347b45ab1dd05e8b03c",
+  "seeded_objects": 443,
+  "regenerated_ui_object_sha256": "bfd3d4de0a787bcf8d6220fd564142a7828570a392a69bf8c7fb8794dbbf8f51",
+  "changed_seed_objects": [
+    "tools/ui/CMakeFiles/llama-ui.dir/ui.cpp.o"
+  ],
+  "grant": "rc=0 time=2026-11-04T13:59:46Z reason=direct-run\njob_id=lsa-ward-build-088-20261104\nowner=lsa-screen\nstep=job-run\nestimated_wall_s=1200\nstarted=2026-11-04T13:59:04Z\nregions=q0\n"
+}

@@ -1,0 +1,22 @@
+{
+  "source_commit": "326f502759986c9846027f8187972969139c0089",
+  "index_repo": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-app-impact-source",
+  "method": "GitNexus exact UID upstream impact, read-only",
+  "targets": [
+    {
+      "uid": "Method:src/repl_environment/context_bundle.py:ContextBundle.get#4",
+      "risk": "HIGH",
+      "impacted_count": 17,
+      "direct": 6,
+      "modules": 3
+    },
+    {
+      "uid": "Method:src/repl_environment/context_bundle.py:ContextBundle.search#3",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 2,
+      "modules": 1
+    }
+  ],
+  "disposition": "STOP and warn before editing ContextBundle.get; index caller counts may omit dynamic paths. No code changed."
+}

@@ -1,0 +1,28 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "answer": null,
+ "at": "2026-11-10T09:13:37+00:00",
+ "compute_burned": false,
+ "end_line": "rc=1 time=2026-11-10T07:11:38Z reason=job-rc-1:exited",
+ "filed_at": "2026-11-10T09:13:37+00:00",
+ "filed_by": "filing.supersede",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-R23-4-SWEEP-WIRE",
+ "id": "vidya-r234-native-sweep-20261104c",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-r234-native-sweep-20261104c.json",
+ "outcome_class": "NO-RESULT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 1,
+ "reason": "family vidya-r234-native-sweep-20261104c",
+ "root_cause_family": null,
+ "row": "vidya-r234-native-sweep-20261104c",
+ "row_verdict": "SUPERSEDED",
+ "superseded_by": "vidya-r234-native-sweep-20261104d",
+ "verdict": {
+  "kind": "superseded",
+  "result": "SUPERSEDED",
+  "status": "filed",
+  "superseded_by": "vidya-r234-native-sweep-20261104d"
+ }
+}

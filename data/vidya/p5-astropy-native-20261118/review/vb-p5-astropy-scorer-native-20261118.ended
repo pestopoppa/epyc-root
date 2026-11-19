@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T19:58:46Z reason=complete
+job_id=vb-p5-astropy-scorer-native-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=360
+started=2026-11-18T19:58:35Z
+regions=0-23

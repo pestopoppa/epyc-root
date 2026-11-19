@@ -1,0 +1,5 @@
+# Handoff result path correction
+
+Manifest tasks may use `kv-cache-program.md:ID` or `handoffs/active/kv-cache-program.md:ID`. The old filing path joined a basename directly to the lane root and failed the checkbox step after writing a verdict. The tested, unapplied `handoff_path()` patch resolves basenames under `handoffs/active`, preserves qualified relative paths, and refuses absolute paths, parent traversal and symlink escape. Task-token selection is unchanged.
+
+Four integration regressions plus the existing verdict/tick case pass (5/5). The full test module has one failure and six errors in publisher smoke fixtures missing required launcher/path metadata; the unchanged HEAD baseline reproduces the same failures. The patch is preserved in `file-result-path-20261104/source.patch`; neither repository nor installed filing code is changed by this commit. D9 requires operator ack before deploying it under scripts/coordination. K35 and VKQ2 receipts were filed without tick_text, and the owning wrap-up applies their exact scoped checkbox texts.

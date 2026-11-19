@@ -1,0 +1,10 @@
+## Belief-kernel evidence (Vidya ledger, read-only)
+No beliefs are scoped to Qwen3.6-35B-A3B-Q4_K_M.gguf (cpu). The lines below are sibling/host context only.
+Target(s): Qwen3.6-35B-A3B-Q4_K_M.gguf / Q4_K_M / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 3, as of 2026-11-17T20:21:40.678876+00:00.
+### Loop-infrastructure facts (harness tier) -- tooling and source-dependency context for this consumer; not evidence about any model or for a proposal
+- clm_ch18-merge-trial:ffc1bac82eec:4e201388c319:f51819c730a97508 [Judged/Located · verified] harness fact: loop infrastructure, not about any model
+  ch18_merge_conflicted_paths: 98 paths (n=1)
+  ch18-merge-trial:data/vidya/ch18-trial-20261117/merge_trial.json: Trial merge of pinned upstream 4e201388c319fc9f747fbe6a666793e2dc2a6d8e into pinned production base ffc1bac82eeca6f9099e1ccd9ba49703c460a115 (git merge -s ort --no-commit --no-ff; tool git, git version 2.56.0) left 98 conflicted paths; cleanup worktree_removed=True, merge_aborted=True. Scope: conflict inventory only. Reconciliation, build, testing and promotion are outside this trial.
+Shown 0 of 0 knob, 0 of 0 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 1 of 1 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.

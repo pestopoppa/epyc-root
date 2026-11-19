@@ -1,0 +1,168 @@
+--- a/scripts/kernel_rnd/autokernel/loop/pool.py
++++ b/scripts/kernel_rnd/autokernel/loop/pool.py
+@@ -465,6 +465,9 @@
+             f"another generation's CMakeCache is the relocation hazard by another route")
+     promoted.mkdir(parents=True)
+     verdict = build(promoted, tuple(targets))
++    # Capture successful build-command completion before any later provenance work.
++    built_at = (time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
++                if getattr(verdict, "passed", False) else None)
+     if not getattr(verdict, "passed", False):
+         raise ValueError(
+             f"champion {champion_commit[:12]} would not build into {promoted} "
+@@ -472,7 +475,7 @@
+             f"the next candidate against")
+     (promoted / "provenance.json").write_text(json.dumps(
+         {"champion_commit": champion_commit, "build_recipe": dict(recipe or {}),
+-         "targets": list(targets), "built_at": str(promoted)},
++         "targets": list(targets), "built_at": built_at},
+         sort_keys=True), encoding="utf-8")
+     return promoted
+ 
+--- a/scripts/kernel_rnd/autokernel/loop/test_anchor.py
++++ b/scripts/kernel_rnd/autokernel/loop/test_anchor.py
+@@ -465,7 +465,46 @@
+             body = json.loads((promoted / "provenance.json").read_text())
+             self.assertEqual(body["champion_commit"], CHAMPION)
+             self.assertEqual(body["build_recipe"]["name"], "house-gpu")
+-            self.assertEqual(body["built_at"], str(promoted))
++            self.assertRegex(body["built_at"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
++
++    def test_built_at_is_captured_at_build_return_and_only_on_success(self):
++        import json
++        from unittest.mock import patch
++        events = []
++        original_dumps = json.dumps
++
++        def build(dest, targets):
++            events.append("build-return")
++            return gates.Verdict("compile", True, "")
++
++        def clock(*args):
++            events.append("timestamp")
++            return "2026-11-02T00:00:00Z"
++
++        def dumps(*args, **kwargs):
++            events.append("provenance-serialize")
++            return original_dumps(*args, **kwargs)
++
++        with tempfile.TemporaryDirectory() as tmp, \
++             patch.object(pool.time, "strftime", side_effect=clock), \
++             patch.object(pool.json, "dumps", side_effect=dumps):
++            promoted = pool.promote_anchor(Path(tmp), build=build,
++                                           champion_commit=CHAMPION)
++            self.assertEqual(events, ["build-return", "timestamp", "provenance-serialize"])
++            body = json.loads((promoted / "provenance.json").read_text())
++            self.assertEqual(body["built_at"], "2026-11-02T00:00:00Z")
++
++        events.clear()
++        def failed_build(dest, targets):
++            events.append("build-return")
++            return gates.Verdict("compile", False, "failed")
++
++        with tempfile.TemporaryDirectory() as tmp, \
++             patch.object(pool.time, "strftime", side_effect=clock):
++            with self.assertRaises(ValueError):
++                pool.promote_anchor(Path(tmp), build=failed_build,
++                                    champion_commit=CHAMPION)
++        self.assertEqual(events, ["build-return"])
+ 
+     def test_a_champion_that_will_not_build_refuses_the_promotion(self):
+         with tempfile.TemporaryDirectory() as tmp:
+--- a/scripts/kernel_rnd/autokernel/loop/run.py
++++ b/scripts/kernel_rnd/autokernel/loop/run.py
+@@ -7431,11 +7431,21 @@
+                     if checked_tree != source_tree:
+                         raise surface_validation.SurfaceValidationRefused(
+                             "shared source tree changed before target build")
+-                    build_ok, build_verdicts = gates.run_all(
+-                        lambda: local_compiles(
++                    # A reused directory can make a successful build a no-op. Its
++                    # command completion is observable; its artifact build time is not.
++                    build_dir_was_absent = not validation_candidate_build.exists()
++                    build_finished_at = [None]
++                    def target_build():
++                        verdict = local_compiles(
+                             checked_source, validation_candidate_build,
+                             cmake_defines=recipe.cmake_defines(), jobs=build_jobs,
+-                            cpu_list=build_cpu_list, targets=gates.PROMOTION_TARGETS),
++                            cpu_list=build_cpu_list, targets=gates.PROMOTION_TARGETS)
++                        if verdict.passed:
++                            build_finished_at[0] = time.strftime(
++                                "%Y-%m-%dT%H:%M:%SZ", time.gmtime())
++                        return verdict
++                    build_ok, build_verdicts = gates.run_all(
++                        target_build,
+                         lambda: local_op_correctness(
+                             validation_candidate_build, op="MUL_MAT",
+                             **({"backend": "CPU",
+@@ -7463,7 +7473,9 @@
+                             {"champion_commit": source_resumed["current_anchor"]["commit"],
+                              "build_recipe": recipe.to_dict(),
+                              "targets": list(gates.PROMOTION_TARGETS),
+-                             "built_at": str(validation_candidate_build)},
++                             "built_at": (build_finished_at[0] if build_dir_was_absent else None),
++                             "build_command_completed_at": build_finished_at[0],
++                             "build_directory_was_absent": build_dir_was_absent},
+                             prefix=".provenance-")
+ 
+             if (direct_launch and calibration_samples and validation_identity_error is None
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/test_r18b_timestamp_writer.py
+@@ -0,0 +1,56 @@
++"""Model-free checks for the target build completion observation."""
++import ast
++import datetime
++from pathlib import Path
++from types import SimpleNamespace
++import time
++
++
++def _target_build(passed):
++    tree = ast.parse((Path(__file__).parent / 'run.py').read_text())
++    funcs = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name == 'target_build']
++    assert len(funcs) == 1
++    stamp = [None]
++    events = []
++    def compile_stub(*args, **kwargs):
++        events.append('build-return')
++        return SimpleNamespace(passed=passed)
++    def gmtime_stub():
++        events.append('clock')
++        return time.gmtime(0)
++    scope = {'local_compiles': compile_stub, 'checked_source': object(),
++             'validation_candidate_build': object(), 'recipe': SimpleNamespace(cmake_defines=lambda: ()),
++             'build_jobs': 1, 'build_cpu_list': '0',
++             'gates': SimpleNamespace(PROMOTION_TARGETS=()), 'build_finished_at': stamp,
++             'time': SimpleNamespace(strftime=time.strftime, gmtime=gmtime_stub)}
++    module = ast.fix_missing_locations(ast.Module(body=[funcs[0]], type_ignores=[]))
++    exec(compile(module, 'run.py', 'exec'), scope)
++    assert scope['target_build']().passed is passed
++    return stamp[0], events
++
++
++def test_success_records_after_build_before_later_gates():
++    stamp, events = _target_build(True)
++    assert events == ['build-return', 'clock']
++    assert datetime.datetime.strptime(stamp, '%Y-%m-%dT%H:%M:%SZ').replace(
++        tzinfo=datetime.timezone.utc).timestamp() == 0
++
++
++def test_failed_build_has_no_completion_timestamp():
++    stamp, events = _target_build(False)
++    assert stamp is None
++    assert events == ['build-return']
++
++
++def test_reused_build_has_unknown_built_at():
++    tree = ast.parse((Path(__file__).parent / 'run.py').read_text())
++    fields = [(k, v) for node in ast.walk(tree) if isinstance(node, ast.Dict)
++              for k, v in zip(node.keys, node.values)
++              if isinstance(k, ast.Constant) and k.value == 'built_at']
++    assert len(fields) == 1
++    expr = ast.fix_missing_locations(ast.Expression(fields[0][1]))
++    code = compile(expr, 'run.py', 'eval')
++    assert eval(code, {'build_finished_at': ['2026-11-02T00:00:00Z'],
++                       'build_dir_was_absent': False}) is None
++    assert eval(code, {'build_finished_at': ['2026-11-02T00:00:00Z'],
++                       'build_dir_was_absent': True}) == '2026-11-02T00:00:00Z'

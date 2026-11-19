@@ -1,0 +1,32 @@
+{
+  "changed_paths": [
+    "scripts/vidya/cli.py",
+    "scripts/vidya/ingest_sources.py",
+    "scripts/vidya/adapters/mi210_paired_raw.py",
+    "scripts/vidya/adapters/README.md",
+    "tests/vidya/test_ingest_sources.py",
+    "tests/vidya/test_mi210_paired_raw_ingest.py"
+  ],
+  "native_acceptance": false,
+  "planning_context_wired": false,
+  "scope": "Explicit capture directory. Complete prospective measurement captures only, projected as per-request Judged/Located with no protocol. Q38 applicability requires the declared unsplit GGUF digest and argv-pinned full GPU offload to ROCm0 across the declared runs. NPD1 and ambiguous identities stay unscoped.",
+  "source": "mi210-paired-raw",
+  "status": "accepted-control-only",
+  "task": "VB-MI210-PAIRED-DIAG-WIRE",
+  "verification": {
+    "alias_control": "An appended -dev none leaves the diagnostic unscoped. Canonical equals forms are already screened.",
+    "failed": 0,
+    "git_diff_check": "passed",
+    "gitnexus": "status and upstream impact unavailable because the repo was not indexed",
+    "passed": 154,
+    "suite": [
+      "tests/vidya/test_mi210_paired_raw_ingest.py",
+      "tests/vidya/test_mi210_paired_capture.py",
+      "tests/vidya/test_mi210_native_patches.py",
+      "tests/vidya/test_ingest_sources.py",
+      "tests/vidya/test_exp01_proxy_capture.py"
+    ],
+    "synthetic_planning_control": "Two synthetic Q38 request claims reach loop_beliefs.prepare only for the matching GPU model digest; wrong digest, filename-only and same-digest CPU targets get none.",
+    "test_environment": "Orchestrator venv with the system pytest path, nonblocking q3 build claim and child affinity to CPUs 72-75"
+  }
+}

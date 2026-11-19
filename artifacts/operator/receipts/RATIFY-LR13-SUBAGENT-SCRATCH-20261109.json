@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-LR13-SUBAGENT-SCRATCH-20261109",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_lr13_subagent_scratch_20261109.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

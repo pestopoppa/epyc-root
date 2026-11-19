@@ -1,0 +1,53 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": null,
+ "answer": null,
+ "at": "2026-11-18T18:01:54+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T18:00:48Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-q38-preflight-planner-20261118.ended",
+ "filed_at": "2026-11-18T18:01:54+00:00",
+ "filed_by": "file_result.py",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-MI210-PAIRED-DIAG-WIRE",
+ "id": "vb-q38-preflight-planner-20261118",
+ "machine_checkable": true,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-q38-preflight-planner-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-q38-preflight-planner-20261118",
+ "row_verdict": "pass",
+ "rule": "control_count == 2 and baseline_visible == 0 and candidate_visible > 0 and native_q38_acceptance_count == 0 and refusal_count == 0",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 102,
+  "input": 407225145,
+  "output": 1725185,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 408950330,
+  "tokens_per_task": 4009316.9607843137
+ },
+ "values": {
+  "baseline_visible": 0.0,
+  "candidate_visible": 16.0,
+  "control_count": 2.0,
+  "native_q38_acceptance_count": 0.0,
+  "refusal_count": 0.0
+ },
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "fa670b15f3f79038a6ef38539142669d020c47341c6cdd173ba013f09e681ec7",
+  "result": "pass",
+  "status": "filed"
+ }
+}

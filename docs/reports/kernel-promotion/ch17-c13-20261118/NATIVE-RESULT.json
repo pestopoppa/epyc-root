@@ -1,0 +1,251 @@
+{
+  "id": "ch17-c13-frontdoor-cpu-20261118-r4",
+  "candidate": {
+    "commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+    "tree": "e6dc8715fa3374406b38de48571e8700bded094f",
+    "image": "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13",
+    "server_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447"
+  },
+  "model": {
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "stat": {
+      "dev": 2431,
+      "ino": 96242023,
+      "size": 37801097504,
+      "mtime_ns": 1782411254270412235,
+      "ctime_ns": 1782411254270412235
+    },
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "identity_source": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/model-identity.json"
+  },
+  "scope": {
+    "process": "frontdoor",
+    "aliases": [
+      "toolrunner",
+      "worker",
+      "worker_explore",
+      "worker_general",
+      "worker_math",
+      "worker_summarize"
+    ],
+    "master_registry_commit": "e94c4dfbfceb9f5a5911337895320b2aaf43298e",
+    "master_registry_sha256": "2e153d548f377016bcffe605184dfeac0900c200b78746146845b449b1a8da06",
+    "legacy_incumbent": "draft-mtp depth 4",
+    "comparison_control": "none",
+    "qualification_scope": "np1 32768 tokens on one CPU quarter"
+  },
+  "input_sha256": "2a74565e7d602e800fd65d1deb5d7d8f511f586d8811a804ebc33789f8f302ca",
+  "grant": "regions=48-71 start=2026-11-18T10:44Z end=2026-11-18T11:09Z holds=q2",
+  "affinity": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "environment": {
+    "ROCR_VISIBLE_DEVICES": "",
+    "HIP_VISIBLE_DEVICES": "-1",
+    "GPU_DEVICE_ORDINAL": "-1",
+    "CUDA_VISIBLE_DEVICES": "-1",
+    "GGML_VK_VISIBLE_DEVICES": "-1",
+    "HSA_ENABLE_SDMA": "0",
+    "FILLER_GPU_FENCE": "1",
+    "FILLER_ID": "ch17-c13-frontdoor-cpu-20261118-r4",
+    "FILLER_STOPFILE": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/STOP",
+    "LD_PRELOAD": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so",
+    "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin",
+    "PATH": "/usr/bin:/bin",
+    "LC_ALL": "C",
+    "OMP_NUM_THREADS": "24",
+    "OMP_DYNAMIC": "FALSE"
+  },
+  "raw_directory": "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/out/run-usi_xn85",
+  "started_at": "2026-11-18T10:45:39.399032+00:00",
+  "pairs": [
+    {
+      "order": [
+        "none",
+        "mtp"
+      ],
+      "comparisons": [
+        {
+          "prompt_id": "repeat-list",
+          "decode_tps": {
+            "none": 25.343739314297416,
+            "mtp": 42.37528011549912
+          },
+          "mtp_to_none_ratio": 1.6720216219866788,
+          "greedy_token_identity": true,
+          "draft_n": 101,
+          "draft_n_accepted": 101
+        },
+        {
+          "prompt_id": "math",
+          "decode_tps": {
+            "none": 25.60558201687968,
+            "mtp": 36.545992560606386
+          },
+          "mtp_to_none_ratio": 1.427266622430788,
+          "greedy_token_identity": true,
+          "draft_n": 122,
+          "draft_n_accepted": 96
+        },
+        {
+          "prompt_id": "coding",
+          "decode_tps": {
+            "none": 25.851483228850256,
+            "mtp": 41.91975445503828
+          },
+          "mtp_to_none_ratio": 1.6215609017070183,
+          "greedy_token_identity": true,
+          "draft_n": 112,
+          "draft_n_accepted": 98
+        },
+        {
+          "prompt_id": "structured",
+          "decode_tps": {
+            "none": 25.5666304339576,
+            "mtp": 32.67656834763784
+          },
+          "mtp_to_none_ratio": 1.2780944454939522,
+          "greedy_token_identity": true,
+          "draft_n": 147,
+          "draft_n_accepted": 89
+        }
+      ]
+    },
+    {
+      "order": [
+        "mtp",
+        "none"
+      ],
+      "comparisons": [
+        {
+          "prompt_id": "repeat-list",
+          "decode_tps": {
+            "none": 26.25400835123597,
+            "mtp": 44.47845192748067
+          },
+          "mtp_to_none_ratio": 1.694158519812718,
+          "greedy_token_identity": true,
+          "draft_n": 101,
+          "draft_n_accepted": 101
+        },
+        {
+          "prompt_id": "math",
+          "decode_tps": {
+            "none": 26.37639988105892,
+            "mtp": 39.09326829190821
+          },
+          "mtp_to_none_ratio": 1.4821305586886164,
+          "greedy_token_identity": true,
+          "draft_n": 122,
+          "draft_n_accepted": 96
+        },
+        {
+          "prompt_id": "coding",
+          "decode_tps": {
+            "none": 26.080751712466235,
+            "mtp": 41.0908727861891
+          },
+          "mtp_to_none_ratio": 1.5755248636697936,
+          "greedy_token_identity": true,
+          "draft_n": 112,
+          "draft_n_accepted": 98
+        },
+        {
+          "prompt_id": "structured",
+          "decode_tps": {
+            "none": 26.284436205003818,
+            "mtp": 32.695431835133284
+          },
+          "mtp_to_none_ratio": 1.2439084323562166,
+          "greedy_token_identity": true,
+          "draft_n": 147,
+          "draft_n_accepted": 89
+        }
+      ]
+    },
+    {
+      "order": [
+        "none",
+        "mtp"
+      ],
+      "comparisons": [
+        {
+          "prompt_id": "repeat-list",
+          "decode_tps": {
+            "none": 26.41845428100732,
+            "mtp": 44.37741605561045
+          },
+          "mtp_to_none_ratio": 1.67978851387661,
+          "greedy_token_identity": true,
+          "draft_n": 101,
+          "draft_n_accepted": 101
+        },
+        {
+          "prompt_id": "math",
+          "decode_tps": {
+            "none": 26.302286840000104,
+            "mtp": 38.50702256782275
+          },
+          "mtp_to_none_ratio": 1.464018045353451,
+          "greedy_token_identity": true,
+          "draft_n": 122,
+          "draft_n_accepted": 96
+        },
+        {
+          "prompt_id": "coding",
+          "decode_tps": {
+            "none": 26.330627518509093,
+            "mtp": 42.28340983987801
+          },
+          "mtp_to_none_ratio": 1.6058641143343402,
+          "greedy_token_identity": true,
+          "draft_n": 112,
+          "draft_n_accepted": 98
+        },
+        {
+          "prompt_id": "structured",
+          "decode_tps": {
+            "none": 26.974922594616647,
+            "mtp": 32.596225713583586
+          },
+          "mtp_to_none_ratio": 1.2083899629090604,
+          "greedy_token_identity": true,
+          "draft_n": 147,
+          "draft_n_accepted": 89
+        }
+      ]
+    }
+  ],
+  "ended_at": "2026-11-18T10:48:15.884863+00:00",
+  "complete": true,
+  "status": "complete",
+  "verdict": "COMPARISON_COMPLETE",
+  "pair_median_ratios": [
+    1.524413762068903,
+    1.528827711179205,
+    1.5349410798438956
+  ]
+}

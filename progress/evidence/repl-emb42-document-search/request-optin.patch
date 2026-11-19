@@ -1,0 +1,47 @@
+--- a/src/api/models/requests.py
++++ b/src/api/models/requests.py
+@@ -454,6 +454,11 @@
+         "context_pulls gains a `search` block. Requires context_bundle. Default off: the "
+         "bundle's prompt and API are byte-identical to before.",
+     )
++    document_search: bool = Field(
++        default=False,
++        description="Experimental document REPL hybrid search; requires force_mode='repl' "
++        "and a preprocessed document, and cannot be combined with context_bundle.",
++    )
+     scouts: ScoutsSpec | None = Field(
+         default=None,
+         description=(
+@@ -475,6 +480,10 @@
+     @model_validator(mode="after")
+     def _validate_context_bundle(self):
+         """INF-78 OAB-7: a bundle is validated at the door (422), and only the REPL reads it."""
++        if self.document_search and self.force_mode != "repl":
++            raise ValueError("document_search requires force_mode='repl'")
++        if self.document_search and self.context_bundle is not None:
++            raise ValueError("document_search cannot be combined with context_bundle")
+         if self.context_bundle is None:
+             if "context_print_cap_bytes" in self.model_fields_set:
+                 raise ValueError("context_print_cap_bytes requires context_bundle")
+--- a/src/api/routes/chat_pipeline/repl_executor.py
++++ b/src/api/routes/chat_pipeline/repl_executor.py
+@@ -405,6 +405,11 @@
+     _task_type = str(routing.task_ir.get("task_type", "chat"))
+     _tool_context = {"no_web": True} if _task_type in NO_WEB_TASK_TYPES else {}
+ 
++    if getattr(request, "document_search", False) and not (
++        routing.document_result and routing.document_result.document_result
++    ):
++        from fastapi import HTTPException
++        raise HTTPException(status_code=422, detail="document_search requires a preprocessed document")
+     if routing.document_result and routing.document_result.document_result:
+         from src.repl_document import DocumentREPLEnvironment, DocumentContext
+ 
+@@ -425,6 +430,7 @@
+         repl = DocumentREPLEnvironment(
+             context=combined_context,
+             document_context=doc_context,
++            document_search_enabled=bool(getattr(request, "document_search", False)),
+             llm_primitives=primitives,
+             tool_registry=state.tool_registry,
+             script_registry=state.script_registry,

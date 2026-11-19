@@ -1,0 +1,1 @@
+{"epoch": 1793584723.2188008, "request": {"cache_prompt": false, "id_slot": 0, "n_predict": 128, "prompt": "On Tuesday the little dog followed the", "speculative.n_max": 2, "temperature": 0.0, "top_k": 1}, "request_sha256": "cc172b551fea2c5a04e2935567706e17baec5a917190b2fccf5edc6053038356", "server_session": "1793584722606892247", "slot_requested": 0}

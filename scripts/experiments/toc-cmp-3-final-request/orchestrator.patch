@@ -1,0 +1,459 @@
+diff --git a/orchestration/runtime_flags.spec.yaml b/orchestration/runtime_flags.spec.yaml
+index a2b2c3ce..98c197fd 100644
+--- a/orchestration/runtime_flags.spec.yaml
++++ b/orchestration/runtime_flags.spec.yaml
+@@ -47,6 +47,7 @@ flags:
+   content_cache: baseline
+   context_arm_ab: baseline
+   context_compaction_contract: baseline
++  context_compaction_final_request: baseline
+   context_compaction_semantic: baseline
+   context_compression: baseline
+   credential_redaction: baseline
+diff --git a/src/backends/llama_server.py b/src/backends/llama_server.py
+index 2fff89f3..84606765 100644
+--- a/src/backends/llama_server.py
++++ b/src/backends/llama_server.py
+@@ -255,6 +255,12 @@ def _context_overflow_result(
+     )
+ 
+ 
++def _verify_final_payload(endpoint, payload):
++    from src.graph.final_request_semantic import verify_final_payload
++
++    return verify_final_payload(endpoint, payload)
++
++
+ def _server_cfg():
+     from src.config import get_config
+ 
+@@ -499,6 +505,7 @@ class LlamaServerBackend(ModelBackend):
+ 
+         # Build request payload
+         payload = self._build_payload(role_config, request)
++        payload = _verify_final_payload("/completion", payload)
+ 
+         try:
+             http_start = time.perf_counter()
+@@ -857,6 +864,7 @@ class LlamaServerBackend(ModelBackend):
+         from src.backends.repl_thinking_budget import request_fields
+ 
+         payload.update(request_fields(request, ctk))
++        payload = _verify_final_payload("/v1/chat/completions", payload)
+ 
+         try:
+             http_start = time.perf_counter()
+@@ -1086,6 +1094,7 @@ class LlamaServerBackend(ModelBackend):
+         """
+         payload = self._build_payload(role_config, request)
+         payload["stream"] = True
++        payload = _verify_final_payload("/completion", payload)
+         request.stream_output_tokens_reported = None
+         request.stream_output_tokens_source = None
+ 
+@@ -1259,6 +1268,7 @@ class LlamaServerBackend(ModelBackend):
+ 
+         payload = self._build_payload(role_config, request)
+         payload["stream"] = True
++        payload = _verify_final_payload("/completion", payload)
+ 
+         try:
+             http_start = time.perf_counter()
+@@ -1915,6 +1925,7 @@ class LlamaServerBackend(ModelBackend):
+         reasoning_chunks: list[str] = []
+         tool_call_parts: dict[int, dict[str, Any]] = {}
+         payload["stream_options"] = {"include_usage": True}
++        payload = _verify_final_payload("/v1/chat/completions", payload)
+         completion_reason = "stop"
+         terminal_event_seen = False
+         interrupted = False
+diff --git a/src/features.py b/src/features.py
+index 04ced0f1..0806aa72 100644
+--- a/src/features.py
++++ b/src/features.py
+@@ -155,6 +155,7 @@ _FEATURE_REGISTRY: tuple[FeatureSpec, ...] = (
+     FeatureSpec("session_compaction", False, True, "SESSION_COMPACTION", "Summarize old context"),
+     FeatureSpec("session_log", False, True, "SESSION_LOG", "Append-only processing journal"),
+     FeatureSpec("session_log_verbatim", False, False, "SESSION_LOG_VERBATIM", "Verbatim experiment history"),
++    FeatureSpec("context_compaction_final_request", False, False, "CONTEXT_COMPACTION_FINAL_REQUEST", "Post-fold REPL HTTP request semantic check", ("context_compaction_contract",)),
+     FeatureSpec("context_compaction_semantic", False, False, "CONTEXT_COMPACTION_SEMANTIC", "Post-fold semantic check", ("context_compaction_contract",)),
+     FeatureSpec("context_compaction_contract", False, False, "CONTEXT_COMPACTION_CONTRACT", "Explicit compaction contract", ("context_arm_ab",)),
+     FeatureSpec("context_arm_ab", False, False, "CONTEXT_ARM_AB", "Context compression experiment arms", ("session_log_verbatim",)),
+@@ -675,6 +676,7 @@ class Features:
+     context_arm_ab: bool = False
+     context_compaction_contract: bool = False
+     context_compaction_semantic: bool = False
++    context_compaction_final_request: bool = False
+     session_scratchpad: bool = False  # Model-extracted semantic insights from session log
+     depth_model_overrides: bool = False  # Map nested llm_call depth to cheaper roles
+     resume_tokens: bool = False  # Base64url continuation tokens for crash recovery
+diff --git a/src/graph/context_arm_ab.py b/src/graph/context_arm_ab.py
+index d5c15356..7f52b83b 100644
+--- a/src/graph/context_arm_ab.py
++++ b/src/graph/context_arm_ab.py
+@@ -22,6 +22,8 @@ CONTINUATION = ('Earlier turns of this task are not shown. You are continuing th
+ def settings() -> tuple[str, int, float, set[int]]:
+     from src.features import features
+     flags = features()
++    if flags.context_compaction_final_request and not flags.context_compaction_contract:
++        raise ValueError("context_compaction_final_request requires context_compaction_contract")
+     if flags.context_compaction_semantic and not flags.context_compaction_contract:
+         raise ValueError('context_compaction_semantic requires context_compaction_contract')
+     if not flags.context_arm_ab:
+diff --git a/src/graph/final_request_semantic.py b/src/graph/final_request_semantic.py
+new file mode 100644
+index 00000000..bdc2d5b5
+--- /dev/null
++++ b/src/graph/final_request_semantic.py
+@@ -0,0 +1,155 @@
++"""Request-bound opt-in semantic enforcement at the REPL's HTTP dispatch."""
++import asyncio
++import base64
++import copy
++import inspect
++import json
++import math
++import weakref
++from contextvars import ContextVar
++from threading import Event
++
++from src.graph.compaction_artifacts import ExecutionBrief, PinnedGovernance, render_contract
++from src.graph.compaction_semantic import canonical, digest, import_judgment, make_case
++
++
++class FinalRequestBlocked(Exception):
++    """A semantic failure is terminal for this guarded trajectory."""
++
++
++active_guard = ContextVar("compaction_final_request_guard", default=None)
++_evaluators = {}
++
++
++def configure_final_request_check(state, evaluator, evaluator_id, timeout_s):
++    """Install an explicit process-local evaluator for exactly this task state."""
++    if (not inspect.iscoroutinefunction(evaluator) or not isinstance(evaluator_id, str)
++            or not evaluator_id.strip() or isinstance(timeout_s, bool)
++            or not isinstance(timeout_s, (int, float)) or not math.isfinite(timeout_s)
++            or timeout_s <= 0):
++        raise ValueError("an async evaluator, identifier and finite positive timeout are required")
++    key = id(state)
++
++    def discard(ref):
++        if _evaluators.get(key, (None,))[0] is ref:
++            _evaluators.pop(key, None)
++
++    _evaluators[key] = (weakref.ref(state, discard), evaluator, evaluator_id, timeout_s)
++
++
++class FinalRequestGuard:
++    def __init__(self, state):
++        self.state = state
++        self.loop = asyncio.get_running_loop()
++        self.cancelled = Event()
++
++    @property
++    def outcomes(self):
++        return self.state.compaction_final_request_outcomes
++
++    def require_unblocked(self):
++        if self.outcomes and self.outcomes[-1]["blocked"]:
++            raise FinalRequestBlocked(self.outcomes[-1]["block_reason"])
++        if self.cancelled.is_set():
++            self.block("cancelled")
++
++    def block(self, reason):
++        self.outcomes.append({
++            "unit": self.unit(), "semantic_verdict": "unknown", "blocked": True,
++            "block_reason": reason,
++        })
++        raise FinalRequestBlocked(reason)
++
++    def unit(self):
++        return {
++            "task_id": self.state.task_id,
++            "boundary_turn": self.state.history_boundaries[-1],
++            "graph_turn": self.state.turns,
++            "attempt": len(self.outcomes) + 1,
++        }
++
++    def verify(self, endpoint, payload):
++        self.require_unblocked()
++        # The HTTP client receives only this private JSON copy. Neither a mutable
++        # caller-owned payload nor the evaluator's copy is reused for dispatch.
++        try:
++            if endpoint not in ("/completion", "/v1/chat/completions"):
++                raise ValueError("unsupported endpoint")
++            snapshot = json.loads(canonical(payload))
++            request = {"endpoint": endpoint, "payload": snapshot}
++            observed = (snapshot["messages"] if endpoint == "/v1/chat/completions"
++                        else [{"role": "prompt", "content": snapshot["prompt"]}])
++            if endpoint == "/v1/chat/completions" and (
++                len(observed) != 1 or observed[0]["role"] != "user" or "tools" in snapshot
++            ):
++                raise ValueError("unsupported REPL chat payload")
++            governance = PinnedGovernance(**self.state.compaction_pinned_governance)
++            reference = {**self.state.compaction_execution_brief, "pinned_governance": governance.text}
++            contract = render_contract(ExecutionBrief(**self.state.compaction_execution_brief), governance)
++            literal = sum(msg["content"].count(contract) for msg in observed) == 1
++            case = make_case(self.unit(), reference, observed, literal,
++                             {"final_request_sha256": digest(canonical(request))})
++        except (AttributeError, KeyError, TypeError, ValueError):
++            self.block("invalid_request_or_contract")
++
++        raw = None
++        reason = None
++        evaluator_id = None
++        config = _evaluators.get(id(self.state))
++        if config is None or config[0]() is not self.state:
++            reason = "missing_evaluator"
++        else:
++            _, evaluator, evaluator_id, timeout_s = config
++            try:
++                raw = self.evaluate(evaluator, case, timeout_s)
++                if not isinstance(raw, bytes):
++                    raw = None
++                    reason = "invalid_evaluator_response"
++            except TimeoutError:
++                reason = "timeout"
++            except FinalRequestBlocked as exc:
++                reason = str(exc)
++            except Exception:
++                reason = "evaluator_error"
++
++        result = import_judgment(case, raw, evaluator_id)
++        if self.cancelled.is_set():
++            reason = "cancelled"
++            result = import_judgment(case, None, evaluator_id)
++        block_reason = (reason or result.get("reason")
++                        or ("literal_contract" if not literal else None)
++                        or (result["semantic_verdict"] if result["semantic_verdict"] != "entailed" else None))
++        result.update(case=case, final_request=copy.deepcopy(request), blocked=block_reason is not None,
++                      block_reason=block_reason)
++        if raw is not None:
++            result["evaluator_output_base64"] = base64.b64encode(raw).decode("ascii")
++        self.outcomes.append(result)
++        if block_reason is not None:
++            raise FinalRequestBlocked(block_reason)
++        return snapshot
++
++    def evaluate(self, evaluator, case, timeout_s):
++        # The REPL event loop awaits the worker thread while the worker submits
++        # the judge coroutine back to that loop. Never block any event loop.
++        try:
++            asyncio.get_running_loop()
++        except RuntimeError:
++            pass
++        else:
++            raise FinalRequestBlocked("unsupported_inline_dispatch")
++        coroutine = evaluator(copy.deepcopy(case))
++        try:
++            pending = asyncio.run_coroutine_threadsafe(coroutine, self.loop)
++        except RuntimeError:
++            coroutine.close()
++            raise FinalRequestBlocked("evaluator_loop_unavailable") from None
++        try:
++            return pending.result(timeout=timeout_s)
++        except TimeoutError:
++            pending.cancel()
++            raise
++
++
++def verify_final_payload(endpoint, payload):
++    guard = active_guard.get()
++    return guard.verify(endpoint, payload) if guard is not None else payload
+diff --git a/src/graph/helpers.py b/src/graph/helpers.py
+index cc484ebd..47a37398 100644
+--- a/src/graph/helpers.py
++++ b/src/graph/helpers.py
+@@ -1087,7 +1087,7 @@ def _best_effort_last_inference_meta(primitives: Any) -> dict[str, Any]:
+ 
+ 
+ async def _call_llm_capturing_meta(
+-    llm_call_fn: Any, primitives: Any, *args: Any, **kwargs: Any
++    llm_call_fn: Any, primitives: Any, *args: Any, final_request_guard=None, **kwargs: Any
+ ) -> tuple[str, dict[str, Any]]:
+     """Call `llm_call_fn` and return `(result, this_calls_inference_meta)`.
+ 
+@@ -1118,6 +1118,24 @@ async def _call_llm_capturing_meta(
+         result = llm_call_fn(*args, **kwargs)
+         return result, _best_effort_last_inference_meta(primitives)
+ 
++    if final_request_guard is not None:
++        from src.graph.final_request_semantic import active_guard
++
++        final_request_guard.require_unblocked()
++        previous = len(final_request_guard.outcomes)
++        binding = active_guard.set(final_request_guard)
++        try:
++            result = await asyncio.to_thread(_run)
++            final_request_guard.require_unblocked()
++            if len(final_request_guard.outcomes) == previous:
++                final_request_guard.block("unobserved_dispatch")
++            return result
++        except asyncio.CancelledError:
++            final_request_guard.cancelled.set()
++            raise
++        finally:
++            active_guard.reset(binding)
++
+     # Unit tests often inject MagicMock llm_call; using to_thread on mocked
+     # callables can deadlock event-loop teardown in pytest-asyncio.
+     if _use_inline_calls_in_tests() or type(llm_call_fn).__module__.startswith("unittest.mock"):
+@@ -1677,6 +1695,13 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+             llm_kwargs.get("n_tokens", "default"),
+             state.tool_required,
+         )
++    from src.graph.final_request_semantic import FinalRequestBlocked, FinalRequestGuard
++
++    final_request_guard = (
++        FinalRequestGuard(state)
++        if _get_features().context_compaction_final_request and state.history_boundaries
++        else None
++    )
+     _turn_call_meta: dict[str, Any] = {}
+     try:
+         llm_call_fn = deps.primitives.llm_call
+@@ -1690,8 +1715,10 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+             role=str(role),
+             stop_sequences=["\n```\n"],
+             skip_suffix=True,
+-            **llm_kwargs,
++            final_request_guard=final_request_guard, **llm_kwargs,
+         )
++    except FinalRequestBlocked:
++        raise
+     except ContextOverflowError as e:
+         # The inference layer already did what it can without the graph
+         # (bounded pool backoff, reroute to a larger-context role). Never retried
+@@ -1750,7 +1777,7 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+                 _cont, _cont_meta = await _call_llm_capturing_meta(
+                     deps.primitives.llm_call, deps.primitives,
+                     prompt + code + _FENCE_STOP, role=str(role), stop_sequences=[],
+-                    skip_suffix=True, **llm_kwargs,
++                    skip_suffix=True, final_request_guard=final_request_guard, **llm_kwargs,
+                 )
+                 _joined = _trim_after_think_at_fence(code + _FENCE_STOP + (_cont or ""))
+                 _bump_diag(state, "think_fence_continued")
+@@ -1758,6 +1785,8 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+                     _bump_diag(state, "think_fence_continue_still_unclosed")
+                 code = _joined
+                 _turn_call_meta = _cont_meta
++            except FinalRequestBlocked:
++                raise
+             except Exception as _cont_exc:
+                 log.warning("think-fence continuation failed (%s: %s); keeping cut turn",
+                             type(_cont_exc).__name__, _cont_exc)
+@@ -1927,7 +1956,7 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+                     _retry_output, _retry_meta = await _call_llm_capturing_meta(
+                         deps.primitives.llm_call, deps.primitives,
+                         _runaway_retry_prompt, role=str(role),
+-                        stop_sequences=["\n```\n"], skip_suffix=True, **llm_kwargs,
++                        stop_sequences=["\n```\n"], skip_suffix=True, final_request_guard=final_request_guard, **llm_kwargs,
+                     )
+                 _reasoning_retry_meta = dict(_retry_meta)
+                 _retry_error_reason = _retry_meta.get("completion_reason")
+@@ -1953,6 +1982,8 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+                     code = _retry_output
+                     raw_llm_output = _retry_output
+                     _turn_call_meta = dict(_retry_meta)
++            except FinalRequestBlocked:
++                raise
+             except Exception as e:
+                 _reasoning_retry_meta = {
+                     "completion_reason": "exception",
+@@ -2025,10 +2056,12 @@ async def _execute_turn(ctx: Ctx, role: Role | str) -> tuple[str, str | None, bo
+                 code, _turn_call_meta = await _call_llm_capturing_meta(
+                     deps.primitives.llm_call, deps.primitives,
+                     _retry_prompt, role=str(role), stop_sequences=["\n```\n"],
+-                    skip_suffix=True, **llm_kwargs,
++                    skip_suffix=True, final_request_guard=final_request_guard, **llm_kwargs,
+                 )
+                 _reasoning_retry_meta = dict(_turn_call_meta)
+                 raw_llm_output = code
++            except FinalRequestBlocked:
++                raise
+             except Exception as e:
+                 _reasoning_retry_failed = True
+                 log.warning("Reasoning length alarm retry failed: %s", e)
+diff --git a/src/graph/langgraph/state.py b/src/graph/langgraph/state.py
+index cb27acd1..40185d78 100644
+--- a/src/graph/langgraph/state.py
++++ b/src/graph/langgraph/state.py
+@@ -170,6 +170,7 @@ class OrchestratorState(TypedDict, total=False):
+     compaction_execution_brief: dict[str, str]
+     compaction_pinned_governance: dict[str, str]
+     compaction_semantic_outcomes: list[dict[str, Any]]
++    compaction_final_request_outcomes: list[dict[str, Any]]
+     history_turns: list[dict[str, Any]]
+     history_boundaries: list[int]
+     history_boundary_index: int
+diff --git a/src/graph/state.py b/src/graph/state.py
+index b79b5146..ea60d89c 100644
+--- a/src/graph/state.py
++++ b/src/graph/state.py
+@@ -125,6 +125,7 @@ class TaskState:
+     compaction_execution_brief: dict[str, str] = field(default_factory=dict)
+     compaction_pinned_governance: dict[str, str] = field(default_factory=dict)
+     compaction_semantic_outcomes: list[dict[str, Any]] = field(default_factory=list)
++    compaction_final_request_outcomes: list[dict[str, Any]] = field(default_factory=list)
+     history_turns: list[dict[str, Any]] = field(default_factory=list)
+     history_boundaries: list[int] = field(default_factory=list)
+     history_boundary_index: int = 0
+diff --git a/src/llm_primitives/inference.py b/src/llm_primitives/inference.py
+index 95df5e5f..5bfac3a1 100644
+--- a/src/llm_primitives/inference.py
++++ b/src/llm_primitives/inference.py
+@@ -795,6 +795,10 @@ class InferenceMixin:
+         on_chunk: Callable[[str], None] | None = None,
+     ) -> str:
+         """Internal real call implementation (no concurrency gating)."""
++        from src.graph.final_request_semantic import active_guard
++
++        # A guarded continuation requires observation of this dispatch.
++        # Cached output has no corresponding final HTTP payload.
+         # Content-addressable cache check
+         from src.features import features as _get_features
+ 
+@@ -803,6 +807,7 @@ class InferenceMixin:
+         if (
+             cache is not None
+             and _get_features().content_cache
++            and active_guard.get() is None
+             and stop_sequences is None
+             and n_probs is None
+             and _request_chat_payload(self) is None
+@@ -1003,8 +1008,19 @@ class InferenceMixin:
+         on_chunk: Callable[[str], None] | None = None,
+     ) -> str:
+         """Execute a single inference call against one role's backend."""
++        from src.graph.final_request_semantic import active_guard
++
+         # Try CachingBackend first (RadixAttention)
+         backend = self._backends.get(role)
++        guard = active_guard.get()
++        if guard is not None:
++            from src.backends.llama_server import LlamaServerBackend
++            from src.inference.prefix_cache import CachingBackend
++
++            guard.require_unblocked()
++            target = backend.backend if type(backend) is CachingBackend else backend
++            if type(target) is not LlamaServerBackend or _request_chat_payload(self) is not None:
++                guard.block("unsupported_dispatch")
+         if backend is not None:
+             return self._call_caching_backend(
+                 backend,
+diff --git a/src/llm_primitives/primitives.py b/src/llm_primitives/primitives.py
+index 8e6b0c60..a4aaceba 100644
+--- a/src/llm_primitives/primitives.py
++++ b/src/llm_primitives/primitives.py
+@@ -1283,6 +1283,10 @@ class LLMPrimitives(
+             log_entry.elapsed_seconds = time.perf_counter() - start_time
+             self._update_query_usage(_usage_before, log_entry)
+             self.call_log.append(log_entry)
++            from src.graph.final_request_semantic import FinalRequestBlocked
++
++            if isinstance(e, FinalRequestBlocked):
++                raise
+             if raise_parked_errors and isinstance(e, RoleParkedError):
+                 raise
+             if isinstance(e, AdmissionDenied):

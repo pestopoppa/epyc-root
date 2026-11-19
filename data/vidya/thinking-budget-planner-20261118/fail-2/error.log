@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/job.py", line 130, in main
+    observations = canary.replay(tuple(map(Path, pins["native_results"])), HERE / "research", workspace)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/vidya/canary/thinking_budget_semantics_context.py", line 85, in replay
+    from scripts.kernel_rnd.autokernel.loop import actors, belief_context
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/research/scripts/kernel_rnd/autokernel/loop/actors.py", line 55, in <module>
+    from .loop import (Abstain, ActorStopped, ActorTransient, AuthorReportMissing, Hypothesis,
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/research/scripts/kernel_rnd/autokernel/loop/loop.py", line 38, in <module>
+    from . import belief_context, bench, gates, history_fields, integrity, reflexion, runtime_identity
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/research/scripts/kernel_rnd/autokernel/loop/gates.py", line 30, in <module>
+    from . import bench, census, residency, scratch
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/research/scripts/kernel_rnd/autokernel/loop/census.py", line 19, in <module>
+    from autokernel.controller import workload_contract
+ModuleNotFoundError: No module named 'autokernel'

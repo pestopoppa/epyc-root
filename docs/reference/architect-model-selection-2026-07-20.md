@@ -11,7 +11,7 @@ role)? "The worst thing we can have is a mediocre architect." Candidates, at the
 | **Qwen3.6-27B dense** | 27B / 27B | MI210 (GPU) | ~40 (MTP) | max active width; Q8 near-lossless; CPU-poor (~4.4 t/s) |
 | **Qwen3.6-35B-A3B** Q8 | 3B / 35B | CPU or MI210 | 34.5 CPU / ~120 GPU | the frontdoor model; **shallowest reasoning** (3B active) — baseline only |
 
-This note is the rationale behind [`../../handoffs/active/architect-model-selection-bench.md`](../../handoffs/active/architect-model-selection-bench.md),
+This note is the rationale behind [`../../handoffs/active/architect-model-selection-bench.md`](../../handoffs/active/model-evaluation-queue.md),
 which converts the principled ranking below into a **decision-grade** local result. Sources were
 deep-dived read-only on 2026-07-20 (see that handoff's intake list).
 

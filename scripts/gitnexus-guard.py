@@ -50,14 +50,15 @@ def ancestors():
         pid = ppid
     return result
 
-def proc_lock_owners():
+def proc_lock_owners(mode="WRITE"):
+    """(major, minor, inode) -> pids holding a granted FLOCK of `mode` (WRITE = LOCK_EX, READ = LOCK_SH)."""
     owners = {}
     with open("/proc/locks", "r", encoding="ascii") as f:
         for line in f:
             fields = line.split()
             if not fields or "->" in fields:
                 continue  # a waiter is not an owner
-            if len(fields) < 8 or fields[1:4] != ["FLOCK", "ADVISORY", "WRITE"]:
+            if len(fields) < 8 or fields[1:4] != ["FLOCK", "ADVISORY", mode]:
                 continue
             if not fields[4].isdigit():
                 continue
@@ -133,7 +134,7 @@ def dev_inode(identity):
     dev, ino = identity
     return (os.major(dev), os.minor(dev), ino)
 
-def valid_payload(data, owner, expected_region):
+def valid_payload(data, owner, expected_region, regions=QUADRANTS):
     try:
         p = json.loads(data.decode("utf-8"))
     except Exception:
@@ -146,13 +147,238 @@ def valid_payload(data, owner, expected_region):
     started = p.get("started_at")
     if (p.get("schema_version") != 1 or p.get("pid") != owner or
         p.get("role") != "build" or p.get("region") != expected_region or
-        p.get("regions") != list(QUADRANTS) or
+        p.get("regions") != list(regions) or
         not isinstance(p.get("request_tag"), str) or not p["request_tag"].strip() or
         isinstance(started, bool) or not isinstance(started, (int, float)) or
         not math.isfinite(started) or started <= 0 or started > time.time() + 60):
         deny("build lock attribution mismatch")
 
-def admit():
+def analyze_workers(args):
+    """Return 1 only for one unambiguous `--workers 1`; otherwise None.
+
+    Operator decision 2026-11-05 ("Change the rule: 1 quarter"): a pinned
+    single-worker analyze may run on ONE CPU quarter. Anything absent,
+    repeated, malformed or not exactly 1 keeps the four-quarter rule.
+    """
+    values = []
+    i = 0
+    while i < len(args):
+        item = args[i]
+        if item == "--":
+            return None  # positional tail is ambiguous: fail closed
+        if item == "--workers":
+            if i + 1 >= len(args):
+                return None
+            values.append(args[i + 1])
+            i += 2
+            continue
+        if item.startswith("--workers="):
+            values.append(item.split("=", 1)[1])
+        elif item.startswith("--worker"):
+            return None  # unknown spelling (e.g. --workers-max) is ambiguous
+        i += 1
+    if len(values) != 1 or values[0] != "1":
+        return None
+    if os.environ.get("GITNEXUS_WORKER_POOL_SIZE", "1") != "1":
+        return None  # environment channel disagrees with the pinned CLI
+    return 1
+
+def admit(analyze_args=None):
+    if analyze_args is not None and analyze_workers(analyze_args) == 1:
+        try:
+            return admit_one_quarter()
+        except Refusal as quarter_refusal:
+            # A full four-quarter claim also covers a single worker.
+            try:
+                return admit_whole_host()
+            except Refusal:
+                pass
+            # Operator 2026-11-05: "approve sub-quarters on q3 for gitnexus!"
+            try:
+                return admit_subquarter_q3()
+            except Refusal as sub_refusal:
+                raise Refusal(f"{quarter_refusal}; sub-quarter q3: {sub_refusal}")
+    return admit_whole_host()
+
+
+SUBQUARTER_Q = "q3"
+SUBQUARTER_CORES = range(72, 96)  # q3 physical cores; siblings 168-191
+
+
+def parse_cpu_list(text):
+    cpus = set()
+    for tok in text.strip().split(","):
+        a, sep, b = tok.partition("-")
+        if not a.isdigit() or (sep and not b.isdigit()):
+            deny("malformed Cpus_allowed_list")
+        lo, hi = int(a), int(b) if sep else int(a)
+        if hi < lo or hi > 1023:
+            deny("malformed Cpus_allowed_list")
+        cpus.update(range(lo, hi + 1))
+    if not cpus:
+        deny("empty Cpus_allowed_list")
+    return cpus
+
+
+def own_affinity():
+    with open("/proc/self/status", "r", encoding="ascii") as f:
+        lines = [line for line in f.read().splitlines() if line.startswith("Cpus_allowed_list:")]
+    if len(lines) != 1:
+        deny("missing Cpus_allowed_list")
+    return parse_cpu_list(lines[0].split(":", 1)[1])
+
+
+def core_lock_path(core):
+    return os.path.join(LOCK_ROOT, f"cpu_core.{core}.lock")
+
+
+def admit_subquarter_q3():
+    """Single-worker analyze on a q3 sub-quarter claim (region-lock `--cpu-list` < 24 q3 cores).
+
+    region-lock holds LOCK_SH on GLOBAL.q3 and build.q3 plus LOCK_EX on each claimed `cpu_core.N.lock`
+    (it writes no payload for these). Required: one live same-UID ancestor holds those READ flocks and the
+    WRITE flock of every core in this process's affinity, no core outside q3, no whole-quarter WRITE pair
+    of its own, the affinity entirely inside the claimed cores (or their SMT siblings), checked twice.
+    """
+    global EXPECTED_ROOT
+    EXPECTED_ROOT = safe_root()
+    if os.environ.get("ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT", "").strip().lower() not in {"1", "true", "yes", "on"}:
+        deny("cross-role global region locks are not enabled")
+    affinity = own_affinity()
+    cores = {c % 96 for c in affinity if c < 192}  # SMT siblings 96-191 count as their physical core
+    if any(c >= 192 for c in affinity) or not cores:
+        deny("affinity outside host cpus")
+    if not cores <= set(SUBQUARTER_CORES):
+        deny("affinity is not inside q3")
+    if len(cores) >= 24:
+        deny("affinity covers a whole quarter; not a sub-quarter claim")
+    anc = ancestors()
+    current_uid = os.getuid()
+    readers, writers = proc_lock_owners("READ"), proc_lock_owners("WRITE")
+    shared = []
+    for role in ("GLOBAL", "build"):
+        path = os.path.join(LOCK_ROOT, f"cpu_region.{role}.{SUBQUARTER_Q}.lock")
+        ident, _payload = open_identity(path)  # region-lock writes no sub-quarter payload; identity is inode + flock
+        cands = readers.get(dev_inode(ident), set()).intersection(anc)
+        if len(cands) != 1:
+            deny(f"{role}/{SUBQUARTER_Q} lacks one ancestor shared flock")
+        if writers.get(dev_inode(ident), set()).intersection(anc):
+            deny(f"{role}/{SUBQUARTER_Q} is write-held by an ancestor: whole-quarter claim, not sub-quarter")
+        shared.append((path, ident, next(iter(cands))))
+    core_entries = []
+    for core in sorted(cores):
+        path = core_lock_path(core)
+        ident, payload = open_identity(path)
+        if payload.strip():
+            deny("unexpected core lock payload")
+        cands = writers.get(dev_inode(ident), set()).intersection(anc)
+        if len(cands) != 1:
+            deny(f"core {core} lacks one ancestor write flock")
+        core_entries.append((path, ident, next(iter(cands))))
+    entries = shared + core_entries
+    if len({e[1] for e in entries}) != len(entries):
+        deny("CPU claims do not have distinct inode identities")
+    owner_set = {e[2] for e in entries}
+    if len(owner_set) != 1:
+        deny("sub-quarter locks do not share one ancestor owner")
+    owner = next(iter(owner_set))
+    if owner == os.getpid():
+        deny("guard itself cannot be the claim owner")
+    if anc[owner][1] != current_uid:
+        deny("claim owner uid differs")
+    # The claim must not extend outside q3 either: no core lock outside q3 held by the owner.
+    for core in range(96):
+        if core in SUBQUARTER_CORES:
+            continue
+        path = core_lock_path(core)
+        try:
+            ident, _ = open_identity(path)
+        except FileNotFoundError:
+            continue
+        if owner in writers.get(dev_inode(ident), set()):
+            deny("claim owner holds cores outside q3")
+    for q in QUADRANTS:
+        for role in ("GLOBAL", "build"):
+            path = os.path.join(LOCK_ROOT, f"cpu_region.{role}.{q}.lock")
+            ident, _ = open_identity(path)
+            if owner in writers.get(dev_inode(ident), set()):
+                deny("claim owner holds a whole-quarter write flock; use the quarter route")
+            if q != SUBQUARTER_Q and owner in readers.get(dev_inode(ident), set()):
+                deny("claim owner holds a sub-quarter share outside q3")
+    # Second observation: process identity, affinity, inodes and kernel grants.
+    ppid_start_uid = proc_stat(owner)
+    anc2 = ancestors()
+    if owner not in anc2 or ppid_start_uid[1] != anc[owner][0] or anc2[owner] != anc[owner] or ppid_start_uid[2] != current_uid:
+        deny("claim owner changed")
+    if own_affinity() != affinity:
+        deny("affinity changed during admission")
+    readers2, writers2 = proc_lock_owners("READ"), proc_lock_owners("WRITE")
+    for i, (path, prior, _owner) in enumerate(entries):
+        now, payload = open_identity(path)
+        if now != prior:
+            deny("lock identity changed during admission")
+        table = readers2 if i < len(shared) else writers2
+        if owner not in table.get(dev_inode(now), set()):
+            deny("flock disappeared during admission")
+        if i >= len(shared) and payload.strip():
+            deny("unexpected core lock payload")
+    return owner
+
+def admit_one_quarter():
+    """Single-worker analyze: GLOBAL+build write flocks on one same quarter."""
+    global EXPECTED_ROOT
+    EXPECTED_ROOT = safe_root()
+    if os.environ.get("ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT", "").strip().lower() not in {"1", "true", "yes", "on"}:
+        deny("cross-role global region locks are not enabled")
+    anc = ancestors()
+    current_uid = os.getuid()
+    kernel = proc_lock_owners()
+    held = {}
+    for q in QUADRANTS:
+        pair = []
+        for role in ("GLOBAL", "build"):
+            path = os.path.join(LOCK_ROOT, f"cpu_region.{role}.{q}.lock")
+            ident, payload = open_identity(path)
+            candidates = kernel.get(dev_inode(ident), set()).intersection(anc)
+            if len(candidates) > 1:
+                deny(f"{role}/{q} has ambiguous ancestor write flocks")
+            pair.append((role, path, ident, next(iter(candidates)) if candidates else None, payload))
+        owners = [entry[3] for entry in pair]
+        if owners[0] is None and owners[1] is None:
+            continue
+        if owners[0] is None or owners[1] is None:
+            deny(f"{q} needs both GLOBAL and build write flocks on the same quarter")
+        held[q] = pair
+    if len(held) != 1:
+        deny("single-worker admission needs exactly one GLOBAL/build quarter pair")
+    q, pair = next(iter(held.items()))
+    owner_set = {entry[3] for entry in pair}
+    if len(owner_set) != 1:
+        deny("quarter locks do not share one ancestor owner")
+    owner = next(iter(owner_set))
+    if owner == os.getpid():
+        deny("guard itself cannot be the claim owner")
+    if anc[owner][1] != current_uid:
+        deny("claim owner uid differs")
+    if pair[0][2] == pair[1][2]:
+        deny("CPU claims do not have two distinct inode identities")
+    valid_payload(pair[1][4], owner, q, (q,))
+    ppid_start_uid = proc_stat(owner)
+    anc2 = ancestors()
+    if owner not in anc2 or ppid_start_uid[1] != anc[owner][0] or anc2[owner] != anc[owner] or ppid_start_uid[2] != current_uid:
+        deny("claim owner changed")
+    kernel2 = proc_lock_owners()
+    for role, path, prior, _owner, _payload in pair:
+        now, payload = open_identity(path)
+        if now != prior:
+            deny("lock identity changed during admission")
+        if owner not in kernel2.get(dev_inode(now), set()):
+            deny("write flock disappeared during admission")
+        if role == "build":
+            valid_payload(payload, owner, q, (q,))
+    return owner
+
+def admit_whole_host():
     global EXPECTED_ROOT
     EXPECTED_ROOT = safe_root()
     if os.environ.get("ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT", "").strip().lower() not in {"1", "true", "yes", "on"}:
@@ -205,9 +431,15 @@ def admit():
 
 def main():
     try:
-        if len(sys.argv) != 3 or sys.argv[1] != "--repo" or sys.argv[2] not in {"root", "app"}:
-            deny("usage: gitnexus-guard.py --repo root|app")
-        admit()
+        argv = sys.argv[1:]
+        if len(argv) < 2 or argv[0] != "--repo" or argv[1] not in {"root", "app"}:
+            deny("usage: gitnexus-guard.py --repo root|app [-- analyze arguments]")
+        if len(argv) == 2:
+            admit()
+        elif argv[2] == "--":
+            admit(argv[3:])
+        else:
+            deny("usage: gitnexus-guard.py --repo root|app [-- analyze arguments]")
         return 0
     except Exception as exc:
         print(f"gitnexus guard: denied: {exc}", file=sys.stderr)

@@ -1,0 +1,38 @@
+{
+  "state": "prepared-not-published-no-native-compute",
+  "row_id": "ni-gpu-pool-elementwise-20261118-v5",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/spec.json",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/launch.sh",
+  "producer": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/run_elementwise.py",
+  "publish_command_from_lane": "ROWFLOW_REPO=\"$PWD\" python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/spec.json",
+  "scope": "17 original unsupported descriptions: NORM 10 SUM 1 SUM_ROWS 6; seed 2026102603",
+  "executable_sha256": "dd9888f1a009dec291a3e3748b8e132ee9a9edf6dd3c9361f0dae10120270431",
+  "hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_dirty_state": "UNKNOWN",
+  "checks": [
+    "exact 17-case selection compared against original plan",
+    "pinned inputs, linkage, shim and graphs knob verified without native test",
+    "three synthetic controls passed including mixed outcomes and missing case",
+    "python compilation and launcher shell syntax passed",
+    "current capture adapter and shared grade used",
+    "C5 source filter supports regex_search; actual case availability awaits acquired smoke",
+    "MI210 ROCm0 identity and OK/FAIL backend terminal checked against C5 console source",
+    "all 17 descriptions required for smoke and completion; partial result records coverage_complete false"
+  ],
+  "limitations": [
+    "Terminal files are written before outcome validation; a missing case remains missing, and no unsupported result is inferred.",
+    "Smoke and official compute were not run.",
+    "GitNexus status and impact unavailable: repository not indexed.",
+    "C5 manifest and provenance attribute the build to the stated commit; no clean-tree attestation is inferred."
+  ],
+  "preparation_input_hashes": {
+    "spec.json": "eef74e49673d4a943edfdd01003e4f336345e2e08673e1372279d36e33ae0804",
+    "launch.sh": "d9ec8dc2ab2367a080cea23c82e2eaab6b1fc7499e97a52a58a02f768b7be7ae",
+    "PINNED.sha256": "1a55bceb106234b1352348a0610a59caccd1e4f05bbf5d3bb5fc8d3ec32bce99"
+  },
+  "manifest_original_path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/SHA256SUMS",
+  "provenance_original_path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/PROVENANCE.md",
+  "manifest_packet_copy": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/source/SHA256SUMS",
+  "provenance_packet_copy": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/source/PROVENANCE.md"
+}

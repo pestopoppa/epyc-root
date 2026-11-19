@@ -1,0 +1,43 @@
+{
+ "admission_class": "block-timing-pairable",
+ "decision_rule": "descriptive same-frame t48 versus t96 recipe bundles; no best-recipe or fold verdict Shares host with GPU job; indicative (operator co-residency policy 2026-10-22: strict GPU-quiet only for decision-grade champion baselines and AK keep windows).",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/source/scripts/coordination/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 7200,
+ "gib": 48,
+ "handoff_task": "mi210-serving-program.md:M4-FOLD-GATE",
+ "id": "inf22-m4-q38-recipe-r2-20261103",
+ "keep": [
+  "captures/run-r1/capture/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/launch.sh",
+  "sha256": "802c853ee6a1eb26a1d93651181a1be90ebd307b78f4be4be033dca17232d821"
+ },
+ "lineage": "inf22-m4-q38-recipe",
+ "min_window_s": 6900,
+ "owner": "codex-inf22-m4",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "mi210-serving-program.md:557: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])",
+  "mi210-serving-program.md:557: untestable prose prerequisite: 'require its valid VRAM samples to overlap the request batch. Old entries are retired, the plan and speed floor are unbou'"
+ ],
+ "published_at": "2026-11-03T17:41:01Z",
+ "published_from": "/mnt/raid0/llm/tmp/main-publish-specs-20261103/recipe-r2.json",
+ "regions": "0-95",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/captures/run-r1/capture/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103",
+ "shape": "host",
+ "stop_file": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/STOP",
+ "supersedes": "inf22-m4-q38-recipe-r1-20261102",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/inf22-m4-q38-recipe-r2-20261103/source"
+}

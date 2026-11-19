@@ -24,7 +24,7 @@ class DryrunNativeResultTests(unittest.TestCase):
         d=fx.job(rid)
         production=Path(d)/'LAST-RESULT.json'
         production.write_text('{"production":"keep"}\n')
-        spec=fx.spec(rid,d,result_path=str(production),result_format='json',regions='0-95',
+        spec=fx.spec(rid,d,result_path=str(production),result_format='json',regions='0-95',shape_override='operator: fixture 2026-11-05: whole-host dry-run fixture',
                      min_window_s=300,dryrun_timeout_s=60,dryrun_native_result=True,
                      dryrun_whole_host=True,admission_class='diagnostic')
         row=rf.publish(spec,fx.flags)

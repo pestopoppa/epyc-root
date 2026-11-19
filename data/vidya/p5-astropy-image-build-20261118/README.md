@@ -1,0 +1,7 @@
+# Astropy scorer image prerequisite
+
+The original Astropy derived image was absent from the current Docker daemon. The immutable AMD64 base was pulled outside the row and inspected against its original image ID. The original Dockerfile, requirements and wheel checksums come from the archived Astropy preparation. The restored base and sealed wheelhouse are inputs to the prospective build.
+
+Run the allocation-backed build through the scratch launcher declared in `spec.json`. The launcher verifies `SOURCE.sha256` before handing control to RowFlow. Preflight checks every original context file and the base manifest's config. The build uses four CPUs within the grant, no network, no pull and no cache. The receipt links to the exact grant, starting and completed UTC times, original Docker output and the derived image ID. Smoke and official results use distinct directories. Refusals and incomplete attempts retain an UNKNOWN terminal in their attempt directory.
+
+The prepared scratch context includes the 33 sealed wheels. To reconstruct it on this host, copy the original `sealed-context` directory from `/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-gold-r1/provision/reset-base-20261104/` to `context` in the scratch root and verify its manifest against the tracked `context/SOURCE.sha256` before launch. Wheel archives remain in the sealed scratch context. This row establishes build custody for a later Astropy scorer run.

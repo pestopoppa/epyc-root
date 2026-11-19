@@ -1,0 +1,7 @@
+# KPF-13.1 request/batch binding: conservative fixture
+
+This standalone model-free contract tests a necessary future capture check: run, process birth, request, task and slot identities must agree across request, operation start, decode capture and completed end; event order must increase, stream completeness must be certified, and the captured batch must contain exactly one unambiguous row for the task and slot. Six test methods pass, including 18 cross-event identity mutations, ordering, missing data, collision and incomplete-operation refusals. A refusal is UNKNOWN, never a match.
+
+This deliberately restrictive single-row fixture can reject legitimate multi-token batches. Its inputs are synthetic caller-supplied records, and neither their provenance nor stream completeness is established by this validator. It is not integrated into the historical observer, does not derive task identity or batch layout from the old binary, and cannot establish a physical cache layout or historical GPU verdict. A real adapter must independently validate the old-image ABI, event origins and completeness, multithread ordering, task/slot/row association, and plant actual row/owner mutations before any inference use. No existing observation was read or changed.
+
+Run `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s progress/evidence/kpf131-request-binding-20261104 -p test_bind_capture.py -v`.

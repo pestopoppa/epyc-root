@@ -1,0 +1,53 @@
+{
+ "admission_class": "block-timing-pairable",
+ "decision_rule": "descriptive same-source A/A np4/65536: report throughput A2/A1; no acceptance floor, no decision-grade or promotion claim",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/scripts/coordination/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 1800,
+ "gib": 64,
+ "handoff_task": "mi210-serving-program.md:M4-GPU-AA-NP4",
+ "id": "inf22-m4-aa-np4-r8-20261103",
+ "keep": [
+  "KEEP",
+  "launch.sh",
+  "scripts/**/*.py",
+  "scripts/**/*.sh",
+  "scripts/**/*.json",
+  "run/*.json",
+  "run/*.PROPOSED",
+  "run/*.disabled",
+  "run/captures/**",
+  "run/dry-captures/**",
+  "PREDECLARATION.md",
+  "SOURCE-SHA256SUMS",
+  "run/captures/result.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/launch.sh",
+  "sha256": "46627a3e0b1d424c7cfc2604baee07057602907f078eb455c156aa31e327d250"
+ },
+ "min_window_s": 1800,
+ "notes": "output estimate 1 GiB; full q3/GPU exclusion; unqualified; descriptive only; host uptime exceeds decision-grade protocol ceiling; successor of r7 (publish smoke: no in-batch residency sample, 0.9 s batch vs 1.0 s cadence; sampler now 0.1 s, epyc-root eca595779) and r6 (stale dry-captures dir, 6174d0078); r6/r7 evidence retained untouched",
+ "owner": "codex-inf22",
+ "ports": [
+  18792
+ ],
+ "priority_rank": 3.0,
+ "published_at": "2026-11-03T17:37:05Z",
+ "published_from": "/mnt/raid0/llm/tmp/main-publish-specs-20261103/aa-r8.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/run/captures/result.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103/STOP",
+ "supersedes": "inf22-m4-aa-np4-r7-20261103",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/inf22-m4-aa-np4-r8-20261103"
+}

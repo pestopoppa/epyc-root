@@ -1,0 +1,47 @@
+{
+ "decision_rule": "Lifecycle validation only: full row passes when two fresh distinct server PIDs complete at least one token each and each captured process is proven dead before the next arm; first arm is dedicated spec-type none, has no draft model/flags and sends no speculative.n_max override. Failed sampling, health ownership or cleanup rejects the row. Native qualification emits one real no-draft result only after verified cleanup; it does not establish full pair behavior or throughput/quality claims.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b16bc2128d28540ff7309b0c1f7c8e5a00116cb3ac57449d019ff0ba4a3f0b8c"
+ },
+ "estimate_s": 600,
+ "gib": 48,
+ "handoff_task": "kv-cache-program.md:KVU-16h-runner",
+ "id": "handoff-kvu16h-k35-native-20261102",
+ "keep": [
+  "RESULT.json",
+  "run/**",
+  "prepared.json",
+  "prompt.txt",
+  "scripts/**",
+  "*.py",
+  "launcher.sh",
+  "row-spec.json"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/launcher.sh",
+  "sha256": "edba2ff23434287d18ca3c1fdb52969197b6820fd8fed3575d29574032bdcfab"
+ },
+ "min_window_s": 600,
+ "notes": "Prepared offline only; owner publishes. Existing 35B GGUF used because historical 27B path is absent. Model header/stat identity verified, no weight digest claim. Fixed 2048 nominal context, 16 max output tokens, no warmups, full row 2 requests; smoke 1 request. Whole-host quiet claim full run. No production source/build/config mutations. Custody hardened: parent-death SIGKILL wrapper, same engine process group, continuous STOP/deadline watchdog. Native smoke pins exactly four CPUs from inherited actual grant affinity and four server threads.",
+ "owner": "handoff-kv-unified-stack-rollout",
+ "ports": [
+  19761,
+  19762
+ ],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-02T19:19:21Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/row-spec.json",
+ "regions": "mi210_0,q0,q1,q2,q3,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102/stop",
+ "window_s": 1020,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/k35-native-validation-20261102"
+}

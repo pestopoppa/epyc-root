@@ -1,0 +1,47 @@
+{
+ "decision_rule": "Accept only pinned v10 plus exact candidate, bridge and build integration patch, full CPU lifecycle executable build, compiled MTP_LIFECYCLE marker, content hashes and local llama-common linkage. Build-only; no model, MTP execution, rollback or fault verdict.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-mtp-lifecycle-build-r2-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/launch.sh",
+  "sha256": "d68e92e485e7acf8b4c632510afd408d1037da27f512b083bc4f163b6ffafcd5"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:455: class non-inference (deliverable) \u2014 non-inference payload (state the run/measurement the row performs, or tag the box [inference])"
+ ],
+ "published_at": "2026-11-04T07:17:20Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-mtp-build-r2"
+}

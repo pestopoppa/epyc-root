@@ -1,0 +1,206 @@
+{
+  "schema": "epyc.gpqa_row_preparation.v1",
+  "box": "L237",
+  "row": "meq-gpqa-q36-35b-cot-20261119",
+  "status": "published_gpu_smoke_queued",
+  "readiness": "Refreshed process-custody driver and source seal on 2026-11-19. Replaced retired worktree source pin with /workspace/scripts/benchmark/m4_cpu_producer/native/k35_stack_context_matrix_runner.py after identical SHA256 verification (341b93e027894b861f374f9cdce642dad743fda467b42be25e1f230b4cfc58ec). prepare() then validated 198 pinned inputs. Republished rc0; GPU busy, native smoke queued. NOT PASS or ready; no cohort verdict. Any files.publish.txt entry records earlier publication only.",
+  "input_validation": "prepare(config) passed: exactly198 unique IDs; prepared source hashes and weight/kernel stat pins unchanged. One-time 37801097504-byte model hash matches current registry c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131. No weight hashing inside grant.",
+  "files": {
+    "config.json": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/config.json",
+      "sha256": "6ecc8e08bb3d4f26af0fb92dff88ac1d8a32ec65016068d98b4e825bcc92020b"
+    },
+    "row.spec.json": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/row.spec.json",
+      "sha256": "2088ca7d12335ed962ea2973e1b8cde3d7c84eed3709125306a223b58d1670ed"
+    },
+    "launch.sh": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/launch.sh",
+      "sha256": "da6f5e8e482394a12b621ad9295eca854d7633bfa13596de271b29ae9796ec48"
+    },
+    "driver.py": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/driver.py",
+      "sha256": "99a56509e90adc17e18aaaae952f9eafa1e3f59bfef8f4ac305aecfb61143313"
+    },
+    "prepare.py": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/prepare.py",
+      "sha256": "441fb15d85bbda80c27edfbfa6393626b64bb966a575894099ad194f4bcca8e7"
+    },
+    "publish.txt": {
+      "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/publish.txt",
+      "sha256": "37fd65828ed2e02b1c652f74566aca6cb72856cd29fd768fd4ad1f59a53184fc"
+    }
+  },
+  "row_spec": {
+    "id": "meq-gpqa-q36-35b-cot-20261119",
+    "owner": "handoff-architect-model-selection-bench",
+    "launcher": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/launch.sh",
+    "lane": "gpu",
+    "regions": "mi210_0",
+    "kind": "compute",
+    "result_path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/out/progress.jsonl",
+    "result_format": "jsonl",
+    "estimate_s": 36000,
+    "min_window_s": 600,
+    "max_window_s": 36000,
+    "handoff_task": "handoffs/active/model-evaluation-queue.md:237",
+    "priority_rank": 40,
+    "scratch_root": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119",
+    "first_progress_s": 900,
+    "dryrun_native_result": true,
+    "resumable": true,
+    "decision_rule": "Current Qwen3.6-35B-A3B MTP Q8_0, same-file native MTP cap4, target99; full n=198 GPQA-CoT census. Seed42, sampler0.6/0.95/20, output8192, np1/context32768, f16KV, thinking off. Accuracy higher is better; report n/correct/accuracy, parse failures and truncation. Accept a descriptive full result only from out/RESULT.json complete with exactly198 unique pinned IDs, original content/stat/source/protocol identities, canonical score validation, two active-slot process-specific HIP/KFD/nonzero-VRAM samples per item. Partial or failed requests unknown, never a full verdict. Stop after198 validated items and own-PID cleanup; futility at first invalid input/context/device/server/capture; STOP/deadline preserves accepted checkpoints and returns75. No historical-arm transfer, speed, winner, significance or production selection claim. Native first item establishes smoke readiness only.",
+    "verdict_by": "agent",
+    "keep": [
+      "out/**",
+      "items/**",
+      "*.json",
+      "*.py",
+      "*.sh",
+      "linkage.txt"
+    ]
+  },
+  "prepared_config": {
+    "schema": "epyc.gpqa_current_arm.v1",
+    "arm": "qwen36_35b_a3b_mtp_q8_gpu_cap4",
+    "model": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "runner": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py",
+    "python": "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python",
+    "research_repo": "/mnt/raid0/llm/epyc-inference-research",
+    "binary": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "library_dir": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin",
+    "manifest": "/mnt/raid0/llm/epyc-inference-research/artifacts/architect-bench-gpu-20260720/questions_gpqa_diamond_cot.json",
+    "items_dir": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/items",
+    "context": 32768,
+    "max_tokens": 8192,
+    "kernel": "production-consolidated-v10/ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "spec_flags": [
+      "--spec-type",
+      "draft-mtp",
+      "--spec-draft-n-max",
+      "4"
+    ],
+    "weights": [
+      {
+        "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+        "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so",
+        "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so",
+        "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so",
+        "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so",
+        "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so",
+        "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so",
+        "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so",
+        "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
+        "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+        "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b"
+      }
+    ],
+    "sources": [
+      {
+        "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-q36-35b-20261119/driver.py",
+        "sha256": "99a56509e90adc17e18aaaae952f9eafa1e3f59bfef8f4ac305aecfb61143313"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py",
+        "sha256": "20a97fbd4aecc6f3887299243362d5315b76f819aa1cbc4b8fd92f33b307b45a"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/answer_scoring.py",
+        "sha256": "4a1498cdd59c21b2e01415888b219ef529c4caf9ba24306e0285a305d298fbfd"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-inference-research/artifacts/architect-bench-gpu-20260720/questions_gpqa_diamond_cot.json",
+        "sha256": "14e807dd11736b022f337466efc0fb5c95bf6e521a4514a09d0f25916524ecee"
+      },
+      {
+        "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml",
+        "sha256": "9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79"
+      },
+      {
+        "path": "/workspace/scripts/benchmark/m4_cpu_producer/native/k35_stack_context_matrix_runner.py",
+        "sha256": "341b93e027894b861f374f9cdce642dad743fda467b42be25e1f230b4cfc58ec"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/PROVENANCE.md",
+        "sha256": "a0e1870be9b043ac7cf0e3ca74b3835a5757c8641d5714321b512f942a9381ee"
+      },
+      {
+        "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/SHA256SUMS",
+        "sha256": "c882cd42598c3bdd6490a422ab74e5b4fb5c74bca60b5d31338077c6ebe632ff"
+      }
+    ],
+    "source_repos": {
+      "/mnt/raid0/llm/epyc-inference-research": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+      "/mnt/raid0/llm/epyc-orchestrator": "c1df9962c919562ce02bebb5608451093fe6bf6c"
+    },
+    "protocol_note": "GPU same-file native MTP cap4 diagnostic, current registry cap4, applied on a GPU benchmark surface with no inherited CPU speed claim. Target -ngl99; f16KV; np1/context32768/output8192, seed42, sampler0.6/0.95/20, thinking off. Exact198 descriptive accuracy census; errors unknown, partial never full, cutoff75. Two active-slot process-specific HIP/KFD/VRAM samples per accepted item."
+  },
+  "prepared_config_projection": "Runtime stat tuples omitted; original config bound by files.config.json.sha256.",
+  "source_blobs": {
+    "scripts/benchmark/gpqa_current_arm.py": "f775b80410e30deb4311d0cd9697a73bced0a827",
+    "scripts/benchmark/m4_cpu_producer/native/k35_stack_context_matrix_runner.py": "47a1ed1b9086cee91d491a01358fdd446bc09d76",
+    "tests/benchmark/test_gpqa_current_arm.py": "610befba80a702e9272e3983224a33fcef828161"
+  },
+  "limitations": [
+    "Same-file native MTP cap4 follows current registry; GPU target99/f16KV/np1/C32768/output8192 is this benchmark condition, with no inherited CPU production speed claim.",
+    "No driver change; existing driver validation reused. Input-contract check is offline validation, not native smoke PASS.",
+    "Three-arm full198 checkbox remains open; smoke and full runs pending.",
+    "Existing VB-GPQA-CURRENT-CENSUS-WIRE covers prospective capture; no canary or wired claim."
+  ],
+  "offline_tests": "Prior current-driver validation: 37 passed, recorded in commit 681d1e9744e75e78a4c20540ac3bb40e7865020a; not rerun this turn."
+}

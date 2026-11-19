@@ -1,0 +1,75 @@
+{
+  "endpoint_semantics": {
+    "endpoint": "/v1/chat/completions",
+    "mmproj_image_decode_required": false,
+    "model_output_token_ids_required": true,
+    "native_completion_count_required": true,
+    "raw_prompt": false,
+    "streams": false
+  },
+  "generation": {
+    "endpoint": "/v1/chat/completions",
+    "loader_reshape_witness_sha256": "eb1a7ab49b75440793223b4d8bf7982577dda1c0fe37ac76d956362337b9f0e3",
+    "model_assets": {
+      "weights": [
+        "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
+        "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
+        "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
+      ]
+    },
+    "recipe_sha256": "9ca91311798f9c64ce20073fe4a227468a6e7eb269b6cb0793a289e855c71de4",
+    "template_applied_by_server": true
+  },
+  "original_metadata_sha256": "52f05ac66733bfe7783011084e2da8b14fa835254050d947d52e7e254c2a7b71",
+  "scoring": [
+    {
+      "expected_finish": "stop",
+      "id": "architect-general-hip-loader-reshape-json",
+      "validator": {
+        "expected": {
+          "enabled": true,
+          "replicas": 3,
+          "route": "amber"
+        },
+        "id": "json-object-subset.v1"
+      }
+    },
+    {
+      "expected_finish": "stop",
+      "id": "architect-general-hip-code",
+      "validator": {
+        "expected": "sorted(set(codes))",
+        "id": "contains-text.v1"
+      }
+    },
+    {
+      "expected_finish": "stop",
+      "id": "architect-general-hip-reasoning",
+      "validator": {
+        "expected": "Gate B",
+        "id": "contains-text.v1"
+      }
+    },
+    {
+      "expected_finish": "stop",
+      "id": "architect-general-hip-prose",
+      "validator": {
+        "expected": "Friday",
+        "id": "contains-text.v1"
+      }
+    }
+  ],
+  "shape": {
+    "endpoint": "/v1/chat/completions",
+    "endpoint_semantics_sha256": "cd2babbb7c4d73675e93d3e8f12db42e15482d6ab2d2180e9a86fd888baee4e0",
+    "generation_path_sha256": "f8c1df780bec61a929f05a2b019d0100a8dfd9f8e24772fb429a3c7fd0d8bce1",
+    "id": "architect-general-hip",
+    "model_sha256": "5067ad3b22001a21c132959615780a7cff735364c0b548baf44915e9b937a891",
+    "profile": "architect-general-hip",
+    "prompt_template_sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+    "question_pool_sha256": "14347f151af73d69e9496a040879b786d58040a4940711cb2c7ad299c3d66b00",
+    "recipe_sha256": "9ca91311798f9c64ce20073fe4a227468a6e7eb269b6cb0793a289e855c71de4",
+    "sampling_sha256": "8508fccbc22db90145f2bf218ded287dab062010b7ba729cabcbbb6553224cc3",
+    "scorer_sha256": "80f7bcc0d088dc6b2ae937242a8d2f746e93b42076d0a4f214c1c1744960fdaa"
+  }
+}

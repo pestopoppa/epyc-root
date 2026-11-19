@@ -1,0 +1,13 @@
+
+==== dry run 2026-11-02T11:45:35Z regions=mi210_0,184-191 launcher_sha=789b3798e16a0ec901da3c0c67073cb3040897779f95f1aa2567c7b4531d8073 units_before=0
+2026-11-02T11:45:35Z [handoff-kvu16h-p3-lifecycle-20261102] launcher up pid=113412 class=gpu poll=45s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-p3-lifecycle-20261102/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-p3-lifecycle-20261102/stop minwin=600s ports=18198 dryrun=1
+2026-11-02T11:45:35Z [handoff-kvu16h-p3-lifecycle-20261102] START regions=mi210_0,184-191 cpus=184-191 threads=8 gpu=1 end=2026-11-02T12:04Z
+[region-lock] dry run: no lock taken (cpus=184-191)
+2026-11-02T11:45:35Z mi210_0 flock held
+[p3 11:45:52Z +0.3m] qualification: healthy in 16.6 s, pid 113585, slots 4 x n_ctx 4096, hip-proof True
+[p3 11:46:05Z +0.5m] qualification: healthy in 8.8 s, pid 118175, slots 4 x n_ctx 4096, hip-proof True
+job rc=0
+==== first unit at 2026-11-02T11:46:11Z: 1 new unit(s) in /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-p3-lifecycle-20261102/native-attempts/attempt-o_vhcw6m/native-result.json
+2026-11-02T11:46:11Z [handoff-kvu16h-p3-lifecycle-20261102] ended rc=0 reason=complete (grant deleted)
+2026-11-02T11:46:11Z [handoff-kvu16h-p3-lifecycle-20261102] ALL DONE: wrote /mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-kvu16h-p3-lifecycle-20261102/complete, row marked COMPLETE; exiting for good
+==== dry run PASS: 1 unit(s), rc=0 time=2026-11-02T11:46:11Z reason=complete (2026-11-02T11:46:17Z)

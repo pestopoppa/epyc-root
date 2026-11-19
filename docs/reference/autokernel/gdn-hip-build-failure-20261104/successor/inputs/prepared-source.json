@@ -1,0 +1,13 @@
+{
+  "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "changed_paths": [
+    "tests/test-backend-ops.cpp"
+  ],
+  "kernel_sources_changed": false,
+  "patch_sha256": "4e2fe4e720d6229f6c6894433fbd4250d1d819d0798f7afff57b27a5f3facb29",
+  "patched_test_sha256": "3153fbbbea0765a6706682bb88519e3aa5ad4eabaadf8ee3e8e0f97d33735d75",
+  "prepared_before_publication": true,
+  "schema": "akx-all-31-gdn.prepared-source.v1",
+  "source_tree": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/hip-build-prereq-repair-20261104/attempt-1/source",
+  "staged_paths": []
+}

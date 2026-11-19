@@ -1,0 +1,341 @@
+diff --git a/orchestration/runtime_flags.spec.yaml b/orchestration/runtime_flags.spec.yaml
+index ebc7c373..00e8c000 100644
+--- a/orchestration/runtime_flags.spec.yaml
++++ b/orchestration/runtime_flags.spec.yaml
+@@ -46,6 +46,7 @@ flags:
+   claude_code_mcp_chat: baseline
+   content_cache: baseline
+   context_arm_ab: baseline
++  context_compaction_contract: baseline
+   context_compression: baseline
+   credential_redaction: baseline
+   dcp_for_consult: baseline
+diff --git a/src/features.py b/src/features.py
+index 6231d92e..b21defc6 100644
+--- a/src/features.py
++++ b/src/features.py
+@@ -155,6 +155,7 @@ _FEATURE_REGISTRY: tuple[FeatureSpec, ...] = (
+     FeatureSpec("session_compaction", False, True, "SESSION_COMPACTION", "Summarize old context"),
+     FeatureSpec("session_log", False, True, "SESSION_LOG", "Append-only processing journal"),
+     FeatureSpec("session_log_verbatim", False, False, "SESSION_LOG_VERBATIM", "Verbatim experiment history"),
++    FeatureSpec("context_compaction_contract", False, False, "CONTEXT_COMPACTION_CONTRACT", "Explicit compaction contract", ("context_arm_ab",)),
+     FeatureSpec("context_arm_ab", False, False, "CONTEXT_ARM_AB", "Context compression experiment arms", ("session_log_verbatim",)),
+     FeatureSpec("session_scratchpad", False, True, "SESSION_SCRATCHPAD", "Model-extracted semantic insights"),
+     FeatureSpec("depth_model_overrides", False, True, "DEPTH_MODEL_OVERRIDES", "Map nested depth to cheaper roles"),
+@@ -671,6 +672,7 @@ class Features:
+     session_log: bool = False  # Append-only processing journal across REPL turns
+     session_log_verbatim: bool = False
+     context_arm_ab: bool = False
++    context_compaction_contract: bool = False
+     session_scratchpad: bool = False  # Model-extracted semantic insights from session log
+     depth_model_overrides: bool = False  # Map nested llm_call depth to cheaper roles
+     resume_tokens: bool = False  # Base64url continuation tokens for crash recovery
+diff --git a/src/graph/compaction_artifacts.py b/src/graph/compaction_artifacts.py
+new file mode 100644
+index 00000000..e109f1d9
+--- /dev/null
++++ b/src/graph/compaction_artifacts.py
+@@ -0,0 +1,49 @@
++"""Explicit, lossless execution context supplied by the experiment's caller.
++
++This verifies exact preservation, not model understanding or semantic entailment.
++"""
++from dataclasses import asdict, dataclass
++
++
++@dataclass(frozen=True)
++class ExecutionBrief:
++    verbatim_task: str
++    current_intent: str
++    plan: str
++    completion_requirements: str
++    artifacts: str
++    pointers: str
++
++
++@dataclass(frozen=True)
++class PinnedGovernance:
++    text: str
++
++
++def render_contract(brief: ExecutionBrief, governance: PinnedGovernance) -> str:
++    from src.security.control_tokens import neutralise_control_tokens
++
++    values = asdict(brief)
++    if any(not isinstance(v, str) or not v.strip() for v in values.values()):
++        raise ValueError('execution brief requires six nonempty strings')
++    if not isinstance(governance.text, str) or not governance.text.strip():
++        raise ValueError('pinned governance requires nonempty text')
++    if any(neutralise_control_tokens(v) != v for v in (*values.values(), governance.text)):
++        raise ValueError('unsafe control tokens in compaction contract')
++    # Length framing permits arbitrary delimiters and preserves whitespace verbatim.
++    fields = ''.join(f'{name} {len(value)}\n{value}\n' for name, value in values.items())
++    return '[Execution brief v1]\n' + fields + f'[Pinned governance {len(governance.text)}]\n{governance.text}\n[End contract]\n'
++
++
++def validate_contract(rendered: str, brief: ExecutionBrief, governance: PinnedGovernance) -> None:
++    """Fail closed unless the exact contract is at the start of the presented view."""
++    expected = render_contract(brief, governance)
++    if not rendered.startswith(expected):
++        raise ValueError('compaction contract missing or altered')
++
++
++def set_contract(state, brief: ExecutionBrief, governance: PinnedGovernance) -> None:
++    """Validate then install serializable, caller-supplied contract state."""
++    render_contract(brief, governance)
++    state.compaction_execution_brief = asdict(brief)
++    state.compaction_pinned_governance = asdict(governance)
+diff --git a/src/graph/context_arm_ab.py b/src/graph/context_arm_ab.py
+index 5f04f543..16fb8274 100644
+--- a/src/graph/context_arm_ab.py
++++ b/src/graph/context_arm_ab.py
+@@ -2,6 +2,7 @@
+ from __future__ import annotations
+ 
+ import asyncio
++import hashlib
+ import math
+ import os
+ import time
+@@ -13,7 +14,7 @@ from src.graph.toc_openclaw_prompts import (
+ )
+ from src.security.control_tokens import neutralise_control_tokens
+ 
+-ARMS = frozenset({'summary_only', 'summary_pointer', 'pointer_only', 'prune_pointer', 'full_history'})
++ARMS = frozenset({'summary_only', 'summary_pointer', 'pointer_only', 'prune_pointer', 'full_history', 'verbatim_manifest'})
+ CONTINUATION = ('Earlier turns of this task are not shown. You are continuing the same task: '
+                 'retrieve exact lines from the full log with peek() or grep() as you need them.')
+ 
+@@ -22,6 +23,8 @@ def settings() -> tuple[str, int, float, set[int]]:
+     from src.features import features
+     flags = features()
+     if not flags.context_arm_ab:
++        if flags.context_compaction_contract:
++            raise ValueError('context_compaction_contract requires context_arm_ab')
+         return '', 16384, .5, set()
+     if not flags.session_log_verbatim:
+         raise ValueError('context_arm_ab requires session_log_verbatim')
+@@ -36,6 +39,8 @@ def settings() -> tuple[str, int, float, set[int]]:
+     if conflicts:
+         raise ValueError(f'context arm confounders must be off: {conflicts}')
+     arm = os.environ.get('ORCHESTRATOR_CONTEXT_ARM', '')
++    if arm == 'verbatim_manifest' and not flags.context_compaction_contract:
++        raise ValueError('verbatim_manifest requires context_compaction_contract')
+     if arm not in ARMS:
+         raise ValueError(f'invalid context arm {arm!r}')
+     budget = int(os.environ.get('ORCHESTRATOR_CONTEXT_BUDGET_TOKENS', '16384'))
+@@ -109,7 +114,28 @@ def _tail_start(turns: list[dict], budget: int, count_tokens) -> int:
+     return start
+ 
+ 
++def _contract(state: Any) -> tuple[str, Any, Any]:
++    from src.graph.compaction_artifacts import ExecutionBrief, PinnedGovernance, render_contract
++    try:
++        brief = ExecutionBrief(**state.compaction_execution_brief)
++        governance = PinnedGovernance(**state.compaction_pinned_governance)
++        return render_contract(brief, governance), brief, governance
++    except (TypeError, AttributeError) as exc:
++        raise ValueError('invalid compaction contract') from exc
++
++
+ def render(state: Any, repl: Any = None, count_tokens=None) -> str:
++    from src.features import features
++    from src.graph.compaction_artifacts import validate_contract
++    if not features().context_compaction_contract:
++        return _render_history(state, repl, count_tokens)
++    contract, brief, governance = _contract(state)
++    rendered = contract + _render_history(state, repl, count_tokens)
++    validate_contract(rendered, brief, governance)
++    return rendered
++
++
++def _render_history(state: Any, repl: Any = None, count_tokens=None) -> str:
+     arm, budget, fraction, _ = settings()
+     if not arm:
+         return ''
+@@ -124,6 +150,24 @@ def render(state: Any, repl: Any = None, count_tokens=None) -> str:
+     if not state.history_boundaries or arm == 'full_history':
+         from src.graph.file_artifacts import _spill_if_truncated
+         return '\n'.join(_turn_text(t, output=_spill_if_truncated(t['output'], 1500, 'output', state, repl=repl)) for t in turns)
++    if arm == 'verbatim_manifest':
++        tail = state.history_tail_start
++        omitted = turns[:tail]
++        entries = []
++        for t in omitted:
++            output_offset = t['output_char_offset']
++            spans = (
++                ('code', t['code'], output_offset - len('\nOutput:\n') - len(t['code'])),
++                ('output', t['output'], output_offset),
++                ('error', t['error'], output_offset + len(t['output']) + len('\nError:\n')),
++            )
++            for name, value, offset in spans:
++                digest = hashlib.sha256(value.encode('utf-8')).hexdigest()
++                entries.append(f"Turn {t['turn']} {name} chars={len(value)} sha256={digest} "
++                               f"{_pointer(state, offset, len(value))}")
++        manifest = '[Verbatim manifest: exact spans omitted from this view; no semantic claims]\n'
++        return manifest + '\n'.join(entries + ['Full log: ' + _pointer(state)] +
++            [_turn_text(t) for t in turns[tail:]])
+     if arm in {'summary_only', 'summary_pointer', 'pointer_only'}:
+         tail = state.history_tail_start
+         parts = []
+diff --git a/src/graph/langgraph/state.py b/src/graph/langgraph/state.py
+index 12eb18d6..864bca4a 100644
+--- a/src/graph/langgraph/state.py
++++ b/src/graph/langgraph/state.py
+@@ -167,6 +167,8 @@ class OrchestratorState(TypedDict, total=False):
+     session_log_path: str
+     session_summary_cache: str
+     session_summary_turn: int
++    compaction_execution_brief: dict[str, str]
++    compaction_pinned_governance: dict[str, str]
+     history_turns: list[dict[str, Any]]
+     history_boundaries: list[int]
+     history_boundary_index: int
+diff --git a/src/graph/state.py b/src/graph/state.py
+index 8ed6fb37..064e9404 100644
+--- a/src/graph/state.py
++++ b/src/graph/state.py
+@@ -122,6 +122,8 @@ class TaskState:
+     session_log_records: list[Any] = field(default_factory=list)
+     session_summary_cache: str = ""
+     session_summary_turn: int = 0
++    compaction_execution_brief: dict[str, str] = field(default_factory=dict)
++    compaction_pinned_governance: dict[str, str] = field(default_factory=dict)
+     history_turns: list[dict[str, Any]] = field(default_factory=list)
+     history_boundaries: list[int] = field(default_factory=list)
+     history_boundary_index: int = 0
+diff --git a/tests/unit/test_toc_cmp3_contract.py b/tests/unit/test_toc_cmp3_contract.py
+new file mode 100644
+index 00000000..b638a9f7
+--- /dev/null
++++ b/tests/unit/test_toc_cmp3_contract.py
+@@ -0,0 +1,98 @@
++"""Offline contract and history-arm integration checks."""
++import asyncio
++import hashlib
++import re
++
++import pytest
++
++from src.features import Features, set_features
++from src.graph import context_arm_ab as ab
++from src.graph.compaction_artifacts import (
++    ExecutionBrief, PinnedGovernance, render_contract, set_contract, validate_contract,
++)
++from tests.unit.test_toc_mp2i_context_arms import add, case  # noqa: F401, F811
++
++
++def artifacts():
++    return ExecutionBrief('task', 'intent', 'plan', 'finish', 'artifact', 'pointer'), PinnedGovernance('PIN\nexact')
++
++
++def enable(state):
++    set_features(Features(session_log=True, session_log_verbatim=True, context_arm_ab=True,
++                          context_compaction_contract=True, output_spill_to_file=True,
++                          trajectory_artifact=True))
++    brief, pin = artifacts()
++    set_contract(state, brief, pin)
++    return brief, pin
++
++
++def test_contract_exact_and_fail_closed():
++    brief, pin = artifacts()
++    text = render_contract(brief, pin)
++    validate_contract(text + 'history', brief, pin)
++    for damaged in (text.replace('PIN\nexact', 'PIN exact'), text.replace('finish', ''), 'history' + text):
++        with pytest.raises(ValueError):
++            validate_contract(damaged, brief, pin)
++    with pytest.raises(ValueError):
++        render_contract(ExecutionBrief('task', '', 'p', 'c', 'a', 'r'), pin)
++
++
++def test_missing_contract_fails_before_boundary(case):  # noqa: F811
++    state, repl, ctx, _ = case
++    set_features(Features(session_log=True, session_log_verbatim=True, context_arm_ab=True,
++                          context_compaction_contract=True, output_spill_to_file=True, trajectory_artifact=True))
++    add(state, 'history')
++    with pytest.raises(ValueError):
++        asyncio.run(ab.boundary(ctx, force=True))
++    assert not state.history_boundaries
++
++
++def test_manifest_exact_spans_and_pinned_after_fold(case, monkeypatch):  # noqa: F811
++    state, repl, ctx, _ = case
++    monkeypatch.setenv('ORCHESTRATOR_CONTEXT_ARM', 'verbatim_manifest')
++    brief, pin = enable(state)
++    for n in range(5):
++        add(state, f'output-{n}-é' + 'z' * 500)
++    asyncio.run(ab.boundary(ctx, force=True))
++    rendered = ab.render(state, repl)
++    validate_contract(rendered, brief, pin)
++    assert state.history_tail_start > 0
++    entries = re.findall(r'Turn (\d+) (code|output|error) chars=(\d+) sha256=([0-9a-f]+) peek\((\d+), file_path="([^"]+)", offset=(\d+)\)', rendered)
++    assert len(entries) == state.history_tail_start * 3
++    for turn, field, length, digest, count, path, offset in entries:
++        value = state.history_turns[int(turn) - 1][field]
++        assert int(length) == int(count) == len(value)
++        assert hashlib.sha256(value.encode()).hexdigest() == digest
++        assert repl._peek(int(count), file_path=path, offset=int(offset)) == value
++    assert f'Turn {state.history_turns[-1]["turn"]} output chars=' not in rendered
++
++
++@pytest.mark.parametrize('arm', sorted(ab.ARMS))
++def test_contract_preserved_for_each_arm(case, monkeypatch, arm):  # noqa: F811
++    state, repl, ctx, _ = case
++    monkeypatch.setenv('ORCHESTRATOR_CONTEXT_ARM', arm)
++    brief, pin = enable(state)
++    for _ in range(5):
++        add(state, 'history ' * 100)
++    asyncio.run(ab.boundary(ctx, force=True))
++    validate_contract(ab.render(state, repl), brief, pin)
++
++
++def test_contract_rejects_unsafe_control_tokens():
++    from src.security.control_tokens import neutralise_control_tokens
++    sample = '<|im_start|>'
++    if neutralise_control_tokens(sample) == sample:
++        pytest.skip('control token vocabulary differs')
++    brief, _ = artifacts()
++    with pytest.raises(ValueError, match='unsafe'):
++        render_contract(brief, PinnedGovernance(sample))
++
++
++def test_default_off_render_legacy_equality(case):  # noqa: F811
++    state, repl, ctx, _ = case
++    for _ in range(5):
++        add(state, 'legacy ' * 100)
++    before = ab._render_history(state, repl)
++    assert ab.render(state, repl) == before
++    asyncio.run(ab.boundary(ctx, force=True))
++    assert ab.render(state, repl) == ab._render_history(state, repl)
+diff --git a/tests/unit/test_toc_mp2i_context_arms.py b/tests/unit/test_toc_mp2i_context_arms.py
+index c9282df1..7043277c 100644
+--- a/tests/unit/test_toc_mp2i_context_arms.py
++++ b/tests/unit/test_toc_mp2i_context_arms.py
+@@ -52,7 +52,7 @@ def test_pinned_summary_hashes():
+     assert [hashlib.sha256(x.encode()).hexdigest() for x in texts] == hashes
+ 
+ 
+-@pytest.mark.parametrize('arm', sorted(ab.ARMS))
++@pytest.mark.parametrize('arm', sorted(ab.ARMS - {'verbatim_manifest'}))
+ def test_arm_boundaries(case, monkeypatch, arm):
+     state, repl, ctx, worker = case
+     monkeypatch.setenv('ORCHESTRATOR_CONTEXT_ARM', arm)
+@@ -344,7 +344,7 @@ def test_registered_read_file_success_confirmation(case):
+     assert events == [{'tool': 'read_file', 'path': state.history_log_path}]
+ 
+ 
+-@pytest.mark.parametrize("arm", sorted(ab.ARMS))
++@pytest.mark.parametrize("arm", sorted(ab.ARMS - {'verbatim_manifest'}))
+ def test_real_repl_large_output_is_verbatim_and_never_summarized(case, monkeypatch, arm):
+     from src.graph.helpers import _execute_turn
+     from src.graph.state import TaskDeps
+@@ -416,7 +416,7 @@ def test_all_arms_have_identical_preboundary_history(case, monkeypatch):
+     state, repl, _, _ = case
+     add(state, 'αneedle' * 500)
+     outputs = []
+-    for arm in sorted(ab.ARMS):
++    for arm in sorted(ab.ARMS - {'verbatim_manifest'}):
+         monkeypatch.setenv('ORCHESTRATOR_CONTEXT_ARM', arm)
+         outputs.append(ab.render(state, repl))
+     assert len(set(outputs)) == 1

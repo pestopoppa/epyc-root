@@ -1,0 +1,192 @@
+{
+ "corpus_sha256": "743603a49e5902ac41657ae4d8ad115f59f5bef42d1f7deb0fb8c12adb2d08b4",
+ "corpus_source": "/mnt/raid0/llm/epyc-orchestrator/data/bep_sandbox/tasks.jsonl",
+ "exclusions": [
+  "t1_create_util: no existing file to draft",
+  "t2_add_and_use: exposed in prior native run and smoke; excluded from independent heldout protocol"
+ ],
+ "independence_scope": "New predeclared three-task/five-block experiment; t2 is excluded after actual exposure. Fresh server on every arm, repeats on different fresh servers. Only prior scoped run and smoke inventory reviewed; no claim of full historical disjointness.",
+ "limitations": [
+  "np4 server with one active request; no concurrent throughput claim",
+  "Five matched pairs cover four edit tasks with fresh servers; no automatic routing authority",
+  "Native direct Jinja renderer is pinned; runtime prompts are exact sealed bytes"
+ ],
+ "native_renderer": {
+  "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/test-chat-template",
+  "scope": "exact pre-rendered /completion prompts, no in-grant rendering/tokenization",
+  "sha256": "6f90322839d2f436ac410437f2610346fe93c2544eacee63358a7eef06d8238f",
+  "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "tokenizer_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-tokenize",
+  "tokenizer_sha256": "3893e741f796e21342fd0d5a599db9e9eb3050448532689339f2523f19776407"
+ },
+ "rendering": "bep_oneshot_ablation.py build_prompt",
+ "rendering_source_sha256": "4dfb90b7e283330f7d89021484faa567032631dfb48ff93d49d15aa3ed0ca576",
+ "schedule": [
+  {
+   "arms": [
+    "current_dflash2",
+    "plain",
+    "prompt_lookup"
+   ],
+   "rep": 1,
+   "task": "t3_method_and_caller"
+  },
+  {
+   "arms": [
+    "prompt_lookup",
+    "current_dflash2",
+    "plain"
+   ],
+   "rep": 2,
+   "task": "t4_rename_module"
+  },
+  {
+   "arms": [
+    "current_dflash2",
+    "plain",
+    "prompt_lookup"
+   ],
+   "rep": 3,
+   "task": "t5_bugfix"
+  },
+  {
+   "arms": [
+    "prompt_lookup",
+    "plain",
+    "current_dflash2"
+   ],
+   "rep": 4,
+   "task": "t3_method_and_caller"
+  },
+  {
+   "arms": [
+    "plain",
+    "current_dflash2",
+    "prompt_lookup"
+   ],
+   "rep": 5,
+   "task": "t4_rename_module"
+  }
+ ],
+ "schema": "epyc.sr8.preparation.v1",
+ "serving_shape": {
+  "backend": "v10 GPU",
+  "concurrent_requests": 1,
+  "context_total": 16384,
+  "draft_n_max": 7,
+  "kv": "q8_0",
+  "note": "np4 configured but one request at a time; no concurrent throughput claim",
+  "parallel_slots": 4,
+  "target": "Qwen3.8-27B-Q8_0"
+ },
+ "source_repo_head": "326f502759986c9846027f8187972969139c0089",
+ "tasks": [
+  {
+   "files": {
+    "report.py": "from shapes import Rect\nr = Rect(4, 5)\nprint(r.area())\n",
+    "shapes.py": "class Rect:\n    def __init__(self, w, h):\n        self.width = w\n        self.height = h\n"
+   },
+   "id": "t3_method_and_caller",
+   "kind": "multi_file_modify_dependency",
+   "native_rendered_prompt": "<|im_start|>system\nAnswer directly, after thinking. Lead with the answer, then only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics \u2014 never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why \u2014 never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nAdd a method `area(self)` to the `Rect` class in `shapes.py` returning width*height. `report.py` already calls `r.area()` \u2014 make the program run correctly.\n\nCurrent file contents:\n\n--- shapes.py ---\nclass Rect:\n    def __init__(self, w, h):\n        self.width = w\n        self.height = h\n\n\n--- report.py ---\nfrom shapes import Rect\nr = Rect(4, 5)\nprint(r.area())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n",
+   "native_tokenization": {
+    "count": 323,
+    "formatter_input": {
+     "add_generation_prompt": true,
+     "enable_thinking": true,
+     "messages": [
+      {
+       "content": "Add a method `area(self)` to the `Rect` class in `shapes.py` returning width*height. `report.py` already calls `r.area()` \u2014 make the program run correctly.\n\nCurrent file contents:\n\n--- shapes.py ---\nclass Rect:\n    def __init__(self, w, h):\n        self.width = w\n        self.height = h\n\n\n--- report.py ---\nfrom shapes import Rect\nr = Rect(4, 5)\nprint(r.area())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+       "role": "user"
+      }
+     ],
+     "reasoning_effort": "medium",
+     "tools": []
+    },
+    "prompt_sha256": "1349010f365631237f377bbbd6517d3480921b33149ced86ede7c0d94f0e6300",
+    "repeated_5gram_fraction": 0.0,
+    "token_ids_sha256": "52f04d0bde1f7a8c05e9f5229873cb5f84c5a1511461b8dbed02e1ec51e4df56"
+   },
+   "prompt": "Add a method `area(self)` to the `Rect` class in `shapes.py` returning width*height. `report.py` already calls `r.area()` \u2014 make the program run correctly.",
+   "rendered_prompt": "Add a method `area(self)` to the `Rect` class in `shapes.py` returning width*height. `report.py` already calls `r.area()` \u2014 make the program run correctly.\n\nCurrent file contents:\n\n--- shapes.py ---\nclass Rect:\n    def __init__(self, w, h):\n        self.width = w\n        self.height = h\n\n\n--- report.py ---\nfrom shapes import Rect\nr = Rect(4, 5)\nprint(r.area())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+   "tokenization": {
+    "repeated_5gram_fraction": 0.0,
+    "scope": "raw full-file prompt, without role chat template; native tokenizer before publication",
+    "token_count": 158,
+    "token_ids_sha256": "932a541e31bfe940d8b54da10ee930942dd5af801b54936cd169b690040ef491"
+   },
+   "verifier_cmd": "test \"$(python3 report.py)\" = \"20\" && echo PASS"
+  },
+  {
+   "files": {
+    "app.py": "from helpers import greet\nprint(greet())\n",
+    "helpers.py": "def greet():\n    return 'hi'\n"
+   },
+   "id": "t4_rename_module",
+   "kind": "rename_and_update_import",
+   "native_rendered_prompt": "<|im_start|>system\nAnswer directly, after thinking. Lead with the answer, then only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics \u2014 never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why \u2014 never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nRename the file `helpers.py` to `utils.py`. Update the import in `app.py` (currently `from helpers import greet`) to import from `utils` instead. `helpers.py` must no longer exist.\n\nCurrent file contents:\n\n--- helpers.py ---\ndef greet():\n    return 'hi'\n\n\n--- app.py ---\nfrom helpers import greet\nprint(greet())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n",
+   "native_tokenization": {
+    "count": 300,
+    "formatter_input": {
+     "add_generation_prompt": true,
+     "enable_thinking": true,
+     "messages": [
+      {
+       "content": "Rename the file `helpers.py` to `utils.py`. Update the import in `app.py` (currently `from helpers import greet`) to import from `utils` instead. `helpers.py` must no longer exist.\n\nCurrent file contents:\n\n--- helpers.py ---\ndef greet():\n    return 'hi'\n\n\n--- app.py ---\nfrom helpers import greet\nprint(greet())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+       "role": "user"
+      }
+     ],
+     "reasoning_effort": "medium",
+     "tools": []
+    },
+    "prompt_sha256": "ba63214bb738d4ba2fab6c4ab45c7cad27695e8067bb713b87707b26b01e95b2",
+    "repeated_5gram_fraction": 0.0,
+    "token_ids_sha256": "6e6ed93f5c839892b65283682a7a649d1147fd60570ec79cf1bab15489f11137"
+   },
+   "prompt": "Rename the file `helpers.py` to `utils.py`. Update the import in `app.py` (currently `from helpers import greet`) to import from `utils` instead. `helpers.py` must no longer exist.",
+   "rendered_prompt": "Rename the file `helpers.py` to `utils.py`. Update the import in `app.py` (currently `from helpers import greet`) to import from `utils` instead. `helpers.py` must no longer exist.\n\nCurrent file contents:\n\n--- helpers.py ---\ndef greet():\n    return 'hi'\n\n\n--- app.py ---\nfrom helpers import greet\nprint(greet())\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+   "tokenization": {
+    "repeated_5gram_fraction": 0.0,
+    "scope": "raw full-file prompt, without role chat template; native tokenizer before publication",
+    "token_count": 135,
+    "token_ids_sha256": "e1627c7f63ee330e50b9fe231bee2604d2506f309f75844724db8c1b79ebbd87"
+   },
+   "verifier_cmd": "test ! -f helpers.py && test \"$(python3 app.py)\" = \"hi\" && echo PASS"
+  },
+  {
+   "files": {
+    "tax.py": "def total(price):\n    return price * 0.1\n"
+   },
+   "id": "t5_bugfix",
+   "kind": "single_file_modify",
+   "native_rendered_prompt": "<|im_start|>system\nAnswer directly, after thinking. Lead with the answer, then only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics \u2014 never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why \u2014 never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nIn `tax.py`, `total(price)` should return price with 10% tax added (price * 1.1) but currently returns price * 0.1. Fix the bug.\n\nCurrent file contents:\n\n--- tax.py ---\ndef total(price):\n    return price * 0.1\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n",
+   "native_tokenization": {
+    "count": 285,
+    "formatter_input": {
+     "add_generation_prompt": true,
+     "enable_thinking": true,
+     "messages": [
+      {
+       "content": "In `tax.py`, `total(price)` should return price with 10% tax added (price * 1.1) but currently returns price * 0.1. Fix the bug.\n\nCurrent file contents:\n\n--- tax.py ---\ndef total(price):\n    return price * 0.1\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+       "role": "user"
+      }
+     ],
+     "reasoning_effort": "medium",
+     "tools": []
+    },
+    "prompt_sha256": "50294334b17f3ab89b42457bbcfd94bea0d9f0b457d9d63404d9d1658c551424",
+    "repeated_5gram_fraction": 0.0071174377224199285,
+    "token_ids_sha256": "8a6f08eef6e513a141494e5f326e0f4d3558747df8e329e350055ef8bd9b6469"
+   },
+   "prompt": "In `tax.py`, `total(price)` should return price with 10% tax added (price * 1.1) but currently returns price * 0.1. Fix the bug.",
+   "rendered_prompt": "In `tax.py`, `total(price)` should return price with 10% tax added (price * 1.1) but currently returns price * 0.1. Fix the bug.\n\nCurrent file contents:\n\n--- tax.py ---\ndef total(price):\n    return price * 0.1\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+   "tokenization": {
+    "repeated_5gram_fraction": 0.017241379310344827,
+    "scope": "raw full-file prompt, without role chat template; native tokenizer before publication",
+    "token_count": 120,
+    "token_ids_sha256": "85f9512343a711794b4b7f1af77ea58f1dc1e94611f425805aee6895e6bdad0f"
+   },
+   "verifier_cmd": "python3 -c \"import tax; assert abs(tax.total(100)-110.0)<1e-6; print('PASS')\""
+  }
+ ]
+}

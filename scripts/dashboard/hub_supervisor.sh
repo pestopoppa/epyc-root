@@ -7,7 +7,7 @@
 # WHY: the :8100 handoff-dashboard hub has been launched with a bare `setsid`
 # and has died silently >=3x (Jul 17-18, 2026) with no watchdog to bring it
 # back (see progress/2026-07/2026-07-05-dashboard-hub.md and
-# handoffs/active/loops-and-dashboards-audit-2026-07-05.md P1 ":8100 hub
+# handoffs/active/autopilot-program.md P1 ":8100 hub
 # process durability"). This script is that watchdog, entirely in userspace —
 # NO systemd unit (host config is operator territory).
 #
@@ -145,6 +145,9 @@ HUB_PIDFILE="${LOG_DIR}/hub_supervisor_hub.pid"
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/daemon_provenance.sh"
 # Identity and health are separate: an unknown probe must never authorize restart.
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../coordination" && pwd)/observer_guard.sh"
+# observer_guard.sh sources env.sh, which exports LOG_DIR from this script's own tree. From the read-only pin that
+# is an unwritable path, so restore the EPYC_ROOT value every log and pidfile above was derived from.
+LOG_DIR="${EPYC_ROOT}/logs"
 og_init hub_supervisor
 
 # The hub is stdlib-only, so any python3 runs it; prefer the interpreter the

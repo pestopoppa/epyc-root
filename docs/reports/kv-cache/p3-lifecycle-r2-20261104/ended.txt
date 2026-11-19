@@ -1,0 +1,1 @@
+rc=1 time=2026-11-04T07:22:13Z reason=job-rc-1:exited

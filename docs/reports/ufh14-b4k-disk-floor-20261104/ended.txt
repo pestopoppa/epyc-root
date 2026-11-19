@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T17:05:26Z reason=disk-floor
+job_id=ufh14-b4k-guard-v4-20261104
+owner=handoff-agentic-serving-harness-fixes
+step=job-run
+estimated_wall_s=9000
+started=2026-11-04T17:05:25Z
+regions=mi210_0,184-191

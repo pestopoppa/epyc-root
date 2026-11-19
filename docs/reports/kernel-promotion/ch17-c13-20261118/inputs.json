@@ -1,0 +1,71 @@
+{
+  "candidate": {
+    "commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+    "tree": "e6dc8715fa3374406b38de48571e8700bded094f",
+    "image": "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13",
+    "server_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447"
+  },
+  "files": {
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/llama-server": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libllama-server-impl.so": "6ebc8a67e2923e53c68196b06884ccf021314960bf5ea828ffabe359314dcc78",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libllama-common.so": "c5c3de801ea8acaccbbc553bbbfbc4bf33725c999138140c1573c1b5841ba339",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libllama.so": "997247c31f7edd2d54d91721e7db14947fbaa511ceeca53679cb73a3a8f04c0c",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libggml.so": "0ef1f53e033e8493d5e572cd38c63d9c3e610fa4c29c4da4e5f700615a50c980",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libggml-base.so": "51faccec7e54fb214e280f93de9d86cd6f8973cb79f13b8fd0dbc5c8c53041e8",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libggml-cpu.so": "0f7b9f49ebe8fca6e4c63bcae6463c658307ea49a6d7f0e8b77fa5711e0ed301",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/bin/libmtmd.so": "e62976f494f653ac9f8579322f9a9fcb92de5679fdfc0d173c72963b76b51e63",
+    "/mnt/raid0/llm/kernels/builds/cpu-20261117-bda43aa17-c13/BUILD-IDENTITY.json": "16145e6b5b21d05b8f38ea140900932ca3dd5171efd0855685f6b8743d9937ca",
+    "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "/workspace/repos/epyc-orchestrator/orchestration/stack_topology.yaml": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+    "/workspace/repos/epyc-orchestrator/orchestration/derived/stack_priors.yaml": "14dcd1ef4c08ca824561e9daa9c7bb71785a080c909accca0ea450fed0f6b8c0",
+    "/workspace/repos/epyc-orchestrator/orchestration/model_registry.yaml": "9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79",
+    "/mnt/raid0/llm/tmp/v11-promotion-checklist/ch17/final/scope.json": "19c8d66bb4786863ded846b06e422a1125159772810f4ca018db26ffc1e5a4ab"
+  },
+  "model": {
+    "path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf",
+    "stat": {
+      "dev": 2431,
+      "ino": 96242023,
+      "size": 37801097504,
+      "mtime_ns": 1782411254270412235,
+      "ctime_ns": 1782411254270412235
+    },
+    "sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "identity_source": "/mnt/raid0/llm/tmp/v11-promotion-checklist/llg-cpu-gate/gate/model-identity.json"
+  },
+  "scope": {
+    "process": "frontdoor",
+    "aliases": [
+      "toolrunner",
+      "worker",
+      "worker_explore",
+      "worker_general",
+      "worker_math",
+      "worker_summarize"
+    ],
+    "master_registry_commit": "e94c4dfbfceb9f5a5911337895320b2aaf43298e",
+    "master_registry_sha256": "2e153d548f377016bcffe605184dfeac0900c200b78746146845b449b1a8da06",
+    "legacy_incumbent": "draft-mtp depth 4",
+    "comparison_control": "none",
+    "qualification_scope": "np1 32768 tokens on one CPU quarter"
+  },
+  "template": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+  "prompts": [
+    {
+      "id": "repeat-list",
+      "prompt": "<|im_start|>user\nList the decimal integers from 1 through 100 separated by commas.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    },
+    {
+      "id": "math",
+      "prompt": "<|im_start|>user\nWhat is 17 * 23 + 4? Compute it and show the arithmetic.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    },
+    {
+      "id": "coding",
+      "prompt": "<|im_start|>user\nImplement a stable merge sort in Python with a short doctest.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    },
+    {
+      "id": "structured",
+      "prompt": "<|im_start|>user\nConvert this CSV to JSON and explain how field types should be inferred: a,b\n1,2\n3,4<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+    }
+  ]
+}

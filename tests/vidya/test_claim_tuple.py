@@ -346,7 +346,7 @@ def _p1_real_tuples() -> list:
     from adapters import autokernel_serving_floor as floor
 
     receipts = sorted((P1_FIXTURES / "serving").glob("*/serving-beliefs/*.json"))
-    assert len(receipts) == 3, (
+    assert len(receipts) == 4, (
         "run tests/vidya/fixtures/belief_p1/derive_fixtures.py to derive the P1 fixtures")
     out = []
     for path in receipts:
@@ -386,7 +386,7 @@ def test_p1a_byte_identity_holds_for_observation_stripped_p1_tuples():
     """Stripping the observation from a v2/floor tuple returns it to the old emission exactly."""
     kw = {"as_of": "t", "adapter_id": "probe/v1"}
     stripped = [_replace(t, observation={}) for t in _p1_real_tuples() if t.observation]
-    assert len(stripped) == 4  # 3 v2 captures + 1 floor
+    assert len(stripped) == 5  # 4 v2 captures + 1 floor
     for t in stripped:
         assert outcome(ct.to_frames, t, **kw) == outcome(legacy_to_frames, t, **kw)
 

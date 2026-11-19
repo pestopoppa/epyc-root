@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "git",
+    "rev-parse",
+    "fcc89b474a0b9d906df5ea8e7cb9d4708ffeaeee:scripts/vidya"
+  ],
+  "cwd": "/workspace",
+  "exit": 0
+}

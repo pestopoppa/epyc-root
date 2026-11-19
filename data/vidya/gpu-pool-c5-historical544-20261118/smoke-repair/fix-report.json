@@ -1,0 +1,30 @@
+{
+  "row_id": "ni-gpu-pool-elementwise-20261118-v6",
+  "status": "FIXED_STATIC_CHECKS_PASS_AWAITING_PUBLISHER_SMOKE",
+  "root_cause": "The official-completion assertion inherited FILLER_DRYRUN=1 from the publisher. The producer selected its smoke completion branch, found no marker for that fixture, and returned 1 without reaching the official sealed-scope rejection the test asserts.",
+  "fix": "The official assertion now runs in a temporary clean environment, which patch.dict restores on exit. The following smoke assertions continue testing explicit publisher variables. Refresh the pinned hash of the changed controls.",
+  "evidence": [
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-elementwise-20261118-v6/FAIL-1.json",
+    "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-elementwise-20261118-v6/historical544-1795035884/controls.log"
+  ],
+  "changed_paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/test_run_elementwise.py",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/PINNED.sha256"
+  ],
+  "changed_sha256": {
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/test_run_elementwise.py": "87423c86a1b6bd9357e17c35f299f19330566e9abe0a301157e5fa776bd5415f",
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/PINNED.sha256": "5f338706e55f52cb51965db3a48bfbcb0459c527a417e3b4a970fe00e1e78355"
+  },
+  "tracked_packet_copies_for_owner_review": [
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/gpu-pool-c5-historical544-20261118/packet/test_run_elementwise.py",
+    "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/gpu-pool-c5-historical544-20261118/packet/PINNED.sha256"
+  ],
+  "publish_command": "ROWFLOW_REPO=/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate /usr/bin/python3 /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/spec.json",
+  "validation": {
+    "python_ast": "PASS",
+    "launcher_bash_syntax": "PASS",
+    "all_21_pinned_sha256": "PASS",
+    "tests_or_compute_executed": false,
+    "published": false
+  }
+}

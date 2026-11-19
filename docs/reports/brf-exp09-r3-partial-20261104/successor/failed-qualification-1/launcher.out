@@ -1,0 +1,15 @@
+
+==== dry run 2026-11-04T16:51:13Z regions=0-3 launcher_sha=fe68f704bcc4053895fd865e4691f21853b25e816192ad27782c7d9e5762f5ba units_before=0
+/mnt/raid0/llm/tmp/brf-exp09-resume-r4/job.py: OK
+/mnt/raid0/llm/tmp/brf-exp09-resume-r4/summary_flags.py: OK
+/mnt/raid0/llm/tmp/brf-exp09-resume-r4/identity.json: OK
+/mnt/raid0/llm/tmp/brf-exp09-resume-r4/smoke_predicate.py: OK
+/mnt/raid0/llm/tmp/brf-exp09-resume-r4/out/seed-pins.json: OK
+/mnt/raid0/llm/tmp/brf-exp09-resume-r4/corpus/MANIFEST.json: OK
+2026-11-04T16:51:13Z [brf-exp09-resume-r4-20261104] launcher up pid=647607 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp09-resume-r4-20261104/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp09-resume-r4-20261104/stop minwin=2700s ports=18431 dryrun=1
+2026-11-04T16:51:13Z [brf-exp09-resume-r4-20261104] START regions=0-3 cpus=0-3 threads=4 gpu=0 end=2026-11-04T17:40Z
+==== first progress at 2026-11-04T16:52:46Z (+93s): smoke_predicate exited 0
+job rc=3
+2026-11-04T16:52:49Z [brf-exp09-resume-r4-20261104] ended rc=3 reason=job-rc-3:exited (grant deleted)
+2026-11-04T16:52:49Z [brf-exp09-resume-r4-20261104] one window done; exiting (no --repeat)
+==== dry run FAIL: first unit written but the job ended rc=3 time=2026-11-04T16:52:49Z reason=job-rc-3:exited [dry run held ONE quarter, WS58_REGIONS=0-3; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-04T16:52:51Z)

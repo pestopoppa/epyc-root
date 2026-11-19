@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T15:16:48Z reason=complete
+job_id=vidya-exp01-proxy-input-recovery-20261118-r2
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=4300
+started=2026-11-18T15:01:21Z
+regions=0-23

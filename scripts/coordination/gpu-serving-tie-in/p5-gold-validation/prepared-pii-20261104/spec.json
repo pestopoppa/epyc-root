@@ -1,0 +1,26 @@
+{
+  "id": "codex-gpu-serving-p5-candidate-pii-20261104",
+  "owner": "handoff-gpu-serving-tie-in",
+  "launcher": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/launch.sh",
+  "lane": "cpu",
+  "result_path": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "COMPLETE requires actual pytest exit0 and JUnit exactly7 collected/testcases, zero failures/errors/skips, source hashes verified pre/post and no temporary Git repositories. Failed/incomplete runs write INCOMPLETE.json only and exit1. Same seven staged-blob controls in smoke/full; no models or network. Four CPUs, 270s execution cap, >=300s estimate/window.",
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "handoff_task": "handoffs/active/mi210-serving-program.md:P5-2d",
+  "priority_rank": 69,
+  "kind": "compute",
+  "scratch_root": "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row",
+  "keep": [
+    "*.py",
+    "*.sh",
+    "*.json",
+    "*.xml",
+    "*.log",
+    "SOURCE.sha256",
+    "READY"
+  ],
+  "ram_gib": 2,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/complete.py"
+}

@@ -48,6 +48,12 @@ def _fresh_install() -> Iterator[None]:
     """Guarantee the installed hook reflects the CURRENT source before any
     test in this module runs — install_git_hooks.sh is idempotent and
     already proven safe to re-run (item 3a's own commit)."""
+    if not (REPO_ROOT / ".git").is_dir():
+        # Linked worktree: .git is a file and the hooks live in the shared
+        # common dir, so INSTALLED_HOOK (<root>/.git/hooks/pre-commit) does not
+        # exist, and re-running the installer here would rewrite the SHARED hooks.
+        pytest.skip("needs a primary checkout (.git must be a directory); "
+                    "running from a linked worktree")
     subprocess.run(["bash", str(INSTALLER)], cwd=str(REPO_ROOT),
                     check=True, capture_output=True, text=True)
     yield

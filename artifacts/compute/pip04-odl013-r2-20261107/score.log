@@ -1,0 +1,7 @@
+[score] pdftotext: NID 0.8589 | TEDS 0.0000 | MHS 0.0000 | overall 0.5705
+[score] legacy_router: NID 0.8589 | TEDS 0.0000 | MHS 0.0000 | overall 0.5705
+[score] opendataloader: NID 0.9115 | TEDS 0.4831 | MHS 0.7570 | overall 0.8419
+[score] liteparse: NID 0.9190 | TEDS 0.7804 | MHS 0.8012 | overall 0.8804
+[score] report -> /mnt/raid0/llm/tmp/pip04-odl013-rerun-r2-20261107/out/run/report.md
+/mnt/raid0/llm/omnidocbench/.venv/lib/python3.11/site-packages/bs4/__init__.py:435: MarkupResemblesLocatorWarning: The input looks more like a filename than markup. You may want to open this file and pass the filehandle into Beautiful Soup.
+  warnings.warn(

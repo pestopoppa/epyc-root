@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/job.py", line 114, in main
+    subprocess.run(
+  File "/usr/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '-I', '-B', '-m', 'unittest', 'discover', '-s', '/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/experiments/thinking-budget-semantics', '-p', 'test_protocol.py', '-v']' returned non-zero exit status 1.

@@ -1,0 +1,41 @@
+{
+  "binary_dir": "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin",
+  "compiler": {
+    "current_path": "/usr/bin/x86_64-linux-gnu-g++-15",
+    "current_sha256": "54c6799dd8814db76a588b598c4d8781d0904d7c96600ea0d9c6a8f906c024a3",
+    "historical_sha256": "148558fc6e291be5a3a1c14adef7638c4c8bec30d085ebaff740244c0204be37"
+  },
+  "current_tools": {
+    "/bin/bash": "bc5945feb8bd26203ebfafea5ce1878bb2e32cb8fb50ab7ae395cfb1e1aaaef1",
+    "/usr/bin/python3": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "/usr/bin/x86_64-linux-gnu-g++-15": "54c6799dd8814db76a588b598c4d8781d0904d7c96600ea0d9c6a8f906c024a3"
+  },
+  "original_closure": {
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-base.so.0.16.0": "66212b8192420d17c75f72e18204280a1554cc9b279d0ed6ad0d2c59f197a395",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml-cpu.so.0.16.0": "7b9ea9f86c64d84c4c688f5b7491d9fe78498752e2bbd0b2b8948a2c51890bd8",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libggml.so.0.16.0": "6af73f78596c8a9ba497ca379c53ab7e2ca2217a088ac9a3bed8e8b9d49a7963",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-cli-impl.so": "d207bb545f08c0aa74e926e40111da0a0bc4b579e289d0b327e487c06d97137a",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-common.so.0.0.10303": "534d8dc126f3c4922f505ab9029777545553fcc3d454e692abbea0eb625f2d92",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama-server-impl.so": "f081a3d4ec336e44a8c54f2203f3f13776dece27600d02caa192ed7bb933a443",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libllama.so.0.0.10303": "06bbd85f231df8be896ca3b300606b4e3087798ae227b0347314d32a414eb4cf",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/libmtmd.so.0.0.10303": "eaa044e928944cd55f16583a903ed8ad8ff411df2ba6e56536c20e493c7352dc",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/llama-cli": "a90f1a24f8734ff02f293b8ab5eec38ec69574511daabcafde6bc089996cf6fb",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/bin/llama-mtmd-cli": "96b3baa36ca68b1953caee3fb5d0ae65036f8ab52be013c3cdb6334dfa0aa851",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/build.log": "33c6b52c703b0475606ae9d15cfd7feab764d5e41b0c43ed4973af0f143cbdb3",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/candidate.diff": "18fa6657ca15904462c44ed4cf6ac5a3f351c45359750a1e5a3565497f9bcd2f",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/manifest.json": "c786b0847a015d8d24d7172fe6d0980539f4aaae3c35a11b1dd07b3243d66b5c",
+    "/mnt/raid0/llm/tmp/autokernel-rebuild/r231-eof-custody/results.jsonl": "65a9a5864daa484f10ab5d0855a920a38a1d31128e0ea14f2d983173299f45fa"
+  },
+  "original_manifest_sha256": "62bc3332a8ea5c4157fae411055be0b1345caa2899d41fbff18b3cb3d0284f62",
+  "parent": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "schema": "epyc.r231_eof.pins.v1",
+  "sources": {
+    "capture.py": "373e4414a4fe4a2a352d0662e36c42a1168f32ed07e99315f6b263d8c4b6f6e1",
+    "control.py": "f5af3d6ee5881bc5161147f876bf4cc5872bfaa1fe9c7d97c257b26a75893fc6",
+    "harness.cpp": "9fb3d077b8c58e1e33391ed10366e2a40b562c82de8839a0888decf59d66cbac",
+    "launch.sh": "72f179fe6fff159586a93c9699807ffebd36d62bc3e114fb44f3c96e941886c0",
+    "original-manifest.json": "62bc3332a8ea5c4157fae411055be0b1345caa2899d41fbff18b3cb3d0284f62",
+    "verify_ggml_linkage.sh": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+  },
+  "upstream_merge": "b04642061d183dff8504127dfbee1c1a8352682c"
+}

@@ -1,0 +1,6 @@
+{
+  "source_path_at_failure": "/mnt/raid0/llm/tmp/autokernel-all-devices-all-dimensions/hip-build-prereq/attempt-1/source",
+  "base_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "patch_sha256": "6ce5552db139c1b133d4765ca138821ca07bb114f3f478430cf51416b79a25a5",
+  "source_binding": "retained original worktree base and exact staged overlay diff"
+}

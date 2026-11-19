@@ -1,0 +1,3 @@
+# Group-3 combined supervisor fixture
+
+Isolated source-derived supervisor retains GPU lock, guard boundary and child-drain calls, adding output samples at admission, while running, after drain and after terminal receipt. The fixed-width terminal-accounting file resides inside the measured attempt; a second scan refuses allocation changes. Four model-free controls cover successful fake-child flow, unsafe scanner entries/cap, terminal scan failure and changed terminal allocation. Original supervisor is retained. No native process lifecycle, integrated entry, GPU admission, hard filesystem quota or unsampled peak is established; production candidate remains disabled. The workload and synthetic controls have not been executed; publisher smoke and full row are distinct.

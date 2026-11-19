@@ -1,0 +1,9 @@
+{
+  "change": "removed operator-identified copied checkout and recreated git worktree --detach",
+  "worktree": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-successor-20261104/orch-src",
+  "source_commit": "77ba24efe7f27783a3a98be5474bace26c753f12",
+  "source_manifest_sha256": "e0dd3895da019700c49cd90d95b0085df27885d903e84fef6838b6a833c2600f",
+  "source_files_checked": 1905,
+  "source_mismatches": 0,
+  "scope": "source preparation only; no smoke, grant or benchmark outcome"
+}

@@ -1,0 +1,37 @@
+{
+ "decision_rule": "PASS only for explicit Test 6 PASS in both n_rs_seq=0/8 modes, same-destination valid control and stale mutation detected with named mechanism, >=2 exact-symbol in-test mapped-library witnesses per mode, and sealed build/model custody. Any missing control, skipped or invalid execution is INVALID, not a kernel defect. Build is pinned by full build receipt, executable and DSOs; the model SHA was preverified out of grant and in-grant checks use stat metadata only. Additionally, the captured inferior must have an independently recorded normal zero exit and continue must return without a live inferior. Additionally require exactly same-attempt native log, config and witness files with matching hashes.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/filler_run15.sh",
+  "sha256": "e848a1d37e164b14ac3a95a9a51a47ed7514a120a6f5dd18b0903bcaebcaa8ad"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17",
+ "id": "kvfork17-oracle-test-r5-20261104",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/launch.sh",
+  "sha256": "a3f3e46805012b6f2f24f25201992528b4621b3903afef1c7e3dddbdcc8e1343"
+ },
+ "min_window_s": 300,
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-04T20:46:41Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-oracle-r5"
+}

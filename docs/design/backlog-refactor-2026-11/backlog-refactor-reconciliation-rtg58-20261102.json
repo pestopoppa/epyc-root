@@ -1,0 +1,53 @@
+{
+ "baseline_sha": "3ac825873dfb8a8ef8d729133dff42c73b5d074d",
+ "current_sha": "fd06fb064865b37eb222429254fe08c0e8a58c05",
+ "commits": [
+  "fd06fb064 Wrap up RTG-58 cache reuse comparison",
+  "87082830c Add decision-focused reporting principle",
+  "0e20b47a3 Guide efficient measurement stopping and audit backlog",
+  "a9f44ef56 Record partial FB and bounded F72 comparison",
+  "9dc8a8def Preserve completed fork and cache replay observations",
+  "b5e33e1bb Record 72-core FB replay launch",
+  "4c40e5419 Record stopped G3 retry and file continuation fix"
+ ],
+ "files": {
+  ".index-graph.json": "generated/index",
+  ".index-state.json": "generated/index",
+  "kv-prefix-fork-and-paged-attention.md": {
+   "target_fold": "kv-cache-program.md",
+   "ticked_since_pin": [],
+   "new_open_boxes": [
+    [
+     131,
+     "**KPF-62-G3-OUTCOME-CONTINUATION \u2014 make paired outcome scoring robust to output limits.** Before a future G3 s"
+    ]
+   ],
+   "new_closed_boxes": [
+    [
+     136,
+     "**KPF-18-ITEM1-GPU-OBS \u2014 preserve integrated 27B/DFlash2 item-1 observations.** "
+    ],
+    [
+     137,
+     "**KPF-18-ITEM2-CPU-OBS \u2014 preserve 35B CPU/MTP checkpoint-fork observation.** \u2705 2"
+    ],
+    [
+     138,
+     "**KPF-64-F-SUCCESSOR-OBS \u2014 preserve the 230-request repaired-cohort F replay.** "
+    ],
+    [
+     140,
+     "**KPF-64-FB72-PARTIAL-OBS \u2014 preserve the operator-stopped exploratory comparison"
+    ],
+    [
+     143,
+     "**KPF-64-F72-STOP-OBS \u2014 record the cache-reuse decision.** \u2705 2026-11-02: stopped"
+    ]
+   ],
+   "boxes_missing_in_current": [],
+   "fold_impact": "kv-cache-program.md fold touches this file: the 5 new closed boxes stay in the completed ledger (source file); the new open box migrates with current text under ## Track: kv-prefix-fork-and-paged-attention and is scored at apply time; nothing ticked since the pin is migrated as open or scheduled",
+   "gate_catches_it": "yes \u2014 the per-fold gate counts task identities over source+target at apply time against the manifest: 8,089 baseline vs 8,095 current for this file set => identity mismatch => the fold is refused until the apply-time reconciliation record (this block) is attached; index_state --check additionally sees the index open-count change (672 -> 673)"
+  },
+  "master-handoff-index.md": "generated/index"
+ }
+}

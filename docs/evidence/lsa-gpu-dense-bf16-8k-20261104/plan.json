@@ -1,0 +1,145 @@
+{
+  "id": "lsa-gpu-dense-bf16-8k-20261104",
+  "question": "Does the matching dense candidate recover the frozen 8204-token development retrieval sentinel under BF16 KV on MI210?",
+  "source_commit": "088a77bd6ce5fac1ad3bf397912d884ae62b909e",
+  "source_identity": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1",
+  "build_root": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out",
+  "artifacts": [
+    {
+      "role": "native_server",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/llama-server",
+      "sha256": "e7b376b28713c17a0755de083d63bdf25d36f801ac6986a33380b7b9f222915b"
+    },
+    {
+      "role": "ggml_hip_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libggml-hip.so.0.16.0",
+      "sha256": "2145faefcea4a9b08b733375d3e6febd3b4b7ccdab2f570eca19db5c7420a1db"
+    },
+    {
+      "role": "ggml_cpu_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libggml-cpu.so.0.16.0",
+      "sha256": "0183cac6b037a3235dd256bf3026a27362437bed217855bfe4744f41d32a9907"
+    },
+    {
+      "role": "ggml_base_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libggml-base.so.0.16.0",
+      "sha256": "d26f2caecdbfdd12e492828465d6bbb61187f41854021d4fab92e4081fef1f0d"
+    },
+    {
+      "role": "ggml_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libggml.so.0.16.0",
+      "sha256": "35d47dae9c6b6bcc6adabe1263fb4546652dfa15e22c45a3a37bbff95c91a5e9"
+    },
+    {
+      "role": "llama_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libllama.so.0.0.0",
+      "sha256": "7d381796426e282fa22ff8a3a79538698c91231d7506180402cb977f61c1519e"
+    },
+    {
+      "role": "llama_common_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libllama-common.so.0.0.0",
+      "sha256": "671e00b11073bfd54afba498638dff1161559211fe75f3e75ec4b842c888aa2d"
+    },
+    {
+      "role": "llama_server_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libllama-server-impl.so",
+      "sha256": "d610710923ec996dd60a12186b5e493126a609ec43de0f76cd12cb6eb1b2fd8c"
+    },
+    {
+      "role": "mtmd_dso",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/out/bin/libmtmd.so.0.0.0",
+      "sha256": "cf1fd6f0d2068e6969e3bb40e515bb55d99a213b3f4cf6da11487810fadfc12c"
+    },
+    {
+      "role": "build_manifest",
+      "path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/pinned-build/build-receipt.json",
+      "sha256": "be38bec5dd7bf0cd65e5492a3669ddf7056f4cba13efd08836f30a236b5b260b"
+    },
+    {
+      "role": "source_manifest",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/source-manifest.json",
+      "sha256": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1"
+    },
+    {
+      "role": "monitor",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/monitor.py",
+      "sha256": "5e3addbd2584d992f345124fdcfb0b24aa5e050ff09b14c8b2944ff4b5a3853f"
+    },
+    {
+      "role": "native_evidence",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/native_evidence.py",
+      "sha256": "9fa64caa725c4dd0655410a2d7c1c18305304be16ad1c8a0bb33e9ac09563870"
+    },
+    {
+      "role": "belief_adapter",
+      "path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/scripts/vidya/adapters/research_screen.py",
+      "sha256": "b5aecc9d08727d9f6a94017aa4728d69090602b836439ce9bd87c35c0dfa9c25"
+    },
+    {
+      "role": "linkage_verifier",
+      "path": "/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh",
+      "sha256": "57585b405f2d7c6062db2db7786c594d4c428f6952bd27db5a86c0d999cffe33"
+    }
+  ],
+  "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "model_inode": 96505457,
+  "model_size": 29047086048,
+  "ids_sha256": "056563f23d3191f5ca9a37ca7684131daacb3210586af1d95ebfea00507209be",
+  "prompt_n": 8204,
+  "expected": "92-8-E75FB6",
+  "item": {
+    "id": "dev-document_qa-00-original-8192-dense-bf16",
+    "split": "dev"
+  },
+  "rows": [
+    {
+      "id": "dev-document_qa-00-original-8192-dense-bf16",
+      "split": "dev"
+    }
+  ],
+  "server_options": [
+    "-np",
+    "1",
+    "-c",
+    "9216",
+    "-t",
+    "4",
+    "-ub",
+    "2048",
+    "--flash-attn",
+    "on",
+    "--jinja",
+    "-ctk",
+    "bf16",
+    "-ctv",
+    "bf16",
+    "--kv-unified",
+    "--no-mmap",
+    "-ngl",
+    "all",
+    "--cache-ram",
+    "65536",
+    "--chat-template-file",
+    "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+    "--device",
+    "ROCm0",
+    "--spec-type",
+    "none",
+    "--fit",
+    "off"
+  ],
+  "request": {
+    "n_predict": 24,
+    "cache_prompt": false,
+    "seed": 42,
+    "stream": true,
+    "temperature": 0,
+    "top_k": 1
+  },
+  "stop": "One request, no retries; 180s startup, 300s first token, 360s complete; failure/stop terminates the attempt.",
+  "scope": "Development dense sentinel only; no cross-device timing, population quality or promotion claim.",
+  "arms": [
+    "dense-bf16"
+  ]
+}

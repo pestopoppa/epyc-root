@@ -23,6 +23,8 @@ from adapters import autokernel_evaluation_event as evaluation_event  # noqa: E4
 ADAPTER_ID = "vidya.adapters.autokernel_property/v2"
 SOURCE_SCHEMA = "epyc.autokernel.property_measurement.v1"
 GATE_ID = "t0.backend_op_units"
+DIAGNOSTIC_RECORD_CLASS = "SC18 CPU PROPERTY TRANSPORT DIAGNOSTIC"
+DIAGNOSTIC_RECIPE_ID = "sc18-cpu-softmax-transport/v1"
 _TRANSFORMS = frozenset({"identity", "x3", "x0p01", "negate"})
 _GATE_OUTCOMES = frozenset({"PASS", "FAIL", "COULD_NOT_CHECK"})
 
@@ -75,8 +77,29 @@ def native_rows(source: Any) -> tuple[dict, ...]:
         return ()
     if not isinstance(measurements, list) or not measurements:
         return ()
+    discipline = event["performance"].get("search_discipline")
+    if isinstance(discipline, dict) and (
+            discipline.get("record_class") == DIAGNOSTIC_RECORD_CLASS
+            or event["claim_grammar"]["protocol_id"] == DIAGNOSTIC_RECIPE_ID):
+        if (discipline.get("record_class") != DIAGNOSTIC_RECORD_CLASS
+                or event["claim_grammar"]["protocol_id"] != DIAGNOSTIC_RECIPE_ID
+                or event["claim_grammar"]["category"] != "CANDIDATE"
+                or event["status"] != "inconclusive" or event["tier"] != "T0"
+                or event["backend"] != "llama_cpu" or gate.get("requires_anchor") is not False
+                or set(event["correctness"]) != {GATE_ID}
+                or any(event[key] for key in ("quality", "stability", "mechanism"))
+                or discipline.get("speed_rank_admissible") is not False
+                or event["performance"]["raw_samples"] or event["performance"]["estimate"] is not None):
+            return ()
     if any(not _measurement_valid(event, gate, measurement) for measurement in measurements):
         return ()
+    if event["claim_grammar"]["protocol_id"] == DIAGNOSTIC_RECIPE_ID:
+        first = measurements[0]
+        if (len(measurements) != 1 or gate["outcome"] != ("PASS" if first["passed"] else "FAIL")
+                or (first["backend"], first["op"], first["metric_id"], first["suite_seed"],
+                    first.get("input_transform")) != ("CPU", "SOFT_MAX", "softmax_invariants/v1",
+                                                    4711, "identity")):
+            return ()
     return tuple({
         **loaded,
         "measurement": measurement,
@@ -116,6 +139,7 @@ def project(native: Any) -> ClaimTuple:
         separators=(",", ":"), ensure_ascii=True)
     identity = hashlib.sha256(identity_payload.encode("utf-8")).hexdigest()[:24]
     artifact = event["artifact"]
+    diagnostic = claim_grammar["protocol_id"] == DIAGNOSTIC_RECIPE_ID
     return ClaimTuple(
         measurement_id=f"akprop_{identity}",
         metric=metric_id,
@@ -125,7 +149,7 @@ def project(native: Any) -> ClaimTuple:
         claim=(f"AutoKernel {backend} {op} shape {shape_id} transform {input_transform} "
                f"property {metric_id}: residual {residual} <= tolerance {tolerance} is {passed}"),
         metric_direction="lower_better",
-        protocol_id=claim_grammar["protocol_id"],
+        protocol_id="" if diagnostic else claim_grammar["protocol_id"],
         reps=1,
         reps_basis="scored:one property evaluation",
         unit="residual",

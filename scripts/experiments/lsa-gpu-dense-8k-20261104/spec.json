@@ -1,0 +1,25 @@
+{
+  "id": "lsa-gpu-dense-bf16-8k-20261104",
+  "owner": "lsa-screen",
+  "launcher": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet/launcher.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,72-75",
+  "gib": 48,
+  "estimate_s": 900,
+  "min_window_s": 900,
+  "scratch_root": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/native/RESULT.json",
+  "result_format": "json",
+  "unit_key": "unit",
+  "first_progress_s": 660,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/lsa-gpu-dense-bf16-8k-20261104/packet/first_progress.py",
+  "decision_rule": "One Qwen3.8-27B Q8 weight 8204-token BF16-KV dense MI210 development sentinel: exact output 92-8-E75FB6 passes, a valid wrong answer fails and stops development; missing request, custody, native capture or in-window own-PID KFD/VRAM is inconclusive. Speculation off, native sparse mode off, one request, stop at answer or 360 seconds. No speedup or population-quality claim.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1-GPU-DENSE-8K",
+  "priority_rank": 10.0,
+  "admission_class": "diagnostic",
+  "keep": [
+    "native/*",
+    "state/*"
+  ],
+  "notes": "Same full 8204-token model request in smoke and grant; smoke qualifies on first generated token. Does not invoke sparse mode or change original GPU PCA STOP."
+}

@@ -1,0 +1,32 @@
+{
+  "id": "dcp12-calibration-20261118",
+  "owner": "h-delegation-context-preassembly",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "0-95",
+  "shape": "quiet-host",
+  "baseline_ref": "docs/design/dcp12-calibration-protocol-20261118.md#dcp-12-native-a0-repeatability-calibration-prospective-protocol",
+  "admission_class": "block-timing-quiet",
+  "priority_rank": 57,
+  "launcher": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp12/packet/launcher.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp12",
+  "result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp12/native/RESULT.json",
+  "result_format": "json",
+  "ram_gib": 52,
+  "budget_gib": 4,
+  "estimate_s": 5760,
+  "min_window_s": 5460,
+  "max_window_s": 5760,
+  "resumable": false,
+  "first_progress_s": 660,
+  "unit_key": "unit",
+  "smoke_predicate": "/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python -I -B /mnt/raid0/llm/tmp/delegation-context-preassembly/dcp12/packet/runner.py smoke",
+  "decision_rule": "completed >= 12",
+  "handoff_task": "context-and-token-economy.md:DCP-12",
+  "keep": [
+    "native/**",
+    "packet/**",
+    "source/**"
+  ],
+  "notes": "Whole-host quiet grant; private server uses four allocator cores. Publisher smoke is qualification only. No model rehash."
+}

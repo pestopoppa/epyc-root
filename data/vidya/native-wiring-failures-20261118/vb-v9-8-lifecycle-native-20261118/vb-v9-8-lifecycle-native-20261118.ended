@@ -1,0 +1,7 @@
+rc=1 time=2026-11-18T05:13:29Z reason=job-rc-1:exited
+job_id=vb-v9-8-lifecycle-native-20261118
+owner=vidya-belief-substrate
+step=job-run
+estimated_wall_s=18000
+started=2026-11-18T05:13:24Z
+regions=0-95

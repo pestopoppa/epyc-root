@@ -1,0 +1,18 @@
+{
+  "row": "handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118",
+  "status": "GPU-SMOKE-QUEUED",
+  "smoke_pass": false,
+  "production_admitted": false,
+  "files": {
+    "unpublished.json": {
+      "archive": "unpublished.json.original-bytes.json",
+      "source": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/unpublished.json",
+      "sha256": "d5f93af99a034e76e9240ef6e422cfecdd3e9dbb0100fb3d060ce39edd8a453b"
+    },
+    "GPU-SMOKE-QUEUED.json": {
+      "archive": "GPU-SMOKE-QUEUED.json.original-bytes.json",
+      "source": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/GPU-SMOKE-QUEUED.json",
+      "sha256": "4d12c5c00db57846f455c407f3a01a493ac86541aa6d3e185e233edf5761be83"
+    }
+  }
+}

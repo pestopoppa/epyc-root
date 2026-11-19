@@ -1,0 +1,19 @@
+{
+  "authority": "software-control-only",
+  "cpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "id": "vb-sync-published-repair-20261118",
+  "lag": 0,
+  "manual_sync_count": 0,
+  "mode": "official",
+  "native_receipt_sha256": "fa10bcc8cfc228e80d0f7e183172be26a9beabde6145b99e7b71e1021d002ebc",
+  "refused": 0,
+  "run_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official-w17enqbb",
+  "selected": 1,
+  "source_pins_sha256": "fb7616cec4f5722a46f2c6f9f2407f63e953f15178121aae80da339d1782222a",
+  "status": "passed"
+}

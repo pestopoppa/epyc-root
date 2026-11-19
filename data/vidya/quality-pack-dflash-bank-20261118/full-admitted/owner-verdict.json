@@ -1,0 +1,5 @@
+{
+  "verdict": "pass",
+  "rationale": "All eight prospectively pinned cap-0/cap-7 production responses have empty problems lists and pass their declared semantic/finish checks with native custody. JSON stops at 16 tokens per cap; code/prose/reasoning match their declared length finish at 128 tokens each. Captured PID1490613 exited status0 and port closed. Bank admitted for production inputs only; candidate_collected=false and seven-profile pack incomplete.",
+  "filed_by": "handoff-vidya-belief-substrate"
+}

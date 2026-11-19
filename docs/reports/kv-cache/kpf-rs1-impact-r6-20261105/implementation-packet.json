@@ -1,0 +1,64 @@
+{
+  "schema": "kpf-rs1-followup/1",
+  "source_commit": "8952a0f693fb923918157eb25117641b74766230",
+  "result_sha256": "19a650346d7806098fb6c6ffdde0482674eb11f04fafaf9dabce7286cbcf965b",
+  "coverage_sha256": "fd69fe19d6d0801e9676edcc2d8df42db8222307d6797212e44287a3f7d510ec",
+  "next_row": "KPF-RS-1 model-free capture/provenance implementation",
+  "source_tree_present": false,
+  "inference_authorized": false,
+  "impact_risk": {
+    "build_conv_state": "LOW",
+    "build_recurrent_attn": "LOW",
+    "seq_rm": "LOW",
+    "seq_cp": "LOW",
+    "state_write": "LOW",
+    "state_read": "LOW",
+    "s_copy": "LOW"
+  },
+  "required_before_source_edits": [
+    "Resolve current champion-derived experimental candidate and branch; do not modify frozen production",
+    "Re-establish source identity; reuse exact-commit impacts only where source identity is unchanged",
+    "Run context/impact for added observer, backend synchronization, test and write-callback symbols outside the seven-query scope",
+    "Retain skipped-file coverage; native default cap is not exhaustive caller coverage"
+  ],
+  "implementation_slices": [
+    {
+      "id": "capture",
+      "files": [
+        "src/llama-memory-recurrent.h",
+        "src/llama-memory-recurrent.cpp"
+      ],
+      "deliverable": "Default-off test-only synchronized row enumeration for R/S/optional P, all cells and planes, raw bytes and logical selection metadata"
+    },
+    {
+      "id": "provenance",
+      "files": [
+        "src/models/delta-net-base.cpp",
+        "src/llama-memory-recurrent.cpp"
+      ],
+      "deliverable": "Actual-execution write provenance, clear/copy/restore/reuse events; distinguish graph construction from completed backend writes"
+    },
+    {
+      "id": "test",
+      "files": [
+        "tests/test-recurrent-state-rollback.cpp"
+      ],
+      "deliverable": "np=1/4 sequence-aware same-backend reference schedules, restore/fork/rollback, short writes, dirty reuse and required skipped-write/poison controls"
+    },
+    {
+      "id": "wiring",
+      "files": [
+        "scripts/vidya/adapters/README.md",
+        "handoffs/active/vidya-belief-substrate-program.md"
+      ],
+      "deliverable": "Owning session adds prospective producer registration and wiring task before first measured capture"
+    }
+  ],
+  "model_free_checks": [
+    "serialization roundtrip and independently replayed SHA-256",
+    "duplicate/missing row identity rejected",
+    "unknown write provenance prevents complete-capture verdict",
+    "mutation missing capture or crash classified INVALID",
+    "logical row comparisons preserve physical mappings and undefined residual bytes"
+  ]
+}

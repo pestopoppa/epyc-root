@@ -1,0 +1,42 @@
+{
+  "schema": "epyc.vidya.quality_pack_architect_bank_preparation.v1",
+  "row": "handoff-vidya-quality-pack-architect-critic-bank-20261118",
+  "publisher": "SMOKE PASS on CPUs116-119 at 2026-11-18T01:58:37Z; PUBLISHED",
+  "scope": "production-bank readiness only; native admission and full prospective pack/candidate comparison remain open",
+  "controls": "51 parity tests and typed terminal/template-relocation/raw-tamper/completion controls passed in worker; owner reviewed source and ran preflight/plan regeneration; publisher native smoke PASS",
+  "integration": "ROWFLOW_REPO points to owning lane for new checkbox resolution; max_window_s corrected to1800 to satisfy min1350+300; no keeper/gate mutations",
+  "file_sha256": {
+    "plan.json": "a8a6813dd6f11648b3a8384a2ef3e92af6fae35933af53bc5a7ccc3aef8113bf",
+    "original-architect-critic-receipt.json": "601ba9a92e70b8bea5a660191f3589507d408871d13524eb09820e15e37de7d6",
+    "quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "SOURCE.sha256": "88b0ae8bb23b4e762c9753f02af62e95e299bc3bd0c40f66dcff98b9ea06a9bf",
+    "model-hash-receipt.json": "be89e5e3383e051aff93b9bdad4110dc625aaef1719605ab90705b1277a0dd3a",
+    "complete.py": "78b4fec9d86ff4371e49ee364c4368387dce5256aeafd96a428ecc70300942a0",
+    "README.md": "86ba780c3da3b31c33427cb85a114b4b92f65e6ffe01a6b9eafa095ccda68740",
+    "input-admission.json": "33e17bcdcd8945badc60fedf4f65738d78646e92772a4c20fa2a640292c773ad",
+    "row-launch.sh": "9894d486f39ed1ab7ef8f44b7e0bd45d0c8eb2aeea50d2252d54a45c738ad405",
+    "packet.diff": "0759a5eea32d2dcd5564632738dbb54315869829734f2f341cacc849bc756758",
+    "capture_base.py": "37e0ca1e0b18a8277a7324535338408724f60137fe0e23b6b0e30da0c6bc87e2",
+    "result.json": "341f5b703fca78a294463b245aed294c85add591e089aa460c40558106ccebbd",
+    "row.spec.json": "1a45a58346c58e79a33d996cb0deb5c7edb7efcb7116461cc2e54ebd2d48da16",
+    "smoke-PASS.json": "c73898899787c6b1006c8bbb9021581f6fe0b5a9bb412d63137870a03e844681",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "make_plan.py": "ae1d159b4556cf78b6991305c5b44e8664134a1034bac37daf289d696f56d728",
+    "capture.py": "d9b090417862781682239d645461cb7a089de6da102031bd44da2a32d9f39c3a",
+    "smoke_predicate.py": "8f04d753c958c3172c50f2397fcd811daebac6d04c10aa4e44330d052719ed67"
+  },
+  "archive_envelopes": {
+    "model-hash-receipt.json": {
+      "envelope": "data/vidya/quality-pack-architect-bank-20261118/model-hash-receipt.json.original-bytes.json",
+      "original_sha256": "be89e5e3383e051aff93b9bdad4110dc625aaef1719605ab90705b1277a0dd3a",
+      "envelope_sha256": "eaa2cb4d61811e0a0b338d575dea17066ea97e29160374f103dcd7f80c795306"
+    },
+    "plan.json": {
+      "envelope": "data/vidya/quality-pack-architect-bank-20261118/plan.json.original-bytes.json",
+      "original_sha256": "a8a6813dd6f11648b3a8384a2ef3e92af6fae35933af53bc5a7ccc3aef8113bf",
+      "envelope_sha256": "ec8e5f2585eb46b95d0bc83d8580c81ebc0e28cbc4c70e7d283ef1ab499af519"
+    }
+  },
+  "archive_note": "Nanosecond stat witnesses triggered the account-number scanner. Original bytes remain unchanged inside base64 envelopes; decode envelope before replaying the original SOURCE.sha256. Live published packets are unchanged."
+}

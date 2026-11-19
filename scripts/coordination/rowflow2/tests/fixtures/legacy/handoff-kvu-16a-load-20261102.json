@@ -1,0 +1,20 @@
+{
+ "decision_rule": "Only full mode: require two own-PID post-health MI210 KFD samples with HIP resident, target 393216-cell Q8 KV allocation parsed from the server load log, pinned",
+ "estimate_s": 1200,
+ "gib": 128,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KVU-16a",
+ "id": "handoff-kvu-16a-load-20261102",
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu16a-load-20261102/launch.sh"
+ },
+ "min_window_s": 600,
+ "owner": "handoff-kvu",
+ "priority_rank": 13.0,
+ "published_at": "2026-11-02T11:28:47Z",
+ "regions": "mi210_0,184-187",
+ "schema": "epyc.row.v3",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu16a-load-20261102/STOP",
+ "window_s": 1740
+}

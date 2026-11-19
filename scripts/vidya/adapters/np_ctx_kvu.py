@@ -39,6 +39,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from adapters._argv_scope import BUILD_SHA, QUANT  # noqa: E402
 from adapters._kvu_hpr_prefix import validate as validate_hpr_prefix  # noqa: E402
+from adapters._kvu126_occupancy import verify as verify_kvu126  # noqa: E402
 from claim_tuple import ClaimTuple, ProjectionError, register  # noqa: E402
 
 SCHEMA = "epyc.vidya.np_ctx_kvu_capture.v1"
@@ -63,7 +64,8 @@ REQ_OK = ("request_ok", "boolean", "higher_better")
 REQ_TTFT = ("ttft_s", "s", "lower_better")
 REQ_PROMPT_N = ("prompt_n_tokens", "tokens", "lower_better")
 METRICS = {**{k: v[0] for k, v in CELL_METRICS.items()}, "request_ok_fraction": REQ_FRACTION[0],
-           "request_ok": REQ_OK[0], "ttft_s": REQ_TTFT[0], "prompt_n_tokens": REQ_PROMPT_N[0]}
+           "request_ok": REQ_OK[0], "ttft_s": REQ_TTFT[0], "prompt_n_tokens": REQ_PROMPT_N[0],
+           "kvu126_occupied_gap_cells": "kvu126_occupied_gap_cells"}
 
 _REQUIRED = ("binary_sha256", "binary_realpath", "n_ctx_slot", "c", "np", "prompt_mode", "ts", "cpu_list", "loadavg_start")
 
@@ -218,12 +220,25 @@ def _natives(unit: str | Path) -> list[dict]:
     """One native record per cell or request row; ``[]`` for a path that is neither shape."""
     p = Path(unit)
     if p.is_file():
-        return _request(p) if p.name == REQUESTS else []
+        if p.name == REQUESTS:
+            return _request(p)
+        if p.name == "belief_measurements.jsonl":
+            carriers, digest = _read_rows(p)
+            if len(carriers) != 1:
+                raise ProjectionError("KVU-12.6 carrier must have exactly one original comparison")
+            try:
+                wave, gap, evidence = verify_kvu126(carriers[0], _strict)
+            except (KeyError, ValueError, TypeError, OSError, json.JSONDecodeError) as exc:
+                raise ProjectionError(f"KVU-12.6 original evidence invalid: {exc}") from exc
+            return [{**_common(wave, p, digest, "occupancy_gap"), "gap": gap,
+                     "carrier": carriers[0], "original_evidence": evidence}]
+        return []
+    extra = _natives(p / "belief_measurements.jsonl") if (p / "belief_measurements.jsonl").is_file() else []
     if (p / SUMMARY).is_file():
-        return _cell(p)
+        return _cell(p) + extra
     if (p / REQUESTS).is_file():
-        return _request(p / REQUESTS)
-    return []
+        return _request(p / REQUESTS) + extra
+    return extra
 
 
 # --- projection ---------------------------------------------------------------------------------------------------
@@ -282,7 +297,9 @@ def _claim(native: dict, metric: str, unit: str, value: Any) -> str:
     v = f"{value:.6g}" if type(value) is float else str(value)
     text = (f"np-ctx-kvu {what} (np {r.get('np')}, c {r.get('c')}, n_ctx_slot {r.get('n_ctx_slot')}, {kv}, "
             f"mode {r.get('prompt_mode')}): {metric} = {v} {unit}")
-    if native["shape"] == "cell":
+    if native["shape"] == "occupancy_gap":
+        text += "; absolute occupancy gap for predeclared 8x48k versus 4x96k; lower means closer occupancy only"
+    elif native["shape"] == "cell":
         text += f"; result {r.get('result')}; {native['n_ok']} of {native['n_requests']} requests ok"
     else:
         text += f"; probe {r.get('probe')} wave {r.get('wave')} status {r.get('status')}"
@@ -300,7 +317,9 @@ def _tuple(native: dict, metric: str, unit: str, direction: str, value: Any, rep
     if reread != digest:
         raise ProjectionError(f"{Path(native['rows_path']).name} changed between read and projection")
     obs: dict = {}
-    if native["shape"] == "cell":
+    if native["shape"] == "occupancy_gap":
+        obs["outcome_native"] = "predeclared occupancy contrast; not performance or quality"
+    elif native["shape"] == "cell":
         obs["outcome_native"] = f"{row.get('result')}: {native['n_ok']} of {native['n_requests']} requests ok"[:120]
     else:
         obs["outcome_native"] = f"HTTP {row.get('status')}"
@@ -310,6 +329,9 @@ def _tuple(native: dict, metric: str, unit: str, direction: str, value: Any, rep
         "draft_depth", "threads", "cpu_list", "loadavg_start", "binary_sha256", "binary_realpath", "kernel_store_path",
         "row_sha256", "stderr_hits", "n_reprefill_by_wave", "error", "ts") if row.get(k) is not None}
     extra["rows_sha256"] = digest
+    if native["shape"] == "occupancy_gap":
+        extra.update(plan_sha256=native["carrier"]["plan_sha256"], evidence_index_sha256=native["carrier"]["evidence_index_sha256"],
+                     original_evidence=native["original_evidence"], recurrent_checkpoint_position="unknown")
     if "hpr_prefix_provenance" in native:
         extra["hpr_prefix_provenance"] = native["hpr_prefix_provenance"]
     if native["shape"] == "cell":
@@ -318,19 +340,38 @@ def _tuple(native: dict, metric: str, unit: str, direction: str, value: Any, rep
     binary = str(row.get("binary_realpath") or "")
     if binary and not binary.startswith(str(row.get("kernel_store_path") or "\0")):
         extra["binary_not_kernel_store"] = True
+    scope = _scope(row)
+    if native["shape"] == "occupancy_gap":
+        scope.pop("np", None)
+        scope["backend"] = "cpu"
+        scope["varied"] = ["np", "L"]
+        scope["knobs"].pop("L", None)
+        scope["knobs"]["compared_shapes"] = "np8 L48k vs np4 L96k"
+        scope["recipe"] += " | occupancy gap only; not a speed or quality verdict"
     return ClaimTuple(
         measurement_id=f"npctxkvu:v1:{row['row_sha256'][:24]}:{mid_key}",
         metric=metric, value=value, unit=unit, date=str(row.get("ts") or "")[:10], category="BASELINE",
         claim=_claim(native, metric, unit, value), metric_direction=direction, protocol_id="",
         reps=reps if reps >= 1 else None, reps_basis=basis,
         attestation_locator=locator, attestation_sha256=digest, attestation_present=True, attestation_verified=True,
-        source_kind=SOURCE_KIND, extra=extra, applicability=_scope(row), observation=obs)
+        source_kind=SOURCE_KIND, extra=extra, applicability=scope, observation=obs)
 
 
 def project_all(native: dict) -> list[ClaimTuple]:
     """Every tuple one native record yields (a cell yields up to six, a request one to three)."""
     row, name = native["row"], Path(native["rows_path"]).name
     out: list[ClaimTuple] = []
+    if native["shape"] == "occupancy_gap":
+        try:
+            _wave, gap, evidence = verify_kvu126(native["carrier"], _strict)
+        except (KeyError, ValueError, TypeError, OSError, json.JSONDecodeError) as exc:
+            raise ProjectionError(f"KVU-12.6 evidence changed before projection: {exc}") from exc
+        if gap != native["gap"] or evidence != native["original_evidence"]:
+            raise ProjectionError("KVU-12.6 evidence changed before projection")
+        metric = "kvu126_occupied_gap_cells"
+        return [_tuple(native, metric, "cells", "lower_better", native["gap"], 1,
+                       "one predeclared occupancy contrast; samples and repeated waves are not independent trials",
+                       f"npctxkvu:{name}#occupancy-gap", metric + ":" + native["rows_sha256"][:16])]
     if native["shape"] == "cell":
         tag = f"{row['launch']}/{row['cell']}"
         for key, (metric, unit, direction) in CELL_METRICS.items():

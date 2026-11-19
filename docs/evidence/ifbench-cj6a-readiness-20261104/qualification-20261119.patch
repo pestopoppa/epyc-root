@@ -1,0 +1,23 @@
+--- a/worker.py
++++ b/worker.py
+@@ -24,7 +24,9 @@
+ def main():
+  mode=os.environ['IFBENCH_MODE'];assert mode in ('full','smoke');out=pathlib.Path(os.environ['IFBENCH_OUT']) if mode=='smoke' else D/'run';out.mkdir(parents=True,exist_ok=True);fid=os.getenv('FILLER_ID');gp=pathlib.Path(os.getenv('FILLER_GRANTS_DIR','/mnt/raid0/llm/tmp/compute-flags/grants'))/(fid+'.grant') if fid else None;grant=gp.read_bytes() if gp and gp.is_file() else None
+  if mode=='full' and not grant:raise RuntimeError('grant missing')
+- assert file_sha(MODEL)==(D/'MODEL.sha256').read_text().split()[0]
++ verified=json.loads((D/'MODEL-PREVERIFIED.json').read_text());model_stat=pathlib.Path(MODEL).stat()
++ assert verified['path']==MODEL and verified['sha256']==(D/'MODEL.sha256').read_text().split()[0]
++ assert all(getattr(model_stat,k)==v for k,v in verified['stat'].items()),'model changed since publish-time verification'
+  if mode=='smoke':assert out.is_absolute() and os.getenv('FILLER_DRYRUN_RESULT_PATH')
+  server_file=K/'llama-server';assert file_sha(server_file)==KERNEL_STORE_SHA,'kernel store server digest changed'
+  link_env={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(K),'OMP_NUM_THREADS':'1','HIP_VISIBLE_DEVICES':'-1','ROCR_VISIBLE_DEVICES':'-1'}
+--- a/launch.sh
++++ b/launch.sh
+@@ -30,6 +30,6 @@
+    exec /bin/bash "$ENGINE" --id "$ID" --class cpu --role bench --claim-cpus "${WS58_REGIONS:?}" --min-window 1800 --stop "$D/STOP" --workdir "$D" --complete-cmd 'test -s /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/run/TERMINAL.json -o -s "${FILLER_DRYRUN_DIR:-/nonexistent}/ifbench-native/TERMINAL.json"' --cmd 'if [ "${FILLER_SMOKE:-0}" = 1 ]; then export IFBENCH_MODE=smoke IFBENCH_OUT="$FILLER_DRYRUN_DIR/ifbench-native"; else export IFBENCH_MODE=full IFBENCH_OUT=run; fi; env -i PATH=/usr/bin:/bin LANG=C.UTF-8 RUS3_DIAGNOSTIC=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 HIP_VISIBLE_DEVICES=-1 ROCR_VISIBLE_DEVICES=-1 PYTHONDONTWRITEBYTECODE=1 IFBENCH_MODE="$IFBENCH_MODE" IFBENCH_OUT="$IFBENCH_OUT" FILLER_DRYRUN_RESULT_PATH="${FILLER_DRYRUN_RESULT_PATH:-}" FILLER_SMOKE="${FILLER_SMOKE:-0}" FILLER_DRYRUN_DIR="${FILLER_DRYRUN_DIR:-}" FILLER_ID="$FILLER_ID" FILLER_CPUS="$FILLER_CPUS" FILLER_NEEDGPU="$FILLER_NEEDGPU" FILLER_STOPFILE="$FILLER_STOPFILE" FILLER_END="$FILLER_END" FILLER_DEADLINE="$FILLER_DEADLINE" FILLER_GRANTS_DIR="$FILLER_GRANTS_DIR" FILLER_FLAGS_DIR="$FILLER_FLAGS_DIR" FILLER_OWNER="$FILLER_OWNER" FILLER_EST_WALL_S="$FILLER_EST_WALL_S" WS58_REGIONS="$WS58_REGIONS" /bin/bash /mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-v3-cj6a-20261104/launch.sh --job' ;;
+  '')
+    exec > >(tee -a "$D/ws58-launcher.out") 2>&1
+-   exec sudo -n --preserve-env=WS58_REGIONS,FILLER_CPUS,FILLER_SMOKE,FILLER_DRYRUN,FILLER_DRYRUN_DIR,FILLER_DRYRUN_RESULT_PATH /usr/bin/setpriv --reuid=1000 --regid=1000 --groups=992 /bin/bash "$D/launch.sh" --engine ;;
++   exec sudo -n --preserve-env=WS58_REGIONS,FILLER_CPUS,FILLER_SMOKE,FILLER_DRYRUN,FILLER_DRYRUN_DIR,FILLER_DRYRUN_RESULT_PATH,FILLER_DRYRUN_ONE_QUARTER /usr/bin/setpriv --reuid=1000 --regid=1000 --groups=992 /bin/bash "$D/launch.sh" --engine ;;
+  *) exit 64 ;;
+ esac

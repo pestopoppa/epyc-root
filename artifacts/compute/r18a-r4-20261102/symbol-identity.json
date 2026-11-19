@@ -1,0 +1,32 @@
+{
+  "anchor_build": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/verified-v10-gpu",
+  "candidate_build": "/mnt/raid0/llm/tmp/refactor-01a16fc3/r18a-verified-anchor-20261031/refactor-r18a-v10-independent-symbols-r4-20261102/scratch/full/buildgpu",
+  "comparisons": {
+    "cpu": {
+      "added": [],
+      "anchor_count": 590,
+      "anchor_sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
+      "candidate_count": 590,
+      "candidate_sha256": "2fb229482c5555275e6bcf78da715720f9abdd22381e152bf2e036fd7a224679",
+      "removed": []
+    },
+    "hip_device": {
+      "added": [],
+      "anchor_code_objects": 135,
+      "anchor_count": 6141,
+      "candidate_code_objects": 135,
+      "candidate_count": 6141,
+      "removed": []
+    },
+    "hip_host": {
+      "added": [],
+      "anchor_count": 1332,
+      "anchor_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+      "candidate_count": 1332,
+      "candidate_sha256": "2c9f6de57ba20d3a2a9f8e259091dee32d07bf19b3fa18bbe426ec4ccad1addc",
+      "removed": []
+    }
+  },
+  "schema": "r18a.independent_symbol_identity.v1",
+  "symbol_identity_pass": true
+}

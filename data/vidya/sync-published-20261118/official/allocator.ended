@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T18:41:18Z reason=complete
+job_id=vb-sync-published-repair-20261118
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T18:41:13Z
+regions=0-23

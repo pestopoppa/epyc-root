@@ -1,0 +1,28 @@
+{
+  "id": "q38p3a-specoff-abba-20261105",
+  "owner": "ws58",
+  "launcher": "/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/q38p3a/launch.sh",
+  "lane": "gpu",
+  "shape": "gpu",
+  "regions": "mi210_0,184-191",
+  "ram_gib": 64,
+  "result_path": "/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/q38p3a/out/results.jsonl",
+  "result_format": "jsonl",
+  "scratch_root": "/mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/q38p3a",
+  "keep": [
+    "IDENTITY.json",
+    "job.py",
+    "gpuproof.py",
+    "launch.sh",
+    "spec.json",
+    "out/**"
+  ],
+  "estimate_s": 3600,
+  "min_window_s": 3000,
+  "first_progress_s": 900,
+  "handoff_task": "handoffs/active/mi210-serving-program.md:Q38P-3a",
+  "decision_rule": "First-stage Q38P-3a: Qwen3.8-27B Q8_0, C=champion c72ec82f5 ROCm 6.2 vs B=same source ROCm 10.1 build-nolto-u600, spec off, np1 ctx 65536, 2 ABBA paired launches C B B C, five fixed greedy prompts each. Higher decode tokens/s is better; median native predicted_per_second per launch, B/C paired ratios and geometric mean of the two paired ratios, reporting each ratio and spread. Require all four valid launches with zero drafted tokens, own KFD VRAM >=20 GiB sampled during, no foreign KFD PID, mapped arm-specific ggml-HIP digest and HIP runtime prefix, clean server release. If geometric mean B/C <1.02 futility: stop pursuing toolchain; if >=1.02 profile pp512@d16384 in a later row; >=1.05 needed before any adoption alongside depth-regression fix. Incomplete or invalid launches, STOP or deadline are inconclusive. Exploratory only, no significance or promotion claim. Stop on STOP, invalid launch, residency/linkage failure or deadline; futility-only.",
+  "priority_rank": 20,
+  "kind": "compute",
+  "smoke_predicate": "test -s /mnt/raid0/llm/tmp/fable5-window2-findings-05c-mi210-lever/q38p3a/smoke-out/results.jsonl"
+}

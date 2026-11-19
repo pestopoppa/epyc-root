@@ -274,10 +274,11 @@
     {
       "id": "fleet_watch",
       "script": "scripts/coordination/fleet_watch.sh",
-      "contract": "unadopted",
-      "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
+      "contract": "exempt",
+      "owning_handoff": "handoffs/active/coordination-and-churn-pipeline.md",
       "task_marker": "OBS-11",
-      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too). REWRITTEN AT P3-3 (2026-08-16): the pane-text heuristics were DELETED \u2014 STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND, PANE-UNREADABLE/DEAD and FLEET-UNREADABLE are gone, because 2,499 of 2,654 STUCK-INPUT reports (94%) were the agent CLI's own empty-composer placeholder text. It no longer decides anything about a session's liveness; per-recipient liveness belongs to the daemon (P0-2b) and pool-runner liveness to P3-4. What remains is hardware- and bus-grounded: COMPUTE-IDLE (rocm-smi + region claims, escalated only when compute-gated READY rows are waiting) and QUEUE-AGING (READY rows past a threshold with worker capacity free, classified by the gate refusing them \u2014 every refusal class has an owner and a routed fix). Its internal discipline is still three-valued: fw_classify_compute returns 'unknown' and never collapses it to idle, an unreadable queue is reported as QUEUE-UNREADABLE rather than as an empty one, and a domain that could not be read is excluded from the alarm clear sweep. Alarms go to alarm_channel.py (emit-once-on-state-change); pane capture survives ONLY as clearly-labelled human evidence attached to an already-decided alarm, OFF by default. What is missing for v1 is the uniform `observe` entrypoint and the behavioural battery. Takes no corrective action of any kind: it detects and logs, never sends keys, never writes the bus, never kills.",
+      "reason": "Reviewed against current D8/P3-3 source (2026-10-06): fleet_watch observes hardware occupancy and bus queue aging, not per-main/session liveness. Pane capture is optional human evidence and never a decision input. Exempt from the semantic main-liveness observe contract and shared liveness battery; scheduled log freshness remains monitored. OBS-11 task marker and owning handoff are retained for owner-side closure after D9 review.",
+      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too). REWRITTEN AT P3-3 (2026-08-16): the pane-text heuristics were DELETED — STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND, PANE-UNREADABLE/DEAD and FLEET-UNREADABLE are gone, because 2,499 of 2,654 STUCK-INPUT reports (94%) were the agent CLI's own empty-composer placeholder text. It no longer decides anything about a session's liveness; per-recipient liveness belongs to the daemon (P0-2b) and pool-runner liveness to P3-4. What remains is hardware- and bus-grounded: COMPUTE-IDLE (rocm-smi + region claims, escalated only when compute-gated READY rows are waiting) and QUEUE-AGING (READY rows past a threshold with worker capacity free, classified by the gate refusing them — every refusal class has an owner and a routed fix). Its internal discipline is still three-valued: fw_classify_compute returns 'unknown' and never collapses it to idle, an unreadable queue is reported as QUEUE-UNREADABLE rather than as an empty one, and a domain that could not be read is excluded from the alarm clear sweep. Alarms go to alarm_channel.py (emit-once-on-state-change); pane capture survives ONLY as clearly-labelled human evidence attached to an already-decided alarm, OFF by default. The original OBS-11 liveness-adoption premise was superseded by the D8/P3-3 rewrite: this remains a hardware/queue report-only monitor, outside the session-liveness observer contract. Takes no corrective action of any kind: it detects and logs, never sends keys, never writes the bus, never kills.",
       "runtime": {
         "mode": "scheduled",
         "log": "/mnt/raid0/llm/epyc-root/logs/fleet_watch.log",
@@ -405,6 +406,33 @@
       "script": "scripts/coordination/handoff_sessions.py",
       "contract": "exempt",
       "reason": "Reviewed 2026-11-01 (rowflow). The dispatcher observes only sessions it started itself: liveness is the pid it recorded in handoff-sessions.json checked via /proc/<pid>/stat (zombie-aware), never an argv/name pattern. The 'pkill/pgrep' token is prompt TEXT handed to the agent sessions forbidding exactly that. Not battery-adoptable: it is an event-driven resumer (grants/<id>.ended -> resume owner), not a watchdog of a daemon it does not own."
+    },
+    {
+      "id": "churn_up",
+      "script": "scripts/coordination/churn/churn_up.sh",
+      "contract": "v1",
+      "notes": "OBS-CHURN-UP adopted. Every loop probe (ensure_loops, status_loops, watchdog-guard) folds two channels through observer_guard.sh: the pidfile pid (alive AND argv marker; unparsable = unavailable) and an exact-path argv scan over /proc (unavailable when /proc is not walkable); a loop whose path field carries a subcommand (dispatcher: `handoff_sessions.py dispatch`) matches only when the argv element after the path IS that token, so per-session `pane-status` processes sharing the installed path are not a dispatcher (CHURNUP-OBSERVER-ARGV, 2026-11-18). present = no action; absent = start permitted; unobservable (channels disagree, or a channel is blind) = loud alarm and NO start. Launch notes og_note_launch (blind streak). `observe` runs one probe from CHURN_OBS_* env; the sandbox battery drives it with a pidfile-shaped heartbeat and a real stand-in process. Registry row retired its owning_handoff/task_marker with the flip (v1 rows carry neither; origin: churn-pipeline.md moved-box note).",
+      "sandbox": {
+        "env": {
+          "EPYC_ROOT": "{root}",
+          "CHURN_REPO": "{root}",
+          "CHURN_FLAGS": "{tmp}/flags",
+          "CHURN_OBS_PIDFILE": "hb.json",
+          "CHURN_OBS_MARKER": "{mark}",
+          "CHURN_OBS_PATH": "{tmp}/{mark}.sh",
+          "OG_STATE_DIR": "{tmp}/alerts"
+        },
+        "heartbeat": "{tmp}/flags/hb.json",
+        "observe_argv": [
+          "observe"
+        ]
+      }
+    },
+    {
+      "id": "rowflow_filler_run15_kill_job",
+      "script": "scripts/coordination/rowflow/filler_run15.sh",
+      "contract": "exempt",
+      "reason": "keeper-hotfix 2026-11-05: the engine observes only processes of its OWN run - its captured setsid group/session (pgid/sid from ps), their ps descendants, and orphans whose /proc environ carries BOTH this run's FILLER_ID and FILLER_STOPFILE (exported by the engine itself). It never matches a process name or argv pattern, never watches a foreign daemon, and verifies death by ps (zombie = dead). Not a watchdog: the observation exists only to stop the run it launched."
     }
   ]
 }

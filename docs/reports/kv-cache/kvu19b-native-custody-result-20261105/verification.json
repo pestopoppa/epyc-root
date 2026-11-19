@@ -1,0 +1,32 @@
+{
+  "target_classification": "CONDITIONAL_ON_CONSTANT_OFFSET; interior drift UNKNOWN",
+  "target_host_ns": [
+    1974283349009351,
+    1974283349024441
+  ],
+  "pid": 2081957,
+  "birth_ticks": 197426730,
+  "bdf": "0000:43:00.0",
+  "profiler_gpu_id": "4",
+  "queue_id": "0",
+  "offset_ns": [
+    -260,
+    90
+  ],
+  "max_gap_ns": 6000000000,
+  "uncertainty_bound_ns": 1000000,
+  "scope": "witness points only; no interpolation or continuous drift bound",
+  "mutations_detected": [
+    "missing",
+    "duplicate",
+    "wrong_pid",
+    "bad_time",
+    "spacing_over_6s",
+    "target_missing",
+    "target_duplicate",
+    "target_pid",
+    "target_queue",
+    "target_gpu",
+    "target_time"
+  ]
+}

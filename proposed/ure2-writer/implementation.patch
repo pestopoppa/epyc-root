@@ -1,0 +1,546 @@
+--- /dev/null
++++ b/src/trace/approval_live.py
+@@ -0,0 +1,158 @@
++"""URE-2 live escalation writes into the shared trace store.
++
++An escalation permits one re-answer or a role transition, never arbitrary
++edits. System approval is not human review. Missing quality/uncertainty
++evidence stays NULL; a decision-time signature is explicitly partial.
++"""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import logging
++from pathlib import Path
++
++from src.trace.harness_schema import (
++    ApprovalRecord,
++    BehaviorSignature,
++    insert_approval_record,
++    insert_behavior_signature,
++)
++from src.trace.store import DEFAULT_DB_PATH, ensure_schema
++
++log = logging.getLogger(__name__)
++
++
++class _Transaction:
++    """Keep the legacy insert helpers' commits inside our pair transaction."""
++
++    def __init__(self, conn):
++        self.execute = conn.execute
++
++    def commit(self):
++        pass
++
++
++def _hash(value) -> str:
++    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
++
++
++def call_escalation(
++    primitives,
++    prompt,
++    *,
++    from_role,
++    to_role,
++    request_id,
++    reason,
++    alternatives,
++    **kwargs,
++):
++    """One live re-answer attempt; preserve the backend's return/exception."""
++    answer = None
++    outcome = "failed"
++    try:
++        result = primitives.llm_call(prompt, role=to_role, **kwargs)
++        answer = result if isinstance(result, str) else None
++        outcome = (
++            "in_band_error"
++            if answer and answer.strip().startswith("[ERROR")
++            else "returned"
++            if answer and answer.strip()
++            else "empty"
++        )
++        return result
++    except Exception as exc:
++        outcome = f"raised:{type(exc).__name__}"
++        raise
++    finally:
++        record_live_escalation(
++            request_id=request_id,
++            prompt=prompt,
++            from_role=from_role,
++            to_role=to_role,
++            reason=reason,
++            primitives=primitives,
++            outcome=outcome,
++            answer=answer,
++            alternatives=alternatives,
++            boundary="re-answer this request once with the selected role",
++        )
++
++
++def record_live_escalation(
++    *,
++    request_id: str | None,
++    prompt: str | None,
++    from_role: str,
++    to_role: str,
++    reason: str,
++    primitives=None,
++    outcome: str = "selected_pending_execution",
++    answer: str | None = None,
++    alternatives: list[str] | None = None,
++    boundary: str = "continue this request with the selected role",
++    db_path: Path | str | None = None,
++) -> int | None:
++    """Write one linked pair atomically. A failed writer cannot break serving.
++
++    Called at the owning transition/attempt, never at response rendering, so
++    two same-role attempts in one request remain two distinct decisions.
++    Outcomes describe this attempt, not inferred task success. No raw prompt
++    or answer is retained. Callers must not invoke this for shadow decisions.
++    """
++    conn = None
++    try:
++        model = None
++        getter = getattr(getattr(primitives, "registry", None), "get_role", None)
++        if callable(getter):
++            try:
++                name = getattr(getattr(getter(to_role), "model", None), "name", None)
++                model = name if isinstance(name, str) and name else None
++            except Exception as exc:
++                log.debug(
++                    "URE-2 model identity unavailable: %s",
++                    type(exc).__name__,
++                    exc_info=True,
++                )
++        task_signature = _hash(prompt) if isinstance(prompt, str) else None
++        path_hash = _hash([from_role, to_role])
++        conn = ensure_schema(db_path if db_path is not None else DEFAULT_DB_PATH)
++        with conn:
++            transaction = _Transaction(conn)
++            signature_id = insert_behavior_signature(
++                transaction,
++                BehaviorSignature(
++                    answer_hash=_hash(answer) if answer is not None else None,
++                    route_path_hash=path_hash,
++                    escalation_path_hash=path_hash,
++                    signature_hash=_hash([task_signature, path_hash, outcome, model]),
++                    signature_confidence="partial",
++                ),
++            )
++            return insert_approval_record(
++                transaction,
++                ApprovalRecord(
++                    request_id=request_id,
++                    task_signature=task_signature,
++                    selected_role=to_role,
++                    selected_model=model,
++                    alternatives=alternatives
++                    if alternatives is not None
++                    else [from_role],
++                    trigger_reason=reason,
++                    approval_boundary=boundary,
++                    actor="system",
++                    downstream_outcome=outcome,
++                    behavior_signature_id=signature_id,
++                ),
++            )
++    except Exception:
++        log.warning("URE-2 live escalation persistence failed", exc_info=True)
++        return None
++    finally:
++        if conn is not None:
++            try:
++                conn.close()
++            except Exception:
++                log.warning("URE-2 trace connection close failed", exc_info=True)
+--- a/src/api/routes/chat_pipeline/stages.py
++++ b/src/api/routes/chat_pipeline/stages.py
+@@ -55,6 +55,7 @@
+     *,
+     allow_escalation: bool = True,
+     escalation_role: Role = Role.CODER_ESCALATION,
++    request_id: str | None = None,
+     force: bool = False,
+     skipped_roles_out: list[str] | None = None,
+ ) -> tuple[str, "Role"]:
+@@ -100,9 +101,14 @@
+                     "escalation_skipped_roles": list(skipped_roles),
+                 })
+             try:
+-                escalated = primitives.llm_call(
+-                    prompt,
+-                    role=candidate_name,
++                from src.trace.approval_live import call_escalation
++
++                escalated = call_escalation(
++                    primitives, prompt,
++                    from_role=initial_name, to_role=candidate_name,
++                    request_id=request_id,
++                    reason="forced_consultant" if force else str(quality_issue),
++                    alternatives=[str(role) for role in unique_candidates],
+                     n_tokens=2048,
+                     skip_suffix=True,
+                     raise_parked_errors=True,
+@@ -341,6 +347,7 @@
+         primitives,
+         initial_role,
+         allow_escalation=not bool(request.force_role),
++        request_id=request.request_id or routing.task_id,
+     )
+ 
+     elapsed = time.perf_counter() - start_time
+--- a/src/api/routes/chat_pipeline/direct_stage.py
++++ b/src/api/routes/chat_pipeline/direct_stage.py
+@@ -248,6 +248,7 @@
+         primitives,
+         initial_role,
+         allow_escalation=not bool(request.force_role),
++        request_id=request.request_id or routing.task_id,
+     )
+ 
+     elapsed = time.perf_counter() - start_time
+--- a/src/api/routes/v1_escalation.py
++++ b/src/api/routes/v1_escalation.py
+@@ -465,6 +465,7 @@
+                     primitives,
+                     role,
+                     allow_escalation=True,
++                    request_id=task_id,
+                     escalation_role=Role(quality_role),
+                     skipped_roles_out=skipped_roles,
+                     **force_kwargs,
+--- a/src/graph/observability.py
++++ b/src/graph/observability.py
+@@ -70,6 +70,13 @@
+ 
+ def _log_escalation(ctx: Any, from_role: str, to_role: str, reason: str) -> None:
+     """Log an escalation event via progress logger and state telemetry."""
++    from src.trace.approval_live import record_live_escalation
++
++    record_live_escalation(
++        request_id=ctx.state.task_id, prompt=getattr(ctx.state, "prompt", None),
++        from_role=from_role, to_role=to_role, reason=reason,
++        primitives=getattr(ctx.deps, "primitives", None),
++    )
+     pl = ctx.deps.progress_logger
+     if pl is None:
+         return
+--- a/src/api/routes/chat.py
++++ b/src/api/routes/chat.py
+@@ -1722,6 +1722,12 @@
+                             )
+                         ),
+                     )
++                    from src.trace.approval_live import record_live_escalation
++                    record_live_escalation(
++                        request_id=request.request_id or task_id, prompt=request.prompt,
++                        from_role=str(role_history[-2]), to_role=str(current_role),
++                        reason=f'Model-initiated: {reason}', primitives=primitives,
++                    )
+                     if state.progress_logger:
+                         state.progress_logger.log_escalation(
+                             task_id=task_id,
+@@ -1786,6 +1792,12 @@
+                         state=repl_state,
+                         failure_context=esc_ctx,
+                         decision=decision,
++                    )
++                    from src.trace.approval_live import record_live_escalation
++                    record_live_escalation(
++                        request_id=request.request_id or task_id, prompt=request.prompt,
++                        from_role=str(role_history[-2]), to_role=str(current_role),
++                        reason=f'{decision.reason} (failures: {consecutive_failures})', primitives=primitives,
+                     )
+                     if state.progress_logger:
+                         state.progress_logger.log_escalation(
+--- a/src/api/routes/chat_pipeline/stream_adapter.py
++++ b/src/api/routes/chat_pipeline/stream_adapter.py
+@@ -319,6 +319,12 @@
+                         )
+                     ),
+                 )
++                from src.trace.approval_live import record_live_escalation
++                record_live_escalation(
++                    request_id=request.request_id or task_id, prompt=request.prompt,
++                    from_role=str(role_history[-2]), to_role=str(current_role),
++                    reason=f'Model-initiated: {reason}', primitives=primitives,
++                )
+                 if state.progress_logger:
+                     state.progress_logger.log_escalation(
+                         task_id=task_id,
+@@ -382,6 +388,12 @@
+                     state=repl_state,
+                     failure_context=esc_ctx,
+                     decision=decision,
++                )
++                from src.trace.approval_live import record_live_escalation
++                record_live_escalation(
++                    request_id=request.request_id or task_id, prompt=request.prompt,
++                    from_role=str(role_history[-2]), to_role=str(current_role),
++                    reason=f'{decision.reason} (failures: {consecutive_failures})', primitives=primitives,
+                 )
+                 if state.progress_logger:
+                     state.progress_logger.log_escalation(
+--- /dev/null
++++ b/tests/unit/test_live_escalation_records.py
+@@ -0,0 +1,254 @@
++"""Offline candidate tests; all persistence targets pytest's temporary directory."""
++
++import importlib
++import sqlite3
++import time
++from types import SimpleNamespace as NS
++from unittest.mock import MagicMock
++
++import pytest
++from src.api.routes.chat_pipeline import stages
++from src.trace import approval_live as live
++
++
++@pytest.fixture(autouse=True)
++def isolated_store(tmp_path, monkeypatch):
++    path = tmp_path / "events.sqlite"
++    monkeypatch.setattr(live, "DEFAULT_DB_PATH", path)
++    monkeypatch.setattr(stages, "features", lambda: NS(generation_monitor=True))
++    monkeypatch.setattr(stages, "_detect_output_quality_issue", lambda _: "repetition")
++    return path
++
++
++def records(path):
++    if not path.exists():
++        return []
++    with sqlite3.connect(path) as conn:
++        conn.row_factory = sqlite3.Row
++        return list(conn.execute("SELECT * FROM approval_record ORDER BY id"))
++
++
++def fake_primitives():
++    p = NS(
++        llm_call=MagicMock(return_value="better answer"),
++        registry=NS(get_role=lambda role: NS(model=NS(name="model-" + role))),
++        total_tokens_generated=10,
++        total_prompt_eval_ms=1.0,
++        total_generation_ms=1.0,
++        total_http_overhead_ms=0.0,
++        _last_predicted_tps=10.0,
++        _backends={},
++        get_last_inference_meta=dict,
++    )
++    return p
++
++
++def quality(p, **kwargs):
++    return stages._quality_escalate(
++        "poor answer", "private prompt", p, "frontdoor", request_id="req-ure2", **kwargs
++    )
++
++
++def test_exactly_one_linked_record_per_quality_escalation(isolated_store):
++    p = fake_primitives()
++    assert quality(p)[0] == "better answer"
++    (row,) = records(isolated_store)
++    assert row["request_id"] == "req-ure2"
++    assert row["selected_role"] == "coder_escalation"
++    assert row["selected_model"] == "model-coder_escalation"
++    assert row["quality_score"] is None and row["uncertainty_score"] is None
++    assert row["actor"] == "system" and row["downstream_outcome"] == "returned"
++    assert (
++        row["approval_boundary"] == "re-answer this request once with the selected role"
++    )
++    with sqlite3.connect(isolated_store) as conn:
++        (signature,) = conn.execute(
++            "SELECT signature_confidence FROM behavior_signature WHERE id=?",
++            (row["behavior_signature_id"],),
++        ).fetchone()
++        assert signature == "partial"
++    assert "private prompt" not in isolated_store.read_bytes().decode(errors="ignore")
++    # Repeated decisions must not collapse just because request/target match.
++    quality(p)
++    assert len(records(isolated_store)) == 2
++
++
++@pytest.mark.parametrize(
++    "result,outcome", [("", "empty"), ("[ERROR: unavailable]", "in_band_error")]
++)
++def test_non_answers_are_retained(isolated_store, result, outcome):
++    p = fake_primitives()
++    p.llm_call.return_value = result
++    quality(p)
++    (row,) = records(isolated_store)
++    assert row["downstream_outcome"] == outcome
++
++
++def test_exception_recorded_and_existing_fallback_preserved(isolated_store):
++    p = fake_primitives()
++    p.llm_call.side_effect = TimeoutError("offline failure")
++    assert quality(p) == ("poor answer", "frontdoor")
++    (row,) = records(isolated_store)
++    assert row["downstream_outcome"] == "raised:TimeoutError"
++    with pytest.raises(TimeoutError):
++        quality(p, force=True)
++    assert len(records(isolated_store)) == 2
++
++
++def test_disabled_or_untriggered_paths_do_not_write(isolated_store, monkeypatch):
++    p = fake_primitives()
++    quality(p, allow_escalation=False)
++    monkeypatch.setattr(stages, "_detect_output_quality_issue", lambda _: None)
++    quality(p)
++    p.llm_call.assert_not_called()
++    assert records(isolated_store) == []
++
++
++def test_pair_rolls_back_when_approval_insert_fails(isolated_store, monkeypatch):
++    def fail(*args):
++        raise sqlite3.OperationalError("injected failure")
++
++    monkeypatch.setattr(live, "insert_approval_record", fail)
++    assert quality(fake_primitives())[0] == "better answer"
++    with sqlite3.connect(isolated_store) as conn:
++        assert (
++            conn.execute("SELECT COUNT(*) FROM behavior_signature").fetchone()[0] == 0
++        )
++        assert conn.execute("SELECT COUNT(*) FROM approval_record").fetchone()[0] == 0
++
++
++def test_unwritable_store_does_not_change_answer(isolated_store, monkeypatch):
++    monkeypatch.setattr(live, "DEFAULT_DB_PATH", isolated_store.parent)
++    assert quality(fake_primitives())[0] == "better answer"
++
++
++def test_graph_transition_writes_without_progress_logger(isolated_store):
++    from src.graph.observability import _log_escalation
++
++    ctx = NS(
++        state=NS(task_id="graph-1", prompt="private task"),
++        deps=NS(progress_logger=None, primitives=fake_primitives()),
++    )
++    _log_escalation(ctx, "frontdoor", "coder_escalation", "retry limit")
++    (row,) = records(isolated_store)
++    assert row["downstream_outcome"] == "selected_pending_execution"
++    assert row["trigger_reason"] == "retry limit"
++
++
++def test_v1_hook_and_receipt_do_not_duplicate_the_shared_write(isolated_store):
++    from src.api.routes import v1_escalation as v1
++
++    p = fake_primitives()
++    p.total_calls = 0
++
++    def answer(*args, **kwargs):
++        p.total_calls += 1
++        return "better answer"
++
++    p.llm_call.side_effect = answer
++    plan = v1.plan_v1_escalation(
++        flag_on=True,
++        requested="auto",
++        role="frontdoor",
++        role_override=False,
++        image_input=False,
++    )
++    assert (
++        v1.escalate_answer(
++            plan,
++            stage="direct",
++            answer="poor answer",
++            question="task",
++            direct_prompt="task",
++            primitives=p,
++            state=NS(),
++            chat_id="v1-approval-1",
++        )
++        == "better answer"
++    )
++    for _ in range(2):
++        v1.record_escalation(
++            plan, chat_id="v1-approval-1", request_keys={}, primitives=p
++        )
++    (row,) = records(isolated_store)
++    assert row["request_id"] == "v1-approval-1"
++
++
++def test_parked_targets_retain_each_attempt(isolated_store, monkeypatch):
++    from src.exceptions import RoleParkedError
++    from src.roles import Role
++
++    p = fake_primitives()
++    monkeypatch.setattr(
++        stages,
++        "get_escalation_chain",
++        lambda _: [Role.CODER_ESCALATION, Role.ARCHITECT_GENERAL],
++    )
++    p.llm_call.side_effect = [
++        RoleParkedError(
++            role="coder_escalation", port=8081, holder="test", retry_after_s=1
++        ),
++        "better answer",
++    ]
++    assert quality(p)[0] == "better answer"
++    rows = records(isolated_store)
++    assert [r["downstream_outcome"] for r in rows] == [
++        "raised:RoleParkedError",
++        "returned",
++    ]
++    assert [r["selected_role"] for r in rows] == [
++        "coder_escalation",
++        "architect_general",
++    ]
++
++
++def test_stubbed_chat_turn_records_once(isolated_store, monkeypatch):
++    from fastapi.testclient import TestClient
++    from src.api import app
++    from src.api.routes.chat_pipeline import direct_stage
++    from src.api.routes.chat_utils import RoutingResult
++    from src.api.state import get_state
++
++    chat = importlib.import_module("src.api.routes.chat")
++    p = fake_primitives()
++    p.llm_call.side_effect = ["poor answer", "better answer"]
++    state = MagicMock()
++    state.progress_logger = None
++    routing = RoutingResult(
++        task_id="chat-1",
++        task_ir={},
++        use_mock=False,
++        routing_decision=["frontdoor"],
++        routing_strategy="test",
++    )
++    monkeypatch.setattr(
++        direct_stage, "_truncate_looped_answer", lambda answer, _: answer
++    )
++    monkeypatch.setattr(direct_stage, "_should_formalize", lambda _: (False, None))
++
++    async def direct_handler(request, state, **kwargs):
++        return direct_stage._execute_direct(
++            request, routing, p, state, time.perf_counter(), "frontdoor"
++        )
++
++    monkeypatch.setattr(chat, "_handle_chat", direct_handler)
++    previous = dict(app.dependency_overrides)
++    app.dependency_overrides[get_state] = lambda: state
++    try:
++        response = TestClient(app).post(
++            "/chat",
++            json={
++                "prompt": "offline test",
++                "real_mode": True,
++                "request_id": "chat-approval-1",
++            },
++        )
++    finally:
++        app.dependency_overrides.clear()
++        app.dependency_overrides.update(previous)
++    assert response.status_code == 200, response.text
++    assert response.json()["answer"] == "better answer"
++    assert p.llm_call.call_count == 2
++    (row,) = records(isolated_store)
++    assert row["request_id"] == "chat-approval-1"
++    assert row["behavior_signature_id"] is not None

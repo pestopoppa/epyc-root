@@ -1,0 +1,106 @@
+--- a/scripts/benchmark/run_repl_preview.py
++++ b/scripts/benchmark/run_repl_preview.py
+@@ -41,6 +41,8 @@
+ DEFAULT_N = 30
+ DEFAULT_TEMP = 0.7
+ DEFAULT_MAX_TOKENS = 700
++# Must be recorded in the predeclaration before collecting rerun samples.
++MAX_NO_ANSWER_FRACTION = 0.20
+ # production stack ports (frontdoor/architect/ingest...): a private server must never be one of these
+ DEFAULT_DENY_PORTS = "8070,8071,8072,8080,8081,8082,8083,8090,8180,8181,8182,8000,8100"
+ 
+@@ -63,7 +65,12 @@
+     exec(compile(open(sys.argv[2]).read(), "<reply>", "exec"), {"batch": batch, "FINAL": FINAL, "__name__": "__repl__"})
+ except BaseException as e:
+     print(json.dumps({"error": type(e).__name__ + ": " + str(e)[:200]})); sys.exit(0)
+-print(json.dumps({"final": _out[-1] if _out else None}))
++if not _out:
++    print(json.dumps({"missing_final": True}))
++elif isinstance(_out[-1], bool) or not isinstance(_out[-1], (int, float, str)):
++    print(json.dumps({"non_scalar_final": True}))
++else:
++    print(json.dumps({"final": _out[-1]}))
+ """
+ 
+ 
+@@ -85,13 +92,15 @@
+             return None, "exec_failed:" + type(e).__name__
+     if "error" in res:
+         return None, "code_error"
++    if res.get("missing_final"):
++        return None, "missing_final"
++    if res.get("non_scalar_final"):
++        return None, "non_scalar_final"
+     f = res["final"]
+-    if isinstance(f, bool) or not isinstance(f, (int, float, str)):
+-        return None, "bad_final"
+     try:
+         return int(float(f)), "code"
+-    except ValueError:
+-        return None, "bad_final"
++    except (ValueError, OverflowError):
++        return None, "nonnumeric_final"
+ 
+ 
+ def build_prompt(fx: dict, rendering: str) -> str:
+@@ -126,6 +135,8 @@
+     try:
+         if res.get("mock") or not res.get("complete"):
+             status["skipped"] = "mock result" if res.get("mock") else "partial result (rerun resumes from --cell-dir)"
++        elif not res.get("valid", False):
++            status["skipped"] = "invalid result"
+         else:
+             root = next((r for r in ([epyc_root, os.environ.get("EPYC_ROOT")] + list(BELIEF_ROOTS)) if r and
+                          (Path(r) / "scripts/vidya/adapters/repl_preview.py").is_file()), None)
+@@ -192,7 +203,9 @@
+         for r in rows:
+             c["no_answer" if r["answer"] is None else fx_mod.classify(r["answer"], fx, rendering)] += 1
+         n = len(rows)
+-        out[key] = {"n": n, **c, "correct_rate": round(c["correct"] / n, 4) if n else None}
++        valid = bool(n) and c["no_answer"] * 5 <= n
++        out[key] = {"n": n, **c, "correct_rate": round(c["correct"] / n, 4) if valid else None,
++                    "valid": valid, "invalid_reason": None if valid else "no_answer exceeds 20% or empty cell"}
+     return out
+ 
+ 
+@@ -254,13 +267,15 @@
+             cf = Path(a.cell_dir) / f"{name}__{rendering}.jsonl" if a.cell_dir else None
+             if cf is not None and cf.exists():
+                 rows = [json.loads(x) for x in cf.read_text().splitlines() if x.strip()]
++                if len(rows) > a.n or any("reply" not in row for row in rows):
++                    sys.exit(f"refusing legacy or oversized cell {cf}; use a fresh cell directory")
+             for i in range(len(rows), a.n):
+                 stopped = should_stop()
+                 if stopped:
+                     break
+                 text = mock_reply(rendering, i) if a.mock else chat(url, prompt, a.temperature, a.max_tokens, seed=1000 + i)
+                 ans, how = run_reply(text, fx["batch"])
+-                rows.append({"i": i, "answer": ans, "how": how})
++                rows.append({"i": i, "answer": ans, "how": how, "reply": text})
+                 if cf is not None:
+                     with cf.open("a") as f:
+                         f.write(json.dumps(rows[-1]) + "\n")
+@@ -270,10 +285,13 @@
+         if stopped:
+             break
+     complete = all(len(r) == a.n for r in cells.values()) and len(cells) == len(roles) * len(renderings)
++    counts = tally(fx, cells)
++    valid = complete and all(c["valid"] for c in counts.values())
+     res = {"schema": "epyc.repl_preview_result.v1", "mock": a.mock, "n_per_cell": a.n, "temperature": a.temperature,
+            "roles": [r[0] for r in roles], "renderings": renderings, "fixture_expected": fx["expected"],
+            "predeclared": "artifacts/queue-builders-3-20261021/dripreview1/PREDECLARED.md (root repo)",
+-           "complete": complete, "stopped": stopped, "counts": tally(fx, cells), "rows": cells, "wall_s": round(time.time() - t0, 1),
++           "complete": complete, "valid": valid, "validity_max_no_answer_fraction": MAX_NO_ANSWER_FRACTION,
++           "stopped": stopped, "counts": counts, "rows": cells, "wall_s": round(time.time() - t0, 1),
+            "note": "a mock result is plumbing only and must never be cited as a finding" if a.mock else ""}
+     Path(a.out).write_text(json.dumps(res, indent=1) + "\n")
+     print(json.dumps(res["counts"], indent=1))
+@@ -282,7 +300,7 @@
+         st = belief_capture(res, Path(a.out).resolve(), roles, rg, fx,
+                             a.run_id or time.strftime("dripreview-%Y%m%dT%H%M%SZ", time.gmtime()), a.epyc_root)
+         print("belief capture:", st["written"] or st["skipped"] or st["error"])
+-    return 0 if complete else 75     # 75 = partial (stop/deadline); rerun resumes from --cell-dir
++    return 75 if not complete else (0 if valid else 2)  # partial / valid / invalid
+ 
+ 
+ if __name__ == "__main__":

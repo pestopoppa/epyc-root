@@ -1,0 +1,187 @@
+{
+  "schema": "kvu16h.p3.durable-source-copy.v1",
+  "scratch_original": "/mnt/raid0/llm/tmp/kvu/p3-row-r2-20261104",
+  "copy_policy": "source evidence only; absolute launcher/spec/catalog/source pins retain original scratch paths",
+  "exclusions": [
+    {
+      "pattern": "contexts/**",
+      "reason": "prompt/context input data"
+    },
+    {
+      "pattern": "server-argv.txt",
+      "reason": "argv input excluded by owner"
+    },
+    {
+      "pattern": "model-receipt.json",
+      "reason": "model receipt excluded by owner"
+    },
+    {
+      "pattern": "run-*/**,qualification-*/**,result.json,linkage-*.txt",
+      "reason": "runtime captures excluded"
+    },
+    {
+      "pattern": "*.gguf,*.so*,llama-server,**/__pycache__/**",
+      "reason": "large binaries and bytecode excluded"
+    }
+  ],
+  "scratch_writes": "Owner-authorized repair only: current spec checksum entry and launcher source_pin updated after lineage/task-pointer amendment; no other runtime bytes changed.",
+  "tests": "copy-only;18 offline tests previously passed; no tests or compute run during copy",
+  "files": [
+    {
+      "path": "launch.sh",
+      "sha256": "08834d0d9ee04276e02e22e91acce58e54bb9bb918ea88ede665d3491e24c34f",
+      "size": 2520
+    },
+    {
+      "path": "spec.json",
+      "sha256": "2ae648e537b2e721ca635215e488c56b2de98cf317e03628ecf055a7215e3e61",
+      "size": 1997
+    },
+    {
+      "path": "job.py",
+      "sha256": "2c253f49e8b8d5ab58ba0877a2b9c839ae7a1680d3d6fcc269defce75c0c3439",
+      "size": 6451
+    },
+    {
+      "path": "p3_kvu_probe.py",
+      "sha256": "af5c950a09b63d46317c9d6f90db18701874d72e4b801f371c6592aeacffcb7a",
+      "size": 39241
+    },
+    {
+      "path": "draft_guard.py",
+      "sha256": "0632b01982121ec1a8b7182571419a7212438e9805503dbf4d1abfb05d04f844",
+      "size": 1709
+    },
+    {
+      "path": "x0_common.py",
+      "sha256": "0a2cad87e35033cc10f09b4f9f1a3135319c22e0d1fb58be05e8144e6ae2cf8e",
+      "size": 8668
+    },
+    {
+      "path": "x0_shape_b.py",
+      "sha256": "96d285d35ae362890b98f9860e5e6808bc2e4f1751ebb821bacd593a245bea27",
+      "size": 14229
+    },
+    {
+      "path": "identity.py",
+      "sha256": "53d84f6dc3ca622278955047484353366b70075ac140b38cf161896091066379",
+      "size": 797
+    },
+    {
+      "path": "parent_death.py",
+      "sha256": "5b85692696e309f36a2a533f79ef0566c9da18823def3b9454e894529e4f8a11",
+      "size": 533
+    },
+    {
+      "path": "pdeath_exec.py",
+      "sha256": "18fcc18b990dd5e1570b6c87a861b0f570264444624454f95fe2cb06f21716f2",
+      "size": 352
+    },
+    {
+      "path": "test_job.py",
+      "sha256": "acbe2d879dd241dcdf8f1ccb332e13788f996cb237ea9f532323cc7f48ace52b",
+      "size": 2730
+    },
+    {
+      "path": "test_p3_lifecycle.py",
+      "sha256": "4200182cd555774e397df8a6656058441f93e88531b362145c6330a04a0ee93d",
+      "size": 3736
+    },
+    {
+      "path": "test_private_lock.py",
+      "sha256": "0930e7a929f8566f007e9ff4163f64acc18d4425d102e704df51037b356eeb9f",
+      "size": 2968
+    },
+    {
+      "path": "source.sha256",
+      "sha256": "045640baa6c14600c72393d60258429e6dce6e54bfc657aa62646b536c6d0009",
+      "size": 4674
+    },
+    {
+      "path": "runtime.sha256",
+      "sha256": "3cb7242f993ab0347503f28e9bb28465bc3ea84019fd74f6d01c036f3ea28811",
+      "size": 995
+    },
+    {
+      "path": "region-lock",
+      "sha256": "2d595510f54702ef49a9027c8f8cc4d010f7da2319fb44123b3bf598969bf0fb",
+      "size": 585
+    },
+    {
+      "path": "REGION-LOCK-INPUTS.sha256",
+      "sha256": "1fa32684310fb345252999f61815a6e4f1aa23e5f435d84304bef79bfbc436c4",
+      "size": 835
+    },
+    {
+      "path": "REGION-LOCK-PYTHON-ALLOW.txt",
+      "sha256": "f169fc8f65912c4995fa1a011fe9a4e596f664575e2c76fcf65d635d51cdd043",
+      "size": 130
+    },
+    {
+      "path": "lock_bootstrap.py",
+      "sha256": "c1ebc7ef623ee911353145b119d063860d550285a4930a5ecc2324a528d1e885",
+      "size": 1759
+    },
+    {
+      "path": "lock-catalog.json",
+      "sha256": "ccac432287c5daa7474a63cc53f468fd2af515a3811e4a1da51e7f84b4ac28ab",
+      "size": 2154
+    },
+    {
+      "path": "measurement-sufficiency.json",
+      "sha256": "30d9a30cb583d7101fb40182b1a300e11807a67998d0afefa1b82f9ab7a19662",
+      "size": 1912
+    },
+    {
+      "path": "review-receipt.json",
+      "sha256": "fcae7bc0fd48965e86e83945c72b437f9ff05c65c45ffe44e23563eba3938cc8",
+      "size": 1208
+    },
+    {
+      "path": "preflight.json",
+      "sha256": "e5760cd0c38b5dd7ae959a56e6347b5968748a07a78c7f5881a678cfe6ad7f71",
+      "size": 650
+    },
+    {
+      "path": "offline-tests.txt",
+      "sha256": "b01a3d8472dd98ab7e0fb5c54c75a86c4f6b1d186bf4b62d495bd0f90558c3d9",
+      "size": 2485
+    },
+    {
+      "path": "lock-source/cpu_region_lock.py",
+      "sha256": "8c6cff10a569f77337d842f7e7084e34504330de75e85b8e48b0fc298c5d212b",
+      "size": 49732
+    },
+    {
+      "path": "lock-source/gpu_quiet_lock.py",
+      "sha256": "7e79fa19d92d50dd5b94611c83316d66a4c935f6e0badd5e0fd335153b91fd58",
+      "size": 16183
+    },
+    {
+      "path": "lock-source/instance_topology.py",
+      "sha256": "b6d7b679bd063883f9f1ab50eb293b7aa2675fddca1665e949d86f1a1860b77c",
+      "size": 26379
+    },
+    {
+      "path": "lock-source/lock_queue.py",
+      "sha256": "27e562521085308ea0a13fbb4b6739eac86725f012105dbf185883fa113e84ad",
+      "size": 18518
+    },
+    {
+      "path": "lock-source/region_claim_receipt.py",
+      "sha256": "cee7fc7f4ab8dc7fe756b3720c6ee126f8f8b9708de5c62ca74ac18fed290801",
+      "size": 10031
+    },
+    {
+      "path": "lock-source/region_lock_cli.py",
+      "sha256": "57b60a24ac77365223afa6a0458edf96a2c49b905ca9a43ada05f270bad74fab",
+      "size": 35607
+    }
+  ],
+  "catalog_repair": {
+    "reason": "owner amended task pointer and lineage/supersedes after sealing",
+    "source_manifest_sha256": "045640baa6c14600c72393d60258429e6dce6e54bfc657aa62646b536c6d0009",
+    "spec_sha256": "2ae648e537b2e721ca635215e488c56b2de98cf317e03628ecf055a7215e3e61",
+    "verification": "all source manifest entries read-only verified after repair; no tests or compute run"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "status": "DRAFT_NOT_PUBLISHABLE",
+  "id": "id9-behavior-aime25-pilot",
+  "lane": "gpu",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "model_sha256": null,
+  "binary_path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+  "kernel_manifest": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/SHA256SUMS",
+  "kernel_source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "request_plan": "/mnt/raid0/llm/worktrees/mains/h-intake-derived-work-2026-07-25/data/experiments/id9-behavior-pilot/request_plan.json",
+  "manifest": "/mnt/raid0/llm/worktrees/mains/h-intake-derived-work-2026-07-25/data/experiments/id9-behavior-pilot/manifest.json",
+  "result_format": "jsonl",
+  "decision_rule": {
+    "scope": "exploratory pilot only; no adoption or matched-accuracy inference",
+    "pass": "All 75 paired draws decided, no truncation or request errors, behavior correct_count >= baseline correct_count, and sum(prompt_tokens+completion_tokens) behavior <= 0.90 * baseline; report paired differences and prefill/decode/wall separately.",
+    "otherwise": "No pilot benefit established. Out-of-coverage scores make pilot inconclusive, never incorrect.",
+    "amortization": "Offline abstraction used no model tokens. Human curation cost remains separately reported; no fully automated pipeline-efficiency claim."
+  },
+  "execution_budget": {
+    "concurrency": 1,
+    "max_requests": 150,
+    "max_completion_tokens": 2457600,
+    "wall_cap_seconds": 14400,
+    "no_adoption_claim": true,
+    "thinking": false,
+    "top_k": 20,
+    "cache_policy": "Disable cross-request prompt cache reuse or record cache hits and report cold/warm timing separately."
+  },
+  "remaining_implementation": [
+    "Review and commit the runner and launcher, provide rowflow-compatible literal shell entrypoint, and publish for keeper qualification; the owner must not run keeper dry runs.",
+    "Before grant: record verified SHA256 of model weights and verify immutable kernel manifest.",
+    "During each request: capture non-zero GPU residency and KFD process identity, complete raw response, usage and prefill/decode timing; cache_prompt=false or report cache-hit split.",
+    "Use canonical answer_scoring.score_response_or_error, preserving None/cause and finish_reason truncation.",
+    "Append native result per completed request, resume only matching plan fingerprint, terminate only owned server PID and verify death."
+  ]
+}

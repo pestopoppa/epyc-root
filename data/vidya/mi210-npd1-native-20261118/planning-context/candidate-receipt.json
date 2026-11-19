@@ -1,0 +1,245 @@
+{
+  "actor_receipt_id": "sha256:7a4ec099d58b282a20071df55bed70c201cad313bae07e5d89703cdeed925bb5",
+  "as_of": "2026-11-18T15:42:21.025407+00:00",
+  "bounded": 1,
+  "claims": [
+    {
+      "anchor_value": null,
+      "claim_id": "clm_mi210_616199b8579ea3e850d41a41",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-current/replay/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-01.json",
+      "mechanism_id": "",
+      "metric": "native_request_tpot_ms",
+      "metric_direction": "lower_better",
+      "model_file": "",
+      "n_pairs": null,
+      "native_arm": "gpu_cpu",
+      "native_pair": "p1",
+      "native_tpot_ms": 39.500798828125,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "original_locator": "data/vidya/mi210-npd1-native-20261118/capture/attempt-01.json",
+      "original_run_id": "belief-7290a4a4fdfa47deb2b049031e42a89f",
+      "outcome": "",
+      "predicted_ms": 20224.409,
+      "predicted_n": 512,
+      "protocol_id": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "mi210-paired-raw",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "harness",
+      "unit": "ms/token",
+      "value": 39.5007988281,
+      "varied": []
+    },
+    {
+      "anchor_value": null,
+      "claim_id": "clm_mi210_6fb7a443ec5f6ecf020ee321",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-current/replay/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-03.json",
+      "mechanism_id": "",
+      "metric": "native_request_tpot_ms",
+      "metric_direction": "lower_better",
+      "model_file": "",
+      "n_pairs": null,
+      "native_arm": "cpu",
+      "native_pair": "p2",
+      "native_tpot_ms": 36.270224609375,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "original_locator": "data/vidya/mi210-npd1-native-20261118/capture/attempt-03.json",
+      "original_run_id": "belief-7290a4a4fdfa47deb2b049031e42a89f",
+      "outcome": "",
+      "predicted_ms": 18570.355,
+      "predicted_n": 512,
+      "protocol_id": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "mi210-paired-raw",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "harness",
+      "unit": "ms/token",
+      "value": 36.2702246094,
+      "varied": []
+    },
+    {
+      "anchor_value": null,
+      "claim_id": "clm_mi210_a9797ee562fe801f9a7f440c",
+      "effect_rel": null,
+      "grade": "Judged/Located",
+      "knob_family": "",
+      "knobs": {},
+      "linked_claim_ids": [],
+      "locator": "/mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-current/replay/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-00.json",
+      "mechanism_id": "",
+      "metric": "native_request_tpot_ms",
+      "metric_direction": "lower_better",
+      "model_file": "",
+      "n_pairs": null,
+      "native_arm": "cpu",
+      "native_pair": "p1",
+      "native_tpot_ms": 41.7874453125,
+      "noise_floor_rel": null,
+      "not_evidence": true,
+      "original_locator": "data/vidya/mi210-npd1-native-20261118/capture/attempt-00.json",
+      "original_run_id": "belief-7290a4a4fdfa47deb2b049031e42a89f",
+      "outcome": "",
+      "predicted_ms": 21395.172,
+      "predicted_n": 512,
+      "protocol_id": "",
+      "recipe": "",
+      "reps": 1,
+      "retrofit": false,
+      "role": "",
+      "run": null,
+      "source_kind": "mi210-paired-raw",
+      "stack_regime": "",
+      "stale_epoch": false,
+      "status": "verified",
+      "tier": "harness",
+      "unit": "ms/token",
+      "value": 41.7874453125,
+      "varied": []
+    },
+    {
+      "claim_id": "clm_mi210_b97aab0a9197a0b3f1e31bf7",
+      "grade": "Judged/Located",
+      "metric": "native_request_tpot_ms",
+      "metric_direction": "lower_better",
+      "native_arm": "gpu_cpu",
+      "native_pair": "p2",
+      "native_tpot_ms": 37.273232421875,
+      "omission_reason": "bounded",
+      "original_locator": "data/vidya/mi210-npd1-native-20261118/capture/attempt-02.json",
+      "original_run_id": "belief-7290a4a4fdfa47deb2b049031e42a89f",
+      "predicted_ms": 19083.895,
+      "predicted_n": 512,
+      "protocol_id": "",
+      "reps": 1,
+      "unit": "ms/token"
+    }
+  ],
+  "consumer": "autokernel.planner",
+  "control_unrelated_consumer": {
+    "claims": [],
+    "consumer": "autopilot.planner"
+  },
+  "control_unrelated_model": {
+    "background_claim_ids": [
+      "clm_mi210_616199b8579ea3e850d41a41",
+      "clm_mi210_6fb7a443ec5f6ecf020ee321",
+      "clm_mi210_a9797ee562fe801f9a7f440c"
+    ],
+    "reliable_claim_ids": [],
+    "target": {
+      "backend": "gpu",
+      "device": "gfx90a",
+      "model_path": "Qwen3.6-35B-A3B-Q4_K_M.gguf",
+      "quant": "Q4_K_M",
+      "surface": ""
+    }
+  },
+  "entry_point": "AgentPlanner.propose -> belief_context.prepare -> loop_beliefs.py prepare",
+  "ingest": {
+    "frames": 12,
+    "refused": 0,
+    "rows": 4
+  },
+  "ledger": {
+    "frame_count": 12,
+    "head_hash": "sha256:754a5b7a4e563793b57bf50214eb11236de9ea4ce536e0b761a92846826bbd9c",
+    "intake_index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "scratch": true
+  },
+  "native_model_applicability": {},
+  "original_files_sha256": {
+    "RESULT.json": "a9fb909db30a5ea3a9dfca7902100c2dc6e383721abb4455545fadea9858c93b",
+    "capture/attempt-00.json": "ef36473da8a22ebe75746d224bc92775266e85d9a1204ce73c3bdad13700f640",
+    "capture/attempt-01.json": "731e719e8747cbf9e4e3d919648de86ba298d5119e37d450353200fae11c48f4",
+    "capture/attempt-02.json": "4acec47afd8745d76349cc3e73915c2d692cb0e9dcfb5e71d36a8ab790040cf1",
+    "capture/attempt-03.json": "0a7cd903b3cb043bdc2ff85a817e583139bda2a44e797d2b3d74149e59a1bcac",
+    "capture/declaration.json": "62d0368f4300ed2cd8e010ed446b82c2220f077c9d2be50981a900c92a7aad86",
+    "capture/terminal.json": "e03a481dc34a6d5c5904834fb73f9cba6b278a4bb21d8beb4123a361cb0f6787",
+    "owner-verdict.json": "fb1c949d945ed47ccbc47eba82056f76194cb940ac2ece3a70d8b1b493cd05af"
+  },
+  "original_filing": "data/vidya/mi210-npd1-native-20261118",
+  "original_run_id": "belief-7290a4a4fdfa47deb2b049031e42a89f",
+  "original_terminal_row_sha256": "bb87c7dd6a5a7e9e0a7f855ae4d7e96e6c310c88d751ffe2b33e96ecf2057ecb",
+  "original_weight_file_count": 4,
+  "reader_checkout": {
+    "behind": 3,
+    "current": true,
+    "error": null,
+    "head": "3e5562f640b51276fdcb1e06c6e5570d14acea54",
+    "oldest_missing_age_s": 452.0,
+    "origin_main": "ee88610ba36780f505212c0338e7c0daabcaed5d",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
+    "within_grace": true
+  },
+  "reader_sha256": "8f1b6d02c531c429101d35c890945c6237dfcc08c5a26a0feadbeeedafdf52d9",
+  "reliance": {
+    "accepted": [],
+    "declared": [
+      "clm_mi210_a9797ee562fe801f9a7f440c",
+      "clm_mi210_616199b8579ea3e850d41a41",
+      "clm_mi210_b97aab0a9197a0b3f1e31bf7",
+      "clm_mi210_6fb7a443ec5f6ecf020ee321"
+    ],
+    "rejected": [
+      {
+        "claim_id": "clm_mi210_a9797ee562fe801f9a7f440c",
+        "reason": "host_tier"
+      },
+      {
+        "claim_id": "clm_mi210_616199b8579ea3e850d41a41",
+        "reason": "host_tier"
+      },
+      {
+        "claim_id": "clm_mi210_b97aab0a9197a0b3f1e31bf7",
+        "reason": "not_presented"
+      },
+      {
+        "claim_id": "clm_mi210_6fb7a443ec5f6ecf020ee321",
+        "reason": "host_tier"
+      }
+    ]
+  },
+  "rendered_excerpt_sha256": "40a9f4c2a050efb456651cc4d48e156ab465b66aaf430a05a270440ee5eb92b9",
+  "schema": "epyc.vidya.mi210_npd1_planning_canary.v1",
+  "scope": "Four original per-request native TPOT observations as consumer background only. No modeled placement effect, paired inference or promotion. No inference rerun or canonical ledger write.",
+  "shown": 3,
+  "status": "candidate-passed",
+  "stop_boundary": "AgentPlanner._proposal_from_agent intercepted before backend execution",
+  "unmodified_reader_control": {
+    "claims": [],
+    "reader_checkout": {
+      "current": true,
+      "error": null,
+      "head": "6f5cf4b45ea023a20546f4d27256487217b71f90",
+      "origin_main": "6f5cf4b45ea023a20546f4d27256487217b71f90",
+      "root": "/mnt/raid0/llm/views/epyc-root-main"
+    },
+    "reasons": [
+      "no_applicable_claims"
+    ]
+  }
+}

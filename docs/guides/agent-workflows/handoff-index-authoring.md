@@ -44,6 +44,10 @@ Exactly one table shape, in every domain index:
    `handoffs/archived/<index>-history-through-YYYY-MM-DD.md` with a "historical ledger only" banner.
    Delete the row from the index; never strike it through in place.
 
+## Measurement tasks carry a stop rule
+
+A handoff checkbox that launches a measurement includes a `Stop rule:` field — question, expected effect versus sample-size error, checkpoints, stop-on-answer and stop-on-futility (formal-gate cells: futility-only). It lives in the handoff task, never in the index row. Canonical: [`measurement-sufficiency.md`](measurement-sufficiency.md).
+
 ## Promote or inline? (a checkbox vs its own handoff + row)
 
 Derived 2026-09-16 (RTG-46) on the *shape* of intake-1309#record's table, with **our own constants**.
@@ -78,7 +82,38 @@ these bands. Do not use intake-1309#record's 10/40 constants: they are unmeasure
    candidate to inline (10 of 173 active handoffs on 2026-09-16).
 4. **Failure isolation, independent of reuse.** Promote at any size when the item can be *blocked
    on something its parent is not*, or its failure must not stall the parent. `readiness` is
-   derived per node, so a gate on an inline box either blocks the whole parent or is invisible.
+   derived per node, so a gate on an inline box either blocks the whole parent or is invisible —
+   unless the parent is a folded handoff with **per-track gates** (below).
+
+5. **Splitting an existing handoff needs a stated justification (operator, 2026-11-07).** A split
+   is allowed only when it is justified and indispensable — a different owner, a different gate, or
+   a first screen that no longer answers "what next?" — and the reason goes in the split commit.
+   Size alone is not one (see the compaction rule in the wrap-up routine: move completed detail to a
+   sibling instead). Worked example: `95bb8998b`/`af8a96c7f` split kernel-champion-and-promotion into
+   the AKX program (workspace-a6), the v11 checklist (main-inf22) and ws58 calibration, by owner.
+6. **"No owner" is never a decline reason (operator, 2026-11-07).** An orphaned box, or a stale lane's
+   box, is *adopted* by the session whose handoff it sits in (or routed to a named owner) — never
+   declined or dropped because nobody claims it. 38 orphans were adopted on that rule in the 11-07 split.
+
+### Per-track gates in a folded handoff (route 1b)
+
+A folded handoff has one `## Track: <name>` section per source. A track declares its own gates with
+exactly one marker inside its section, conventionally the line under the heading:
+
+```markdown
+## Track: kv-prefix-fork-and-paged-attention
+<!-- gate: INF-65, BRF-T2-1 -->
+```
+
+Each ref is an index **row id** (gates while that row's handoff has dispatchable work, the same test
+as a `Deps` cell), a **track ref** `<ROW>#<track>` (gates while that one `## Track:` of a track-gated
+handoff has dispatchable work — route 1b uses it when a handoff and the handoff it gated land in the same
+file, where the row id would gate the file on itself) or a **task id** (gates until every box headed
+`**<id>**` is ticked); `<!-- gate: none -->` declares the track ungated. `index_state.py` then derives `readiness` per track: a marked track is
+blocked only by its own gates, an unmarked track and boxes outside every track inherit the row's
+`Deps`, and the node is `ready` if any track is ready. A handoff with no marker at all is computed
+exactly as before. `--check` reports `BAD GATE` for an unknown ref, a track ref whose row has no such track,
+or a second marker in one track.
 
 ## What this replaces, and why
 

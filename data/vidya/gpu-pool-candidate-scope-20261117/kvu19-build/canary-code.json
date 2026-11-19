@@ -1,0 +1,8 @@
+{
+  "schema": "epyc.vidya.kvu19_canary_preparation.v1",
+  "source": "scripts/vidya/canary/kvu19_context.py",
+  "tests": "tests/vidya/test_kvu19_context.py",
+  "validation": "9 focused canary/adapter tests passed; CLI help rendered; no live replay",
+  "scope": "Requires completed original 20-launch native result and sidecar. Uses actual AutoKernel planner and child reader with backend intercepted. Device-only context; CPU exclusion and no accepted reliance required.",
+  "live_canary_passed": false
+}

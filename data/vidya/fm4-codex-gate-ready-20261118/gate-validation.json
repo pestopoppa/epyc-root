@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/experiments/test_fm4_codex_gate_canary.py",
+    "tests/experiments/test_fm4_native_canary.py",
+    "tests/experiments/test_fm4_codex_dispatch.py",
+    "tests/vidya/test_fm4_gate_acceptance.py"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/source",
+  "ended_at": "2026-11-18T17:33:15.809369Z",
+  "official_native_acceptance": false,
+  "returncode": 0,
+  "schema": "fm4.codex_gate.readiness_validation.v1",
+  "source": "original publisher smoke gate execution",
+  "started_at": "2026-11-18T17:33:11.613379Z",
+  "stderr": "",
+  "stdout": "...........ss........................................................... [ 70%]\n..............................                                           [100%]\nP1-A carrier invariants: 14 tuples from 1 source kinds checked (byte identity / grade invariance), 0 violation(s)\n100 passed, 2 skipped in 4.02s\n",
+  "task_outcome": null
+}

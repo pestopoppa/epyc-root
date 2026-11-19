@@ -1,0 +1,46 @@
+{
+  "case_count": 1,
+  "checkpoints": [
+    "complete fixture baseline accepted",
+    "barrier-synchronized mutation refused"
+  ],
+  "decision_rule": "PASS only for accepted complete private fixture baseline followed by refusal on synchronized in-place mutation during a second validate_maps call. Any missing or unexpected outcome is INVALID/unknown. Smoke output goes only to FILLER_DRYRUN_RESULT_PATH. Full output is accepted only with matching fresh attempt id/nonce/context and source/input seals. No claim for mutation after final revalidation, build_identity, native loading, or full custody chain.",
+  "dryrun_native_result": true,
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh"
+  },
+  "estimate_s": 300,
+  "expected_effect_vs_sample_error": "Deterministic protocol qualification, not a population estimate.",
+  "gate_class": "futility-only at interim looks",
+  "gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.MAP-REVALIDATION",
+  "id": "kvfork17-alt17-map-revalidation-safe-20261104",
+  "keep": [
+    "spec.json",
+    "launch.sh",
+    "qualify.py",
+    "complete.py",
+    "custody.py",
+    "binding.json",
+    "input_seal.json",
+    "out/**",
+    "done.json"
+  ],
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17-safe/launch.sh",
+  "min_window_s": 300,
+  "model_free": true,
+  "owner": "h-kvfork",
+  "priority_rank": 45,
+  "question": "Does the exact source-bound custody.validate_maps reject a synchronized same-UID in-place mutation before a second map capture?",
+  "regions": "any-cpu-quarter",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17-safe/out/RESULT.json",
+  "schema": "epyc.row.v3",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17-safe",
+  "shape": "quarter",
+  "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17-safe/STOP",
+  "stop_rule": "Stop after one case or first INVALID, STOP, timeout, or deadline; no retries.",
+  "unit_key": "case_count",
+  "window_s": 900
+}

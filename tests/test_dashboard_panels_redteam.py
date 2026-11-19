@@ -516,13 +516,10 @@ class MalformedOutcomeContractTest(unittest.TestCase):
             out = server.outcome_payload()
         self.assertIsNone(out["outcome_progress"]["blockers"])
 
-    def test_the_deployed_page_still_tolerates_the_null(self):
-        """COMPLIANT-PATH CONTROL: ``static/handoffs.html`` reads blockers through
-        ``Array.isArray(op.blockers)?op.blockers:[]``, so the card renders exactly
-        as before. Only the wire changed."""
-        page = (Path(server.__file__).resolve().parent
-                / "static" / "handoffs.html").read_text(encoding="utf-8")
-        self.assertIn("Array.isArray(op.blockers)?op.blockers:[]", page)
+    def test_the_null_blockers_wire_is_serialisable(self):
+        """COMPLIANT-PATH CONTROL: ``static/handoffs.html`` no longer renders the
+        outcome card (removed 2026-11-10); the API contract stays, so the null
+        wire must remain serialisable and cannot 500."""
         with _Artifact("AUTOPILOT_OUTCOME_JSON", None):
             json.dumps(server.outcome_payload())   # serialisable; cannot 500
 

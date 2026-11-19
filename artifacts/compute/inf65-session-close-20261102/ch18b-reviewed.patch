@@ -1,0 +1,713 @@
+--- a/src/llama-kv-cells.h
++++ b/src/llama-kv-cells.h
+@@ -354,6 +354,23 @@
+         }
+ 
+         return -1;
++    }
++
++    // Prove that every integer position in [p0, p1) occurs exactly once for this sequence.
++    // This is occupancy only: it does not prove token provenance or safe rollback.
++    bool seq_pos_covers_unique(llama_seq_id seq_id, llama_pos p0, llama_pos p1) const {
++        if (seq_id < 0 || seq_id >= LLAMA_MAX_SEQ || p0 < 0 || p1 < p0) {
++            return false;
++        }
++        const auto & positions = seq_pos[seq_id];
++        auto it = positions.lower_bound(p0);
++        for (llama_pos p = p0; p < p1; ++p) {
++            if (it == positions.end() || it->first != p || it->second != 1) {
++                return false;
++            }
++            ++it;
++        }
++        return true;
+     }
+ 
+     // the minimum position of sequence seq_id currently present in any of the cells
+--- a/src/llama-memory.h
++++ b/src/llama-memory.h
+@@ -113,6 +113,10 @@
+     virtual void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) = 0;
+     virtual void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) = 0;
+ 
++    // Fail closed unless this memory implementation proves full-prefix coverage
++    // and that removing a suffix is supported without snapshots.
++    virtual bool seq_can_reuse_full_prefix(llama_seq_id, llama_pos) const { return false; }
++
+     virtual llama_pos seq_pos_min(llama_seq_id seq_id) const = 0;
+     virtual llama_pos seq_pos_max(llama_seq_id seq_id) const = 0;
+ 
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -172,6 +172,8 @@
+     ggml_tensor * get_k_storage(int32_t il) const;
+ 
+     const llama_kv_cells & get_cells(llama_seq_id seq_id) const;
++    bool seq_has_unique_full_prefix(llama_seq_id seq_id, llama_pos end) const;
++
+ 
+     // state_read, plus the cells the restored tokens were placed in
+     // a cache that mirrors another one (the qwen4exp indexer) must not search for its own cells: two searches agree only by luck
+--- a/src/llama-kv-cache.cpp
++++ b/src/llama-kv-cache.cpp
+@@ -1261,6 +1261,14 @@
+     return layers[ikv].k;
+ }
+ 
++bool llama_kv_cache::seq_has_unique_full_prefix(llama_seq_id seq_id, llama_pos end) const {
++    if (other || seq_id < 0 || (size_t) seq_id >= seq_to_stream.size() || end <= 0) {
++        return false;
++    }
++    const auto & cells = v_cells[seq_to_stream[seq_id]];
++    return !cells.get_has_shift() && cells.seq_pos_covers_unique(seq_id, 0, end);
++}
++
+ const llama_kv_cells & llama_kv_cache::get_cells(llama_seq_id seq_id) const {
+     GGML_ASSERT(seq_id >= 0 && (size_t) seq_id < seq_to_stream.size());
+ 
+--- a/src/llama-kv-cache-iswa.h
++++ b/src/llama-kv-cache-iswa.h
+@@ -73,6 +73,8 @@
+     void seq_add (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, llama_pos shift) override;
+     void seq_div (llama_seq_id seq_id,                              llama_pos p0, llama_pos p1, int d) override;
+ 
++    bool seq_can_reuse_full_prefix(llama_seq_id seq_id, llama_pos end) const override;
++
+     llama_pos seq_pos_min(llama_seq_id seq_id) const override;
+     llama_pos seq_pos_max(llama_seq_id seq_id) const override;
+ 
+@@ -92,6 +94,7 @@
+ 
+ private:
+     const bool unified;
++    const bool reuse_standard_swa;
+ 
+     std::unique_ptr<llama_kv_cache> kv_base;
+     std::unique_ptr<llama_kv_cache> kv_swa;
+--- a/src/llama-kv-cache-iswa.cpp
++++ b/src/llama-kv-cache-iswa.cpp
+@@ -47,7 +47,8 @@
+            llama_memory_t   mem_other,
+     const layer_filter_cb & filter,
+     const  layer_reuse_cb & reuse,
+-    const  layer_share_cb & share) : unified(unified) {
++    const  layer_share_cb & share) : unified(unified),
++        reuse_standard_swa(hparams.swa_type == LLAMA_SWA_TYPE_STANDARD && hparams.n_swa > 0) {
+ 
+     // chain filters
+     const layer_filter_cb filter_base = [&](int32_t il) {
+@@ -137,6 +138,13 @@
+ void llama_kv_cache_iswa::seq_div(llama_seq_id seq_id, llama_pos p0, llama_pos p1, int d) {
+     kv_base->seq_div(seq_id, p0, p1, d);
+     kv_swa ->seq_div(seq_id, p0, p1, d);
++}
++
++bool llama_kv_cache_iswa::seq_can_reuse_full_prefix(llama_seq_id seq_id, llama_pos end) const {
++    // Both caches are ordinary KV caches with non-failing suffix removal.
++    // Full prefix on both is intentionally stronger than the SWA attention window.
++    return reuse_standard_swa && kv_base->seq_has_unique_full_prefix(seq_id, end) &&
++           kv_swa->seq_has_unique_full_prefix(seq_id, end);
+ }
+ 
+ llama_pos llama_kv_cache_iswa::seq_pos_min(llama_seq_id seq_id) const {
+--- a/include/llama.h
++++ b/include/llama.h
+@@ -821,6 +821,11 @@
+             llama_memory_t mem,
+               llama_seq_id seq_id);
+ 
++    // Conservative proof of complete full-prefix KV coverage and suffix removal capability.
++    // Does not establish token provenance or speculative draft consistency.
++    LLAMA_API bool llama_context_can_reuse_full_prefix(
++            const struct llama_context * ctx, llama_seq_id seq_id, llama_pos end);
++
+     // Check if the memory supports shifting
+     LLAMA_API bool llama_memory_can_shift(llama_memory_t mem);
+ 
+--- a/src/llama-context.cpp
++++ b/src/llama-context.cpp
+@@ -4336,6 +4336,13 @@
+     mem->seq_div(seq_id, p0, p1, d);
+ }
+ 
++bool llama_context_can_reuse_full_prefix(const llama_context * ctx, llama_seq_id seq_id, llama_pos end) {
++    if (!ctx || !ctx->get_cparams().causal_attn || !ctx->get_memory()) {
++        return false;
++    }
++    return ctx->get_memory()->seq_can_reuse_full_prefix(seq_id, end);
++}
++
+ llama_pos llama_memory_seq_pos_min(
+         llama_memory_t mem,
+           llama_seq_id seq_id) {
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -1,3 +1,4 @@
++#include "server-swa-reuse.h"
+ #include "server-context.h"
+ #include "server-chat.h"
+ #include "server-common.h"
+@@ -307,6 +308,8 @@
+     slot_state state = SLOT_STATE_IDLE;
+ 
+     server_prompt prompt;
++    // Only a successful cold prefill can arm this; it is consumed at the next task.
++    llama_tokens swa_cold_prefix;
+ 
+     bool prompt_save(server_prompt_cache & prompt_cache) const {
+         if (prompt.tokens.size() == 0) {
+@@ -335,6 +338,7 @@
+     }
+ 
+     bool prompt_load(server_prompt_cache & prompt_cache, const server_tokens & tokens) {
++        swa_cold_prefix.clear();
+         bool res = prompt_cache.load(prompt, tokens, ctx_tgt, ctx_dft, id);
+         if (!res) {
+             SLT_WRN(*this, "%s", "failed to load prompt from cache\n");
+@@ -344,6 +348,7 @@
+     }
+ 
+     void prompt_clear() {
++        swa_cold_prefix.clear();
+         SLT_TRC(*this, "clearing prompt with %zu tokens\n", prompt.tokens.size());
+ 
+         common_context_seq_rm(ctx_tgt, id, -1, -1);
+@@ -793,6 +798,7 @@
+         other.n_prompt_tokens_cache     = n_prompt_tokens_cache;
+         other.n_prompt_tokens_processed = n_prompt_tokens_processed;
+ 
++        other.swa_cold_prefix.clear();
+         other.prompt = prompt.clone();
+         other.init_sampler();
+     }
+@@ -1832,6 +1838,7 @@
+                 // if lora has changed, check to see if the cache should be cleared
+                 if (lora_should_clear_cache(slot.lora, task_loras)) {
+                     SLT_TRC(slot, "clearing cache for lora change. %zu loras -> %zu loras\n", slot.lora.size(), task.params.lora.size());
++                    slot.swa_cold_prefix.clear();
+                     slot.prompt.clear();
+                 } else {
+                     SLT_TRC(slot, "keeping cache for alora. %zu target loras\n", task_loras.size());
+@@ -2938,6 +2945,7 @@
+                     llama_tokens tokens;
+                     tokens.resize(slot->n_ctx);
+                     size_t token_count = 0;
++                    slot->swa_cold_prefix.clear();
+                     size_t nread = llama_state_seq_load_file(ctx_tgt, filepath.c_str(), slot->id, tokens.data(), tokens.size(), &token_count);
+                     if (nread == 0) {
+                         slot->prompt.clear(); // KV may already been invalidated?
+@@ -3030,6 +3038,7 @@
+ 
+                     llama_kv_compress_params ea_params = make_server_expected_attention_params(task);
+ 
++                    slot->swa_cold_prefix.clear();
+                     const int n_evicted = llama_kv_compress_evict(ctx_tgt, id_slot, ea_params);
+                     if (n_evicted < 0) {
+                         send_error(task, "Expected Attention compression failed", ERROR_TYPE_SERVER);
+@@ -3396,6 +3405,7 @@
+                     return;
+                 }
+ 
++                slot.swa_cold_prefix.clear();
+                 // Shift context
+                 int n_keep = slot.task->params.n_keep < 0 ? slot.task->n_tokens() : slot.task->params.n_keep;
+ 
+@@ -3733,6 +3743,7 @@
+ 
+                                 // reuse chunks from the cached prompt by shifting their KV cache in the new position
+                                 if (can_cache_reuse && n_cache_reuse > 0) {
++                                    slot.swa_cold_prefix.clear();
+                                     GGML_ASSERT(!slot.prompt.tokens.has_mtmd);
+ 
+                                     size_t head_c = n_past; // cache
+@@ -3792,11 +3803,15 @@
+ 
+                             llama_pos pos_next = slot.prompt.tokens.pos_next(n_past);
+ 
++                            // #30666: checkpoint validity follows the pre-restore shared prefix.
++                            const int n_prefix = n_past;
++
+                             // ref: https://github.com/ggml-org/llama.cpp/pull/24110
+                             const bool has_new_tokens = (n_past < slot.task->n_tokens());
+ 
+-                            // the largest pos_min required for a checkpoint to be useful
+-                            const auto pos_min_thold = std::max(0, pos_next - n_swa - (has_new_tokens ? 0 : 1));
++                            // #30580: SWA needs positions strictly above pos_eval - n_swa.
++                            const llama_pos pos_eval = pos_next - (has_new_tokens ? 0 : 1);
++                            const auto pos_min_thold = std::max(0, n_swa > 0 ? pos_eval - n_swa + 2 : pos_eval);
+ 
+                             if (n_past > 0 && n_past <= slot.prompt.n_tokens()) {
+                                 const auto pos_min = llama_memory_seq_pos_min(llama_get_memory(ctx_tgt), slot.id);
+@@ -3848,7 +3863,26 @@
+                                     SLT_WRN(slot, "%s\n", st1.str().c_str());
+                                 }
+ 
+-                                if (pos_min >= pos_min_thold) {
++                                // The snapshot comes only from a completed cold text prefill.
++                                // Restrict to plain target-only causal iSWA with no context
++                                // shifts, adapters, chunk reuse or shared-prompt mutation.
++                                const llama_pos eval_pos = pos_eval;
++                                const server_swa_reuse_gates reuse_gates = {
++                                    n_swa > 0,
++                                    !params_base.ctx_shift,
++                                    !ctx_dft && !spec,
++                                    !mctx && !slot.prompt.tokens.has_mtmd,
++                                    slot.lora.empty(),
++                                    !slot.task->is_parent() && !slot.task->is_child(),
++                                    slot.task->params.n_cache_reuse == 0,
++                                    pos_next == n_past,
++                                    eval_pos > 0,
++                                    server_swa_prefix_matches(slot.swa_cold_prefix, slot.prompt.tokens, input_tokens, (size_t) n_past),
++                                    llama_context_can_reuse_full_prefix(ctx_tgt, slot.id, eval_pos),
++                                };
++                                const bool proven_reuse = server_swa_reuse_allowed(reuse_gates);
++
++                                if (pos_min >= pos_min_thold && !proven_reuse) {
+                                     // search for a context checkpoint
+                                     const auto it = std::find_if(
+                                         slot.prompt.checkpoints.rbegin(),
+@@ -3898,10 +3932,10 @@
+                             }
+ 
+                             {
+-                                // erase any checkpoints with pos_max > pos_next
++                                // #30666: discard checkpoints that cover non-shared tokens
+                                 for (auto it = slot.prompt.checkpoints.begin(); it != slot.prompt.checkpoints.end();) {
+                                     const auto & cur = *it;
+-                                    if (cur.pos_max > pos_next) {
++                                    if (cur.pos_max > pos_next || cur.n_tokens > n_prefix) {
+                                         SLT_TRC(slot, "erased invalidated context checkpoint (pos_min = %d, pos_max = %d, n_tokens = %" PRId64 ", n_swa = %d, pos_next = %d, size = %.3f MiB)\n", cur.pos_min, cur.pos_max, cur.n_tokens, n_swa, pos_next, (float) cur.size() / 1024 / 1024);
+                                         it = slot.prompt.checkpoints.erase(it);
+                                     } else {
+@@ -3910,6 +3944,8 @@
+                                 }
+                             }
+                         }
++
++                        slot.swa_cold_prefix.clear(); // a proof is single-use, including fallback
+ 
+                         // [TAG_PROMPT_LOGITS]
+                         if (n_past == slot.task->n_tokens() && n_past > 0) {
+@@ -4499,6 +4535,15 @@
+                 }
+ 
+                 GGML_ASSERT(slot.task->need_sampling());
++
++                // Only after successful decode of an entirely cold prompt may its
++                // exact text become provenance for one later reuse attempt.
++                if (slot.n_prompt_tokens_cache == 0 && n_swa > 0 && !params_base.ctx_shift &&
++                    !ctx_dft && !spec && !mctx && slot.lora.empty() &&
++                    !slot.task->is_parent() && !slot.task->is_child() &&
++                    slot.task->params.n_cache_reuse == 0 && !slot.prompt.tokens.has_mtmd) {
++                    slot.swa_cold_prefix = slot.prompt.tokens.get_text_tokens();
++                }
+ 
+                 // prompt evaluated for next-token prediction
+                 slot.state = SLOT_STATE_GENERATING;
+--- a/tools/server/tests/unit/test_slot_save.py
++++ b/tools/server/tests/unit/test_slot_save.py
+@@ -545,3 +545,89 @@
+     })
+     assert res.status_code == 200
+     assert res.body["timings"]["prompt_n"] == n_live
++
++
++# a SWA window smaller than the prompt, so a saved state holds only the cells inside the window
++@pytest.fixture
++def swa_window_server(tmp_path):
++    swa = ServerPreset.tinygemma3()
++    swa.override_kv = "gemma3.attention.sliding_window=int:64"
++    swa.slot_save_path = str(tmp_path)
++    swa.temperature = 0.0
++    swa.n_predict = 8
++    return swa
++
++
++SWA_PROMPT = "The quick brown fox jumps over the lazy dog. " * 30
++
++
++def tokenize(server, text):
++    res = server.make_request("POST", "/tokenize", data={"content": text})
++    assert res.status_code == 200
++    return res.body["tokens"]
++
++
++# the first turn and the exact token continuation of it, so the next turn extends the saved state
++def swa_turns(server, id_slot):
++    res = server.make_request("POST", "/completion", data={
++        "prompt": tokenize(server, SWA_PROMPT),
++        "id_slot": id_slot,
++        "cache_prompt": True,
++        "return_tokens": True,
++    })
++    assert res.status_code == 200
++    return tokenize(server, SWA_PROMPT) + res.body["tokens"] + tokenize(server, " The end.")
++
++
++def swa_next(server, id_slot, prompt):
++    res = server.make_request("POST", "/completion", data={
++        "prompt": prompt,
++        "id_slot": id_slot,
++        "cache_prompt": True,
++    })
++    assert res.status_code == 200
++    return res.body["timings"]
++
++
++# a restored SWA state holds the window the next token needs, so it is reused as is
++def test_slot_restore_swa_window(swa_window_server):
++    server = swa_window_server
++    server.cache_ram = 0
++    server.start()
++
++    prompt = {id_slot: swa_turns(server, id_slot) for id_slot in [0, 1]}
++    assert prompt[0] == prompt[1]
++
++    res = server.make_request("POST", "/slots/0?action=save", data={"filename": "swa_slot0.bin"})
++    assert res.status_code == 200
++    res = server.make_request("POST", "/slots/0?action=erase")
++    assert res.status_code == 200
++    res = server.make_request("POST", "/slots/0?action=restore", data={"filename": "swa_slot0.bin"})
++    assert res.status_code == 200
++
++    timings = {id_slot: swa_next(server, id_slot, prompt[id_slot]) for id_slot in [0, 1]}
++
++    assert timings[0]["cache_n"]  == timings[1]["cache_n"]
++    assert timings[0]["prompt_n"] == timings[1]["prompt_n"]
++
++
++# a SWA state loaded back from the RAM prompt cache is reused as is
++def test_prompt_cache_swa_window(swa_window_server):
++    server = swa_window_server
++    server.n_slots = 1
++
++    def run(other_prompt_first):
++        server.start()
++        prompt = swa_turns(server, 0)
++        if other_prompt_first:
++            res = server.make_request("POST", "/completion", data={"prompt": "Once upon a time " * 60, "cache_prompt": True})
++            assert res.status_code == 200
++        timings = swa_next(server, 0, prompt)
++        server.stop()
++        return timings
++
++    direct = run(False)
++    cached = run(True)
++
++    assert cached["cache_n"]  == direct["cache_n"]
++    assert cached["prompt_n"] == direct["prompt_n"]
+--- a/tools/server/tests/unit/test_completion.py
++++ b/tools/server/tests/unit/test_completion.py
+@@ -659,3 +659,81 @@
+         assert "prompt_n" in timings and timings["prompt_n"] + timings["cache_n"] == n_prompt
+         assert "predicted_n" in timings and timings["predicted_n"] == n_predict
+         assert "tokens" in res.body and isinstance(res.body["tokens"], list)
++
++
++# a slot that switched to an unrelated prompt must not restore a context checkpoint of the previous one
++def test_completion_checkpoint_after_unrelated_prompt():
++    global server
++    server = ServerPreset.tinygemma3()
++    server.n_slots = 1
++    server.cache_ram = 0
++    server.temperature = 0.0
++    server.start()
++
++    def tokenize(content):
++        res = server.make_request("POST", "/tokenize", data={"content": content})
++        assert res.status_code == 200
++        return res.body["tokens"]
++
++    def top_logprobs(prompt, cache_prompt):
++        res = server.make_request("POST", "/completion", data={
++            "prompt": prompt,
++            "n_predict": 1,
++            "n_probs": 5,
++            "cache_prompt": cache_prompt,
++        })
++        assert res.status_code == 200
++        return [(p["id"], p["logprob"]) for p in res.body["completion_probabilities"][0]["top_logprobs"]]
++
++    tokens = tokenize("Purple elephants quietly compose sonnets about tax law")
++    expected = top_logprobs(tokens[:2], False)
++
++    # 5 tokens: the checkpoint 4 tokens before the end of the prompt holds only its first token
++    top_logprobs(tokenize("The quick brown fox jumps over the lazy dog")[:5], True)
++    top_logprobs(tokens[:1], True)
++    actual = top_logprobs(tokens[:2], True)
++
++    assert [tid for tid, _ in actual] == [tid for tid, _ in expected]
++    for (_, lp), (_, lp_expected) in zip(actual, expected):
++        assert lp == pytest.approx(lp_expected, abs=1e-3)
++
++
++# a restored context checkpoint must be kept for the next request that shares the same prefix
++def test_completion_checkpoint_kept_after_restore():
++    global server
++    server = ServerPreset.tinygemma3()
++    server.n_slots = 1
++    server.n_batch = 16
++    server.n_ubatch = 16
++    server.cache_ram = 0
++    server.temperature = 0.0
++    server.start()
++
++    def tokenize(content):
++        res = server.make_request("POST", "/tokenize", data={"content": content})
++        assert res.status_code == 200
++        return res.body["tokens"]
++
++    def cache_n(prompt):
++        res = server.make_request("POST", "/completion", data={
++            "prompt": prompt,
++            "n_predict": 1,
++            "cache_prompt": True,
++        })
++        assert res.status_code == 200
++        return res.body["timings"]["cache_n"]
++
++    prefix = tokenize("Purple elephants quietly compose sonnets about tax law in the moonlight")
++    suffixes = [tokenize(s) for s in [
++        "The quick brown fox jumps over the lazy dog while the farmer counts his sheep and the sun slowly sets behind the distant hills",
++        "Seven tiny robots repaired the broken lighthouse lens before the storm arrived, then danced on the rocks until the morning tide came in",
++        "Green apples rolled down the hill toward the river, where a curious otter collected them one by one and stacked them on a flat stone",
++    ]]
++
++    # 4 tokens: the checkpoint 4 tokens before the end of the prompt holds exactly the prefix
++    cache_n(prefix + suffixes[0][:4])
++
++    # suffixes longer than n_ubatch + 4: no new checkpoint within the prefix, only the restored one can be reused
++    for suffix in suffixes[1:]:
++        assert len(suffix) > server.n_ubatch + 4
++        assert cache_n(prefix + suffix) == len(prefix) - 1
+--- a/tools/server/tests/utils.py
++++ b/tools/server/tests/utils.py
+@@ -114,6 +114,7 @@
+     media_path: str | None = None
+     sleep_idle_seconds: int | None = None
+     cache_ram: int | None = None
++    override_kv: str | None = None
+     no_cache_idle_slots: bool = False
+     log_path: str | None = None
+     prefill_budget_decoding: int | None = None
+@@ -277,6 +278,8 @@
+             server_args.extend(["--sleep-idle-seconds", self.sleep_idle_seconds])
+         if self.cache_ram is not None:
+             server_args.extend(["--cache-ram", self.cache_ram])
++        if self.override_kv:
++            server_args.extend(["--override-kv", self.override_kv])
+         if self.prefill_budget_decoding is not None:
+             server_args.extend(["--prefill-budget-decoding", self.prefill_budget_decoding])
+         if self.prefill_budget_target_ms is not None:
+--- /dev/null
++++ b/tools/server/server-swa-reuse.h
+@@ -0,0 +1,42 @@
++#pragma once
++
++#include <cstddef>
++#include <vector>
++
++// A snapshot is armed only after a successful cold text prefill and is consumed
++// at the next task. Matching endpoints alone say nothing about token provenance.
++template<class Token, class OldTokens, class NewTokens>
++bool server_swa_prefix_matches(const std::vector<Token> & snapshot,
++                               const OldTokens & old_tokens, const NewTokens & new_tokens,
++                               size_t n) {
++    if (n == 0 || snapshot.size() < n || old_tokens.size() < n || new_tokens.size() < n) {
++        return false;
++    }
++    for (size_t i = 0; i < n; ++i) {
++        if (snapshot[i] != old_tokens[i] || snapshot[i] != new_tokens[i]) {
++            return false;
++        }
++    }
++    return true;
++}
++
++struct server_swa_reuse_gates {
++    bool standard_window;
++    bool shift_disabled;
++    bool no_draft_or_speculation;
++    bool text_only;
++    bool no_adapters;
++    bool unshared_task;
++    bool no_chunk_reuse;
++    bool unit_positions;
++    bool nonempty_prior;
++    bool matching_provenance;
++    bool native_coverage_and_removal;
++};
++
++inline bool server_swa_reuse_allowed(const server_swa_reuse_gates & g) {
++    return g.standard_window && g.shift_disabled && g.no_draft_or_speculation &&
++           g.text_only && g.no_adapters && g.unshared_task && g.no_chunk_reuse &&
++           g.unit_positions && g.nonempty_prior && g.matching_provenance &&
++           g.native_coverage_and_removal;
++}
+--- /dev/null
++++ b/tests/test-ch18b-cells.cpp
+@@ -0,0 +1,30 @@
++#include "src/llama-kv-cells.h"
++#include <cassert>
++#include <cstdio>
++
++int main() {
++    llama_kv_cells c;
++    c.resize(10);
++    for (int i = 0; i < 6; ++i) { c.pos_set(i, i); c.seq_add(i, 0); }
++    assert(c.seq_pos_covers_unique(0, 0, 6));
++    assert(c.seq_pos_covers_unique(0, 2, 5));
++    assert(c.seq_pos_covers_unique(0, 0, 0));
++    assert(!c.seq_pos_covers_unique(0, -1, 1));
++    assert(!c.seq_pos_covers_unique(0, 4, 3));
++    assert(!c.seq_pos_covers_unique(-1, 0, 1));
++    assert(!c.seq_pos_covers_unique(LLAMA_MAX_SEQ, 0, 1));
++    assert(!c.seq_pos_covers_unique(1, 0, 1));
++    assert(!c.seq_pos_covers_unique(0, 0, 7));
++    c.seq_add(0, 1);
++    assert(c.seq_pos_covers_unique(1, 0, 1));
++    assert(!c.seq_pos_covers_unique(1, 0, 2));
++    c.seq_rm(2, 0);
++    assert(c.seq_pos_min(0) == 0 && c.seq_pos_max(0) == 5);
++    assert(!c.seq_pos_covers_unique(0, 0, 6));
++    c.pos_set(6, 1); c.seq_add(6, 0);
++    assert(!c.seq_pos_covers_unique(0, 0, 2));
++    assert(c.seq_pos_covers_unique(0, 3, 6));
++    c.seq_rm(6, 0);
++    assert(c.seq_pos_covers_unique(0, 0, 2));
++    puts("CH-18.b occupancy controls passed");
++}
+--- /dev/null
++++ b/tests/test-ch18b-policy.cpp
+@@ -0,0 +1,34 @@
++#include "tools/server/server-swa-reuse.h"
++#include <cassert>
++#include <vector>
++#include <cstdio>
++int main() {
++    const std::vector<int> snapshot{11,12,13,14};
++    const std::vector<int> old{11,12,13,14,15};
++    const std::vector<int> same{11,12,13,14,16};
++    const std::vector<int> wrong{11,99,13,14};
++    const std::vector<int> shortv{11,12};
++    assert(server_swa_prefix_matches(snapshot, old, same, 4));
++    assert(server_swa_prefix_matches(snapshot, old, same, 1));
++    assert(!server_swa_prefix_matches(snapshot, old, wrong, 4));
++    assert(!server_swa_prefix_matches(snapshot, wrong, same, 4));
++    assert(!server_swa_prefix_matches(snapshot, old, same, 5));
++    assert(!server_swa_prefix_matches(snapshot, old, shortv, 3));
++    assert(!server_swa_prefix_matches(snapshot, old, same, 0));
++    server_swa_reuse_gates gates{true,true,true,true,true,true,true,true,true,true,true};
++    assert(server_swa_reuse_allowed(gates));
++    bool server_swa_reuse_gates::* fields[] = {
++        &server_swa_reuse_gates::standard_window, &server_swa_reuse_gates::shift_disabled,
++        &server_swa_reuse_gates::no_draft_or_speculation, &server_swa_reuse_gates::text_only,
++        &server_swa_reuse_gates::no_adapters, &server_swa_reuse_gates::unshared_task,
++        &server_swa_reuse_gates::no_chunk_reuse, &server_swa_reuse_gates::unit_positions,
++        &server_swa_reuse_gates::nonempty_prior, &server_swa_reuse_gates::matching_provenance,
++        &server_swa_reuse_gates::native_coverage_and_removal,
++    };
++    for (auto field : fields) {
++        gates.*field = false;
++        assert(!server_swa_reuse_allowed(gates));
++        gates.*field = true;
++    }
++    puts("CH-18.b provenance and fail-closed gate controls passed");
++}
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -3721,6 +3721,7 @@
+                                 return;
+                             }
+ 
++                            int n_prefix = 0;
+                             if (slot.task->params.cache_prompt) {
+                                 // reuse any previously computed tokens that are common with the new prompt
+                                 n_past = slot.prompt.tokens.get_common_prefix(input_tokens);
+@@ -3731,6 +3732,10 @@
+                                     n_past = std::min(n_past, slot.alora_invocation_start - 1);
+                                 }
+ 
++                                // Checkpoints predate any chunk shifting below and can only
++                                // cover the original common prefix (including the alora bound).
++                                n_prefix = n_past;
++
+                                 const auto n_cache_reuse = slot.task->params.n_cache_reuse;
+ 
+                                 const bool can_cache_reuse =
+@@ -3803,9 +3808,6 @@
+ 
+                             llama_pos pos_next = slot.prompt.tokens.pos_next(n_past);
+ 
+-                            // #30666: checkpoint validity follows the pre-restore shared prefix.
+-                            const int n_prefix = n_past;
+-
+                             // ref: https://github.com/ggml-org/llama.cpp/pull/24110
+                             const bool has_new_tokens = (n_past < slot.task->n_tokens());
+ 
+@@ -3891,7 +3893,7 @@
+                                             // guarantee that a checkpoint will result in at least one token being processed [TAG_PROMPT_LOGITS]
+                                             SLT_TRC(slot, "checking checkpoint with [%d, %d] against %d...\n", cur.pos_min, cur.pos_max, pos_min_thold);
+                                             // workaround for [TAG_CHECKPOINTS_FIX_POS_MIN]
+-                                            if (cur.pos_max > pos_next) {
++                                            if (!server_checkpoint_within_prefix(cur.pos_max, pos_next, cur.n_tokens, (int64_t) n_prefix)) {
+                                                 return false;
+                                             }
+                                             return cur.pos_min < pos_min_thold || cur.pos_min == 0;
+--- a/tools/server/server-swa-reuse.h
++++ b/tools/server/server-swa-reuse.h
+@@ -40,3 +40,11 @@
+            g.unit_positions && g.nonempty_prior && g.matching_provenance &&
+            g.native_coverage_and_removal;
+ }
++
++// A checkpoint can only describe tokens in the pre-restore shared prefix.
++// Position and token counts may differ for multimodal input.
++template<class Position, class Count>
++inline bool server_checkpoint_within_prefix(Position checkpoint_pos_max, Position pos_next,
++                                            Count checkpoint_tokens, Count prefix_tokens) {
++    return checkpoint_pos_max <= pos_next && checkpoint_tokens >= 0 && checkpoint_tokens <= prefix_tokens;
++}
+--- a/tests/test-ch18b-policy.cpp
++++ b/tests/test-ch18b-policy.cpp
+@@ -1,5 +1,7 @@
+ #include "tools/server/server-swa-reuse.h"
+ #include <cassert>
++#include <algorithm>
++#include <cstdint>
+ #include <vector>
+ #include <cstdio>
+ int main() {
+@@ -30,5 +32,32 @@
+         assert(!server_swa_reuse_allowed(gates));
+         gates.*field = true;
+     }
++    // Position bound alone accepts the later multimodal checkpoint although it
++    // contains 8 tokens beyond the four-token shared prefix. Search must skip
++    // it before loading and retain the earlier valid checkpoint.
++    struct checkpoint { int pos_max; int64_t n_tokens; };
++    const std::vector<checkpoint> checkpoints{{1, 4}, {3, 12}};
++    const int pos_next = 3;
++    const int64_t n_prefix = 4;
++    auto selected = std::find_if(checkpoints.rbegin(), checkpoints.rend(), [&](const checkpoint & c) {
++        return server_checkpoint_within_prefix(c.pos_max, pos_next, c.n_tokens, n_prefix);
++    });
++    assert(selected != checkpoints.rend() && selected->n_tokens == 4);
++    assert(!server_checkpoint_within_prefix(3, 3, int64_t(12), n_prefix));
++    assert(!server_checkpoint_within_prefix(4, 3, int64_t(4), n_prefix));
++    assert(!server_checkpoint_within_prefix(1, 3, int64_t(-1), n_prefix));
++    assert(server_checkpoint_within_prefix(3, 3, int64_t(4), n_prefix));
++    // Chunk reuse can extend n_past after shifting a later matching chunk over
++    // an unrelated gap. An old checkpoint in that gap must still be rejected
++    // against the original shared prefix, while the prefix checkpoint survives.
++    const std::vector<checkpoint> chunk_checkpoints{{3, 3}, {7, 7}};
++    const int64_t original_prefix = 3;
++    const int64_t after_chunk_reuse = 8;
++    assert(server_checkpoint_within_prefix(7, 8, int64_t(7), after_chunk_reuse));
++    assert(!server_checkpoint_within_prefix(7, 8, int64_t(7), original_prefix));
++    auto chunk_selected = std::find_if(chunk_checkpoints.rbegin(), chunk_checkpoints.rend(), [&](const checkpoint & c) {
++        return server_checkpoint_within_prefix(c.pos_max, 8, c.n_tokens, original_prefix);
++    });
++    assert(chunk_selected != chunk_checkpoints.rend() && chunk_selected->n_tokens == 3);
+     puts("CH-18.b provenance and fail-closed gate controls passed");
+ }

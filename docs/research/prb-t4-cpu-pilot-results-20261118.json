@@ -1,0 +1,441 @@
+{
+  "aggregate_four_items": {
+    "baseline": {
+      "completion_tokens": 965,
+      "correct": 2,
+      "prompt_tokens": 1301,
+      "total_tokens": 2266,
+      "unknown": 0,
+      "wall_s": 128.9448251950089
+    },
+    "static": {
+      "completion_tokens": 422,
+      "correct": 2,
+      "prompt_tokens": 1367,
+      "total_tokens": 1789,
+      "unknown": 0,
+      "wall_s": 75.3926955020288
+    },
+    "tale": {
+      "completion_tokens": 754,
+      "correct": 1,
+      "prompt_tokens": 2861,
+      "total_tokens": 3615,
+      "unknown": 0,
+      "wall_s": 154.3326201690361
+    }
+  },
+  "cleanup": {
+    "finished_epoch": 1795020773.8702915,
+    "listener_empty": true,
+    "pid": 3605970,
+    "wait_returncode": 0
+  },
+  "completed": 16,
+  "coverage_verdict": "pass",
+  "decision_rule": "completed >= 16",
+  "error": null,
+  "limitations": [
+    "Fixed first registered item per original suite; descriptive finite CPU pilot only. No sampling-error, confidence interval, population-quality or adoption claim.",
+    "Lower token and wall costs are favorable; total tokens include prompt and completion, and TALE includes estimator cost.",
+    "Correctness uses the source scorers, including formatting-sensitive OlympiadBench substring scoring and confined LiveCodeBench tests. Length-capped valid responses are scored, not replaced.",
+    "Does not complete PRB-T4 full 4x400 evaluation, architect GPU arm or frontdoor overhead replicate.",
+    "Existing VB-PRB-T4-CPU-PILOT-WIRE owns strict projection/reader/planning-context canary; no accepted belief measurement tuple is asserted."
+  ],
+  "native_files_sha256": {
+    "CLEANUP.json": "6d2a0aa78a0a52881f0c5195e072ebc8eb70154336b3692201a9a579e60bf796",
+    "LINKAGE.txt": "a72b4e97e77dff2bff49a310206707443440a34d4ba33f816108b8a86c19adaf",
+    "SERVER-MODELS.json": "a040451dc10558958c8a20c90522ab5014d79043b6d4dde82c2b958b2a7c02cf",
+    "SERVER-PROPS.json": "192f1c8c8e41238ad29dfa7cca3a14517a6954a59489487a1286f3fe087778a1",
+    "SERVER-SLOTS.json": "8717f08059dc6fca99350c28a7f111aa5b8cf0ea5be1782927ef9bff4bf033f1",
+    "SERVER.json": "653dd5632cbc3b0ab3b478ec9ce45b33e5b357cc2ce0163af16603d44cf24724",
+    "WINDOW.json": "456238e85e953aaba6ae6117648f29a03b8cc215594bf05c53c5a31873a992c3",
+    "attempt-00/HTTP.json": "1815041206234247db5c89f0a36d948e8e85b528297c5e61bd14bf78f5a9ce3c",
+    "attempt-00/OUTCOME.json": "b03562a67d0ed7329cd7050d260e5ee88c6b5b929ba7c71f3067b8a98c6c0c8f",
+    "attempt-00/REQUEST.json": "1f11edb93644f012891e920e9d6d3517218fe4e6793980065c72f2c47d019f12",
+    "attempt-00/RESPONSE.json": "b87c7fc6d09aa7c8883faf89651145536d91e68dd976a93fdb15879548e55293",
+    "attempt-01/HTTP.json": "af7ab1276b293f217bebff26e9c59e1cdfbf5146214805443bc8214f1891dc30",
+    "attempt-01/OUTCOME.json": "27b3c9e2daa8644fd6b1840b05f2e4a3fdca9f1914cf2fc5c5251cf44661d9a7",
+    "attempt-01/REQUEST.json": "2c534063eea164fd082596b095bca2c3cba093ae38acf8082bcb149e866f6146",
+    "attempt-01/RESPONSE.json": "0968a211fbab90d66e30038adb91c938bceef039669042a084c8a55ea0b0992c",
+    "attempt-02/HTTP.json": "996386dbe61aac15a0b19e62fd005dce371eab6aa3c4488ce2d0a0e7f10d87f8",
+    "attempt-02/OUTCOME.json": "5f6da0ff3012b69079097b40245699415bec7ffd30f9a4b64745eb8cc9f8af49",
+    "attempt-02/REQUEST.json": "6e177239d0b4011327afb12d9b59cb65abe3e87a4f5f64c6a2101472412dcfec",
+    "attempt-02/RESPONSE.json": "6e06a20f8dd13246dfac4b7ea0e76a8d529ae5ce063ea4adb19f59f528e1b608",
+    "attempt-03/HTTP.json": "fe15074e6e7af29ce3234e5a4cabc1941c334453340fc6f9319ed7f076f66524",
+    "attempt-03/OUTCOME.json": "eb238e56bd7e80a8315498587122858ac00da9201c5bd262dcf91c332311be66",
+    "attempt-03/REQUEST.json": "19dc0a1cad52fc437c0f97d3fbefb7d912ffc52114fa682c050a5c898bc500b3",
+    "attempt-03/RESPONSE.json": "9ffe0d9d9ad9c788583106b10176b9efb7f46d99997af36cd52c2e9035edbd3b",
+    "attempt-04/HTTP.json": "09317a915ccc3d8dda51b0921b5e5da2dbb8553bebeb71aaaaf272adae6409db",
+    "attempt-04/OUTCOME.json": "40322abf5b169a1369a57600569154e47f0f53597463b7912fa9fdd0177eed34",
+    "attempt-04/REQUEST.json": "3e49f83d0163dee3f191f60e5f5b6644a7fdafbb475264429c72e23150675c2d",
+    "attempt-04/RESPONSE.json": "d08b3eb5c4a14fa23309dd8c2c737d68a203d55e485162d20be063ff9ebaf796",
+    "attempt-05/HTTP.json": "429800c588c4bec0f118353b27df7ad3cc764164938cccf5ec936b53201de4d1",
+    "attempt-05/OUTCOME.json": "218de25691388f56408633cf16365b7d9fc45c4e658579f2406d09786f7eb72d",
+    "attempt-05/REQUEST.json": "dc029a1936e1b8cae766175e479475036b115fa4a9e338b1695bddbc01b85777",
+    "attempt-05/RESPONSE.json": "9de867475b6055cab07e3a1b2287ebc826bd448accfbda18986b76faab7b774b",
+    "attempt-06/HTTP.json": "ad91455142d4397437a8fa39f723533bb57f80224296bd000daad1b142ce49de",
+    "attempt-06/OUTCOME.json": "1a26556204c7d309d537be2b4e85731a4276e7283c4319125b3eccc7d7e31ab0",
+    "attempt-06/REQUEST.json": "a6979bedf876ed109ad369454c66b4c0ba0c06fada29df74c3929b746752bb2f",
+    "attempt-06/RESPONSE.json": "76d49fa502bf293059ff207a7bdf70b0b6d6d9bcd8ccd305ee6938206252bf7c",
+    "attempt-07/HTTP.json": "2d59b530d7f524ad09dca8b539cef6193f6126f8d965ea977ac6ef488913e4ec",
+    "attempt-07/OUTCOME.json": "c5d4b57edb87f0e07ab6b44eb9cc6781b7b8db367048fca260289b8615852b41",
+    "attempt-07/REQUEST.json": "3eeddb6b894029c4dc819a9bbab3c7962971911b58c2567e1d03fb4a049cdff5",
+    "attempt-07/RESPONSE.json": "079ea1bbf929e80f8387b3640cf2d6f03a895b6a2849dc1466bbc38283ee9470",
+    "attempt-08/HTTP.json": "6e3246dbb17624b11e8e9a54f1862f414697da413bc658cafba7d88b058b5ea9",
+    "attempt-08/OUTCOME.json": "28425fcb6df7c52d89ab12448f4f053261727508ee6fbbdf285d0a4a0e35b6e0",
+    "attempt-08/REQUEST.json": "bdcf4cce049a15c59d664fa1b14ec2290f551fe587a001e5888ee5a2a8345692",
+    "attempt-08/RESPONSE.json": "8e1b72dbf6cc68e53d68618b53ea68e156d25ab76fd2ec0702b5df4cef950935",
+    "attempt-09/HTTP.json": "55eb3bf35d70c250591a1f308cb509d6cd53850502e29696ee3ff220336ee16c",
+    "attempt-09/OUTCOME.json": "1c3c758aa294ccf3b028da90ad80e054d7d84ced525e0fdc992d42b21de75f18",
+    "attempt-09/REQUEST.json": "413f7cc531d5dada9382e1ff088ccaf4449bda97822ca3ae8188a9569d2af9e8",
+    "attempt-09/RESPONSE.json": "7bbf2c3284dfe220103f57e52b218e8bc73a6c87d75f287399177170ff2c0e48",
+    "attempt-10/HTTP.json": "ad2418556a28816bcf718c5850b5954e636d3f1c2fef6c0585fe4002429cd431",
+    "attempt-10/OUTCOME.json": "d279e02e2492f56fbb875723484d770c705103d6e0c605e4dbdafeed46d01b35",
+    "attempt-10/REQUEST.json": "1e11a751f0ffade06d1d993c6765491b2badf2e3551e41dc59601e2b1082b48c",
+    "attempt-10/RESPONSE.json": "1c66e908135cacf6179299a4b01737aefcd781c22084c802de290a93dc9019b0",
+    "attempt-11/HTTP.json": "704be433adec82544734da2149b217aec46755c1c9802c077f556f49969d0a97",
+    "attempt-11/OUTCOME.json": "d6482b735b4f2292989142034fc943ca8a39ecf404e7d0e3b0fe0a6c0e280ebe",
+    "attempt-11/REQUEST.json": "140fe3408c7e608797d253cb882491e6cbccfa5b9b425c9a648f763d042189a5",
+    "attempt-11/RESPONSE.json": "8cf581d04cf34435055adc7d8af631ffc8916b181441064d796435ca658cbcb9",
+    "attempt-12/HTTP.json": "3e3aeab1a47df34dd283f6c41283bfe6555453bf0f195ae0e2861263289f69ad",
+    "attempt-12/OUTCOME.json": "cbd98b1eb289905abdd263b9f9fe0c042235accb7ff9dbf787039be8384d2a50",
+    "attempt-12/REQUEST.json": "372ab9e97f0469f00862643ddcbca011010807bb31c183beff937f0911f7bec4",
+    "attempt-12/RESPONSE.json": "db0c084bcd36deee8166c23edb79d3da35b1e45cc3c64c49fc8424fa25a9a9e7",
+    "attempt-12/scorer/orch_debug_scorer.py": "395b46ac9a93c9ea274e2d113b03b6ead20edfbd50c3b3042519f6bef44cdcfa",
+    "attempt-12/scorer/sandbox.py": "014061ab210cf3b3cef3b1df7cdd6f299e67271ae920aa3e244031968fc02ac6",
+    "attempt-12/scorer/scorer_child.py": "231a5235cf5c8ccf343c6ad7e92e1e0b8efca1f025fe3d529d45c3e95d39ea22",
+    "attempt-13/HTTP.json": "29594b69bbac89571973b3cad81f708ed5e8350b871e6efc933fbe505bbc8a9e",
+    "attempt-13/OUTCOME.json": "3d52844dd96771667365ddb32b0187f1a6217089d07725879dd468fee6f40f24",
+    "attempt-13/REQUEST.json": "d16a3eeb89a5e0400b6bc9f97bb703522887b32c63570185e513c4126f3a6e9c",
+    "attempt-13/RESPONSE.json": "549baa243684f5242f47736a21beb4ef415031288f2bcd0f20077f2c01b736f5",
+    "attempt-13/scorer/orch_debug_scorer.py": "395b46ac9a93c9ea274e2d113b03b6ead20edfbd50c3b3042519f6bef44cdcfa",
+    "attempt-13/scorer/sandbox.py": "014061ab210cf3b3cef3b1df7cdd6f299e67271ae920aa3e244031968fc02ac6",
+    "attempt-13/scorer/scorer_child.py": "231a5235cf5c8ccf343c6ad7e92e1e0b8efca1f025fe3d529d45c3e95d39ea22",
+    "attempt-14/HTTP.json": "5176f19bd61bc726319d0b557c5aa9f424d87e164bbe40b4bead689ec0a67afc",
+    "attempt-14/OUTCOME.json": "ab343b921a5691c365f781ebfca85b801a4002b10e9db05eadba1528ed8b7228",
+    "attempt-14/REQUEST.json": "39b3c3325b075bd75d1a7dbd7e4c9786b32cfd458db3edc1ea513b0a315e6980",
+    "attempt-14/RESPONSE.json": "eb03afd7cb5e803dd4297f521cd4a003f19faae75e34a45f187952a7e1e3a35e",
+    "attempt-15/HTTP.json": "04358adfa7903a678a726ab71244b66ca8128f51894eab201289e9b50214a094",
+    "attempt-15/OUTCOME.json": "16b64697f9c9918ed2c39fa3cf5f0bc405ce62db79ec6aea6941e8c6490f27ff",
+    "attempt-15/REQUEST.json": "700b7f8bc47f8ea77ad575d70ebf173bbedacb97d2f141485e919f86c7197c83",
+    "attempt-15/RESPONSE.json": "66e7fe6b74067ad89e771a45601dc8a7a6afba4df7fa7edb848c718c1fab7662",
+    "attempt-15/scorer/orch_debug_scorer.py": "395b46ac9a93c9ea274e2d113b03b6ead20edfbd50c3b3042519f6bef44cdcfa",
+    "attempt-15/scorer/sandbox.py": "014061ab210cf3b3cef3b1df7cdd6f299e67271ae920aa3e244031968fc02ac6",
+    "attempt-15/scorer/scorer_child.py": "231a5235cf5c8ccf343c6ad7e92e1e0b8efca1f025fe3d529d45c3e95d39ea22",
+    "server.log": "14d74c23d934449277acddca63ae8cc90063e3f1f2541576caf4260b8082821a"
+  },
+  "native_result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/tale-pilot/native/RESULT.json",
+  "native_result_sha256": "30e438dfde58bdf06d21c3e3e47b1b13846931338f4bdc9c0965fa4d45b7ceee",
+  "packet_manifest_sha256": "d54e787539cfc6f23a12ed6ba922e52fc8f371aef43b7169d2d0a7301195a13d",
+  "rc": 0,
+  "row": "prb-t4-cpu-pilot-20261118",
+  "schema": "epyc.prb-t4.cpu-pilot.filed.v1",
+  "status": "captured",
+  "suite_costs": {
+    "livecodebench": {
+      "baseline": {
+        "answer_only": {
+          "completion_tokens": 208,
+          "prompt_tokens": 411,
+          "total_tokens": 619,
+          "wall_s": 26.098453072016127
+        },
+        "correct": true,
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 208,
+          "prompt_tokens": 411,
+          "total_tokens": 619,
+          "wall_s": 26.098453072016127
+        }
+      },
+      "estimator": {
+        "beta": 150,
+        "completion_tokens": 6,
+        "fallback": false,
+        "prompt_tokens": 459,
+        "total_tokens": 465,
+        "wall_s": 10.642334620002657
+      },
+      "static": {
+        "answer_only": {
+          "completion_tokens": 57,
+          "prompt_tokens": 427,
+          "total_tokens": 484,
+          "wall_s": 13.651161754038185
+        },
+        "correct": true,
+        "delta_from_baseline": {
+          "completion_tokens": -151,
+          "prompt_tokens": 16,
+          "total_tokens": -135,
+          "wall_s": -12.447291317977943
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 57,
+          "prompt_tokens": 427,
+          "total_tokens": 484,
+          "wall_s": 13.651161754038185
+        }
+      },
+      "tale": {
+        "answer_only": {
+          "completion_tokens": 57,
+          "prompt_tokens": 428,
+          "total_tokens": 485,
+          "wall_s": 14.317249942105263
+        },
+        "correct": true,
+        "delta_from_baseline": {
+          "completion_tokens": -145,
+          "prompt_tokens": 476,
+          "total_tokens": 331,
+          "wall_s": -1.1388685099082068
+        },
+        "delta_from_static": {
+          "completion_tokens": 6,
+          "prompt_tokens": 460,
+          "total_tokens": 466,
+          "wall_s": 11.308422808069736
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 63,
+          "prompt_tokens": 887,
+          "total_tokens": 950,
+          "wall_s": 24.95958456210792
+        }
+      }
+    },
+    "math": {
+      "baseline": {
+        "answer_only": {
+          "completion_tokens": 243,
+          "prompt_tokens": 310,
+          "total_tokens": 553,
+          "wall_s": 29.494628672022372
+        },
+        "correct": true,
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 243,
+          "prompt_tokens": 310,
+          "total_tokens": 553,
+          "wall_s": 29.494628672022372
+        }
+      },
+      "estimator": {
+        "beta": 150,
+        "completion_tokens": 6,
+        "fallback": false,
+        "prompt_tokens": 358,
+        "total_tokens": 364,
+        "wall_s": 7.621668582898565
+      },
+      "static": {
+        "answer_only": {
+          "completion_tokens": 75,
+          "prompt_tokens": 328,
+          "total_tokens": 403,
+          "wall_s": 13.529991377028637
+        },
+        "correct": true,
+        "delta_from_baseline": {
+          "completion_tokens": -168,
+          "prompt_tokens": 18,
+          "total_tokens": -150,
+          "wall_s": -15.964637294993736
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 75,
+          "prompt_tokens": 328,
+          "total_tokens": 403,
+          "wall_s": 13.529991377028637
+        }
+      },
+      "tale": {
+        "answer_only": {
+          "completion_tokens": 160,
+          "prompt_tokens": 327,
+          "total_tokens": 487,
+          "wall_s": 21.351083477027714
+        },
+        "correct": false,
+        "delta_from_baseline": {
+          "completion_tokens": -77,
+          "prompt_tokens": 375,
+          "total_tokens": 298,
+          "wall_s": -0.5218766120960936
+        },
+        "delta_from_static": {
+          "completion_tokens": 91,
+          "prompt_tokens": 357,
+          "total_tokens": 448,
+          "wall_s": 15.442760682897642
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 166,
+          "prompt_tokens": 685,
+          "total_tokens": 851,
+          "wall_s": 28.97275205992628
+        }
+      }
+    },
+    "mmlu_pro": {
+      "baseline": {
+        "answer_only": {
+          "completion_tokens": 2,
+          "prompt_tokens": 332,
+          "total_tokens": 334,
+          "wall_s": 7.585617349948734
+        },
+        "correct": false,
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 2,
+          "prompt_tokens": 332,
+          "total_tokens": 334,
+          "wall_s": 7.585617349948734
+        }
+      },
+      "estimator": {
+        "beta": 15,
+        "completion_tokens": 5,
+        "fallback": false,
+        "prompt_tokens": 380,
+        "total_tokens": 385,
+        "wall_s": 9.415282782982104
+      },
+      "static": {
+        "answer_only": {
+          "completion_tokens": 2,
+          "prompt_tokens": 348,
+          "total_tokens": 350,
+          "wall_s": 7.998775337007828
+        },
+        "correct": false,
+        "delta_from_baseline": {
+          "completion_tokens": 0,
+          "prompt_tokens": 16,
+          "total_tokens": 16,
+          "wall_s": 0.413157987059094
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 2,
+          "prompt_tokens": 348,
+          "total_tokens": 350,
+          "wall_s": 7.998775337007828
+        }
+      },
+      "tale": {
+        "answer_only": {
+          "completion_tokens": 2,
+          "prompt_tokens": 348,
+          "total_tokens": 350,
+          "wall_s": 7.992107997066341
+        },
+        "correct": false,
+        "delta_from_baseline": {
+          "completion_tokens": 5,
+          "prompt_tokens": 396,
+          "total_tokens": 401,
+          "wall_s": 9.82177343009971
+        },
+        "delta_from_static": {
+          "completion_tokens": 5,
+          "prompt_tokens": 380,
+          "total_tokens": 385,
+          "wall_s": 9.408615443040617
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 7,
+          "prompt_tokens": 728,
+          "total_tokens": 735,
+          "wall_s": 17.407390780048445
+        }
+      }
+    },
+    "olympiadbench": {
+      "baseline": {
+        "answer_only": {
+          "completion_tokens": 512,
+          "prompt_tokens": 248,
+          "total_tokens": 760,
+          "wall_s": 65.76612610102165
+        },
+        "correct": false,
+        "finish_reason": "length",
+        "including_estimator": {
+          "completion_tokens": 512,
+          "prompt_tokens": 248,
+          "total_tokens": 760,
+          "wall_s": 65.76612610102165
+        }
+      },
+      "estimator": {
+        "beta": 150,
+        "completion_tokens": 6,
+        "fallback": false,
+        "prompt_tokens": 296,
+        "total_tokens": 302,
+        "wall_s": 9.169154016999528
+      },
+      "static": {
+        "answer_only": {
+          "completion_tokens": 288,
+          "prompt_tokens": 264,
+          "total_tokens": 552,
+          "wall_s": 40.21276703395415
+        },
+        "correct": false,
+        "delta_from_baseline": {
+          "completion_tokens": -224,
+          "prompt_tokens": 16,
+          "total_tokens": -208,
+          "wall_s": -25.553359067067504
+        },
+        "finish_reason": "stop",
+        "including_estimator": {
+          "completion_tokens": 288,
+          "prompt_tokens": 264,
+          "total_tokens": 552,
+          "wall_s": 40.21276703395415
+        }
+      },
+      "tale": {
+        "answer_only": {
+          "completion_tokens": 512,
+          "prompt_tokens": 265,
+          "total_tokens": 777,
+          "wall_s": 73.82373874995392
+        },
+        "correct": false,
+        "delta_from_baseline": {
+          "completion_tokens": 6,
+          "prompt_tokens": 313,
+          "total_tokens": 319,
+          "wall_s": 17.22676666593179
+        },
+        "delta_from_static": {
+          "completion_tokens": 230,
+          "prompt_tokens": 297,
+          "total_tokens": 527,
+          "wall_s": 42.780125732999295
+        },
+        "finish_reason": "length",
+        "including_estimator": {
+          "completion_tokens": 518,
+          "prompt_tokens": 561,
+          "total_tokens": 1079,
+          "wall_s": 82.99289276695345
+        }
+      }
+    }
+  }
+}

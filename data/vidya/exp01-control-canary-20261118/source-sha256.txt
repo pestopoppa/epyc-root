@@ -1,0 +1,6 @@
+75302787ba6618f196de531091532e0215231a981be55ef10d3262b1f2da3d46  scripts/experiments/exp01-pilot/capture.py
+dbba2fdc3116a6f08cd5d1e8d638f51100bc1b0e04a67689a659e3f969c8c3ef  scripts/experiments/exp01-pilot/job_r3.sh
+9e1084e5c31c577e491b35f1024c20cae83c14f1892677e56dc7df9dba32a79f  scripts/experiments/exp01-pilot/pilot_r3_job.sh
+993040c16d86b6ea77154205f6d9d49fdadd37f26d0d94fed0dada78d066022f  scripts/vidya/canary/exp01_context.py
+455640580fbe1d1448922478c70a57d3b560511820b41dd9aefb3469767ab786  tests/vidya/test_exp01_official_writer.py
+0e0a0b4d8feefd0ca81a7db8828b23ecd2bd6c4062a847be5c4a0137dd204c11  data/vidya/row-preparation/2026-11-04/vb-exp01-wire-20261104/source-packet.tar.gz

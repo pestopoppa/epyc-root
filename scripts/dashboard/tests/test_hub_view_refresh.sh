@@ -31,6 +31,9 @@ PY="$(command -v python3)"
 export GIT_CONFIG_GLOBAL=/dev/null GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t \
        GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
 
+# Never read the live host's grants: every refresher run below sees this (empty unless a case writes a grant).
+export QUIET_HOST_FLAGS="$TMP/qflags"; mkdir -p "$QUIET_HOST_FLAGS/grants"
+
 pass=0; fail=0
 chk() { if [ "$2" = "$3" ]; then echo "  PASS  $1"; pass=$((pass+1));
         else echo "  FAIL  $1 (got $2, want $3)"; fail=$((fail+1)); fi; }
@@ -71,6 +74,7 @@ push_change() {   # $1 = path, $2 = content
   git -C "$WORK" commit -qm "change $1"; git -C "$WORK" push -q origin main
 }
 export HUB_VIEW_PYTHON="$PY"
+export HUB_VIEW_GATE_FLAGS="$TMP/gate-flags"
 
 # ---------------------------------------------------------------- A. refresher #
 rc=0; "$REFRESH" "$VIEW" 2>/dev/null || rc=$?
@@ -118,6 +122,48 @@ git -C "$VIEW" remote set-url origin "$ORIGIN"
 LOGF="$TMP/refresh.log"
 HUB_VIEW_LOG="$LOGF" "$REFRESH" "$VIEW" 2>/dev/null
 chk "A8 HUB_VIEW_LOG receives the result line" "$(grep -c '\[hub-view\] refresh view=' "$LOGF")" 1
+
+# A10. quiet-host deferral: heavy regeneration defers under a live whole-host grant, runs without one.
+printf 'holds=q0,q1,q2,q3,gpu-quiet owner=test\n' > "$QUIET_HOST_FLAGS/grants/g-test.grant"
+touch -d '-2 hours' "$VIEW/handoffs/active/.index-graph.json"
+n_before="$(wc -c < "$VIEW/regen.count")"
+LOGQ="$TMP/quiet.log"
+HUB_VIEW_LOG="$LOGQ" "$REFRESH" "$VIEW" 2>/dev/null; rc=$?
+chk "A10 grant live -> rc 0" "$rc" 0
+chk "A10 grant live -> generators did NOT run" "$(wc -c < "$VIEW/regen.count")" "$n_before"
+chk "A10 grant live -> DEFER-QUIET-HOST logged" "$(grep -c '\[hub-view\] DEFER-QUIET-HOST' "$LOGQ")" "2"
+chk "A10 grant live -> result says deferred" "$(grep -c 'regen=no(quiet-host-deferred)' "$LOGQ")" 1
+chk "A10 grant live -> view still clean" "$(git -C "$VIEW" status --porcelain | wc -l)" 0
+rm -f "$QUIET_HOST_FLAGS/grants/g-test.grant"
+"$REFRESH" "$VIEW" 2>/dev/null
+chk "A11 no grant -> generators run (deferred work caught up)" "$(wc -c < "$VIEW/regen.count")" "$((n_before+1))"
+# an expired grant defers nothing
+printf 'holds=q0,q1,q2,q3,gpu-quiet end=2000-01-01T00:00:00Z\n' > "$QUIET_HOST_FLAGS/grants/g-old.grant"
+touch -d '-2 hours' "$VIEW/handoffs/active/.index-graph.json"
+"$REFRESH" "$VIEW" 2>/dev/null
+chk "A12 expired grant -> still runs" "$(wc -c < "$VIEW/regen.count")" "$((n_before+2))"
+rm -f "$QUIET_HOST_FLAGS/grants/g-old.grant"
+
+# ------------------------------------------- A9. one regen per BATCH (debounce) #
+# TOKEN-REGEN-TRIPLE-DEBOUNCE: three commits landing in one batch must cost ONE regen,
+# not three. The gate (index_regen.py --gate) holds regeneration inside the quiet window.
+"$REFRESH" "$VIEW" 2>/dev/null   # settle: regenerate + record at current head
+n0="$(wc -c < "$VIEW/regen.count")"
+push_change handoffs/active/h1.md "- [x] batch 1"
+out1="$("$REFRESH" "$VIEW" 2>&1)"
+push_change handoffs/active/h1.md "- [x] batch 2"
+out2="$("$REFRESH" "$VIEW" 2>&1)"
+push_change handoffs/active/h1.md "- [x] batch 3"
+out3="$("$REFRESH" "$VIEW" 2>&1)"
+chk "A9 three head moves inside the quiet window -> zero regens" "$(( $(wc -c < "$VIEW/regen.count") - n0 ))" 0
+chk "A9 gated refreshes say so" "$(grep -c 'regen=no(gated)' <<<"$out1"$'\n'"$out2"$'\n'"$out3")" 3
+chk "A9 view still advanced to origin/main" "$(git -C "$VIEW" rev-parse HEAD)" "$(git -C "$WORK" rev-parse HEAD)"
+# NEGATIVE CONTROL: once the batch has ended (quiet window elapsed) the ONE regen fires.
+out4="$(HUB_VIEW_GATE_QUIET_S=0 "$REFRESH" "$VIEW" 2>&1)"
+chk "A9 batch ended -> exactly one regen for the three commits" "$(( $(wc -c < "$VIEW/regen.count") - n0 ))" 1
+n1="$(wc -c < "$VIEW/regen.count")"
+HUB_VIEW_GATE_QUIET_S=0 "$REFRESH" "$VIEW" 2>/dev/null
+chk "A9 no further input change -> no second regen" "$(wc -c < "$VIEW/regen.count")" "$n1"
 
 # ----------------------------------------------------------------- B. mtimes #
 SRV="$VIEW/dashboard/server.py"

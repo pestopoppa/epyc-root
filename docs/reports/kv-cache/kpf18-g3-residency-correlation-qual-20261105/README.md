@@ -1,0 +1,9 @@
+# PREPARED_UNEXECUTED — GPU residency correlation helper
+
+Distinct standalone correlator prerequisite: retained Witness.sample assigns UNKNOWN to wrong-executable snapshots, but sysfs_residency.correlate does not inspect executable identity or status. This is source inspection, not an observed native failure; no integrated consumer or live false promotion is established. Existing GPU tests exercise Witness and BoundSampler, not correlate.
+
+original.py preserves source bytes; corrected.py privately adds exact True executable and RESIDENT_SNAPSHOT predicates. Neither changes any candidate. Nine synthetic cases compare both implementations (18 outcomes), retaining original promotion on wrong/missing executable and UNKNOWN/missing status; honest, zero-own, wrong-birth, missing-map and missing-KFD controls remain matched. No model, GPU device, proc/sysfs, inference, historical replay or binary read. No subprocess/thread is launched. Hard control boundary 30 seconds; reservation 300 seconds; actual end minus seven seconds and STOP/signals refuse. Disk failure/signals may leave no result; no success is inferred. Source seals checked before and after; explicit completion path works outside inner exports. Four-outcome smoke is separate from full output.
+
+No tests, smoke, qualification, publication or model/target work has run. Owner must review the sealed row; the publisher smoke provides scoped qualification. This packet does not qualify live residency, full driver, admission, construction, cancellation or output lifecycle.
+
+Original source: `/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/scripts/coordination/kvfork/kpf18-g3-gpu/sysfs_residency.py`; copied-byte SHA-256: `dd36ae78e28f4fd048ed6411a038386410cfd6853b5c7ffc9194308b412e68a9`. `original.py` remains the exact retained helper; no original/helper bytes were changed by this provenance update.

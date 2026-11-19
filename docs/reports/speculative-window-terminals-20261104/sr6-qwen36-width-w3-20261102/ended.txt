@@ -1,0 +1,7 @@
+rc=0 time=2026-11-03T07:36:46Z reason=complete
+job_id=sr6-qwen36-width-w3-20261102
+owner=handoff-speculative-decoding-mtp
+step=job-run
+estimated_wall_s=14400
+started=2026-11-03T07:36:25Z
+regions=0-95

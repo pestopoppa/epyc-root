@@ -1,0 +1,6 @@
+{
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-source-fd25848-20261104/source-manifest.json": "380305bcaaaec4377274267aa9c6ce8e8aa92c6b9121dcee5bb3f1afbc8ff82e",
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/CMakeCache.txt": "27803d8d36e98e3813f1940a0e7459c83d761481f64c6b8bcc21d6c6eada635e",
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/compile_commands.json": "a5d215ce2031d96c60bb578b4c2ac5f711d35d3d1af87a36eb04209d66319ac9",
+  "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-base.so.0.16.0": "2853da333d93be06ce4ac82eee0c9116cf4b7f5be786827edda4f5b179b73082"
+}

@@ -1,0 +1,43 @@
+{
+ "decision_rule": "Build-only pass requires exact content-sealed standalone source and fixture, zero compile and fixture exits, verified owned-child cleanup, and matching source/binary/log hashes. No native cache, model, writer parity, GPU, transfer or byte-count measurement follows.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 300,
+ "gib": 4,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-60.GPU-X",
+ "id": "kpf60-checked-fixture-20261104-r6",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-checked-fixture-r6/launch.sh",
+  "sha256": "400d9a73a0346c432d3062a1d5ec857effbc0d33dadedc5bc972f434d07b7f08"
+ },
+ "lineage": "kpf60-checked-fixture",
+ "min_window_s": 300,
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:1186: identity fields incomplete: ['estimate'] \u2014 add estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)",
+  "kv-cache-program.md:1186: untestable prose prerequisite: 'require no inference; any new native measurement requires current resource coordination. Filed 2026-10-27 harvest.\\n    -'"
+ ],
+ "published_at": "2026-11-04T21:20:02Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-checked-fixture-r6/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-checked-fixture-r6/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-checked-fixture-r6",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-checked-fixture-r6/STOP",
+ "supersedes": "kpf60-checked-fixture-20261104-r5",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-checked-fixture-r6"
+}

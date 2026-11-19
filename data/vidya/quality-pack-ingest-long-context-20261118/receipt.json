@@ -1,0 +1,299 @@
+{
+  "at": "2026-11-18T00:51:37.546715+00:00",
+  "broad_pack_status": "incomplete",
+  "chat_template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+  "files_sha256": {
+    "SOURCE.sha256": "b3280f2e42ef051046c8156510e1817ea16bfbe9e07d46a91c29acf2af87ff58",
+    "capture.py": "b223830112df73630e188e48723d73428bcea5d7f504c85fcc3c9a0873254928",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "make_plan.py": "481c75dd5b41ec97cc477c5a443f30d6f772b811294324215715c8b446f162bb",
+    "model-hash-receipt.json": "be89e5e3383e051aff93b9bdad4110dc625aaef1719605ab90705b1277a0dd3a",
+    "plan.json": "d0fd4411fd423a5b133f9d8aed4bf276d14ee5323b73e7ced1f0b181c6231745",
+    "publication.log": "be65b2563159ce90e3b9042625eedd37c616a7bd443194640588b7e1d86cc623",
+    "ready-manifest.json": "84355f99214e274a61340211fb45ef76c4b05d7e203c036b8f19143e0c05d1cd",
+    "requests/ingest-document-reconciliation.json": "2bf817b432f9459498a37e627cfacca4034e95dec62721de15d630724e202afb",
+    "requests/ingest-early-lookup.json": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688",
+    "requests/ingest-recurrent-state.json": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12",
+    "requests/ingest-short-summary.json": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273",
+    "requests/native-smoke.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "row-launch.sh": "1713dbfa51f34b802671fec245c79823ca572dcb79108a47cda1c9be968fbf5c",
+    "row.spec.json": "a5557775e2f6d0dad9b66e59dd1c57065536b28cb7d2e13b847f307c5476a272",
+    "smoke-PASS.json": "f87dd4776c430192b7c690c0d32ece4610e83de764c00ad2d002c8102ea10741",
+    "smoke-launcher.out": "6de7f895753680a29b00ba4288c6013fc22a9f2d874a651389e3c3e0cce8bc2f",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "smoke-native/banked-capture.json": "cc1f8c1804b7c7e421a7a8e06ce1b6c81bfdcf34093386007482b6bedbe465d9",
+    "smoke-native/banked-capture.sha256": "5e73f300805b3411dd1b9138ec2071a5e0171d3c88e1650e59ce5cc1041013f1",
+    "smoke-native/production/cleanup.json": "72e9cf1d51596f4fdfd513156bdafc004de5ea6afa43f5f907e8fcfe702f05e3",
+    "smoke-native/production/native-smoke.request.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "smoke-native/production/native-smoke.response.json": "9592efe4492376c5ffafa02ab5d1197bddb1f9ff71cf2fde879f006244cbce11",
+    "smoke-native/production/server.json": "573af21cec442ebef5faa19e224b8e1f4c3440a6204c41b38a6c1026f696ba49",
+    "smoke-native/production/server.log": "96f76b7cab53c0db53955cbe07a6ca1d72703330165875c8d438e0eac705144f",
+    "smoke-native/scheduler.grant": "c4e05160937663a543131248e9cf7521438e05a131cec1f34264e470b9cf14a0",
+    "smoke-result.json": "ec950b0648e89e9df3514584484de7fe4cdf725fc6a8e27bb1173f39da1f1aa6",
+    "smoke_predicate.py": "3d0441317627815f86c31b16e3fae7c2d0f6688a15df25b577d8a05983259d3f"
+  },
+  "full_job_complete": false,
+  "full_request_count_per_arm": 4,
+  "gitnexus": {
+    "changed_scope": "new isolated packet and archive",
+    "reason": "worktree has no GitNexus index",
+    "status": "unavailable"
+  },
+  "kernel_images": {
+    "candidate": {
+      "binary_sha256": "c2178f18b9d0c12c6795fe900831932425ae9b874a6b24cdebaf9cd7d5b95447",
+      "build_manifest_sha256": "f77db04733a8c85d520dd09cef13c2312212a25745dcfed95978cb0e4fab384b",
+      "kernel_commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+      "kernel_tree": "e6dc8715fa3374406b38de48571e8700bded094f"
+    },
+    "production": {
+      "binary_sha256": "4483bcfc92c5c3bb0005df31e1c668cb565d49f7b40ba94f4df5a126cbbb648c",
+      "build_manifest_sha256": "ccfe57b18bc720e569c2e97e55454a27865d15dd928857d4ba3674874a1608a2",
+      "kernel_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+      "kernel_tree": "a7c564ffbac0a86ce648ef6f11c1748c81a6560d"
+    }
+  },
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "native_capture_task": "VB-V9-8-QUALITY-PACK-INGEST-LONG-CONTEXT",
+  "original_bytes_envelopes": {
+    "model-hash-receipt.json": "model-hash-receipt.json.original-bytes.json",
+    "plan.json": "plan.json.original-bytes.json",
+    "smoke-native/banked-capture.json": "smoke-native/banked-capture.json.original-bytes.json",
+    "smoke-result.json": "smoke-result.json.original-bytes.json"
+  },
+  "prior_frontdoor_json_mismatch": {
+    "completion_tokens": [
+      8,
+      13
+    ],
+    "content_equal": false,
+    "id": "json",
+    "token_ids_equal": false
+  },
+  "prior_frontdoor_receipt_sha256": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+  "profile": "ingest-long-context-recurrent-no-spec",
+  "profile_provenance": {
+    "architect_packet_receipt": {
+      "path": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-architect-critic-20261118/receipt.json",
+      "plan_sha256": "61aa74d218b11c96a5e05626465d15e348f7988cb768713c709537eadc989244",
+      "sha256": "79515b8e8c1c25bfb87fe2cc4b9c665ede85041d333655c394379c81f404b683"
+    },
+    "compiled_alias_launch_requirements": {
+      "draft_model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf"
+    },
+    "compiled_alias_spec": {
+      "disabled_by": null,
+      "draft_max": null,
+      "draft_min": null,
+      "draft_model_path": null,
+      "draft_p_min": null,
+      "draft_p_split": null,
+      "enabled": false,
+      "n_gpu_layers_draft": null,
+      "ngram_mod_n_match": null,
+      "ngram_mod_n_max": null,
+      "ngram_mod_n_min": null,
+      "threads_draft": null,
+      "type": null
+    },
+    "compiled_host_spec": {
+      "disabled_by": null,
+      "draft_max": 7,
+      "draft_min": null,
+      "draft_model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "draft_p_min": null,
+      "draft_p_split": null,
+      "enabled": true,
+      "n_gpu_layers_draft": 99,
+      "ngram_mod_n_match": null,
+      "ngram_mod_n_max": null,
+      "ngram_mod_n_min": null,
+      "threads_draft": null,
+      "type": "draft-dflash"
+    },
+    "compiled_serving_binary": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "compiled_serving_cache": {
+      "batch": 512,
+      "context_tokens": 393216,
+      "draft_kv_type_k": null,
+      "draft_kv_type_v": null,
+      "kv_hadamard": false,
+      "kv_type_k": "q8_0",
+      "kv_type_v": "q8_0",
+      "kv_unified": true,
+      "mlock": false,
+      "no_mmap": true,
+      "slot_save_path": "/mnt/raid0/llm/cache/kv_slots/architect_critic",
+      "slots": 4,
+      "slots_by_port": {
+        "8083": 4
+      },
+      "ubatch": 512
+    },
+    "compiled_serving_context_tokens": 393216,
+    "compiled_serving_device": "ROCm0",
+    "compiled_serving_endpoint": "http://localhost:8083",
+    "compiled_serving_per_request_limit": 262144,
+    "compiled_serving_role": "architect_critic",
+    "compiled_serving_slots": 4,
+    "isolated_chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "qwen35_gdn_source": {
+      "candidate": {
+        "commit": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273",
+        "path": "src/models/qwen35.cpp",
+        "sha256": "ffb866e177aade603b70e56352f773f1d334978ac2be41a471c9c7506b13ea67"
+      },
+      "production": {
+        "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+        "path": "src/models/qwen35.cpp",
+        "sha256": "1ca00c4fd5ff59a96ef8bb5af3d945cb25b34416ef78e79ec00a19d2d4c66a51"
+      }
+    },
+    "registry_acceleration": {
+      "draft_max": 7,
+      "draft_model": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "drafter_selection": {
+        "drafter": "dflash2",
+        "inherited_by": "ingest_long_context",
+        "model_role": "qwen38_27b_q8_local",
+        "recipe": "artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json",
+        "server": "architect_critic",
+        "source": "stack_topology.drafter_selection"
+      },
+      "inherits_spec_from": "architect_critic",
+      "k": 7,
+      "n_gpu_layers_draft": 99,
+      "spec_type": "draft-dflash",
+      "type": "none"
+    },
+    "registry_commit": "12afe2858f9dbd4691447926d6cf1864de64348c",
+    "registry_ingest_chat_template_kwargs": {
+      "enable_thinking": true,
+      "reasoning_effort": "medium"
+    },
+    "registry_model": "Qwen3.8-27B-Q8_0",
+    "registry_model_architecture": "qwen35",
+    "registry_role": "ingest_long_context",
+    "serving_interpretation": "Ingest shares the architect_critic :8083 host with DFlash2 cap 7. The compiled alias view reports speculation disabled while its launch requirements and registry preserve the inherited sidecar.",
+    "sources_sha256": {
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml": "14dcd1ef4c08ca824561e9daa9c7bb71785a080c909accca0ea450fed0f6b8c0",
+      "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml": "9615682d9461ced4f3a10cfebb9c8925bd40db351d2aa9bd18a5745bed40df79",
+      "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/.claude/skills/kernel-promotion/scripts/quality_parity.py": "bce2cf1b5f86a27d0891f87b7d95dc838c49054af2c87730cd3a3d30596c8f4d"
+    }
+  },
+  "promotion_authorized": false,
+  "publication": {
+    "book_s": 3300,
+    "cpu_region": "any-cpu-quarter",
+    "estimate_s": 2400,
+    "gib": 48,
+    "manifest_path": "/mnt/raid0/llm/tmp/compute-flags/ready/handoff-vidya-quality-pack-ingest-long-context-20261118.json",
+    "manifest_sha256": "84355f99214e274a61340211fb45ef76c4b05d7e203c036b8f19143e0c05d1cd",
+    "min_window_s": 3300,
+    "port": 19477,
+    "published_at": "2026-11-18T00:51:04Z",
+    "status": "PUBLISHED",
+    "window_s": 3600
+  },
+  "quality_transfer_authorized": false,
+  "question_pool_sha256": "bc95dabd002742526397be1dbdba4d10e4115db34a61a459ae08e968ee648cc2",
+  "recipe": {
+    "args": [
+      "--device",
+      "none",
+      "-ngl",
+      "0",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "-fa",
+      "on",
+      "--no-warmup",
+      "-np",
+      "1",
+      "-m",
+      "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "-c",
+      "16384",
+      "-b",
+      "512",
+      "-ub",
+      "512",
+      "--cache-ram",
+      "0",
+      "--no-kv-unified",
+      "--no-context-shift",
+      "--jinja",
+      "--chat-template-file",
+      "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+      "--spec-type",
+      "none"
+    ],
+    "context_tokens": 16384,
+    "endpoint": "/v1/chat/completions",
+    "kv_type_k": "q8_0",
+    "kv_type_v": "q8_0",
+    "kv_unified": false,
+    "minimum_long_prompt_tokens": 4096,
+    "request_s": 360,
+    "slots": 1,
+    "speculation": "none",
+    "startup_s": 240
+  },
+  "recipe_sha256": "c8fdf9a7da1235d11cc869151441a11c83536cff951c2d432451322c107c347f",
+  "request_files": {
+    "ingest-document-reconciliation": {
+      "path": "requests/ingest-document-reconciliation.json",
+      "sha256": "2bf817b432f9459498a37e627cfacca4034e95dec62721de15d630724e202afb"
+    },
+    "ingest-early-lookup": {
+      "path": "requests/ingest-early-lookup.json",
+      "sha256": "18c0e2688033889dbd8871a1e09417b645793dbfb29c7a341538469c7b05e688"
+    },
+    "ingest-recurrent-state": {
+      "path": "requests/ingest-recurrent-state.json",
+      "sha256": "6dc2db51370d8e175ebd521e302d9b53771049e7924c878442c03d794f291f12"
+    },
+    "ingest-short-summary": {
+      "path": "requests/ingest-short-summary.json",
+      "sha256": "7812c70b1c22f747a6a678f45b1cb654b1501c77d12094a24680e8dc6389b273"
+    },
+    "native-smoke": {
+      "path": "requests/native-smoke.json",
+      "sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba"
+    }
+  },
+  "row_id": "handoff-vidya-quality-pack-ingest-long-context-20261118",
+  "schema": "epyc.vidya.quality_pack_ingest_long_context_preparation.v1",
+  "scope": "isolated bounded ingest input slice with hybrid recurrent state and no speculation",
+  "smoke": {
+    "captured_process_dead": true,
+    "completion_tokens": 8,
+    "cpus": [
+      116,
+      117,
+      118,
+      119
+    ],
+    "listener_closed": true,
+    "model": "Qwen3-0.6B Q8_0",
+    "passed_at": "2026-11-18T00:51:09Z",
+    "request_sha256": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "response_sha256": "9592efe4492376c5ffafa02ab5d1197bddb1f9ff71cf2fde879f006244cbce11",
+    "status": "PASS",
+    "units": 1
+  },
+  "task": "VB-V9-8-QUALITY-PACK-INGEST-PREP",
+  "validation": [
+    "reused exact architecture model-hash receipt and checked registry digest and current file identity",
+    "verified qwen35 hybrid GDN source in both pinned kernel commits",
+    "content-bound v10 and C13 CPU runtime preflight",
+    "source manifest, shell syntax, Python AST, five distinct precomputed request bodies including smoke",
+    "offline response guard accepted zero-draft control and rejected ten deliberately corrupted controls",
+    "publisher native smoke PASS bound to the archived launcher, runner and plan digests"
+  ]
+}

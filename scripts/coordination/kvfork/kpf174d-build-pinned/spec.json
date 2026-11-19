@@ -1,0 +1,26 @@
+{
+  "id": "kvfork174d-pinned-build-20261102",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build-pinned/v3/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build-pinned/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only PASS when rc=0 and source/options/knobs/linkage pass using the pinned verifier, every ggml core, base, CPU, HIP and llama library is hashed in the build-completion receipt, and CUSTODY.json seals those receipt hashes; no inference or historical image equivalence.",
+  "estimate_s": 2400,
+  "ram_gib": 32,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.4d",
+  "priority_rank": 45,
+  "dryrun_timeout_s": 2700,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kpf174d-build-pinned",
+  "keep": [
+    "RESULT.json",
+    "CUSTODY.json",
+    "runs/**",
+    "v3/**"
+  ],
+  "smoke_timeout_s": 300,
+  "notes": "Fresh custody build with pinned local ggml linkage verifier, verified before and after linkage check; source snapshot and build options remain separately verified.",
+  "supersedes": "kvfork174d-custody-build-20261102"
+}

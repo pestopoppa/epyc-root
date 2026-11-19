@@ -1,0 +1,279 @@
+{
+  "controls": {
+    "path-only": {
+      "actor_backend_called": false,
+      "actor_receipt_id": "sha256:a169cdda3bf55fb6f3a5ac8f746b1e0adab443b96d5f51a14726f02a445f0bcf",
+      "bounded": 0,
+      "claims": [],
+      "current_regime": {
+        "backend": "gpu",
+        "measurement_surface": "serving:selected-gpu",
+        "model": {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/fixture/CONTROL-ONLY.gguf"
+        },
+        "quant": "Q5_0",
+        "recipe": {
+          "build_recipe": {
+            "divergences": [],
+            "flags": [
+              {
+                "diverges": false,
+                "name": "GGML_HIP",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "AMDGPU_TARGETS",
+                "production_value": "gfx90a",
+                "reason": null,
+                "value": "gfx90a"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_ROCWMMA_FATTN",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_MMQ_MFMA",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_GRAPHS",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_NO_VMM",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_CUDA_FA",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_NATIVE",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_OPENMP",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "BUILD_SHARED_LIBS",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "CMAKE_BUILD_TYPE",
+                "production_value": "Release",
+                "reason": null,
+                "value": "Release"
+              },
+              {
+                "diverges": false,
+                "name": "CMAKE_BUILD_RPATH_USE_ORIGIN",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "CMAKE_HIP_COMPILER",
+                "production_value": "/opt/rocm/lib/llvm/bin/clang++",
+                "reason": null,
+                "value": "/opt/rocm/lib/llvm/bin/clang++"
+              }
+            ],
+            "name": "gfx90a-rocm62-v10",
+            "notes": "Read back from production-consolidated-v10 (gpu-20260921-ffc1bac82 CMakeCache.txt), ROCm 6.2.0-66. Matches production on every named flag; the build host must report ROCm 6.2.0 (check_rocm_version). rocWMMA in-binary arm: planned: carried as GGML_HIP_ROCWMMA_FATTN=ON until the runtime arm lands.",
+            "production_reference_is_verifiable": true,
+            "schema": "epyc.autokernel.gpu_build_recipe.v1"
+          }
+        }
+      },
+      "reader_checkout_check": false,
+      "target": {
+        "backend": "gpu",
+        "device": "gfx90a",
+        "kernel_only": true,
+        "model_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/fixture/CONTROL-ONLY.gguf",
+        "quant": "Q5_0",
+        "surface": "serving:selected-gpu"
+      },
+      "visible": 0
+    },
+    "preflight": {
+      "actor_backend_called": false,
+      "actor_receipt_id": "sha256:914a72b3f1c7c54b7fa07fa2dbce487e1148c35ccd406b18fa74014d47c193ef",
+      "bounded": 4,
+      "claims": [
+        "clm_mi210_05110328074ce48e5b00a8f7",
+        "clm_mi210_2b655692156681aafa8bb16c",
+        "clm_mi210_2b8889363ba6b23f5111e5a9",
+        "clm_mi210_315fbe14997d605826af80d2",
+        "clm_mi210_3c30f1cdc79e3068270c3a87",
+        "clm_mi210_466ced87f4861becb98c4767",
+        "clm_mi210_484327e91d6ea59f3c4dd9c5",
+        "clm_mi210_4d09c1ae6f63b2a691d30729",
+        "clm_mi210_5b0f00096a72469e95bdda85",
+        "clm_mi210_60931f70b61e45cfe7ab427a",
+        "clm_mi210_7ad7f1b66643e0975ddbde26",
+        "clm_mi210_840f3d4bfb16178ad40a0de8",
+        "clm_mi210_895b0c7d1aa5fb9920090d8d",
+        "clm_mi210_89d236f0fa9ce9c1b231a84e",
+        "clm_mi210_a32c3199956c40c2ead6edfe",
+        "clm_mi210_c5a0d5ff894004de9361c8ea"
+      ],
+      "current_regime": {
+        "backend": "gpu",
+        "measurement_surface": "serving:selected-gpu",
+        "model": {
+          "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/fixture/CONTROL-ONLY.gguf",
+          "sha256": "b77b39d0b04be35c28b568f577b1b9e15e6c8b0b51beccd6b267abdeaac6b0b6"
+        },
+        "quant": "Q5_0",
+        "recipe": {
+          "build_recipe": {
+            "divergences": [],
+            "flags": [
+              {
+                "diverges": false,
+                "name": "GGML_HIP",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "AMDGPU_TARGETS",
+                "production_value": "gfx90a",
+                "reason": null,
+                "value": "gfx90a"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_ROCWMMA_FATTN",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_MMQ_MFMA",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_GRAPHS",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_HIP_NO_VMM",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_CUDA_FA",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_NATIVE",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "GGML_OPENMP",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "BUILD_SHARED_LIBS",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "CMAKE_BUILD_TYPE",
+                "production_value": "Release",
+                "reason": null,
+                "value": "Release"
+              },
+              {
+                "diverges": false,
+                "name": "CMAKE_BUILD_RPATH_USE_ORIGIN",
+                "production_value": "ON",
+                "reason": null,
+                "value": "ON"
+              },
+              {
+                "diverges": false,
+                "name": "CMAKE_HIP_COMPILER",
+                "production_value": "/opt/rocm/lib/llvm/bin/clang++",
+                "reason": null,
+                "value": "/opt/rocm/lib/llvm/bin/clang++"
+              }
+            ],
+            "name": "gfx90a-rocm62-v10",
+            "notes": "Read back from production-consolidated-v10 (gpu-20260921-ffc1bac82 CMakeCache.txt), ROCm 6.2.0-66. Matches production on every named flag; the build host must report ROCm 6.2.0 (check_rocm_version). rocWMMA in-binary arm: planned: carried as GGML_HIP_ROCWMMA_FATTN=ON until the runtime arm lands.",
+            "production_reference_is_verifiable": true,
+            "schema": "epyc.autokernel.gpu_build_recipe.v1"
+          }
+        }
+      },
+      "reader_checkout_check": false,
+      "target": {
+        "backend": "gpu",
+        "device": "gfx90a",
+        "kernel_only": true,
+        "model_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/q38-preflight-current/fixture/CONTROL-ONLY.gguf",
+        "model_sha256": "b77b39d0b04be35c28b568f577b1b9e15e6c8b0b51beccd6b267abdeaac6b0b6",
+        "quant": "Q5_0",
+        "surface": "serving:selected-gpu"
+      },
+      "visible": 16
+    }
+  },
+  "frames": 60,
+  "model_sha256": "b77b39d0b04be35c28b568f577b1b9e15e6c8b0b51beccd6b267abdeaac6b0b6",
+  "native_q38_acceptance_count": 0,
+  "rows": 20
+}

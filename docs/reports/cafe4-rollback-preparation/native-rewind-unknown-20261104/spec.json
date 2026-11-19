@@ -1,0 +1,29 @@
+{
+  "id": "cafe4-v10-native-rollback-fault-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 900,
+  "min_window_s": 900,
+  "first_progress_s": 600,
+  "gib": 64,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "One-prompt CPU real-MTP rollback/fault diagnostic only. PASS requires pinned v10 source/build/model/actual mapped libraries, positive native strict partial acceptance, distinct matched off/observe/target-fault controls, nonfault cold-prefix and batched comparisons within declared baseline plus 1e-5, both native recurrent-state mode witnesses, fault deviation greater than ten times diagnostic tolerance, no cutoff and reaped child. Any missing or invalid control is UNKNOWN. One prompt and diagnostic-capped acceptance cannot establish full CAFE-4 or performance; candidate lacks -ngl and arbitrary verify-width CLI. Corrected V4 draft-context rewind build; requalification retains original native lineage and first failed qualification.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "dryrun_timeout_s": 900,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104/runtime.py predicate",
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-native-rewind-20261104",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "bin/**",
+    "*.json",
+    "*.py",
+    "*.sh",
+    "*.sha256"
+  ]
+}

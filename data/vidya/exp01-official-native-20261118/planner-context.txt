@@ -1,0 +1,47 @@
+- `akm-cpu-q6k-x4t-weight-prefetch` → scope_blocked
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-IQ2_KT.gguf / quant unstated / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 24, as of 2026-11-18T16:10:52.592000+00:00.
+### Usable, target tier -- claims scoped to the target's own weights
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:pp512 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ2_KT/cpu build c04881fc
+  official_proxy_pp512_native_tokens_per_s: 539 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2KT:tg128 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ2_KT/cpu build c04881fc
+  official_proxy_tg128_native_tokens_per_s: 35.49 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+Shown 0 of 0 knob, 2 of 2 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.
+
+- `akm-cpu-q6k-x4t-weight-prefetch` → scope_blocked
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-IQ2_XXS.gguf / quant unstated / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 24, as of 2026-11-18T16:10:52.672367+00:00.
+### Usable, target tier -- claims scoped to the target's own weights
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:pp512 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ2_XXS/cpu build c04881fc
+  official_proxy_pp512_native_tokens_per_s: 503.8 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ2XXS:tg128 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ2_XXS/cpu build c04881fc
+  official_proxy_tg128_native_tokens_per_s: 38.1 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+Shown 0 of 0 knob, 2 of 2 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.
+
+- `akm-cpu-q6k-x4t-weight-prefetch` → scope_blocked
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-IQ4_KT.gguf / quant unstated / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 24, as of 2026-11-18T16:10:52.760478+00:00.
+### Usable, target tier -- claims scoped to the target's own weights
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:pp512 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ4_KT/cpu build c04881fc
+  official_proxy_pp512_native_tokens_per_s: 445.2 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:IQ4KT:tg128 [Judged/Located · verified] Qwen3.6-35B-A3B-IQ4_KT/cpu build c04881fc
+  official_proxy_tg128_native_tokens_per_s: 30.6 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+Shown 0 of 0 knob, 2 of 2 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.
+
+- `akm-cpu-q6k-x4t-weight-prefetch` → scope_blocked
+## Belief-kernel evidence (Vidya ledger, read-only)
+Target(s): Qwen3.6-35B-A3B-Q4_K_M.gguf / quant unstated / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 24, as of 2026-11-18T16:10:52.847525+00:00.
+### Usable, target tier -- claims scoped to the target's own weights
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:pp512 [Judged/Located · verified] Qwen3.6-35B-A3B-Q4_K_M/cpu build c04881fc
+  official_proxy_pp512_native_tokens_per_s: 496.4 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+- clm_exp01-official:324f2a402186442f9efc21f4e65624eb:Q4KM:tg128 [Judged/Located · verified] Qwen3.6-35B-A3B-Q4_K_M/cpu build c04881fc
+  official_proxy_tg128_native_tokens_per_s: 25.48 tokens/s (n=3). Prospective CPU proxy pilot observation. Operational looks and the fixed quality slice are exploratory.
+Shown 0 of 0 knob, 2 of 2 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 0 of 0 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.

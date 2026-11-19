@@ -1,0 +1,1 @@
+{"status": "QUALIFIED_SYNTHETIC", "progress": 12, "tests": 2, "mutations": 12, "inputs_sha256": "f7353b73e2b74ab0e38c4f46517d57ee3bdaf3bdfac5df6c1c20604865662113", "scope": "target mark parsing only; no GPU, target process alignment, drift, attribution or inference"}

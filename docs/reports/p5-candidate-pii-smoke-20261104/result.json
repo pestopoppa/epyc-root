@@ -1,0 +1,33 @@
+{
+  "elapsed_s": 1.2725071907043457,
+  "junit_counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 7
+  },
+  "junit_sha256": "8ee4b97df8ac3fc50c767d606d5eb87bd7569d1a786567bd495803d535b83adf",
+  "launcher_sha256": "9f0be4ed64ac3427dda590f17de1c49ef5a1b171292910c7b061ab6a22c323da",
+  "pins_sha256": "a9d752373057dccc2ee37e0fdeaa773d07d3adb133b3a6f6c56fddddcb724585",
+  "pytest_exit": 0,
+  "pytest_version": "9.1.1",
+  "python_executable": "/usr/bin/python3",
+  "python_version": "3.13.7 (main, Mar  3 2026, 12:19:54) [GCC 15.2.0]",
+  "schema": "p5.candidate-pii-controls.v1",
+  "source_manifest_sha256": "79576d38dddab6fbadbb8efe24df9ba204ee2bdf4b8577ff55b11d0cb6ed3944",
+  "sources": {
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/complete.py": "98eee8e4b0b931056d6795ad9f16796197f797f1aaad325d3d84b4d627542047",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/job.py": "8cb65ecfbe3dbfba7a1f1ef7239bf890e595d4cacf2f66158bf71df145fdd3cd",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/spec.json": "9e5917e246887348008b832f84c9d2371e345ab37c66eab8eb0f07336c1a5c91",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/docs/reports/p5-question-candidate-20261104/questions.json": "f33dfbd8bbe7a0d3b7a69883a0e254ed9352539e6d622aa7cd6dcede5488946c",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/ci/native_conformance.py": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/fixture_snapshot_provenance.py": "4e5e295fa3421b339b4772957297f7837ef59f422f4cfa549db9d1c9374ba6be",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/pii_precommit.sh": "41ba8f74e4d1a32ec38ad66ab3d3e9ac6252e6b507b013fe0f7167ee8dbf8ef8",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/pii_staged_capture.py": "932083f41537ff3b41136d90c18f7274cd83c96eb8412519abaea282aec6ec7a",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/tests/test_pii_p5_candidate_question.py": "0088c2c01f09d3038ffe61af21116145f592d5d93854a8cfd46ec8e799c87bd1"
+  },
+  "sources_verified_pre_post": true,
+  "status": "COMPLETE",
+  "test_repositories_removed": true,
+  "testcases": 7
+}

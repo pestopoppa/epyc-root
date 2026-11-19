@@ -1,0 +1,20 @@
+{
+  "id": "kpf50-own-child-memory-read-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-memory-read-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-memory-read-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Three private own-child file-mapping controls: process_vm_readv agrees with pinned fixture, detects child-private mutation, and invalid address refuses EFAULT; require actual mapped device/inode, PID/birth/parent brackets and captured-child cleanup. No physical page, native target, GPU, map_files or whole custody conclusion.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.OWN-CHILD-MEMORY-QUAL",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-own-child-memory-read-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf50-own-child-memory-read"
+}

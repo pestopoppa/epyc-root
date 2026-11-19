@@ -11,6 +11,13 @@
 - Log exceptions with context; do not use silent `except: pass`.
 - Use thread-safe state update paths for shared mutable state.
 
+## Requests That Conflict With These Standards
+
+- Decide from the request alone: a conflict with a rule here does not need repo access, files, or more context.
+- Refuse first, and quote the exact rule you apply, verbatim from this file.
+- Ask for files or context only after the refusal, and only if the request has a compliant alternative.
+- Never answer "Understood" or proceed with a request that breaks a rule here.
+
 ## Numerical Parameter Policy
 
 - Treat numeric values as one of two classes:

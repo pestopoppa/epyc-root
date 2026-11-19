@@ -1,0 +1,204 @@
+{
+  "canonical_ingest": {
+    "frames_emitted": 3,
+    "independent_sources": 1,
+    "once": true,
+    "only_new": false,
+    "raw_support_edges_for_same_evidence_label": 2,
+    "refused": [],
+    "rows_projected": 1,
+    "same_claim_and_source_id": true
+  },
+  "claim_id": "clm_kvu16a_fd3c14cda3b89b343e56bd63",
+  "code_sha256": {
+    "scripts/vidya/adapters/kvu16a_native.py": "fad660f651643e712bee21185ae699f085d523cd07734320768ff4899c367d26",
+    "scripts/vidya/adapters/kvu16a_projection.py": "4e33c1a749033fd0ebb6cc06a55149a13c03ab15d1669d36936ba3d21baf2085",
+    "scripts/vidya/ingest_sources.py": "a7427498471b9656138c2f5bacae698c54a169ac537966593e14d67361e5f803",
+    "scripts/vidya/loop_beliefs.py": "c803316d816a48473b9a3eb7c436d8ec821e74f31f41d09eb3e4dd42cb90752e",
+    "tests/vidya/test_kvu16a_native.py": "688337f7b5649b5e0e778761e63907ab5b647bb7f2639e043782b659760c240f",
+    "tests/vidya/test_loop_beliefs.py": "786c43da8a462968364a60305aa564bcf1cad36ea97a29aab233f80e0c663356"
+  },
+  "files": {
+    "canonical/legacy-baseline-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/legacy-baseline-gpu/prompt.txt",
+      "sha256": "ae74700d843d6cdc5282b0e2c5388d88c69224649d4bf185fa5d8d30562175ad",
+      "size": 13737
+    },
+    "canonical/legacy-baseline-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/legacy-baseline-gpu/ready.json",
+      "sha256": "486c6f014846bf877719fe53ce730d43ede0d4b7a45b6d9e54e766ded0d6d47f",
+      "size": 55682
+    },
+    "canonical/matching-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/matching-gpu/prompt.txt",
+      "sha256": "684a0671b727abcb08f896409cd857f4763795430326a0bd0ef35a94752a8e5e",
+      "size": 13658
+    },
+    "canonical/matching-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/matching-gpu/ready.json",
+      "sha256": "bef1b9337312c8fcdbfa238c4f2217a4c80cde0991f5716f2f909ce0bbfb98c1",
+      "size": 55497
+    },
+    "canonical/same-weights-cpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/same-weights-cpu/prompt.txt",
+      "sha256": "283758e8be7207d5400f8b854cbcb94fd815fc656626b108e499c346c193417d",
+      "size": 7776
+    },
+    "canonical/same-weights-cpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/same-weights-cpu/ready.json",
+      "sha256": "d1905dd810c376b3f9f4f0287625823252912f0b7d00bfbf831df0cb9d7feca7",
+      "size": 48977
+    },
+    "canonical/summary.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/summary.json",
+      "sha256": "1e82b73a24a30062b523e297a8a0b9ae111412113fc90229b49974f6018491f6",
+      "size": 6214
+    },
+    "canonical/unrelated-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/unrelated-gpu/prompt.txt",
+      "sha256": "5c564f392568e7c167a9e78b8adcfb78a71394af9101d228aa3029af1c62e73a",
+      "size": 6710
+    },
+    "canonical/unrelated-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-e_pk3u63/unrelated-gpu/ready.json",
+      "sha256": "89f1b9d0e61872f147335de8f2dc158c4b4416cbfb717ae0990d1db0ef65162a",
+      "size": 12636
+    },
+    "check_planner.py": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/check_planner.py",
+      "sha256": "4dd8bd0408e4a972b1ff756c5a20fb5290d7986a199fc79b0657d2433c3e81e0",
+      "size": 7362
+    },
+    "current-snapshot/legacy-baseline-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/legacy-baseline-gpu/prompt.txt",
+      "sha256": "eca7e4d92dca7914c7b321e483c697e3d78e6840e32f5b6c922499d5b7edd6c9",
+      "size": 13737
+    },
+    "current-snapshot/legacy-baseline-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/legacy-baseline-gpu/ready.json",
+      "sha256": "a8ca35890fb49f04fbfe9622f7a97a8323111b174bca787650d729d39077e0b7",
+      "size": 55605
+    },
+    "current-snapshot/matching-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/matching-gpu/prompt.txt",
+      "sha256": "15fc6030f78b178d604616b0ea2992f6c31161f1e56b32aa0d7ffe851638e542",
+      "size": 13658
+    },
+    "current-snapshot/matching-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/matching-gpu/ready.json",
+      "sha256": "0a0ef3bca8ea88e063a6a0c64b338fc5c3933fe492b8b17b54ac1c148c7bec3a",
+      "size": 55537
+    },
+    "current-snapshot/same-weights-cpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/same-weights-cpu/prompt.txt",
+      "sha256": "24d14ba6117453e146eafec9a1a151c02cb1fe286d7dceed9001eb21a562c232",
+      "size": 7776
+    },
+    "current-snapshot/same-weights-cpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/same-weights-cpu/ready.json",
+      "sha256": "656d340ef5874544f8ced45466a719e11e55d34f086c7b4adc7a3049483e6faa",
+      "size": 49017
+    },
+    "current-snapshot/summary.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/summary.json",
+      "sha256": "d5a0b1799e220c741259dabc6f2fb6d008e818a3d78dee429ec01250a3f9b0d6",
+      "size": 6394
+    },
+    "current-snapshot/unrelated-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/unrelated-gpu/prompt.txt",
+      "sha256": "087e330e1711947aecf65dd5a7034a4ba8000f43af472f1012125197fb9aedf2",
+      "size": 6710
+    },
+    "current-snapshot/unrelated-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-foxvbhks/unrelated-gpu/ready.json",
+      "sha256": "65874dbcf7dd95325a752ca21c1a0a0cede9fb69ad9f505da0d60cf78d1f6dfc",
+      "size": 12676
+    },
+    "installed-snapshot/legacy-baseline-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/legacy-baseline-gpu/prompt.txt",
+      "sha256": "2fe0fa3a8def2b9fa03c9be3b620d8cb13e60c2298be2fb4949dc5bf43344278",
+      "size": 13017
+    },
+    "installed-snapshot/legacy-baseline-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/legacy-baseline-gpu/ready.json",
+      "sha256": "9ccb139c6a2fdc65069c42603842ae52c77982b2ccf15f8abfd48b807a20a5c4",
+      "size": 55949
+    },
+    "installed-snapshot/matching-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/matching-gpu/prompt.txt",
+      "sha256": "a4689f8854b8102b0d666a318a26bf0ce5510f0091f35be50d7f862882e8af33",
+      "size": 12917
+    },
+    "installed-snapshot/matching-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/matching-gpu/ready.json",
+      "sha256": "8fd7a09ba6a49c7f0e0abaa0b4994f1f84dee65b3e3a0557059107a0b7f5b637",
+      "size": 55840
+    },
+    "installed-snapshot/same-weights-cpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/same-weights-cpu/prompt.txt",
+      "sha256": "4086b73bdcb598cc42b87eca027dc44fdea552c02ad05e2868b0c0c78ea002f7",
+      "size": 7420
+    },
+    "installed-snapshot/same-weights-cpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/same-weights-cpu/ready.json",
+      "sha256": "ece39856c49874560e47fcf4069ade27ced5b2934a71a65195d759e8528c7823",
+      "size": 49067
+    },
+    "installed-snapshot/summary.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/summary.json",
+      "sha256": "fbcf4d8a9d99ed6d0744bc1d8521c81ad6e9e727bd39ac694d7382dfbbd99851",
+      "size": 6302
+    },
+    "installed-snapshot/unrelated-gpu/prompt.txt": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/unrelated-gpu/prompt.txt",
+      "sha256": "0133d139abef6f2e1e35b635488a7fb4b3e0652e02992e3c67a96cebd90e0844",
+      "size": 6354
+    },
+    "installed-snapshot/unrelated-gpu/ready.json": {
+      "original_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu16a-canary-20261118/planner-xibyqq0g/unrelated-gpu/ready.json",
+      "sha256": "b24773081c13d9bbdd3f5e5f26b36f11c4f6c514054d5125f334b6d9b98c9f3c",
+      "size": 12726
+    },
+    "native/kvu16a_sampled_load.beliefs.jsonl": {
+      "original_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/kvu16a_sampled_load.beliefs.jsonl",
+      "sha256": "6072d1982673151a4db4a9deae604ecdc89b2fe567c5ab731c62692c8fa832d2",
+      "size": 5051
+    },
+    "native/plan.json": {
+      "original_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/plan.json",
+      "sha256": "46c794ad91009e2dc159af531c4ce3572cc5f3ff81b35df6d443bcf201097956",
+      "size": 25235
+    },
+    "native/result.json": {
+      "original_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/result.json",
+      "sha256": "0330c5682d316ceeac7c39afb27f2946cf23c2fc9fe410faad1a9edcfe479e11",
+      "size": 6558
+    },
+    "native/samples.jsonl": {
+      "original_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/samples.jsonl",
+      "sha256": "c82cbeec6ba87da5b97f1a090e0468c0ea9f5c3f58d06e93d08062b4f6fb7276",
+      "size": 722
+    },
+    "native/server.log": {
+      "original_path": "/mnt/raid0/llm/tmp/kvu/kvu16a-row-r3-20261104/native-load-tfz4cs9a/server.log",
+      "sha256": "5cc8a5598d338e0ccd969adbc57a895c5b30c96f65ea9b48302a021e2347aafe",
+      "size": 37085
+    }
+  },
+  "grade": "Judged/Located",
+  "negative_targets": [
+    "same-model CPU",
+    "unrelated GPU"
+  ],
+  "planner": "AgentPlanner.propose interrupted at backend boundary; default budgets; current reader guard enabled",
+  "reps": 2,
+  "schema": "epyc.vidya.kvu16a_planning_acceptance.v1",
+  "scope": "two healthy samples in one load-only process; startup coverage UNKNOWN; sampled maximum minus observed target KV, not a lifetime peak or bound",
+  "status": "passed",
+  "tests": {
+    "executed_by": "kvu16a_canary subagent",
+    "reported_passed": 537
+  },
+  "unit": "bytes",
+  "value": 37648130048
+}

@@ -1,0 +1,33 @@
+{
+ "raw_dir": "/mnt/raid0/llm/tmp/vb-r18d-aa-wire-20261104/out/",
+ "note": "raw stays on raid (not committed, ~60 MB); hashes bind the filing",
+ "files": {
+  "results.jsonl": {
+   "sha256": "91cd8f75c0dae4bb7d88616929c5d3ba1b4de2c968173cefcb11ab58b06f781a",
+   "bytes": 443678
+  },
+  "invocations.jsonl": {
+   "sha256": "7a3cddeff05d81ab7c128b90df8e25a34efaec05606dce5e7c84083b981723b5",
+   "bytes": 30665122
+  },
+  "r18d-capture-687a9549eee3417a8cf42f1004e6f57a.jsonl": {
+   "sha256": "9a418ac23d3a84e54f00b1b436653f3cc6a114970c1fa5dc746405040e86697b",
+   "bytes": 29690413
+  },
+  "aa-campaign.json": {
+   "sha256": "b79eec4646883b287d919a2bc2d46b1f3d5ebaee9f3783a3d594eac6e8028925",
+   "bytes": 7146
+  },
+  "COMPLETE": {
+   "sha256": "37a40f08d8548dba289b9b0bb35bcf63b359f6d37ee86044ebc6b6da080b9ec1",
+   "bytes": 9
+  }
+ },
+ "adapter_check": {
+  "reader": "scripts/vidya/adapters/autokernel_r18d_aa.py",
+  "checked": "2026-11-09",
+  "result": "REFUSED as a floor: missing own-PID HIP residency or unstable clocks",
+  "detail": "all 136 invocations (SETTLED 42, PREHEATED 52, POST_BUILD 42) recorded clock_stable=false (sclk 800-1700 MHz in-window); hash chain, marker, identities, grant, claim witness and unit order are checked before that gate; the producer-declared bootstrap floor is therefore not ingested",
+  "ingest_refused_expected": 1
+ }
+}

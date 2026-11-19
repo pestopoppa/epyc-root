@@ -1,0 +1,29 @@
+{
+  "schema": "epyc.delegation.context_budget_candidate.v1",
+  "repo": "epyc-orchestrator",
+  "base_commit": "de0f114415be7d5ffb5cb6cbd9a40032329c54ef",
+  "patch_sha256": "a5f82b4fbf1e703e8d8d50413d884d1ecc87e56a598dbc9ee61768a10a0f1489",
+  "changed_source_sha256": {
+    "src/api/routes/chat_delegation_config.py": "9380c26045166fd8c586e70369b976de1b97ab9025d7209a3d570afbdc1a82c1",
+    "src/api/routes/chat_delegation.py": "b4d4481eb16042f97d860fc1073ca336191ab7a0804a8aac5a19bcf2759706b3",
+    "tests/unit/test_delegation_context_budgets.py": "31970d74c3ad1f26d85f2488ad6be8a8ce738c6222711fc0655a1f2f2d682962"
+  },
+  "source_blobs": {
+    "src/api/routes/chat_delegation_config.py": "cb693cb235794ed00a45e0f12e76e3f74b3323cd",
+    "src/api/routes/chat_delegation.py": "b3777c27e973cac82e4735e550fd8f029947a50f"
+  },
+  "app_tests": {
+    "passed": 88,
+    "scope": [
+      "tests/unit/test_delegation_context_budgets.py",
+      "tests/unit/test_dcp4_wiring.py",
+      "tests/unit/test_chat_delegation.py"
+    ]
+  },
+  "root_tests": {
+    "passed": 6
+  },
+  "make_gates": "schema passed/skipped absent inputs; shellcheck missing, gate stopped; no full-gate pass",
+  "production_applied": false,
+  "inference_calls": 0
+}

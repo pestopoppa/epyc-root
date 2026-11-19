@@ -1,0 +1,15 @@
+{
+  "schema": "p5.candidate-pii-sources.v1",
+  "sources": {
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/complete.py": "98eee8e4b0b931056d6795ad9f16796197f797f1aaad325d3d84b4d627542047",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/job.py": "8cb65ecfbe3dbfba7a1f1ef7239bf890e595d4cacf2f66158bf71df145fdd3cd",
+    "/mnt/raid0/llm/tmp/gpu-serving-tie-in/p5-candidate-pii-row/spec.json": "9e5917e246887348008b832f84c9d2371e345ab37c66eab8eb0f07336c1a5c91",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/docs/reports/p5-question-candidate-20261104/questions.json": "f33dfbd8bbe7a0d3b7a69883a0e254ed9352539e6d622aa7cd6dcede5488946c",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/ci/native_conformance.py": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/fixture_snapshot_provenance.py": "4e5e295fa3421b339b4772957297f7837ef59f422f4cfa549db9d1c9374ba6be",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/pii_precommit.sh": "41ba8f74e4d1a32ec38ad66ab3d3e9ac6252e6b507b013fe0f7167ee8dbf8ef8",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/pii_staged_capture.py": "932083f41537ff3b41136d90c18f7274cd83c96eb8412519abaea282aec6ec7a",
+    "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/tests/test_pii_p5_candidate_question.py": "0088c2c01f09d3038ffe61af21116145f592d5d93854a8cfd46ec8e799c87bd1"
+  },
+  "test_path": "/mnt/raid0/llm/worktrees/mains/h-gpu-serving-tie-in/scripts/hooks/tests/test_pii_p5_candidate_question.py"
+}

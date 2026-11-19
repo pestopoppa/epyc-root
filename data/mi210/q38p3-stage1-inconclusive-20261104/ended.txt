@@ -1,0 +1,7 @@
+rc=0 time=2026-11-04T23:48:10Z reason=complete
+job_id=q38p3-stage1-20261104
+owner=workspace-ec
+step=job-run
+estimated_wall_s=4200
+started=2026-11-04T23:46:34Z
+regions=mi210_0,184-191

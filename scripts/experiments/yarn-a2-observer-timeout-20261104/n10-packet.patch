@@ -1,0 +1,224 @@
+--- old/observer_entry.py
++++ new/observer_entry.py
+@@ -28,18 +28,26 @@
+             raise ValueError('invalid sampling configuration')
+         self.request_id, self.custody, self.slots, self.busy = request_id, custody, slots, busy
+         self.interval_ns, self.max_samples, self.clock = int(interval_s*1e9), max_samples, clock
+-        self.samples=[]; self.attempts=0; self.inactive=0; self.next_ns=0; self.truncated=0
++        self.samples=[]; self.attempts=0; self.inactive=0; self.timeouts=0; self.next_ns=0; self.truncated=0
+         self.window_start_ns=clock(); self.closed=False; self.observed_count=0; self.max_vram_bytes=0; self.max_device_busy_percent=0
+     def poll(self):
+         if self.closed: raise ObservationError('observation closed')
+         now=self.clock()
+         if now < self.next_ns: return
+         self.next_ns=now+self.interval_ns; self.attempts+=1
+-        before_start=self.clock(); before,before_task=processing(self.slots()); before_end=self.clock()
++        before_start=self.clock()
++        try: before,before_task=processing(self.slots())
++        except TimeoutError:
++            self.timeouts+=1; self.inactive+=1; return
++        before_end=self.clock()
+         if not before:
+             self.inactive+=1; return
+         measured_start=self.clock(); own=self.custody(); busy=self.busy(); measured_end=self.clock()
+-        after_start=self.clock(); after,after_task=processing(self.slots()); after_end=self.clock()
++        after_start=self.clock()
++        try: after,after_task=processing(self.slots())
++        except TimeoutError:
++            self.timeouts+=1; self.inactive+=1; return
++        after_end=self.clock()
+         if not after or before_task != after_task:
+             self.inactive+=1; return
+         if not isinstance(own,dict) or type(own.get('vram_bytes')) is not int or own['vram_bytes'] <= 0:
+@@ -58,7 +66,7 @@
+         end=self.clock(); self.closed=True
+         return {'schema':'a2.gpu-observation.v1','request_id':self.request_id,
+                 'request_client_window_ns':[self.window_start_ns,end], 'interval_ns':self.interval_ns,
+-                'attempts':self.attempts,'slot_not_bracketed':self.inactive,'samples':self.samples,
++                'attempts':self.attempts,'slot_not_bracketed':self.inactive,'slot_timeouts':self.timeouts,'samples':self.samples,
+                 'truncated_samples':self.truncated, 'bracketed_sample_count':self.observed_count,
+                 'sampled_max_own_vram_bytes':self.max_vram_bytes if self.observed_count else None,
+                 'sampled_max_device_busy_percent':self.max_device_busy_percent if self.observed_count else None,
+--- old/job_entry.py
++++ new/job_entry.py
+@@ -11,7 +11,7 @@
+ from yarn_proof import check_proof
+ P=pathlib.Path
+ ROOT=P(__file__).resolve().parent
+-STORE=P('/mnt/raid0/llm/tmp/yarn/a2/runtime/bin').resolve()
++STORE=P('/mnt/raid0/llm/tmp/yarn/a2-n10-20261104/runtime/bin').resolve()
+ MODEL=P('/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf')
+ TEMPLATE=P('/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja')
+ RECEIPT=P('/mnt/raid0/llm/tmp/yarn/a2-model-current-result.txt')
+@@ -61,17 +61,13 @@
+  atomic(control/'job.json',{'pid':os.getpid(),'start_ticks':owner.start_ticks(os.getpid())})
+  # Recheck the same closure after engine admission and immediately before launch.
+  subprocess.run([sys.executable,str(ROOT/'seal_entry.py')],check=True,timeout=120)
+- if os.environ.get('FILLER_ID')!='yarn-e1-a2-gpu-20261102-v2': raise Refused('keeper ID required')
++ if os.environ.get('FILLER_ID')!='yarn-e1-a2-n10-gpu-20261104': raise Refused('keeper ID required')
+  stop=P(os.environ['FILLER_STOPFILE']); cpus=os.environ['FILLER_CPUS']; threads=int(os.environ['FILLER_THREADS'])
+  if not stop.is_absolute() or not cpus or threads<=0: raise Refused('invalid grant environment')
+  deadline=time.monotonic()+int(os.environ['FILLER_DEADLINE'])-time.time()
+  if stop.exists() or deadline-time.monotonic()<60: raise Refused('insufficient work and cleanup interval')
+- smoke=os.environ.get('FILLER_SMOKE')=='1'
+- result=P(os.environ['FILLER_DRYRUN_RESULT_PATH']) if smoke else ROOT/'results/RESULT.json'
+- if smoke and os.environ.get('FILLER_DRYRUN')!='1': raise Refused('smoke requires isolated dry run')
+- if not result.is_absolute(): raise Refused('result must be absolute')
+- if result.exists(): raise Refused('result path already exists')
+- if not smoke and any((ROOT/'results').glob('attempt-*')): raise Refused('prior attempt requires explicit review before re-exposure')
++ result=ROOT/'results/RESULT.json'
++ if result.exists() or any((ROOT/'results').glob('attempt-*')): raise Refused('N10 already exposed or attempted; no replay')
+  custody.verify_static(STORE)
+  if hashlib.sha256(TEMPLATE.read_bytes()).hexdigest()!=TEMPLATE_HASH: raise Refused('template changed')
+  device=device_entry.identify()
+@@ -80,9 +76,9 @@
+  segcounts=counts(inp)
+  fd=model_fd(); original_stat=os.fstat(fd)
+  tmp=tempfile.TemporaryDirectory(prefix='a2-job-',dir=ROOT); work=P(tmp.name); stop_local=work/'stop'
+- attempt=(result.parent if smoke else ROOT/'results')/('attempt-'+work.name)
++ attempt=(ROOT/'results')/('attempt-'+work.name)
+  attempt.mkdir(parents=True,exist_ok=False)
+- if not smoke: atomic(result,{'status':'partial_no_verdict','attempt_path':str(attempt),'cleanup':'unknown_until_audited','claim_context':{'task':'YARN-E1-A2','arm':'A2','warrant':'not_assessed','input_manifest_sha256':y.MANIFEST_SHA}})
++ atomic(result,{'status':'partial_no_verdict','attempt_path':str(attempt),'cleanup':'unknown_until_audited','claim_context':{'task':'YARN-E1-A2','arm':'A2','warrant':'not_assessed','input_manifest_sha256':y.MANIFEST_SHA}})
+  atomic(attempt/'job-identity.json',json.loads((control/'job.json').read_text()))
+  atomic(attempt/'seal.manifest.json',json.loads((ROOT/'seal.manifest.json').read_text()))
+  atomic(attempt/'model-receipt.json',json.loads(RECEIPT.read_text()))
+@@ -106,6 +102,8 @@
+  for v in list(env):
+   if v.startswith(('GGML_','LLAMA_','LD_')) or v in ('HIP_VISIBLE_DEVICES','ROCR_VISIBLE_DEVICES','GPU_DEVICE_ORDINAL'): env.pop(v,None)
+  env.update(LD_LIBRARY_PATH=str(STORE)+':/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib',HIP_PATH='/opt/rocm',ROCM_PATH='/opt/rocm',GGML_IQK='1',HIP_VISIBLE_DEVICES='0')
++ with (attempt/'linkage.txt').open('w') as link:
++  subprocess.run(['/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh',str(STORE/'llama-server'),str(ROOT/'runtime')],env=env,stdout=link,stderr=subprocess.STDOUT,check=True,timeout=60)
+  argv=[str(STORE/'llama-server'),'-m',f'/proc/self/fd/{fd}','--host','127.0.0.1','--port',str(port),'-np','1','-t',str(threads),'-ub','2048','--flash-attn','on','--jinja','-ctk','q8_0','-ctv','q8_0','--no-mmap','-ngl','all','--cache-ram','0','--chat-template-file',str(TEMPLATE),'--device','ROCm0','--slot-save-path',str(work), '--verbosity','4','-c','524288','--override-kv','qwen35.context_length=int:524288']
+  tree=None; completed=None; cleanup_ok=False
+  try:
+@@ -162,26 +160,27 @@
+     entry.update(state='response_received',response=out,observation=observation)
+     atomic(exposure,entry)
+     return out
+-   if smoke:
+-    body={'messages':[{'role':'user','content':'Write a detailed paragraph of at least 100 words describing a lighthouse during a storm.'}], 'max_tokens':128,'temperature':0.0,'top_k':1,'return_tokens':True,'verbose':True,'chat_template_kwargs':{'enable_thinking':False}}
+-    response=post('/v1/chat/completions',body,{'kind':'native_smoke','id':'smoke'})
+-    if not observations or observations[-1]['bracketed_sample_count']<2: raise Refused('smoke GPU observation insufficient')
+-    if not isinstance(response.get('choices'),list) or not response['choices'] or not response.get('__verbose',{}).get('tokens') or not isinstance(response['choices'][0].get('message',{}).get('content'),str): raise Refused('smoke response invalid')
+-    completed={'status':'smoke_only','response':response,'gpu_observations':observations}
+-   else:
+-    rows=[]
+-    partial=attempt/'partial.json'
+-    def persist(row):
+-     rows.append(row); atomic(partial,{'status':'partial_no_verdict','rows':rows})
+-    staged.run_stages(post,inp,segcounts,persist)
+-    expected={('s1',3),('s2',3),('128k',6),('240k',6),('400k',6)}
+-    observed={(stage,sum(r.get('stage')==stage for r in rows)) for stage in staged.ALL_STAGES}
+-    if len(rows)!=24 or observed!=expected or len({r.get('id') for r in rows})!=24: raise Refused('incomplete staged capture')
+-    completed={'status':'complete_control_only','rows':rows,'gpu_observations':observations,'token_evidence':'raw generated IDs; retokenize text outside grant before tier-0 comparison'}
++   rows=[n for n in inp['needles'] if n['stage']=='400k' and n['needle']=='N10']
++   if len(rows)!=1: raise Refused('N10 fixture is not unique')
++   needle=rows[0]
++   baseline=[json.loads(line) for line in (ROOT/'a1-needle-400k.jsonl').read_text().splitlines() if json.loads(line).get('id')=='N10']
++   if len(baseline)!=1: raise Refused('N10 baseline is not unique')
++   baseline=baseline[0]; messages=y.chain_messages(inp['segments'],y.stage_chain('400k'),needle['question'])
++   prompt_hash=hashlib.sha256(json.dumps(messages).encode()).hexdigest()
++   if prompt_hash!=baseline['prompt_sha256'] or needle['expected']!=baseline['expected'] or needle['question']!=baseline['question']:
++    raise Refused('N10 prompt or truth differs from original A1')
++   body={'messages':messages,'max_tokens':y.NEEDLE_MAX_TOKENS,'temperature':0.0,'top_k':1,'cache_prompt':True,'chat_template_kwargs':{'enable_thinking':False},'return_tokens':True,'verbose':True}
++   response=post('/v1/chat/completions',body,{'stage':'400k','id':'N10','kind':'needle'})
++   if not observations or observations[-1]['bracketed_sample_count']<2: raise Refused('N10 GPU observation insufficient')
++   choice=response['choices'][0]; text=choice['message'].get('content') or ''; times=response['timings']; ids=response.get('__verbose',{}).get('tokens')
++   if not isinstance(text,str) or not isinstance(ids,list) or any(type(i) is not int for i in ids): raise Refused('missing answer or raw token IDs')
++   if type(times.get('prompt_n')) is not int or type(times.get('cache_n')) is not int or times['prompt_n']+times['cache_n']!=399470: raise Refused('N10 total token count mismatch')
++   witness={'id':'N10','arm':'A2','stage':'400k','question':needle['question'],'expected':needle['expected'],'depth_target':needle['depth_target'],'prompt_sha256':prompt_hash,'text':text,'raw_generated_token_ids':ids,'response':response,'http_ok':True,'error':None}
++   completed={'status':'one_witness_complete','unit':'A2-N10-400K','witness':witness,'gpu_observations':observations,'token_evidence':'raw generated IDs; retokenize text outside grant before tier-0 comparison','scope':'one of five fixed 400K witnesses; no five-witness verdict'}
+    final_stat=os.fstat(fd)
+    if (original_stat.st_ino,original_stat.st_size,original_stat.st_mtime_ns,original_stat.st_ctime_ns)!=(final_stat.st_ino,final_stat.st_size,final_stat.st_mtime_ns,final_stat.st_ctime_ns): raise Refused('model mutated during run')
+  except BaseException as exc:
+-  if not smoke and not result.exists():
++  if not result.exists():
+    atomic(result,{'status':'partial_no_verdict','reason':type(exc).__name__+': '+str(exc),'attempt_path':str(attempt),'cleanup':'unknown_until_audited'})
+   raise
+  finally:
+@@ -193,7 +192,7 @@
+    os.close(fd)
+    if tree is None or cleanup_ok: tmp.cleanup()
+  if completed is None or not cleanup_ok: raise Refused('no clean completion')
+- completed.update(server_tree_cleanup='cgroup unpopulated and child reaped',model_sha256=MODEL_HASH,server_sha256=custody.PINS['llama-server'],server_proof=proof,attempt_path=str(attempt),claim_context={'task':'YARN-E1-A2','arm':'A2','warrant':'not_assessed','input_manifest_sha256':y.MANIFEST_SHA})
++ completed.update(server_tree_cleanup='cgroup unpopulated and child reaped',model_sha256=MODEL_HASH,server_sha256=custody.PINS['llama-server'],server_proof=proof,linkage_sha256=hashlib.sha256((attempt/'linkage.txt').read_bytes()).hexdigest(),attempt_path=str(attempt),claim_context={'task':'YARN-E1-A2','arm':'A2','warrant':'not_assessed','input_manifest_sha256':y.MANIFEST_SHA})
+  atomic(result,completed)
+  return 0
+ if __name__=='__main__':
+--- old/grant_supervisor.py
++++ new/grant_supervisor.py
+@@ -1,8 +1,8 @@
+ """Grant-gated outer supervisor; never writes the allocator's grant."""
+ import datetime as dt,os,pathlib,subprocess,sys,time
+ import owner_entry as owner
+-ID='yarn-e1-a2-gpu-20261102-v2'
+-ROOT=pathlib.Path('/mnt/raid0/llm/tmp/yarn/a2')
++ID='yarn-e1-a2-n10-gpu-20261104'
++ROOT=pathlib.Path('/mnt/raid0/llm/tmp/yarn/a2-n10-20261104')
+ LOCK='/mnt/raid0/llm/epyc-orchestrator/scripts/region-lock'
+ class Refused(RuntimeError): pass
+ 
+@@ -36,7 +36,7 @@
+  grant=grants/(ID+'.grant')
+  prefix=[LOCK,'run','--cpu-list','88-91','--gpu-quiet','exclusive','--role','bench','--timeout-s','30','--tag','filler-'+ID,'--']
+  cmd=[sys.executable,str(ROOT/'held_supervisor.py'),str(grant),str(os.getpid()),str(owner.start_ticks(os.getpid()))]
+- stopfile=(pathlib.Path(os.environ['FILLER_DRYRUN_DIR'])/'stop') if os.environ.get('FILLER_DRYRUN')=='1' else flags/(ID+'.stop')
++ stopfile=flags/(ID+'.stop')
+  child=spawn_when_granted(grant,prefix,cmd,poll=1,stop=stopfile.exists)
+  return child.wait() if child is not None else 75
+ if __name__=='__main__':sys.exit(main())
+--- old/held_supervisor.py
++++ new/held_supervisor.py
+@@ -42,7 +42,7 @@
+   engine.wait();(engine_cg/'cgroup.kill').write_text('1');engine_cg.rmdir();return 75
+  ebirth=owner.start_ticks(engine.pid)
+  (control/'engine.json').write_text(json.dumps({'pid':engine.pid,'start_ticks':ebirth}))
+- stopfile=(pathlib.Path(os.environ['FILLER_DRYRUN_DIR'])/'stop') if os.environ.get('FILLER_DRYRUN')=='1' else pathlib.Path(os.environ.get('FILLER_FLAGS_DIR','/mnt/raid0/llm/tmp/compute-flags'))/(grant.ID+'.stop')
++ stopfile=pathlib.Path(os.environ.get('FILLER_FLAGS_DIR','/mnt/raid0/llm/tmp/compute-flags'))/(grant.ID+'.stop')
+  grant_lost=False
+  while engine.poll() is None and alive(owner_pid,owner_birth):
+   if not grant.read_grant(grant_path,min_remaining=0) or stopfile.exists():grant_lost=True;break
+--- old/complete_entry.py
++++ new/complete_entry.py
+@@ -1,10 +1,8 @@
+ #!/usr/bin/env python3
+-"""Completion predicate only; partial journals never complete the row."""
+-import json,os,sys
++import json,sys
+ from pathlib import Path
+-p=Path(os.environ['FILLER_DRYRUN_RESULT_PATH']) if os.environ.get('FILLER_SMOKE')=='1' else Path('/mnt/raid0/llm/tmp/yarn/a2/results/RESULT.json')
++p=Path(__file__).resolve().parent/'results/RESULT.json'
+ try:
+- d=json.loads(p.read_text())
+- valid=d.get('status')==('smoke_only' if os.environ.get('FILLER_SMOKE')=='1' else 'complete_control_only') and d.get('server_tree_cleanup')=='cgroup unpopulated and child reaped'
++ d=json.loads(p.read_text()); valid=d.get('status')=='one_witness_complete' and d.get('unit')=='A2-N10-400K' and d.get('server_tree_cleanup')=='cgroup unpopulated and child reaped'
+ except (OSError,ValueError,KeyError): valid=False
+ sys.exit(0 if valid else 1)
+--- old/launcher.entry.DRAFT.sh
++++ new/launcher.entry.DRAFT.sh
+@@ -1,17 +1,20 @@
+ #!/bin/bash
+ set -euo pipefail
+-D=/mnt/raid0/llm/tmp/yarn/a2
++D=/mnt/raid0/llm/tmp/yarn/a2-n10-20261104
+ unset PYTHONHOME PYTHONPATH BASH_ENV ENV LD_PRELOAD LD_LIBRARY_PATH LOOP_METRICS_LEDGER LOOP_METRICS_HOOK FILLER_RL
+ export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
+-printf '%s\n' 'd665dc572bf95ae776c73f719889a8b2308ea6205c76a00a2573838498d1571f  /mnt/raid0/llm/tmp/yarn/a2/seal_entry.py' '2d087b534f9708f21067ae374a0a047f8a46a58eda7e32652335cc918546860d  /mnt/raid0/llm/tmp/yarn/a2/seal_anchor.py' | sha256sum -c -
++export FILLER_GRANTS_DIR="${FILLER_GRANTS_DIR:-/mnt/raid0/llm/tmp/compute-flags/grants}"
++state_key=$(/usr/bin/python3 -c 'import hashlib,os; print(hashlib.sha256(os.environ["FILLER_GRANTS_DIR"].encode()).hexdigest()[:16])')
++export FILLER_STATE_DIR="$D/state/$state_key"
++printf '%s\n' 'd665dc572bf95ae776c73f719889a8b2308ea6205c76a00a2573838498d1571f  /mnt/raid0/llm/tmp/yarn/a2-n10-20261104/seal_entry.py' 'ef85b14ccc479942d52c44176b261633735d000f125cd50304cf4b610e464e2d  /mnt/raid0/llm/tmp/yarn/a2-n10-20261104/seal_anchor.py' | sha256sum -c -
+ /usr/bin/python3 "$D/seal_entry.py"
+ if [[ ${1:-} == --engine && ${A2_ENGINE_MODE:-} == 1 ]]; then
+-exec /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --id yarn-e1-a2-gpu-20261102-v2 --class gpu --self-claim --min-window 14400 --stop /mnt/raid0/llm/tmp/compute-flags/yarn-e1-a2-gpu-20261102-v2.stop --port 18083 --workdir "$D" --gpu-quiet exclusive --gpu-threads 88-91 --claim-cpus 88-91 --cmd '/usr/bin/python3 /mnt/raid0/llm/tmp/yarn/a2/job_entry.py' --complete-cmd '/usr/bin/python3 /mnt/raid0/llm/tmp/yarn/a2/complete_entry.py'
++exec /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --id yarn-e1-a2-n10-gpu-20261104 --class gpu --self-claim --min-window 14400 --stop /mnt/raid0/llm/tmp/compute-flags/yarn-e1-a2-n10-gpu-20261104.stop --port 18083 --workdir "$D" --gpu-quiet exclusive --gpu-threads 88-91 --claim-cpus 88-91 --cmd '/usr/bin/python3 /mnt/raid0/llm/tmp/yarn/a2-n10-20261104/job_entry.py' --complete-cmd '/usr/bin/python3 /mnt/raid0/llm/tmp/yarn/a2-n10-20261104/complete_entry.py'
+ fi
+ if [[ $# -eq 0 ]]; then
+ # ws58 2026-11-02: the keeper arms this launcher as a grant poller and requires the engine's "launcher up pid=" line within 30 s;
+ # the engine runs only after a grant, so the grant-gated supervisor (exec: same pid) announces itself in the engine's format.
+-printf '%s [%s] launcher up pid=%s class=gpu poll=1s grants=%s stop=%s minwin=14400s ports=18083 supervisor=grant-gated\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" yarn-e1-a2-gpu-20261102-v2 "$$" "${FILLER_GRANTS_DIR:-/mnt/raid0/llm/tmp/compute-flags/grants}" /mnt/raid0/llm/tmp/compute-flags/yarn-e1-a2-gpu-20261102-v2.stop
++printf '%s [%s] launcher up pid=%s class=gpu poll=1s grants=%s stop=%s minwin=14400s ports=18083 supervisor=grant-gated\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" yarn-e1-a2-n10-gpu-20261104 "$$" "${FILLER_GRANTS_DIR:-/mnt/raid0/llm/tmp/compute-flags/grants}" /mnt/raid0/llm/tmp/compute-flags/yarn-e1-a2-n10-gpu-20261104.stop
+ exec /usr/bin/python3 "$D/grant_supervisor.py"
+ fi
+ printf '%s\n' 'REFUSE: unexpected launcher arguments' >&2

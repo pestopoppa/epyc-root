@@ -1,0 +1,26 @@
+{
+ "verdict": "PASS",
+ "kind": "gpu",
+ "arms": {
+  "nollg": {
+   "source_sha": "c061d0a126dbd13a81062030e48e95993e77c9e1",
+   "arm": "nollg",
+   "kind": "gpu",
+   "llg_matcher_strings": 0,
+   "libggml_hip": 3,
+   "inputs": "/mnt/raid0/llm/kernels/inputs/llguidance-v1.0.1-d795912/INPUTS.json",
+   "elapsed_s": 404,
+   "built": "2026-11-05T12:01:43Z"
+  },
+  "llg": {
+   "source_sha": "c061d0a126dbd13a81062030e48e95993e77c9e1",
+   "arm": "llg",
+   "kind": "gpu",
+   "llg_matcher_strings": 9,
+   "libggml_hip": 3,
+   "inputs": "/mnt/raid0/llm/kernels/inputs/llguidance-v1.0.1-d795912/INPUTS.json",
+   "elapsed_s": 411,
+   "built": "2026-11-05T12:15:41Z"
+  }
+ }
+}

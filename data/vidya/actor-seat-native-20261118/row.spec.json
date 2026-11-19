@@ -1,0 +1,23 @@
+{
+  "id": "vb-ak-seat-native-instrument-20261118",
+  "owner": "vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 8,
+  "declared_threads": 24,
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/official/RESULT.json",
+  "result_format": "json",
+  "unit_key": "call_id",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118",
+  "keep": ["*.py", "*.sh", "*.json", "*.jsonc", "*.patch", "*.sha256", "root/**", "research/**", "bin/**", "official/**", "smoke/**"],
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "first_progress_s": 240,
+  "busy_fraction": 0.1,
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/actor-seat-native-20261118/job.py smoke-complete",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-AK-SEAT-NATIVE-INSTRUMENT",
+  "decision_rule": "Stop on answer after one direct, prospective OpenCode variable-context call against v10 CPU Qwen3-0.6B Q8_0 seals exact owned server identity, original props and offered prompt and bundle bytes, and a shared call-ID metrics sibling with strict reader replay at refused=0 and clean process and port teardown. Stop on futility on the first source, identity, native, join or cleanup failure, STOP or deadline, retaining source bytes and partial status. A separate four-CPU publisher smoke replays this instrument end to end. The official run books a CPU quarter. This is a one-call source-custody control.",
+  "verdict_by": "agent",
+  "priority_rank": 10
+}

@@ -1,0 +1,18 @@
+In file included from /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/models/models.h:3,
+                 from /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/models/qwen35.cpp:1:
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/./llama-model.h: In member function ‘virtual bool llama_model::fused_decode(const llama_ubatch&, const llama_memory_context_i*, llm_graph_result*, const llama_cparams&, const ggml_tensor* const*) const’:
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/./llama-model.h:746:52: warning: unused parameter ‘ubatch’ [-Wunused-parameter]
+  746 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                               ~~~~~~~~~~~~~~~~~~~~~^~~~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/./llama-model.h:746:98: warning: unused parameter ‘mctx’ [-Wunused-parameter]
+  746 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/./llama-model.h:746:129: warning: unused parameter ‘res’ [-Wunused-parameter]
+  746 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/./llama-model.h:746:156: warning: unused parameter ‘cparams’ [-Wunused-parameter]
+  746 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                      ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/quality-screen-prep/recall-instrument-worktree/src/./llama-model.h:746:200: warning: unused parameter ‘prev_layer_inp’ [-Wunused-parameter]
+  746 |     virtual bool fused_decode(const llama_ubatch & ubatch, const struct llama_memory_context_i * mctx, class llm_graph_result * res, const llama_cparams & cparams, const struct ggml_tensor * const * prev_layer_inp) const { return false; }
+      |                                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~

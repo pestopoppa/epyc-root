@@ -1,0 +1,204 @@
+{
+  "schema": "epyc.sr8.fresh-edit-plan.v1",
+  "corpus_sha256": "998baf9d778550ce2b49a1fad223081356f4f4472e05bcf70f7917cb291a0cae",
+  "corpus_source": "corpus.json",
+  "schedule": [
+    {
+      "rep": 1,
+      "task": "fresh_shipping",
+      "arms": [
+        "current_dflash2",
+        "plain",
+        "prompt_lookup"
+      ]
+    },
+    {
+      "rep": 2,
+      "task": "fresh_time",
+      "arms": [
+        "prompt_lookup",
+        "current_dflash2",
+        "plain"
+      ]
+    },
+    {
+      "rep": 3,
+      "task": "fresh_inventory",
+      "arms": [
+        "plain",
+        "prompt_lookup",
+        "current_dflash2"
+      ]
+    },
+    {
+      "rep": 4,
+      "task": "fresh_pricing",
+      "arms": [
+        "current_dflash2",
+        "prompt_lookup",
+        "plain"
+      ]
+    },
+    {
+      "rep": 5,
+      "task": "fresh_measurement",
+      "arms": [
+        "plain",
+        "current_dflash2",
+        "prompt_lookup"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "fresh_shipping",
+      "prompt": "Edit both existing files. In fees.py, preserve base_fee and add shipping_total(weight, surcharge) with the behavior shown by its name and the task description. In invoice.py, replace placeholder with invoice_total(weight, surcharge) which delegates to shipping_total. The shipping total is the base fee plus surcharge. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+      "files": {
+        "fees.py": "def base_fee(weight):\n    return weight * 3\n",
+        "invoice.py": "from fees import base_fee\n\ndef placeholder():\n    return 0\n"
+      },
+      "rendered_prompt": "Edit both existing files. In fees.py, preserve base_fee and add shipping_total(weight, surcharge) with the behavior shown by its name and the task description. In invoice.py, replace placeholder with invoice_total(weight, surcharge) which delegates to shipping_total. The shipping total is the base fee plus surcharge. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- fees.py ---\ndef base_fee(weight):\n    return weight * 3\n\n\n--- invoice.py ---\nfrom fees import base_fee\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "native_rendered_prompt": "<|im_start|>system\nAnswer directly and concisely. Give the answer with only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics — never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why — never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nEdit both existing files. In fees.py, preserve base_fee and add shipping_total(weight, surcharge) with the behavior shown by its name and the task description. In invoice.py, replace placeholder with invoice_total(weight, surcharge) which delegates to shipping_total. The shipping total is the base fee plus surcharge. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- fees.py ---\ndef base_fee(weight):\n    return weight * 3\n\n\n--- invoice.py ---\nfrom fees import base_fee\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "native_tokenization": {
+        "count": 346,
+        "token_ids_sha256": "c741eef70c3229be79dd339a01451e73d5e42cb27f934ce4efc1bf27a1d303ef",
+        "repeated_5gram_fraction": 0.005847953216374269,
+        "prompt_sha256": "29a481a6bdaef050adc74d6d759cfde6ab40ef3f93e33f58642352e9874e8579",
+        "formatter_input": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "Edit both existing files. In fees.py, preserve base_fee and add shipping_total(weight, surcharge) with the behavior shown by its name and the task description. In invoice.py, replace placeholder with invoice_total(weight, surcharge) which delegates to shipping_total. The shipping total is the base fee plus surcharge. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- fees.py ---\ndef base_fee(weight):\n    return weight * 3\n\n\n--- invoice.py ---\nfrom fees import base_fee\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>"
+            }
+          ],
+          "enable_thinking": false,
+          "add_generation_prompt": true,
+          "tools": []
+        }
+      }
+    },
+    {
+      "id": "fresh_time",
+      "prompt": "Edit both existing files. In clock.py, preserve to_minutes and add duration(hours, minutes) with the behavior shown by its name and the task description. In agenda.py, replace placeholder with meeting_minutes(hours, minutes) which delegates to duration. Duration is hours converted to minutes plus extra minutes. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+      "files": {
+        "clock.py": "def to_minutes(hours):\n    return hours * 60\n",
+        "agenda.py": "from clock import to_minutes\n\ndef placeholder():\n    return 0\n"
+      },
+      "rendered_prompt": "Edit both existing files. In clock.py, preserve to_minutes and add duration(hours, minutes) with the behavior shown by its name and the task description. In agenda.py, replace placeholder with meeting_minutes(hours, minutes) which delegates to duration. Duration is hours converted to minutes plus extra minutes. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- clock.py ---\ndef to_minutes(hours):\n    return hours * 60\n\n\n--- agenda.py ---\nfrom clock import to_minutes\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "native_rendered_prompt": "<|im_start|>system\nAnswer directly and concisely. Give the answer with only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics — never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why — never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nEdit both existing files. In clock.py, preserve to_minutes and add duration(hours, minutes) with the behavior shown by its name and the task description. In agenda.py, replace placeholder with meeting_minutes(hours, minutes) which delegates to duration. Duration is hours converted to minutes plus extra minutes. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- clock.py ---\ndef to_minutes(hours):\n    return hours * 60\n\n\n--- agenda.py ---\nfrom clock import to_minutes\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "native_tokenization": {
+        "count": 342,
+        "token_ids_sha256": "9583c0d66f0178869e24ac578e1b5389fb1f05d80f56470caf91cd4d04aba13c",
+        "repeated_5gram_fraction": 0.0,
+        "prompt_sha256": "9e9858b1667598371a24bf4225724e3c82687659d33dfca3529c605eb3652c20",
+        "formatter_input": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "Edit both existing files. In clock.py, preserve to_minutes and add duration(hours, minutes) with the behavior shown by its name and the task description. In agenda.py, replace placeholder with meeting_minutes(hours, minutes) which delegates to duration. Duration is hours converted to minutes plus extra minutes. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- clock.py ---\ndef to_minutes(hours):\n    return hours * 60\n\n\n--- agenda.py ---\nfrom clock import to_minutes\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>"
+            }
+          ],
+          "enable_thinking": false,
+          "add_generation_prompt": true,
+          "tools": []
+        }
+      }
+    },
+    {
+      "id": "fresh_inventory",
+      "prompt": "Edit both existing files. In stock.py, preserve remaining and add available(total, sold, reserved) with the behavior shown by its name and the task description. In warehouse.py, replace placeholder with sellable(total, sold, reserved) which delegates to available. Available inventory is total minus sold minus reserved. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+      "files": {
+        "stock.py": "def remaining(total, sold):\n    return total - sold\n",
+        "warehouse.py": "from stock import remaining\n\ndef placeholder():\n    return 0\n"
+      },
+      "rendered_prompt": "Edit both existing files. In stock.py, preserve remaining and add available(total, sold, reserved) with the behavior shown by its name and the task description. In warehouse.py, replace placeholder with sellable(total, sold, reserved) which delegates to available. Available inventory is total minus sold minus reserved. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- stock.py ---\ndef remaining(total, sold):\n    return total - sold\n\n\n--- warehouse.py ---\nfrom stock import remaining\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "native_rendered_prompt": "<|im_start|>system\nAnswer directly and concisely. Give the answer with only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics — never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why — never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nEdit both existing files. In stock.py, preserve remaining and add available(total, sold, reserved) with the behavior shown by its name and the task description. In warehouse.py, replace placeholder with sellable(total, sold, reserved) which delegates to available. Available inventory is total minus sold minus reserved. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- stock.py ---\ndef remaining(total, sold):\n    return total - sold\n\n\n--- warehouse.py ---\nfrom stock import remaining\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "native_tokenization": {
+        "count": 342,
+        "token_ids_sha256": "8ea743adec84c1f0db74f405adfee0404575af7c7593fff69c93ece67f2e793d",
+        "repeated_5gram_fraction": 0.005917159763313609,
+        "prompt_sha256": "4e64bb6a6c7e35fe57494cd2a53025f7653c347c848598ef204292aada30764e",
+        "formatter_input": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "Edit both existing files. In stock.py, preserve remaining and add available(total, sold, reserved) with the behavior shown by its name and the task description. In warehouse.py, replace placeholder with sellable(total, sold, reserved) which delegates to available. Available inventory is total minus sold minus reserved. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- stock.py ---\ndef remaining(total, sold):\n    return total - sold\n\n\n--- warehouse.py ---\nfrom stock import remaining\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>"
+            }
+          ],
+          "enable_thinking": false,
+          "add_generation_prompt": true,
+          "tools": []
+        }
+      }
+    },
+    {
+      "id": "fresh_pricing",
+      "prompt": "Edit both existing files. In prices.py, preserve subtotal and add after_coupon(price, count, coupon) with the behavior shown by its name and the task description. In checkout.py, replace placeholder with checkout_total(price, count, coupon) which delegates to after_coupon. The price after coupon is subtotal minus coupon. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+      "files": {
+        "prices.py": "def subtotal(price, count):\n    return price * count\n",
+        "checkout.py": "from prices import subtotal\n\ndef placeholder():\n    return 0\n"
+      },
+      "rendered_prompt": "Edit both existing files. In prices.py, preserve subtotal and add after_coupon(price, count, coupon) with the behavior shown by its name and the task description. In checkout.py, replace placeholder with checkout_total(price, count, coupon) which delegates to after_coupon. The price after coupon is subtotal minus coupon. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- prices.py ---\ndef subtotal(price, count):\n    return price * count\n\n\n--- checkout.py ---\nfrom prices import subtotal\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "native_rendered_prompt": "<|im_start|>system\nAnswer directly and concisely. Give the answer with only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics — never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why — never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nEdit both existing files. In prices.py, preserve subtotal and add after_coupon(price, count, coupon) with the behavior shown by its name and the task description. In checkout.py, replace placeholder with checkout_total(price, count, coupon) which delegates to after_coupon. The price after coupon is subtotal minus coupon. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- prices.py ---\ndef subtotal(price, count):\n    return price * count\n\n\n--- checkout.py ---\nfrom prices import subtotal\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "native_tokenization": {
+        "count": 344,
+        "token_ids_sha256": "0545ab089c87e4d749f7209d0844e6c849683af2dd13021d0f907f39f43530ae",
+        "repeated_5gram_fraction": 0.0058823529411764705,
+        "prompt_sha256": "9c0a8a2dc2ad6cec596fa3a136ae591bb41c7379e425360aab8525976492e961",
+        "formatter_input": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "Edit both existing files. In prices.py, preserve subtotal and add after_coupon(price, count, coupon) with the behavior shown by its name and the task description. In checkout.py, replace placeholder with checkout_total(price, count, coupon) which delegates to after_coupon. The price after coupon is subtotal minus coupon. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- prices.py ---\ndef subtotal(price, count):\n    return price * count\n\n\n--- checkout.py ---\nfrom prices import subtotal\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>"
+            }
+          ],
+          "enable_thinking": false,
+          "add_generation_prompt": true,
+          "tools": []
+        }
+      }
+    },
+    {
+      "id": "fresh_measurement",
+      "prompt": "Edit both existing files. In measure.py, preserve centimeters and add total_cm(meters, extra_cm) with the behavior shown by its name and the task description. In display.py, replace placeholder with display_cm(meters, extra_cm) which delegates to total_cm. The total length in centimeters is meters converted to centimeters plus extra centimeters. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.",
+      "files": {
+        "measure.py": "def centimeters(meters):\n    return meters * 100\n",
+        "display.py": "from measure import centimeters\n\ndef placeholder():\n    return 0\n"
+      },
+      "rendered_prompt": "Edit both existing files. In measure.py, preserve centimeters and add total_cm(meters, extra_cm) with the behavior shown by its name and the task description. In display.py, replace placeholder with display_cm(meters, extra_cm) which delegates to total_cm. The total length in centimeters is meters converted to centimeters plus extra centimeters. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- measure.py ---\ndef centimeters(meters):\n    return meters * 100\n\n\n--- display.py ---\nfrom measure import centimeters\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>",
+      "native_rendered_prompt": "<|im_start|>system\nAnswer directly and concisely. Give the answer with only what it needs to be correct and usable.\nNever: open with preamble or pleasantries; restate the question; add filler transitions; hedge with niceties; or repeat a point you've already made.\nAlways: keep essential steps, caveats, uncertainties, and specifics — never drop correctness or a needed warning for brevity. Keep the final answer lean. Use the least structure that conveys it (plain prose when short; lists or code only when they earn their place). If genuinely uncertain, say so and explain why — never omit uncertainty for the sake of brevity.\nIf a user request is genuinely ambiguous, ask a sharp question, don't guess.<|im_end|>\n<|im_start|>user\nEdit both existing files. In measure.py, preserve centimeters and add total_cm(meters, extra_cm) with the behavior shown by its name and the task description. In display.py, replace placeholder with display_cm(meters, extra_cm) which delegates to total_cm. The total length in centimeters is meters converted to centimeters plus extra centimeters. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- measure.py ---\ndef centimeters(meters):\n    return meters * 100\n\n\n--- display.py ---\nfrom measure import centimeters\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>><|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "native_tokenization": {
+        "count": 357,
+        "token_ids_sha256": "da10e7a9ddf9a5dfa5d0ceb124c3e6156fea7b59f9b5f726276450e612e049f2",
+        "repeated_5gram_fraction": 0.0084985835694051,
+        "prompt_sha256": "6b8fde2e4a5ac7c08f0e9e2d57bd6b715ee8e9749830abfff8b6a0be2d7a07f1",
+        "formatter_input": {
+          "messages": [
+            {
+              "role": "user",
+              "content": "Edit both existing files. In measure.py, preserve centimeters and add total_cm(meters, extra_cm) with the behavior shown by its name and the task description. In display.py, replace placeholder with display_cm(meters, extra_cm) which delegates to total_cm. The total length in centimeters is meters converted to centimeters plus extra centimeters. Return only the complete modified files in <<<FILE: name>>> / <<<END>>> envelopes.\n\nCurrent file contents:\n\n--- measure.py ---\ndef centimeters(meters):\n    return meters * 100\n\n\n--- display.py ---\nfrom measure import centimeters\n\ndef placeholder():\n    return 0\n\n\nReturn the COMPLETE final content of EVERY file that should exist after your change, each in exactly this format (and nothing else):\n<<<FILE: filename>>>\n<full file content>\n<<<END>>>\nTo delete a file, output: <<<DELETE: filename>>>"
+            }
+          ],
+          "enable_thinking": false,
+          "add_generation_prompt": true,
+          "tools": []
+        }
+      }
+    }
+  ],
+  "native_renderer": {
+    "path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/test-chat-template",
+    "sha256": "6f90322839d2f436ac410437f2610346fe93c2544eacee63358a7eef06d8238f",
+    "template": "/mnt/raid0/llm/models/chat-templates/sha256/1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551.jinja",
+    "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+    "tokenizer_path": "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-tokenize",
+    "tokenizer_sha256": "3893e741f796e21342fd0d5a599db9e9eb3050448532689339f2523f19776407",
+    "tokenizer_model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf"
+  },
+  "limitations": [
+    "Fresh synthetic BEP-style multi-file edits, different from the canonical BEP track; not a route authority.",
+    "Prior exposure review is scoped; no claim of global or pretraining independence.",
+    "Each arm has fresh server and one active request; no concurrency throughput claim.",
+    "Reference solutions and verifier controls are excluded from model prompts."
+  ]
+}

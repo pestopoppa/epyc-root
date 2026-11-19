@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "claude-filing-subagent",
+  "rationale": "Three native upstream GitNexus impact records at source pin c72ec82f for find_slot (risk LOW, 5 impacted, 2 direct), apply_ubatch (LOW, 6, 3 direct) and llama_kv_cells (LOW, 29, 3 direct), all epistemic=exact and upstream, followed by scan_complete with impact_count 3, partial=false. No HIGH/CRITICAL, so no owner warning is triggered. No benchmark or correctness claim.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T13:58:17+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T09:13:01Z reason=complete",
+ "filed_at": "2026-11-04T13:58:17+00:00",
+ "filed_by": "claude-filing-subagent",
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-32.IMPACT",
+ "id": "kvfork31-p3-impact-r2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/kvfork31-p3-impact-r2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvfork/kpf31-p3-index-r2-20261104/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "h-kvfork",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Three native upstream GitNexus impact records at source pin c72ec82f for find_slot (risk LOW, 5 impacted, 2 direct), apply_ubatch (LOW, 6, 3 direct) and llama_kv_cells (LOW, 29, 3 direct), all epistemic=exact and upstream, followed by scan_complete with impact_count 3, partial=false. No HIGH/CRITICAL, so no owner warning is triggered. No benchmark or correctness claim.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/kvfork/kpf31-p3-index-r2-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "kvfork31-p3-impact-r2-20261104",
+ "row_verdict": "pass",
+ "rule": "Capture three native upstream GitNexus impact records with explicit repository, source pin c72ec82f5417bb2937310326120f149b665e8400 and resolved risk for find_slot, apply_ubatch, llama_kv_cells, followed by nonpartial scan_complete. Source-reference smoke is preliminary only. HIGH/CRITICAL requires owner warning before source edits. Stop on all three records or first parser/query failure; no benchmark/correctness claim.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "6535e4d76f290705e914067ec6491cece43c1bc0d8bb6d1a22e8a3de49698818",
+  "result": "pass",
+  "status": "filed"
+ }
+}

@@ -6,7 +6,7 @@ are pinned in `SOURCES.sha256`.
 
 ## What it is
 
-- **Item.** AKX-ALL-30a in `handoffs/active/autokernel-all-devices-all-dimensions.md` (TensorFold 1.1.4 Stage-3 plan,
+- **Item.** AKX-ALL-30a in `handoffs/active/kernel-champion-and-promotion.md` (TensorFold 1.1.4 Stage-3 plan,
   packet P1, operator-approved 2026-10-24; `/mnt/raid0/llm/tmp/tensorfold-114-review-20261024/STAGE3-PLAN.md`).
 - **Kind.** A profiling probe. No build. It is **not** an AutoKernel launch, and the 2026-10-24 "DO NOT LAUNCH
   AUTOKERNEL" hold stays in force.

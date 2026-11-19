@@ -32,6 +32,25 @@ PAIR_UNIT_FIELDS = {"unit_id", "arm", "process_generation_id", "pair_id", "order
     "original_frame", "parent_unit_receipt", "parent_unit_receipt_digest",
     "original_unit_scientific_receipt", "original_unit_status", "original_inputs",
     "original_owning_t0", "original_model_preparation", "selected_anchor_unit_id", "final_evidence"}
+# Optional additive key (AKU-07o, research 74e09ab48): present only when a frozen request carried
+# the v2 seed/token fields; absent on every v1 receipt so v1 bytes are unchanged.
+TOKEN_WITNESS_KEY = "same_server_token_witness"
+TOKEN_WITNESS_SCHEMA = "epyc.autokernel.same_server_token_determinism.v1"
+TOKEN_ROW_SCHEMA = "epyc.autokernel.server_token_evidence_row.v1"
+TOKEN_MODULE = "native_server_token_evidence.py"
+TOKEN_DEFECT = "same-server repeat-token witness diverged"
+WITNESS_SCHEMA = "epyc.autokernel.parent_scientific_witness.v1"
+RECEIPT_REFERENCE_FIELDS = {"artifact", "digest", "witness", "schema"}
+# Registry schemas: v1/v2 (correctness only) and the additive v3 (research 2a208a221), whose
+# contention/residency slots may hold the concrete observation adapters. Purpose is never one.
+REGISTRY_SCHEMAS = {"epyc.autokernel.parent_scientific_witness_adapters.v1",
+                    "epyc.autokernel.parent_scientific_witness_adapters.v2",
+                    "epyc.autokernel.parent_scientific_witness_adapters.v3"}
+REGISTRY_V3 = "epyc.autokernel.parent_scientific_witness_adapters.v3"
+OBSERVATION_ADAPTERS = {"contention": "epyc.autokernel.observation_contention_witness.v1",
+                        "residency": "epyc.autokernel.observation_residency_witness.v1"}
+OBSERVATION_SOURCE_FIELDS = {"adapter_id", "witness", "callables", "helpers", "owning_protocols"}
+HISTORICAL_MODULE_COUNT, CURRENT_MODULE_COUNT = 6, 7
 EVIDENCE_FIELDS = {"schema", "witness", "adapter_id", "frame", "native_observation",
     "lifecycle_reference", "runtime_readbacks", "original_owning_inputs",
     "original_anchor_native", "source", "report", "scope_defects", "status", "replay_coverage"}
@@ -181,6 +200,127 @@ def _report_status(evidence, expected_prompts, requests, owning_original):
     return status
 
 
+def _registry(adapters):
+    """Closed read of the recorded scientific adapter registry (v1, v2 or additive v3).
+
+    Returns the observation sources actually configured per slot. Nothing is re-derived from
+    today's installation; this only checks the recorded grammar, not a verdict."""
+    if not isinstance(adapters, dict) or adapters.get("schema") not in REGISTRY_SCHEMAS:
+        raise arm.ProjectionError("parent final scientific adapter registry schema is unsupported")
+    arm._exact(adapters, {"schema", "correctness", "purpose", "contention", "residency"},
+               "scientific adapter registry")
+    if adapters["purpose"] is not None:
+        raise arm.ProjectionError("parent final purpose slot cannot hold a concrete adapter")
+    configured = {}
+    for name, adapter_id in OBSERVATION_ADAPTERS.items():
+        row = adapters[name]
+        if row is None:
+            continue
+        if adapters["schema"] != REGISTRY_V3:
+            raise arm.ProjectionError("parent final observation adapter requires registry v3")
+        arm._exact(row, OBSERVATION_SOURCE_FIELDS, f"{name} observation adapter source")
+        _same((row["adapter_id"], row["witness"]), (adapter_id, name), f"{name} observation adapter identity")
+        configured[name] = row
+    if adapters["schema"] == REGISTRY_V3 and adapters["correctness"] is None:
+        raise arm.ProjectionError("parent final registry v3 lacks the concrete correctness adapter")
+    return configured
+
+
+def _pins(selected):
+    """Historical 6-module and current 7-module owning pin sets are both recorded grammar."""
+    modules = selected["owning_source_pins"]["modules"]
+    if not isinstance(modules, list) or len(modules) not in (HISTORICAL_MODULE_COUNT, CURRENT_MODULE_COUNT):
+        raise arm.ProjectionError("parent final owning module pin set is neither the 6- nor 7-module grammar")
+    has_token = len(modules) == CURRENT_MODULE_COUNT
+    # The current set is exactly the historical set with the token-evidence module appended.
+    if has_token and not (isinstance(modules[-1], dict)
+                          and str(modules[-1].get("path", "")).endswith("/" + TOKEN_MODULE)):
+        raise arm.ProjectionError("parent final 7-module pin set lacks the token-evidence module")
+    return has_token
+
+
+def _token_witness(token, evidence, *, pinned):
+    """Reopen the recorded same-server repeat-token witness; it never confers a PASS."""
+    arm._exact(token, {"schema", "evidence_class", "overall", "groups", "unknown_prompts",
+                       "is_t0_pass", "rows"}, "same-server token witness")
+    _same((token["schema"], token["evidence_class"]), (TOKEN_WITNESS_SCHEMA, "same_server_repeat_token_equality"),
+          "token witness identity")
+    if not pinned:
+        raise arm.ProjectionError("parent final token witness without the token-evidence module pinned")
+    if token["is_t0_pass"] is not False:
+        raise arm.ProjectionError("parent final token witness claims a T0 pass")
+    if token["overall"] not in {"identical", "diverged", "unknown"}:
+        raise arm.ProjectionError("parent final token witness verdict is unsupported")
+    rows = token["rows"]
+    if not isinstance(rows, list) or not any(isinstance(row, dict) and row.get("basis") == "v2_explicit_seed_token_request"
+                                              for row in rows):
+        raise arm.ProjectionError("parent final token witness carries no v2 request row")
+    by_slot = {}
+    for row in rows:
+        if not isinstance(row, dict) or row.get("schema") != TOKEN_ROW_SCHEMA:
+            raise arm.ProjectionError("parent final token row schema is unsupported")
+        if row["basis"] == "v1_request_no_seed_token_request" and (
+                row["seed"] is not None or row["tokens"] is not None):
+            raise arm.ProjectionError("parent final v1 token row invents seed/token evidence")
+        key = (row["phase"], row["slot_index"])
+        if key in by_slot:
+            raise arm.ProjectionError("parent final token rows repeat a slot")
+        by_slot[key] = row
+    verdicts = []
+    for group in token["groups"]:
+        members = [by_slot.get(tuple(slot)) for slot in group["slots"]]
+        if any(item is None or item.get("tokens") is None or item["seed"] != group["seed"]
+               or item["prompt_id"] != group["prompt_id"] for item in members):
+            raise arm.ProjectionError("parent final token group does not rejoin its rows")
+        lists = [item["tokens"] for item in members]
+        verdict = ("unknown" if len(lists) < 2 else
+                   "identical" if all(item == lists[0] for item in lists[1:]) else "diverged")
+        _same(group["verdict"], verdict, "token group verdict")
+        verdicts.append(verdict)
+    overall = ("diverged" if "diverged" in verdicts else
+               "identical" if verdicts and set(verdicts) == {"identical"} and not token["unknown_prompts"]
+               else "unknown")
+    _same(token["overall"], overall, "token witness overall verdict")
+    if overall == "diverged" and (evidence["status"] != "fail" or TOKEN_DEFECT not in evidence["scope_defects"]):
+        raise arm.ProjectionError("parent final diverged token witness is not a recorded failure")
+
+
+def _witness_receipts(parent, receipt, witnesses, evidence, configured, reader):
+    """Per-witness readback: each recorded finding must agree with the issued witness map, and a
+    concrete observation receipt must reopen, rehash and agree with its finding and source."""
+    findings = parent["findings"]
+    for name, witness in witnesses.items():
+        finding = findings.get(name)
+        if not isinstance(finding, dict) or finding.get("status") != witness["status"]:
+            raise arm.ProjectionError(f"parent final {name} finding differs from issued witness")
+        if witness["status"] != "unknown":
+            _same(witness["ref"], f"parent-unit-evidence:{receipt['digest']}#{name}", f"{name} witness reference")
+        if name not in OBSERVATION_ADAPTERS:
+            continue
+        facts = finding.get("facts") if isinstance(finding.get("facts"), dict) else {}
+        if name not in configured:
+            if witness["status"] != "unknown" or "receipt" in facts:
+                raise arm.ProjectionError(f"parent final {name} has a verdict without a configured adapter")
+            continue
+        if "receipt" not in facts:
+            # The adapter refused or was unavailable: only unknown is honest.
+            if witness["status"] != "unknown":
+                raise arm.ProjectionError(f"parent final {name} verdict has no witness receipt")
+            continue
+        reference = arm._exact(facts["receipt"], RECEIPT_REFERENCE_FIELDS, f"{name} witness receipt reference")
+        _same((reference["schema"], reference["witness"]), (WITNESS_SCHEMA, name), f"{name} receipt identity")
+        body = reader.artifact(reference["artifact"])
+        _same(arm._hash(body), reference["digest"], f"{name} witness receipt content")
+        _same((body["schema"], body["witness"], body["adapter_id"], body["status"]),
+              (WITNESS_SCHEMA, name, OBSERVATION_ADAPTERS[name], witness["status"]), f"{name} receipt status")
+        _same(body["source"], configured[name], f"{name} receipt adapter source")
+        _same((facts["report"], facts["scope_defects"], facts["adapter_source"]),
+              (body["report"], body["scope_defects"], body["source"]), f"{name} finding mirrors its receipt")
+        _same(body["lifecycle_reference"], evidence["lifecycle_reference"], f"{name} receipt lifecycle")
+        if body["scope_defects"] and witness["status"] == "pass":
+            raise arm.ProjectionError(f"parent final {name} pass carries scope defects")
+
+
 def validate_final(carrier, *, corpus_root):
     """Return validated original row witnesses for the shared native fact checks."""
     reader = _Reader(corpus_root)
@@ -242,10 +382,12 @@ def validate_final(carrier, *, corpus_root):
     source = arm._exact(final["source_identity"], {"finalizer", "selected_scientific_adapter"}, "parent final source")
     instrument = reader.artifact(carrier["loaded_instrument"]["artifact"])
     closure = instrument["used_constants"]["producer_source_closure"]
+    configured = _registry(closure["scientific_adapters"])
     selected = closure["scientific_adapters"]["correctness"]
     _same(selected["adapter_id"], ADAPTER_ID, "selected concrete server adapter")
     _same(source["selected_scientific_adapter"], selected, "prospectively pinned selected adapter")
     _same(source["finalizer"], selected["owning_source_pins"]["final_trial_source"], "prospectively pinned finalizer")
+    token_pinned = _pins(selected)
     _same((pair["adapter_source_identity"], pair["original_issuer_source"]),
           (selected, selected["owning_issuer"]), "pair original source closure")
     _source(closure)
@@ -267,7 +409,9 @@ def validate_final(carrier, *, corpus_root):
               (receipt["receipt"], receipt["digest"]), "pair original parent receipt")
         _same((derived["original_unit_digest"], derived["original_parent_receipt"], derived["final_scientific_reference"]),
               (arm._hash(original), receipt["receipt"], final["scientific_pair_reference"]), "derived original provenance")
-        evidence = arm._exact(pair_unit["final_evidence"], EVIDENCE_FIELDS, "final scientific evidence")
+        evidence = dict(pair_unit["final_evidence"])
+        token = evidence.pop(TOKEN_WITNESS_KEY, None)
+        evidence = arm._exact(evidence, EVIDENCE_FIELDS, "final scientific evidence")
         inputs = reader.artifact(pair_unit["original_inputs"])
         arm._exact(inputs, INPUT_FIELDS, "original server T0 inputs")
         _same((inputs["schema"], inputs["frame"], inputs["source"], inputs["original_t0"]),
@@ -309,6 +453,9 @@ def validate_final(carrier, *, corpus_root):
         _same(parent["findings"]["correctness"]["facts"]["receipt"], old_ref, "original parent scientific receipt")
         _same(old_evidence["status"], pair_unit["original_unit_status"], "immutable original scientific status")
         status = _report_status(evidence, spec["expected_prompt_ids"], inputs["request_by_slot"], owning)
+        if TOKEN_WITNESS_KEY in pair_unit["final_evidence"]:
+            _token_witness(token, evidence, pinned=token_pinned)
+        _witness_receipts(parent, receipt, original["witnesses"], evidence, configured, reader)
         projected = dict(original)
         projected["witnesses"] = dict(original["witnesses"])
         prior = original["witnesses"].get("correctness")

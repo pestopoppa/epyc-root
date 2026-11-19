@@ -1,0 +1,31 @@
+{
+  "build": "NOT_RUN",
+  "disk_floor_gib": 150,
+  "id": "kvu-kpf174-custody-r4-20261104",
+  "launcher_sha256": "3fa11eff80e92d098d16fa25ebc66c5d2c37b0bdc935b122fdd122522f522b5d",
+  "lineage": "kvu-kpf174-custody",
+  "parent_source": "84d0a31603d495377dee24e1159bbbf02f1e2f21",
+  "prepared_sha256": "c28e41cec9b631fe489e209e3e31ba3f4a85ab82c4d9c60b48c1c7b54ec4df69",
+  "prior_failure": "kvu-kpf174-custody-r3-20261104 rc75 disk-floor",
+  "publication": "NOT_RUN",
+  "qualification": "NOT_RUN",
+  "ram_gib": 48,
+  "runtime_sha256": "d5aae3ee667f23d77d8931bf32076662096a3614bed4dfd6eb3f03cb0e6e4a36",
+  "schema": "epyc.kpf174d.preparation.v1",
+  "scope": "fresh successor preparation only; no compute, grants, publication, inference, historical equivalence or correctness verdict",
+  "smoke": "NOT_RUN",
+  "source_commit": "6ec877068936588b6d63dbba5842bbd540b92031",
+  "source_files_verified": 3304,
+  "source_worktree": "/mnt/raid0/llm/worktrees/kpf174-custody-r4-source-20261104",
+  "spec_sha256": "1ab3248ac8f0814d62e4c6d72ef25485bdfb0318279b4ba55d99504211f235be",
+  "static_checks": [
+    "python-ast",
+    "bash-syntax",
+    "source-byte-inventory",
+    "input-byte-pins",
+    "detached-source-identity",
+    "integrity",
+    "runtime-sha256"
+  ],
+  "supersedes": "kvu-kpf174-custody-r3-20261104"
+}

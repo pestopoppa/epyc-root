@@ -1,0 +1,39 @@
+{
+  "schema_version": 2,
+  "mode": "default",
+  "taxonomy": "/mnt/raid0/llm/tmp/coordination-and-churn-pipeline/fm2/code/adamast/core/mast.json",
+  "judge": {
+    "provider": "openai",
+    "model": "local-fm2"
+  },
+  "trace_count": 1,
+  "diagnoses": [
+    {
+      "trace_id": "claude-b5e282deeb32ad34",
+      "failure_modes": [
+        {
+          "code": "MAST-11",
+          "name": "Premature termination",
+          "evidence": "The task required implementing 5 items. The final report states: 'Two items ticked (AK-TIER-1, AK-SETUP-1). Three are partial or stopped (AK-SETUP-2, KEEP-TAIL-1, CHURN-WARM-1)... AK-SETUP-2: open... KEEP-TAIL-1: open... CHURN-WARM-1 phase A: the stop rule fired... The box stays open'. The agent concluded the run without completing the specified work for 3 of the 5 items.",
+          "confidence": "high",
+          "severity": "major"
+        },
+        {
+          "code": "MAST-12",
+          "name": "No or incomplete verification",
+          "evidence": "For AK-SETUP-2, the agent states: 'I did not run the live serial-vs-parallel compile.' The task required a 'smoke proof' and measurement of the parallel build, but the agent only added the script without executing it to verify the behavior.",
+          "confidence": "high",
+          "severity": "moderate"
+        }
+      ],
+      "none_apply": false,
+      "judge_metadata": {
+        "judge": "selection",
+        "judge_model": "local-fm2",
+        "taxonomy_version": 1,
+        "created_at": 1795006005,
+        "warnings": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "task": "UFH14-B4k-RUN-GUARD",
+  "status": "scratch_implementation_complete",
+  "scratch": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/guard-integrated-20261104",
+  "tests": {
+    "command": "python3 -m unittest -v test_safety test_integration",
+    "result": "Ran 30 tests in 0.036s; OK",
+    "output": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/guard-integrated-20261104/test-results.txt"
+  },
+  "changes": [
+    "job.py parses CLI before actions, captures consumed grant before checks/launch, verifies unchanged grant before COMPLETE, writes ID/start/end/SHA/source/snapshot binding",
+    "grant_guard.py snapshots exact currently valid same-ID nonterminal native grant and verifies launcher end correspondence",
+    "select_run.py selects exact single run against snapshot and actual same-ID native ended receipt in original flags directory; missing/failed/forged/ambiguous/naive timestamp refused",
+    "Grant directory mirrors filler_run15 ${FILLER_GRANTS_DIR:-${FILLER_FLAGS_DIR:-/mnt/raid0/llm/tmp/compute-flags}/grants}, including empty-value fallback, canonical absolute and no-symlink checks.",
+    "Grant regions must equal exact mi210_0,184-191; optional cpus must equal 184-191. Mere GPU token, widened or reordered regions refused."
+  ],
+  "cleanup": "Actual reap AST and actual startup finally AST tested against mocked owned child for startup exception and KeyboardInterrupt; TERM timeout escalates KILL then wait.",
+  "safety": {
+    "inference_executed": false,
+    "job_imported_or_executed": false,
+    "cli_executed": false,
+    "server_executed": false,
+    "active_packets_changed": false,
+    "grants_changed": false,
+    "maintained_sources_changed": false
+  },
+  "limitations": [
+    "Hashes and fields establish internal consistency, not cryptographic provenance; filesystem writer can forge matching records.",
+    "Fresh scratch candidate has no launcher/queued row and has not been deployed or inference-qualified.",
+    "Native receipt is created after job exit and original grant deletion; filing must pass preserved snapshot plus actual original flags/<id>.ended.",
+    "Cleanup verification uses AST-extracted existing cleanup and mock owned child, not real server execution."
+  ],
+  "files": {
+    "select_run.py": "f092eb9cd6045978abd421d26e883b823cb0bcb399e30ab3ebdff28ded5a5264",
+    "test_integration.py": "86b93308f02203716e55a9f43d9db02f6a22eda901ddb676e695c7d19719332f",
+    "test_safety.py": "ccf57e8527dc5dbe13f66cff0cbea5274c07542e43ccafafe05a6ea38c342fa2",
+    "job.py": "27e355b6df4520137884b242a8d6e4a13c808948e7ad224018d62b5cad4c1201",
+    "grant_guard.py": "76a468f51ebb3ac428a54da8e00a8c3cde5d1150da62be292c8c8f8bca5bd790"
+  },
+  "native_environment_tests": {
+    "FILLER_END": "1793808480",
+    "FILLER_END_ISO": "2026-11-04T16:08Z",
+    "grant_end": "2026-11-04T16:08Z",
+    "override_capture": "passed",
+    "flags_default_capture": "passed",
+    "global_default_resolution": "passed without touching actual flags directory"
+  }
+}

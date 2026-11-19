@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T23:00:49Z reason=disk-floor
+job_id=kvfork50-clock-qual-r5-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T23:00:48Z
+regions=mi210_0,184-187

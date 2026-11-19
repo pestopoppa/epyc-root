@@ -1,0 +1,65 @@
+{
+  "status": "pass",
+  "reason": "one sentinel and native trace passed",
+  "score": 1,
+  "server_pid": 1368025,
+  "server_start_ticks": "192362681",
+  "mapped_dsos": [
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-base.so.0.16.0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-cpu.so.0.16.0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml-hip.so.0.16.0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libggml.so.0.16.0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama-common.so.0.0.0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama-server-impl.so",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libllama.so.0.0.0",
+    "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/ward-fix-088/build/out/bin/libmtmd.so.0.0.0"
+  ],
+  "trace_offset": 13897,
+  "request": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/ATTEMPT/response.json",
+  "trace": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/ATTEMPT/request-trace.jsonl",
+  "trace_validation": {
+    "valid": true,
+    "schema": "lsa-native-trace-validation-v1",
+    "mechanism": "pruned",
+    "identity": [
+      0,
+      0,
+      3
+    ],
+    "layers_pruned": [
+      3,
+      7,
+      11,
+      15,
+      19,
+      23,
+      27,
+      31,
+      35,
+      39,
+      43,
+      47,
+      51,
+      55,
+      59,
+      63
+    ],
+    "events": 208,
+    "covered_tokens": 5141,
+    "scope": "one request; no model-quality or speedup generalization"
+  },
+  "samples": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/native-27b-screen-final/ATTEMPT/samples.jsonl",
+  "schema": "lsa-screen-raw-v1",
+  "arm": "pca-native",
+  "item": {
+    "id": "dev-document_qa-00-trim-5120-no-think",
+    "split": "dev"
+  },
+  "time_utc": "2026-11-04T14:07:47.158305+00:00",
+  "manifest_sha256": "bcb49cc1430809edd679490022285be225020705f82d18c6bc13ba1f295a6ece",
+  "binding": {
+    "source_commit": "088a77bd6ce5fac1ad3bf397912d884ae62b909e",
+    "source_manifest_sha256": "2dcae5f36b153fd3af74497576795c1ad679812fddc963c83206eb77d4fb84a1"
+  },
+  "scope": "one bounded 27B native screen; no population, promotion or speedup generalization"
+}

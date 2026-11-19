@@ -1,0 +1,70 @@
+{
+  "schema": "epyc.kpf174.synthetic-plan.v1",
+  "synthetic_only": true,
+  "rules": "v1",
+  "research_commit": "1157adc2f007d1b0c45ddc6daf91eafc45358df7",
+  "fixture_sha256": "698326dbef3a0ff4b71500e58f7e6deede4914b0b944953fa90d9678da72bc1f",
+  "geo": {
+    "L": 100,
+    "swa_cells": 40,
+    "build": [
+      17
+    ],
+    "c": [
+      17
+    ],
+    "n_ubatch": 1
+  },
+  "launches": {
+    "honest": {
+      "synthetic-g901-c17": {
+        "cell": "synthetic-g901-c17",
+        "group": 901,
+        "c": 17,
+        "S": 3
+      }
+    },
+    "flag_on": {
+      "synthetic-g901-c17": {
+        "cell": "synthetic-g901-c17",
+        "group": 901,
+        "c": 17,
+        "S": 3
+      }
+    },
+    "mut_no_transfer": {
+      "synthetic-g901-c17": {
+        "cell": "synthetic-g901-c17",
+        "group": 901,
+        "c": 17,
+        "S": 3
+      }
+    },
+    "mut_partial_noop": {
+      "synthetic-g901-c17": {
+        "cell": "synthetic-g901-c17",
+        "group": 901,
+        "c": 17,
+        "S": 3
+      }
+    }
+  },
+  "expected_launch_verdicts": {
+    "honest": "PASS",
+    "flag_on": "PASS",
+    "mut_no_transfer": "DETECTED",
+    "mut_partial_noop": "DETECTED"
+  },
+  "controls": [
+    "missing_launch",
+    "extra_launch",
+    "rename_id",
+    "geometry_group",
+    "geometry_junction",
+    "geometry_suffix",
+    "incomplete_later_launch",
+    "unknown_source",
+    "wrong_pruning",
+    "missing_control"
+  ]
+}

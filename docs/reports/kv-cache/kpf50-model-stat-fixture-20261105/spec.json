@@ -1,0 +1,20 @@
+{
+  "id": "kpf50-model-stat-fixture-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-model-stat-fixture-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-model-stat-fixture-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Six synthetic fixture controls execute the retained stat checker with explicitly substituted private paths: positive, metadata drift, bad schema, receipt-seal drift, symlink refusal, and same-size content mutation with restored mtime accepted as a known limitation. Require exact outcomes, source-seal match and fixture teardown. No model access, immutability, live integration or profile claim.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.MODEL-STAT-FIXTURE",
+  "priority_rank": 45,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-model-stat-fixture-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf50-model-stat-fixture"
+}

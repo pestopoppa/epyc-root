@@ -46,12 +46,12 @@ KVU = {  # label: (skip, b, ub, estimate_min_at_full_cap)
 }
 KVU_OVERHEAD_MIN = 4.0
 KVU_MIN_REPLAY_MIN = 8.0
-P3_EST = {"on": 15.0, "off": 16.5}  # A1 only: v1 A1 took 20.4 min incl. L1/L2 (~5.5 min) -> v2 A1 ~15; OFF slower at L3
-P3_HARD_MIN = {"a1": 25.0, "all": 42.0}
+P3_EST = {"on": 30.0, "off": 33.0}  # A1 only: v1 A1 took 20.4 min incl. L1/L2 (~5.5 min) -> v2 A1 ~15; OFF slower at L3
+P3_HARD_MIN = {"a1": 50.0, "all": 84.0}
 TERM_GRACE_S = 420
 
 T0 = time.time()
-CUR: dict = {"proc": None, "label": None, "dir": None}
+CUR: dict = {"proc": None, "label": None, "dir": None, "contained_p3": False}
 STOP = {"flag": False}
 
 
@@ -93,7 +93,7 @@ def reap_recorded_server(arm_dir: Path, port: int) -> dict | None:
     return rec
 
 
-def stop_child(p: subprocess.Popen, arm_dir: Path | None, port: int) -> dict:
+def stop_child(p: subprocess.Popen, arm_dir: Path | None, port: int, contained_p3: bool = False) -> dict:
     rec = {"pid": p.pid, "sent": []}
     if p.poll() is None:
         p.send_signal(signal.SIGTERM)
@@ -104,9 +104,17 @@ def stop_child(p: subprocess.Popen, arm_dir: Path | None, port: int) -> dict:
             p.send_signal(signal.SIGKILL)
             rec["sent"].append("KILL")
             p.wait(timeout=30)
-            if arm_dir is not None:
+            if arm_dir is not None and not contained_p3:
                 rec["server_reap"] = reap_recorded_server(arm_dir, port)
     rec["verified_dead"] = subprocess.run(["ps", "-p", str(p.pid)], capture_output=True).returncode != 0
+    if contained_p3:
+        deadline = time.monotonic() + 30
+        while True:
+            probe = subprocess.run(["ss", "-ltnH", f"sport = :{port}"], capture_output=True, text=True)
+            rec["port_free_after"] = probe.returncode == 0 and not probe.stdout.strip()
+            if rec["port_free_after"] or time.monotonic() >= deadline:
+                break
+            time.sleep(0.2)
     rec["rc"] = p.returncode
     return rec
 
@@ -115,25 +123,25 @@ def on_signal(signum, _frame):
     STOP["flag"] = True
     say(f"signal {signum}: stopping the current arm ({CUR['label']}) and exiting")
     if CUR["proc"] is not None:
-        CUR["teardown"] = stop_child(CUR["proc"], CUR["dir"], ARGS.port)
+        CUR["teardown"] = stop_child(CUR["proc"], CUR["dir"], ARGS.port, CUR["contained_p3"])
         say(f"current arm teardown: {CUR['teardown']}")
     raise SystemExit(128 + signum)
 
 
-def run_child(label: str, argv: list[str], log: Path, hard_s: float, arm_dir: Path) -> dict:
+def run_child(label: str, argv: list[str], log: Path, hard_s: float, arm_dir: Path, contained_p3: bool = False) -> dict:
     t = time.time()
     with open(log, "w") as fh:
         p = subprocess.Popen(argv, stdout=fh, stderr=subprocess.STDOUT, start_new_session=True)
-        CUR.update(proc=p, label=label, dir=arm_dir)
+        CUR.update(proc=p, label=label, dir=arm_dir, contained_p3=contained_p3)
         rec = {"label": label, "argv": argv, "pid": p.pid, "hard_timeout_s": round(hard_s), "log": str(log)}
         try:
             rec["rc"] = p.wait(timeout=hard_s)
         except subprocess.TimeoutExpired:
             say(f"{label}: HARD TIMEOUT {hard_s:.0f} s - SIGTERM own child {p.pid}")
             rec["hard_timeout_hit"] = True
-            rec["teardown"] = stop_child(p, arm_dir, ARGS.port)
+            rec["teardown"] = stop_child(p, arm_dir, ARGS.port, contained_p3)
             rec["rc"] = p.returncode
-        CUR.update(proc=None, label=None, dir=None)
+        CUR.update(proc=None, label=None, dir=None, contained_p3=False)
     rec["wall_min"] = round((time.time() - t) / 60, 2)
     return rec
 
@@ -157,7 +165,11 @@ def kvu_argv(label: str, cap_min: float, dry: bool) -> list[str]:
 
 
 def p3_argv(arm: str, label: str, budget_min: float, dry: bool) -> list[str]:
-    a = PY + [str(HERE / "p3_kvu_probe_slot.py"), "--arm", arm, "--bin-dir", str(C.BIN), "--port", str(ARGS.port),
+    return _p3_isolated_argv(arm, label, budget_min, dry)
+
+
+def _p3_isolated_argv(arm: str, label: str, budget_min: float, dry: bool) -> list[str]:
+    a = PY + [str(HERE / "p3_kvu_probe_isolated.py"), "--arm", arm, "--bin-dir", str(C.BIN), "--port", str(ARGS.port),
               "--out-dir", str(ARGS.results / "p3v2" / label), "--phase", ARGS.p3_phase,
               "--budget-min", f"{budget_min:.1f}"]
     if ARGS.p3_npp_list:
@@ -176,6 +188,40 @@ def plan() -> list[tuple]:
         else:
             raise SystemExit(f"unknown order item {it}")
     return items
+
+
+def run_p3_pair(pair: int, run: dict, save) -> int:
+    remaining = ARGS.budget_min - elapsed_min()
+    need = P3_EST["on"] + P3_EST["off"]
+    if remaining < need:
+        run["items"].append({"label": f"p3 pair{pair}", "status": "skipped",
+                             "reason": f"budget: {remaining:.1f} min left < {need} for an ON+OFF pair"})
+        save()
+        return 0
+    for arm in ("on", "off"):
+        pre = gpu_clear()
+        if pre["kfd_holders"]:
+            run["items"].append({"label": f"p3 pair{pair} {arm}", "status": "aborted", **pre})
+            STOP["flag"] = True
+            save()
+            return 2
+        label = f"pair{pair}_{arm}"
+        remaining = ARGS.budget_min - elapsed_min()
+        if remaining <= 0:
+            STOP["flag"] = True
+            return 1
+        b_budget = remaining - (P3_EST["off"] if arm == "on" else 0)
+        r = run_child(f"p3_{label}", p3_argv(arm, label, max(0.0, b_budget), False),
+                      ARGS.results / f"p3_{label}.driver.log",
+                      min(P3_HARD_MIN[ARGS.p3_phase], remaining) * 60,
+                      ARGS.results / "p3v2" / label, contained_p3=True)
+        r.update(kind="p3", arm=arm, pair=pair, status="ok" if r["rc"] == 0 else "failed")
+        run["items"].append(r)
+        save()
+        if r["rc"] != 0:
+            STOP["flag"] = True
+            return 1
+    return 0
 
 
 def main() -> int:
@@ -221,8 +267,9 @@ def main() -> int:
         for kind, x in items:
             if kind == "kvu":
                 subprocess.run(kvu_argv(x, ARGS.kvu_cap_min, True), check=False)
-        for arm in ("on", "off"):
-            subprocess.run(p3_argv(arm, f"pair1_{arm}", P3_HARD_MIN[ARGS.p3_phase], True), check=False)
+            else:
+                for arm in ("on", "off"):
+                    print("  [p3 isolated] " + " ".join(p3_argv(arm, f"pair{x}_{arm}", ARGS.budget_min, True)))
         subprocess.run(PY + [str(HERE / "kvu16b_residency_slot.py"), "--dry-run", "--base",
                              f"http://127.0.0.1:{ARGS.port}"], check=False)
         print(f"  [report] {' '.join(PY)} {HERE / 'slot_report.py'} {ARGS.results}  -> {ARGS.results}/report.md")
@@ -266,31 +313,7 @@ def main() -> int:
             rc_all |= 0 if r["rc"] == 0 else 1
             say(f"{x}: done rc {r['rc']} verdict {r['verdict']} in {r['wall_min']} min")
         else:
-            need = P3_EST["on"] + P3_EST["off"]
-            if remaining < need:
-                run["items"].append({"label": f"p3 pair{x}", "status": "skipped",
-                                     "reason": f"budget: {remaining:.1f} min left < {need} for an ON+OFF pair"})
-                say(f"p3 pair{x}: SKIPPED ({remaining:.1f} min left < {need})")
-                save()
-                continue
-            for arm in ("on", "off"):
-                pre = gpu_clear()
-                if pre["kfd_holders"]:
-                    run["items"].append({"label": f"p3 pair{x} {arm}", "status": "aborted", **pre})
-                    rc_all |= 2
-                    STOP["flag"] = True
-                    break
-                label = f"pair{x}_{arm}"
-                b_budget = ARGS.budget_min - elapsed_min() - (P3_EST["off"] if arm == "on" else 0)
-                say(f"p3 {label}: start (remaining {ARGS.budget_min - elapsed_min():.1f} min)")
-                r = run_child(f"p3_{label}", p3_argv(arm, label, max(0.0, b_budget), False),
-                              ARGS.results / f"p3_{label}.driver.log", P3_HARD_MIN[ARGS.p3_phase] * 60,
-                              ARGS.results / "p3v2" / label)
-                r.update(kind="p3", arm=arm, pair=x, status="ok" if r["rc"] == 0 else "failed")
-                rc_all |= 0 if r["rc"] == 0 else 1
-                say(f"p3 {label}: done rc {r['rc']} in {r['wall_min']} min")
-                run["items"].append(r)
-                save()
+            rc_all |= run_p3_pair(x, run, save)
             continue
         run["items"].append(r)
         save()

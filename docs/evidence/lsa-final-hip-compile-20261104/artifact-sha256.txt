@@ -1,0 +1,11 @@
+bb765adc1ea8c93267e3ab1a29be3804589055885abd2fefddca9cc2464de856  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/test-lsa-native-hip-live
+0c9b704f044d3ed5bb6f99f3b476596f37783891471bc91185089c1f99d14312  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/test-lsa-runtime-hip-live
+cb27005d1712a3511aa7436e94e8bb90ddbbfaa15c1bcc33961aac5c0a35b7b2  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-hip.so.0.16.0
+1942b7f226f5dad457e9b6cd4c91d3712fef9976c83991ecd8a957e6a526c4dc  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-cpu.so.0.16.0
+0eb4c5fc9e56d5cb7dd5381dcc47a87d70ff1fb2cd7f921a760460fcba801e35  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libllama-common.so.0.0.0
+df3ce34b0114dfcc6853cc9d54f0ff13fb8426eaf7565cc9fef3ade5e3d8c71b  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libllama.so.0.0.0
+05e003c02f0fb6785e40ba261044f5294a04b8503617823167c2d10842997cfb  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml.so.0.16.0
+b056f895142a6108fdbe6f632e5e827531f3f939f1561e0bb16b75d9f71c862a  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libllama-server-impl.so
+2853da333d93be06ce4ac82eee0c9116cf4b7f5be786827edda4f5b179b73082  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/libggml-base.so.0.16.0
+3e204060319da756aa4e6efecbf9cb7f77d0141ceea9c399b69cfc209a7a3da7  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/llama-server
+47a29b6cc8e5d9f14fe979976d1556a14ea152bd9231ffb0c54c66bbf23e811b  /mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/critical-compute-20261104/final-hip/out/bin/test-lsa-graph-integration

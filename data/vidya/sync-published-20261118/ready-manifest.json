@@ -1,0 +1,64 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.25,
+ "busy_fraction": 0.25,
+ "decision_rule": "selected == 1 and refused == 0 and lag == 0 and manual_sync_count == 0",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-SYNC-PUBLISHED-REPAIR",
+ "id": "vb-sync-published-repair-20261118",
+ "keep": [
+  "bundle/**",
+  "*.py",
+  "*.json",
+  "*.sh",
+  "official/**",
+  "official-*/**",
+  "publisher-smoke-*/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/launch.sh",
+  "sha256": "af749de12553f870f6f469d190456856160c04071c5a7cedeea598b4197171d9"
+ },
+ "lineage": "vidya-sync-published-repair",
+ "min_window_s": 120,
+ "notes": "Software-only, four granted CPUs. Actual Vidya installer and ordinary disposable main push update origin/main; synchronous reference-transaction hook folds published ref without fetch or manual sync. Checks source digest, marker and lag 0. No model, GPU, or production acceptance. Stop on answer, STOP, refusal or 300-second deadline.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:339: identity fields incomplete: ['region'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210)",
+  "vidya-belief-substrate-program.md:339: untestable prose prerequisite: 'after publication, preserving published truth; bound failures and preserve publication status. Preserve existing hooks a'"
+ ],
+ "published_at": "2026-11-18T18:37:59Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T18:37:59Z",
+  "session": "01a1efe7-497f-7d80-b4f6-4a19d9d24268",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/STOP",
+ "total_units": 1,
+ "unit_key": "selected",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-hook-current/engine-work"
+}

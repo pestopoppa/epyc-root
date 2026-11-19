@@ -1,0 +1,97 @@
+--- a/precond.py
++++ b/precond.py
+@@ -1,6 +1,10 @@
+ #!/usr/bin/env python3
+-"""rc 0 iff packet A RESULT.json exists with complete=true; else prints a reason line and exits 1."""
++"""rc 0 iff the packet A gate RESULT.json exists with complete=true and a passed[] list; else prints a reason line and exits 1.
++
++Gate artifact: rock-aiter-tests-r3-20261105 (packet A step 2, GPU op tests) wrote rock-aiter-tests-20261105/out/RESULT.json. The
++original rock-aiter-build-20261105 row stopped at rc=75 (mha_varlen unfinished) and never wrote a RESULT.json; its lineage
++(prebuild-r4 -> tests-r3) is the one whose passed[] gates this packet (tests-r3 decision_rule)."""
+ import json, sys
+-try: r = json.load(open('/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-build-20261105/out/RESULT.json'))
++try: r = json.load(open('/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-tests-20261105/out/RESULT.json'))
+ except (OSError, ValueError): print('packet-A-RESULT-missing'); sys.exit(1)
+-if not r.get('complete'): print('packet-A-incomplete'); sys.exit(1)
++if not r.get('complete') or not isinstance(r.get('passed'), list): print('packet-A-incomplete'); sys.exit(1)
+--- a/job.py
++++ b/job.py
+@@ -12,8 +12,9 @@
+ D = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, D)
+ import gpuproof as gp
+ 
+-SRC = '/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/src'
+-A_RESULT = '/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-build-20261105/out/RESULT.json'
++SRC = '/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-prebuild-20261105/src-gfx90a'   # the tree packet A step 2 tested (gfx90a CU map + prebuilt modules)
++PYDEPS = '/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-prebuild-20261105/pydeps'
++A_RESULT = '/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-tests-20261105/out/RESULT.json'
+ IMG = 'vllm/vllm-openai-rocm@sha256:4fcd39b758b660c4e9c345c021e2ea8f0ccdb31e3c32507d676cc3005ae83fba'
+ C6 = '/mnt/raid0/llm/kernels/builds/gpu-20261030-729599d69-c6'
+ TBO = C6 + '/bin/test-backend-ops'
+@@ -121,7 +122,7 @@
+     argv = ['docker', 'run', '--rm', '--name', cname, '--entrypoint', '/bin/bash', '--device', '/dev/kfd', '--device', '/dev/dri',
+             '--group-add', 'video', '--ipc', 'host', '--security-opt', 'seccomp=unconfined', '--cpuset-cpus', '184-191',
+             '-e', 'GPU_ARCHS=gfx90a', '-e', 'PYTORCH_ROCM_ARCH=gfx90a', '-e', 'AITER_JIT_DIR=/aiter/aiter/jit',
+-            '-e', 'PYTHONPATH=/aiter', '-e', 'HIP_VISIBLE_DEVICES=0', '-v', f'{SRC}:/aiter', '-v', f'{D}:/pkt', IMG, '-c', inner]
++            '-e', 'PYTHONPATH=/aiter:/pydeps', '-e', 'HIP_VISIBLE_DEVICES=0', '-v', f'{SRC}:/aiter', '-v', f'{PYDEPS}:/pydeps', '-v', f'{D}:/pkt', IMG, '-c', inner]
+     log = os.path.join(OUT, 'logs', f'aiter-{int(time.time())}.log'); os.makedirs(os.path.dirname(log), exist_ok=True)
+     rc, err, proof = gp.run_sampled(argv, log, timeout_at=min(DEADLINE - 30, time.time() + 5400), stopfile=STOPF, container_name=cname)
+     have = jload(AJ, {})
+--- a/spec.json
++++ b/spec.json
+@@ -4,7 +4,7 @@
+  "launcher": "/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-timing-20261105/launch.sh",
+  "lane": "gpu",
+  "shape": "gpu",
+- "regions": "mi210_0,184-191",
++ "regions": "mi210_0,88-95,184-191",
+  "ram_gib": 24,
+  "result_path": "/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-timing-20261105/out/results.jsonl",
+  "result_format": "jsonl",
+@@ -29,9 +29,13 @@
+  "estimate_s": 7200,
+  "first_progress_s": 300,
+  "handoff_task": "handoffs/active/rocm-kernel-authoring.md:ROCK-AITER-GFX90A",
+- "decision_rule": "ROCK-AITER-GFX90A packet B. Depends on rock-aiter-build-20261105 RESULT.json (precond). Question: for each op family that passed in A (rmsnorm, int8 a8w8 GEMM, bf16 GEMM, CK flash-attn fwd), is AITER on gfx90a >= 1.10x faster than C6 gpu-20261030-729599d69-c6 (test-backend-ops perf, file-driven generic-op cells, Q8_0 x f32 MUL_MAT, f32 RMS_NORM, f16-KV FLASH_ATTN_EXT) at Qwen3-4B and Qwen3.8-27B shapes (GEMM/RMSNorm M=1,4,512,2048; FA kv 8k/32k x n_q 1/512)? ratio = median C6 us / median AITER us, n=5 reps per side per cell; ratio >= 1.10 = port candidate. Verdict PORT_CANDIDATES | NO_PORT_CANDIDATE | NOTHING_TO_TIME. Stop on answer: table complete, no repeats; resumable per cell. gpu-quiet exclusive.",
++ "decision_rule": "ROCK-AITER-GFX90A packet B. Depends on the packet-A gate RESULT.json written by rock-aiter-tests-r3-20261105 (rock-aiter-tests-20261105/out/RESULT.json; precond). Question: for each op family that passed in A (rmsnorm, int8 a8w8 GEMM, bf16 GEMM, CK flash-attn fwd), is AITER on gfx90a >= 1.10x faster than C6 gpu-20261030-729599d69-c6 (test-backend-ops perf, file-driven generic-op cells, Q8_0 x f32 MUL_MAT, f32 RMS_NORM, f16-KV FLASH_ATTN_EXT) at Qwen3-4B and Qwen3.8-27B shapes (GEMM/RMSNorm M=1,4,512,2048; FA kv 8k/32k x n_q 1/512)? ratio = median C6 us / median AITER us, n=5 reps per side per cell; ratio >= 1.10 = port candidate. Verdict PORT_CANDIDATES | NO_PORT_CANDIDATE | NOTHING_TO_TIME. Stop on answer: table complete, no repeats; resumable per cell. gpu-quiet exclusive.",
+  "priority_rank": 50,
+  "kind": "compute",
+  "supersedes": null,
+- "launcher_sha256": "dd09141565696efb6ad5ef28d143b3901df19bbdb1820f3b686235cc7e1d3690"
+-}
+\ No newline at end of file
++ "launcher_sha256": "cb26e8e9131bacd8f3ab8d4674f46eae82aa391b5c7f77b19bddd1f18f7597f3",
++ "gpu_quiet": "exclusive",
++ "role": "bench",
++ "claim_cpus": "88-95,184-191",
++ "min_window_s": 3600
++}
+--- a/launch.sh
++++ b/launch.sh
+@@ -1,12 +1,12 @@
+ #!/bin/bash
+-# ROCK-AITER-GFX90A packet B (rocm-kernel-authoring.md): per-op timing AITER(gfx90a) vs C6 test-backend-ops perf, gated on packet A RESULT.json.
+-# Exclusive quiet MI210 (timing) + GPU host threads 184-191; ~1.5 h. precond: packet A RESULT.json complete.
++# ROCK-AITER-GFX90A packet B (rocm-kernel-authoring.md): per-op timing AITER(gfx90a) vs C6 test-backend-ops perf, gated on packet A gate RESULT.json (rock-aiter-tests-20261105/out).
++# Exclusive quiet MI210 (timing) + claim 88-95,184-191 (operator 2026-11-05); ~1.5 h. precond: packet A gate RESULT.json complete.
+ set -euo pipefail
+ D=/mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-timing-20261105
+ cd "$D"
+ /usr/bin/sha256sum --check --status SOURCE.sha256
+ exec /bin/bash /mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh --id rock-aiter-timing-20261105 \
+-  --class gpu --gpu-quiet exclusive --claim-cpus 184-191 --role bench --min-window 3600 \
++  --class gpu --gpu-quiet exclusive --claim-cpus 88-95,184-191 --role bench --min-window 3600 \
+   --gpu-threads 184-191 \
+   --precond-cmd "/usr/bin/python3 -I $D/precond.py" \
+   --cmd "/usr/bin/python3 -I $D/job.py" \
+--- a/SOURCE.sha256
++++ b/SOURCE.sha256
+@@ -1,6 +1,6 @@
+-a8dffca744cd442c8ead6a0acee89dcefc224138c80a8a1c2d5f6b84500b76e7  job.py
++42d4d937195d7ff0506e5e7d86d9f55fb068719a11928a251a110c05a4fb585a  job.py
+ 2bcaee2c3fa7775790432b088b3406678490fef41f35e14b3caf1bac9d29e71f  bench_aiter.py
+ a442c36ba7173fa2834c9de5b53163db029146cc254e3933e3e99c3c5c06ef6b  gpuproof.py
+ 1fb0b6afc47fe1741426d6e41ae4f478aeb4d87292cbe1f05632170c31f3bf2c  check_complete.py
+-1cbe6a4797fabe73cfa013b88055be1040d1adab310c9ebfcba577619b9b1012  precond.py
++aedc0625516afb8a225c2a7ca47f99b5639d782c2affada724e6c2bb754c82b4  precond.py
+ 5d9342fc6b6e864002a1e400ce32ae4ea0fcac6882afc17133f3a51ff6dcb738  ggml-729599d69.h

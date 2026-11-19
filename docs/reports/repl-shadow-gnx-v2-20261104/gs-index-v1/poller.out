@@ -1,0 +1,10 @@
+
+==== arm 2026-11-04T14:17:44Z
+2026-11-04T14:17:44Z [ufh12-gs-frozen-gnx-20261104] launcher up pid=1519315 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/grants stop=/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet/STOP minwin=300s ports=none dryrun=0
+2026-11-04T14:17:50Z [ufh12-gs-frozen-gnx-20261104] START regions=0-95 cpus=0-95 threads=96 gpu=0 end=2026-11-04T15:09Z
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='build' (timeout_s=3070.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: /bin/bash /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet/filler_run15.sh --inner --id ufh12-gs-frozen-gnx-20261104 --class cpu --cmd python3 '/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet/job.py' --min-window 300 --stop /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet/STOP --port  --workdir /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/gs-index-packet --gpu-threads 184-191
+[region-lock] forwarded signal(s) [15] to child
+2026-11-04T14:17:51Z [ufh12-gs-frozen-gnx-20261104] group 1520768 ended after TERM
+2026-11-04T14:17:51Z [ufh12-gs-frozen-gnx-20261104] ended rc=75 reason=disk-floor (grant deleted)
+2026-11-04T14:17:51Z [ufh12-gs-frozen-gnx-20261104] one window done; exiting (no --repeat)

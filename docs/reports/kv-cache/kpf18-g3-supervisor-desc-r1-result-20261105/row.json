@@ -1,0 +1,41 @@
+{
+ "budget_gib": 1.0,
+ "decision_rule": "PASS iff the copied source-sealed actual supervisor passes four model-free real direct-child and descendant controls: normal, child failure, mocked STOP, mocked deadline; all captured descendants absent after owned drain, source seals unchanged and child return outcomes as declared. Mocked admission, STOP and deadline do not qualify full native lifecycle or GPU execution.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "21987e52ee02c609cd5a80f7b493b2d69fbaf367b4dd44bd9ff9fa3ec20c51b2"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 30,
+ "gib": 1,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18.0d(item 3, group 3)",
+ "id": "kvu-kpf18-g3-supervisor-desc-20261105",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-successor/launch.sh",
+  "sha256": "ec2a386a0cbf7543967ddb95f6a187434062c56219a1c3a3c3e53c2b3817c5dd"
+ },
+ "min_window_s": 300,
+ "owner": "h-kvu",
+ "ports": [],
+ "priority_rank": 46.0,
+ "publish_warnings": [
+  "kv-cache-program.md:803: untestable prose prerequisite: 'after 160 bit-identical tokens.\\n        - (iii) The defect classes the fork mutants model (`fork_clobber_src`, wrong sta'"
+ ],
+ "published_at": "2026-11-05T02:56:32Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-successor/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-successor/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-successor",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-successor/STOP",
+ "window_s": 660,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/kpf18-supervisor-successor"
+}

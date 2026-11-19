@@ -1,0 +1,24 @@
+
+==== dry run 2026-11-18T14:59:06Z regions=116-119 launcher_sha=0e2bbc87d7f10ff5d4976f0b7bb836e79b5dbba46083f74aa24dd96e5e4f5e8d units_before=0
+2026-11-18T14:59:06Z [vidya-exp01-proxy-input-recovery-20261118-r2] launcher up pid=1188465 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/stop minwin=5100s ports=none dryrun=1
+2026-11-18T14:59:07Z [vidya-exp01-proxy-input-recovery-20261118-r2] START regions=116-119 cpus=116-119 threads=4 gpu=0 end=2026-11-18T16:28Z
+2026-11-18T14:59:07Z [vidya-exp01-proxy-input-recovery-20261118-r2] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+ValueError: native quantizer produced no IQ2_KT conversion
+job rc=4
+==== engine START at +5s; first-progress timer (300 s) starts now
+2026-11-18T14:59:15Z [vidya-exp01-proxy-input-recovery-20261118-r2] ended rc=4 reason=job-rc-4:exited (grant deleted)
+2026-11-18T14:59:15Z [vidya-exp01-proxy-input-recovery-20261118-r2] one window done; exiting (no --repeat)
+==== dry run FAIL: job ended rc=4 time=2026-11-18T14:59:15Z reason=job-rc-4:exited after 10s, before its first progress (no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/native-attempts/attempt-93rrr53u/native-result.json (json): no new real record); fix: the job's own error is in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/launcher.out; fix it, then re-run publish_row.py <spec.json> [dry run held ONE quarter, WS58_REGIONS=116-119; a launcher whose own taskset/claim hard-codes a wider cpu list must honour WS58_REGIONS under FILLER_DRYRUN] (2026-11-18T14:59:17Z)
+==== OVER-DECLARED busy_fraction: declared 1, measured 0; right-size the shape/claim
+
+==== dry run 2026-11-18T15:00:44Z regions=140-143 launcher_sha=0e2bbc87d7f10ff5d4976f0b7bb836e79b5dbba46083f74aa24dd96e5e4f5e8d units_before=0
+2026-11-18T15:00:44Z [vidya-exp01-proxy-input-recovery-20261118-r2] launcher up pid=1206898 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/stop minwin=5100s ports=none dryrun=1
+2026-11-18T15:00:44Z [vidya-exp01-proxy-input-recovery-20261118-r2] START regions=140-143 cpus=140-143 threads=4 gpu=0 end=2026-11-18T16:29Z
+2026-11-18T15:00:44Z [vidya-exp01-proxy-input-recovery-20261118-r2] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+==== engine START at +5s; first-progress timer (300 s) starts now
+job rc=0
+==== first progress at 2026-11-18T15:00:54Z (+10s): new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/native-attempts/attempt-01qg520n/native-result.json (unit_key verified_iq2kt_tensors set)
+2026-11-18T15:00:55Z [vidya-exp01-proxy-input-recovery-20261118-r2] ended rc=75 reason=partial-native-incomplete (grant deleted)
+2026-11-18T15:00:55Z [vidya-exp01-proxy-input-recovery-20261118-r2] one window done; exiting (no --repeat)
+==== dry run PASS: first progress: new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/vidya-exp01-proxy-input-recovery-20261118-r2/native-attempts/attempt-01qg520n/native-result.json (unit_key verified_iq2kt_tensors set); rc=75 time=2026-11-18T15:00:55Z reason=partial-native-incomplete (2026-11-18T15:00:59Z)
+==== OVER-DECLARED busy_fraction: declared 1, measured 0.001; right-size the shape/claim

@@ -1,0 +1,43 @@
+{
+ "decision_rule": "Build-only PASS requires the exact source-bound selection and writer observer candidate to compile, link to its own ggml and pass the existing model-free chunk store test with verified child cleanup. No writer equivalence, byte counter, GPU, model or crossover conclusion.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 2400,
+ "first_progress_s": 900,
+ "gib": 16,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KPF-60.GPU-X",
+ "id": "kpf60-gpux-observer-build-20261104-r2",
+ "keep": [
+  "**",
+  "out/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build-r2/launch.sh",
+  "sha256": "a2c175003b98b4c726476bc8c00b434a3277ed8bf3a2a82161a552dfac48657d"
+ },
+ "lineage": "kpf60-gpux-observer-build-20261104",
+ "min_window_s": 300,
+ "owner": "h-kvfork",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "kv-cache-program.md:1186: identity fields incomplete: ['estimate'] \u2014 add estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)",
+  "kv-cache-program.md:1186: untestable prose prerequisite: 'require no inference; any new native measurement requires current resource coordination. Filed 2026-10-27 harvest.\\n    -'"
+ ],
+ "published_at": "2026-11-04T20:56:18Z",
+ "published_from": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build-r2/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build-r2/out/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build-r2",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build-r2/STOP",
+ "supersedes": "kpf60-gpux-observer-build-20261104",
+ "window_s": 3180,
+ "workdir": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf60-observer-build-r2"
+}

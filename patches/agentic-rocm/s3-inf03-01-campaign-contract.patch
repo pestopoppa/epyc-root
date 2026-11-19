@@ -1,0 +1,26 @@
+--- a/scripts/kernel_rnd/autokernel/controller/ARENA_INTEGRATION.md
++++ b/scripts/kernel_rnd/autokernel/controller/ARENA_INTEGRATION.md
+@@ -40,6 +40,23 @@
+ 6. Xe-Forge; and
+ 7. GEAK-v1; and
+ 8. ARGUS.
++
++**Interpretation and greedy-control disposition.** This panel ranks whole agents,
++not search strategies in isolation: each authoring arm brings its own actor/editor
++and other controller choices. Arm 1 is the no-authoring starting state; it has no
++actor or search policy and is not a trivial greedy-search control. Differences in
++panel outcomes therefore cannot be attributed to search policy alone.
++
++Decline adding a greedy hill-climber as a ninth arm to this fixed eight-arm panel.
++A fixed-actor policy comparison is a separate study: activate it after shared
++selector replay finds a material held-out policy difference, or an already-running
++AutoKernel campaign can reuse its frozen actors, proposals, evaluator, and budgets
++without new generation infrastructure. Compare greedy incumbent selection using an
++existing actor as editor against the AIDE85-style five-arm UCB/fork policy while
++fixing model, prompts, context policy, task subset, seeds, and token, evaluator, and
++wall budgets. Keep the final evaluator inaccessible and retain every proposal,
++branch, failure, score, and receipt. This disposition does not confer ranking or
++promotion authority on a partial panel.
+ 
+ ARGUS is unavailable, not omitted. EvoEngineer is now source-admitted and
+ executable through the same parent-worker broker, controller sandbox, and

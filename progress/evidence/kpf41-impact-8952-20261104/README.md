@@ -1,0 +1,16 @@
+# KPF-41 direct-vector impact scan preparation
+
+This packet prepares a model-free source-bound upstream impact scan before any future direct-row vector dtype/shape extension. The source target is the full RTG-58 experimental candidate, a fresh detached worktree at `8952a0f693fb923918157eb25117641b74766230`, tree `8772563484cd449f15188aaf6db89e84bdb6b025`, created under this packet from a private `--shared` clone. The original production repository/worktree metadata is not used for registration or indexing. Exact source path and critical-file hashes are in `identity.json`.
+
+Target symbols and file bindings:
+
+- `ggml_cuda_get_best_fattn_kernel` — `ggml/src/ggml-cuda/fattn.cu` (shape/dtype/stride/dispatch guard)
+- `ggml_cuda_flash_attn_ext_vec` — `ggml/src/ggml-cuda/fattn.cu` (K/V dtype and head-dimension route)
+- `ggml_cuda_flash_attn_ext_vec_case_impl` — `ggml/src/ggml-cuda/fattn-vec.cuh` (direct-row vector case launch)
+- `flash_attn_ext_vec` — `ggml/src/ggml-cuda/fattn-vec.cuh` (templated vector kernel)
+
+The row reuses `scripts/coordination/kvfork/v11-fa8-impact/`'s candidate-bound pattern: exact source identity checks, pre-scan source references, one-worker forced index in a uniquely named repo slot, native upstream impacts with file disambiguation, analyzer/skipped-file coverage retention, and fail-closed completion. `GITNEXUS_HOME` is redirected to this packet's private directory so the run does not alter the shared global registry. The launcher pins the runtime-manifest digest; that manifest pins `identity.json`, the Python job/source-integrity helper, copied GitNexus guard, spec/readme, GitNexus CLI/runtime, rowflow launcher, and source analyzer wrapper. The precondition verifies those hashes. The launcher and precondition use `/usr/bin/python3 -I`; source and packet integrity failures raise explicit errors rather than assertions, so `PYTHONOPTIMIZE` cannot disable custody checks. Tracked-file inventory requires all 3,356 entries to be ordinary `H` index entries and refuses untracked non-ignored source files. The launch is prepared only; no impact scan or kernel/build/inference/GPU action has run. The shared `llama.cpp` GitNexus index is for production v7, not this candidate; the prepared job indexes the exact detached candidate in its private GitNexus home before impacts. The final external `SHA256SUMS` digest also binds the launch script, avoiding a self-referential runtime seal.
+
+**STOP policy:** any HIGH/CRITICAL risk writes `out/OWNER_WARNING` and exits before source edits. Source drift, dirty/untracked files, unmatched references, ambiguous or unresolved graph targets, parser/analyzer errors, partial/truncated impact output, STOP, or deadline produce INCONCLUSIVE and no clearance. Analyzer logs and the >512 KiB tracked-file list must be reviewed; skipped or parser-unavailable code is unknown impact. The scan does not authorize source changes or establish safety outside indexed coverage.
+
+This is not a rerun of the already completed KPF-41 D=64 fixture and does not make a broader correctness claim. The handoff target is `KPF-41`; the owning session applies any handoff/index edits after reviewing the scan result.

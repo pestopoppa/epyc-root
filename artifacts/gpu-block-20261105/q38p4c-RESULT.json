@@ -1,0 +1,290 @@
+{
+ "verdict": "PARITY_FAIL",
+ "at": "2026-11-05T14:19:11Z",
+ "median_tok_s": {
+  "L": {
+   "np1": 21.482,
+   "np4": 69.197,
+   "pf2048": 316.229,
+   "pf8192": 205.136
+  },
+  "V": {
+   "np1": 10.433,
+   "np4": 34.928,
+   "pf2048": 924.326,
+   "pf8192": 648.476
+  }
+ },
+ "ratio_vllm_over_llama": {
+  "np1": 0.4857,
+  "np4": 0.5048,
+  "pf2048": 2.923,
+  "pf8192": 3.1612
+ },
+ "win_threshold": 1.1,
+ "per_launch": {
+  "L1": {
+   "np1": 21.482,
+   "np4": 70.093,
+   "pf2048": 308.882,
+   "pf8192": 203.313
+  },
+  "V1": {
+   "np1": 10.533,
+   "np4": 34.807,
+   "pf2048": 962.916,
+   "pf8192": 648.476
+  },
+  "L2": {
+   "np1": 21.601,
+   "np4": 69.197,
+   "pf2048": 316.229,
+   "pf8192": 205.136
+  },
+  "V2": {
+   "np1": 10.122,
+   "np4": 34.928,
+   "pf2048": 924.326,
+   "pf8192": 666.688
+  },
+  "L3": {
+   "np1": 21.32,
+   "np4": 68.965,
+   "pf2048": 304.82,
+   "pf8192": 205.601
+  },
+  "V3": {
+   "np1": 10.433,
+   "np4": 36.23,
+   "pf2048": 919.667,
+   "pf8192": 582.723
+  },
+  "L4": {
+   "np1": 20.763,
+   "np4": 66.619,
+   "pf2048": 338.782,
+   "pf8192": 173.688
+  },
+  "V4": {
+   "np1": 10.349,
+   "np4": 34.119,
+   "pf2048": 870.532,
+   "pf8192": 590.619
+  },
+  "L5": {
+   "np1": 21.555,
+   "np4": 71.375,
+   "pf2048": 347.355,
+   "pf8192": 227.734
+  },
+  "V5": {
+   "np1": 10.645,
+   "np4": 36.651,
+   "pf2048": 1028.163,
+   "pf8192": 709.018
+  }
+ },
+ "rss_peak_gib": {
+  "L1": 10.114,
+  "V1": 25.961,
+  "L2": 10.114,
+  "V2": 25.922,
+  "L3": 10.114,
+  "V3": 25.832,
+  "L4": 10.114,
+  "V4": 25.921,
+  "L5": 10.114,
+  "V5": 25.943
+ },
+ "numa_share": {
+  "L1": {
+   "0": 0.9984,
+   "1": 0.0001,
+   "2": 0.0,
+   "3": 0.0014
+  },
+  "V1": {
+   "0": 0.9737,
+   "1": 0.0018,
+   "2": 0.0024,
+   "3": 0.0221
+  },
+  "L2": {
+   "0": 0.9984,
+   "1": 0.0001,
+   "2": 0.0,
+   "3": 0.0014
+  },
+  "V2": {
+   "0": 0.9737,
+   "1": 0.0018,
+   "2": 0.0024,
+   "3": 0.0221
+  },
+  "L3": {
+   "0": 0.9984,
+   "1": 0.0001,
+   "2": 0.0,
+   "3": 0.0014
+  },
+  "V3": {
+   "0": 0.9736,
+   "1": 0.0018,
+   "2": 0.0024,
+   "3": 0.0222
+  },
+  "L4": {
+   "0": 0.9984,
+   "1": 0.0001,
+   "2": 0.0,
+   "3": 0.0014
+  },
+  "V4": {
+   "0": 0.9737,
+   "1": 0.0018,
+   "2": 0.0025,
+   "3": 0.022
+  },
+  "L5": {
+   "0": 0.9984,
+   "1": 0.0001,
+   "2": 0.0,
+   "3": 0.0014
+  },
+  "V5": {
+   "0": 0.9737,
+   "1": 0.0018,
+   "2": 0.0024,
+   "3": 0.0221
+  }
+ },
+ "claimed_busy_frac": {
+  "L1": 0.9553,
+  "V1": 0.3898,
+  "L2": 0.9497,
+  "V2": 0.3916,
+  "L3": 0.9535,
+  "V3": 0.3924,
+  "L4": 0.9567,
+  "V4": 0.3842,
+  "L5": 0.9458,
+  "V5": 0.3906
+ },
+ "placement": {
+  "L1": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": null
+  },
+  "V1": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": 16
+  },
+  "L2": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": null
+  },
+  "V2": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": 16
+  },
+  "L3": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": null
+  },
+  "V3": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": 16
+  },
+  "L4": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": null
+  },
+  "V4": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": 16
+  },
+  "L5": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": null
+  },
+  "V5": {
+   "cpus": "0-23",
+   "phys_range": "0-23",
+   "threads": 24,
+   "numa_node": 0,
+   "vllm_kv_gib": 16
+  }
+ },
+ "backend_log_V1": [
+  "['native'], gelu_and_mul_sparse=['native']), enable_flashinfer_autotune=True, enable_rocm_segmented_attn_autotune=False, enable_cutedsl_warmup=True, enable_jit_warmup=True, monokernel=False, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)",
+  "(Worker pid=238) INFO 11-05 14:00:49 [__init__.py:868] Selected CPUInt8ScaledMMLinearKernel for CompressedTensorsW8A8Int8",
+  "(EngineCore pid=160) INFO 11-05 14:00:52 [utils.py:381] Using LBHNC KV cache layout.",
+  "(Worker pid=238) INFO 11-05 14:01:46 [cpu_worker.py:261] Explicitly set (16.0/283.07) GiB for KV cache on node 0.",
+  "(EngineCore pid=160) INFO 11-05 14:01:46 [kv_cache_utils.py:1147] CPU KV cache size: 116,480 tokens, Maximum concurrency for 9,216 tokens per request: 12.64x",
+  "(APIServer pid=1) INFO 11-05 14:02:16 [loggers.py:335] Engine 000: Avg prompt throughput: 95.7 tokens/s, Avg generation throughput: 7.7 tokens/s, Running: 1 reqs, Waiting: 0 reqs, CPU KV cache usage: 0.6%",
+  "(APIServer pid=1) INFO 11-05 14:02:26 [loggers.py:335] Engine 000: Avg prompt throughput: 51.2 tokens/s, Avg generation throughput: 9.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, CPU KV cache usage: 0.6%",
+  "(APIServer pid=1) INFO 11-05 14:02:36 [loggers.py:335] Engine 000: Avg prompt throughput: 204.8 tokens/s, Avg generation throughput: 18.8 tokens/s, Running: 4 reqs, Waiting: 0 reqs, CPU KV cache usage: 2.2%",
+  "(APIServer pid=1) INFO 11-05 14:02:46 [loggers.py:335] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 36.7 tokens/s, Running: 0 reqs, Waiting: 0 reqs, CPU KV cache usage: 0.0%",
+  "(APIServer pid=1) INFO 11-05 14:02:56 [loggers.py:335] Engine 000: Avg prompt throughput: 204.8 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 1 reqs, Waiting: 0 reqs, CPU KV cache usage: 5.3%"
+ ],
+ "parity": {
+  "basis": "text_chars",
+  "common_prefix": 24,
+  "of": null,
+  "self_consistency": {
+   "L": {
+    "texts_identical_across_launches": true,
+    "ids_present": false
+   },
+   "V": {
+    "texts_identical_across_launches": true,
+    "ids_present": true
+   }
+  },
+  "llama_text": "  `speed_metric` in the `apply` bundle must be set to `task_rate`.\n\n- **`tokens/s` (tokens / second, higher-better)** is the **only metric for model-level speed**\n  (e.g. `P-FAST-1`, `P-FAST-2`) and",
+  "vllm_text": "  `speed_metric` in the claim must be `task_rate`.\n\n- **`tokens/s` (tokens / second, higher-better)** is the **only speed metric for per-model\n  evaluation** (e.g. `P-GEN-1`, `P-GEN-2`) and is used in",
+  "parity_ok": false
+ },
+ "model": "Qwen3-4B-Instruct-2507 8-bit: llama.cpp Q8_0 GGUF vs vLLM INT8 W8A8 (small-model proxy)",
+ "question": "Q38P-4c: on one whole CPU quarter (same cores, threads = physical cores), does vLLM 0.33.0 CPU gain >= 1.10x over llama.cpp C6 CPU on any metric at matched 8-bit precision?",
+ "cpu_vs_gpu_4b": {
+  "error": "cannot read /mnt/raid0/llm/tmp/q38p4b-int8-20261105/out/RESULT.json: FileNotFoundError(2, 'No such file or directory')"
+ },
+ "identity_sha256": "fbc3f5234a83cf50025134b81026676faf507675c70ac5c5d2f5be94976e9dfe",
+ "image_reclaim": {
+  "image": "vllm/vllm-openai-cpu@sha256:4154467a886f8b7ffa9dbab32f873f5ca4528409d042a6ec866e8888223263d3",
+  "at": "2026-11-05T14:19:11Z",
+  "containers_using": [],
+  "rmi_rc": 0,
+  "rmi_out": "Untagged: vllm/vllm-openai-cpu@sha256:4154467a886f8b7ffa9dbab32f873f5ca4528409d042a6ec866e8888223263d3\nDeleted: sha256:7a7c9c18ff642dc315a147132dacf50cc4646492459a00bb683f713d4126e966\nDeleted: sha256:22b4a2d51381956a88a77a1b3eabb2695c39871fc3c2177ad5c303aa439d72ff\nDeleted: sha256:4c1d95a2f880e133e787d43ad02fe5146aa043b71c1da1ae1fb615be14f80edf\nDeleted: sha256:dcc1f8560feba7562595950db9dd2fcdd9fa0438c0c07cec19f415c419b0dfc1\nDeleted: sha256:ac51b99d5e7bbcfac502dc06d436f96d7c45293114bd84a51f9f594fd4503803\nDeleted: sha256:249d7199a34c4da141c4d2153dc243df808e5273de11dee9473909e0cf719a76\nDeleted: sha256:cf521157f43645d43c6f907d2eb58bd63e011998dd3947700bf5159b3f84d15d\nDeleted: sha256:e3baf7216aeed6b474280bf766714a7f1aef644e4ee8ea3cb0fa992432ac00c8\nDeleted: sha256:b4c44052623ad945e1a81e252fcc57b9c6c2ba9a0a79eeefc890ce16bd1b5147\nDeleted: sha256:5ce36a7145d058f9845586fe4593499db37c242166f3d6420c8be64635614f91\nDeleted: sha256:815c960bc81bc7aaf2efff09e8b840dad3743d1e276f630b0ff32ba7af694985\nDeleted: sha256:1cb8423d141ef283e031c6589d0cda2798d3d06d8d0944f302b5e9fb1d76fd97\nDeleted: sha256:23b0cd8cf3a7f8e08992cd80cb27b2f39e0759ba690e8187deaa338f3ad17d0c\nDeleted: sha256:fc72d96cfc72dc54c1405f1e0007db9ff5889804535f972a5de4e57dc5c886af\nDeleted: sha256:cccad1143c6ad5225cdc6eca41e5424a28f70360ae50904d83dd17ba292c722f\nDeleted: sha256:74d5c5fc1beac474ccb0c8e88f6c5ba74845e707da70f66b20558ddb2833e459\nDeleted: sha256:297a592b66593a3dddc39e7970a718cc1cbb04c8a9b904009b33eb623dafc588\n",
+  "removed": true,
+  "freed_gib": 5.16
+ }
+}

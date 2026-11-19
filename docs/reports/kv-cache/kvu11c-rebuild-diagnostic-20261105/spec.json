@@ -1,0 +1,23 @@
+{
+  "id": "kvu11c-rebuild-diagnostic-20261105",
+  "owner": "h-kvfork",
+  "launcher": "/mnt/raid0/llm/tmp/kvfork/kvu11c-rebuild-diagnostic-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/kvfork/kvu11c-rebuild-diagnostic-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build-only PASS requires detached qwentts aca703283192f892f1e85636fbc48832c4d5560a with detached pinned ggml b86f660238dcc1a83b7cbf5a72d355a965de9245, GGML_HIP=ON gfx90a full tts-server build, own ggml linkage, CLI --threads marker and hashed server and four ggml libraries. Stop on answer: build receipt with all checks. Stop on futility: source drift, build/linkage error, STOP, deadline or disk floor. No model or GPU execution is claimed. Record whether every rebuilt binary matches the retained r2 receipt; a mismatch is a distinct binary, not proof about the original crash.",
+  "estimate_s": 3600,
+  "ram_gib": 24,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KVU-11c",
+  "priority_rank": 45,
+  "smoke_timeout_s": 900,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/kvfork/kvu11c-rebuild-diagnostic-20261105",
+  "keep": [
+    "**"
+  ],
+  "kind": "compute",
+  "unit_key": "bytes",
+  "notes": "Diagnostic rebuild; source commits match retained run. Compare every binary digest against filed r2 receipt; exact-byte reproduction only if all five match. No model access or GPU inference."
+}

@@ -1,0 +1,55 @@
+{
+  "target": {
+    "id": "Method:src/llama-memory-hybrid.cpp:get_mem_attn#0",
+    "name": "get_mem_attn",
+    "type": "Method",
+    "filePath": "src/llama-memory-hybrid.cpp"
+  },
+  "direction": "upstream",
+  "impactedCount": 2,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 2,
+    "processes_affected": 0,
+    "modules_affected": 2
+  },
+  "byDepthCounts": {
+    "1": 2
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Cluster_1261",
+      "hits": 1,
+      "impact": "direct"
+    },
+    {
+      "name": "Cluster_1262",
+      "hits": 1,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Method:src/llama-memory-hybrid.cpp:llama_memory_hybrid_context#1",
+        "name": "llama_memory_hybrid_context",
+        "filePath": "src/llama-memory-hybrid.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.63,
+        "processes": []
+      },
+      {
+        "depth": 1,
+        "id": "Method:src/llama-memory-hybrid.cpp:llama_memory_hybrid_context#3",
+        "name": "llama_memory_hybrid_context",
+        "filePath": "src/llama-memory-hybrid.cpp",
+        "relationType": "CALLS",
+        "confidence": 0.63,
+        "processes": []
+      }
+    ]
+  }
+}

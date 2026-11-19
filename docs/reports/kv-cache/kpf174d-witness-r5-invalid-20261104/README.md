@@ -1,0 +1,5 @@
+# KPF-17.4d R5 prospective witness: INVALID
+
+Row `kvfork174d-witness-r5-20261104` ended rc=1 with no `out/RESULT.json`. Its retained partial `STATE.json` reports `Invalid: expected exactly one bound prefix snapshot`, no completed cells, and verified server cleanup. The g0-S2-B cell has a `.started` marker and fork-arm traces, so it was exposed and must not be silently retried or redrawn. A fork-arm request reached 64 generated tokens; the same-layout control pair did not complete. Own sampled VRAM reached approximately 41.4 GiB; this is a residency observation, not proof of layout match or historical image equivalence.
+
+The original decision rule therefore yields **INVALID**, not a failed kernel or layout verdict. No KPF-17.4d re-judgment follows. The retained private raw output is at `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf174d-witness-r5-evidence-20261104/`; its per-file hashes are in `FILES.sha256.json`. Parser diagnosis must use this already-exposed run without re-running the cell.

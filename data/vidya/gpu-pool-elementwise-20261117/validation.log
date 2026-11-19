@@ -1,0 +1,27 @@
+Shell syntax and frozen packet input bytes
+candidate/bin/test-backend-ops: OK
+candidate/bin/libggml-base.so.0: OK
+candidate/bin/libggml-cpu.so.0: OK
+candidate/bin/libggml-hip.so.0: OK
+candidate/bin/libggml.so.0: OK
+candidate/nprocs_shim.so: OK
+candidate/test-backend-ops.cpp: OK
+verify_ggml_linkage.sh: OK
+scripts/vidya/adapters/gpu_pool_native.py: OK
+scripts/vidya/claim_tuple.py: OK
+scripts/vidya/canonical.py: OK
+run_elementwise.py: OK
+test_run_elementwise.py: OK
+case-plan.tsv: OK
+source/run-v3.py: OK
+source/ACTUAL-ARTIFACT-PINS.sha256: OK
+
+Candidate inputs against historical artifact receipt
+
+Same-seed source plan partitions (expected counts only)
+true
+
+Focused synthetic tests pending. Region-lock exited 75 waiting for q3 after 20 s.
+rka-verify-tile-cpu-20261117 holds q0 through q3; its current grant ends at 2026-11-18T01:10Z.
+No focused controls, publisher smoke, backend tests, or GPU workload ran in preparation.
+The final producer runs the focused controls only after the actual publisher smoke grant is acquired.

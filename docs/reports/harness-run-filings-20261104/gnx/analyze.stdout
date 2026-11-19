@@ -1,0 +1,25 @@
+
+  GitNexus Analyzer
+
+[2K
+  Skipped 183 large files (>512KB, likely generated/vendored)
+[2K
+  - artifacts/ci/cj567-fixture-source-20261021/native/execution-request.json
+[2K
+  - artifacts/ci/cj567-fixture-source-20261021/native/receipt.json
+[2K
+  - artifacts/ci/evl49-s05-native-source-20261008/native/execution-request.json
+[2K
+  - artifacts/ci/evl49-s05-native-source-20261008/native/receipt.json
+[2K
+  - artifacts/ci/pii-native-metadata-source-20261021/job-repair99/native/execution-request.json
+[2K
+  ...and 178 more (set GITNEXUS_VERBOSE=1 to list them all)
+[2K
+  Set GITNEXUS_MAX_FILE_SIZE=<KB> to include files above the default cap.
+
+  Repository indexed successfully (161.0s)
+
+  125,333 nodes | 190,554 edges | 2889 clusters | 300 flows
+  /mnt/raid0/llm/tmp/repl-embedding-retrieval/gnx-shadow/source
+

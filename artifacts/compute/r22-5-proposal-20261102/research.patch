@@ -1,0 +1,197 @@
+commit fa620eaa32677745fafdb062ed133d3838941241
+Author:     pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+AuthorDate: Mon Nov 2 13:44:44 2026 +0000
+Commit:     pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+CommitDate: Mon Nov 2 13:44:44 2026 +0000
+
+    R22-5: add explicit boundary matrix gate
+
+diff --git a/scripts/kernel_rnd/autokernel/loop/R22-5-boundary-matrix.md b/scripts/kernel_rnd/autokernel/loop/R22-5-boundary-matrix.md
+new file mode 100644
+index 000000000..14020a3d6
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/R22-5-boundary-matrix.md
+@@ -0,0 +1,19 @@
++# R22-5 boundary matrix coverage (source preparation)
++
++The experimental `test-backend-ops` case set `r22-5-v1` contains the lengths
++33, 127, 128, 129, 512, 1023, 1024, 2047 and 2048. MUL_MAT and MUL_MAT_ID
++exercise both output-row and token axes with F32 and Q8_0 inputs (36 cases each).
++GATED_DELTA_NET exercises sequence tokens; RMS_NORM and RMS_NORM_MUL_ADD exercise
++row width; FLASH_ATTN_EXT exercises KV length (nine cases each). Each selected
++binary must produce the case-set marker and the entire expected non-skipped case
++tally. A seeded GPU reference also requires a native reference metric for each.
++
++The graph scheduler additionally covers ADD, MUL, SCALE, CLAMP, CONT, CPY,
++CONCAT, GLU, UNARY, SUM_ROWS, GET_ROWS, SET_ROWS, ROPE, SOFT_MAX, ARGSORT,
++SUB, DIV, SQR, SQRT, LOG, SIN, COS, FILL, DUP and TOPK_MOE. These operations
++have no reviewed boundary mapping in this packet. Explicit
++`boundary_matrix_correctness` requests for them refuse with `oracle_unavailable`;
++legacy ordinary correctness checks retain their existing behavior. No universal
++boundary coverage is claimed. The special custom scoped corpora also retain their
++existing behavior. Physical CPU and GPU execution and numerical tolerance still
++require validation before this source is deployed.
+diff --git a/scripts/kernel_rnd/autokernel/loop/gates.py b/scripts/kernel_rnd/autokernel/loop/gates.py
+index 29b79571a..14ba727be 100644
+--- a/scripts/kernel_rnd/autokernel/loop/gates.py
++++ b/scripts/kernel_rnd/autokernel/loop/gates.py
+@@ -2796,7 +2796,8 @@ def op_correctness(build_dir: Path, *, op: str = "MUL_MAT",
+                    require_reference: bool = False,
+                    params_filter: str | None = None,
+                    environment_overrides: tuple[tuple[str, str], ...] = (),
+-                   expected_cases: int | None = None) -> Verdict:
++                   expected_cases: int | None = None,
++                   _boundary_case_set: bool = False) -> Verdict:
+     """`test-backend-ops` on the op the patch touches. The real correctness gate.
+ 
+     THE DEFECT THIS SHAPE EXISTS TO PREVENT. An older binary did not accept
+@@ -2837,6 +2838,8 @@ def op_correctness(build_dir: Path, *, op: str = "MUL_MAT",
+         # Run it under the actual treatment's loader/env and CPU/NUMA prefix.
+         argv = [*resolved_recipe.topology_prefix, *argv]
+         environment = dict(resolved_recipe.launch_env)
++    # The selector belongs to this gate, not inherited launcher state.
++    environment.pop("AUTOKERNEL_BOUNDARY_CASE_SET", None)
+     if environment_overrides:
+         environment = {**environment, **dict(environment_overrides)}
+     if require_reference:
+@@ -2865,6 +2868,9 @@ def op_correctness(build_dir: Path, *, op: str = "MUL_MAT",
+         return Verdict("oracle_unavailable", False,
+                        "seeded reference suite output exceeds inspection bound")
+     plain = re.sub(r"\x1b\[[0-9;]*m", "", output)
++    if _boundary_case_set and "AUTOKERNEL_BOUNDARY_CASE_SET=r22-5-v1 cases=108" not in done.stderr:
++        return Verdict("oracle_unavailable", False,
++                       "selected instrument lacks the R22-5 boundary case set")
+     block = re.search(
+         rf"(?ms)^Backend \d+/\d+: {re.escape(backend)}\b(.*?)"
+         rf"^  Backend {re.escape(backend)}: (OK|FAIL)\b", plain)
+@@ -2905,8 +2911,9 @@ def op_correctness(build_dir: Path, *, op: str = "MUL_MAT",
+                     for case in frame.cases
+                     if case.op in backend_ops_selector(op).split(",")
+                     and case.status != "not_supported"]
+-        if (not selected or any(not case.passed or case.reference is None
+-                                for case in selected)):
++        if ((_boundary_case_set and len(selected) != expected_cases)
++                or not selected or any(not case.passed or case.reference is None
++                                       for case in selected)):
+             return Verdict("oracle_unavailable", False,
+                            f"{op} did not emit a reference metric for every selected {backend} case")
+         if any(case.reference.oracle_id != "ggml_cpu_reference/v1" for case in selected):
+@@ -2938,6 +2945,20 @@ def op_correctness(build_dir: Path, *, op: str = "MUL_MAT",
+                    case_records=gate_case_records(plain, backend, op))
+ 
+ 
++def boundary_matrix_correctness(build_dir: Path, *, op: str, backend: str,
++                                resolved_recipe=None, require_reference: bool = False) -> Verdict:
++    """Run the reviewed R22-5 matrix for one op; unsupported ops refuse explicitly."""
++    counts = {"MUL_MAT": 36, "MUL_MAT_ID": 36, "GATED_DELTA_NET": 9,
++              "RMS_NORM": 9, "RMS_NORM_MUL_ADD": 9, "FLASH_ATTN_EXT": 9}
++    if op not in counts:
++        return Verdict("oracle_unavailable", False,
++                       f"R22-5 has no reviewed boundary-shape corpus for {op}")
++    return op_correctness(build_dir, op=op, backend=backend, resolved_recipe=resolved_recipe,
++                          require_reference=require_reference,
++                          environment_overrides=(("AUTOKERNEL_BOUNDARY_CASE_SET", "r22-5-v1"),),
++                          expected_cases=counts[op], _boundary_case_set=True)
++
++
+ def deterministic(build_dir: Path, model: Path, *, runs: int = 3) -> Verdict:
+     """The same input must give the same output three times.
+ 
+diff --git a/scripts/kernel_rnd/autokernel/loop/test_r22_5_boundary.py b/scripts/kernel_rnd/autokernel/loop/test_r22_5_boundary.py
+new file mode 100644
+index 000000000..5c261f792
+--- /dev/null
++++ b/scripts/kernel_rnd/autokernel/loop/test_r22_5_boundary.py
+@@ -0,0 +1,92 @@
++"""R22-5 boundary corpus must actually run and refuse an old instrument."""
++from pathlib import Path
++from types import SimpleNamespace
++from unittest import mock
++
++from autokernel.loop import gates
++
++
++def _suite(n, status="OK"):
++    return (f"Backend 1/1: ROCm0\n  {n}/{n} tests passed\n"
++            f"  Backend ROCm0: {status}\n1/1 backends passed\n")
++
++
++def _run(marker=True, boundary_n=36, op="MUL_MAT"):
++    seen = []
++    def command(argv, **kwargs):
++        boundary = kwargs["env"].get("AUTOKERNEL_BOUNDARY_CASE_SET")
++        seen.append(boundary)
++        return SimpleNamespace(stdout=_suite(boundary_n if boundary else 12),
++                               stderr=("AUTOKERNEL_BOUNDARY_CASE_SET=r22-5-v1 cases=108\n"
++                                       if boundary and marker else ""), returncode=0)
++    with mock.patch.object(Path, "is_file", return_value=True), \
++         mock.patch.object(gates.residency, "loader_env", return_value={}), \
++         mock.patch.object(gates.subprocess, "run", side_effect=command):
++        verdict = gates.boundary_matrix_correctness(Path("/mock"), op=op, backend="ROCm0")
++    return verdict, seen
++
++
++def test_explicit_boundary_executes_selected_suite():
++    result, seen = _run()
++    assert result.passed
++    assert seen == ["r22-5-v1"]
++
++
++def test_old_binary_refuses():
++    result, _ = _run(marker=False)
++    assert not result.passed and result.gate == "oracle_unavailable"
++
++
++def test_missing_cases_refuse():
++    result, _ = _run(boundary_n=35)
++    assert not result.passed and result.gate == "oracle_unavailable"
++
++
++def test_seeded_receipt_includes_boundary():
++    import json
++    from autokernel.execution import t0_provider
++
++    ref = SimpleNamespace(oracle_id="ggml_cpu_reference/v1", observed=0.1,
++                          tolerance=1.0, metric_id="nmse")
++    case = SimpleNamespace(op="MUL_MAT", status="ok", passed=True,
++                           reference=ref, params="m=33")
++    lengths = [36]
++    def parsed(_):
++        n = lengths.pop(0)
++        return SimpleNamespace(reconcile=lambda: None,
++                               backends=[SimpleNamespace(name="ROCm0", skipped=False,
++                                                         cases=[case] * n)])
++    def command(argv, **kwargs):
++        if "--help" in argv:
++            return SimpleNamespace(stdout="--suite-seed --autokernel-properties", stderr="", returncode=0)
++        boundary = kwargs["env"].get("AUTOKERNEL_BOUNDARY_CASE_SET")
++        return SimpleNamespace(stdout=_suite(36 if boundary else 12),
++                               stderr=("AUTOKERNEL_BOUNDARY_CASE_SET=r22-5-v1 cases=108\n"
++                                       if boundary else ""), returncode=0)
++    caps = SimpleNamespace(require=lambda _: None)
++    with mock.patch.object(Path, "is_file", return_value=True), \
++         mock.patch.object(gates.residency, "loader_env", return_value={}), \
++         mock.patch.object(gates.subprocess, "run", side_effect=command), \
++         mock.patch.object(t0_provider, "parse_backend_ops_help", return_value=caps), \
++         mock.patch.object(t0_provider, "parse_backend_ops_console", side_effect=parsed):
++        result = gates.boundary_matrix_correctness(Path("/mock"), op="MUL_MAT", backend="ROCm0", require_reference=True)
++    assert result.passed
++    assert json.loads(result.detail)["cases"] == 36
++
++
++def test_other_admitted_gpu_ops_require_their_complete_boundary_matrix():
++    for op, count in (("MUL_MAT_ID", 36), ("GATED_DELTA_NET", 9),
++                      ("RMS_NORM", 9), ("RMS_NORM_MUL_ADD", 9),
++                      ("FLASH_ATTN_EXT", 9)):
++        result, seen = _run(op=op, boundary_n=count)
++        assert result.passed and seen == ["r22-5-v1"]
++        result, _ = _run(op=op, boundary_n=count - 1)
++        assert not result.passed and result.gate == "oracle_unavailable"
++
++
++def test_unmapped_cpu_graph_op_refuses_instead_of_claiming_coverage():
++    with mock.patch.object(gates.subprocess, "run") as run:
++        result = gates.boundary_matrix_correctness(Path("/mock"), op="ROPE", backend="CPU")
++    assert result.gate == "oracle_unavailable" and not result.passed
++    assert "no reviewed boundary-shape corpus" in result.reason
++    run.assert_not_called()

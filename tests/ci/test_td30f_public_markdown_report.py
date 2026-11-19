@@ -4,18 +4,60 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 
+import pytest
+
 REPORT = Path(__file__).parents[2] / "scripts/ci/td30f_public_markdown_report.py"
-OUTPUT = Path(os.environ["TD30F_REPORT_OUTPUT"])
+
 spec = importlib.util.spec_from_file_location("td30f_report", REPORT)
 assert spec and spec.loader
 report = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(report)
 
 
-def test_original_aggregate_is_218_row_public_successor_and_non_gold() -> None:
-    data = json.loads(OUTPUT.read_text(encoding="utf-8"))
+@pytest.fixture
+def app_root() -> Path:
+    """Orchestrator clone holding the pinned guard sources (build_guards reads `git show APP_PIN:...`).
+
+    TD30F_APP_ROOT names it explicitly (then it must work). Otherwise the sibling clone is used when
+    it holds the pinned commit; a machine without it skips the two guard-boundary controls instead of
+    failing with a KeyError.
+    """
+    if sys.version_info < (3, 13):
+        # The reviewed AST fingerprints (AST_SHA256) hash ast.dump() text, whose format changed in
+        # Python 3.13; they were minted on the 3.13 hosted recipe and cannot match on an older
+        # interpreter. That is a property of the interpreter, not a drift in the pinned sources.
+        pytest.skip("AST fingerprints are minted on Python >= 3.13 (ast.dump format); have "
+                    f"{sys.version_info.major}.{sys.version_info.minor}")
+    value = os.environ.get("TD30F_APP_ROOT")
+    if value:
+        return Path(value)
+    default = Path("/workspace/repos/epyc-orchestrator")
+    probe = subprocess.run(["git", "-C", str(default), "cat-file", "-e", f"{report.APP_PIN}^{{commit}}"],
+                           capture_output=True, check=False)
+    if probe.returncode != 0:
+        pytest.skip("no orchestrator clone with the pinned TD-30f guard commit: set TD30F_APP_ROOT")
+    return default
+
+
+@pytest.fixture
+def output() -> Path:
+    """The captured aggregate, produced by the hosted recipe (scripts/ci/td30f_public_markdown_run.py).
+
+    Resolved lazily: an unset TD30F_REPORT_OUTPUT used to raise KeyError at IMPORT, which aborted
+    collection of the whole file -- including the synthetic controls below that need no capture.
+    """
+    value = os.environ.get("TD30F_REPORT_OUTPUT")
+    if not value:
+        pytest.skip("TD30F_REPORT_OUTPUT not set: the captured aggregate exists only inside the hosted recipe")
+    return Path(value)
+
+
+def test_original_aggregate_is_218_row_public_successor_and_non_gold(output: Path) -> None:
+    data = json.loads(output.read_text(encoding="utf-8"))
     assert data["schema"] == "td30f-public-markdown-replay-aggregate-v1"
     assert data["root_source_commit"] == report.ROOT_PIN
     assert data["app_source_commit"] == report.APP_PIN
@@ -55,8 +97,8 @@ def test_original_aggregate_is_218_row_public_successor_and_non_gold() -> None:
             assert all(r["trigger_share"] is None or 0 <= r["trigger_share"] <= 1 for r in rows)
 
 
-def test_word_trigram_guards_keep_strict_threshold_and_minimum_boundaries() -> None:
-    quality, pipeline, _, _ = report.build_guards(Path(os.environ["TD30F_APP_ROOT"]))
+def test_word_trigram_guards_keep_strict_threshold_and_minimum_boundaries(app_root: Path) -> None:
+    quality, pipeline, _, _ = report.build_guards(app_root)
     repeated9 = "a b c a b c a b c"
     # Equality is not a trigger because the pinned source uses a strict '<'.
     assert pipeline(repeated9, threshold=3 / 7) is False
@@ -70,8 +112,8 @@ def test_word_trigram_guards_keep_strict_threshold_and_minimum_boundaries() -> N
     assert quality("a b c a b c a b c a b c a b c a b c a") is False
 
 
-def test_streaming_block_controls_are_body_only_and_match_pinned_boundaries() -> None:
-    _, _, streaming, _ = report.build_guards(Path(os.environ["TD30F_APP_ROOT"]))
+def test_streaming_block_controls_are_body_only_and_match_pinned_boundaries(app_root: Path) -> None:
+    _, _, streaming, _ = report.build_guards(app_root)
     block = "abcdefghijklmnopqrst\n" + "ABCDEFGHIJKLMNOPQRST\n" + "01234567890123456789"
     assert len(block) == 62
     twice = block + "\n" + block + "\n" + "z" * 60

@@ -1,0 +1,118 @@
+{
+  "archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-loader-hip-bank-20261118/repair-r3",
+  "archived_evidence": {
+    "README.md": "f5a6d3b7ec2cd6cef865d35a016ea0b7b91d5c214010dbba583e5295aadc3531",
+    "SOURCE.sha256": "8ffeeb2b42f914d65c3e73024173517c18e0556511eb00cf4281db7390fbb932",
+    "failures/1/FAIL-1.json": "ae818f5beedd1ec0dee4f8a4f47889e8936e20b37bd297879c81bce4ae1f8679",
+    "failures/1/native-result.json": "06ae42a1f52a1cf8dde6b5b53f9134aee0d96575ee7fa62f10364e299b4f9ebd",
+    "failures/2/FAIL-1.json": "dcdcdf3e527581f8422790d7aee51cebea1bdace22a9ffac124e8c7dc8fe546e",
+    "failures/2/native-result.json": "9fc00aac79768200525b1dee7e1900ed5c8343304b82cd4c154f8f140197d963",
+    "failures/3/FAIL-1.json": "79177a1e8ad6763ddb3ff5eebdae69efdd592a594af9410ec0430edfce46dd08",
+    "failures/3/cleanup.json": "033d4efa960ca050d77bf905ed6c0ab66d4d42fcc65b635bab49d0b99e441a8a",
+    "failures/3/native-result.json": "dcb4fec90544f2bf39c98ad37f11b2285e07c64d326c956d7829ca56bcc554ea",
+    "failures/3/server.log": "512cb5c83b6c2156de1c960726277be81ad8b2f12bfac995d8d74adaf9141be8",
+    "make_plan.py": "8288ba3ca7ddce9d3209e1cdd38415320312bcc462f780b0ab34690c4ea1cf2c",
+    "offline-validation.txt": "d1a2eb0ec01f0c6e9eb2035babc408834096dface177d11e1259898112edc412",
+    "plan.json.original-bytes.json": "9cfd386469b27ea857101c1031a85aad780f17a5b8b4e438c60470072ad578e1",
+    "row.spec.json": "d1dc9f0cb3e849bc482f5c688846664ad2aebe82e0fa1c381b095eb35685c59f"
+  },
+  "changed_paths": [
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/make_plan.py",
+      "sha256": "8288ba3ca7ddce9d3209e1cdd38415320312bcc462f780b0ab34690c4ea1cf2c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/plan.json",
+      "sha256": "e59a07e74d24ae8153b28ea540f9b3efcf69d5d4a8565a207afbba5bfae9ea38"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/SOURCE.sha256",
+      "sha256": "8ffeeb2b42f914d65c3e73024173517c18e0556511eb00cf4281db7390fbb932"
+    }
+  ],
+  "changes": "Add --verbosity 4 only to the small-model smoke recipe so v10 exposes native GGML INFO startup evidence. Full plan is otherwise identical.",
+  "failures": [
+    {
+      "at": "2026-11-18T05:22:36Z",
+      "error": {
+        "message": "CPU affinity differs from the granted smoke or the pinned HIP profile",
+        "phase": "preflight",
+        "type": "ValueError"
+      },
+      "native_result": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/native-attempts/attempt-hbntb8ka/native-result.json",
+        "sha256": "06ae42a1f52a1cf8dde6b5b53f9134aee0d96575ee7fa62f10364e299b4f9ebd"
+      },
+      "receipt": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/superseded/20261118T211359091178Z/FAIL-1.json",
+        "sha256": "ae818f5beedd1ec0dee4f8a4f47889e8936e20b37bd297879c81bce4ae1f8679"
+      }
+    },
+    {
+      "at": "2026-11-18T21:42:48Z",
+      "error": {
+        "message": "native startup did not prove the pinned MI210 and partial layer count",
+        "phase": "native_capture",
+        "type": "RuntimeError"
+      },
+      "native_result": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/native-attempts/attempt-7yp6lm1t/native-result.json",
+        "sha256": "9fc00aac79768200525b1dee7e1900ed5c8343304b82cd4c154f8f140197d963"
+      },
+      "receipt": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/superseded/20261118T214457277268Z/FAIL-1.json",
+        "sha256": "dcdcdf3e527581f8422790d7aee51cebea1bdace22a9ffac124e8c7dc8fe546e"
+      }
+    },
+    {
+      "at": "2026-11-18T21:45:08Z",
+      "error": {
+        "message": "thread 1925961 affinity exceeds the grant",
+        "phase": "native_capture",
+        "type": "RuntimeError"
+      },
+      "native_result": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/native-attempts/attempt-a0ksyh0o/native-result.json",
+        "sha256": "dcb4fec90544f2bf39c98ad37f11b2285e07c64d326c956d7829ca56bcc554ea"
+      },
+      "receipt": {
+        "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/FAIL-1.json",
+        "sha256": "79177a1e8ad6763ddb3ff5eebdae69efdd592a594af9410ec0430edfce46dd08"
+      }
+    }
+  ],
+  "native_task_text": "- [ ] **VB-V9-8-QUALITY-PACK-LOADER-HIP-BANK \u2014 capture and strictly admit the four-item architect-general HIP production bank with the native loader-reshape fixture.** Row `handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118`, immutable v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`, three-shard Qwen3.8-Flash-Next UD-IQ4_XS, registered template, 24 HIP layers, 4096 context, split f16 KV, one slot, no speculation, eight CPU threads on CPUs184\u2013191 plus MI210_0; RAM112 GiB, estimate980 s, minimum1200 s, maximum1500 s. Question: do all four production responses satisfy the pinned strict finish/semantic/token rules while native logs witness both named qwen4exp norm loads in the unique mmap serving phase? Finite four-item census; no population effect or sampling-error estimate. Preserve source/header-derived dimensions separately from native tensor-name lines, original bytes, grant/model/runtime/recipe/template identities, each request's two same-PID in-window nonzero HIP/KFD/VRAM and mapped-library samples, and captured-PID/listener/KFD cleanup. Stop-on-answer after all four strict admissions and cleanup; stop-on-futility on STOP/deadline or first identity/startup/transport/residency/log/cleanup failure. Preserve inadmissible and partial dispositions. Publisher four-CPU v10 HIP small-model smoke establishes readiness only. Collect no candidate before the complete seven-profile pack seal; no deployed equivalence, quality-transfer or promotion authority. [inference] [no-belief: prospective strict native bank admission]",
+  "next_action": "Keep the lineage parked under the three-failure rule. If explicitly reopened, attribute the out-of-mask thread and evaluate the HSA affinity override already used by the qualified Historical544 runner while retaining the strict all-thread assertion.",
+  "observed_affinity": {
+    "captured_server_pid": 1925956,
+    "outside_mask_recorded": false,
+    "refused_thread_tid": 1925961,
+    "required_cpus": [
+      184,
+      185,
+      186,
+      187
+    ]
+  },
+  "offline_validation": "All manifest digests, launcher syntax, one deterministic plan/spec check, and 13 offline controls passed.",
+  "park_disposition": "Three recorded qualification failures. Stop retrying. No supported owner park command is available for this unpublished row.",
+  "prep_task_text": "- [ ] **VB-V9-8-QUALITY-PACK-LOADER-HIP-BANK-PREP \u2014 pin and publish a strict architect-general HIP production bank with a genuine loader-reshape fixture.** The CPU diagnostic's semantic refusal supplies no bank fixture. Prospectively pin a new typed JSON request with unchanged JSON-subset policy and retain the original code/reasoning/prose requests with their predeclared metadata validators. All four share one effective recipe/source/model/template pin including native tensor logging; do not mix recipe hashes or create a one-item shape that fails per-shape coverage. Preserve the existing queued paired input packet unchanged. Finish on genuine publisher native smoke PASS; production admission and seven-profile sealing remain separate. [no-belief: split required native HIP fixture preparation]",
+  "prepatch_backup": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-presmoke-log.xEvafm",
+  "publisher_exit": 2,
+  "row_id": "handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118",
+  "rowflow_state": "unknown: no epyc.row.v3 row in ready/",
+  "spec": {
+    "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/loader-hip-bank-20261118-repair/row.spec.json",
+    "sha256": "d1dc9f0cb3e849bc482f5c688846664ad2aebe82e0fa1c381b095eb35685c59f"
+  },
+  "status": "third_qualification_failed_park",
+  "third_attempt_cleanup": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/native-attempts/attempt-a0ksyh0o/native/production/cleanup.json",
+    "sha256": "033d4efa960ca050d77bf905ed6c0ab66d4d42fcc65b635bab49d0b99e441a8a"
+  },
+  "third_attempt_native_server_log": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-loader-bank-20261118/native-attempts/attempt-a0ksyh0o/native/production/server.log",
+    "sha256": "512cb5c83b6c2156de1c960726277be81ad8b2f12bfac995d8d74adaf9141be8"
+  },
+  "third_attempt_native_startup": "Native server log shows ROCm0 AMD Instinct MI210 and offloaded 29/29 layers. Sample subsequently refused a thread affinity outside CPUs 184-187."
+}

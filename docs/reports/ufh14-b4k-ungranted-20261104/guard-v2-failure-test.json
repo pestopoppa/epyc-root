@@ -1,0 +1,14 @@
+{
+  "task": "B4k guard-v2 fake-boundary failure/history regression",
+  "source_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/b4k-guard-v2-20261104/job.py",
+  "source_sha256": "8b1d8c2ff844e2aa1e011bd198c894675015e5b75aabdcb724c0042acc113b61",
+  "test_path": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/guard-v2-failure-test-20261104/run_test.py",
+  "test_sha256": "c3c9b914ebbdd1eb776d890b2e28535f5e3d311d48f14a662faf1b759622e931",
+  "result": "PASS",
+  "fake_backend_calls": 482,
+  "error_rows": 482,
+  "assertions": ["each failed call preserves error and failure_reason", "failed output never enters session prompt history", "all calls have corresponding errors.log entries"],
+  "network_attempts": 0,
+  "job_entrypoint_check_server_called": false,
+  "scope": "Only job.run() executed with monkeypatched backend, registry and serving-call boundaries. No main/check/server/CLI, model load, inference, or network use."
+}

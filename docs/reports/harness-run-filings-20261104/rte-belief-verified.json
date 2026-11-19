@@ -1,0 +1,60 @@
+{
+  "status": "write_side_invocation_evidenced",
+  "row_id": "handoff-rte-pfx2-quarter-native-v3-20261102",
+  "producer_hook": "/mnt/raid0/llm/tmp/repl-turn-efficiency/pfx3/supervisor.py:104-110",
+  "enrollment": "scripts/vidya/adapters/README.md:984 (rte_pfx2_capture.py -> chunk_kv.py)",
+  "adapter_sha256": "3a172800c3caaa8108c4aba660eb799da80963174c1422e9a6e230524730f423",
+  "adapter_matches_enrolled_source": true,
+  "result_sidecar": "rte/chunk_kv.beliefs.jsonl",
+  "record_count": 6,
+  "metrics": [
+    {
+      "measurement_id": "kvchunk_555cdc13175ff99336238c1a",
+      "metric": "chunk_kv_uncached_prompt_tokens",
+      "subject": "arm=simultaneous n=4 prefix_sha256=d95770fbd35a31295e622715aed129e9c751c653c24a0ea1ce1500ff1c11357a"
+    },
+    {
+      "measurement_id": "kvchunk_79deded89fdff57f744cb2f0",
+      "metric": "prefix_hit_realised_over_ideal",
+      "subject": "arm=simultaneous n=4 prefix_sha256=d95770fbd35a31295e622715aed129e9c751c653c24a0ea1ce1500ff1c11357a"
+    },
+    {
+      "measurement_id": "kvchunk_9ffeca096ca00e7ef8d203e6",
+      "metric": "chunk_kv_uncached_prompt_tokens",
+      "subject": "arm=hold_first_tok n=4 prefix_sha256=d95770fbd35a31295e622715aed129e9c751c653c24a0ea1ce1500ff1c11357a"
+    },
+    {
+      "measurement_id": "kvchunk_2d014c5739285d5d020789b2",
+      "metric": "prefix_hit_realised_over_ideal",
+      "subject": "arm=hold_first_tok n=4 prefix_sha256=d95770fbd35a31295e622715aed129e9c751c653c24a0ea1ce1500ff1c11357a"
+    },
+    {
+      "measurement_id": "kvchunk_c143f349ca20df98172338e6",
+      "metric": "chunk_kv_uncached_prompt_tokens",
+      "subject": "arm=hold_first_end n=4 prefix_sha256=d95770fbd35a31295e622715aed129e9c751c653c24a0ea1ce1500ff1c11357a"
+    },
+    {
+      "measurement_id": "kvchunk_07c924bd66cb2314a185b871",
+      "metric": "prefix_hit_realised_over_ideal",
+      "subject": "arm=hold_first_end n=4 prefix_sha256=d95770fbd35a31295e622715aed129e9c751c653c24a0ea1ce1500ff1c11357a"
+    }
+  ],
+  "emitted_at": [
+    "2026-11-03T07:35:32Z"
+  ],
+  "header_sha256": "50c24010e54df6d6dd6ffd10d047ec8be7b98ebf86474190922196c1a055843d",
+  "probe_sha256": "a371d5ae75e6beeae53accab561dab4accc2bcfeb413bc205fa4d7e58c2a5b58",
+  "all_references_match": true,
+  "recorded_window": {
+    "end_utc": "2026-11-03T09:11Z",
+    "region_lock_claim": "0-95; role bench; shares host with GPU job (no gpu-quiet)",
+    "start_utc": "2026-11-03T07:18Z",
+    "window_id": "handoff-rte-pfx2-quarter-native-v3-20261102"
+  },
+  "original_header_claim": "filler region-lock 0-95; shares host with GPU job (gpu-quiet not claimed); indicative",
+  "claim_consistent": true,
+  "limitation": "Original grant file is no longer present, so start/end cannot be independently compared with it. Supervisor source passes the original grant start/end read during the run; sidecar emission precedes .ended. The stored UTC span is the grant envelope, not the actual end time. No new warrant has been created.",
+  "actual_job_started": "2026-11-03T07:19:29Z",
+  "actual_job_ended": "2026-11-03T07:35:34Z",
+  "recommendation": "Owner may file the native result with the original recorded window and indicative co-residency limitation; use existing capture, do not regenerate or claim an independently authenticated grant interval."
+}

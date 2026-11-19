@@ -1,0 +1,121 @@
+diff --git a/src/llama-kv-cache.cpp b/src/llama-kv-cache.cpp
+index 80c73f75b..6d2c46e0f 100644
+--- a/src/llama-kv-cache.cpp
++++ b/src/llama-kv-cache.cpp
+@@ -2957,14 +2957,22 @@ void llama_kv_cache::state_write_meta(llama_io_write_i & io, const cell_ranges_t
+     }
+ }
+ 
+-void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t & cr) const {
++void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t & cr, state_data_observer_i * observer) const {
+     const auto & cells = v_cells[cr.strm];
++    auto write_metadata = [&](const void * src, size_t size) {
++        if (observer) observer->metadata(size);
++        io.write(src, size);
++    };
++    auto write_tensor = [&](uint32_t layer, bool is_key, ggml_tensor * value, size_t offset, size_t size) {
++        if (observer) observer->tensor(layer, is_key, cr.strm, value, offset, size);
++        io.write_tensor(value, offset, size);
++    };
+ 
+     const uint32_t v_trans = this->v_trans ? 1 : 0;
+     const uint32_t n_layer = layers.size();
+ 
+-    io.write(&v_trans, sizeof(v_trans));
+-    io.write(&n_layer, sizeof(n_layer));
++    write_metadata(&v_trans, sizeof(v_trans));
++    write_metadata(&n_layer, sizeof(n_layer));
+ 
+     // Iterate and write all the keys first, each row is a cell
+     // Get whole range at a time
+@@ -2977,17 +2985,17 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+ 
+         // Write key type
+         const int32_t k_type_i = (int32_t) k->type;
+-        io.write(&k_type_i, sizeof(k_type_i));
++        write_metadata(&k_type_i, sizeof(k_type_i));
+ 
+         // Write row size of key
+         const uint64_t k_size_row = ggml_row_size(k->type, n_embd_k_gqa);
+-        io.write(&k_size_row, sizeof(k_size_row));
++        write_metadata(&k_size_row, sizeof(k_size_row));
+ 
+         // Read each range of cells of k_size length and write out
+         for (const auto & range : cr.data) {
+             const size_t range_size = range.second - range.first;
+             const size_t buf_size = range_size * k_size_row;
+-            io.write_tensor(k, range.first * k_size_row, buf_size);
++            write_tensor(il, true, k, range.first * k_size_row, buf_size);
+         }
+     }
+ 
+@@ -3004,17 +3012,17 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+ 
+             // Write value type
+             const int32_t v_type_i = (int32_t) v->type;
+-            io.write(&v_type_i, sizeof(v_type_i));
++            write_metadata(&v_type_i, sizeof(v_type_i));
+ 
+             // Write row size of value
+             const uint64_t v_size_row = ggml_row_size(v->type, n_embd_v_gqa);
+-            io.write(&v_size_row, sizeof(v_size_row));
++            write_metadata(&v_size_row, sizeof(v_size_row));
+ 
+             // Read each range of cells of v_size length and write out
+             for (const auto & range : cr.data) {
+                 const size_t range_size = range.second - range.first;
+                 const size_t buf_size = range_size * v_size_row;
+-                io.write_tensor(v, range.first * v_size_row, buf_size);
++                write_tensor(il, false, v, range.first * v_size_row, buf_size);
+             }
+         }
+     } else {
+@@ -3033,14 +3041,14 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+ 
+             // Write value type
+             const int32_t v_type_i = (int32_t) v->type;
+-            io.write(&v_type_i, sizeof(v_type_i));
++            write_metadata(&v_type_i, sizeof(v_type_i));
+ 
+             // Write element size
+             const uint32_t v_size_el = ggml_type_size(v->type);
+-            io.write(&v_size_el, sizeof(v_size_el));
++            write_metadata(&v_size_el, sizeof(v_size_el));
+ 
+             // Write GQA embedding size
+-            io.write(&n_embd_v_gqa, sizeof(n_embd_v_gqa));
++            write_metadata(&n_embd_v_gqa, sizeof(n_embd_v_gqa));
+ 
+             // For each row, we get the element values of each cell
+             for (uint32_t j = 0; j < n_embd_v_gqa; ++j) {
+@@ -3049,7 +3057,7 @@ void llama_kv_cache::state_write_data(llama_io_write_i & io, const cell_ranges_t
+                     const size_t range_size = range.second - range.first;
+                     const size_t src_offset = (range.first + j * kv_size) * v_size_el;
+                     const size_t buf_size = range_size * v_size_el;
+-                    io.write_tensor(v, src_offset, buf_size);
++                    write_tensor(il, false, v, src_offset, buf_size);
+                 }
+             }
+         }
+diff --git a/src/llama-kv-cache.h b/src/llama-kv-cache.h
+index 147760f87..3e2a89a69 100644
+--- a/src/llama-kv-cache.h
++++ b/src/llama-kv-cache.h
+@@ -390,7 +390,16 @@ private:
+     };
+ 
+     void state_write_meta(llama_io_write_i & io, const cell_ranges_t & cr, llama_seq_id seq_id = -1) const;
+-    void state_write_data(llama_io_write_i & io, const cell_ranges_t & cr) const;
++    // Read-only diagnostics: reports the exact serialization traversal. The observer
++    // must not modify tensors or the I/O sink; a null observer keeps the normal path.
++    struct state_data_observer_i {
++        virtual ~state_data_observer_i() = default;
++        virtual void metadata(size_t size) = 0;
++        virtual void tensor(uint32_t layer, bool is_key, uint32_t stream,
++                            ggml_tensor * value, size_t offset, size_t size) = 0;
++    };
++    void state_write_data(llama_io_write_i & io, const cell_ranges_t & cr,
++                          state_data_observer_i * observer = nullptr) const;
+ 
+     // sinfo_in, when set, replaces the find_slot call: the cells are given by the caller
+     bool state_read_meta(llama_io_read_i & io, uint32_t strm, uint32_t cell_count,       slot_info & sinfo, llama_seq_id dest_seq_id = -1, const slot_info * sinfo_in = nullptr);

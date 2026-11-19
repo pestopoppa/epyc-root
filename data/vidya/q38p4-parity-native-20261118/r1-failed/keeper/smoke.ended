@@ -1,0 +1,7 @@
+rc=75 time=2026-11-18T05:22:42Z reason=partial-native-incomplete
+job_id=q38p4-greedy-parity-20261118-r1
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=420
+started=2026-11-18T05:22:37Z
+regions=mi210_0,184-191

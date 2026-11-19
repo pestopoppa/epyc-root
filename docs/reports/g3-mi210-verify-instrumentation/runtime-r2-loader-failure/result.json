@@ -1,0 +1,26 @@
+{
+  "status": "partial",
+  "requests": [],
+  "error": "RuntimeError('server exited')",
+  "residency": [
+    {
+      "status": "UNKNOWN",
+      "reasons": [
+        "no request observation window"
+      ]
+    }
+  ],
+  "residency_scope": "HTTP request window only; trace overlap and device isolation remain unproven",
+  "request_windows": [],
+  "server_exit": 127,
+  "process_group_drained": true,
+  "timed_analysis": {
+    "status": "UNKNOWN",
+    "reasons": [
+      "incomplete capture or unverified process drain"
+    ],
+    "trace": null,
+    "correlations": [],
+    "scope": "Observed dispatches only; residency is device-wide; no bandwidth or performance conclusion."
+  }
+}

@@ -1,0 +1,7 @@
+rc=1 time=2026-11-05T01:36:07Z reason=job-rc-1:exited
+job_id=kvu11c-gpu-mechanics-smoke-r3-20261105
+owner=h-kvfork
+step=job-run
+estimated_wall_s=900
+started=2026-11-05T01:36:04Z
+regions=mi210_0,184-187

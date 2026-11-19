@@ -1,0 +1,19 @@
+{
+  "row": "q38p3a-specoff-abba-20261105",
+  "rc": 0,
+  "interpretation": "Futility: spec-off B/C geometric mean <1.02; no profile or adoption. Exploratory single-host diagnostic, not a promotion gate.",
+  "pair_ratios": [
+    0.9850858393706726,
+    0.9881588151925238
+  ],
+  "geometric_mean": 0.9866211308782398,
+  "medians_tps": {
+    "p1-C": 33.11203456896409,
+    "p1-B": 32.61819636663872,
+    "p2-B": 32.542950656623944,
+    "p2-C": 32.932915394053914
+  },
+  "all_four_valid": true,
+  "result_sha256": "3afba4501f2511a96b7b21b87a73a6029045021e237a032d23116f8f4ee1b388",
+  "linkage_limitation": "The producer reports digest checks passed and records mapped paths but not observed digest values per sample; in-window bytes cannot be independently rehashed from retained record alone."
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "epyc.quality_pack_architect_general_hip_smoke_preparation.v1",
+  "status": "gpu-smoke-queued",
+  "row_id": "handoff-vidya-quality-pack-architect-general-hip-smoke-20261118",
+  "supersedes": [
+    "handoff-vidya-quality-pack-architect-general-hip-20261118"
+  ],
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118/row.spec.json",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118/row-launch.sh",
+  "archive": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/data/vidya/quality-pack-architect-general-hip-smoke-20261118",
+  "publisher_smoke": {
+    "runtime_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "binary": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
+    "model": "/mnt/raid0/llm/models/Qwen_Qwen3-0.6B-Q8_0.gguf",
+    "model_sha256": "c159d1518f16bc42533d9a09f034eb598b670341adc2b08b9a9751614aea71eb",
+    "device": "ROCm0",
+    "offloaded_layers": 29,
+    "cpu_threads": 4,
+    "speculation": "none",
+    "in_request_distinct_sample_min": 2,
+    "keeper_vram_floor_bytes": 67108864,
+    "request_tokens": 256
+  },
+  "paired_capture_preservation": {
+    "predecessor_plan_sha256": "21d6f8f792480208a83dc48694592ee1910600737ad6793e986ed376bd711324",
+    "full_recipe_exactly_equal": true,
+    "full_recipe_sha256": "9ca91311798f9c64ce20073fe4a227468a6e7eb269b6cb0793a289e855c71de4",
+    "four_full_request_bytes_and_pins_exactly_equal": true,
+    "full_request_sha256": {
+      "architect-general-hip-json": "5a15ceefd8b37d3f6c8f9b70ace27551abb9f82a371f36525e57597ea213d1b2",
+      "architect-general-hip-code": "b173e985d3d1b30ffcbbb1644a6a4162c7636b3e351026857c0d84232a6d01a7",
+      "architect-general-hip-reasoning": "f44c1ab1d97aa0a6bf7d1157aa31b562887e88d6550084e890efb2e0dba2e997",
+      "architect-general-hip-prose": "1c5a50da19c729a13696178ab702104faa78778dd11dc9a388faf5a1f6cb1616"
+    },
+    "production_and_candidate_runtime_pins_exactly_equal": true,
+    "large_model_shard_and_template_pins_exactly_equal": true,
+    "template_launch_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-20261118/chat-template.jinja"
+  },
+  "checks": [
+    "Source and predecessor manifest digests",
+    "Capture input preflight",
+    "Rowflow publisher preflight and launcher parsing",
+    "Python and Bash syntax",
+    "Full paired recipe, runtime, model, template and request equality",
+    "Synthetic predicate accepts valid structure and rejects sub-floor VRAM, wrong PID/device, out-of-window sampling and missing library maps"
+  ],
+  "source_manifest_sha256": "2a48757a00507548555a5c39edc752ad87817baaf23970e1da3f37232cf21682",
+  "files_sha256": {
+    "capture.py": "2c178b47d169c7cec0d94e71502aade96a991c484a2a66ea159a8ac26778daf4",
+    "make_plan.py": "8efb56645ea9c1969fa2a50820ffb2ef1844bc8c5b7e7e8a5706b5431f5c898f",
+    "plan.json": "51ca3cdd63fea358a53449151f1174751ac857431663f7745791cd0f317b0e23",
+    "base-plan.json": "21d6f8f792480208a83dc48694592ee1910600737ad6793e986ed376bd711324",
+    "row.spec.json": "4fecb965212551c936c6250feef8d75766211aea5a563b2fc887d19bd68e4591",
+    "row-launch.sh": "1d5c2333a681cb1c37931e9cee5de2cc3371c33abf6eac165187c8d8f25f385c",
+    "smoke_predicate.py": "e15f2b5a0a761e7c641059c2578cf7d0c565ec3d5fa842d3708b4d47d27ecf4b",
+    "chat-template.jinja": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+    "model-hash-receipt.json": "f07d999ec84134b63bc4d836a9ed038f7f046534589834c4dd5ef3e386d89163",
+    "profile-source.json": "727af10bf7602c5b56b230657e6f133aeba6090fba4ada739bd7956cabc9665c",
+    "smoke-model-plan.original-bytes.json": "94afd3e5ea7f90dd3aa8188bf0713b361ee51ff668cb56f2694051bceae36fbc",
+    "frontdoor-full-receipt.json": "c8bc87219807adb536f15f6ece55b97b3c6d2b55d2b8f3becfd45c4f23c8638c",
+    "requests/architect-general-hip-code.json": "b173e985d3d1b30ffcbbb1644a6a4162c7636b3e351026857c0d84232a6d01a7",
+    "requests/architect-general-hip-json.json": "5a15ceefd8b37d3f6c8f9b70ace27551abb9f82a371f36525e57597ea213d1b2",
+    "requests/architect-general-hip-prose.json": "1c5a50da19c729a13696178ab702104faa78778dd11dc9a388faf5a1f6cb1616",
+    "requests/architect-general-hip-reasoning.json": "f44c1ab1d97aa0a6bf7d1157aa31b562887e88d6550084e890efb2e0dba2e997",
+    "requests/native-smoke.json": "1a05b2db197c7c179d5fae6e1b53fdba31987d8ba7d57f07830b88389f927e99"
+  },
+  "inference_run": false,
+  "readiness_passed": false,
+  "native_capture_complete": false,
+  "broad_pack_status": "incomplete",
+  "prior_frontdoor_json_mismatch": true,
+  "promotion_authorized": false,
+  "publication": {
+    "publisher_exit_code": 0,
+    "queue_marker": "/mnt/raid0/llm/tmp/compute-flags/dryrun/handoff-vidya-quality-pack-architect-general-hip-smoke-20261118/GPU-SMOKE-QUEUED.json",
+    "queue_marker_sha256": "6c3e28f15bc2a82de12446590e436e8379d6860ab6d9f27f50bccde4622686ce",
+    "queued_at": "2026-11-18T01:24:45Z",
+    "observed_at": "2026-11-18T01:25:32+00:00",
+    "regions": "mi210_0,184-191",
+    "smoke_s": 120,
+    "ready_manifest_present": false,
+    "predecessor_queue_marker_present": true,
+    "publisher_warnings": [
+      "vidya-belief-substrate-program.md:134: untestable prose prerequisite: 'after all eight responses and cleanup; stop-on-futility on STOP, deadline or first identity/startup/response/residency/c'"
+    ]
+  }
+}

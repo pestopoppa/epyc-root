@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+opencode=/usr/local/share/npm-global/bin/opencode
+if [[ ${1:-} == export ]]; then
+  shift
+  set -- session export "$@"
+fi
+exec "$opencode" --standalone "$@"

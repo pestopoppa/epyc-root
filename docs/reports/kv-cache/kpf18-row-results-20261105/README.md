@@ -1,0 +1,7 @@
+# KPF-18 scoped row results (2026-11-05)
+
+Each subdirectory retains the published row, native result, and grant end. All six jobs ended rc 0. The cancellation ordering, smoke admission and output supervisor rows passed seven, seven and four synthetic controls respectively. These are model-free controls, not proof of native cancellation, actual GPU admission or a complete lifecycle.
+
+The model-free HIP child produced seven positive own-PID VRAM and KFD snapshots over 12.607 seconds with cleanup; this is neither continuous residency nor a model or inference result. The disabled full driver imported 20 modules and exposed its expected entry points; its main was not called.
+
+The prospective item-4 raw-logit diagnostic build returned a receipt for source `6ec877068936588b6d63dbba5842bbd540b92031` plus patch SHA-256 `5309fb07d49eda7ecfa373f5cb3dc51294c73eef931a4b7d03d083ef0dc5f2f1`, binary SHA-256 `f4d8b3a5cd9bcd537301e15966b4f8aace98f477cdd7c9bfc4b9b89ec2002650`, own linkage, four compiled knobs and listed DSO hashes. A copy of the build's `bin/` is retained at `/mnt/raid0/llm/tmp/kvu/kpf18-item4-retained-20261105/bin/`; its receipt records the original paths. This is a build result only, not historical-image equivalence, raw-logit runtime qualification, or an item-4 verdict. The build packet's repeated source-file hashing remains a known verify-inputs-once workflow defect, disclosed in the progress record.

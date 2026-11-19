@@ -1,0 +1,36 @@
+{
+  "assigned_code_count": 0,
+  "finished_at": "2026-11-18T17:04:29.114277+00:00",
+  "native_artifact_digests": {
+    "cli.log": "81be14e5cc39c5eb4842f953786cfb90756ab2e38df042d1e084dacaead673f8",
+    "diagnosis.json": "1b1d9afb5d86b2b690e9dfd41a7abbab28cb9ed7c24a95d03b09f2023ea49c68",
+    "request.json": "959ee1a6082c9bb3c6e19503df1c534ebb95ee0435ca3b81c6c666d8fffb3568",
+    "response.json": "0dc22710323f4ca36a21db27558058ce9cfc7ec07ad2f9cc1750585dc4806dc5"
+  },
+  "native_receipt_sha256": "5e6848d42bb8ad0c9b500aafd3d1adc190a839f666c23176705e7484ec8ff4fa",
+  "native_scope": "pilot",
+  "none_apply": true,
+  "rc": 0,
+  "results_match_unit": true,
+  "row": "vb-fm2-wire-20261118",
+  "runtime": {
+    "crosswalk_sha256": "de36ce47e779564cfd2544e765c3e4dcc598f12a67d6477d0d8f4b60666aaed6",
+    "filler": {
+      "FILLER_CPUS": "0-23",
+      "FILLER_DEADLINE": "1795022490",
+      "FILLER_END": "1795022580",
+      "FILLER_ID": "vb-fm2-wire-20261118",
+      "FILLER_THREADS": "24"
+    },
+    "grant_sha256": "5f79399f975125088c52569bc7d73b2f28114a2b1e34b9e518dca9813894a344",
+    "kernel_version": "10303 (ffc1bac82)",
+    "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+    "packet_sha256": "a2aa77d5fad9a442a38e90dd6bb2b9cf49ab67ebee76cd1793373548ab862739",
+    "taxonomy_sha256": "3908377c9d34d810fa4ad646b5673e791ebabc1b0d8b7979e1f713b69021cb44"
+  },
+  "schema": "epyc.fm2.native-filing-summary.v1",
+  "scope": "One original frozen trace, one judge; descriptive assignment only. No prevalence, accuracy, faithfulness, crosswalk validation or causal fan-out claim.",
+  "started_at": "2026-11-18T17:01:23.913282+00:00",
+  "status": "valid",
+  "unit_id": "claude-e950eb03f48fcba8"
+}

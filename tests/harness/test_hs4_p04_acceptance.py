@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import os
 import subprocess
@@ -150,9 +151,9 @@ def _timings(rid, ts, prompt, completion, keys=OURS, source="server_terminal"):
 STEP_PROMPTS = (100 + 20, 30 + 120, 10 + 150)
 
 
-def _simulate_run(tmp_path, fixed=True, session_steps=None):
+def _simulate_run(tmp_path, fixed=True, session_steps=None, prepare_extra=()):
     out = tmp_path / "p04"
-    assert m.main(["prepare", "--out", str(out)]) == 0
+    assert m.main(["prepare", "--out", str(out), *prepare_extra]) == 0
     repo, evid = out / "repo", out / "evidence"
     if fixed:
         calc = repo / "calc.py"
@@ -179,6 +180,273 @@ def _verify(evid, tap, *extra):
     rc = m.main(["verify", "--evidence", str(evid), "--user-id", USER,
                  "--tap-events", str(tap), *extra])
     return rc, json.loads((evid / "verdict.json").read_text())
+
+
+def _catalog_inputs(tmp_path, arm='candidate', trial=1):
+    snapshots = {}
+    catalogs = {}
+    for name in ('baseline', 'candidate'):
+        snapshots[name] = tmp_path / f'{name}-catalog.json'
+        snapshots[name].write_text(json.dumps({'tools': ['read', name]}))
+        catalogs[name] = hashlib.sha256(snapshots[name].read_bytes()).hexdigest()
+    manifest = {
+        'identity': {'model': 'frontdoor', 'server': '10125 (0db32c06)',
+                     'plugin': m.plugin_sha256(), 'base_catalog': catalogs['baseline']},
+        'catalogs': catalogs,
+        'tasks': [{'id': 'calc-add-fix', 'fixture': m.task_suite_fingerprint(),
+                   'previously_passing': True}],
+    }
+    path = tmp_path / 'catalog-manifest.json'
+    path.write_text(json.dumps(manifest))
+    return ['--catalog-manifest', str(path), '--catalog-arm', arm,
+            '--catalog-trial', str(trial), '--catalog-snapshot', str(snapshots[arm])]
+
+
+def _launch_inputs(tmp_path):
+    options = _catalog_inputs(tmp_path)
+    source = tmp_path / 'row-owned server.py'
+    source.write_text('raise RuntimeError("must never execute during preparation")\n')
+    spec = {'command': [sys.executable, str(source)], 'cwd': str(tmp_path),
+            'files': {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in (Path(sys.executable), source)}}
+    path = tmp_path / 'launch.json'
+    path.write_text(json.dumps(spec))
+    manifest_path = tmp_path / 'catalog-manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['mcp_launch_specs'] = {'candidate': hashlib.sha256(path.read_bytes()).hexdigest()}
+    manifest_path.write_text(json.dumps(manifest))
+    return [*options, '--enable-mcp', '--mcp-launch-spec', str(path)], path, source
+
+
+def test_row_owned_mcp_launch_preserves_shell_and_passes_existing_linter(tmp_path):
+    options, path, _ = _launch_inputs(tmp_path)
+    out = tmp_path / 'p04'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    spec = json.loads(path.read_text())
+    evid = out / 'evidence'
+    config = (evid / 'opencode.jsonc').read_text()
+    # Replacing only these two fields recovers the existing MCP-enabled template.
+    restored = config.replace(json.dumps(spec['command']),
+                              '["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"]')
+    restored = restored.replace(f'"cwd": {json.dumps(spec["cwd"])}',
+                                '"cwd": "{env:EPYC_ORCHESTRATOR_REPO}"')
+    assert restored == m.render_config(m.TEMPLATE.read_text(), True)
+    lint = subprocess.run(['node', str(m.PLUGIN_DIR / 'scripts/lint-config.ts'),
+                           str(evid / 'opencode.jsonc'), str(m.ENV_FILE)], capture_output=True)
+    assert lint.returncode == 0, lint.stderr.decode()
+    assert m.main(['check-catalog', '--evidence', str(evid), '--model-role', 'frontdoor',
+                   '--build-info', '10125 (0db32c06)']) == 0
+
+
+@pytest.mark.parametrize('drift', [False, True])
+def test_row_launch_pins_also_gate_native_finalization(tmp_path, drift):
+    options, _, source = _launch_inputs(tmp_path)
+    _, evid, tap = _simulate_run(tmp_path, prepare_extra=options)
+    if drift:
+        source.write_text('changed after exposure')
+    rc = m.main(['verify', '--evidence', str(evid), '--user-id', USER,
+                 '--tap-events', str(tap), *IDENTITY])
+    assert rc == (2 if drift else 0)
+    assert (evid / 'catalog-record.json').exists() is not drift
+
+
+@pytest.mark.parametrize('target', ['spec', 'source', 'executable', 'cwd'])
+def test_row_owned_launch_drift_refused_before_exposure(tmp_path, target):
+    options, path, source = _launch_inputs(tmp_path)
+    # Use an owned executable so the negative control never modifies Python.
+    executable = tmp_path / 'python'
+    executable.write_bytes(b'#!/bin/bash\nexit 99\n')
+    executable.chmod(0o755)
+    spec = json.loads(path.read_text())
+    spec['files'].pop(spec['command'][0])
+    spec['command'][0] = str(executable)
+    spec['files'][str(executable)] = hashlib.sha256(executable.read_bytes()).hexdigest()
+    cwd = tmp_path / 'server-root'
+    cwd.mkdir()
+    spec['cwd'] = str(cwd)
+    path.write_text(json.dumps(spec))
+    manifest_path = tmp_path / 'catalog-manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['mcp_launch_specs']['candidate'] = hashlib.sha256(path.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    out = tmp_path / 'p04'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    if target == 'cwd':
+        cwd.rmdir()
+    else:
+        {'spec': path, 'source': source, 'executable': executable}[target].write_text('changed')
+    assert m.main(['check-catalog', '--evidence', str(out / 'evidence'),
+                   '--model-role', 'frontdoor', '--build-info', '10125 (0db32c06)']) == 2
+    assert not (out / 'evidence/window-start.txt').exists()
+
+
+@pytest.mark.parametrize('defect', ['disabled', 'unbound', 'unpinned', 'manifest',
+                                   'relative', 'shell', 'environment', 'file-expansion',
+                                   'stale', 'extra'])
+def test_invalid_row_launch_refused_without_workspace(tmp_path, defect):
+    options, path, source = _launch_inputs(tmp_path)
+    spec = json.loads(path.read_text())
+    if defect == 'disabled':
+        options.remove('--enable-mcp')
+    elif defect == 'unbound':
+        options = ['--enable-mcp', '--mcp-launch-spec', str(path)]
+    elif defect == 'unpinned':
+        spec['files'] = {}
+    elif defect == 'manifest':
+        pass  # Keep the launch valid but change its original bytes after manifest pinning.
+    elif defect == 'relative':
+        spec['cwd'] = '.'
+    elif defect == 'shell':
+        spec['command'] = 'python server.py'
+    elif defect == 'environment':
+        spec['command'].append('{env:UNPINNED}')
+    elif defect == 'file-expansion':
+        spec['command'].append('{file:UNPINNED}')
+    elif defect == 'stale':
+        source.write_text('changed')
+    elif defect == 'extra':
+        spec['environment'] = {'UNPINNED': 'value'}
+    path.write_text(json.dumps(spec) + '\n')
+    out = tmp_path / 'p04'
+    with pytest.raises((ValueError, OSError)):
+        m.main(['prepare', '--out', str(out), *options])
+    assert not out.exists()
+
+
+def test_catalog_records_pair_directly_with_comparator(tmp_path):
+    spec = importlib.util.spec_from_file_location('p6_gate', SCRIPT.with_name('hs4_p6_catalog_gate.py'))
+    gate = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gate)
+    records = []
+    manifest = None
+    for arm in ('baseline', 'candidate'):
+        for trial in (1, 2):
+            case = tmp_path / f'{arm}-{trial}'
+            case.mkdir()
+            options = _catalog_inputs(case, arm, trial)
+            manifest = json.loads(Path(options[1]).read_text())
+            _, evid, tap = _simulate_run(case, prepare_extra=options)
+            rc, verdict = _verify(evid, tap, *IDENTITY)
+            assert rc == 0, verdict
+            record = json.loads((evid / 'catalog-record.json').read_text())
+            assert record['trial'] == trial and record['arm'] == arm
+            assert record['tokens'] == sum(STEP_PROMPTS) + 15
+            assert record['outcome'] == 'pass'
+            records.append(record)
+            run = json.loads((evid / 'opencode_shell_run.json').read_text())
+            attempt = json.loads((evid / 'attempts.jsonl').read_text())
+            assert run['arm_role'] == arm.upper()
+            assert attempt['catalog_comparison']['trial'] == trial
+    result = gate.compare(manifest, records)
+    assert result['verdict'] == 'pass'
+    assert result['tasks'][0]['candidate_to_baseline_token_ratio'] == 1
+
+
+@pytest.mark.parametrize('fixed,missing_tap,outcome',
+                         [(False, False, 'fail'), (True, True, 'infra_error')])
+def test_catalog_failure_keeps_infrastructure_unknown(tmp_path, fixed, missing_tap, outcome):
+    options = _catalog_inputs(tmp_path)
+    _, evid, tap = _simulate_run(tmp_path, fixed=fixed, prepare_extra=options)
+    if missing_tap:
+        tap.unlink()
+    rc, _ = _verify(evid, tap, *IDENTITY)
+    assert rc == 1
+    record = json.loads((evid / 'catalog-record.json').read_text())
+    assert record['outcome'] == outcome
+    assert (record['tokens'] is None) == missing_tap
+
+
+@pytest.mark.parametrize('target', ['opencode.jsonc', 'prompt.txt', 'catalog-binding.json',
+                                  'catalog-manifest.json', 'candidate-catalog.json'])
+def test_catalog_input_drift_refused_before_inference(tmp_path, target):
+    options = _catalog_inputs(tmp_path)
+    out = tmp_path / 'fresh'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    evid = out / 'evidence'
+    target_path = evid / target if (evid / target).exists() else tmp_path / target
+    target_path.write_text(target_path.read_text() + '\nchanged')
+    assert m.main(['check-catalog', '--evidence', str(evid), '--model-role', 'frontdoor',
+                   '--build-info', '10125 (0db32c06)']) == 2
+    assert not (evid / 'window-start.txt').exists()
+
+
+def test_catalog_binding_rejects_serving_drift_and_trial_reuse(tmp_path):
+    options = _catalog_inputs(tmp_path)
+    out = tmp_path / 'fresh'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    evid = out / 'evidence'
+    command = ['check-catalog', '--evidence', str(evid), '--model-role', 'frontdoor',
+               '--build-info', '10125 (0db32c06)']
+    assert m.main(command) == 0
+    assert m.main([*command, '--model-role', 'wrong']) == 2
+    assert m.main([*command, '--build-info', 'wrong']) == 2
+    (evid / 'window-start.txt').write_text('1')
+    assert m.main(command) == 2
+
+
+def test_catalog_finalization_cannot_overwrite_trial(tmp_path):
+    options = _catalog_inputs(tmp_path)
+    _, evid, tap = _simulate_run(tmp_path, prepare_extra=options)
+    assert _verify(evid, tap, *IDENTITY)[0] == 0
+    original = (evid / 'catalog-record.json').read_bytes()
+    assert _verify(evid, tap, *IDENTITY)[0] == 2
+    assert (evid / 'catalog-record.json').read_bytes() == original
+
+
+def test_catalog_missing_usage_cannot_become_zero_cost(tmp_path):
+    options = _catalog_inputs(tmp_path)
+    # The legacy A5 check cannot distinguish omitted zero output from explicit zero.
+    steps = [_step(100, 0, 20), _step(30, 120), _step(10, 150)]
+    for step in steps:
+        del step['tokens']['output']
+    _, evid, tap = _simulate_run(tmp_path, session_steps=steps, prepare_extra=options)
+    rows = [json.loads(line) for line in tap.read_text().splitlines()]
+    for row in rows:
+        if row['event'] == 'timings':
+            row['tokens'] = 0
+    tap.write_text(''.join(json.dumps(row) + '\n' for row in rows))
+    rc, verdict = _verify(evid, tap, *IDENTITY)
+    assert rc == 1
+    assert _by(verdict['checks'], 'A5-session-tokens-match-tap')['ok']
+    record = json.loads((evid / 'catalog-record.json').read_text())
+    assert record['outcome'] == 'infra_error' and record['tokens'] is None
+
+
+def test_catalog_plugin_drift_refused(tmp_path, monkeypatch):
+    options = _catalog_inputs(tmp_path)
+    out = tmp_path / 'fresh'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    monkeypatch.setattr(m, 'plugin_sha256', lambda: 'changed')
+    assert m.main(['check-catalog', '--evidence', str(out / 'evidence'),
+                   '--model-role', 'frontdoor', '--build-info', '10125 (0db32c06)']) == 2
+
+
+def test_catalog_binding_cannot_be_added_during_verification(tmp_path):
+    _, evid, tap = _simulate_run(tmp_path)
+    (evid / 'catalog-binding.json').write_text('{}')
+    assert m.main(['verify', '--evidence', str(evid), '--user-id', USER,
+                   '--tap-events', str(tap), *IDENTITY]) == 2
+    assert not (evid / 'catalog-record.json').exists()
+
+
+@pytest.mark.parametrize('field', ['plugin', 'base_catalog', 'fixture', 'snapshot', 'partial'])
+def test_prepare_refuses_invalid_catalog_pins_without_creating_workspace(tmp_path, field):
+    options = _catalog_inputs(tmp_path)
+    path = Path(options[1])
+    manifest = json.loads(path.read_text())
+    if field in ('plugin', 'base_catalog'):
+        manifest['identity'][field] = 'wrong'
+    elif field == 'fixture':
+        manifest['tasks'][0]['fixture'] = 'wrong'
+    elif field == 'snapshot':
+        Path(options[-1]).write_text('changed')
+    else:
+        options = options[:2]
+    path.write_text(json.dumps(manifest))
+    out = tmp_path / 'invalid'
+    with pytest.raises(ValueError):
+        m.main(['prepare', '--out', str(out), *options])
+    assert not out.exists()
 
 
 def test_prepare_writes_a_runnable_script(tmp_path):

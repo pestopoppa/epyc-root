@@ -1,0 +1,70 @@
+{
+  "schema": "epyc.result-review.v1",
+  "rows": [
+    {
+      "id": "handoff-s4-omega-isolated-pilot-v2-20261102",
+      "handoff": "handoffs/active/harness-program.md",
+      "box": "S4-OMEGA-PILOT-V2 \u2014 run the isolated 16-item S4 Omega mixed-domain pilot (baseline vs Omega intervention arm) on a keeper-granted backend.",
+      "verdict": "FUTILITY; partial/refused capture",
+      "tick": "Eligible only after actual capture is filed as partial/refused and native self-hashed records are ingested through enrolled S4 Omega adapter; no completion/efficacy/liveness claim.",
+      "rc": 0,
+      "evidence_dir": "s4",
+      "capture": "capture.json",
+      "pairs": "driver/pairs.jsonl",
+      "counts": {
+        "denominator": 16,
+        "complete_pairs": 1,
+        "incomplete_pairs": 7,
+        "not_run_pairs": 8,
+        "native_records": 10,
+        "backend_correlations": 10,
+        "backend_match": 10,
+        "drained": true,
+        "tool_liveness": "NOT_MET"
+      },
+      "incomplete_reasons": "5 baseline repeated no-progress/comment-only failures, 2 baseline no coder_escalation backend",
+      "complete_pair": {
+        "question": "aime_2024-II-15",
+        "baseline": {
+          "turns": 3,
+          "prompt_tokens": 8405,
+          "legacy_tokens_generated": 1627,
+          "native_output_tokens": "missing",
+          "elapsed_s": 111.85572093608789,
+          "passed": false
+        },
+        "s4_omega": {
+          "turns": 1,
+          "prompt_tokens": 3246,
+          "legacy_tokens_generated": 369,
+          "native_output_tokens": "missing",
+          "elapsed_s": 31.835227099014446,
+          "passed": false
+        },
+        "pass_discordance": false
+      },
+      "native_output_missing": "output_tokens_reported absent in all 10 native records",
+      "follow_up": "Preserve and ingest all 7 manifests and 10 records with the enrolled S4 Omega adapter, verify capture source/model/kernel/suite/prompt pins and filing contract; investigate repeated no-progress and missing coder_escalation backend before a separately designed successor. Touch receipt only after filing. All seven native manifests report refused."
+    },
+    {
+      "id": "ufh14-b4a-window-8083-20261102",
+      "handoff": "handoffs/active/harness-program.md",
+      "box": "UFH14-B4k \u2014 measure the B4a baseline: one `missed_prefill_share` window of \u2265 200 calls on the :8083 shape (rowflow row `ufh14-b4a-window-8083-20261102`).",
+      "verdict": "INCOMPLETE; do not tick B4k or B4a",
+      "rc": 75,
+      "evidence_dir": "/mnt/raid0/llm/tmp/ufh14-b4a-window-20261102/out/runs/20261102T212621Z",
+      "counts": {
+        "dispatched_report_calls": 140,
+        "ok_calls": 4,
+        "fp_coverage": 1.0,
+        "missed_prefill_share": 0.0252,
+        "hit_tok": 0.9278,
+        "cold_large_share": 0.2923,
+        "concurrent_dupes": 6,
+        "eviction_lines": 0
+      },
+      "qualification": "All reported metrics descriptive only; <200 dispatched calls, no valid baseline or cache-ram decision; synthetic agentic replica not organic traffic. Of 140 calls: two warm and two turn successes; 136 turn calls have ok=false. SUMMARY and REPORT contain no error details.",
+      "follow_up": "Investigate why backend returns unsuccessful results despite 140 serving records; repair workload, predeclare and republish a rerun with enough window for >=200 qualifying calls and prefix coverage >=0.95. File incomplete outcome and receipt."
+    }
+  ]
+}

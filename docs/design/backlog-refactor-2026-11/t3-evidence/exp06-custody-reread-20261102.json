@@ -1,0 +1,79 @@
+{
+ "candidate_no_observed_start": {
+  "any_has_start_region_or_finish_record": false,
+  "any_in_scope_unknown_shard": false,
+  "every_candidate_shard_has_5_pages": true,
+  "n": 65,
+  "n_shards": 13,
+  "shard_dirs_absent_in_surviving_phasec_root": {
+   "101": true,
+   "102": true,
+   "122": true,
+   "123": true,
+   "124": true,
+   "137": true,
+   "138": true,
+   "139": true,
+   "146": true,
+   "147": true,
+   "148": true,
+   "149": true,
+   "150": true
+  },
+  "shards": [
+   101,
+   102,
+   122,
+   123,
+   124,
+   137,
+   138,
+   139,
+   146,
+   147,
+   148,
+   149,
+   150
+  ]
+ },
+ "captures_total": 2108,
+ "captures_without_verified_complete_result": 2108,
+ "dispositions": {
+  "CANDIDATE_NO_OBSERVED_START": 65,
+  "PROTECTED_SCOPE_UNKNOWN": 690
+ },
+ "fresh_inventory_feasible_here": {
+  "attempt_roots_present_now": {
+   "false": 15,
+   "true": 12
+  },
+  "campaign_roots_present_now": 1,
+  "campaign_roots_total": 7,
+  "capture_files_absent_now": 1581,
+  "capture_files_present_now": 527,
+  "capture_files_total": 2108,
+  "roots": {
+   "/mnt/micron/codex3-pip-head-r26-20261030/campaigns-fresh": false,
+   "/mnt/micron/codex3-pip-pool0-merged-r35-20261031/campaigns-fresh": false,
+   "/mnt/micron/codex3-pip-pool1-r32-20261031/campaigns-fresh": false,
+   "/mnt/micron/codex3-pip-pool2-r30-v2-20261031/campaigns-fresh": false,
+   "/mnt/micron/codex3-pip-pool3-tail-r31-20261031/campaigns-fresh": false,
+   "/mnt/micron/codex3-pip-split-r22-20261030/campaigns-fresh": false,
+   "/mnt/raid0/llm/tmp/codex3-pip02-phasec-20261029/campaigns-fresh": true
+  },
+  "verdict": "NOT REPRODUCIBLE in this namespace: inventory_all.py refuses when any declared campaign root is inaccessible (6 of 7 roots, under /mnt/micron, are absent) \u2014 the snapshot is therefore the last readable record, and the box clause \"refresh the inventory\" cannot be met by replay (absence may be a mount/namespace difference, not asserted to be deletion)"
+ },
+ "no_evidence_pages_total": 151,
+ "pages": 755,
+ "plan_sha256_matches_declared": true,
+ "schema": "brf-t3/exp06-custody-reread/1",
+ "scope_unknown_shards": 138,
+ "snapshot": "/mnt/raid0/llm/tmp/codex3-pip-exposure-recheck-20261101/all-shards-inventory-v8.json",
+ "snapshot_sha256": "329575a52b3f502e178c6853eea45c7b66f563015821399223b5a9ef7a9e3c86",
+ "snapshot_warning": "Snapshot only: candidates have no observed start, not established eligibility; custody, repeat inventory, rate evidence, and keeper qualification remain required.",
+ "terminal_reasons": {
+  "result missing": 13,
+  "unbound_or_incomplete_result": 2095
+ },
+ "unique_page_indices": 755
+}

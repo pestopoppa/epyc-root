@@ -1,0 +1,26 @@
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 479878a81..27f7340e6 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1736,7 +1736,20 @@ server_mode:
+       #    unmeasured. Margins against the 62.00 GiB gate: PACKAGE section 4.
+       # (was, -ub 2048, DERIVED + load-confirmed) vram_non_kv_gib: 39.15
+       # (was, DFlash2 d8 @196608, MEASURED pid 3737649) vram_non_kv_gib: 37.92
+-      vram_non_kv_gib: 38.03
++      # KVU-16a r3, 2026-11-04: max of TWO post-health own-PID samples minus
++      # logged target KV. SAMPLE MAXIMUM ONLY; startup/whole-load coverage unqualified.
++      # No runtime/lifetime peak or safety-envelope warrant; runtime headroom unchanged.
++      vram_non_kv_gib: 35.06255340576172
++      vram_non_kv_measurement:
++        statistic: sampled_post_health_maximum_minus_target_kv
++        own_vram_bytes: 51338338304
++        target_kv_bytes: 13690208256
++        non_kv_bytes: 37648130048
++        sample_count: 2
++        peak_claim: false
++        whole_load_coverage_qualified: false
++        evidence: evidence/kv-cache/kvu16a-shape-load-r3-20261104/result.json
++        evidence_sha256: 0330c5682d316ceeac7c39afb27f2946cf23c2fc9fe410faad1a9edcfe479e11
+       vram_non_kv_drafter: dflash2
+       vram_non_kv_ubatch: 512
+       # (was, MTP d4, live-confirmed 2026-10-03) vram_non_kv_gib: 32.80

@@ -1,0 +1,7 @@
+rc=1 time=2026-11-05T03:22:25Z reason=job-rc-1:exited
+job_id=kpf131-native-binding-impact-a1f0-r2-20261105
+owner=h-heterogeneous-slot-fabric-residency
+step=job-run
+estimated_wall_s=7200
+started=2026-11-05T02:54:39Z
+regions=0-95

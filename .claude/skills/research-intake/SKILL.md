@@ -22,8 +22,8 @@ Do not use when:
 ## Execution model — fan out by stage (token efficiency, binding)
 
 The session running this skill is the INTEGRATOR. It does not fetch or dive sources itself. It
-dispatches 3–5 concurrent subagents per batch, each on the cheapest capable model with effort set
-explicitly, per [Parallel Subagent Fan-Out](../../../agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
+dispatches subagents per batch (width is a ceiling, not a floor), each on the cheapest capable model with the lowest adequate
+effort set explicitly, per [Parallel Subagent Fan-Out](../../../agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main)
 and `agents/README.md` → Model Routing:
 
 | Work | Model / effort |
@@ -209,6 +209,14 @@ For each URL:
    - **Not every paper has an HTML rendering** (older papers, and submissions whose LaTeX fails to
      convert). Fall through to ar5iv, then the abs page, then the PDF. Record which route was used in
      `source_revision`, because it bounds what a later reader may trust.
+   - **A PDF-only paper cannot be `dive-verified` today.** `machine_anchor._extract_text` accepts text
+     media only, so a PDF snapshot gets no `anchor_mark`. Without a mark, the anchor gate fails any
+     entry ingested on or after 2026-11-08. File the entry as `stage1-unverified` with
+     `read_depth: PARTIAL`, add a note saying the PDF quotes were checked by hand, and keep its numbers
+     out of plans. Anchor HTML companions (blogs, project pages) normally. For HTML anchors, store the raw
+     source with `raw_anchor_store.store_raw_bytes` under a root owned by the current user with mode 700
+     (`/mnt/raid0/llm/state/vidya/raw-anchors` since 2026-11-17). Set `source_revision` to exactly the
+     artifact's `effective_url`: any suffix makes the check report `source_unavailable`. (intake-2669#record)
 
 5. **Extract**: title, authors, 3–5 key claims, named techniques, reported results, referenced arXiv IDs.
 
@@ -411,6 +419,12 @@ Begins only when the operator names the intakes. Never self-trigger.
   write a metric you have not read out of a run's own output**, and **truncated output is not
   evidence of absence**. (orx-evidence pattern, intake-883#record; the intake-side expression of the
   belief-kernel write-side rule.)
+- **Pin `lane_head` and run `dive_preflight.py` first.** Main runs
+  `python3 .claude/skills/research-intake/scripts/dive_preflight.py --root <lane worktree> --fetch`
+  before dispatch; it refuses (exit 1) if the root is the shared clone or HEAD is behind origin/main.
+  The brief requires the returned YAML to carry `lane_head: <full SHA of the lane worktree>`, and every
+  in-house `claim_anchors` locator to read `path:Lx-Ly @ <sha7>`. A brief without `lane_head` is
+  malformed. (ID-RI-LANE-HEAD; stale `d372c953` reads, 2026-09-14.)
 - **Per-claim second reader.** A different agent re-checks each claim_anchor (mechanical quote
   re-find, SC76) and answers one bounded question per claim: does this quote support this key_claim
   — yes/no/partial. Disagreements go to the operator in the Stage-3 plan; they never auto-overturn.
@@ -424,6 +438,14 @@ Begins only when the operator names the intakes. Never self-trigger.
 
 - Promote `verification: stage1-unverified` → `dive-verified` (or `dive-overturned`).
 - **Record a `claim_anchors` entry for every claim the dive will let a plan or handoff cite — REQUIRED (not optional) for every `dive-verified` entry.** `locator` format: `p.N §X Table N` / `Eq. N` / `path/file.py:L10-L25 @ <sha7>`.
+  **`anchor_mark` is written by the script only.** Never author or edit an `anchor_mark`: after the
+  anchors are recorded, main runs `validate_intake.py --check-anchors --write-marks`, which re-finds each
+  `quote` in the retained source (write the fetched source into `EPYC_VIDYA_RAW_ANCHOR_ROOT` so it can),
+  recomputes `quote_sha256` and records `anchor_mark: {verifier, source_raw_sha256, found}`. A
+  `dive-verified` entry ingested on/after 2026-11-08 without a passing mark fails validation; earlier
+  entries are grandfathered. A `quote_sha256` shared by two entries is flagged as a cross-paste.
+  Passing proves containment, not entailment; the per-claim second reader still applies.
+  (ID-RI-ANCHOR-GATE.)
   You have the passage open; nobody downstream will. Capture `claim_index`, a `locator` (page,
   section, heading path, or line range), the `quote` verbatim, its `quote_sha256`, and the
   `source_revision` you read — schema and worked example in
@@ -573,6 +595,9 @@ EPYC context:
 5. Apply the six-control minimum-rigor floor to immediate empirical experiments or replays. For
    deterministic infrastructure, explain inapplicable controls and name replacement conformance
    and provenance checks.
+6. Draft every measurement task with a sufficiency block: question/decision, expected effect versus
+   sample-size error, checkpoints, stop-on-answer and stop-on-futility rules, evidence reused first
+   (`docs/guides/agent-workflows/measurement-sufficiency.md`; formal-gate cells are futility-only).
 6. Choose the execution posture after this review. For `monitor`, `knowledge-only` and `decline`, explicitly
    explain why no useful immediate operational step remains, citing current implementation and
    execution conditions. Nondeployment, absence of full reproduction, or a HIGH/CRITICAL graph
@@ -851,7 +876,9 @@ disposition **and a dive-surfaced sources list**; the consolidated dive-surfaced
 operator with a per-item recommendation; every selected item dived in a Stage-2b pass and
 persisted `dive-verified`/`dive-overturned`, every declined item named in `dive_corrections`;
 verification fields promoted; fabrications corrected in-index immediately; `git status handoffs/`
-still clean.
+still clean; **`validate_intake.py --check-anchors` exit 0 (marks written by the script) and
+`--check-lane-anchors` exit 0 or every `stale_epoch` re-read; `dive_preflight.py` passed before dispatch
+and each dive returned `lane_head`**.
 
 **Stage 3** — Stage-2 close-out gate closed before entry; presented via plan mode; every coverage,
 verification, context/opportunity, consumer-mapping, minimum-rigor, trigger, ordering and

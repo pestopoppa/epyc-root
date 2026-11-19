@@ -1,0 +1,33 @@
+
+==== dry run 2026-11-18T18:14:17Z regions=140-143 launcher_sha=1d6674a396b828c0c5f1a4cf1c18512f606202857c26c579b102fb551903c570 units_before=0
+2026-11-18T18:14:17Z [vb-tb-semantics-native-planner-20261118] launcher up pid=824655 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T18:14:17Z [vb-tb-semantics-native-planner-20261118] START regions=140-143 cpus=140-143 threads=4 gpu=0 end=2026-11-18T18:30Z
+2026-11-18T18:14:17Z [vb-tb-semantics-native-planner-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+CalledProcessError: Command '['/usr/bin/python3', '-I', '-B', '-m', 'unittest', 'discover', '-s', '/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/reader/scripts/experiments/thinking-budget-semantics', '-p', 'test_protocol.py', '-v']' returned non-zero exit status 1.
+job rc=75
+==== engine START at +5s; first-progress timer (120 s) starts now
+2026-11-18T18:14:22Z [vb-tb-semantics-native-planner-20261118] ended rc=75 reason=exited (grant deleted)
+2026-11-18T18:14:22Z [vb-tb-semantics-native-planner-20261118] one window done; exiting (no --repeat)
+==== dry run FAIL: no first progress within 120 s: job ended rc=75 time=2026-11-18T18:14:22Z reason=exited after 10s; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/native-attempts/attempt-0u10vylq/native-result.json (json): no new real record; fix: make the job write its first measured record to /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/native-attempts/attempt-0u10vylq/native-result.json within first_progress_s=120 (a numeric field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or unit_key in the spec, then re-run publish_row.py <spec.json> (2026-11-18T18:14:27Z)
+
+==== dry run 2026-11-18T18:17:07Z regions=140-143 launcher_sha=45f9948421a6c002bd2081a892e458638e91049e347ca75936a99def6f0fddeb units_before=0
+2026-11-18T18:17:07Z [vb-tb-semantics-native-planner-20261118] launcher up pid=942570 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T18:17:07Z [vb-tb-semantics-native-planner-20261118] START regions=140-143 cpus=140-143 threads=4 gpu=0 end=2026-11-18T18:33Z
+2026-11-18T18:17:07Z [vb-tb-semantics-native-planner-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+ModuleNotFoundError: No module named 'autokernel'
+job rc=75
+==== engine START at +5s; first-progress timer (120 s) starts now
+2026-11-18T18:17:12Z [vb-tb-semantics-native-planner-20261118] ended rc=75 reason=exited (grant deleted)
+2026-11-18T18:17:12Z [vb-tb-semantics-native-planner-20261118] one window done; exiting (no --repeat)
+==== dry run FAIL: no first progress within 120 s: job ended rc=75 time=2026-11-18T18:17:12Z reason=exited after 10s; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/native-attempts/attempt-oyuoo46_/native-result.json (json): no new real record; fix: make the job write its first measured record to /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/native-attempts/attempt-oyuoo46_/native-result.json within first_progress_s=120 (a numeric field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or unit_key in the spec, then re-run publish_row.py <spec.json> (2026-11-18T18:17:17Z)
+
+==== dry run 2026-11-18T18:19:14Z regions=140-143 launcher_sha=7f7b5ba404cf75eb536986b99ccbcb436946ea529a1dd28ae893d4f22ecf3331 units_before=0
+2026-11-18T18:19:14Z [vb-tb-semantics-native-planner-20261118] launcher up pid=1034080 class=cpu poll=5s grants=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/grants stop=/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/stop minwin=120s ports=none dryrun=1
+2026-11-18T18:19:14Z [vb-tb-semantics-native-planner-20261118] START regions=140-143 cpus=140-143 threads=4 gpu=0 end=2026-11-18T18:35Z
+2026-11-18T18:19:14Z [vb-tb-semantics-native-planner-20261118] GPU-FENCE on: grant holds no GPU token (/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/state/gpu_fence-c58f0dee6a21.so)
+FileNotFoundError: [Errno 2] No such file or directory: '/mnt/raid0/llm/tmp/vidya-belief-substrate/tb-semantics-current/publisher-smoke-47k2iohj/exact/actor-replies/belief-receipts.jsonl'
+job rc=75
+==== engine START at +5s; first-progress timer (120 s) starts now
+2026-11-18T18:19:22Z [vb-tb-semantics-native-planner-20261118] ended rc=75 reason=exited (grant deleted)
+2026-11-18T18:19:22Z [vb-tb-semantics-native-planner-20261118] one window done; exiting (no --repeat)
+==== dry run FAIL: no first progress within 120 s: job ended rc=75 time=2026-11-18T18:19:22Z reason=exited after 10s; no unit in /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/native-attempts/attempt-roqatz21/native-result.json (json): no new real record; fix: make the job write its first measured record to /mnt/raid0/llm/tmp/compute-flags/dryrun/vb-tb-semantics-native-planner-20261118/native-attempts/attempt-roqatz21/native-result.json within first_progress_s=120 (a numeric field outside the bookkeeping keys, no qualification_only/measurement:false), or declare smoke_predicate or unit_key in the spec, then re-run publish_row.py <spec.json> (2026-11-18T18:19:24Z)

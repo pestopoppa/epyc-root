@@ -1,0 +1,7 @@
+rc=4 time=2026-11-18T05:10:08Z reason=job-rc-4:exited
+job_id=vidya-r231-eof-native-wire-20261118-r2
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T05:10:03Z
+regions=0,1,2,3,96,97,98,99

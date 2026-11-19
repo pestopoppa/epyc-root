@@ -146,6 +146,7 @@ def chat_body(content: str, **kw) -> dict:
 
 # --------------------------------------------------------------------------- phases
 def phase_a(base: str, sink: L.JsonlSink) -> dict:
+    raise RuntimeError("KVU-16h: phase A requires separate drafted and no-draft server lifecycles")
     prompts = json.loads(L.PROD_MIX.read_text())
     gt = ground_truth([p["id"] for p in prompts])
     arms = {"dflash2": {}, "nodraft": {"speculative.n_max": 0}}
@@ -226,6 +227,7 @@ def pair_a(rows: list[dict], texts: dict, ids: list[str]) -> dict:
 
 
 def phase_b(base: str, sink: L.JsonlSink, targets: list[int], gen: int, gen_nd: int, reps: int) -> dict:
+    raise RuntimeError("KVU-16h: phase B requires independently warmed drafted and no-draft servers")
     text = (PROBE_DIR / "contexts/C2/prompt.inline.txt").read_text() + "\n\n" + \
         (PROBE_DIR / "contexts/C4/prompt.inline.txt").read_text()
     full_tok = L.tokenize_count(base, text)
@@ -478,6 +480,8 @@ def main() -> int:
     ap.add_argument("--wait-idle-s", type=float, default=600)
     args = ap.parse_args()
     phases = {p.strip().upper() for p in args.phases.split(",") if p.strip()}
+    if phases & {"A", "B"}:
+        ap.error("KVU-16h: phases A/B require separate drafted and no-draft server lifecycles")
     targets = [int(t) for t in args.targets.split(",")]
 
     if args.dry_run:

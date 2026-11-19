@@ -1,0 +1,35 @@
+{
+  "id": "sr8-bep-heldout-exact-rounds-20261104",
+  "lineage": "sr8-bep-heldout-exact-rounds",
+  "owner": "handoff-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/sr8-heldout-v2/launch.sh",
+  "lane": "gpu",
+  "regions": "mi210_0,184-191",
+  "ports": [
+    18453
+  ],
+  "estimate_s": 7200,
+  "ram_gib": 48,
+  "result_path": "/mnt/raid0/llm/tmp/df2/sr8-heldout-v2/live/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Independent newly predeclared held-out SR-8 diagnostic; prior-exposed t2 excluded, five interleaved blocks t3/t4/t5/t3/t4, fresh server per request, canonical edit verifier and in-request GPU residency. Bind exact native response draft counters to one same-slot info log; derive verifier rounds only if exactly one positive integer is consistent with inclusive rounded-mean interval, zero/ambiguous/missing/mismatched counters UNKNOWN. Preserve raw logs, response, scope and all failures. Complete five paired blocks: report weighted accepted length and lookup/DFlash2 geometric mean decode speed; >=1.5 is candidate signal only with no noise-floor or route claim. Any incomplete/invalid cell stop-on-futility UNKNOWN, no adaptive extension.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:SR-8",
+  "priority_rank": 30,
+  "kind": "compute",
+  "smoke_timeout_s": 1200,
+  "dryrun_timeout_s": 1500,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/sr8-heldout-v2",
+  "keep": [
+    "live/**",
+    "smoke/**",
+    "*.json",
+    "*.sha256",
+    "*.py",
+    "*.sh",
+    "*.txt",
+    "*.md"
+  ],
+  "unit_key": "observation.decode_tps",
+  "first_progress_s": 1200
+}

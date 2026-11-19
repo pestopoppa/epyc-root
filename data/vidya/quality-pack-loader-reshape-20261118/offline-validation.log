@@ -1,0 +1,5 @@
+deterministic plan/spec, model stat and exact runtime receipt preflight: PASS
+pass: PASS
+semantic_refusal: PASS
+missing_loader_log: PASS
+http_failure: PASS

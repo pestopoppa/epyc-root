@@ -25,9 +25,11 @@ ALLOWS
   FAIL-OPEN on what cannot be parsed or resolved (unknown $VAR, unreadable file): the
   hygiene-tick backstop (guards-design section 2.8) covers those. A literal protected
   prefix followed by a variable (/mnt/raid0/llm/tmp/$X) IS refused.
-OVERRIDE
-  env EPYC_ALLOW_SCRATCH_DELETE="operator: <who> <date>: <reason>" (read from the HOOK's
-  environment, so a command cannot self-authorize by embedding the text).
+NO OVERRIDE
+  There is no environment or per-command override, and the refusal names none (LOOP-53,
+  operator decision B, 2026-11-02: the message advertised one that no tool call could set).
+  The only exceptions are the sanctioned tools above and the sha256-pinned scripts in
+  destructive_scratch_pins.json (operator approval per entry).
 TEST-ONLY KNOB
   EPYC_DESTRUCTIVE_SCRATCH_ROOTS=colon:separated:roots replaces the protected-root list so
   tests can use mktemp dirs. Never set it in production.
@@ -61,11 +63,9 @@ def _load_pins():
     except (OSError, ValueError, KeyError, TypeError):
         return {}
 PINNED_SCRIPTS = _load_pins()
-ACK_ENV = "EPYC_ALLOW_SCRATCH_DELETE"
-ACK_RE = re.compile(r"^operator: \S+ \S+: \S.*$")
 MAX_FILE = 2 * 1024 * 1024
 FIX = ("trash via scripts/safety/guarded_rm.sh <exact path> (OPERATING_CONSTRAINTS.md -> "
-       "Destructive operations), or set EPYC_ALLOW_SCRATCH_DELETE='operator: <who> <date>: <reason>'")
+       "Destructive operations)")
 
 PRIMITIVE = re.compile(
     r"\bshutil\.rmtree\b|\brmtree\s*\(|\bos\.(?:unlink|remove|rmdir|removedirs)\s*\("
@@ -306,16 +306,9 @@ def scan(cmd: str):
 
 
 def main() -> int:
-    ack = os.environ.get(ACK_ENV, "").strip()
     cmd = sys.stdin.read()
     if not cmd.strip():
         return 0
-    if ack:
-        if ACK_RE.match(ack):
-            print(f"note: {ACK_ENV} override recorded: {ack}", file=sys.stderr)
-            return 0
-        print(f"note: {ACK_ENV} set but not of the form 'operator: <who> <date>: <reason>'; ignored",
-              file=sys.stderr)
     reason = scan(cmd)
     if reason is None:
         return 0

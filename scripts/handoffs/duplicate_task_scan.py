@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """duplicate_task_scan.py — cross-file semantic duplicate-TASK detector.
 
-Owning handoff: handoffs/active/handoff-index-and-backlog-graph.md (RTG-46, open item:
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md (RTG-46, open item:
 "Cross-file duplicate-TASK detector (semantic, not exact-text)").
 
 WHY THIS EXISTS. Exact-text scanning is proven insufficient: `stale-open-audit-2026-07-18.md`

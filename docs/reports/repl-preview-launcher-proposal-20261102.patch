@@ -1,0 +1,51 @@
+--- a/scripts/benchmark/dripreview1_filler_job.sh
++++ b/scripts/benchmark/dripreview1_filler_job.sh
+@@ -13,20 +13,43 @@
+ MODEL="${MODEL:-/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf}"
+ PORT="${PORT:-9461}"
+ ROLE="${ROLE:-worker_general}"
+-OUT="${OUT:-/mnt/raid0/llm/tmp/dripreview1-out}"
++OUT="${OUT:-/mnt/raid0/llm/tmp/dripreview1-rerun-20261102-out}"
+ PY="${PY:-/workspace/repos/epyc-orchestrator/.venv/bin/python}"
+ N="${N:-30}"
+ : "${FILLER_CPUS:?}" "${FILLER_STOPFILE:?}" "${FILLER_DEADLINE:?}" "${FILLER_PIDFILE:?}"
+ THREADS="${FILLER_THREADS:-8}"
++# The original output is invalid and cannot be reused for this rerun.
++if [ "$(readlink -m -- "$OUT")" = /mnt/raid0/llm/tmp/dripreview1-out ]; then
++  echo "refusing old invalid output directory" >&2
++  exit 8
++fi
+ mkdir -p "$OUT"
++# A completed invalid or legacy result is not success; never restart into it.
++if [ -s "$OUT/result.json" ]; then
++  python3 -I - "$OUT/result.json" <<'PY_CHECK'
++import json, sys
++try:
++    with open(sys.argv[1], encoding="utf-8") as f:
++        result = json.load(f)
++    if not isinstance(result, dict):
++        raise ValueError("result is not an object")
++    if result.get("complete") is True:
++        sys.exit(0 if result.get("valid") is True else 8)
++except (OSError, ValueError, TypeError):
++    sys.exit(8)
++sys.exit(10)  # partial: resume through the driver
++PY_CHECK
++  status=$?
++  case "$status" in
++    0) echo "already complete and valid"; exit 0 ;;
++    10) ;;
++    *) echo "completed invalid, legacy, or unreadable result; use a fresh output directory" >&2; exit 8 ;;
++  esac
++fi
+ [ -e "$FILLER_STOPFILE" ] && {
+   echo "stop-file"
+   exit 0
+ }
+-[ -s "$OUT/result.json" ] && python3 -I -c "import json,sys; sys.exit(0 if json.load(open('$OUT/result.json')).get('complete') else 1)" && {
+-  echo "already complete"
+-  exit 0
+-}
+ [ "$(date -u +%s)" -ge "$FILLER_DEADLINE" ] && {
+   echo "deadline: nothing started"
+   exit 0

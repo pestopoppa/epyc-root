@@ -1,0 +1,23 @@
+{
+  "id": "kpf18-g3-later-slots-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS requires 12 synthetic real-socket controls dynamically reaching actual copied SeedControl task-binding query 2 and postcancel-idle query 3: normal, stalled headers/body, trickle, STOP during headers/body. Require exact per-query status, bounded call durations and joined peer/watchdog threads. Query-2 timeout is swallowed by retained SeedControl, then fixture terminal deadline must propagate; this is recorded, not a native lifecycle qualification. Stop on first failed/missing control, source drift, row STOP or deadline.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-G3-LATER-SLOTS-QUAL",
+  "priority_rank": 47,
+  "first_progress_s": 30,
+  "dryrun_timeout_s": 60,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105",
+  "keep": [
+    "**"
+  ],
+  "notes": "PREPARED ONLY; no test/smoke run. Later sites were structural-only in prior SLOTS qualifier; independent from published output-supervision row. Patched transport and dependencies copied byte-for-byte from durable prior r2 report. Synthetic peer runs in same process, own listener checked by actual pid_owns_port with synthetic proc wrapper; synthetic log does not establish native release/cancellation. No child processes or signals. No native candidate modification, READY publication, model, GPU, admission or full lifecycle claim. Actual grant STOP/deadline/end and SIGTERM/SIGINT are distinct from synthetic STOP controls; signal handlers set a flag, socket boundary checks abort and finally blocks join/close only own peer threads/sockets. Earliest finite epoch FILLER_DEADLINE/END is checked at every HTTP boundary, between controls and before PASS. Completion checker does not depend on inner-only grant env.",
+  "lineage": "kpf18-g3-later-slots-qual"
+}

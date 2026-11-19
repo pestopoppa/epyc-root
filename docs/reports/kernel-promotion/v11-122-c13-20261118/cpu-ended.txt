@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T10:23:12Z reason=complete
+job_id=v11-122-llg-cpu-c13-gate-20261118
+owner=v11-promotion-checklist
+step=job-run
+estimated_wall_s=1500
+started=2026-11-18T10:19:07Z
+regions=0-23

@@ -1,0 +1,19 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp04-c6-loadthreads-build-20261104-r1/launcher.out",
+ "elapsed_s": 10,
+ "ended": "rc=75 time=2026-11-04T08:39:26Z reason=partial-native-incomplete",
+ "engine_sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c",
+ "first_progress": "new record in /mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp04-c6-loadthreads-build-20261104-r1/native-attempts/attempt-455jxqmh/native-result.json (unit_key compiled_object_count set)",
+ "first_progress_s": 1500,
+ "first_unit_at": "2026-11-04T08:39:27Z",
+ "id": "brf-exp04-c6-loadthreads-build-20261104-r1",
+ "launcher_sha256": "237931a5537edfbc466972e43b86295e22bc9e1d41d5d1f7a217db3baa91fb73",
+ "passed_at": "2026-11-04T08:39:27Z",
+ "progress_rule": "record",
+ "regions": "0-3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/brf-exp04-c6-loadthreads-build-20261104-r1/native-attempts/attempt-455jxqmh/native-result.json",
+ "units": 1,
+ "vram_used_max_bytes": null,
+ "warning": null
+}

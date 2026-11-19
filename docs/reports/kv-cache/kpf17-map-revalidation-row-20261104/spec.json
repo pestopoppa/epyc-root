@@ -1,0 +1,45 @@
+{
+  "case_count": 1,
+  "checkpoints": [
+    "complete fixture baseline accepted",
+    "barrier-synchronized mutation refused by second validate_maps call"
+  ],
+  "decision_rule": "PASS only when the byte-sealed KPF-17 r5 custody.py validate_maps function accepts a complete private five-DSO mapping fixture, then refuses a same-UID in-place overwrite synchronized after baseline acceptance and before a second map capture, with the expected unattested-library error. Missing baseline, missing barrier, unexpected acceptance/refusal, timeout or failed input seal is INVALID/unknown. PASS establishes only this function's post-write revalidation behavior; it does not establish protection against mutation after final revalidation, build_identity behavior, native loader behavior, or full custody-chain safety. No shared artifact may be mutated.",
+  "engine": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh"
+  },
+  "estimate_s": 300,
+  "expected_effect_vs_sample_error": "Deterministic protocol qualification, not a population estimate; no sample-size error term.",
+  "gate_class": "futility-only at interim looks",
+  "gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-17.MAP-REVALIDATION",
+  "id": "kvfork17-alt17-custody-race-qual-20261104",
+  "keep": [
+    "spec.json",
+    "launch.sh",
+    "qualify.py",
+    "complete.py",
+    "custody.py",
+    "binding.json",
+    "input_seal.json",
+    "out/**",
+    "done.json"
+  ],
+  "lane": "cpu",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17/launch.sh",
+  "min_window_s": 300,
+  "model_free": true,
+  "owner": "h-kvfork",
+  "priority_rank": 45,
+  "question": "Does the exact source-bound KPF-17 custody.validate_maps primitive reject a synchronized same-UID in-place mutation when it is invoked again after the mutation?",
+  "regions": "any-cpu-quarter",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17/out/RESULT.json",
+  "schema": "epyc.row.v3",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17",
+  "shape": "quarter",
+  "stop_file": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf17-alt17/STOP",
+  "stop_rule": "Stop on complete PASS or first INVALID, STOP, timeout, or deadline; no retries or expanded mutation paths.",
+  "unit_key": "case_count",
+  "window_s": 900
+}

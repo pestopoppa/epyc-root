@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """row_intake.py — the two receipts a queue row must carry at BIRTH.
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 Consumers:      backlog_queue_gen.py (--generate), seed_queue.py, session_bus_coordinator.intake
 
 WHY THIS EXISTS. `a06780f4` made the coordinator-daemon's AUTOMATIC dispatch refuse

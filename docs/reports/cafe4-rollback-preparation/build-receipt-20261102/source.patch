@@ -1,0 +1,121 @@
+diff --git a/include/llama.h b/include/llama.h
+index 8ab8aafee8..c17b13e189 100644
+--- a/include/llama.h
++++ b/include/llama.h
+@@ -587,6 +587,12 @@ extern "C" {
+ 
+     LLAMA_API const struct llama_model * llama_get_model   (const struct llama_context * ctx);
+     LLAMA_API           llama_memory_t   llama_get_memory  (const struct llama_context * ctx);
++
++    // CAFE-4 diagnostic only: configure the recurrent memory owned by this
++    // exact context. mode 0=off, 1=observe, 2=fault. Configure before decode.
++    // Returns false for missing/non-recurrent memory or an invalid mode.
++    LLAMA_API bool llama_cafe4_target_configure(struct llama_context * ctx, int mode);
++    LLAMA_API bool llama_cafe4_target_counts(const struct llama_context * ctx, uint64_t * selected, uint64_t * faulted);
+     LLAMA_API  enum llama_pooling_type   llama_pooling_type(const struct llama_context * ctx); // TODO: rename to llama_get_pooling_type
+ 
+     LLAMA_API const struct llama_vocab * llama_model_get_vocab(const struct llama_model * model);
+diff --git a/src/llama-context.cpp b/src/llama-context.cpp
+index c566e71fcc..e87787d8a3 100644
+--- a/src/llama-context.cpp
++++ b/src/llama-context.cpp
+@@ -7,6 +7,9 @@
+ #include "llama-batch.h"
+ #include "llama-io.h"
+ #include "llama-memory.h"
++#include "llama-memory-hybrid.h"
++#include "llama-memory-hybrid-iswa.h"
++#include "llama-memory-recurrent.h"
+ #include "llama-mmap.h"
+ #include "llama-model.h"
+ #include "llama-ext.h"
+@@ -4056,6 +4059,34 @@ void llama_set_nextn_layer_offset(llama_context * ctx, int32_t offset) {
+     ctx->set_nextn_layer_offset(offset);
+ }
+ 
++// CAFE-4 diagnostic: never use environment state to select a context.
++static llama_memory_recurrent * cafe4_recurrent(const struct llama_context * ctx) {
++    if (!ctx) return nullptr;
++    llama_memory_t mem = ctx->get_memory();
++    if (auto * r = dynamic_cast<llama_memory_recurrent *>(mem)) return r;
++    if (auto * h = dynamic_cast<llama_memory_hybrid *>(mem)) return h->get_mem_recr();
++    if (auto * h = dynamic_cast<llama_memory_hybrid_iswa *>(mem)) return h->get_mem_recr();
++    return nullptr;
++}
++
++bool llama_cafe4_target_configure(struct llama_context * ctx, int mode) {
++    if (mode < 0 || mode > 2) return false;
++    auto * r = cafe4_recurrent(ctx);
++    if (!r || r->n_rs_seq == 0) return false;
++    r->cafe4_selected.store(0);
++    r->cafe4_faulted.store(0);
++    r->cafe4_mode.store(mode);
++    return true;
++}
++
++bool llama_cafe4_target_counts(const struct llama_context * ctx, uint64_t * selected, uint64_t * faulted) {
++    auto * r = cafe4_recurrent(ctx);
++    if (!r || !selected || !faulted) return false;
++    *selected = r->cafe4_selected.load();
++    *faulted = r->cafe4_faulted.load();
++    return true;
++}
++
+ llama_memory_t llama_get_memory(const struct llama_context * ctx) {
+     if (!ctx) {
+         return nullptr;
+diff --git a/src/llama-memory-recurrent.cpp b/src/llama-memory-recurrent.cpp
+index ebc66a9fef..3e03b57766 100644
+--- a/src/llama-memory-recurrent.cpp
++++ b/src/llama-memory-recurrent.cpp
+@@ -9,6 +9,7 @@
+ #include <algorithm>
+ #include <cassert>
+ #include <cstring>
++#include <cstdio>
+ #include <limits>
+ #include <map>
+ #include <stdexcept>
+@@ -1303,6 +1304,18 @@ int32_t llama_memory_recurrent_context::s_copy(int i) const {
+         const llama_seq_id seq = *mem->cells[cell_idx].seq_id.begin();
+         if (seq >= 0 && (size_t) seq < mem->rs_idx.size()) {
+             idx = mem->rs_idx[seq];
++            // This per-memory-instance diagnostic never changes position or KV.
++            const int cafe4_mode = mem->cafe4_mode.load();
++            if (idx != 0 && (cafe4_mode == 1 || cafe4_mode == 2)) {
++                mem->cafe4_selected.fetch_add(1);
++                const uint32_t selected = idx;
++                if (cafe4_mode == 2) {
++                    idx = 0;
++                    mem->cafe4_faulted.fetch_add(1);
++                }
++                std::fprintf(stderr, "CAFE4_TARGET_RS memory=%p seq=%d selected=%u used=%u mode=%d\n",
++                             (void *) mem, (int) seq, selected, idx, cafe4_mode);
++            }
+             // reset rollback idx
+             mem->rs_idx[seq] = 0;
+         }
+diff --git a/src/llama-memory-recurrent.h b/src/llama-memory-recurrent.h
+index 4abb3f5cf5..27f7199414 100644
+--- a/src/llama-memory-recurrent.h
++++ b/src/llama-memory-recurrent.h
+@@ -4,6 +4,7 @@
+ #include "llama-graph.h"
+ #include "llama-memory.h"
+ 
++#include <atomic>
+ #include <map>
+ #include <set>
+ #include <vector>
+@@ -76,6 +77,11 @@ public:
+     // per-seq rollback index
+     std::vector<uint32_t> rs_idx;
+ 
++    // Experimental CAFE-4 state is owned by this memory instance, not global.
++    std::atomic<int> cafe4_mode {0};
++    std::atomic<uint64_t> cafe4_selected {0};
++    std::atomic<uint64_t> cafe4_faulted {0};
++
+     void set_rs_idx(llama_seq_id seq_id, uint32_t idx);
+ 
+     // computed before each graph build

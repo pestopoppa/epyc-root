@@ -1,0 +1,26 @@
+{
+  "id": "df2-cafe4-modes-native-hip-r4-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/launch.sh",
+  "lane": "gpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/RESULT.json",
+  "result_format": "json",
+  "verdict_by": "agent",
+  "decision_rule": "One-prompt GPU modes diagnostic only. Require hash-bound v10+diagnostic modes build and actual mapped libraries/model, official grant binding, widths 2 and 3 each normal rc0 PASS and explicit fault rc1 FAIL injected-fault. Each case must witness native strict partial acceptance, target mode1 and mode2, draft rewind, nonfault errors <= original baseline+1e-5 and fault differences >10x tolerance, finite numeric fields, no cutoff and reaped child. Stop on all four valid cases (PASS), or first missing/failed native control (UNKNOWN/futility), STOP or deadline. Smoke qualifies native model and all-library mapping only; no rollback, performance, full CAFE-4 claim follows from smoke. R2 uses corrected cold-reference source 41fc473a908b7c385d79d1941b6576cc993b985e691682d6598d6122e968fe1c and qualified HIP R4 executable 1623d9e2455116944e330a8c28200a84270f0dd0833563171f48344e22dfb63a; fixed error gate 0.743863867, lower error is better, reference floor separate. No threshold relaxation. Each case and smoke require model/all six local libraries mapped plus two live per-child KFD/nonzero-VRAM samples; missing residency is UNKNOWN. Offload requested with -ngl 99.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.py",
+    "*.sh",
+    "*.json"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r4-20261119/runtime.py predicate"
+}

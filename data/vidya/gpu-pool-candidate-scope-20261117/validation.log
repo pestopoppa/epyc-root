@@ -1,0 +1,12 @@
+[region-lock] acquiring regions [] as role='build' (timeout_s=1.0) …
+[region-lock] held sub-quarter cores {q3: [72, 73, 74, 75]}
+[72, 73, 74, 75]
+........................................................................ [ 16%]
+........................................................................ [ 33%]
+........................................................................ [ 50%]
+........................................................................ [ 66%]
+........................................................................ [ 83%]
+......................................................................   [100%]
+- generated xml file: /mnt/raid0/llm/tmp/vidya-belief-substrate/candidate-scope-validation/hybrid-verified/tests.xml -
+P1-A carrier invariants: 1007 tuples from 17 source kinds checked (byte identity / grade invariance), 0 violation(s)
+430 passed in 6.87s

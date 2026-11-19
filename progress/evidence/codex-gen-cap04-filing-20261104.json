@@ -1,0 +1,448 @@
+{
+  "filing": {
+    "$schema": "epyc.filed.verdict.v1",
+    "agent_verdict": {
+      "filed_by": "codex-gen",
+      "rationale": "Owner closeout progress/2026-11/2026-11-03-ws58-brf-t4-closeout.md already records REVISE (budget derivation) and completion of the bounded BRF-T4-CAP04 pilot. Native summary has 76/76 units and nested_derivation_valid=false: 0/4 fresh checks match, so derived 8k/16k budget comparisons and TB-4 cannot support a verdict. Existing 32k and E screen observations remain exploratory; no gate verdict or E-2/E-3 settlement. Architect_general remains outside pilot coverage. Filing receipt only: parent bounded pilot is already checked in handoffs/completed/backlog-refactor-2026-11.md and TB-1 remains open, so omit tick_text to avoid reticking or changing another task.",
+      "verdict": "inconclusive"
+    },
+    "at": "2026-11-04T07:27:55+00:00",
+    "compute_burned": true,
+    "dry_run": false,
+    "end_line": "rc=0 time=2026-11-02T23:52:22Z reason=complete",
+    "filed_at": "2026-11-04T07:27:55+00:00",
+    "filed_by": "codex-gen",
+    "handoff_task": "handoffs/active/backlog-refactor-2026-11.md:BRF-T4-CAP04",
+    "id": "brf-cap04-pilot-20261102-v3",
+    "machine_checkable": false,
+    "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-cap04-pilot-20261102-v3.json",
+    "native_result_path": "/mnt/raid0/llm/tmp/brf-cap04/job/out/results.jsonl",
+    "outcome_class": "PARTIAL-VERDICT",
+    "owner": "ws58",
+    "phase": "filing",
+    "rc": 0,
+    "reason": "Owner closeout progress/2026-11/2026-11-03-ws58-brf-t4-closeout.md already records REVISE (budget derivation) and completion of the bounded BRF-T4-CAP04 pilot. Native summary has 76/76 units and nested_derivation_valid=false: 0/4 fresh checks match, so derived 8k/16k budget comparisons and TB-4 cannot support a verdict. Existing 32k and E screen observations remain exploratory; no gate verdict or E-2/E-3 settlement. Architect_general remains outside pilot coverage. Filing receipt only: parent bounded pilot is already checked in handoffs/completed/backlog-refactor-2026-11.md and TB-1 remains open, so omit tick_text to avoid reticking or changing another task.",
+    "result_exists": true,
+    "result_format": "jsonl",
+    "result_path": "/mnt/raid0/llm/tmp/brf-cap04/job/out/results.jsonl",
+    "root_cause_family": null,
+    "row": "brf-cap04-pilot-20261102-v3",
+    "row_verdict": "inconclusive",
+    "rule": "CAP-04 pilot v2 on the SERVED config (exploratory/decision-support, manifest sufficiency CAP-04). architect_critic Qwen3.8-27B-Q8_0 thinking ON (enable_thinking=true, reasoning_effort=medium, temp 0.1, draft-dflash), frontdoor Qwen3.6-35B-A3B-MTP-Q8_0 thinking OFF (enable_thinking=false, --reasoning off, temp 0.3), served terse template 1443ea9ab4bb, q8_0 KV, top_k 40 top_p 0.95 repeat_penalty 1.1 seed 42; max_tokens counts the thinking tokens. <=76 generations: each (item, level) generated once at 32768, 8k/16k (and the crossed X 8k/32k TB-4 screen) derived as nested prefix, validated by 4 fresh 8192 CHK generations (nested_derivation_valid); E frontdoor x {L2,L3} x 20 GPQA; TB frontdoor x 20 and critic x <=12 olympiadbench_hard. Critic LOOK at 8 items: futility if >=75% truncated at 32768; answer if trunc<=5% and no correctness change vs 32768 at 8k or 16k; else continue to 12. Valid only if no completion exceeds its budget, no frontdoor reasoning leak, critic thinking engaged, n_ctx_slot >= 34816 and kernel-store libggml-hip mapped with all layers offloaded. out/summary.json gives TB-1 overall and finished-only accuracy + truncation + truncation-inside-thinking rate per cell + knee, TB-2 >=90% budget, TB-3 registry vs knee, TB-4 interaction, E-2 tokens vs accuracy, E-3 rescue. Owner reviews: EXPAND / REVISE / INCONCLUSIVE; a knee below the production ceiling never settles E-2/E-3; architect_general (87 GB, CPU) is NOT covered (open sub-item CAP04-AG). No gate verdict.",
+    "values": {},
+    "verdict": {
+      "kind": "science",
+      "native_result_sha256": "81397b10396fd79b78e5f43c7cb011e449e4f606a5cfc54b9d42bacd3bd81278",
+      "result": "inconclusive",
+      "status": "filed"
+    }
+  },
+  "owner_closeout": "progress/2026-11/2026-11-03-ws58-brf-t4-closeout.md",
+  "summary_source": "/mnt/raid0/llm/tmp/brf-cap04/job/out/summary.json",
+  "summary_sha256": "9d2204432edcc2a476904fc11b405519ebd99f6150171d983e3c30a3bbae0abc",
+  "native_summary": {
+    "at": "2026-11-02T23:52:19Z",
+    "mode": "live",
+    "units_done": 76,
+    "units_total_max": 76,
+    "stop_reason": null,
+    "served_config": {
+      "frontdoor": {
+        "ctk": {
+          "enable_thinking": false
+        },
+        "temperature": 0.3,
+        "reasoning_flag": "off",
+        "src": {
+          "ctk": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:1837-1838",
+          "temperature": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:2226-2228",
+          "template": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:1839",
+          "reasoning_flag": "/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml:826",
+          "kv": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:1846-1848",
+          "spec": "stack_priors.yaml draft-mtp draft_max 4"
+        }
+      },
+      "architect_critic": {
+        "ctk": {
+          "enable_thinking": true,
+          "reasoning_effort": "medium"
+        },
+        "temperature": 0.1,
+        "reasoning_flag": null,
+        "src": {
+          "ctk": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:2009-2011",
+          "temperature": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:2577-2579",
+          "template": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml:2012",
+          "reasoning_flag": "/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml (architect_critic flags.reasoning: null)",
+          "kv": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml (serving_shape kv_quant q8_0/q8_0)",
+          "spec": "/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml:168-171 draft-dflash draft_max 7"
+        }
+      },
+      "sampling": {
+        "top_k": 40,
+        "top_p": 0.95,
+        "repeat_penalty": 1.1,
+        "seed": 42,
+        "src": "/mnt/raid0/llm/epyc-orchestrator/src/backends/llama_server.py:1606-1610 (top_k/top_p/repeat_penalty/seed), :70 (seed const), :1600-1601 (temperature = role generation_defaults)"
+      },
+      "template_sha256": "1443ea9ab4bb0a2663b1002a5d4baad970e9f0b2f42ca4ec12b4683838284551",
+      "kv": "q8_0/q8_0",
+      "note": "critic spec draft-dflash n-max 7; frontdoor draft-mtp n-max 4; frontdoor runs on the MI210 here (served on CPU :8070) - placement is speed-only"
+    },
+    "design": "nested-prefix: 32768 base generation, 8k/16k/X-8k derived; CHK = fresh 8192 prefix check",
+    "TB": {
+      "architect_critic": {
+        "suite@8192": {
+          "n": 12,
+          "acc_overall": 0.25,
+          "n_finished": 8,
+          "acc_finished": 0.375,
+          "trunc_rate": 0.3333333333333333,
+          "n_truncated": 4,
+          "trunc_inside_thinking_n": 4,
+          "trunc_inside_thinking_rate": 0.3333333333333333,
+          "trunc_inside_thinking_share_of_truncated": 1.0,
+          "mean_tokens": 3315.0,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "suite@16384": {
+          "n": 12,
+          "acc_overall": 0.25,
+          "n_finished": 9,
+          "acc_finished": 0.3333333333333333,
+          "trunc_rate": 0.25,
+          "n_truncated": 3,
+          "trunc_inside_thinking_n": 3,
+          "trunc_inside_thinking_rate": 0.25,
+          "trunc_inside_thinking_share_of_truncated": 1.0,
+          "mean_tokens": 5955.666666666667,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "suite@32768": {
+          "n": 12,
+          "acc_overall": 0.25,
+          "n_finished": 10,
+          "acc_finished": 0.3,
+          "trunc_rate": 0.16666666666666666,
+          "n_truncated": 2,
+          "trunc_inside_thinking_n": 2,
+          "trunc_inside_thinking_rate": 0.16666666666666666,
+          "trunc_inside_thinking_share_of_truncated": 1.0,
+          "mean_tokens": 9996.083333333334,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "_knee": null,
+        "_tb2_min_budget_ge90pct_of_max": 8192,
+        "_tb3_registry": {
+          "reasoning_budget": null,
+          "max_tokens_multiplier": 4,
+          "disable_thinking": false
+        },
+        "_items": 12
+      },
+      "frontdoor": {
+        "suite@8192": {
+          "n": 20,
+          "acc_overall": 0.5,
+          "n_finished": 20,
+          "acc_finished": 0.5,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 2385.55,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "suite@16384": {
+          "n": 20,
+          "acc_overall": 0.5,
+          "n_finished": 20,
+          "acc_finished": 0.5,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 2385.55,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "suite@32768": {
+          "n": 20,
+          "acc_overall": 0.5,
+          "n_finished": 20,
+          "acc_finished": 0.5,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 2385.55,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "_knee": 8192,
+        "_tb2_min_budget_ge90pct_of_max": 8192,
+        "_tb3_registry": {
+          "reasoning_budget": null,
+          "max_tokens_multiplier": 4,
+          "disable_thinking": true
+        },
+        "_items": 20
+      }
+    },
+    "X": {
+      "frontdoor": {
+        "L2@8192": {
+          "n": 10,
+          "acc_overall": 0.9,
+          "n_finished": 9,
+          "acc_finished": 1.0,
+          "trunc_rate": 0.1,
+          "n_truncated": 1,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": 0.0,
+          "mean_tokens": 1167.9,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "L2@32768": {
+          "n": 10,
+          "acc_overall": 1.0,
+          "n_finished": 10,
+          "acc_finished": 1.0,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 1247.0,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "L3@8192": {
+          "n": 10,
+          "acc_overall": 0.9,
+          "n_finished": 9,
+          "acc_finished": 1.0,
+          "trunc_rate": 0.1,
+          "n_truncated": 1,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": 0.0,
+          "mean_tokens": 1598.1,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "L3@32768": {
+          "n": 10,
+          "acc_overall": 0.9,
+          "n_finished": 10,
+          "acc_finished": 0.9,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 1838.7,
+          "parse_fail": 0,
+          "empty_answer": 0
+        }
+      },
+      "_interaction_acc": -0.09999999999999998,
+      "_interaction_tokens": 161.50000000000023
+    },
+    "E": {
+      "frontdoor": {
+        "L2@32768": {
+          "n": 20,
+          "acc_overall": 0.95,
+          "n_finished": 20,
+          "acc_finished": 0.95,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 1343.3,
+          "parse_fail": 0,
+          "empty_answer": 0
+        },
+        "L3@32768": {
+          "n": 20,
+          "acc_overall": 0.95,
+          "n_finished": 20,
+          "acc_finished": 0.95,
+          "trunc_rate": 0.0,
+          "n_truncated": 0,
+          "trunc_inside_thinking_n": 0,
+          "trunc_inside_thinking_rate": 0.0,
+          "trunc_inside_thinking_share_of_truncated": null,
+          "mean_tokens": 2521.5,
+          "parse_fail": 0,
+          "empty_answer": 0
+        }
+      },
+      "_rescue": {
+        "paired": 20,
+        "cheap_wrong": 1,
+        "rescued": 1,
+        "harmed": 1,
+        "extra_tokens_mean": 1178.2
+      },
+      "_effort_fired": true
+    },
+    "trunc_inside_thinking_by_cell": {
+      "TB|architect_critic|suite@8192": {
+        "n": 12,
+        "n_truncated": 4,
+        "n_inside_thinking": 4,
+        "rate_of_n": 0.3333333333333333,
+        "share_of_truncated": 1.0
+      },
+      "TB|architect_critic|suite@16384": {
+        "n": 12,
+        "n_truncated": 3,
+        "n_inside_thinking": 3,
+        "rate_of_n": 0.25,
+        "share_of_truncated": 1.0
+      },
+      "TB|architect_critic|suite@32768": {
+        "n": 12,
+        "n_truncated": 2,
+        "n_inside_thinking": 2,
+        "rate_of_n": 0.16666666666666666,
+        "share_of_truncated": 1.0
+      },
+      "TB|frontdoor|suite@8192": {
+        "n": 20,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      },
+      "TB|frontdoor|suite@16384": {
+        "n": 20,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      },
+      "TB|frontdoor|suite@32768": {
+        "n": 20,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      },
+      "X|frontdoor|L2@8192": {
+        "n": 10,
+        "n_truncated": 1,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": 0.0
+      },
+      "X|frontdoor|L2@32768": {
+        "n": 10,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      },
+      "X|frontdoor|L3@8192": {
+        "n": 10,
+        "n_truncated": 1,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": 0.0
+      },
+      "X|frontdoor|L3@32768": {
+        "n": 10,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      },
+      "E|frontdoor|L2@32768": {
+        "n": 20,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      },
+      "E|frontdoor|L3@32768": {
+        "n": 20,
+        "n_truncated": 0,
+        "n_inside_thinking": 0,
+        "rate_of_n": 0.0,
+        "share_of_truncated": null
+      }
+    },
+    "_nested_check": {
+      "n": 4,
+      "ok": 0,
+      "details": [
+        {
+          "model": "frontdoor",
+          "idx": 0,
+          "fresh_8k_finished": true,
+          "equal_or_prefix": false,
+          "fresh_chars": 1438,
+          "base_chars": 1391
+        },
+        {
+          "model": "frontdoor",
+          "idx": 1,
+          "fresh_8k_finished": true,
+          "equal_or_prefix": false,
+          "fresh_chars": 7763,
+          "base_chars": 9609
+        },
+        {
+          "model": "architect_critic",
+          "idx": 0,
+          "fresh_8k_finished": true,
+          "equal_or_prefix": false,
+          "fresh_chars": 1109,
+          "base_chars": 1596
+        },
+        {
+          "model": "architect_critic",
+          "idx": 1,
+          "fresh_8k_finished": false,
+          "equal_or_prefix": false,
+          "fresh_chars": 21725,
+          "base_chars": 41715
+        }
+      ]
+    },
+    "nested_derivation_valid": false,
+    "critic_look": {
+      "decision": "continue",
+      "n": 8,
+      "trunc_rate": {
+        "8192": 0.375,
+        "16384": 0.25,
+        "32768": 0.25
+      },
+      "discordant_vs_32k": {
+        "8192": 0,
+        "16384": 0
+      }
+    },
+    "_validity": {
+      "budget_violations": 0,
+      "frontdoor_think_leaks": 0,
+      "critic_thinking_not_engaged": 0,
+      "request_errors": 0
+    },
+    "TB4_status": "COVERED (screen)"
+  },
+  "interpretation": "Owner REVISE disposition retained. Raw summary TB4_status is not accepted: nested_derivation_valid=false invalidates derived comparisons; owner closeout marks TB-4 UNCOVERED. Parent pilot already complete; TB-1 remains open."
+}

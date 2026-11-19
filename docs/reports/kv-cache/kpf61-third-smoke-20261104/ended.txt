@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T22:34:43Z reason=partial-native-incomplete
+job_id=kvfork61-cpu-permutation-20261104
+owner=h-kvfork
+step=job-run
+estimated_wall_s=3600
+started=2026-11-04T22:30:45Z
+regions=0-3

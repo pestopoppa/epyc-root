@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-AFC-DIRECTIVE-SCOPE-20261115",
+  "indexed_by": "ratify",
+  "receipt": "artifacts/operator/ratify_afc_directive_scope_20261115.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

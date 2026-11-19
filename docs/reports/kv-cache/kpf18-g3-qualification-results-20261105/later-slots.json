@@ -1,0 +1,1545 @@
+{
+  "schema": "kpf18.g3.later-slots.v1",
+  "status": "PASS",
+  "controls": 12,
+  "observations": [
+    {
+      "phase": 2,
+      "mode": "success",
+      "status": "returned",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966944.215818182,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.217260067
+        },
+        {
+          "site": 2,
+          "start": 1966944.218974125,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.219553571
+        },
+        {
+          "site": 3,
+          "start": 1966944.219746293,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.220233349
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.05615382199175656,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query2-success/synthetic-server.log"
+    },
+    {
+      "phase": 2,
+      "mode": "headers",
+      "status": "Deadline",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966944.272031475,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.27251301
+        },
+        {
+          "site": 2,
+          "start": 1966944.273865415,
+          "status": "TimeoutError",
+          "end": 1966944.454054367
+        },
+        {
+          "site": 3,
+          "start": 1966944.454169728,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.454745164
+        },
+        {
+          "site": 4,
+          "start": 1966944.504844433,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.505289947
+        },
+        {
+          "site": 5,
+          "start": 1966944.555387406,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.555796431
+        },
+        {
+          "site": 6,
+          "start": 1966944.605893569,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.606299284
+        },
+        {
+          "site": 7,
+          "start": 1966944.656395852,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.656788737
+        },
+        {
+          "site": 8,
+          "start": 1966944.706873915,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.70732723
+        },
+        {
+          "site": 9,
+          "start": 1966944.757440839,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.758190077
+        },
+        {
+          "site": 10,
+          "start": 1966944.808293176,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.809337627
+        },
+        {
+          "site": 11,
+          "start": 1966944.859441456,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.860094043
+        },
+        {
+          "site": 12,
+          "start": 1966944.910196261,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.910706537
+        },
+        {
+          "site": 13,
+          "start": 1966944.960807316,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966944.961274981
+        },
+        {
+          "site": 14,
+          "start": 1966945.011374779,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.011914985
+        },
+        {
+          "site": 15,
+          "start": 1966945.062030114,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.06255963
+        },
+        {
+          "site": 16,
+          "start": 1966945.112657268,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.113160834
+        },
+        {
+          "site": 17,
+          "start": 1966945.163261282,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.163706297
+        },
+        {
+          "site": 18,
+          "start": 1966945.213805166,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.214289601
+        },
+        {
+          "site": 19,
+          "start": 1966945.26438769,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.265065097
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 1.0948307169601321,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query2-headers/synthetic-server.log"
+    },
+    {
+      "phase": 2,
+      "mode": "body",
+      "status": "Deadline",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966945.367315236,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.367969473
+        },
+        {
+          "site": 2,
+          "start": 1966945.369499939,
+          "status": "TimeoutError",
+          "end": 1966945.549669931
+        },
+        {
+          "site": 3,
+          "start": 1966945.549767502,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.550256267
+        },
+        {
+          "site": 4,
+          "start": 1966945.600358886,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.600885362
+        },
+        {
+          "site": 5,
+          "start": 1966945.65098207,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.651459125
+        },
+        {
+          "site": 6,
+          "start": 1966945.701559524,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.701992949
+        },
+        {
+          "site": 7,
+          "start": 1966945.752088608,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.752510452
+        },
+        {
+          "site": 8,
+          "start": 1966945.802609981,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.803076246
+        },
+        {
+          "site": 9,
+          "start": 1966945.853173364,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.8536795
+        },
+        {
+          "site": 10,
+          "start": 1966945.903781019,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.904264334
+        },
+        {
+          "site": 11,
+          "start": 1966945.954360593,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966945.954795857
+        },
+        {
+          "site": 12,
+          "start": 1966946.004893116,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.00531611
+        },
+        {
+          "site": 13,
+          "start": 1966946.055413379,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.055824764
+        },
+        {
+          "site": 14,
+          "start": 1966946.105921672,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.106440268
+        },
+        {
+          "site": 15,
+          "start": 1966946.156541097,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.157040922
+        },
+        {
+          "site": 16,
+          "start": 1966946.207138591,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.207578345
+        },
+        {
+          "site": 17,
+          "start": 1966946.257675724,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.258093189
+        },
+        {
+          "site": 18,
+          "start": 1966946.308191797,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.308610492
+        },
+        {
+          "site": 19,
+          "start": 1966946.35870971,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.359164315
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 1.093934226082638,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query2-body/synthetic-server.log"
+    },
+    {
+      "phase": 2,
+      "mode": "trickle",
+      "status": "Deadline",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966946.461509626,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.461997791
+        },
+        {
+          "site": 2,
+          "start": 1966946.463551697,
+          "status": "TimeoutError",
+          "end": 1966946.643704229
+        },
+        {
+          "site": 3,
+          "start": 1966946.64379957,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.644303395
+        },
+        {
+          "site": 4,
+          "start": 1966946.694393904,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.694904889
+        },
+        {
+          "site": 5,
+          "start": 1966946.745073249,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.745780376
+        },
+        {
+          "site": 6,
+          "start": 1966946.795862825,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.796320039
+        },
+        {
+          "site": 7,
+          "start": 1966946.846416248,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.846835993
+        },
+        {
+          "site": 8,
+          "start": 1966946.896932871,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.897346826
+        },
+        {
+          "site": 9,
+          "start": 1966946.947444104,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.947843439
+        },
+        {
+          "site": 10,
+          "start": 1966946.997943547,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966946.998376242
+        },
+        {
+          "site": 11,
+          "start": 1966947.048462971,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.048922885
+        },
+        {
+          "site": 12,
+          "start": 1966947.099048745,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.099694131
+        },
+        {
+          "site": 13,
+          "start": 1966947.14980363,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.150380486
+        },
+        {
+          "site": 14,
+          "start": 1966947.200497255,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.201106832
+        },
+        {
+          "site": 15,
+          "start": 1966947.251211441,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.251707116
+        },
+        {
+          "site": 16,
+          "start": 1966947.317224758,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.365214305
+        },
+        {
+          "site": 17,
+          "start": 1966947.415311302,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.415768907
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 1.056401199894026,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query2-trickle/synthetic-server.log"
+    },
+    {
+      "phase": 2,
+      "mode": "stop_headers",
+      "status": "SyntheticStop",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966947.518147308,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.518678833
+        },
+        {
+          "site": 2,
+          "start": 1966947.520141169,
+          "status": "SyntheticStop",
+          "end": 1966947.540479694
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.054261032957583666,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query2-stop_headers/synthetic-server.log"
+    },
+    {
+      "phase": 2,
+      "mode": "stop_body",
+      "status": "SyntheticStop",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966947.572679293,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.573197489
+        },
+        {
+          "site": 2,
+          "start": 1966947.574607504,
+          "status": "SyntheticStop",
+          "end": 1966947.594984469
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.054099920904263854,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query2-stop_body/synthetic-server.log"
+    },
+    {
+      "phase": 3,
+      "mode": "success",
+      "status": "returned",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966947.626912046,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.627373601
+        },
+        {
+          "site": 2,
+          "start": 1966947.628646534,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.629030868
+        },
+        {
+          "site": 3,
+          "start": 1966947.62919108,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.629510783
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.05437046382576227,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query3-success/synthetic-server.log"
+    },
+    {
+      "phase": 3,
+      "mode": "headers",
+      "status": "TimeoutError",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966947.68135995,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.681817535
+        },
+        {
+          "site": 2,
+          "start": 1966947.683105199,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.683477783
+        },
+        {
+          "site": 3,
+          "start": 1966947.683623924,
+          "status": "TimeoutError",
+          "end": 1966947.863793746
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.20511395507492125,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query3-headers/synthetic-server.log"
+    },
+    {
+      "phase": 3,
+      "mode": "body",
+      "status": "TimeoutError",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966947.887478686,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.887978501
+        },
+        {
+          "site": 2,
+          "start": 1966947.889242965,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966947.889637189
+        },
+        {
+          "site": 3,
+          "start": 1966947.88978921,
+          "status": "TimeoutError",
+          "end": 1966948.069938832
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.20590787311084569,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query3-body/synthetic-server.log"
+    },
+    {
+      "phase": 3,
+      "mode": "trickle",
+      "status": "TimeoutError",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966948.092941865,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966948.093381619
+        },
+        {
+          "site": 2,
+          "start": 1966948.094628432,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966948.095072547
+        },
+        {
+          "site": 3,
+          "start": 1966948.095217459,
+          "status": "TimeoutError",
+          "end": 1966948.27536812
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.20522189582698047,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query3-trickle/synthetic-server.log"
+    },
+    {
+      "phase": 3,
+      "mode": "stop_headers",
+      "status": "SyntheticStop",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966948.298401633,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966948.298880588
+        },
+        {
+          "site": 2,
+          "start": 1966948.300243883,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966948.300755958
+        },
+        {
+          "site": 3,
+          "start": 1966948.30093064,
+          "status": "SyntheticStop",
+          "end": 1966948.321223614
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.05477186804637313,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query3-stop_headers/synthetic-server.log"
+    },
+    {
+      "phase": 3,
+      "mode": "stop_body",
+      "status": "SyntheticStop",
+      "calls": [
+        {
+          "site": 1,
+          "start": 1966948.353369873,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": false,
+              "n_prompt_tokens": 0,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966948.353805918
+        },
+        {
+          "site": 2,
+          "start": 1966948.355109352,
+          "status": "returned",
+          "rows": [
+            {
+              "id": 1,
+              "id_task": 9,
+              "is_processing": true,
+              "n_prompt_tokens": 32000,
+              "kv_cells": {
+                "private": 0
+              }
+            }
+          ],
+          "end": 1966948.355515036
+        },
+        {
+          "site": 3,
+          "start": 1966948.355669277,
+          "status": "SyntheticStop",
+          "end": 1966948.375920461
+        }
+      ],
+      "requests": [
+        "GET /slots HTTP/1.1",
+        "POST /completion HTTP/1.1",
+        "GET /slots HTTP/1.1",
+        "GET /slots HTTP/1.1"
+      ],
+      "elapsed_s": 0.054470903938636184,
+      "peer_joined": true,
+      "ownership": "real same-process loopback listener; synthetic HTTP peer and process wrapper; no native server",
+      "synthetic_log": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/g3-later-slots-qual-20261105/out/full-attempt/fixture-cases/query3-stop_body/synthetic-server.log"
+    }
+  ],
+  "error": null,
+  "affinity": [
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71
+  ],
+  "inputs": {
+    "physical_trace.py": "d038e3cee0f117025f5b630d91ca2bb03966d889be8e4181c63efe56c3d15dc5",
+    "socket_deadline.py": "fcc17534e69bfa080c35abb6e38ca495fe6c1a1938983a8b601d92c08f696b93",
+    "cancel_seed_transport.py": "a961ad85add9fd0cc2af659aa3717b0d40ef31b07a15584f494e89f0a8a1d757",
+    "complete.py": "37bd2f143f47ea232436b37d743c90fd1b8721d7fb7a1c93f433c800370edf08",
+    "qualify.py": "84d8c954f533f1916f8fcfc210119b439be4b4d89b55e7d1af7df55d294afb45",
+    "native_block.py": "2703d39eef136a58f898d7c8038756ca8fdcc9efc55506b517b28856ef49c4af",
+    "cancel_seed_stream.py": "d9ae491aea9ef6f80fe60af855b5c48cb9a25c333ab726aeafc31029b2e301bf",
+    "cancel_seed_admission.py": "a07d6060f15c2e51808216e260dad5a5190ba50f38ff1b09b1b106d27b9e0308",
+    "native_task_log.py": "83c93054f5927a4dae2f1e0aa141275e7da8aaca8813c1f332750d0c8ff3166a",
+    "slots_transport.py": "7d95a8ea5eba8786886db6492cec459c4fd1ea19979aa6b0f5fd00bf1e64a68c"
+  },
+  "scope": "dynamic second task-binding and third postcancel-idle slot-query software controls in copied patched SeedControl; synthetic native log; no native cancellation/release, GPU, admission or full lifecycle claim"
+}

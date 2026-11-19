@@ -1,0 +1,29 @@
+[region-lock] acquiring regions [] as role='bench' (timeout_s=21600.0) …
+[region-lock] held sub-quarter cores {q1: [24, 25, 26, 27, 28, 29, 30, 31]}
+warning: no usable GPU found, --gpu-layers option will be ignored
+warning: one possible reason is that llama.cpp was compiled without GPU support
+warning: consult docs/build.md for compilation instructions
+0.00.135.032 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+[1/4] leval-legal:6:1 all-inject r=1.000 mean KL=0.0000e+00 top1=1.0000 hits=0 (191444 ms)
+[1/4] leval-legal:6:1 none       r=0.000 mean KL=3.1173e-01 top1=0.8657 hits=2 (8058 ms)
+[1/4] leval-legal:6:1 kdev       r=0.259 mean KL=1.3794e-01 top1=0.8955 hits=2 (40694 ms)
+[2/4] leval-meeting:8:6 all-inject r=1.000 mean KL=0.0000e+00 top1=1.0000 hits=0 (96738 ms)
+[2/4] leval-meeting:8:6 none       r=0.000 mean KL=2.5095e-01 top1=0.8507 hits=2 (5843 ms)
+[2/4] leval-meeting:8:6 kdev       r=0.261 mean KL=8.6051e-02 top1=0.9552 hits=2 (21077 ms)
+[3/4] leval-meeting:11:2 all-inject r=1.000 mean KL=0.0000e+00 top1=1.0000 hits=0 (212611 ms)
+[3/4] leval-meeting:11:2 none       r=0.000 mean KL=4.5087e-01 top1=0.7761 hits=2 (7804 ms)
+[3/4] leval-meeting:11:2 kdev       r=0.260 mean KL=1.4295e-01 top1=0.8955 hits=2 (43569 ms)
+[4/4] leval-meeting:21:3 all-inject r=1.000 mean KL=0.0000e+00 top1=1.0000 hits=2 (50561 ms)
+[4/4] leval-meeting:21:3 none       r=0.000 mean KL=3.5694e-01 top1=0.7761 hits=2 (5820 ms)
+[4/4] leval-meeting:21:3 kdev       r=0.261 mean KL=1.0924e-01 top1=0.8358 hits=2 (21182 ms)
+sanity (all-inject vs reference): max KL=0.000e+00 max NMSE=0.000e+00 top1 misses=0 -> bit-identical
+OK
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/kv-prefix-fork/rtg58-g3-dev-score-20261102/scripts/chunk-kv/g3_dev_retention.py", line 82, in <module>
+    main()
+  File "/mnt/raid0/llm/tmp/kv-prefix-fork/rtg58-g3-dev-score-20261102/scripts/chunk-kv/g3_dev_retention.py", line 76, in main
+    result = score(manifest, selection, read_jsonl(a.inputs), read_jsonl(a.outcomes), ids)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/mnt/raid0/llm/tmp/kv-prefix-fork/rtg58-g3-dev-score-20261102/scripts/chunk-kv/g3_dev_retention.py", line 52, in score
+    raise ValueError('failed, truncated or missing outcome')
+ValueError: failed, truncated or missing outcome

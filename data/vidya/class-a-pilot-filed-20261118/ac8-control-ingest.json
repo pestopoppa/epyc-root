@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/committed_conclusion.py",
+  "adapter_id": "vidya.adapters.committed_conclusion/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 3,
+  "frames_skipped": 0,
+  "missing": [],
+  "only_new": true,
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/ac8-epoch-control.jsonl"
+  ],
+  "refused": [],
+  "rows_projected": 1,
+  "source": "committed-conclusion",
+  "units_matched": 1,
+  "units_projected": 1
+}

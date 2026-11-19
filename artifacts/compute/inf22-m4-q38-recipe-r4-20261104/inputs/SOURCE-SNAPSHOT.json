@@ -1,0 +1,52 @@
+{
+  "head": "9e138e3a3e22ecf8c57cd5bf50beed571d107b54",
+  "records": {
+    "descriptors": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_descriptors.yaml",
+      "sha256": "b3ee748f77785aa92b5366ba2a3f46c726029dcbe925d9aca7c17b28072efef6",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/orchestration/model_descriptors.yaml"
+    },
+    "launch_manifest": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml",
+      "sha256": "323567eb6f2fe5d78d957dc93541d49c2f3748801fad728d41ea8efef77486de",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/orchestration/launch_manifest.yaml"
+    },
+    "orchestrator_stack": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py",
+      "sha256": "ea637a727ecc16e52c54a1904c5f3124bb1da819910521863d69a9826ebf5c23",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/scripts/server/orchestrator_stack.py"
+    },
+    "registry": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml",
+      "sha256": "57bc3c90515437b5c057cafdd0556e83c1615676350d36b7219b8fc0f5106fff",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/orchestration/model_registry.yaml"
+    },
+    "stack_manifest": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py",
+      "sha256": "8329d81f8a7435f0e1cfce1e3a32e4a8635d0e80bc92fcf21100fd2e813b9143",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/scripts/server/stack_manifest.py"
+    },
+    "stack_numa": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_numa.py",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/scripts/server/stack_numa.py"
+    },
+    "stack_paths": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_paths.py",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/scripts/server/stack_paths.py"
+    },
+    "stack_runtime": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_runtime.py",
+      "sha256": "984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/scripts/server/stack_runtime.py"
+    },
+    "stack_topology": {
+      "path": "/mnt/raid0/llm/epyc-orchestrator/orchestration/stack_topology.yaml",
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "snapshot": "/mnt/raid0/llm/worktrees/inf22-cpu-binding-packet-20261102/sources/orchestration/stack_topology.yaml"
+    }
+  },
+  "repository": "/mnt/raid0/llm/epyc-orchestrator",
+  "scope": "working-tree bytes as reviewed; not a production launch receipt"
+}

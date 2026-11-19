@@ -1,0 +1,23 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "gate_id": "RATIFY-V6R4B-FORWARD-PORT-20261117",
+  "status": "ratified",
+  "ratified_at": "2026-11-17T20:10:49Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-02 (decisions-batch2-4-20261102.json): V6R-4b / OP-58 forward-port rule: ratify the proposed text as written"
+  },
+  "origin": "INC-20260925 (v6 Stage 1a bundled revert lost 52ddd3200)",
+  "base_origin_main": "ae8ca2533696897bc98df2ec02d56f44662f4f00",
+  "consolidated_receipt": "artifacts/operator/ratify_v6r4b_forward_port_rule_20261117.receipt.json",
+  "state": {
+    "CLAUDE.md": {
+      "sha256_before": "9984c4f3b06b89a3ffef3d76b8e793ccd9f5b252b072c4d9bb120195944620ff",
+      "sha256_after": "7bebaeb7167415b3c85e2a663e1c002cfd8f19b912d8a78c1b90ece6132a6e6c"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_v6r4b_forward_port_rule_20261117.sh",
+  "ratify_script_sha256": "168d3b8910d77b781fa3a2f7a2a1f1bba74a0665d917ea4178395384373c63f9",
+  "processes_touched": []
+}

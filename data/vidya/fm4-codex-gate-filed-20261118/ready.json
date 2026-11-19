@@ -1,0 +1,66 @@
+{
+ "book_s": 225,
+ "budget_gib": 0.01,
+ "busy_fraction": 0.25,
+ "decision_rule": "selected_gate_count == 1 and refusal_count == 0 and task_outcome_claim_count == 0 and gate_pass_count == 1",
+ "declared_shape": "sub-quarter",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+ },
+ "estimate_s": 300,
+ "first_progress_s": 120,
+ "gib": 1,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM4-ORACLE-WIRE",
+ "id": "vb-fm4-codex-gate-20261118",
+ "keep": [
+  "source/**",
+  "launcher/**",
+  "official/**",
+  "official-*/**",
+  "publisher_smoke-*/**",
+  "*.py",
+  "*.json",
+  "REPORT.md",
+  "private/**",
+  "official/RESULT.json"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/launcher/launch.sh",
+  "sha256": "affbcc6f0b95e5a8e8692ae7a6a9785691987df4271b9534edf19a304dfb08fc"
+ },
+ "lineage": "vidya-fm4-codex-gate",
+ "min_window_s": 120,
+ "notes": "Does a fresh independently selected gate for the current Codex implementation child bind its exact native dispatch and surface the same acceptance in the shared coordination.fm4 reader? One finite prospective structural check, higher intact selection count is better, with one exact recorded gate and unrelated-reader exclusion as the checkpoint. Separate publisher smoke and official runs each execute the complete pinned gate on four actual allocated CPUs. Stop on answer after verifying the exact Judged/Located gate observation and null task outcome. Stop on input drift, refusal, STOP, or the earlier of the grant deadline and the 300-second cap, preserving partial UNKNOWN. The gate covers the current child implementation and yields no historical task or oracle accuracy verdict.",
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "publish_warnings": [
+  "vidya-belief-substrate-program.md:3: untestable prose prerequisite: 'prerequisites. Require a planning-context canary before declaring wired. [no-belief: prospective source-wiring task] [in'",
+  "env-clean: /mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/job.py runs `start_new_session=True`; the keeper attributes the job's processes (and GPU residency) by FILLER_ID, so a child that loses it reads as not the row's. FIX: pass FILLER_ID through (env -i FILLER_ID=\"$FILLER_ID\" ..., env={..., \"FILLER_ID\": os.environ[\"FILLER_ID\"]}) and keep the child in the job's session (publish continues)"
+ ],
+ "published_at": "2026-11-18T17:32:36Z",
+ "published_from": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/spec.json",
+ "publisher": {
+  "agent_id": null,
+  "agent_id_env": null,
+  "at": "2026-11-18T17:32:36Z",
+  "session": "01a1efb0-b2ac-7bc2-a51a-5d7ae4dc2d39",
+  "session_env": "CODEX_THREAD_ID",
+  "user": "node"
+ },
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/official/RESULT.json",
+ "resumable": false,
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/STOP",
+ "total_units": 1,
+ "unit_key": "selected_gate_count",
+ "window_s": 420,
+ "workdir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-codex-gate-20261118/engine-work"
+}

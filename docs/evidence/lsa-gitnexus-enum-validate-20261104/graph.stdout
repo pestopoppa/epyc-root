@@ -1,0 +1,2 @@
+{"path":"fixture.cpp","original":["ready","starting-file","progress","extraction-staged","sub-batch-done","result"],"candidate":["ready","starting-file","extraction-staged","progress","sub-batch-done","result"],"nodes":2,"relationships":2,"calls":2}
+{"path":"fixture.py","original":["ready","starting-file","progress","extraction-staged","sub-batch-done","result"],"candidate":["ready","starting-file","extraction-staged","progress","sub-batch-done","result"],"nodes":2,"relationships":2,"calls":1}

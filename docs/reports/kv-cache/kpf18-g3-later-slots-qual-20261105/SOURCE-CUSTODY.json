@@ -1,0 +1,15 @@
+{
+  "source": "/mnt/raid0/llm/worktrees/mains/h-heterogeneous-slot-fabric-residency/docs/reports/kv-cache/kpf18-g3-slots-deadline-r2-20261105",
+  "transport_decompression": "gzip byte-preserving decompression",
+  "copied_inputs": {
+    "physical_trace.py": "d038e3cee0f117025f5b630d91ca2bb03966d889be8e4181c63efe56c3d15dc5",
+    "socket_deadline.py": "fcc17534e69bfa080c35abb6e38ca495fe6c1a1938983a8b601d92c08f696b93",
+    "cancel_seed_transport.py": "a961ad85add9fd0cc2af659aa3717b0d40ef31b07a15584f494e89f0a8a1d757",
+    "native_block.py": "2703d39eef136a58f898d7c8038756ca8fdcc9efc55506b517b28856ef49c4af",
+    "cancel_seed_stream.py": "d9ae491aea9ef6f80fe60af855b5c48cb9a25c333ab726aeafc31029b2e301bf",
+    "cancel_seed_admission.py": "a07d6060f15c2e51808216e260dad5a5190ba50f38ff1b09b1b106d27b9e0308",
+    "native_task_log.py": "83c93054f5927a4dae2f1e0aa141275e7da8aaca8813c1f332750d0c8ff3166a",
+    "slots_transport.py": "7d95a8ea5eba8786886db6492cec459c4fd1ea19979aa6b0f5fd00bf1e64a68c"
+  },
+  "scope": "prior r2 isolated patched transport, not original unpatched GPU integrated candidate"
+}

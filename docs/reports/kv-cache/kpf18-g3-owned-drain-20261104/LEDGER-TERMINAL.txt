@@ -1,0 +1,14 @@
+KPF-18 group-3 ledger-terminal exception control (review-only)
+
+The requested prior terminal report was absent. I kept all work under `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/`; candidate driver, controller, gate, grants, keeper, source manifests, and entry barriers were not modified.
+
+Updated review-only proposal: `g3-entry-adapter/driver.py.proposed` and exact unified diff `g3-entry-adapter/driver-entry-refusal.patch`. The proposal creates one `ContextBoundary`/`RowflowContext` outside `controller.run`, checks its latched `terminal_refusal` in both the typed `EntryRefused` and generic exception branches, and converts either into `gate.Abort`. `abort_terminal_refusal` still raises `gate.Abort` if the diagnostic refusal ledger write itself fails, chaining that write exception. This preserves STOP/deadline as terminal even when the controller's per-attempt `finally` ledger write raises and replaces the original `EntryRefused`.
+
+Added an injected-fake integration control in `g3-entry-adapter/test_adapter.py`: it executes the actual candidate `controller.run()` and actual candidate `kpf18_gate.main()`, with fake transport/ledger/server collaborators. It reaches the real controller's construction-attempt `finally`, injects `OSError` from its ledger finalizer after a deadline refusal, and verifies rc=3, latched deadline in the diagnostic, gate cleanup and partial-run finalization, and no publish step. Existing broken-diagnostic-ledger unit control verifies the helper still raises the gate abort type on diagnostic write failure.
+
+Validation: `python3 -B -I test_adapter.py` passed 20/20. All process-facing primitives, HTTP/transport, server and ledger operations are fake-injected; no real process, signal, grant, model, build, GPU, benchmark, or publication occurred. This is source-level conformance only, not candidate integration or row qualification.
+
+SHA-256:
+- proposed driver: `fc4f250dbae39a6249231ed2cf1e0cb2925ce8a56b29f198f513e93a6c0fdb7d`
+- patch: `194b0bd2eb14b1a5a0752977d1f948158a29cf7692a090598220d164366964eb`
+- tests: `4c5108a04a1f6f2814f6aa6bfcaffeec2209399ed09bfbfdc9610d47f62618fe`

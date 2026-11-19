@@ -1,0 +1,183 @@
+--- a/ggml/src/ggml-cuda/quantize.cu
++++ b/ggml/src/ggml-cuda/quantize.cu
+@@ -395,7 +395,7 @@
+ }
+ 
+ // scatter: grid over tokens, quantize once, write to all the token's compact rows
+-template <mmq_q8_1_ds_layout ds_layout, bool scatter>
++template <mmq_q8_1_ds_layout ds_layout, bool scatter, bool q4k_quantized_sum = false>
+ static __global__ void quantize_mmq_q8_1(
+         const float * __restrict__ x, const int32_t * __restrict__ ids, void * __restrict__ vy,
+         const int64_t ne00, const int64_t s01, const int64_t s02, const int64_t s03,
+@@ -460,6 +460,19 @@
+     q.z = roundf(xi.z*d_inv);
+     q.w = roundf(xi.w*d_inv);
+     const float d = 1.0f / d_inv;
++
++    if constexpr (q4k_quantized_sum) {
++        static_assert(ds_layout == MMQ_Q8_1_DS_LAYOUT_DS4 && !scatter,
++                      "q4_K quantized sum is scoped to direct DS4 MMQ");
++        int qsum = int(q.x) + int(q.y) + int(q.z) + int(q.w);
++#pragma unroll
++        for (int offset = 4; offset > 0; offset >>= 1) {
++            qsum += __shfl_xor_sync(0xFFFFFFFF, qsum, offset, WARP_SIZE);
++        }
++        // The MMQ dot uses the half-rounded q8 scale, so its offset must
++        // use that same scale and the same quantized activation values.
++        sum = __half2float(__float2half(d)) * float(qsum);
++    }
+ 
+     // write the block once (normal) or to each of the token's compact rows (scatter)
+     const int nwrite = scatter ? n_expert_used : 1;
+@@ -536,8 +549,13 @@
+                 <<<num_blocks, block_size, 0, stream>>>(x, ids, vy, ne00, s01, s02, s03, ne0, ne1, ne2, /*n_expert_used=*/0);
+             break;
+         case MMQ_Q8_1_DS_LAYOUT_DS4:
+-            quantize_mmq_q8_1<MMQ_Q8_1_DS_LAYOUT_DS4, false>
+-                <<<num_blocks, block_size, 0, stream>>>(x, ids, vy, ne00, s01, s02, s03, ne0, ne1, ne2, /*n_expert_used=*/0);
++            if (type_src0 == GGML_TYPE_Q4_K && ids == nullptr) {
++                quantize_mmq_q8_1<MMQ_Q8_1_DS_LAYOUT_DS4, false, true>
++                    <<<num_blocks, block_size, 0, stream>>>(x, ids, vy, ne00, s01, s02, s03, ne0, ne1, ne2, /*n_expert_used=*/0);
++            } else {
++                quantize_mmq_q8_1<MMQ_Q8_1_DS_LAYOUT_DS4, false>
++                    <<<num_blocks, block_size, 0, stream>>>(x, ids, vy, ne00, s01, s02, s03, ne0, ne1, ne2, /*n_expert_used=*/0);
++            }
+             break;
+         case MMQ_Q8_1_DS_LAYOUT_D2S6:
+             quantize_mmq_q8_1<MMQ_Q8_1_DS_LAYOUT_D2S6, false>
+--- a/ggml/src/ggml-cuda/vecdotq.cuh
++++ b/ggml/src/ggml-cuda/vecdotq.cuh
+@@ -521,8 +521,14 @@
+ 
+         sumf_d += d8 * (dot0 * sc[i]);
+         if (sum_lane) {
+-            const float s8 = __high2float(ds8);
+-            sumf_m += s8 * m[i]; // sum of q8_1 block * q4_K min val
++            // Match the min correction to the quantized activation values
++            // used by dot0, rather than the q8_1 sum of original floats.
++            int sum_q8 = 0;
++#pragma unroll
++            for (int k = 0; k < QI8_1; ++k) {
++                sum_q8 = ggml_cuda_dp4a(0x01010101, get_int_b4(bq8_1[i].qs, k), sum_q8);
++            }
++            sumf_m += (d8 * float(sum_q8)) * m[i];
+         }
+     }
+ 
+@@ -721,7 +727,20 @@
+         u[2*i+1] = get_int_b4(bq8_1->qs, iqs + i + QI4_0);
+     }
+ 
+-    return vec_dot_q4_0_q8_1_impl<VDR_Q4_0_Q8_1_MMVQ>(v, u, bq4_0->d, bq8_1->ds);
++    // Center the four-bit weights in integer space.  ds8.y is the rounded
++    // sum of the original activations, not the sum of their q8 integers; using
++    // it for the -8 correction adds a second quantization discrepancy.
++    int sumi = 0;
++#pragma unroll
++    for (int i = 0; i < VDR_Q4_0_Q8_1_MMVQ; ++i) {
++        const uint32_t lo = uint32_t(v[i]) & 0x0f0f0f0fU;
++        const uint32_t hi = (uint32_t(v[i]) >> 4) & 0x0f0f0f0fU;
++        const uint32_t slo = (lo & 0x07070707U) | (((~lo) & 0x08080808U) * 31U);
++        const uint32_t shi = (hi & 0x07070707U) | (((~hi) & 0x08080808U) * 31U);
++        sumi = ggml_cuda_dp4a(static_cast<int>(slo), u[2*i+0], sumi);
++        sumi = ggml_cuda_dp4a(static_cast<int>(shi), u[2*i+1], sumi);
++    }
++    return float(bq4_0->d) * float(sumi) * __half22float2(bq8_1->ds).x;
+ }
+ 
+ 
+--- a/tests/test-backend-ops.cpp
++++ b/tests/test-backend-ops.cpp
+@@ -36,6 +36,8 @@
+ #include <ctime>
+ #include <future>
+ #include <fstream>
++#include <fcntl.h>
++#include <unistd.h>
+ #include <memory>
+ #include <mutex>
+ #include <random>
+@@ -661,6 +663,39 @@
+            candidate_error <= kappa * std::max(sibling_error, floor);
+ }
+ 
++// Diagnostic-only logical block capture: the caller must provide a fresh private directory.
++// Exclusive creation makes an accidental second invocation fail closed. The external
++// consumer hashes bytes; no verdict or existing property threshold is changed.
++static void c6_capture_tensor(const char * dir, const char * label, const ggml_tensor * t) {
++    if (!t) GGML_ABORT("C6 capture null tensor");
++    const std::string path = std::string(dir) + "/" + label + ".bin";
++    int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);
++    if (fd < 0) GGML_ABORT("C6 capture create failed");
++    const int64_t block = ggml_blck_size(t->type);
++    const size_t block_bytes = ggml_type_size(t->type);
++    if (block <= 0 || t->ne[0] % block != 0) GGML_ABORT("C6 capture invalid block shape");
++    std::vector<uint8_t> bytes;
++    for (int64_t i3=0; i3<t->ne[3]; ++i3)
++      for (int64_t i2=0; i2<t->ne[2]; ++i2)
++        for (int64_t i1=0; i1<t->ne[1]; ++i1)
++          for (int64_t i0=0; i0<t->ne[0]; i0+=block) {
++            const size_t offset = i3*t->nb[3] + i2*t->nb[2] + i1*t->nb[1] + (i0/block)*t->nb[0];
++            const size_t pos = bytes.size(); bytes.resize(pos + block_bytes);
++            ggml_backend_tensor_get(t, bytes.data()+pos, offset, block_bytes);
++          }
++    size_t off = 0;
++    while (off < bytes.size()) {
++        ssize_t n = write(fd, bytes.data() + off, bytes.size() - off);
++        if (n < 0 && errno == EINTR) continue;
++        if (n <= 0) GGML_ABORT("C6 capture write failed");
++        off += static_cast<size_t>(n);
++    }
++    if (close(fd) != 0) GGML_ABORT("C6 capture close failed");
++    fprintf(stderr, "C6_CAPTURE %s type=%d ne=%" PRId64 ",%" PRId64 ",%" PRId64 ",%" PRId64 " nb=%zu,%zu,%zu,%zu bytes=%zu\n",
++        label, (int)t->type, t->ne[0], t->ne[1], t->ne[2], t->ne[3],
++        t->nb[0], t->nb[1], t->nb[2], t->nb[3], bytes.size());
++}
++
+ static host_property_result check_fp64_mul_mat_ratio(const ggml_tensor * candidate,
+                                                      const ggml_tensor * sibling) {
+     if (candidate->op != GGML_OP_MUL_MAT || sibling->op != GGML_OP_MUL_MAT ||
+@@ -679,6 +714,16 @@
+             break;
+         default:
+             return {};
++    }
++
++    if (const char * dir = std::getenv("C6_PROPERTY_CAPTURE_DIR")) {
++        c6_capture_tensor(dir, "candidate_weight", candidate->src[0]);
++        c6_capture_tensor(dir, "candidate_activation", candidate->src[1]);
++        c6_capture_tensor(dir, "sibling_weight", sibling->src[0]);
++        c6_capture_tensor(dir, "sibling_activation", sibling->src[1]);
++        c6_capture_tensor(dir, "candidate_output", candidate);
++        c6_capture_tensor(dir, "sibling_output", sibling);
++        sleep(6); // Retain the native allocation for the rowflow residency sample.
+     }
+ 
+     std::string detail;
+@@ -13370,6 +13415,12 @@
+         test_cases = make_test_cases_from_file(test_file_path);
+     }
+ 
++    // The full-suite seed is keyed by the unfiltered case ordinal. A selected
++    // diagnostic case must retain that ordinal to reproduce the original input.
++    std::unordered_map<const test_case *, size_t> c6_original_index;
++    if (std::getenv("C6_PROPERTY_CAPTURE_DIR")) {
++        for (size_t k = 0; k < test_cases.size(); ++k) c6_original_index.emplace(test_cases[k].get(), k);
++    }
+     filter_test_cases(test_cases, params_filter);
+ 
+     if (mode == MODE_TEST) {
+@@ -13414,7 +13465,12 @@
+                 for (size_t i = my_begin; i < my_end; ++i) {
+                     auto & test = test_cases[i];
+                     if (suite_seed_enabled) {
+-                        test->set_suite_seed(suite_seed, i);
++                        size_t seed_index = i;
++                        if (std::getenv("C6_PROPERTY_CAPTURE_DIR")) {
++                            seed_index = c6_original_index.at(test.get());
++                            fprintf(stderr, "C6_SEED_INDEX %zu\n", seed_index);
++                        }
++                        test->set_suite_seed(suite_seed, seed_index);
+                     }
+                     test_status_t status = test->eval(
+                         b, b_cpu, op_names_filter, output_printer, autokernel_properties,

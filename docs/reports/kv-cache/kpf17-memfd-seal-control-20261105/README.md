@@ -1,0 +1,1 @@
+Private non-ELF memfd control: compare an unsealed writable alias with sealed-write, shrink and further-seal refusals. The exercise uses only same-process descriptors and a synthetic mapping; it is not a native ELF loader, provenance, cross-process or whole-chain qualification.

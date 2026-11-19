@@ -1,4 +1,6 @@
-import type { Plugin } from "@opencode-ai/plugin"
+import { spawn } from "node:child_process"
+
+import { Plugin } from "@opencode/plugin"
 
 /**
  * Filesystem containment guard for opencode (INC-20260823).
@@ -11,105 +13,115 @@ import type { Plugin } from "@opencode-ai/plugin"
  *
  * This plugin is the opencode surface of the ONE shared scanner
  * (scripts/hooks/filesystem_containment_scan.py — the same file the Claude
- * PreToolUse hook calls; the repo's rule: never a fifth parser). Every bash
- * invocation is scanned before execution; every write/edit of a file path is
+ * PreToolUse hook calls; the repo's rule: never a fifth parser). Every shell
+ * command is scanned before execution; every write/edit of a file path is
  * checked against the same containment roots + allowlist (--check-path);
- * a refuse verdict blocks the tool.
+ * a refuse verdict blocks the operation.
  *
- * Why no `permission` block for edit/write: the opencode schema accepts
+ * Why no `permissions` block for edit/write: the opencode schema accepts
  * path-pattern deny maps for `edit`, but the scanner's allow-set
  * (/mnt/raid0/llm/**, /workspace/**, /tmp/**, ~/.claude/**, ~/.codex/** plus
  * the operator allowlist and EPYC_FS_ACK) cannot be expressed as deny
  * patterns without hand-copying the containment tables — the exact drift this
  * unification kills. The plugin runs the real check (realpath'd, allowlist-
- * aware, fail-closed); the generated permission.bash block is defense-in-depth
+ * aware, fail-closed); the generated shell permission block is defense-in-depth
  * only for the literal CLASS A verbs.
  *
  * The scanner reads EPYC_FS_ACK from ITS OWN process environment — the
- * opencode server's environment, which a bash-session `export` cannot reach —
+ * opencode server's environment, which a shell-session `export` cannot reach —
  * so in this surface the env-ack is strictly operator-set. The operator
  * allowlist (scripts/hooks/filesystem_allowlist.yaml) approves CLASS B path
  * prefixes; CLASS A (mount/apt/systemctl/...) always needs the env ack.
  *
- * NOTE: the type import below is dev-time only (erased at runtime), so the
- * plugin loads with no dependencies and no network access. Config is loaded
- * at opencode start — RESTART opencode after changing plugin or permissions.
+ * V2 note: OpenCode 2 calls the shell operation `shell` (not V1's `bash`), so
+ * shell commands are intercepted at `ctx.shell.hook("create.before")`; file
+ * writes/edits remain `ctx.tool.hook("execute.before")`. V1 plugin hooks are
+ * intentionally not used because V2 does not run V1 plugin implementations.
  */
 
 const SCANNER = "/workspace/scripts/hooks/filesystem_containment_scan.py"
 const FILE_TOOLS = new Set(["write", "edit"])
 
-export const FilesystemContainment: Plugin = async ({ $, directory, client }) => {
-  const runScanner = async (args: string[]): Promise<{ exitCode: number; stdout: string; stderr: string }> => {
-    try {
-      // Bun's shell passes array elements as individual argv entries, so the
-      // command reaches the scanner untouched by shell quoting.
-      return await $`python3 ${args}`.nothrow().quiet()
-    } catch {
-      throw new Error(
-        "[filesystem-containment] scanner could not be started — refusing (fail closed, INC-20260823)",
-      )
-    }
-  }
+type ScanResult = { exitCode: number; stdout: string; stderr: string }
 
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (input.tool === "bash") {
-        const command: unknown = output.args?.command
-        if (typeof command !== "string" || command.trim() === "") return
-        const args: string[] = [SCANNER, "--command", command]
-        if (typeof directory === "string" && directory) args.push("--cwd", directory)
-        const res = await runScanner(args)
-        if (res.exitCode === 0) return
-        const detail = (res.stderr || "").trim() || (res.stdout || "").trim()
-        const message = detail || `scanner refused the command (exit ${res.exitCode})`
-        try {
-          await client.app.log({
-            body: {
-              service: "filesystem-containment",
-              level: "warn",
-              message: `refused bash: ${message}`,
-              extra: { tool: "bash" },
-            },
-          })
-        } catch {
-          // logging must never mask the refusal
-        }
-        throw new Error(
-          `[filesystem-containment] ${message} — operator override: set ` +
-            'EPYC_FS_ACK="operator: <who> <date>: <reason>" on the opencode process ' +
-            "environment (CLASS A), or add the path to scripts/hooks/filesystem_allowlist.yaml (CLASS B)",
-        )
-      }
+function runScanner(args: string[]): Promise<ScanResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn("python3", args, { stdio: ["ignore", "pipe", "pipe"] })
+    let stdout = ""
+    let stderr = ""
 
-      if (FILE_TOOLS.has(input.tool)) {
-        const filePath: unknown = output.args?.filePath
-        if (typeof filePath !== "string" || filePath.trim() === "") return
-        const args: string[] = [SCANNER, "--check-path", filePath]
-        if (typeof directory === "string" && directory) args.push("--cwd", directory)
-        const res = await runScanner(args)
-        if (res.exitCode === 0) return
-        const detail = (res.stderr || "").trim() || (res.stdout || "").trim()
-        const message = detail || `scanner refused the file path (exit ${res.exitCode})`
-        try {
-          await client.app.log({
-            body: {
-              service: "filesystem-containment",
-              level: "warn",
-              message: `refused ${input.tool}: ${message}`,
-              extra: { tool: input.tool },
-            },
-          })
-        } catch {
-          // logging must never mask the refusal
-        }
-        throw new Error(
-          `[filesystem-containment] ${message} — operator override: add the path to ` +
-            "scripts/hooks/filesystem_allowlist.yaml (CLASS B), or set " +
-            'EPYC_FS_ACK="operator: <who> <date>: <reason>" on the opencode process ' +
-            "environment for a one-off",
-        )
-      }
-    },
-  }
+    child.stdout?.on("data", (chunk) => {
+      stdout += String(chunk)
+    })
+    child.stderr?.on("data", (chunk) => {
+      stderr += String(chunk)
+    })
+    child.on("error", reject)
+    child.on("close", (code) => resolve({ exitCode: code ?? 1, stdout, stderr }))
+  })
 }
+
+function refusal(message: string): string {
+  return (
+    `[filesystem-containment] ${message} — operator override: set ` +
+    'EPYC_FS_ACK="operator: <who> <date>: <reason>" on the opencode process ' +
+    "environment (CLASS A), or add the path to scripts/hooks/filesystem_allowlist.yaml (CLASS B)"
+  )
+}
+
+export default Plugin.define({
+  id: "filesystem-containment",
+  async setup(ctx) {
+    const directory = ctx.location.directory
+
+    await ctx.shell.hook("create.before", async (event) => {
+      const command = event.command
+      if (typeof command !== "string" || command.trim() === "") return
+
+      const args = [SCANNER, "--command", command]
+      const cwd = event.cwd || directory
+      if (cwd) args.push("--cwd", cwd)
+
+      let result: ScanResult
+      try {
+        result = await runScanner(args)
+      } catch {
+        throw new Error(
+          "[filesystem-containment] scanner could not be started — refusing (fail closed, INC-20260823)",
+        )
+      }
+      if (result.exitCode === 0) return
+
+      const detail = (result.stderr || "").trim() || (result.stdout || "").trim()
+      const message = detail || `scanner refused the command (exit ${result.exitCode})`
+      console.warn(`[filesystem-containment] refused shell command: ${message}`)
+      throw new Error(refusal(message))
+    })
+
+    await ctx.tool.hook("execute.before", async (event) => {
+      if (!FILE_TOOLS.has(event.tool)) return
+
+      const input = (event.input ?? {}) as Record<string, unknown>
+      const filePath = input.path ?? input.filePath
+      if (typeof filePath !== "string" || filePath.trim() === "") return
+
+      const args = [SCANNER, "--check-path", filePath]
+      if (directory) args.push("--cwd", directory)
+
+      let result: ScanResult
+      try {
+        result = await runScanner(args)
+      } catch {
+        throw new Error(
+          "[filesystem-containment] scanner could not be started — refusing (fail closed, INC-20260823)",
+        )
+      }
+      if (result.exitCode === 0) return
+
+      const detail = (result.stderr || "").trim() || (result.stdout || "").trim()
+      const message = detail || `scanner refused the file path (exit ${result.exitCode})`
+      console.warn(`[filesystem-containment] refused ${event.tool}: ${message}`)
+      throw new Error(refusal(message))
+    })
+  },
+})

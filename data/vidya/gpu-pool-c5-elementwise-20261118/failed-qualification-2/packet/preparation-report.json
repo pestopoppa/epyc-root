@@ -1,0 +1,63 @@
+{
+  "state": "prepared-not-published-no-native-compute",
+  "row_id": "ni-gpu-pool-elementwise-20261118-v5",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/spec.json",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/launch.sh",
+  "producer": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/run_elementwise.py",
+  "publish_command_from_lane": "ROWFLOW_REPO=\"$PWD\" python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/spec.json",
+  "scope": "17 original unsupported target descriptions plus 3 original supported controls, seed 2026102603; target and control results reported separately",
+  "executable_sha256": "dd9888f1a009dec291a3e3748b8e132ee9a9edf6dd3c9361f0dae10120270431",
+  "hip_sha256": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4",
+  "source_commit": "c72ec82f5417bb2937310326120f149b665e8400",
+  "source_dirty_state": "UNKNOWN",
+  "checks": [
+    "exact 17-case selection compared against original plan",
+    "pinned inputs, linkage, shim and graphs knob verified without native test",
+    "three synthetic controls passed including mixed outcomes and missing case",
+    "python compilation and launcher shell syntax passed",
+    "current capture adapter and shared grade used",
+    "C5 source filter supports regex_search; actual case availability awaits acquired smoke",
+    "MI210 ROCm0 identity and OK/FAIL backend terminal checked against C5 console source",
+    "all 17 descriptions required for smoke and completion; partial result records coverage_complete false",
+    "Three original control descriptors separately pinned, same invocation, require PASS; target counts exclude controls",
+    "Two positive VRAM samples per invocation remain mandatory; success of control design awaits smoke"
+  ],
+  "limitations": [
+    "Terminal files are written before outcome validation; a missing case remains missing, and no unsupported result is inferred.",
+    "Smoke and official compute were not run.",
+    "GitNexus status and impact unavailable: repository not indexed.",
+    "C5 manifest and provenance attribute the build to the stated commit; no clean-tree attestation is inferred."
+  ],
+  "preparation_input_hashes": {
+    "spec.json": "dff2e7b254d969db8c7e64b6282cd0985ec46ce9d3ca19d92241f86158d51fce",
+    "launch.sh": "d9ec8dc2ab2367a080cea23c82e2eaab6b1fc7499e97a52a58a02f768b7be7ae",
+    "PINNED.sha256": "7beec04ba45a2b5f4bb7f4c8fcf76f9dde01b473be5f19e39793fe61fce2795e"
+  },
+  "manifest_original_path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/SHA256SUMS",
+  "provenance_original_path": "/mnt/raid0/llm/kernels/builds/gpu-20261024-c72ec82f5-c5/PROVENANCE.md",
+  "manifest_packet_copy": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/source/SHA256SUMS",
+  "provenance_packet_copy": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-elementwise-current/source/PROVENANCE.md",
+  "smoke_failure": {
+    "evidence_directory": "/mnt/raid0/llm/tmp/compute-flags/dryrun/ni-gpu-pool-elementwise-20261118-v5/elementwise-1795033741/native",
+    "outcome": "NORM 10/10, SUM 1/1, SUM_ROWS 6/6 unsupported; zero passes or failures",
+    "durations_s": [
+      0.465,
+      0.468,
+      0.469
+    ],
+    "samples_each": 19,
+    "kfd_samples": [
+      17,
+      16,
+      17
+    ],
+    "positive_vram_samples": [
+      0,
+      0,
+      0
+    ],
+    "diagnosis": "No observed positive VRAM despite multiple KFD samples in each process. A missed short allocation is possible, but is not established; zero supported executions plausibly entail no allocation. Increasing sampling frequency alone is not an evidence-based fix. Pinned private maps matched. Witness threshold retained unchanged.",
+    "status": "Failed qualification preserved as diagnostic; one supported original control per op added in same invocation, subject to new acquired smoke.",
+    "preserved_copy": "data/vidya/gpu-pool-c5-elementwise-20261118/failed-qualification-1"
+  }
+}

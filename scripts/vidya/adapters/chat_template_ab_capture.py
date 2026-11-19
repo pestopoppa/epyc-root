@@ -131,8 +131,20 @@ def validate_row(row: Any) -> list[str]:
 
     if row.get("schema") != CAPTURE_SCHEMA:
         p.append(f"schema must be {CAPTURE_SCHEMA!r}")
+    # CT21-DIRECT-WRITE: an exploratory diagnostic has no codified protocol; its EMPTY protocol_id
+    # is admissible only when the row binds a hashed exploratory profile + producer source (the
+    # shared ladder then caps it at Judged/Located). Any other row still needs a protocol_id.
+    _x = row.get("extra")
+    _expl = _x.get("exploratory") if isinstance(_x, dict) else None
+    _exploratory_empty = bool(
+        row.get("protocol_id") == ""
+        and isinstance(_expl, dict) and _text(_expl.get("profile"))
+        and _SHA256.match(str(_expl.get("profile_sha256", "")))
+        and _SHA256.match(str(_expl.get("source_sha256", ""))))
     for key in ("run_id", "producer", "measurement_id", "metric", "unit", "claim",
                 "protocol_id", "reps_basis", "results_path", "date"):
+        if key == "protocol_id" and _exploratory_empty:
+            continue
         if not _text(row.get(key)):
             p.append(f"{key} must be a non-empty string")
     if not _utc_timestamp(row.get("emitted_at")):

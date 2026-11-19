@@ -1,0 +1,57 @@
+{
+  "changed_lane_paths": [
+    "scripts/vidya/producers/mi210_native_deploy.py",
+    "tests/vidya/mi210_native_deploy_control.py"
+  ],
+  "control_script": "tests/vidya/mi210_native_deploy_control.py",
+  "controls": [
+    "28 existing producer, patch and carrier tests passed",
+    "transformed sources compiled and sampler recognizes captured PID only",
+    "isolated -I reads recognized sealed 4-CPU smoke and refused smoke as official",
+    "isolated -I official predicate refused 4-CPU width and altered grant, accepted sealed 8-CPU fixture",
+    "isolated -I projection produced 20 synthetic Judged/Located observations through shared grade",
+    "prepared identity runtime gate refused altered model stat without hashing model again",
+    "launcher lint, task resolution, preflight, GPU timing shape gpu-q3, 8-thread evidence and claim width passed"
+  ],
+  "gitnexus": "No local index available; gitnexus status and upstream impact requested",
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-MI210-PAIRED-DIAG-WIRE",
+  "historical_c_hip_sha256": "fcd3bf0cf2d045d4152463b283cf9cdd403db469f9b6d5254c10b4db138c74ee",
+  "historical_c_image_path": "/mnt/raid0/llm/kernels/quarantine/unlisted-strays-20261109/gpu-20261024-c72ec82f5-c5/libggml-hip.so.0.16.0.objcopy-rewritten-20261105",
+  "historical_equivalence_claimed": false,
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/launch.sh",
+  "launcher_sha256": "67aa29f8ee1cf672bcb4406043f488ecb4fb84b2a7cd418bf30468c821a6fb92",
+  "manifest_sha256": "24d77219f359d08a5c2f6e833634f9164acbaac48bf54705e448074a3bb15f33",
+  "mi210_hip_sha256": {
+    "B": "559677a86746233bc7fd58f54c92548d48387536b9b8dfa9db78b65941e740e2",
+    "C": "23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4"
+  },
+  "model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "official_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/RESULT.json",
+  "owner": "handoff-vidya-belief-substrate",
+  "postcapture_projection": "/usr/bin/python3 -I /mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/mi210_native_deploy.py project",
+  "publish_command_from_lane": "ROWFLOW_REPO=\"$PWD\" python3 scripts/coordination/rowflow/publish_row.py /mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/spec.json",
+  "remaining": [
+    "Keeper smoke requalification after owner republished unchanged row; returned PASS retained separately in q38-smoke-event.json.",
+    "Genuine native Q38 capture, registered ingestion and real planning-context canary."
+  ],
+  "row_id": "vidya-mi210-q38-native-wire-20261117",
+  "smoke_result": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/SMOKE.json",
+  "source_registration": "Canonical mi210-paired-raw reader and synthetic controls already landed; NPD1 private successor published with smoke PASS.",
+  "spec": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/spec.json",
+  "spec_sha256": "44eecff4bba672492ed2916becee9fe9d601019c82cb607bb9cec953b3cbce92",
+  "staged_input_sha256": {
+    "IDENTITY.json": "cde504858d377caed28c6a98a09d41479ba981b8e8885458bf6be275d6945a6e",
+    "dependency.json": "e3e59b0eabb1f99ca2c8509b410d27265a93637d327cc59a34b5a8a23d7ca0d1",
+    "gpuproof.py": "249715d409c741bcfee923595ea87738fb433d7f54ea638b56eb18b4248eece0",
+    "job.py": "03de5c525c5ebf4c1bd6659df2f3ef17a3e2839a9dd3e99bc2190cba64bc5175",
+    "mi210_native_deploy.py": "95ffaf24ecc38a7ad2b6351b1f14ad8234bf8a3728ea0940fd401be7c6f15cf4",
+    "scripts/vidya/adapters/_native_sidecar.py": "405e9fe8fa536029886580070eb6c8c6838e1eab8309cc33c94956ee260a23d2",
+    "scripts/vidya/adapters/mi210_paired_raw.py": "d728b02a28a63d6677d4021e1a8425bae1d50003098bfb96b0ffd9c92b2a2640",
+    "scripts/vidya/canonical.py": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+    "scripts/vidya/claim_tuple.py": "bb69eac8a5c1cc9ad3e743d3c4817d84339095fef9c1c31a37543a8b550fb4e6",
+    "scripts/vidya/lattice.py": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+    "scripts/vidya/producers/mi210_native_run.py": "bb6dd702ba9ea69a90d749670335cca0f14067b6b70e6357f5a6eff9d36f8a60",
+    "scripts/vidya/producers/mi210_paired_capture.py": "55787a1ce44cb311bda6a7e6581a489eb8f20df22845cb8848be37ade1a70b56"
+  },
+  "state": "republished-smoke-queued-after-returned-pass"
+}

@@ -1,0 +1,50 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": null,
+ "answer": null,
+ "at": "2026-11-18T16:20:00+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-18T16:19:33Z reason=complete",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-fm4-codex-native-20261118.ended",
+ "filed_at": "2026-11-18T16:20:00+00:00",
+ "filed_by": "file_result.py",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-FM4-ORACLE-WIRE",
+ "id": "vb-fm4-codex-native-20261118",
+ "machine_checkable": true,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-fm4-codex-native-20261118.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/official/RESULT.json",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/fm4-native-current/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "vb-fm4-codex-native-20261118",
+ "row_verdict": "pass",
+ "rule": "terminal_receipt_count >= 2 and refusal_count == 0",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 77,
+  "input": 331874337,
+  "output": 1382797,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 333257134,
+  "tokens_per_task": 4328014.7272727275
+ },
+ "values": {
+  "refusal_count": 0.0,
+  "terminal_receipt_count": 2.0
+ },
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "06b0ece27a099748d991c62d817aa0a8050d38865014db281ac1bd5ea1355432",
+  "result": "pass",
+  "status": "filed"
+ }
+}

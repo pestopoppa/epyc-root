@@ -1,0 +1,43 @@
+{
+ "admission_class": "block-correctness",
+ "decision_rule": "PASS iff status=PASS, prepare_status=ready, ingest_refused=0, rows_projected>0, proposition_visible=true, harness_matrix_visible=true, harness_excluded_from_claim_ids=true and canonical_unchanged=true. FAIL on a ready unchanged canary missing any required proposition, harness isolation or ingest condition; UNKNOWN on exception, refusal or canonical change. Model-free verifier finding only; no timing or quality claim.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 900,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+ "id": "vb-ak-wire-canary-r3-20261104",
+ "keep": [
+  "RESULT.json",
+  "evidence/**",
+  "state/ingest.json",
+  "state/prepared.json",
+  "state/planner-belief-section.txt"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/launch.sh",
+  "sha256": "4c5b38656afd33b3996c623935aff9e89f426edd199841b25ba97d91d639e01f"
+ },
+ "lineage": "vb-ak-wire-canary",
+ "min_window_s": 900,
+ "owner": "handoff-vidya-belief-substrate",
+ "ports": [],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-04T16:24:22Z",
+ "published_from": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/row-spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104",
+ "shape": "quarter",
+ "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/progress.py",
+ "stop_file": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104/STOP",
+ "window_s": 1380,
+ "workdir": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r3-20261104"
+}

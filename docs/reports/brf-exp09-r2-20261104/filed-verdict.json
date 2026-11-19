@@ -1,0 +1,38 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-delegation-context-preassembly",
+  "rationale": "EXPAND exploratory: rc=0, 48/48 unique matching item/arm cells with raw view+answer and parsed outputs below 1024 tokens; unchanged control and correct linkage; 12/12 planted mismatches rejected; verified-quote mean accuracy 0.868083 >= control 0.803500. Native terminal mechanism_fired/capture_complete false are aggregate bugs: run_cell returns score-only while complete records were emitted, independently checked in docs/reports/brf-exp09-r2-20261104/SUMMARY.json. The original terminal and prior inconclusive verdict are retained; no production claim.",
+  "verdict": "pass"
+ },
+ "at": "2026-11-04T15:48:13+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-04T07:37:51Z reason=complete",
+ "filed_at": "2026-11-04T15:48:13+00:00",
+ "filed_by": "handoff-delegation-context-preassembly",
+ "handoff_task": "handoffs/active/context-and-token-economy.md:TOC-SP-3-EXP09-R2",
+ "id": "brf-exp09-answerbudget-r2-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp09-answerbudget-r2-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl",
+ "outcome_class": "SCIENCE-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "EXPAND exploratory: rc=0, 48/48 unique matching item/arm cells with raw view+answer and parsed outputs below 1024 tokens; unchanged control and correct linkage; 12/12 planted mismatches rejected; verified-quote mean accuracy 0.868083 >= control 0.803500. Native terminal mechanism_fired/capture_complete false are aggregate bugs: run_cell returns score-only while complete records were emitted, independently checked in docs/reports/brf-exp09-r2-20261104/SUMMARY.json. The original terminal and prior inconclusive verdict are retained; no production claim.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "brf-exp09-answerbudget-r2-20261104",
+ "row_verdict": "pass",
+ "rule": "BRF-T4-EXP09 repaired 12-log replay, exploratory/decision-support. Preserve the original frozen 12-log corpus (same manifest and item bytes), four arms, pinned unchanged control implementation, quote-verification planted-mismatch check, own production-consolidated-v10 kernel-store binary and worker model; only the evaluator answer completion budget changes from 256 to 1024 tokens to remove the observed exact-256-token truncation confound. Continue recording raw answers and selected evidence per cell. Complete 12-log comparison supports owner decision: EXPAND only if control is verified, mechanism fired, and verified-quote accuracy >= control; REVISE if nominal path did not run; STOP if verified-quote never beats control. Futility after >=4 verified-quote cells is an operational early-stop decision only, never a pass/fail gate; every incomplete/futile run remains partial and cannot satisfy completion. All answer records must parse without hitting the 1024-token completion ceiling for a clean full comparison; otherwise REVISE harness/inconclusive. Retention uses the original capped failed-ID reference and substring scorer, so report only that scope.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "d29680e346f05481d1387e8f90a2d095d009abfe9ea2a1bdb7be4b8e2cc32296",
+  "result": "pass",
+  "status": "filed"
+ }
+}

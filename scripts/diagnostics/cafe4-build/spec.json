@@ -1,0 +1,28 @@
+{
+  "id": "df2-cafe4-modes-cpu-build-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Build qualification only: require pinned v10 commit and diagnostic patch SHA-256, exact generated modes source/header hashes, full CPU executable, compiled MTP load/rollback/rewind and verify-batch/fault-option markers, hashed libraries and all llama/ggml linkage local to this build. No native rollback, GPU residency or performance verdict.",
+  "verdict_by": "agent",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-modes-20261119",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "*.py",
+    "*.cpp",
+    "*.hpp",
+    "*.json",
+    "*.sh"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-modes-20261119/driver.py predicate"
+}

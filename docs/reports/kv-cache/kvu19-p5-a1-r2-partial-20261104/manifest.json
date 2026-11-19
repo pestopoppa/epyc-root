@@ -1,0 +1,61 @@
+{
+ "decision_rule": "Identical r3 A1 protocol (20 decode-only rows, drafted + no-draft dedicated server lifetimes, L0/L1/L2/L3/L0 x2, park by direct prefill, same occupancy/draft/residency/teardown gates) on the champion store build gpu-20261024-c72ec82f5-c5 (KVU-19a + KVU-19b-c1 masked-block skip). Reference: r3 production v10 L3 loss 58.0% drafted / 61.3% no-draft. Classify per variant by L3 loss vs own mean L0: <=15% SKIP-RECOVERS, 15-45% PARTIAL, >=45% NO-RECOVERY; also report L0 vs r3 v10 L0 (35.56 / 22.17 tok/s). KVU-19 predeclared expectation: L3 drafted >= ~33, no-draft >= ~19 tok/s. Qualification is two native lifecycles on CPUs184-187 only and yields no verdict. A partial failed-result file is not PASS. Descriptive, not a formal gate; no production deployment implied.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 7200,
+ "first_progress_s": 300,
+ "gib": 128,
+ "handoff_task": "handoffs/active/kv-cache-program.md:KVU-19-P5A1",
+ "id": "handoff-kvu19-p5-champion-a1-r2-20261104",
+ "keep": [
+  "result.json",
+  "preflight.json",
+  "model-receipt.json",
+  "source.sha256",
+  "runtime.sha256",
+  "*.py",
+  "*.sh",
+  "server-argv.txt",
+  "contexts/**",
+  "run-*/**",
+  "qualification-*/**",
+  "linkage-*.txt",
+  "region-lock",
+  "REGION-LOCK-INPUTS.sha256",
+  "REGION-LOCK-PYTHON-ALLOW.txt",
+  "lock-catalog.json",
+  "lock-source/*.py",
+  "lock_bootstrap.py",
+  "review-receipt.json",
+  "measurement-sufficiency.json",
+  "test_private_lock.py"
+ ],
+ "lane": "gpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/launch.sh",
+  "sha256": "c5ef5945b0897f963f97ed0277d6aa9bb60f47501e5c0407fc8738ac84d6a208"
+ },
+ "lineage": "handoff-kvu19-p5-champion-a1",
+ "min_window_s": 600,
+ "notes": "Same declared 20-row A1 protocol and source/model/runtime identities; previous row ended rc75 disk-floor before a full result. Fresh ID preserves original event and does not weaken storage or resource guards.",
+ "owner": "handoff-kvu",
+ "ports": [
+  18198
+ ],
+ "priority_rank": 20.0,
+ "published_at": "2026-11-04T14:34:45Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/spec.json",
+ "regions": "mi210_0,184-191",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/result.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104",
+ "shape": "gpu",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104/STOP",
+ "supersedes": "handoff-kvu19-p5-champion-a1-20261104",
+ "window_s": 8940,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/p5-champion-a1-r2-20261104"
+}

@@ -1,0 +1,16 @@
+{
+  "adapter": "adapters/autokernel_r234_sweep.py",
+  "adapter_id": "vidya.adapters.autokernel_r234_sweep/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 54,
+  "missing": [],
+  "paths": [
+    "/mnt/raid0/llm/tmp/vb-r234-wire-20261104/runs/dc2079b32cce475a9f4e62d782cb09ca"
+  ],
+  "refused": [],
+  "rows_projected": 18,
+  "source": "ak-r234-sweep",
+  "units_matched": 1,
+  "units_projected": 1
+}

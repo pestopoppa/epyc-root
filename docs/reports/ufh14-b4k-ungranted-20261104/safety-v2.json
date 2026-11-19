@@ -1,0 +1,45 @@
+{
+  "schema": "epyc.selector-harden.scratch.v1",
+  "written_at": "2026-11-04T16:18:56.472192+00:00",
+  "status": "OFFLINE_PROTOTYPE_PASS",
+  "scratch": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/independent-prep-20261104/b4k-launcher-safety",
+  "tests": {
+    "command": "python3 -m unittest discover -s /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/independent-prep-20261104/b4k-launcher-safety -p test_safety.py -v",
+    "passed": 17,
+    "failed": 0,
+    "runtime_s": 0.013
+  },
+  "sha256": {
+    "job.py": "727cac8db61fdc0fb9f1f72130694a2202e53cfd781f283f233c906498785c0c",
+    "select_run.py": "25ae4ec5870847ff5039cda4008eaac2966eebee4fc4f0fccc1df9f8815e8d7c",
+    "test_safety.py": "ccf57e8527dc5dbe13f66cff0cbea5274c07542e43ccafafe05a6ea38c342fa2"
+  },
+  "native_contract": {
+    "grant": "rowflow.write_grant: <id>.grant; regions/start/end/holds plus optional cpus; minute UTC timestamps",
+    "ended": "<id>.ended in same directory; first line rc=N time=ISO reason=text; optional appended unique key=value metadata",
+    "success": "rc=0; job_id must match when present; start <= run_start <= ended_time <= end; exactly one canonical UTC run directory in grant window",
+    "complete": "Prospective grant_id, grant_start, grant_end, grant_sha256 and absolute run pointer required; existing producer does not emit binding"
+  },
+  "controls": [
+    "malformed timestamps and receipts",
+    "duplicate JSON/grant/receipt keys",
+    "forged and missing COMPLETE binding",
+    "mismatched job_id and receipt filename",
+    "failed rc",
+    "ambiguous run, including directories without calls",
+    "timezone equivalent instant and naive rejection",
+    "ungranted run",
+    "relative pointer rejection",
+    "AST-isolated argparse help and unknown-argument exit before actions"
+  ],
+  "scope": "Filing-time selector only. Not qualification authority, cryptographic authentication, producer wiring, runtime validity or performance evidence. Matching SHA and copied fields detect inconsistencies but can be forged together. No job.py import or CLI/server invocation occurred; parser unit test extracts only three parser AST statements. Scratch job.py has argparse prefix but retains original producer and requires separate authorized integration before use.",
+  "prior_terminal_review": "independent-prep-20261104.json confirms accidental stopped run 20261104T160643Z had six calls, no COMPLETE, no valid window; no scientific use.",
+  "boundaries": {
+    "scratch_only_edits": true,
+    "active_or_queued_packet_edits": false,
+    "grant_or_handoff_or_production_edits": false,
+    "wait_or_poll": false,
+    "job_cli_or_server_invoked": false
+  },
+  "disclosure": "One overbroad rg source search also traversed ready manifests and printed unrelated static manifest matches; no row status/terminal files were inspected and no queue monitoring was performed."
+}

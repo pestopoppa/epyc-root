@@ -1,0 +1,13 @@
+{
+ "pid": 4027083,
+ "kfd_vram_bytes": 51338338304,
+ "libggml_maps": [
+  "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+  "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0"
+ ],
+ "linkage_rc": 0,
+ "linkage_tail": "bac82/bin/libllama-server-impl.so\n  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0\n  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0\n  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0\n  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0\n  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0\n  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0\n  OK   libggml-hip.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0\n\nLD_LIBRARY_PATH order as the loader sees it:\n         1\t/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin\n         2\t/opt/rocm/lib\n         3\t/usr/lib/llvm-20/lib\n         4\t/opt/AMD/aocc-compiler-5.0.0/lib\n         5\t/opt/rocm/lib\n\nPASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin\nNOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and\n      are not covered by ldd. Confirm the intended device appears in the\n      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and\n      do not trust a 'use gpu = 1' flag alone \u2014 that flag reports what was\n      REQUESTED, not what was loaded.\n",
+ "at": "2026-11-02T21:26:27.342+00:00"
+}

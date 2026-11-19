@@ -399,3 +399,28 @@ def test_review_decision_overlay_allows_row_specific_override():
 
     assert decisioned[0].action == "remeasure_required"
     assert decisioned[0].review_reason == "important comparison row"
+
+
+def test_caveat_line_above_table_is_carried_on_rows_generically():
+    text = """# Results
+
+## CPU Decode (P-BENCH-1) [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-abc123def456]
+
+*Caveat: bench figures only, not serving throughput.*
+
+| Model | Quant | Decode t/s | Reps / date |
+|---|---|---|---|
+| Qwen-test | Q4_K_M | 42.0 | n=10, 2026-11-11 |
+
+## Other [Protocol: P-BENCH-1, n=10, 2026-11-11, attest hh-abc123def457]
+
+| Model | Quant | Decode t/s | Reps / date |
+|---|---|---|---|
+| Plain | Q4_K_M | 10.0 | n=10, 2026-11-11 |
+"""
+    rows = collect_rows(text)
+    assert rows[0].note == "Caveat: bench figures only, not serving throughput." or "bench figures only" in rows[0].note
+    assert rows[1].note == ""
+    page = render_page(rows, Path("RESULTS.md"))
+    assert "(Caveat: " in page.splitlines()[[i for i, l in enumerate(page.splitlines()) if "Qwen-test" in l][0]]
+    assert page.count("(Caveat: ") == 1

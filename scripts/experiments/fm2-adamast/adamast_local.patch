@@ -1,0 +1,46 @@
+--- a/adamast/llm/providers.py
++++ b/adamast/llm/providers.py
+@@ -198,7 +198,13 @@
+                 from openai import OpenAI
+             except ImportError as exc:
+                 raise _missing_dependency("openai", "openai") from exc
+-            client = OpenAI()
++            base_url = os.getenv("ADAMAST_BASE_URL")
++            if base_url:
++                from fm2_transport import local_client_options
++
++                client = OpenAI(**local_client_options(base_url, 600))
++            else:
++                client = OpenAI()
+         self.client = client
+ 
+     def complete(
+@@ -218,6 +224,10 @@
+             "max_completion_tokens": self.config.max_output_tokens,
+             "timeout": self.config.timeout,
+         }
++        if os.getenv("ADAMAST_BASE_URL"):
++            request["extra_body"] = {"chat_template_kwargs": {"enable_thinking": False}}
++            request["temperature"] = 0
++            request["timeout"] = 600
+         if response_format == "json":
+             request["response_format"] = {"type": "json_object"}
+         try:
+--- a/adamast/judges/contract.py
++++ b/adamast/judges/contract.py
+@@ -13,6 +13,7 @@
+ 
+ from dataclasses import dataclass, field
+ import json
++import os
+ from pathlib import Path
+ from typing import Any, Iterable, Mapping
+ 
+@@ -290,6 +291,7 @@
+         adapter,
+         max_trace_chars=max_trace_chars,
+         allow_review_required=allow_review_required,
++        max_retries=0 if os.getenv("ADAMAST_BASE_URL") else 1,
+     )
+ 
+ 

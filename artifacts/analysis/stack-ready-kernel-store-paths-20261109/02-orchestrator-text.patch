@@ -1,0 +1,62 @@
+--- a/orchestration/launch_manifest.yaml
++++ b/orchestration/launch_manifest.yaml
+@@ -331,9 +331,10 @@
+     # gemma4-26B-A4B Q4_K_M MTP — swapped 2026-05-08 from Qwen3-Coder-30B-A3B Q4_K_M.
+     # +18pp on tool_compliance (96% vs 78%), +6pp on full suite (90% vs 84%),
+     # +36% tps on tool_compliance (60.7 vs 44.7), 3× more concise output.
+-    # NB: requires ik_llama.cpp PR #1744 binary (Phase 2 wires runtime_requirements
+-    # through the launcher; until then this path is informational only — production
+-    # launcher still uses default LLAMA_SERVER and will fail on gemma4 arch).
++    # 2026-11-09: HISTORICAL. This entry once needed the ik_llama.cpp PR #1744 binary.
++    # ik_llama.cpp is deprecated; worker_general MTP is native draft-mtp on the
++    # production kernel served from kernels/production/cpu (stack_paths resolves it).
++    # No role needs a separate binary: server_mode.<role>.runtime_requirements is empty.
+     # 2026-06-26 v6 cutover: ORIG base GGUF — old gemma-4-26B-A4B-it-Q4_K_M.gguf garbles on v6.
+       # 2026-09-23: the gemma4 path this named was DELETED with the model.
+       # worker_explore is now an ALIAS on frontdoor's Qwen3.6-35B-A3B-MTP process
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -1075,12 +1075,13 @@
+ def _build_worker_general_command(
+     port: int, model_path: str, binary_override: str | None, numa_instance: int = 0
+ ) -> list[str]:
+-    """Worker-general MTP path: gemma4-26B-A4B Q4_K_M via ik_llama.cpp PR #1744.
+-
+-    Swapped 2026-05-08 from Qwen3-Coder-30B-A3B Q4_K_M. Tool_compliance 96% vs 78%
+-    prior, +36% tps. `binary_override` comes from `server_mode.worker.runtime_requirements.binary_dir`
+-    in the registry — required because gemma4 MTP needs ik_llama.cpp PR #1744 build,
+-    not the production llama.cpp build.
++    """Worker-general MTP path (native draft-mtp on the production kernel).
++
++    Originally (2026-05-08) gemma4-26B-A4B Q4_K_M via the ik_llama.cpp PR #1744 build;
++    ik_llama.cpp is deprecated and worker_general now rides the production kernel
++    (kernels/production/cpu, resolved by stack_paths). `binary_override` still comes
++    from `server_mode.worker.runtime_requirements.binary_dir` when a registry declares
++    one; none does today, so `LLAMA_SERVER` (the kernel store) is used.
+     """
+     requirements, runtime = _stack_prior_launch("worker_general")
+     cache = _runtime_cache(runtime)
+@@ -1192,9 +1193,9 @@
+                 cache, "context_tokens", _WORKER_GENERAL_DEGRADED_FALLBACK["context_tokens"]
+             ),
+             # Per-instance thread count (full=96, quarters=48). Pre-2026-05-08 was
+-            # hardcoded -t 24 (Qwen3-Coder tolerated it); gemma4 + MTP under
+-            # ik_llama.cpp PR #1744 must match the bench recipe to avoid the
+-            # "tensor buffer not set" MTP assertion.
++            # hardcoded -t 24 (Qwen3-Coder tolerated it); gemma4 + MTP (then on the
++            # ik_llama.cpp PR #1744 build, since deprecated) had to match the bench
++            # recipe to avoid the "tensor buffer not set" MTP assertion.
+             "-t",
+             str(numa_thread_count),
+             # KV cache q8_0/q8_0 — registry-declared and required for stable MTP buffer
+@@ -1769,8 +1770,8 @@
+     """Dispatch to the per-mode command builder.
+ 
+     `binary_override`: when set, replaces `LLAMA_SERVER` for the worker_pool
+-    general branch (used by worker_general / gemma4 MTP to launch ik_llama.cpp
+-    PR #1744). Other branches ignore this argument today.
++    general branch (historically a separate ik_llama.cpp build for worker_general;
++    no role sets it today). Other branches ignore this argument today.
+ 
+     `numa_instance`: which instance in NUMA_CONFIG[role]["instances"] is being
+     launched (0 = full/primary, 1..N = quarters). Used by `_build_role_command`

@@ -1,0 +1,75 @@
+{
+  "schema": "epyc.inf83.draft_rows.v1",
+  "status": "DRAFT - NOT PUBLISHED. No row below is on any queue. Publishing is the owning session's act (autokernel), after the operator decision package in the INF-83 prep report.",
+  "prepared": "2026-11-17, autokernel INF-83 prep subagent, no compute",
+  "candidate": {"name": "C13", "sha": "bda43aa17c11b671e0e203e7eb7bf4f1303bc273", "branch": "llama.cpp-experimental-c12-lb49-sinks-20261117", "parent": "C12 457d5fc523ba5cc687a333a588c1dc15db9346f4"},
+  "incumbent": {"name": "v10", "sha": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115", "store": "/mnt/raid0/llm/kernels/production/{cpu,gpu}", "build_number": 10303},
+  "gate_contract": ".claude/skills/kernel-promotion/promotion_gates.yaml (required: speed, quality(+truncation_audit), serving_floor, load_only_preflight, gpu_isa_audit, relocatable_runtime, binary_set_parity, rollback_rehearsal)",
+  "reuse_rule": "C13 = C12 + 4 LB4.9 commits that are default-off (GGML_IQK_FA_SINKS unset) and compiled out when GGML_IQK_FLASH_ATTENTION=OFF (the shipping recipe). C12-vs-v10 evidence transfers to C13 ONLY after D0 proves the C13 shipping-recipe libraries are code-identical to C12's (or differ only in the LB4.9 objects with identity PASS). lb49-sinks-identity-c12-20261117 already shows greedy identity with IQK FA ON, knob unset.",
+  "evidence_reusable_now": [
+    {"row": "c12-cpu-validate-20261116-r2", "verdict": "fail (within-lineage KLD bar)", "reusable_part": "test-backend-ops CPU: C12 fails a subset of v10 (59 vs 62, 0 new); PPL 3.5407 vs 3.5430", "not_reusable": "KLD 0.0425 / top-1 93.5% failed the 0.002 bar; r3 amended to the cross-lineage bar (KLD<=0.05, top-1>=93%) and passed it"},
+    {"row": "c12-cpu-validate-20261116-r3", "verdict": "inconclusive (INVALID_UNITS on v10 P1)", "reusable_part": "quality gates PASS under the amended cross-lineage bar", "not_reusable": "speed (P1 invalid on all v10 visits; informational S~1.7x P2~1.2x P3~1.3x not decision-grade)"},
+    {"row": "c12-cpu-validate-20261116-r4", "verdict": "RUNNING/pending at 2026-11-17 13:39Z (smoke ok)", "use": "if PASS, it is the Q38FN CPU speed+quality cell vs v10 for C12 -> C13 via D0"},
+    {"row": "up-bundle1-gpu-20261115-r5", "verdict": "PASS", "scope": "C12 vs C11 (NOT vs v10): per-step geomean 1.030, tbo ROCm0 fail set; one unconfirmed TOPK_MOE flake", "use": "fold evidence only; not a v10 comparison"},
+    {"row": "ak-lb49-sinks-gate-c12-20261117 + lb49-sinks-identity-c12-20261117", "verdict": "PASS + PASS", "use": "V11-143 presence/fold evidence; supports D0 equivalence argument"},
+    {"row": "akx31-edge-q38fn-cpu-20261117", "verdict": "pass", "scope": "C12 within v10-calibrated numeric bounds, 13800 receipts, 4 edge families; gap: CPU repacked kernels (Q4_0, IQ4_NL, MXFP4) not exercised"},
+    {"row": "akx31-edge-q38fn-gpu-20261117", "verdict": "pass", "scope": "C12 within v10 bounds on ROCm0; FINDING: v10 itself overflows to inf/NaN on MUL_MAT_ID iq4_nl near-f16-max (file as its own box)"},
+    {"row": "v11-122-llg serving-ab / fold_gate (artifacts/compute/v11-122-llg-fold-20261105)", "verdict": "PASS / structural", "use": "V11-122-GATE CPU half answered structurally; GPU llama-bench pairs never ran"}
+  ],
+  "drafts": [
+    {
+      "id": "v11-c13-build-preflight-<date>",
+      "gates": ["relocatable_runtime", "binary_set_parity", "load_only_preflight", "gpu_isa_audit", "V11 presence gates", "D0 equivalence"],
+      "lane": "cpu+gpu (build only, then loads)", "shape": "multi-quarter(2) for the build, gpu-q3 for the HIP build/ISA audit",
+      "question": "Does a FULL relocatable C13 candidate (CPU store + GPU store, same commit, -DLLAMA_LLGUIDANCE=ON with pinned inputs) pass every non-timing promotion gate?",
+      "steps": [
+        "Build C13 CPU and GPU store images from git archive of bda43aa17 (never in /mnt/raid0/llm/llama.cpp), C10/C12 shipping configure argv + -DLLAMA_LLGUIDANCE=ON -DLLAMA_LLGUIDANCE_SOURCE_DIR=/mnt/raid0/llm/kernels/inputs/llguidance-v1.0.1-d795912; full --target set (binary_set_parity vs v10 store).",
+        "D0: research fold_gate.py C13 vs the C12 store builds used by c12-cpu-validate-r4 / bundle1 r5: libggml*/libllama code-identical, or differences confined to LB4.9 objects; --record-json.",
+        "skill scripts: preflight.sh (RUNPATH, binary set), loadcheck.sh --apply over the DERIVED scope (scope.sh cpu/gpu; one load per (model,drafter) pair), gfx90a_isa_audit.py audit+diff vs v10 (families mmq,fattn_mma,fattn_wmma,mmf).",
+        "Presence gates: every IN row of llama-v11-manifest.md (G-ANC + strings), incl. V11-122 (llg matcher strings >0), CH-24 (strings: 0 ungated /tmp/qwen4exp-builds literals in libllama; fused-ON decode writes 0 files), V11-106 fused default-OFF, V6R-4a (25132e042, 90c12df42 ancestors; tests/test-repack-parallel), V11-086 (GGML_FA_VKQ_REG present, default HYBRID), V11-136 strings GGML_HIP_GEMM_DOWN_TILE, verify_ggml_linkage.sh both stores."
+      ],
+      "decision_rule": "PASS iff every listed check passes; any ISA FAIL blocks GPU timing unless named in accepted_fails by the operator. FAIL names each check.",
+      "estimate_s": "~9000 (two builds ~6000, loads ~2000, audit ~600)",
+      "missing_today": "everything (no C13 store build exists)"
+    },
+    {
+      "id": "v11-c13-cpu-speed-vs-v10-<date>",
+      "gate": "speed.cpu", "lane": "cpu", "shape": "whole-host or multi-quarter per role recipe",
+      "question": "Per DERIVED CPU role, does C13 at its own best recipe hold decode speed vs v10 at v10's recipe (recipe-to-recipe)?",
+      "steps": ["Scope = scope.sh --backend cpu on the day (v10 arms were worker_general gemma4-26b, architect_critic 122b (now architect_general Q38FN), frontdoor qwen36-35b-a3b, ingest qwen3next-80b; re-derive, do not copy).", "n_per_arm 5, ABBA, serving argv from the compiled priors; record load time per arm (V6R-4a load-time half) and run the V6R-4a decode A/B to full pair count inside this row."],
+      "decision_rule": "PASS iff every role ratio >= 0.95 (v10 floor); stop-on-futility if any role < 0.95 on 3 of the first 3 pairs.",
+      "reuse": "c12-cpu-validate-r4 Q38FN cells count for architect_general only if D0 passes and r4 PASSES; other roles have no v10 comparison.",
+      "missing_today": "all roles except possibly Q38FN"
+    },
+    {
+      "id": "v11-c13-gpu-speed-vs-v10-<date>",
+      "gate": "speed.gpu + V6R-4a gpu-champion-ab + V11-122-GATE GPU half", "lane": "gpu", "shape": "gpu-quiet exclusive + q3 host threads",
+      "question": "On the MI210, does C13 hold np1/2/4/8 decode at ctx 65536 vs v10 for the derived GPU models, residency proven?",
+      "steps": ["After gpu_isa_audit passes.", "Models = scope.sh --backend gpu (v10: qwen38_27b_q8 [+DFlash2], qwen3_vl_30b_a3b_q4km); 3 launches per point; VRAM + KFD sampled during runs.", "Add the V11-122-GATE pairs: Qwen3.6-35B-A3B-MTP-Q8_0 llama-bench -ngl 99 -fa 1 pp512/tg128 r5, llg vs nollg C13 builds, AB/BA up to 3 pairs (rule in the checklist box).", "Add CH-18.d(1) only if the pull lands #28957 (not in C13)."],
+      "decision_rule": "PASS iff every (model,np) ratio >= 0.95 and residency proven on every launch; V11-122 sub-rule as predeclared.",
+      "missing_today": "all (bundle1 r5 is C12 vs C11, not vs v10)"
+    },
+    {
+      "id": "v11-c13-quality-vs-v10-<date>",
+      "gate": "quality (+truncation_audit)", "lane": "cpu (+gpu if a gated role is GPU)", "shape": "per role recipe",
+      "question": "Do worker_general and architect_general on C13 match v10 on MMLU-Pro n=200 and GPQA n=195 (seed 42, T=0)?",
+      "steps": ["v7_quality_gate_runner.py --suites mmlu_pro gpqa --n 200 --seed 42 --endpoint chat on both kernels, same pinned item manifests.", "max_tokens: per operator decision D3 (64 = what v10 ran; 4096 = the truncation-audit-safe cap). Report truncated count beside every accuracy; compare untruncated-only accuracy.", "v7_quality_gate_compare.py; errors_allowed 0."],
+      "decision_rule": "PASS iff no suite/role drops beyond the comparator CI and truncated.n is reported for every cell; a capped accuracy is a lower bound.",
+      "reuse": "None: KLD/PPL/edge evidence is supporting only; the gate is the suites.",
+      "missing_today": "all"
+    },
+    {
+      "id": "v11-c13-serving-floor-and-rollback-<date>",
+      "gate": "serving_floor (p95_dev_pct vs v10 7.249, n=24) + rollback_rehearsal (anchor.sh cpu/gpu)",
+      "question": "Does C13 serving variance stay within the v10 floor, and is the v10 anchor demonstrably restorable?",
+      "missing_today": "all"
+    },
+    {
+      "id": "v11-mi210-q38fn-coresidency-<date>",
+      "gate": "V11-MI210-PREFILL-RUNBOOK (2)", "lane": "gpu+cpu", "shape": "whole-host window (both :8083 and Q38FN offload live)",
+      "question": "What is :8083 (Qwen3.8-27B + DFlash2) decode TPOT during a concurrent Q38FN 32k GPU-offload prefill (-ngl 0 -ub 2048 -b 2048, GGML_CUDA_NO_PINNED=1) on C13?",
+      "decision_rule": "Report TPOT ratio vs idle; if > 1.10, gate Q38FN offload on :8083 having no active slots (operator decision D6).",
+      "missing_today": "all (NPD1-STEP5 was on C6)"
+    }
+  ]
+}

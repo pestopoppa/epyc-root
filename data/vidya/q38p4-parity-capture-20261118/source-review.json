@@ -1,0 +1,100 @@
+{
+  "task": "VB-Q38P4-PARITY-CAPTURE-CODE",
+  "status": "source preparation and offline controls passed",
+  "changed_paths": [
+    "scripts/vidya/producers/q38p4_parity.py",
+    "scripts/vidya/adapters/q38p4_parity.py",
+    "scripts/vidya/ingest_sources.py",
+    "scripts/vidya/cli.py",
+    "scripts/vidya/loop_beliefs.py",
+    "tests/vidya/test_q38p4_parity.py",
+    "tests/vidya/test_ingest_sources.py",
+    "tests/vidya/test_ingest_sources.py"
+  ],
+  "blast_radius": {
+    "gitnexus": "Worktree and no registered repositories indexed. Impact commands for new source and shared ingestion/planner were unavailable. No reindex per parent.",
+    "direct_call_sites": [
+      "cli.py ingest source choices and source-dispatch registry",
+      "ingest_sources.py one new Source entry for an explicit capture path",
+      "loop_beliefs.py Target.from_mapping, called by prepare, permits one new operator and run form",
+      "loop_beliefs.py collect, called by the normal planner evidence assembly around line 1953, carries the exact matching source/operator/run. Existing scopes retain their branches."
+    ],
+    "assessment": "Additive and narrow. No historical producers, calibration/grade ladders, measurement protocols, live ledger contents, or existing source allowlist branches modified."
+  },
+  "validation": [
+    {
+      "command": "PYTHONPATH=scripts/vidya python3 -m pytest tests/vidya/test_q38p4_parity.py tests/vidya/test_qwen4exp_cpu_loader.py --basetemp=/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-wire-20261118/pytest -q",
+      "result": "26 passed; 5 tuples / 2 source kinds carrier checks, zero violations"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "python3 scripts/vidya/cli.py ingest --help",
+      "result": "source kind q38p4-greedy-parity listed"
+    }
+  ],
+  "provenance": {
+    "llama": "Local 729599d69:tools/server/server-task.cpp returns top-level tokens and stop_type for native /completion. Historical OpenAI route omitted native token IDs.",
+    "vllm": "https://raw.githubusercontent.com/vllm-project/vllm/v0.33.0/vllm/entrypoints/openai/completion/serving.py#L586-L607",
+    "historical_producer": "/mnt/raid0/llm/tmp/q38p4-timing-20261105/job.py is a completed timing producer with character-prefix fallback and cannot provide native Q38P-4 token warrant."
+  },
+  "next_native_row": {
+    "task": "VB-Q38P4-PARITY-WIRE",
+    "state": "Native run and native planning-context canary remain open",
+    "row_id_pattern": "q38p4-greedy-parity-YYYYMMDD-rN",
+    "resource": "Exclusive quiet MI210 with reserved owner CPU/localhost ports, finite one request per arm in sequence, no timings.",
+    "predeclare": [
+      "Pin the selected shared HF source and converted GGUF artifacts by digest, conversion command/source/output, original tokenizer and token-ID generation receipt, and both runtime receipt bytes. The capture binds these declarations by digest.",
+      "Use verified local llama.cpp /completion build (C6 has the required API) and the digest-pinned vLLM v0.33.0 image with vLLM effective generation config and prefix cache/speculation disabled. Verify actual local image and build contents before publishing.",
+      "Use one fixed token array and an output cap up to 128 chosen with an observation window for two KFD samples. Record exact process cmdline digest, listener port, native executable or vLLM Docker image ID, and mapped HIP DSO hashes. Full Docker container ID and its host init PID must be passed to arm."
+    ],
+    "runner": [
+      "python3 scripts/vidya/producers/q38p4_parity.py init OUT PLAN ROW.grant RECEIPTS",
+      "For each llama then vllm, launch one owned pinned server and wait for readiness; call arm OUT ENGINE PORT PID [--container FULL_ID]. Teardown only captured owned process/container; call cleanup OUT ENGINE before starting the next arm.",
+      "Terminal trap calls close OUT finished|failed|stopped after cleanup. Settled match and divergence both rc0. Refused/failed/stopped rc2, originals retained. In-window GPU and linkage, request bytes and response native ID/stop checks are mandatory for emission.",
+      "Scratch-ingest q38p4-greedy-parity into the actual planning-context canary. Demand one Judged/Located scoped claim for the exact candidate/run, dedup on replay, and no result on contaminating partials, ordinary targets or changed candidate/run."
+    ],
+    "limitations": [
+      "No live inference, hardware witness, image execution, row publication, or native canary performed in this job. Tests simulate scope/transport artifacts and are never eligible for production projection.",
+      "If the installed vLLM image does not emit the upstream native response shape, if two request-window samples cannot be captured, or if cleanup fails, the seal remains a refusal rather than substituting text or post-request evidence.",
+      "Native question is equality for the declared single input, conversion and two exact runtime configurations. It makes no throughput, quality or deployment assertion."
+    ]
+  },
+  "integration_followup": {
+    "paths": [
+      "scripts/vidya/adapters/q38p4_parity.py",
+      "tests/vidya/test_ingest_sources.py",
+      "tests/vidya/test_q38p4_parity.py"
+    ],
+    "fix": "Declare registry ADAPTER_ID and AUTHORITY; cite the dedicated fixture exemption; run the actual CLI source dispatch to exercise clean control decline, tampered seal refusal, and an empty scratch ledger.",
+    "python": "/mnt/raid0/llm/epyc-inference-research/.venv/bin/python3, using system pytest through /usr/lib/python3/dist-packages",
+    "suite": [
+      "test_q38p4_parity.py",
+      "test_ingest_sources.py",
+      "test_loop_beliefs.py",
+      "test_claim_tuple.py"
+    ],
+    "result": "508 passed; 2240 carrier tuples across 78 source kinds, zero invariant violations; git diff --check passed"
+  },
+  "integration_validation": {
+    "command": "PYTHONPATH=scripts/vidya:/usr/lib/python3/dist-packages /mnt/raid0/llm/epyc-inference-research/.venv/bin/python3 -m pytest -q tests/vidya/test_q38p4_parity.py tests/vidya/test_ingest_sources.py tests/vidya/test_loop_beliefs.py tests/vidya/test_claim_tuple.py",
+    "result": "510 passed; 2240 tuples / 78 source kinds; zero carrier invariant violations",
+    "output": "offline-controls.txt"
+  },
+  "source_sha256": {
+    "scripts/vidya/producers/q38p4_parity.py": "257c101d1c7176a9b4a736d31e60918ddc604e51f7ecbcf244c3faf08d028fed",
+    "scripts/vidya/adapters/q38p4_parity.py": "cd85d59dd300c9065cece06b17a309a25b697a11b010af7b6eb68d12e77ae69e",
+    "scripts/vidya/ingest_sources.py": "1c7171c632ed8cc87cc249c875563592eb01937fbff8ade1c18147989472d4f5",
+    "scripts/vidya/cli.py": "68242a0cc4d4b53c1fa6acacd2e6b8f424c971c844afcf6900b0265665b12d66",
+    "scripts/vidya/loop_beliefs.py": "640ac4342b6d5b267ffaa7dccdf53071d149c72890691626cb2a93a0a5ac50b6",
+    "tests/vidya/test_q38p4_parity.py": "6fef6701fe059d8e98b2d23b68ac5a81cbf908d151cee09bc58b0cb1fa4d095a",
+    "tests/vidya/test_ingest_sources.py": "80362bd01d5f5b832687070ac92d3e7cce8bd0e6fa3d39e4529f4b79989d3293"
+  },
+  "native_packet": "../q38p4-parity-native-20261118/result.json",
+  "publisher": {
+    "row": "q38p4-greedy-parity-20261118-r1",
+    "result": "GPU busy: smoke queued; no smoke PASS or official/native acceptance"
+  }
+}

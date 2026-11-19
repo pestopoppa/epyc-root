@@ -1,0 +1,55 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "filed_by": "handoff-vidya-belief-substrate",
+  "rationale": "rc2, accepted=false, unstarted/UNKNOWN, native_unit_count0: packet-local c6-ggml-linkage.txt stat identity changed after pregrant pin. No parity observation. Preserve failed r1; successor separates allocator workdir from immutable packet assets.",
+  "verdict": "inconclusive"
+ },
+ "answer": null,
+ "at": "2026-11-18T13:19:42+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=2 time=2026-11-18T06:48:26Z reason=job-rc-2:exited",
+ "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/q38p4-greedy-parity-20261118-r1.ended",
+ "filed_at": "2026-11-18T13:19:42+00:00",
+ "filed_by": "handoff-vidya-belief-substrate",
+ "handoff_task": "vidya-belief-substrate-program.md:VB-Q38P4-PARITY-WIRE",
+ "id": "q38p4-greedy-parity-20261118-r1",
+ "keep_tail": {
+  "reason": "no samples_a/samples_b in result",
+  "reported": false
+ },
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/q38p4-greedy-parity-20261118-r1.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/official/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-vidya-belief-substrate",
+ "phase": "filing",
+ "rc": 2,
+ "reason": "rc2, accepted=false, unstarted/UNKNOWN, native_unit_count0: packet-local c6-ggml-linkage.txt stat identity changed after pregrant pin. No parity observation. Preserve failed r1; successor separates allocator workdir from immutable packet assets.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118/official/RESULT.json",
+ "root_cause_family": null,
+ "row": "q38p4-greedy-parity-20261118-r1",
+ "row_verdict": "inconclusive",
+ "rule": "Does greedy decoding on the Qwen3-4B-Instruct-2507 BF16 proxy yield identical native token IDs and stop categories on the pinned C6 llama.cpp GPU runtime and vLLM 0.33.0 ROCm image under the same predeclared 512-token input and at most 128 generated tokens per arm? Each arm uses its own sequential launch, one fixed request, speculative decoding and prefix cache disabled, and exact body bytes under one exclusive MI210 grant. Stop-on-answer after one settled match or divergence. Stop-on-futility on STOP, grant deadline, input or response refusal, load or cleanup failure, or missing two samples with in-window linkage. The publisher smoke runs one separate 0.6B HIP arm on four reserved threads with native token IDs and cleanup. The full result is a finite correctness diagnostic.",
+ "source": "grant",
+ "tokens": {
+  "available": true,
+  "completed": 59,
+  "input": 220420785,
+  "output": 954045,
+  "owner_slug": "vidya-belief-substrate",
+  "scope": "owner session, UTC day of filing",
+  "tokens": 221374830,
+  "tokens_per_task": 3752115.7627118644
+ },
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "503ccb97d145a335f6c948d1ab85e9cba0cfe2b11311690b27df8ac39de8a08d",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

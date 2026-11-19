@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+import importlib.util, json, math, os, pathlib, subprocess, sys, time, hashlib
+D=pathlib.Path('/mnt/raid0/llm/tmp/autokernel-cross-workload-keep-gate/ch26-serving-compact-integration')
+sys.path.insert(0,str(D))
+INPUT=D/'input'
+BUILD='/mnt/raid0/llm/kernels/builds/cpu-20261024-c72ec82f5-c5'
+ROOT='/mnt/raid0/llm/worktrees/research-ds41-run10'
+if subprocess.check_output(['git','-C',ROOT,'rev-parse','HEAD'],text=True).strip() != '5d947693cc5fc245f7a85f5ccf144edfb6dfe4c9': raise SystemExit('REFUSED research source moved')
+if subprocess.run(['git','-C',ROOT,'diff','--quiet','HEAD','--']).returncode: raise SystemExit('REFUSED dirty research tracked source')
+spec=importlib.util.spec_from_file_location('ds41gate',INPUT/'gate_1017.py')
+g=importlib.util.module_from_spec(spec); sys.modules[spec.name]=g; spec.loader.exec_module(g)
+g.BASE=INPUT; g.SEPT_SNAPSHOT=INPUT/'sept_launch.snapshot.json'; g.MANIFEST=INPUT/'prompt-manifest.ds41-decode.json'; g.MODEL_PIN=INPUT/'model_identity_1017.json'; g.GGUF_META=INPUT/'gguf_meta.py'; g.LOCK_TAG='filler-akagg-ch26b-1017-c5-20261104'
+# Model headers and pin were checked once before publication; no model hashing or header scan in a grant.
+prepared=json.loads((D/'model-prepared.json').read_text());pin=json.loads(g.MODEL_PIN.read_text())
+from custody_check import verify_build, verify_model_metadata
+verify_model_metadata(pin, prepared, hashlib.sha256(g.MODEL_PIN.read_bytes()).hexdigest())
+verify_build(BUILD, json.loads((D/'build-prepared.json').read_text()))
+from linkage_check import verify_linkage
+verify_linkage(BUILD)
+g.verify_pin=lambda headers=True:(pin,['preverified prior to publication'])
+phase='dryrun' if os.environ.get('FILLER_DRYRUN')=='1' or os.environ.get('FILLER_SMOKE')=='1' else 'full'
+result_path=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']) if phase=='dryrun' else D/'measured.full.jsonl'
+out=(INPUT/'dryruns'/hashlib.sha256(str(result_path).encode()).hexdigest()[:16]) if phase=='dryrun' else INPUT/'full'
+if out.exists(): raise SystemExit('REFUSED phase output already exists; use a fresh successor')
+old_install=g.install_measure_wrapper
+def install(serving,out_dir,boot_timeout_s,log_name='launches.jsonl',echo=True):
+    old_install(serving,out_dir,boot_timeout_s,log_name,echo)
+    measure=serving._measure_once
+    def wrapped(recipe,build_dir,port,*args,**kwargs):
+        stop=os.environ.get('FILLER_STOPFILE','')
+        if (stop and pathlib.Path(stop).exists()) or time.time() >= int(os.environ['FILLER_DEADLINE']): raise SystemExit(75)
+        val=measure(recipe,build_dir,port,*args,**kwargs)
+        if str(pathlib.Path(build_dir).resolve()) != BUILD or not math.isfinite(val) or val <= 0: raise SystemExit('REFUSED invalid measured unit')
+        rec={'phase':phase,'build':BUILD,'status':'ok','tok_s':val,'recorded_ns':time.time_ns()}
+        with open(result_path,'a') as f: f.write(json.dumps(rec)+'\n'); f.flush(); os.fsync(f.fileno())
+        if stop and pathlib.Path(stop).exists(): raise SystemExit(75)
+        return val
+    serving._measure_once=wrapped
+    return measure
+g.install_measure_wrapper=install
+# Fresh isolated measurement implementation: only request-boundary evidence is added.
+from scripts.kernel_rnd.autokernel.loop import serving
+from scripts.kernel_rnd.autokernel.resource import preflight
+import boundary_witness
+helper_path=pathlib.Path(ROOT)/'scripts/benchmark/fg4b_a4_cpu_optimized_reanchor.py'
+helper_spec=importlib.util.spec_from_file_location('ch26_affinity_helper',helper_path)
+helper=importlib.util.module_from_spec(helper_spec);sys.modules[helper_spec.name]=helper;helper_spec.loader.exec_module(helper)
+candidate_spec=importlib.util.spec_from_file_location('scripts.kernel_rnd.autokernel.loop.serving_ch26_observed',D/'serving_observed.py')
+candidate=importlib.util.module_from_spec(candidate_spec);sys.modules[candidate_spec.name]=candidate;candidate_spec.loader.exec_module(candidate)
+from floor_binding import bind_request_boundaries
+sys.path.insert(0, str(D/'native'))
+import gate_hook
+from owner_hook import RequestCapture
+launch_state={'ordinal':0,'frozen':None}
+original_build_ctx=g.build_ctx
+def build_ctx(*args,**kwargs):
+    ctx=original_build_ctx(*args,**kwargs)
+    launch_state['frozen']=ctx.frozen
+    return ctx
+g.build_ctx=build_ctx
+original_measure=candidate._measure_once
+def measured_with_ordinal(*args,**kwargs):
+    launch_state['ordinal']+=1
+    return original_measure(*args,**kwargs)
+candidate._measure_once=measured_with_ordinal
+runtime_prepared=json.loads((D/'build-runtime-prepared.json').read_text())
+scope=preflight.PreflightScope.cpu('ch26b-c5',('q0','q1','q2','q3'),protocol_id='CH-26b')
+def quiet():
+    return preflight.claim_witness_preflight(scope,preflight.ClaimSources.from_environment()).to_dict()
+def factory(owned,slots,*,request_context):
+    return boundary_witness.Hook(owned,slots,out/'request-boundaries.jsonl',snapshot=helper.read_thread_affinities,quiet=quiet,request_context=request_context,launch_ordinal=launch_state['ordinal'],observer_required=True,runtime_prepared=runtime_prepared)
+candidate._CH26_REQUEST_HOOK_FACTORY=factory
+serving._measure_once=candidate._measure_once
+serving._ch26_owner_patch=candidate._CH26_OWNER_PATCH
+original_calibrate=serving.calibrate_floor
+def calibrated_with_request_binding(*args,**kwargs):
+    row=original_calibrate(*args,**kwargs)
+    journal=out/'request-boundaries.jsonl'
+    if not journal.is_file():
+        raise RuntimeError('REFUSED missing request boundary journal')
+    events=[json.loads(line) for line in journal.read_text().splitlines() if line.strip()]
+    return bind_request_boundaries(row,events,launch_state['frozen'],runtime_prepared=runtime_prepared)
+serving.calibrate_floor=calibrated_with_request_binding
+def native_capture_factory(target_pid, request_context):
+    ordinal=request_context.get('launch_ordinal')
+    phase_name=request_context.get('phase')
+    slot=request_context.get('slot_index')
+    if type(ordinal) is not int or phase_name not in ('warmup','measurement') or slot != 0:
+        raise RuntimeError('REFUSED native observer request context mismatch')
+    directory=out/'native-observer';directory.mkdir(parents=True,exist_ok=True)
+    path=directory/f'launch-{ordinal:03d}-{phase_name}-slot-{slot}.json'
+    return RequestCapture(path,set(range(96)),request_context=request_context,
+                          timeout_s=120,worker=D/'native/capture_worker.py')
+gate_hook.install_in_gate(g, native_capture_factory)
+raise SystemExit(g.main(['calibrate','--pairs','24','--cmp-pairs','5','--build',BUILD,'--port','18741','--out',str(out),'--execute']))

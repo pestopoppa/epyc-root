@@ -1,0 +1,795 @@
+"""Error classification helpers for orchestration graph execution."""
+
+from __future__ import annotations
+
+from src.escalation import ErrorCategory
+
+
+def classify_error(error_message: str) -> ErrorCategory:
+    """Classify an error message into an ErrorCategory."""
+    lower = error_message.lower()
+
+    if any(kw in lower for kw in ("timeout", "timed out", "deadline")):
+        return ErrorCategory.TIMEOUT
+    if any(kw in lower for kw in ("json", "schema", "validation", "jsonschema")):
+        return ErrorCategory.SCHEMA
+    if any(kw in lower for kw in ("format", "style", "lint", "ruff", "markdown")):
+        return ErrorCategory.FORMAT
+    if any(
+        kw in lower
+        for kw in ("abort", "generation aborted", "early_abort", "early abort")
+    ):
+        return ErrorCategory.EARLY_ABORT
+    if any(
+        kw in lower
+        for kw in ("backend", "connection", "unreachable", "infrastructure", "502", "503")
+    ):
+        return ErrorCategory.INFRASTRUCTURE
+    if any(
+        kw in lower
+        for kw in ("syntax", "type error", "typeerror", "nameerror", "import error", "test fail")
+    ):
+        return ErrorCategory.CODE
+    if any(kw in lower for kw in ("wrong", "incorrect", "assertion", "logic")):
+        return ErrorCategory.LOGIC
+
+    return ErrorCategory.UNKNOWN
+
+"""Pure answer-extraction helpers for graph execution."""
+
+from __future__ import annotations
+
+import re
+
+from src.env_parsing import env_bool as _env_bool
+
+
+def _repl_prose_rescue_enabled() -> bool:
+    """Gate raw-prose FINAL rescue behind an env flag for safe rollout."""
+    return _env_bool("ORCHESTRATOR_REPL_PROSE_RESCUE", True)
+
+
+def _looks_like_prompt_echo(text: str) -> bool:
+    """Detect echoed prompt/instruction text that should never be rescued."""
+    hay = (text or "").lower()
+    markers = (
+        "answer with the letter only",
+        "answer with the",
+        "question:",
+        "options:",
+        "choose the correct",
+        "select the best",
+        "respond with",
+        "you are given",
+        "instruction:",
+    )
+    return any(m in hay for m in markers)
+
+
+def _should_attempt_prose_rescue(raw_output: str, extracted_code: str) -> bool:
+    """Allow prose rescue only for short, answer-like outputs."""
+    if not _repl_prose_rescue_enabled():
+        return False
+    if not raw_output or not raw_output.strip():
+        return False
+    if "FINAL(" in extracted_code:
+        return False
+    if "```" in raw_output:
+        return False
+    if _looks_like_prompt_echo(raw_output):
+        return False
+    if len(raw_output) > 220:
+        return False
+    return True
+
+
+_FINAL_RE = re.compile(
+    r"""FINAL\(\s*(?:'{3}(.+?)'{3}|"{3}(.+?)"{3}|["'](.+?)["']|(-?[\d.]+(?:e[+-]?\d+)?|True|False|None))\s*\)""",
+    re.DOTALL,
+)
+
+_PROSE_ANSWER_RE = re.compile(
+    r"(?:^|\n)\s*(?:"
+    r"[Tt]he\s+(?:correct\s+)?answer\s+is[:\s]+|"
+    r"[Aa]nswer[:\s]+|"
+    r"[Tt]herefore[,:\s]+(?:the\s+answer\s+is[:\s]+)?|"
+    r"[Ss]o\s+the\s+answer\s+is[:\s]+|"
+    r"[Ss]o,?\s+I\s+will\s+go\s+with[:\s]+|"
+    r"I(?:'ll|\s+will)\s+go\s+with[:\s]+|"
+    r"I\s+(?:choose|select|pick)[:\s]+|"
+    r"[Mm]y\s+answer\s+is[:\s]+|"
+    r"[Tt]he\s+correct\s+(?:option|choice)\s+is[:\s]+"
+    r")([A-Za-z0-9][A-Za-z0-9.)]*)",
+)
+
+
+def _extract_final_from_raw(text: str) -> str | None:
+    """Extract answer from FINAL("answer") in raw LLM output."""
+    m = _FINAL_RE.search(text)
+    if m:
+        return m.group(1) or m.group(2) or m.group(3) or m.group(4) or ""
+    return None
+
+
+def _extract_prose_answer(text: str) -> str | None:
+    """Extract answer from prose LLM output that lacks FINAL()."""
+    m = _PROSE_ANSWER_RE.search(text)
+    if m:
+        answer = m.group(1).rstrip(".)").strip()
+        if answer:
+            return answer
+    bare = re.search(r"(?:^|\n)\s*([A-D])\s*(?:\n|$)", text)
+    if bare:
+        return bare.group(1)
+    return None
+
+
+def _rescue_from_last_output(text: str) -> str | None:
+    """Try to extract a usable answer from the last LLM output."""
+    if not text or not text.strip():
+        return None
+    final_answer = _extract_final_from_raw(text)
+    if final_answer is not None:
+        return final_answer
+    prose_answer = _extract_prose_answer(text)
+    if prose_answer is not None:
+        return prose_answer
+    code_block = re.search(r"```(?:\w*\n)?(.*?)```", text, re.DOTALL)
+    if code_block:
+        code_content = code_block.group(1).strip()
+        if len(code_content) > 20:
+            return code_content
+    return None
+
+
+def _resolve_answer(output: str, tool_outputs: list) -> str:
+    """Extract the best answer from REPL output and tool outputs."""
+    if output and output.strip():
+        return output.strip()
+    if tool_outputs:
+        return "\n".join(str(t) for t in tool_outputs if t)
+    return ""
+"""Prospective, request-local observations of native registry argument validation.
+
+The registry is copied for this REPL only; shared tools and registry remain untouched.
+This covers registry invocations only, not direct REPL functions or parser failures.
+"""
+
+from __future__ import annotations
+
+import copy
+import threading
+import uuid
+from contextvars import ContextVar
+from types import MethodType
+from typing import Any
+
+MAX_RECORDED_CALLS = 4096
+
+
+class Observer:
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._active: ContextVar[dict[str, Any] | None] = ContextVar(
+            "tool_validation_observer_call", default=None
+        )
+        self._calls: list[dict[str, Any]] = []
+        self._attempted = 0
+        self._capture_error = False
+
+    def invoke(self, original, *args, **kwargs):
+        try:
+            with self._lock:
+                self._attempted += 1
+                record = None
+                if len(self._calls) < MAX_RECORDED_CALLS:
+                    record = {
+                        "call_id": uuid.uuid4().hex,
+                        "argument_validation": None,
+                        "finished": False,
+                    }
+                    self._calls.append(record)
+            token = self._active.set(record)
+        except Exception:
+            self._capture_error = True
+            return original(*args, **kwargs)
+        try:
+            return original(*args, **kwargs)
+        finally:
+            try:
+                if record is not None:
+                    with self._lock:
+                        record["finished"] = True
+                self._active.reset(token)
+            except Exception:
+                self._capture_error = True
+                pass
+
+    def validate(self, original, args):
+        errors = original(args)
+        try:
+            active = self._active.get()
+            if active is not None:
+                with self._lock:
+                    active["argument_validation"] = not bool(errors)
+        except Exception:
+            self._capture_error = True
+            pass
+        return errors
+
+    def snapshot(self) -> dict[str, Any]:
+        with self._lock:
+            calls = [dict(row) for row in self._calls]
+            if self._capture_error:
+                for call in calls:
+                    call["argument_validation"] = None
+            attempted = None if self._capture_error else self._attempted
+            omitted = None if attempted is None else attempted - len(calls)
+        return {
+            "scope": "request_local_registry_invoke",
+            "coverage_of_all_tool_attempts": "unknown",
+            "calls": calls,
+            "registry_invocations": attempted,
+            "unrecorded_invocations": omitted,
+            "censored": omitted is None or omitted > 0,
+            "repair_links": None,
+        }
+
+
+def attach(repl: Any) -> Observer | None:
+    """Attach only when the native registry and tools can be copied unchanged.
+
+    Instance invoke overrides (including query_memory's identity-bound closure),
+    subclasses and custom validation are intentionally unsupported.
+    """
+    from src.registry.tool_registry import Tool, ToolRegistry
+
+    registry = getattr(repl, "tool_registry", None)
+    overrides = (
+        "invoke",
+        "can_use_tool",
+        "_can_use_tool_cascading",
+        "_record_invocation",
+        "_invoke_mcp",
+    )
+    if type(registry) is not ToolRegistry or any(name in vars(registry) for name in overrides):
+        return None
+    tools = registry._tools
+    if any(type(tool) is not Tool or "validate_args" in vars(tool) for tool in tools.values()):
+        return None
+    observer = Observer()
+    local = copy.copy(registry)
+    local._tools = {}
+    for name, tool in tools.items():
+        cloned = copy.copy(tool)
+        original_validate = cloned.validate_args
+
+        def validate(args, original=original_validate):
+            return observer.validate(original, args)
+
+        cloned.validate_args = validate
+        local._tools[name] = cloned
+    original_invoke = MethodType(ToolRegistry.invoke, local)
+
+    def invoke(*args, **kwargs):
+        return observer.invoke(original_invoke, *args, **kwargs)
+
+    local.invoke = invoke
+    repl.tool_registry = local
+    return observer
+"""Portable resume tokens for crash recovery (Lobster pattern).
+
+Encodes minimal graph state as a compact base64url token for
+cross-session resume. Complements SQLiteStatePersistence.
+
+Only active when features().resume_tokens is True.
+
+Encoding: JSON → zlib compress → base64url. Target: <500 bytes.
+
+Usage:
+    from src.graph.resume_token import ResumeToken
+
+    # Encode from TaskState
+    token = ResumeToken.from_state(state, node_class="CoderNode")
+    encoded = token.encode()  # compact base64url string
+
+    # Decode back
+    token = ResumeToken.decode(encoded)
+    # Use token.node_class, token.current_role, etc. to reconstruct state
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import json
+import logging
+import zlib
+from dataclasses import asdict, dataclass, field
+
+log = logging.getLogger(__name__)
+
+
+@dataclass
+class ResumeToken:
+    """Compact graph state for crash recovery.
+
+    Contains only the fields needed to resume execution — no full
+    prompt or context (those come from the session store).
+    """
+
+    task_id: str = ""
+    node_class: str = ""  # e.g. "CoderNode"
+    current_role: str = ""
+    turns: int = 0
+    escalation_count: int = 0
+    consecutive_failures: int = 0
+    role_history: list[str] = field(default_factory=list)
+    last_error: str = ""  # truncated to 200 chars
+    checksum: str = ""  # SHA-256[:8] integrity check
+
+    @classmethod
+    def from_state(
+        cls,
+        state: "TaskState",  # noqa: F821
+        node_class: str,
+    ) -> ResumeToken:
+        """Create a ResumeToken from current TaskState.
+
+        Args:
+            state: Current graph state.
+            node_class: Name of the current node class.
+
+        Returns:
+            ResumeToken ready for encoding.
+        """
+        token = cls(
+            task_id=state.task_id,
+            node_class=node_class,
+            current_role=str(state.current_role),
+            turns=state.turns,
+            escalation_count=state.escalation_count,
+            consecutive_failures=state.consecutive_failures,
+            role_history=list(state.role_history),
+            last_error=(state.last_error[:200] if state.last_error else ""),
+        )
+        # Compute checksum over content fields
+        content = json.dumps(
+            {k: v for k, v in asdict(token).items() if k != "checksum"},
+            sort_keys=True,
+        )
+        token.checksum = hashlib.sha256(content.encode()).hexdigest()[:8]
+        return token
+
+    def encode(self) -> str:
+        """Encode token to compact base64url string.
+
+        Returns:
+            Base64url-encoded string (typically <500 bytes).
+        """
+        payload = json.dumps(asdict(self), separators=(",", ":"))
+        compressed = zlib.compress(payload.encode(), level=9)
+        return base64.urlsafe_b64encode(compressed).decode()
+
+    @classmethod
+    def decode(cls, encoded: str) -> ResumeToken:
+        """Decode a base64url token string.
+
+        Args:
+            encoded: Base64url-encoded token string.
+
+        Returns:
+            ResumeToken instance.
+
+        Raises:
+            ValueError: If token is invalid or checksum fails.
+        """
+        try:
+            compressed = base64.urlsafe_b64decode(encoded)
+            payload = zlib.decompress(compressed).decode()
+            data = json.loads(payload)
+        except Exception as e:
+            raise ValueError(f"Invalid resume token: {e}") from e
+
+        token = cls(**data)
+
+        # Verify checksum
+        content = json.dumps(
+            {k: v for k, v in data.items() if k != "checksum"},
+            sort_keys=True,
+        )
+        expected = hashlib.sha256(content.encode()).hexdigest()[:8]
+        if token.checksum != expected:
+            raise ValueError(
+                f"Resume token checksum mismatch: {token.checksum} != {expected}"
+            )
+
+        return token
+"""Prospective native backend usage for one opt-in compression episode."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any
+
+
+@dataclass(frozen=True)
+class Baseline:
+    ledger: Any
+    task_id: str
+    call_ids: frozenset[str]
+
+
+def begin(primitives: Any, repl: Any, task_id: str) -> Baseline | None:
+    """Bind only the active request's ledger and the REPL's actual primitives."""
+    try:
+        from src.llm_primitives.usage import UsageLedger
+
+        if (not task_id or repl.llm_primitives is not primitives
+                or getattr(primitives, '_bound_request_usage', None) is not None):
+            return None
+        if primitives._request_task_id_ctx.get() != task_id:
+            return None
+        ledger = primitives._usage_ledger_ctx.get()
+        if not isinstance(ledger, UsageLedger):
+            return None
+        records = ledger.records()
+        return Baseline(ledger, task_id, frozenset(record['call_id'] for record in records))
+    except (AttributeError, KeyError, TypeError):
+        return None
+
+
+def finish(baseline: Baseline | None, primitives: Any, repl: Any, task_id: str) -> dict[str, Any]:
+    """Never turn missing, pending, estimated or foreign usage into exact totals."""
+    unknown = {
+        'status': 'unknown', 'backend_attempts': None, 'cached_replays': None,
+        'observed_input_calls': None, 'observed_output_calls': None,
+        'total_input_tokens': None, 'total_output_tokens': None, 'total_tokens': None,
+    }
+    try:
+        if (baseline is None or baseline.task_id != task_id or repl.llm_primitives is not primitives
+                or getattr(primitives, '_bound_request_usage', None) is not None
+                or primitives._request_task_id_ctx.get() != task_id
+                or primitives._usage_ledger_ctx.get() is not baseline.ledger):
+            return unknown
+        records = [r for r in baseline.ledger.records() if r['call_id'] not in baseline.call_ids]
+        replays = [r for r in records if r['provenance'] == 'cached_replay_of_server_reported'
+                   and not r['pending'] and not r['censored']]
+        attempts = [r for r in records if r not in replays]
+
+        def observed(record: dict, key: str) -> bool:
+            value = record.get(key)
+            return (record.get('provenance') == 'server_reported' and not record.get('pending')
+                    and not record.get('censored') and type(value) is int and value >= 0)
+
+        ins = [r['prompt_tokens'] for r in attempts if observed(r, 'prompt_tokens')]
+        outs = [r['completion_tokens'] for r in attempts if observed(r, 'completion_tokens')]
+        # An empty record set cannot prove that the expected graph call was observed.
+        complete_in = bool(records) and len(ins) == len(attempts)
+        complete_out = bool(records) and len(outs) == len(attempts)
+        total_in = sum(ins) if complete_in else None
+        total_out = sum(outs) if complete_out else None
+        return {
+            'status': 'complete' if complete_in and complete_out else 'partial',
+            'backend_attempts': len(attempts), 'cached_replays': len(replays),
+            'observed_input_calls': len(ins), 'observed_output_calls': len(outs),
+            'total_input_tokens': total_in, 'total_output_tokens': total_out,
+            'total_tokens': total_in + total_out if total_in is not None and total_out is not None else None,
+        }
+    except (AttributeError, KeyError, TypeError, ValueError):
+        return unknown
+"""Think-harder adaptive logic for orchestration graph nodes.
+
+Manages per-role ROI tracking and adaptive token budget decisions. Extracted
+from graph/helpers.py — all callers continue to import from helpers via
+compatibility re-exports.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+from pydantic_graph import GraphRunContext
+
+from src.escalation import ErrorCategory
+from src.graph.state import TaskDeps, TaskState
+
+log = logging.getLogger(__name__)
+
+Ctx = GraphRunContext[TaskState, TaskDeps]
+
+
+def _think_harder_cfg():
+    from src.config import get_config
+
+    return get_config().think_harder
+
+
+def _expected_think_harder_roi(state: TaskState, role: str) -> float:
+    """Return expected ROI for think-harder on this role from historical stats."""
+    stats = state.think_harder_roi_by_role.get(role, {})
+    attempts = float(stats.get("attempts", 0.0))
+    successes = float(stats.get("successes", 0.0))
+    if attempts <= 0:
+        return 1.0
+    success_rate = successes / attempts
+    # ROI proxy: how often think-harder avoided escalation/failure, centered at 0.5.
+    return success_rate - 0.5
+
+
+def _update_think_harder_stats(ctx: Ctx) -> None:
+    """Track per-role think-harder ROI for future gating decisions."""
+    state = ctx.state
+    attempted = bool(state.think_harder_attempted or state.think_harder_succeeded is False)
+    if not attempted:
+        return
+    role = str(state.current_role)
+    stats = state.think_harder_roi_by_role.setdefault(
+        role,
+        {
+            "attempts": 0.0,
+            "successes": 0.0,
+            "expected_roi": 1.0,
+            "ema_marginal_utility": 0.0,
+            "last_attempt_turn": -9999.0,
+        },
+    )
+    stats["attempts"] = float(stats.get("attempts", 0.0)) + 1.0
+    succeeded = bool(state.think_harder_succeeded)
+    if succeeded:
+        stats["successes"] = float(stats.get("successes", 0.0)) + 1.0
+
+    th_cfg = _think_harder_cfg()
+    fallback_budget = float(th_cfg.token_budget_fallback)
+    n_tokens = float(state.artifacts.get("think_harder_token_budget", fallback_budget) or fallback_budget)
+    token_penalty = min(n_tokens / fallback_budget, 1.5) * float(th_cfg.token_penalty_per_4k)
+    sample_utility = (1.0 if succeeded else 0.0) - token_penalty
+    prev_ema = float(stats.get("ema_marginal_utility", 0.0))
+    alpha = max(
+        float(th_cfg.ema_alpha_min),
+        min(float(th_cfg.ema_alpha_max), float(state.think_harder_ema_alpha)),
+    )
+    stats["ema_marginal_utility"] = ((1.0 - alpha) * prev_ema) + (alpha * sample_utility)
+    stats["last_attempt_turn"] = float(state.turns)
+    stats["expected_roi"] = _expected_think_harder_roi(state, role)
+    state.artifacts["think_harder_expected_roi"] = stats["expected_roi"]
+    state.artifacts["think_harder_marginal_utility"] = stats["ema_marginal_utility"]
+
+
+def _should_think_harder(ctx: Ctx, error_category: ErrorCategory) -> bool:
+    """On penultimate retry, try same model with boosted config (CoT, 2x tokens).
+
+    Returns True exactly once: when consecutive_failures == max_retries - 1
+    and think_harder hasn't been attempted yet for this role.
+    """
+    cfg = ctx.deps.config
+    state = ctx.state
+
+    # Format/schema errors: just retry, don't think harder
+    if (
+        error_category in cfg.no_escalate_categories
+        or error_category == ErrorCategory.SCHEMA
+        or error_category == ErrorCategory.TIMEOUT
+    ):
+        return False
+
+    # Only try once per role
+    if state.think_harder_attempted:
+        return False
+
+    role = str(state.current_role)
+    role_stats = state.think_harder_roi_by_role.get(role, {})
+    last_attempt_turn = float(role_stats.get("last_attempt_turn", -9999.0))
+    if (state.turns - last_attempt_turn) < max(0, int(state.think_harder_cooldown_turns)):
+        return False
+    attempts = int(role_stats.get("attempts", 0.0))
+    if attempts >= state.think_harder_min_samples:
+        expected_roi = _expected_think_harder_roi(state, role)
+        if expected_roi < state.think_harder_min_expected_roi:
+            log.info(
+                "Think-harder disabled for %s due to low ROI (expected=%.3f, attempts=%d)",
+                role, expected_roi, attempts,
+            )
+            return False
+        ema_marginal = float(role_stats.get("ema_marginal_utility", 0.0))
+        if ema_marginal < float(state.think_harder_min_marginal_utility):
+            log.info(
+                "Think-harder disabled for %s due to low marginal utility "
+                "(ema=%.3f < %.3f, attempts=%d)",
+                role,
+                ema_marginal,
+                float(state.think_harder_min_marginal_utility),
+                attempts,
+            )
+            return False
+
+    return state.consecutive_failures == cfg.max_retries - 1
+
+
+def _build_think_harder_config(state: TaskState) -> dict[str, Any]:
+    """Build adaptive think-harder config using per-role ROI history.
+
+    This uses a decaying envelope:
+    - high expected ROI -> larger token budget + CoT prefix
+    - low expected ROI -> smaller budget and lower temperature
+    """
+    role = str(state.current_role)
+    expected_roi = _expected_think_harder_roi(state, role)
+    role_stats = state.think_harder_roi_by_role.setdefault(
+        role,
+        {
+            "attempts": 0.0,
+            "successes": 0.0,
+            "expected_roi": 1.0,
+            "ema_marginal_utility": 0.0,
+            "last_attempt_turn": -9999.0,
+        },
+    )
+    # Map ROI range [-0.5, 0.5] to [0, 1] for stable envelope scaling.
+    roi_norm = max(0.0, min(1.0, expected_roi + 0.5))
+
+    th_cfg = _think_harder_cfg()
+    min_tokens = int(th_cfg.token_budget_min)
+    max_tokens = int(th_cfg.token_budget_max)
+    n_tokens = int(round(min_tokens + ((max_tokens - min_tokens) * roi_norm)))
+    temp_min = float(th_cfg.temperature_min)
+    temp_max = float(th_cfg.temperature_max)
+    temperature = round(temp_min + ((temp_max - temp_min) * roi_norm), 2)
+    cot_prefix = (
+        "# Step-by-step solution:\n"
+        if roi_norm >= float(th_cfg.cot_roi_threshold)
+        else ""
+    )
+
+    state.artifacts["think_harder_expected_roi"] = expected_roi
+    state.artifacts["think_harder_token_budget"] = n_tokens
+    state.artifacts["think_harder_temperature"] = temperature
+    state.artifacts["think_harder_cot_enabled"] = bool(cot_prefix)
+    role_stats["last_attempt_turn"] = float(state.turns)
+
+    return {
+        "n_tokens": n_tokens,
+        "cot_prefix": cot_prefix,
+        "temperature": temperature,
+    }
+"""REPL session log — append-only processing journal for multi-turn tasks.
+
+Gives models memory of their own processing history across REPL turns
+and escalation boundaries. Each turn is captured as a TurnRecord and
+appended to a per-task markdown file.
+
+Follows repl_tap.py patterns: thread-safe, fail-silent, _IN_PYTEST guard.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import os
+import threading
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from typing import Any
+
+from src.roles import Role
+from src.security.control_tokens import neutralise_control_tokens
+
+log = logging.getLogger(__name__)
+
+_session_log_lock = threading.Lock()
+_IN_PYTEST = bool(os.environ.get("PYTEST_CURRENT_TEST"))
+
+
+# ---------------------------------------------------------------------------
+# TurnRecord — one turn's full record
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class TurnRecord:
+    """Structured record of a single REPL turn."""
+
+    turn: int
+    role: str
+    timestamp: str = ""
+
+    # Code metadata
+    code_hash: str = ""  # 8-char hash for anti-loop detection
+    code_first_line: str = ""  # first non-comment line
+    code_last_line: str = ""
+    code_line_count: int = 0
+
+    # Output
+    output_preview: str = ""  # ~200 chars
+    output_length: int = 0
+
+    # Error
+    error_message: str = ""  # ~300 chars
+
+    # Outcome classification
+    outcome: str = ""  # "ok" | "error" | "nudge" | "silent" | "final" | "escalation"
+
+    # Tool calls (from exploration log diff)
+    tool_calls: list[str] = field(default_factory=list)
+
+    # Nudge / escalation details
+    nudge_text: str = ""
+    escalation_target: str = ""
+
+    # Process reward telemetry (CF Phase 3a)
+    token_budget_ratio: float = 0.0   # tokens_used / tokens_budgeted for this turn
+    on_scope: bool = True             # whether turn stayed on-task (heuristic)
+    tool_success_ratio: float = 1.0   # fraction of tool calls that succeeded
+
+    def to_log_line(self) -> str:
+        """Compact single-line summary for deterministic fallback."""
+        parts = [f"T{self.turn}({self.role})"]
+        if self.outcome:
+            parts.append(self.outcome)
+        if self.code_hash:
+            parts.append(f"code:{self.code_hash}")
+        if self.code_line_count:
+            parts.append(f"{self.code_line_count}L")
+        if self.tool_calls:
+            parts.append(f"tools:[{','.join(self.tool_calls[:3])}]")
+        if self.error_message:
+            parts.append(f"err:{self.error_message[:60]}")
+        elif self.output_preview:
+            parts.append(f"out:{self.output_preview[:60]}")
+        if self.nudge_text:
+            parts.append(f"nudge:{self.nudge_text[:40]}")
+        return " | ".join(parts)
+
+    def to_markdown_block(self) -> str:
+        """Multi-line markdown block for the session log file."""
+        lines = [
+            f"### Turn {self.turn} — {self.role} [{self.outcome}]",
+        ]
+        if self.timestamp:
+            lines[0] += f" ({self.timestamp})"
+        if self.code_hash:
+            lines.append(
+                f"- Code: `{self.code_hash}` "
+                f"({self.code_line_count} lines) "
+                f"first=`{self.code_first_line[:80]}`"
+            )
+        if self.tool_calls:
+            lines.append(f"- Tools: {', '.join(self.tool_calls[:5])}")
+        if self.error_message:
+            lines.append(f"- Error: {self.error_message[:300]}")
+        if self.output_preview:
+            lines.append(f"- Output: {self.output_preview[:200]}")
+        if self.nudge_text:
+            lines.append(f"- Nudge: {self.nudge_text[:120]}")
+        if self.escalation_target:
+            lines.append(f"- Escalation → {self.escalation_target}")
+        return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# ConsolidatedSegment — two-level condensation (CF Phase 1)
+# ---------------------------------------------------------------------------
+
+# Max granular blocks before forcing consolidation
+MAX_GRANULAR_BLOCKS = 15
+
+
+@dataclass
+class ConsolidatedSegment:
+    """A consolidated segment from two-level condensation.
+
+    Tier 1 (granular): TurnRecord.to_log_line() produces stable 1-2 sentence
+    blocks that accumulate without re-processing.
+
+    Tier 2 (deep): At consolidation boundaries, accumulated Tier 1 blocks are
+    consolidated into a dense paragraph via the live worker path.
+    """
+
+    turn_range: tuple[int, int]  # (start_turn, end_turn) inclusive
+    granular_blocks: list[str]   # raw Tier 1 lines preserved for audit
+    consolidated: str            # Tier 2 dense paragraph
+    trigger: str                 # what triggered consolidation
+    timestamp: float = 0.0
+    reward_signals: Any = None   # RewardSignals instance (CF Phase 3a), optional
+    # CF-P1: Provenance tracking — trace derived summaries to source t

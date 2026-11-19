@@ -1,0 +1,184 @@
+{
+ "sha": "4ffa29969cb26de63c49663effe68f94bcb4a476",
+ "folds": [
+  {
+   "kind": "whole-file",
+   "src": "bep-dcp-falsification-harness.md",
+   "tgt": "autopilot-continuous-optimization.md",
+   "old_row": "RTG-05",
+   "moved_open_boxes": 2,
+   "tasks_before": 107,
+   "tasks_after": 107,
+   "lost": [],
+   "gained": []
+  },
+  {
+   "kind": "split/carve",
+   "src": "eval-tower-verification.md",
+   "tgt": "model-evaluation-queue.md (new, EVL-53)",
+   "carved_lines": [
+    232,
+    259
+   ],
+   "moved_open_boxes": 2,
+   "tasks_before": 107,
+   "tasks_after": 107,
+   "lost": [],
+   "gained": []
+  },
+  {
+   "kind": "live-session",
+   "src": "dflash2-block-drafter-experimental-build.md",
+   "tgt": "speculative-decoding-mtp-refresh.md",
+   "old_row": "INF-62",
+   "moved_open_boxes": 19,
+   "tasks_before": 153,
+   "tasks_after": 153,
+   "lost": [],
+   "gained": [],
+   "session_slug": "df2 -> handoff re-pointed in scratch copy /mnt/raid0/llm/tmp/ws58-csh/dryrun/handoff-sessions.json",
+   "rowflow_specs_rewritten_in_scratch": [
+    "df2-6bbis-gpu-20261101.json",
+    "df2-exl3-codec-build-20261101-r1.json",
+    "df2-sl2-export-cpu-20261101.json",
+    "df2-sl2-fresh-cpu-20261101.json"
+   ],
+   "curated_rekeyed": 1,
+   "dependents_repointed": [
+    "INF-65 (deps INF-06,INF-62,INF-64 -> INF-06,INF-50,INF-64)",
+    "INF-81 (INF-62 -> INF-50)"
+   ]
+  }
+ ],
+ "index_state_rc": 0,
+ "index_state_tail": "wrote handoffs/active/.index-state.json\nwrote handoffs/active/.index-graph.json (174 nodes, 627 edges, 78 dep) \u2014 132 ready, 41 blocked, 1 no-open\nmaster index block: updated\n<!-- BEGIN GENERATED index_state -->\n| Domain | Handoffs | Open | Blocked | Oldest advance |\n|--------|----------|------|---------|----------------|\n| inference-research | 57 | 1033 | 59 | 2026-07-29 |\n| pipeline-integration | 5 | 70 | 1 | 2026-09-24 |\n| research-evaluation | 41 | 735 | 15 | 2026-07-29 |\n| reviewer-control-plane | 6 | 26 | 12 | 2026-07-29 |\n| routing-and-optimization | 53 | 673 | 17 | 2026-07-29 |\n| user-facing-harness | 12 | 122 | 17 | 2026-08-12 |\n<!-- END GENERATED index_state -->\n",
+ "check_rc": 0,
+ "check_out": "cite-check: clean \u2014 294 citation(s) across 9 document(s)    review=17  unknown=2  ok=140  record=135    [unknown] intake-25  handoffs/active/.index-graph.json    [review] intake-2604  handoffs/active/autopilot-continuous-optimization.md    [review] intake-1354  handoffs/active/eval-tower-verification.md    [review] intake-2461  handoffs/active/eval-tower-verification.md    [review] intake-2484  handoffs/active/eval-tower-verification.md    [review] intake-2491  handoffs/active/eval-tower-verification.md    [review] intake-1282  handoffs/active/speculative-decoding-mtp-refresh.md    [unknown] intake-1923  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2136  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2386  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2388  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2401  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2415  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2422  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2550  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2574  handoffs/active/speculative-decoding-mtp-refresh.md    [review] intake-2386  handoffs/completed/dflash2-block-drafter-experimental-build.md    [review] intake-2550  handoffs/completed/dflash2-block-drafter-experimental-build.md    [review] intake-2574  handoffs/completed/dflash2-block-drafter-experimental-build.md\nSCRATCH (warning): kv-unified-stack-rollout.md: /native: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/\nSCRATCH (warning): multimodal-pipeline.md: /data/runtime: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/; /canary: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/\nSCRATCH (warning): qwen-chat-template-evaluation.md: /running: scratch must live under /mnt/raid0/llm/tmp/ or /mnt/raid0/llm/worktrees/\nSCRATCH (warning): 110 handoff(s) declare no **Scratch** field (e.g. agent-file-prose-compression.md, agent-world-env-synthesis.md, amd-ai-lab-website-publication.md) \u2014 add one when you next touch the handoff; docs/guides/agent-workflows/handoff-index-authoring.md \u00a7 Scratch roots\n\n0 problem(s)\nADVISORY WARNING: backlog-priority.json lists 2 row(s) no longer in any index (INF-62, RTG-05); ignored\nADVISORY WARNING: 2 open row(s) are not in backlog-priority.json (EVL-53, RTG-62); they sort below file-ranked rows by the heuristic\n",
+ "stale_rc": 1,
+ "stale_tail": "ation-index.md]\n    ticked: MHS-3d, MHS-12\n    next:   MHS-3d \u2014 operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12\n    fix:    repoint at the handoff's first still-open task, or say what the row is waiting on.\n\n  RTG-58  [routing-and-optimization-index.md]\n    ticked: KPF-64\n    next:   Qualify P1 candidate correctness; complete chunk-KV integration and repair the KPF-64 family cohort\n    fix:    repoint at the handoff's first still-open task, or say what the row is waiting on.\n\n  UFH-07  [user-facing-harness-index.md]\n    ticked: TOC-MP-1, TOC-MP-2\n    next:   TOC-MP-1 pointer-reachability test (zero inference), then TOC-MP-2/3 A/B design text\n    fix:    repoint at the handoff's first still-open task, or say what the row is waiting on.\n\n",
+ "readiness_counts_before": {
+  "blocked": 41,
+  "no_open": 1,
+  "ready": 133
+ },
+ "readiness_counts_after": {
+  "blocked": 41,
+  "no_open": 1,
+  "ready": 132
+ },
+ "readiness_diff": {
+  "EVL-14": {
+   "before": [
+    "ready",
+    [],
+    27
+   ],
+   "after": [
+    "ready",
+    [],
+    25
+   ]
+  },
+  "EVL-53": {
+   "before": null,
+   "after": [
+    "blocked",
+    [
+     "EVL-08",
+     "INF-22"
+    ],
+    2
+   ]
+  },
+  "RTG-05": {
+   "before": [
+    "ready",
+    [],
+    2
+   ],
+   "after": null
+  },
+  "INF-81": {
+   "before": [
+    "blocked",
+    [
+     "INF-62",
+     "INF-73",
+     "INF-75",
+     "INF-77",
+     "RTG-57",
+     "RTG-58"
+    ],
+    59
+   ],
+   "after": [
+    "blocked",
+    [
+     "INF-50",
+     "INF-73",
+     "INF-75",
+     "INF-77",
+     "RTG-57",
+     "RTG-58"
+    ],
+    59
+   ]
+  },
+  "INF-65": {
+   "before": [
+    "blocked",
+    [
+     "INF-06",
+     "INF-62",
+     "INF-64"
+    ],
+    35
+   ],
+   "after": [
+    "blocked",
+    [
+     "INF-06",
+     "INF-50",
+     "INF-64"
+    ],
+    35
+   ]
+  },
+  "RTG-02": {
+   "before": [
+    "ready",
+    [],
+    57
+   ],
+   "after": [
+    "ready",
+    [],
+    59
+   ]
+  },
+  "INF-50": {
+   "before": [
+    "ready",
+    [],
+    32
+   ],
+   "after": [
+    "ready",
+    [],
+    51
+   ]
+  },
+  "INF-62": {
+   "before": [
+    "blocked",
+    [
+     "INF-06",
+     "INF-50"
+    ],
+    20
+   ],
+   "after": null
+  }
+ },
+ "git_status": " M handoffs/active/.index-graph.json\n M handoffs/active/.index-state.json\n M handoffs/active/autopilot-continuous-optimization.md\n M handoffs/active/eval-tower-verification.md\n M handoffs/active/inference-research-index.md\n M handoffs/active/master-handoff-index.md\n M handoffs/active/research-evaluation-index.md\n M handoffs/active/routing-and-optimization-index.md\n M handoffs/active/speculative-decoding-mtp-refresh.md\nRM handoffs/active/bep-dcp-falsification-harness.md -> handoffs/completed/bep-dcp-falsification-harness.md\nRM handoffs/active/dflash2-block-drafter-experimental-build.md -> handoffs/completed/dflash2-block-drafter-experimental-build.md\n M scripts/handoffs/backlog_priority_curated.json\n?? handoffs/active/model-evaluation-queue.md\n"
+}

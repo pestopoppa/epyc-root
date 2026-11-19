@@ -1,0 +1,27 @@
+{
+  "authority": "software-control-only",
+  "baseline_visible": 0,
+  "candidate_visible": 16,
+  "control_count": 2,
+  "control_receipts_sha256": {
+    "baseline": "79a6db3c660d66747c89334fe3c37403ff1690ba5c3294f8de10e165d8a98a4d",
+    "candidate": "8c67d5796b2fcf06e63ac6315ebb2821564250066300d009ff4b2f7ad6ebff64"
+  },
+  "cpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "excluded_count": 4,
+  "id": "vb-mi210-q38-planner-control-20261118",
+  "mode": "official",
+  "native_q38_acceptance_count": 0,
+  "refusal_control_count": 3,
+  "refusal_count": 0,
+  "research_baseline_commit": "6decaeda4481a841b3a85b55b0be87a6963b3042",
+  "run_dir": "/mnt/raid0/llm/tmp/vidya-belief-substrate/ch18-current/packet/official-3htquvxq",
+  "source_commit": "d9f7a53db8e6fb0ba51d5b0cc597011da12e4338",
+  "source_pins_sha256": "0f04f9bb15f0740ddd4de848c964964f5dca539fd1153db0ae8b76ba70de2128",
+  "status": "passed"
+}

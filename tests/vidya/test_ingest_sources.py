@@ -20,6 +20,7 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -207,7 +208,12 @@ def _distillation_pool(tmp: Path) -> Path:
 
 
 def _s4_omega_ab(tmp: Path) -> Path:
-    return _helpers("test_s4_omega_ab_adapter").write_fixture(tmp)
+    # The fixture runs the actual producer from the pinned orchestrator checkout; absent that
+    # checkout (env-gated like the other cross-repo tests) there is nothing to run.
+    helpers = _helpers("test_s4_omega_ab_adapter")
+    if helpers.producer_path() is None:
+        pytest.skip("s4-omega-ab fixture requires EPYC_ORCHESTRATOR_SOURCE_ROOT or the default orchestrator clone")
+    return helpers.write_fixture(tmp)
 
 
 def _usage_provenance(tmp: Path) -> Path:
@@ -223,9 +229,12 @@ BUILDERS = {
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
     "research-screen": _research_screen,
     "s4-omega-ab": _s4_omega_ab,
+    "ak-r18-symbols": lambda tmp: _helpers("test_r18_symbol_integration").fixture(tmp)[0] / "terminal.json",
     "usage-provenance": _usage_provenance,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
+    "cj7a-inverse-mutation": lambda tmp: _helpers("test_cj7a_inverse_mutation_adapter").fixture(tmp),
+    "dar-join-coverage": lambda tmp: _helpers("test_dar_join_coverage_adapter").fixture(tmp),
     "contention-gate": _contention_gate,
     "contention-matrix": _contention_matrix,
     "beam": _beam,
@@ -250,6 +259,8 @@ BUILDERS = {
     "reviewer-fa": _reviewer_fa,
     "typed-decisions-measurement": _typed_decisions,
     "ak-actor-seat": _ak_actor_seat,
+    "ak-actor-wire": lambda tmp: (lambda m: (m.build(tmp), tmp)[1])(
+        _helpers("test_autokernel_actor_wire_adapter")),
     "ufh13-thesis-measurement": _ufh13_thesis,
     "toc-ab": lambda tmp: _helpers("test_prospective_ab_carriers").toc_write(tmp),
     "skillbank-ab": lambda tmp: _helpers("test_prospective_ab_carriers").sk_write(tmp),
@@ -310,6 +321,15 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # KVQ's exact producer pin and external-repo artifact path are exercised by
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        "repl-shadow-observation",  # Completed shadow streams, strict reader: test_repl_shadow_observation.py.
+        "committed-conclusion",  # Throwaway git repo, quote audit, tamper and reingest: test_committed_conclusion_adapter.py.
+        "ak-r234-sweep",  # Prospective native sweep: positive, refusal and tamper controls in test_autokernel_r234_sweep.py.
+        "ak-r18d-aa",  # Needs the research repo bench parser (patched): positive, refusal and tamper controls in test_autokernel_r18d_aa.py.
+        "kvu16a-sampled-load",  # Original-run synthetic ingest and planning canary: test_kvu16a_native.py.
+        "kvu19a2-native",  # Dedicated positive ingest and tamper/pre-hook controls: test_kvu19a2_native.py.
+        "exp01-proxy-capture",  # Real filed control, CLI and refusal tests: test_exp01_proxy_capture.py.
+        "r231-eof-capture",  # Prospective seal, scoped CLI and refusal tests: test_r231_eof_capture.py.
+        "kvu19b-gap",  # Synthetic producer fixture, tamper controls, real-record ingest, planning canary: test_kvu19b_gap.py.
         "dev-harness-aggregate",  # Actual miners, publisher, CLI and planning: test_dev_harness_aggregate.py.
         "pip02-incremental-teds",  # Prospective writer, strict projection and private CLI: test_pip02_teds.py.
         "kpf261-plan-steps",  # Synthetic refusal: test_kpf261_plan_steps.py; native canary uses pinned external capture.
@@ -327,8 +347,16 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "m4-cpu-recipe-speed",
         "df2-row-exact-akx",  # synthetic producer to actual registry and planning context: test_df2_native_integration.py
         "ufh12-gs-coverage",  # synthetic producer, registry and planning canary: test_ufh12_gs_coverage.py
+        "repl-trace-coverage",  # synthetic producer, strict adapter and CLI: test_repl_trace_ingest.py
+        "repl-trace-facts",  # explicit sealed event observations: test_repl_trace_facts_ingest.py
         # Actual accepted writer -> strict reader/CLI ledger custody: tests/test_hg5_request_event_reader.py.
         "hg5-request-event",
+        # Native custody needs the pinned producer/provider/lock/receipt SHA-256s and a hash-chained
+        # journal; no fixture can satisfy those without fabricating the pins. Registry/CLI ingest with
+        # the native reader stubbed, fixture refusal and journal-chain refusals:
+        # test_dtap_crm_pair_refusal.py.
+        "dtap-crm-pair",
+        "dtap-finance-pair",  # Synthetic native record, tamper refusals and CLI ingest: test_dtap_finance_pair.py.
         # Strict re-derivation, refusals and grading on fixture trees: test_autokernel_width_dimension.py
         # (HIP) and test_autokernel_width_cells_cpu.py (CPU, plus the real stored record).
         "ak-width-dimension", "ak-width-cells-cpu",
@@ -336,10 +364,18 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         # CLI dispatch count: test_gpu_cpu_noise_adapter.py. v1 readings + pre-hook dumps, refusals and the
         # real STACKCHG-GPUPIN evidence dispatch: test_launch_affinity_adapter.py.
         # FD-DIV-1a/1b strict re-derivation + real receipts: test_fused_decode_div_adapter.py.
-        "gpu-cpu-noise", "launch-affinity", "fused-decode-div",
+        "gpu-cpu-noise", "launch-affinity", "fused-decode-div", "ch18-merge-trial",
+        "fm2-adamast",  # Native and CLI controls: test_fm2_adamast.py.
+        "thinking-budget-semantics",  # Native planning canary: scripts/vidya/canary/thinking_budget_semantics_context.py.
+        "p5-sphinx-scorer",  # Original evidence, CLI and refusal controls: test_p5_sphinx_scorer.py.
+        "p5-astropy-scorer",  # Original evidence, CLI and refusal controls: test_p5_astropy_scorer.py.
+        "tool-selector-events",  # Synthetic rows, refusals, CLI ingest and planning canary: test_tool_selector_events.py.
+        "monty-lane",  # Synthetic rows, refusals, CLI ingest and planning canary: test_monty_lane.py.
+        "fm4-gate-acceptance",  # Dedicated adapter tests: test_fm4_gate_acceptance.py.
         # Structured fold_gate v4 producer, strict per-library verifier projection and CLI dispatch:
         # test_champion_fold_gate_adapter.py.
         "champion-fold-gate",
+        "v11-gate-bench",  # Synthetic + real v11-050/051/052 re-derivation and tamper controls: test_v11_gate_bench.py.
         # HSF-5.P sidecar written by the real analyzer, re-derivation refusals and CLI dispatch:
         # test_hsf5p_microbench_adapter.py.
         "hsf5p-microbench",
@@ -384,6 +420,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "graph-profiler-measurement",
         # Dedicated ODL identity, refusal and CLI controls: tests/vidya/test_odl_model_gated.py.
         "odl-unlimited-ocr-run",
+        "odl-unlimited-ocr-intrinsic",  # tests/vidya/test_odl_model_gated.py (intrinsic tests)
         # Prospective SC54 receipt writer, pinned reader and shared-ladder adapter:
         # test_sc54_qwen4exp_quality_adapter.py; no historical backfill.
         "qwen4exp-quality-measurement",
@@ -398,7 +435,18 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "speech-listen-rating",
         # Full original C6 R2 native run and tamper/missing/qualification/case mismatch controls:
         # test_c6_q4_microbench_adapter.py (component observations only; no historical backfill).
-        "c6-q4-microbench"}
+        "c6-q4-microbench",
+        "inf66-r2364",  # sealed-sweep fixture, tamper and real-data controls: test_inf66_r2364.py
+        "mi210-paired-raw",  # isolated CLI, refusals and synthetic context: test_mi210_paired_raw_ingest.py
+        "gpu-pool-native",  # sealed synthetic CLI and refusal controls: test_gpu_pool_native_ingest.py
+        "qwen4exp-cpu-loader-diagnostic",  # Prospective writer and refusals: test_qwen4exp_cpu_loader.py.
+        # Dedicated original-byte, carrier/planner, and CLI decline/refusal controls: test_q38p4_parity.py.
+        "q38p4-greedy-parity",
+        "quality-pack-comparison",  # Native comparison capture and refusal controls: test_kernel_promotion_quality_parity.py.
+        "kernel-promotion-lifecycle",  # Sealed fixture, strict replay refusals and CLI retry: test_kernel_promotion_evidence.py.
+        "autopilot-rotation",  # AP-70 strict reader CLI, refusals and planning-context canary: test_autopilot_rotation_canary.py.
+        "toc-ab-cf3c",  # cf3c-live sealed-window reader: fixture from real cells, refusals, canary: test_toc_ab_cf3c.py.
+    }
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():

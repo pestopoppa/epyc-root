@@ -1,7 +1,7 @@
 #!/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python
 """backlog_queue_gen.py — generate the dispatchable bench, and audit a hand-written one.
 
-Owning handoff: handoffs/active/session-bus-thin-dispatcher.md
+Owning handoff: handoffs/active/coordination-and-churn-pipeline.md
 Companion:      coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md
 Screen:         scripts/coordination/backlog_row_check.py (this reuses its classifier)
 

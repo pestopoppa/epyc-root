@@ -1,0 +1,55 @@
+{
+  "$schema": "epyc.filed.verdict.v1",
+  "agent_verdict": {
+    "filed_by": "handoff-vidya-belief-substrate",
+    "rationale": "Original allocator rc0 and accepted true complete one-pair native capture; native token sequences diverged (both 128 tokens, first mismatch at zero-based index 37), normalized length stops agreed. This answers the finite parity question negatively, not a capture failure, performance or model-quality finding. Task planning acceptance remains separate.",
+    "verdict": "fail"
+  },
+  "answer": null,
+  "at": "2026-11-18T19:36:34+00:00",
+  "compute_burned": true,
+  "dry_run": false,
+  "end_line": "rc=0 time=2026-11-18T19:24:54Z reason=complete",
+  "end_record": "/mnt/raid0/llm/tmp/compute-flags/grants/q38p4-greedy-parity-20261118-r2.ended",
+  "filed_at": "2026-11-18T19:36:34+00:00",
+  "filed_by": "handoff-vidya-belief-substrate",
+  "handoff_task": "vidya-belief-substrate-program.md:VB-Q38P4-PARITY-WIRE",
+  "id": "q38p4-greedy-parity-20261118-r2",
+  "keep_tail": {
+    "reason": "no samples_a/samples_b in result",
+    "reported": false
+  },
+  "machine_checkable": false,
+  "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/q38p4-greedy-parity-20261118-r2.json",
+  "native_result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/RESULT.json",
+  "outcome_class": "SCIENCE-VERDICT",
+  "owner": "handoff-vidya-belief-substrate",
+  "phase": "filing",
+  "rc": 0,
+  "reason": "Original allocator rc0 and accepted true complete one-pair native capture; native token sequences diverged (both 128 tokens, first mismatch at zero-based index 37), normalized length stops agreed. This answers the finite parity question negatively, not a capture failure, performance or model-quality finding. Task planning acceptance remains separate.",
+  "result_exists": true,
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/RESULT.json",
+  "root_cause_family": null,
+  "row": "q38p4-greedy-parity-20261118-r2",
+  "row_verdict": "fail",
+  "rule": "Does greedy decoding on the Qwen3-4B-Instruct-2507 BF16 proxy yield identical native token IDs and stop categories on the pinned C6 llama.cpp GPU runtime and vLLM 0.33.0 ROCm image under the same predeclared 512-token input and at most 128 generated tokens per arm? Each arm uses its own sequential launch, one fixed request, speculative decoding and prefix cache disabled, and exact body bytes under one exclusive MI210 grant. Stop-on-answer after one settled match or divergence. Stop-on-futility on STOP, grant deadline, input or response refusal, load or cleanup failure, or missing two samples with in-window linkage. The publisher smoke runs one separate 0.6B HIP arm on four reserved threads with native token IDs and cleanup. The full result is a finite correctness diagnostic.",
+  "source": "grant",
+  "tokens": {
+    "available": true,
+    "completed": 123,
+    "input": 501070312,
+    "output": 2079795,
+    "owner_slug": "vidya-belief-substrate",
+    "scope": "owner session, UTC day of filing",
+    "tokens": 503150107,
+    "tokens_per_task": 4090651.276422764
+  },
+  "values": {},
+  "verdict": {
+    "kind": "science",
+    "native_result_sha256": "419947aaff0750007ad0549d526aa28d40dccc23ef0bcf0b16ee05e6dd02e9e3",
+    "result": "fail",
+    "status": "filed"
+  }
+}

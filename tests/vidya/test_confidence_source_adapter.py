@@ -79,6 +79,7 @@ def _identity(path: Path, *, arm: str, batch: str, declared, segments: int = 1) 
                                  "repeat_penalty": 1.1, "seed": 42}},
         "request": {"top_logprobs": 20, "max_tokens": 2048},
         "serving": {"endpoint": "http://127.0.0.1:18381", "spec_declared": declared,
+                    "slots": {"_list": [{"speculative": declared}]},
                     "props": {"model_path": "/models/gemma.gguf", "build_info": "b10125-ef81196d5"}},
     }
     path.write_text(json.dumps({"segments": [seg] * segments}))
@@ -181,6 +182,73 @@ def test_spec_off_arm_with_missing_declaration_is_refused(tmp_path):
     with pytest.raises(capture.CaptureError, match="must resolve to spec 'off', not 'unknown'"):
         _write(w)
     assert not capture.sidecar_path(w["report"]).exists()
+
+
+@pytest.mark.parametrize("raw", [
+    None, {}, {"_error": "http_503"}, {"_list": None}, {"_list": {}},
+    {"_list": []}, {"_list": [{}]}, {"_list": [{"speculative": None}]},
+    {"_list": [{"speculative": 0}]}, {"_list": [{"speculative": "false"}]},
+    {"_list": [{"speculative": False}, {}]},
+    {"_list": [{"speculative": False}, None]},
+    {"_list": [{"speculative": False}], "_error": "http_503"},
+])
+def test_lossy_false_summary_cannot_establish_spec_off(tmp_path, raw):
+    w = _world(tmp_path)
+    data = json.loads(w["identity"].read_text())
+    data["segments"][0]["serving"]["slots"] = raw
+    w["identity"].write_text(json.dumps(data))
+    with pytest.raises(capture.CaptureError, match="must resolve to spec 'off', not 'unknown'"):
+        _write(w)
+    assert not capture.sidecar_path(w["report"]).exists()
+
+
+def test_legacy_summary_without_raw_slots_is_unknown(tmp_path):
+    w = _world(tmp_path)
+    data = json.loads(w["identity"].read_text())
+    del data["segments"][0]["serving"]["slots"]
+    w["identity"].write_text(json.dumps(data))
+    with pytest.raises(capture.CaptureError, match="not 'unknown'"):
+        _write(w)
+
+
+def test_every_segment_needs_complete_raw_slots(tmp_path):
+    w = _world(tmp_path)
+    data = json.loads(w["identity"].read_text())
+    second = json.loads(json.dumps(data["segments"][0]))
+    second["serving"]["slots"]["_list"].append({})
+    data["segments"].append(second)
+    w["identity"].write_text(json.dumps(data))
+    with pytest.raises(capture.CaptureError, match="not 'unknown'"):
+        _write(w)
+
+
+def test_raw_slots_and_summary_contradiction_is_refused(tmp_path):
+    w = _world(tmp_path)
+    data = json.loads(w["identity"].read_text())
+    data["segments"][0]["serving"]["slots"]["_list"].append({"speculative": True})
+    w["identity"].write_text(json.dumps(data))
+    with pytest.raises(capture.CaptureError, match="raw /slots contradicts"):
+        _write(w)
+
+
+def test_explicit_on_survives_unknown_slots(tmp_path):
+    w = _world(tmp_path, arm="B-mtp", declared=True)
+    data = json.loads(w["identity"].read_text())
+    data["segments"][0]["serving"]["slots"]["_list"].append({})
+    w["identity"].write_text(json.dumps(data))
+    _write(w)
+    tup = reader.project(reader.rows_for_report(w["report"])[0])
+    assert tup.extra["spec"]["state"] == "on"
+    assert tup.extra["confidence_is_real"] is False
+
+
+def test_slot_endpoint_error_cannot_establish_off(tmp_path):
+    w = _world(tmp_path)
+    data = json.loads(w["identity"].read_text())
+    data["segments"][0]["serving"]["slots_error"] = "http_503"
+    w["identity"].write_text(json.dumps(data))
+    with pytest.raises(capture.CaptureError, match="not 'unknown'"):
+        _write(w)
 
 
 def test_mtp_arm_that_never_speculated_is_refused(tmp_path):

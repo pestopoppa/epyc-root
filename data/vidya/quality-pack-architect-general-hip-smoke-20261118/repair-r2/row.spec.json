@@ -1,0 +1,36 @@
+{
+  "decision_rule": "Capture four fixed native responses per arm on the one-MI210 Qwen3.8-Flash-Next UD-IQ4_XS text-only no-spec slice, with 24 layers on HIP, f16 KV, context 4096 and one slot. Stop after eight exact captures, two distinct in-window samples per request proving the pinned HIP objects, KFD PID and nonzero VRAM on the pinned MI210, sealed production bank before candidate launch, and captured-PID plus listener and KFD cleanup. Stop on STOP, deadline, or first identity, startup, response, residency or cleanup failure. Publisher smoke proves four-CPU scheduler custody and native MI210 residency with one pinned v10 HIP Qwen3-0.6B Q8_0 no-spec completion, two distinct in-request mapped-library, KFD PID and VRAM samples above the 64 MiB keeper floor, and PID, listener and KFD cleanup. The observed deployment is a distinct CPU/MTP recipe. Retain the prior frontdoor JSON mismatch and the incomplete broad-pack status.",
+  "dryrun_native_result": true,
+  "estimate_s": 1700,
+  "first_progress_s": 120,
+  "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-V9-8-QUALITY-PACK-ARCHITECT-GENERAL",
+  "id": "handoff-vidya-quality-pack-architect-general-hip-smoke-20261118",
+  "keep": [
+    "out/**",
+    "requests/**",
+    "*.py",
+    "*.json",
+    "*.jinja",
+    "*.sh",
+    "*.md",
+    "SOURCE.sha256"
+  ],
+  "kind": "compute",
+  "lane": "gpu",
+  "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118-repair-r2.2o7xv56j/row-launch.sh",
+  "max_window_s": 2700,
+  "min_window_s": 2250,
+  "owner": "handoff-vidya-belief-substrate",
+  "priority_rank": 38,
+  "ram_gib": 112,
+  "regions": "mi210_0,184-191",
+  "result_format": "json",
+  "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118-repair-r2.2o7xv56j/out/RESULT.json",
+  "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118-repair-r2.2o7xv56j",
+  "shape": "gpu",
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vidya-belief-substrate/architect-general-hip-smoke-20261118-repair-r2.2o7xv56j/smoke_predicate.py",
+  "supersedes": [
+    "handoff-vidya-quality-pack-architect-general-hip-20261118"
+  ],
+  "verdict_by": "agent"
+}

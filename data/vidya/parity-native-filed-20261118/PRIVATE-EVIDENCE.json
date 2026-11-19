@@ -1,0 +1,48 @@
+{
+  "schema": "epyc.private_evidence_reference.v1",
+  "reason": "Original account-number-shaped socket/container/map records are retained privately; sealed originals are unchanged. Public packet alone is not a complete replay input.",
+  "original_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2",
+  "original_seal": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/q38p4-greedy-parity.json",
+  "omitted_public_copies": [
+    {
+      "relative_path": "official/capture/llama/listener-after",
+      "sha256": "48e7e226cf95dff15d7a708791405f897ba0be61a3b6ea1a417e50facaca4e6c",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/llama/listener-after"
+    },
+    {
+      "relative_path": "official/capture/llama/listener-before",
+      "sha256": "c7fe68790b8015a337c8747c8b9c82b0854440c407db16d04b5b998340af1efd",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/llama/listener-before"
+    },
+    {
+      "relative_path": "official/capture/llama/listener-cleanup",
+      "sha256": "b712d5af6940d3d19817ca67c22112f565f58699cc116c162cd6114c1bf1586f",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/llama/listener-cleanup"
+    },
+    {
+      "relative_path": "official/capture/vllm/listener-after",
+      "sha256": "a631872500e104f2d71a3eba9fe9d835443e318e188b68e4645ec202655c4036",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/vllm/listener-after"
+    },
+    {
+      "relative_path": "official/capture/vllm/listener-before",
+      "sha256": "076c589733c361745530874175a2633af2ecef840130559b7acf150dc12ec34b",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/vllm/listener-before"
+    },
+    {
+      "relative_path": "official/capture/vllm/listener-cleanup",
+      "sha256": "7f9430618229db57a0a2c8a5eb736e1d678f3ff7b02f5813695745cbee0a04b3",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/vllm/listener-cleanup"
+    },
+    {
+      "relative_path": "official/capture/vllm/docker-inspect.json",
+      "sha256": "e4d6566eb3aa68aec8c5ef42e40634088692b70bb54d17a091733466d0fe9f98",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/vllm/docker-inspect.json"
+    },
+    {
+      "relative_path": "official/capture/vllm/maps-3895439.txt",
+      "sha256": "319af99bfc55115cfd77a1fff7051d16ddfda43a597d349aa90c31ea3c895913",
+      "private_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/parity-native-20261118-r2/official/capture/vllm/maps-3895439.txt"
+    }
+  ]
+}

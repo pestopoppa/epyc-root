@@ -1,0 +1,6 @@
+All preimage hashes verified
+checking file dist/core/ingestion/pipeline-phases/communities.js
+patching file dist/core/ingestion/pipeline-phases/communities.js
+All postimage hashes verified
+6b5937d48e04c82c37e7d4071578da79631256b66fbf87bb1d44222cf6958242  /usr/local/share/npm-global/lib/node_modules/gitnexus/dist/core/ingestion/pipeline-phases/communities.js
+installed smoke: 2/2 success after apply (logs/installed)

@@ -1,0 +1,19 @@
+{
+ "decision_rule": "Descriptive CPU first-start decode throughput (higher is faster) and exact 60-item MMMU paired accuracy (higher is better); paired MI210 36/60=60.0%, original m",
+ "estimate_s": 86400,
+ "gib": 48,
+ "handoff_task": "FILLERS:codex-ni-s18-qwenvl-cpu-r1-20261031",
+ "id": "codex-ni-s18-qwenvl-cpu-r1-20261031",
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/run_full.sh"
+ },
+ "min_window_s": 1800,
+ "owner": "codex-ni",
+ "priority_rank": 36.0,
+ "published_at": "2026-11-01T17:09:13Z",
+ "regions": "0-47,96-143",
+ "schema": "epyc.row.v3",
+ "stop_file": "/mnt/raid0/llm/tmp/codex-ni-next-ranked-cpu-prep-20261031/STOP",
+ "window_s": 103980
+}

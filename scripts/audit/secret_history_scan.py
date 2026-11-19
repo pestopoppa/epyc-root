@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""secret_history_scan.py — SEC-SECRETS-1 one-off history scan (handoffs/active/model-exec-containment.md).
+"""secret_history_scan.py — SEC-SECRETS-1 one-off history scan (handoffs/active/stack-lifecycle-program.md).
 
 Walks EVERY commit reachable from any ref (`git log --all -p`) of the given repos and looks at each ADDED line for
 Hugging Face and Weights & Biases credentials, using the same regexes as the pre-commit hook

@@ -1,0 +1,23 @@
+{
+  "id": "kpf18-g3-output-supervision-qual-r2-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-g3-output-supervision-r2-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-g3-output-supervision-r2-20261105/out/full-attempt/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "PASS requires six isolated supervisor controls: normal, sampled budget growth/overshoot, STOP, deadline, child failure, detached writer cleanup; every owned process absent and samples retained. New reusable implementation only, no candidate/native/GPU coverage. Stop on source drift, failed or missing control, row STOP or deadline.",
+  "estimate_s": 300,
+  "ram_gib": 1,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-18-G3-OUTPUT-SUPERVISION-QUAL",
+  "priority_rank": 46,
+  "first_progress_s": 30,
+  "dryrun_timeout_s": 60,
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf18-g3-output-supervision-r2-20261105",
+  "keep": [
+    "**"
+  ],
+  "notes": "Preparation only. No tests/smoke performed. New disabled-by-nonintegration supervisor; retained native candidate unchanged. Smoke result uses publisher-supplied path, distinct from full attempt. Successor of kpf18-g3-output-supervision-qual-20261105; original publisher smoke retained partial-native-incomplete rc75. Corrects uppercase STOP-only completion refusal; preserves original exposure.",
+  "lineage": "kpf18-g3-output-supervision-qual-20261105"
+}

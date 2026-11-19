@@ -1,0 +1,29 @@
+{
+  "id": "lsa-spec-guard-server-build-21bebb-20261104",
+  "owner": "lsa-screen",
+  "lane": "cpu",
+  "regions": "q0",
+  "ram_gib": 4,
+  "launcher": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/server-build-unit/launch.sh",
+  "estimate_s": 600,
+  "first_progress_s": 180,
+  "smoke_predicate": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/server-build-unit/smoke-predicate.py",
+  "result_path": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/server-build-unit/results.jsonl",
+  "result_format": "jsonl",
+  "dryrun_native_result": true,
+  "unit_key": "unit",
+  "decision_rule": "Model-free standard llama-server target build from source-bound 21bebb candidate output; receipt hashes and final linkage required. No model or GPU run.",
+  "handoff_task": "long-context-program.md:LSA-SCREEN-1",
+  "priority_rank": 10,
+  "scratch_root": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-spec-guard-20261104-packet/server-build-unit",
+  "keep": [
+    "results.jsonl",
+    "COMPLETE",
+    "smoke.json",
+    "run-*/build.log",
+    "run-*/inputs.sha256",
+    "run-*/outputs.sha256",
+    "run-*/server.dynamic.txt",
+    "run-*/server.ldd.txt"
+  ]
+}

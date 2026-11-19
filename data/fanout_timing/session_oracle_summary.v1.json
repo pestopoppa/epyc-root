@@ -1,0 +1,38 @@
+{
+  "by_harness": {
+    "claude": {
+      "n": 1511,
+      "unknown": 803,
+      "unknown_rate": 0.5314,
+      "verdicts": {
+        "failure": 28,
+        "partial": 642,
+        "success": 38,
+        "unknown": 803
+      }
+    },
+    "codex": {
+      "n": 5,
+      "unknown": 0,
+      "unknown_rate": 0.0,
+      "verdicts": {
+        "failure": 1,
+        "partial": 1,
+        "success": 3
+      }
+    }
+  },
+  "cutoff": "2026-10-31T13:03:52Z",
+  "manifest": "data/fanout_timing/delegation_manifest.v1.json",
+  "manifest_entries": 5829,
+  "missing_on_disk": 4313,
+  "rows": 1516,
+  "schema": "session_oracle_summary.v1",
+  "unknown_rate": 0.5297,
+  "verdict_counts": {
+    "failure": 29,
+    "partial": 643,
+    "success": 41,
+    "unknown": 803
+  }
+}

@@ -1,0 +1,192 @@
+diff --git a/scripts/hooks/check_serial_collapse.py b/scripts/hooks/check_serial_collapse.py
+--- a/scripts/hooks/check_serial_collapse.py
++++ b/scripts/hooks/check_serial_collapse.py
+@@ -13,14 +13,12 @@
+ import datetime as _dt
+ import json
+ import os
+-import re
++import shlex
+ import sys
+ from pathlib import Path
+ 
+ HOOK = "check_serial_collapse"
+-THRESHOLD = int(os.environ.get("SERIAL_COLLAPSE_THRESHOLD", "3"))
+ HOOK_PATH = Path(__file__).resolve()
+-TASK_RE = re.compile(r'"task_id"\s*:\s*"([^"]*)"')
+ 
+ 
+ def audit_log_path() -> Path:
+@@ -32,10 +30,29 @@
+ 
+ 
+ def boundary_task(command: str):
+-    if "session_bus.py" not in command or " append" not in command or "heartbeat" not in command:
++    # Accept only a simple direct invocation; shell composition and expansion make
++    # the command's actual effect ambiguous. Refuse rather than guess.
++    if not isinstance(command, str) or any(c in command for c in "\n\r`$"):
+         return None
+-    m = TASK_RE.search(command)
+-    return m.group(1) if m else None
++    try:
++        lexer = shlex.shlex(command, posix=True, punctuation_chars=";&|<>()")
++        lexer.whitespace_split = True
++        lexer.commenters = ""
++        args = list(lexer)
++        if len(args) != 9 or args[0] not in ("python", "python3"):
++            return None
++        if args[1] != "scripts/coordination/session_bus.py" or args[2] != "append":
++            return None
++        options = dict(zip(args[3::2], args[4::2]))
++        if len(options) != 3 or set(options) != {"--agent", "--target", "--json"}:
++            return None
++        if options["--target"] != "heartbeat" or not options["--agent"]:
++            return None
++        data = json.loads(options["--json"])
++        task = data.get("task_id") if isinstance(data, dict) else None
++        return task if isinstance(task, str) and task else None
++    except (ValueError, TypeError):
++        return None
+ 
+ 
+ def session_rows(path: Path, session_id: str) -> list:
+@@ -70,6 +87,13 @@
+         return
+     if payload.get("tool_name") not in (None, "Bash"):
+         return
++    response = payload.get("tool_response")
++    if payload.get("hook_event_name") != "PostToolUse" or not isinstance(response, dict):
++        return
++    if response.get("interrupted") is not False:
++        return
++    if "exit_code" in response and (type(response["exit_code"]) is not int or response["exit_code"] != 0):
++        return
+     cmd = (payload.get("tool_input") or {}).get("command") or ""
+     task = boundary_task(cmd)
+     session_id = payload.get("session_id")
+@@ -77,14 +101,28 @@
+         return
+     path = audit_log_path()
+     rows = session_rows(path, session_id)
++    if any(d.get("hook") == HOOK and d.get("task_id") == task for d in rows):
++        return
++    threshold = int(os.environ.get("SERIAL_COLLAPSE_THRESHOLD", "3"))
++    if threshold < 1:
++        raise ValueError("SERIAL_COLLAPSE_THRESHOLD must be positive")
+     width = width_since_last_boundary(rows)
+-    prior = [d.get("width") for d in rows if d.get("hook") == HOOK]
++    seen = set()
++    prior = []
++    for d in rows:
++        if d.get("hook") != HOOK:
++            continue
++        task_id = d.get("task_id")
++        if not isinstance(task_id, str) or not task_id or task_id in seen:
++            continue
++        seen.add(task_id)
++        prior.append(d.get("width"))
+     streak = 0
+     for w in reversed(prior + [width]):
+         if w != 0:
+             break
+         streak += 1
+-    flagged = streak >= THRESHOLD
++    flagged = streak >= threshold
+     rec = {
+         "ts": _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+         "hook": HOOK, "mode": "warn", "event": "boundary", "session_id": session_id,
+diff --git a/tests/hooks/test_check_serial_collapse.py b/tests/hooks/test_check_serial_collapse.py
+--- a/tests/hooks/test_check_serial_collapse.py
++++ b/tests/hooks/test_check_serial_collapse.py
+@@ -6,8 +6,10 @@
+ HOOK = Path(__file__).resolve().parents[2] / "scripts" / "hooks" / "check_serial_collapse.py"
+ 
+ 
+-def run(log, payload, raw=None):
++def run(log, payload, raw=None, threshold=None):
+     env = {"AGENT_DISPATCH_AUDIT_LOG": str(log), "PATH": "/usr/bin:/bin"}
++    if threshold is not None:
++        env["SERIAL_COLLAPSE_THRESHOLD"] = threshold
+     p = subprocess.run([sys.executable, str(HOOK)], input=raw if raw is not None else json.dumps(payload),
+                        capture_output=True, text=True, env=env)
+     assert p.returncode == 0
+@@ -15,7 +17,7 @@
+ 
+ 
+ def boundary(task, sid="s1", agent_id=None):
+-    d = {"tool_name": "Bash", "session_id": sid, "tool_input": {"command":
++    d = {"tool_name": "Bash", "hook_event_name": "PostToolUse", "session_id": sid, "tool_response": {"stdout": "", "stderr": "", "interrupted": False, "isImage": False}, "tool_input": {"command":
+          f"python3 scripts/coordination/session_bus.py append --agent mainA --target heartbeat "
+          f"--json '{{\"state\":\"working\",\"task_id\":\"{task}\"}}'"}}
+     if agent_id:
+@@ -65,3 +67,70 @@
+ def test_malformed_input_allows(tmp_path):
+     log = tmp_path / "a.jsonl"
+     assert "internal error allowed" in run(log, None, raw="{not json")
++
++
++def test_repeated_task_not_counted_and_distinct_task_counts(tmp_path):
++    log = tmp_path / "a.jsonl"
++    run(log, boundary("t1")); run(log, boundary("t1")); run(log, boundary("t2"))
++    assert len(rows(log)) == 2
++    assert "serial_collapse" in run(log, boundary("t3"))
++    assert len(rows(log)) == 3
++
++
++def test_failed_or_unverified_response_refused_success_accepted(tmp_path):
++    log = tmp_path / "a.jsonl"
++    failure = boundary("t1"); failure["hook_event_name"] = "PostToolUseFailure"
++    failed = boundary("t1"); failed["tool_response"]["exit_code"] = 1
++    interrupted = boundary("t1"); interrupted["tool_response"]["interrupted"] = True
++    missing = boundary("t1"); missing.pop("tool_response")
++    unknown = boundary("t1"); unknown["tool_response"].pop("interrupted")
++    no_event = boundary("t1"); no_event.pop("hook_event_name")
++    invalid_status = boundary("t1"); invalid_status["tool_response"]["exit_code"] = None
++    for payload in (failure, failed, interrupted, missing, unknown, no_event, invalid_status):
++        run(log, payload)
++    assert not log.exists()
++    run(log, boundary("t1"))  # documented Bash response, without exit_code
++    explicit = boundary("t2"); explicit["tool_response"]["exit_code"] = 0
++    run(log, explicit)
++    assert len(rows(log)) == 2
++
++
++def test_echo_and_composed_commands_refused_direct_accepted(tmp_path):
++    log = tmp_path / "a.jsonl"
++    good = boundary("t1")
++    command = good["tool_input"]["command"]
++    for text in ("echo " + command, "echo prefix; " + command,
++                 command + " || true", "python3 evil_session_bus.py append --target heartbeat --json '{}'"):
++        bad = boundary("t1"); bad["tool_input"]["command"] = text
++        run(log, bad)
++    assert not log.exists()
++    run(log, good)
++    assert len(rows(log)) == 1
++
++
++def test_invalid_threshold_warn_only_and_valid_threshold_flags(tmp_path):
++    log = tmp_path / "a.jsonl"
++    for value in ("bad", "0", "-1"):
++        assert "internal error allowed" in run(log, boundary("t1"), threshold=value)
++        assert not log.exists()
++    assert "serial_collapse" in run(log, boundary("t1"), threshold="1")
++
++
++def test_duplicate_preserves_dispatch_and_task_ids_are_session_local(tmp_path):
++    log = tmp_path / "a.jsonl"
++    run(log, boundary("t1")); dispatch(log)
++    run(log, boundary("t1")); run(log, boundary("t2"))
++    run(log, boundary("t1", sid="other"))
++    records = rows(log)
++    assert [(r["session_id"], r["task_id"], r["width"]) for r in records] == [
++        ("s1", "t1", 0), ("s1", "t2", 1), ("other", "t1", 0)]
++
++
++def test_legacy_duplicate_boundaries_do_not_inflate_streak(tmp_path):
++    log = tmp_path / "a.jsonl"
++    legacy = {"hook": "check_serial_collapse", "session_id": "s1", "task_id": "t1", "width": 0}
++    log.write_text((json.dumps(legacy) + "\n") * 2)
++    assert "serial_collapse" not in run(log, boundary("t2"))
++    assert rows(log)[-1]["zero_streak"] == 2
++    assert "serial_collapse" in run(log, boundary("t3"))
++    assert rows(log)[-1]["zero_streak"] == 3

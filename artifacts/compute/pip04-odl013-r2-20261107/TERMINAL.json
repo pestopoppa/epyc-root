@@ -1,0 +1,114 @@
+{
+ "state": "terminal",
+ "mode": "full",
+ "protocol": "P-DOCPARSE-1 (draft)",
+ "n_docs": 200,
+ "verdict": "NO_DECISION_DEFAULT_UNCHANGED",
+ "smoke_verdict_ignored": null,
+ "pairs": {
+  "liteparse-opendataloader": {
+   "mean_diff": 0.03849501274251917,
+   "ci95": [
+    0.017620273923139265,
+    0.06143350096516916
+   ],
+   "n": 200
+  },
+  "liteparse-pdftotext": {
+   "mean_diff": 0.3098705749478565,
+   "ci95": [
+    0.2774061793449377,
+    0.3427672845910417
+   ],
+   "n": 200
+  },
+  "opendataloader-pdftotext": {
+   "mean_diff": 0.2713755622053374,
+   "ci95": [
+    0.23848925744221372,
+    0.3043615432959637
+   ],
+   "n": 200
+  },
+  "legacy_router-opendataloader": {
+   "mean_diff": -0.2713755622053374,
+   "ci95": [
+    -0.3043615432959637,
+    -0.23848925744221372
+   ],
+   "n": 200
+  },
+  "legacy_router-pdftotext": {
+   "mean_diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n": 200
+  },
+  "liteparse-legacy_router": {
+   "mean_diff": 0.3098705749478565,
+   "ci95": [
+    0.2774061793449377,
+    0.3427672845910417
+   ],
+   "n": 200
+  }
+ },
+ "median_latency_ms": {
+  "pdftotext": 13.609576970338821,
+  "legacy_router": 16.589336562901735,
+  "opendataloader": 237.19207104295492,
+  "liteparse": 676.9290007650852
+ },
+ "legacy_router_needs_ocr": [
+  "doc-067a890d3a2f5995",
+  "doc-9c342b204eee4c00",
+  "doc-50f8f7eaccc1ebcd",
+  "doc-b026f74e52989c81",
+  "doc-491182d9c9dcd9e9",
+  "doc-5b3e8688dcea19c4",
+  "doc-c2860541581d40ca",
+  "doc-d4a4be9c76bdd864",
+  "doc-fc6673c2302e7ee4",
+  "doc-407019118dfa2440",
+  "doc-062172e2f40b911d",
+  "doc-5125e926805ffbd1",
+  "doc-5761144b0b05badc",
+  "doc-e902d1a1aaf9feea",
+  "doc-7b5c49806c028b85",
+  "doc-210d504b73deb82e",
+  "doc-ed7e15d95837c942",
+  "doc-afe18b68c92aa31e",
+  "doc-2b191996d971c67e",
+  "doc-afe1d14f041b74f8",
+  "doc-aa8c845af3466cab",
+  "doc-bf59523f4ed1348e",
+  "doc-a861904295674722",
+  "doc-17ec44f7a3f9d670",
+  "doc-e3142af7225a290c",
+  "doc-a1acf658b5e1063d",
+  "doc-12bde5825321fbdd",
+  "doc-fc3b270a4fc28611",
+  "doc-80d4680a8aabdc72",
+  "doc-1fcc9d4ef75007a3",
+  "doc-4502a45d45b52836",
+  "doc-3e4c6b75c8395742",
+  "doc-dbb2430314cf8ab5",
+  "doc-4168a57f3d1c41e0",
+  "doc-5c6e26226df30559",
+  "doc-b1b126e0ff214047",
+  "doc-11edeeb3f7a733ed",
+  "doc-aea1aaa1b9f4daea",
+  "doc-68df7775276c2ebc",
+  "doc-2836a2ea03ecbee1",
+  "doc-3ca1e244d5f6d499",
+  "doc-6d323699cff7d411",
+  "doc-d0ae8844b655177a"
+ ],
+ "legacy_router_note": "OCR leg not exercised; flagged docs scored on pdftotext text",
+ "evaluator_commit": "7af1d8f4d0c09f51ea1a5c6ba5f66e993286d109",
+ "orchestrator_commit": "f92a89b80794d4a3d640031070c693a11c075a16",
+ "research_commit": "b839143bb",
+ "at": "2026-11-07T20:59:04Z"
+}

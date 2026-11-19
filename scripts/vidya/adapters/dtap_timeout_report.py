@@ -26,6 +26,13 @@ PRODUCERS = {
     "env_state.py": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f",
     "judge_guard.py": "b911cc4f978778e1f8b10d5a1c938faaacc312438cda1bacf4633b712d065216",
 }
+# Reviewed as a complete source set; never permit arbitrary mixing of revisions.
+# The original set remains accepted for existing sealed receipts.
+PRODUCER_SETS = (PRODUCERS, {
+    **PRODUCERS,
+    "runner.py": "ed59a198683a8fbbd6292a4dff53fd8125f405ce7009706b7c169f126059b7e4",
+    "endpoint.py": "0648089c77cba12edba4de7d03a44d3738096867289886f6cafd79f18f1a0745",
+})
 REGISTRY_SHA = "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431"
 EXCLUSIONS = ["inference authority", "performance", "promotion", "field robustness rates",
               "dependency completeness", "exact credential-bearing argv", "old-run reconstruction"]
@@ -182,11 +189,15 @@ def read_receipt(path):
         raise ValueError("native original membership is not exact-once")
     for pin in pins:
         read_pin(archive, pin)
-    for filename, expected in PRODUCERS.items():
+    observed_producers = {}
+    for filename in PRODUCERS:
         sources = [source for source in request["readset"]
                    if source["source"].endswith("/scripts/autopilot/evals/dtap/harness/" + filename)]
-        if len(sources) != 1 or sources[0]["artifact"]["sha256"] != expected:
+        if len(sources) != 1:
             raise ValueError("native producer source pin is not reviewed")
+        observed_producers[filename] = sources[0]["artifact"]["sha256"]
+    if observed_producers not in PRODUCER_SETS:
+        raise ValueError("native producer source set is not reviewed")
     registries = [source for source in request["readset"]
                   if source["source"].endswith("/scripts/autopilot/evals/dtap/cases.json")]
     if len(registries) != 1 or registries[0]["artifact"]["sha256"] != REGISTRY_SHA:

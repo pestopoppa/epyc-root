@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "Qualification compiled the capture harness successfully and its binary was preserved; declared rule excluded the qualification as the full build, so the publisher completion does not satisfy the declared full-build rule. No GPU execution or repeatability verdict.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-02T11:50:47+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=0 time=2026-11-02T11:49:58Z reason=complete",
+ "filed_at": "2026-11-02T11:50:47+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/kv-unified-stack-rollout.md:KVU-19a-2",
+ "id": "handoff-kvu-kvu19a2-capture-build-20261102",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/kvu/capture-filing-stage/ready/handoff-kvu-kvu19a2-capture-build-20261102.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/kvu/kvu19a2-capture-build-20261102/RESULT.json",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "handoff-kvu",
+ "phase": "filing",
+ "rc": 0,
+ "reason": "Qualification compiled the capture harness successfully and its binary was preserved; declared rule excluded the qualification as the full build, so the publisher completion does not satisfy the declared full-build rule. No GPU execution or repeatability verdict.",
+ "result_exists": true,
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/kvu19a2-capture-build-20261102/RESULT.json",
+ "root_cause_family": null,
+ "row": "handoff-kvu-kvu19a2-capture-build-20261102",
+ "row_verdict": "inconclusive",
+ "rule": "Compile only: bind capture harness executable digest to preserved source, headers, compiler and base ggml libraries. No GPU execution or nondeterminism verdict. Smoke compilation is a qualification artifact, not the full build.",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "c7214d22e185e0be68c1411c97d4426d28ee6837437591fcc5db7c5e1292f82f",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

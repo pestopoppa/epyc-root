@@ -1,0 +1,14 @@
+{
+  "schema": "kvu19a2.successor-source-pins.v1",
+  "files": {
+    "PREDECLARATION-ROOTBUILD.md": "cec6d837a48a25d1dbccf4b0ba7a04ec2304c2adf9fdae70761b374187037624",
+    "canonical-input-hashes.json": "f9fc6b1f96d359c7dad6023794a9b804e71910a2d6ae31acc25f2faaf317f1e8",
+    "kvu19a2_custody.py": "c6a4f85fe8f9f1d12fb11014b0f819df8df1fb5ecb667cff84bbdc70c0a1c2b5",
+    "kvu19a2_repeat_rootbuild.py": "736630cbc7de74d0f67a2433737c97ab89db476d47b1acff35ff70b9263a75f4",
+    "pins_env.py": "08c2cafa0fa3561e044f177094bbac6f1c7c6520f3e56eacdc1381d55041a353",
+    "preflight.py": "6610d50252fb5e6dce75842d6ac921194ed9a3ea8e0abfc180b714dc83b8e38c",
+    "row-launch.sh": "d11641c33066a792065de46b5863d4b3983d4a5665e38783997e1acb39f67b76",
+    "smoke_predicate.py": "fa99ccfdb8a4a43302e007dd4aaf886ab5ec607e14e2825c698b06cc3a033a9b",
+    "spec.json": "31710e95ab204503079fe63c6caea776eb71d4ec88b4c3061dbcb3af436e1d84"
+  }
+}

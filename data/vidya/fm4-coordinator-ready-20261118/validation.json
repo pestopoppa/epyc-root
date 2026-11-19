@@ -1,0 +1,15 @@
+{
+  "integration_tests": {
+    "passed": 89,
+    "skipped": 2,
+    "reason": "D9 acceptance API unavailable"
+  },
+  "final_alarm_isolation_controls": {
+    "passed": 7
+  },
+  "publisher": "PASS",
+  "publisher_at": "2026-11-18T17:23:14Z",
+  "cpus": "116-119",
+  "rc": 0,
+  "scope": "Software readiness; official two-pair entrypoint and genuine coordinator invocation remain separate."
+}

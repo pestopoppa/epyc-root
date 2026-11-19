@@ -1,0 +1,72 @@
+{
+  "schema": "jetlong-cpu-preregistration-draft-v1",
+  "status": "DRAFT_NOT_REGISTERED_NOT_AUTHORIZED_FOR_INFERENCE",
+  "purpose": "Prepare the two-length portion of JETLONG-LONGCTX-RUN before any scientific execution; this document must be reviewed and durably committed before first exposure.",
+  "protocol_reference": {
+    "git_blob": "f6af78ef94d53fd32012ff24f74548ec0dae7a1d",
+    "path": "artifacts/yarn-ctx-20261006/jetlong/LONGCTX_PLAN.md",
+    "scope_limit": "The source plan also includes 1M, which it permits deferring when the window cannot hold it. This packet does not measure 1M or separately adjudicate decode throughput."
+  },
+  "fixture_binding": {
+    "directory": "/mnt/raid0/llm/tmp/yarn/jetlong-cpu/fixtures-v2.DRAFT",
+    "plan_sha256": "73015eba919ab0595d350a166f1762281d3c18289927b436cdb92896fd32c03a",
+    "preparation_checksums_sha256": "06bbb50bdbf6bd3c4e78a652d1a9027b29cd652e9b5c29ffd8eda2c6f76cda9c",
+    "custody_sha256": "9d1a8b7fd41884ff5f35623ae8204895341346fc740144cea56097515b4ccb97",
+    "generator_sha256": "2bbb1565e3f0b52a8627b02b488460a0479dc57a0dc6be65a9c14a87e69b2eb3",
+    "validator_sha256": "f1f82d76e8aa2347c82fcc8aa2111a19dfa0d7c98e79bd742b51ae003b25b707",
+    "tokenizer_binary_sha256": "e97d3d1d2488fdfaec38b970b587ee1158f7ca4de822593c64d8e918b475b5bb",
+    "model_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+    "adapter_sha256": "9e6925a39ed815e729a0b7e6431fcfd242bcd5001873a7722c07d2a24b6dde3d",
+    "scorer_sha256": "dcf9085156afaccd1b1e42f8e683f786de8b9749d00e85e7dda4c837992dcd2a",
+    "items": "150 JSON arrays; each path, token count, insertion position, answer and SHA-256 are in the pinned plan"
+  },
+  "scientific_deviations_to_review": [
+    "Original plan specifies long_context_adapters.py; the supplied adapter uses a single fixed needle, no seed parameter and character-derived approximate positioning. This draft independently constructs five named facts and three seeds using directly concatenated token IDs and exact token insertion positions. These are method changes, not results from the original adapter.",
+    "Seeds 1701, 1702, 1703 choose circular offsets in the same pinned corpus; they are not independent corpora. Prompts use the same repeated token haystack and overlap substantially; do not claim independent trials or uncertainty based on independence.",
+    "Numeric token arrays are proposed for /completion, not chat prompts. Source inspection indicates no automatic BOS or chat template; native server prompt_n and framing remain unverified.",
+    "1M is omitted from this packet under the original conditional window exception; the owner must record why that condition applies before excluding it from any claim."
+  ],
+  "design": {
+    "lengths_tokens": [
+      300000,
+      524288
+    ],
+    "depth_percent_from_start": [
+      10,
+      30,
+      50,
+      70,
+      90
+    ],
+    "needle_count": 5,
+    "seeds": [
+      1701,
+      1702,
+      1703
+    ],
+    "units": "75 matched prompts per length; each J and Y arm receives identical token IDs for each item",
+    "arms": {
+      "J": "Jet-Long window 2048, no YaRN",
+      "Y": "static YaRN scale 4, original context 262144"
+    },
+    "context_tokens": 1048576,
+    "batch": 32,
+    "ubatch": 32,
+    "parallel_sequences": 1,
+    "model": "Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+  },
+  "rule": {
+    "direction": "higher recall is better",
+    "per_length": "Only after all 75 J and 75 Y cells at each length are terminal, lenient recall J >= Y at that length; report strict and lenient separately. Native gate A must pass before claiming in-window use.",
+    "timeouts": "Count as failures in the original denominator; no replacement or silent exclusion.",
+    "unknown": "Preserve uncertain attempts separately; do not count as success or failure, replay automatically, or issue a complete verdict.",
+    "throughput": "Report decode token count, decode time and rate; full throughput and MTP claims remain a separate qualification.",
+    "no_historical_comparison": "Do not treat this modified fixture as equivalent to the original adapter or a prior multi-needle prompt."
+  },
+  "required_before_publication": [
+    "Owner scientific review and durable preregistration of deviations and scope before exposure",
+    "Booked native framing/prompt_n check and source-to-binary provenance",
+    "Sealed plan, model custody, keeper admission, bounded stop and cleanup, measured booking, and real keeper qualification",
+    "Confirm Gate A evidence suffices for the exact claim; no quality result exists for this packet."
+  ]
+}

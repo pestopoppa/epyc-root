@@ -1,0 +1,16 @@
+## Belief-kernel evidence (Vidya ledger, read-only)
+No beliefs are scoped to Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf (cpu). The lines below are sibling/host context only.
+Target(s): Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf / IQ4_XS / cpu / epyc-9655.
+Claims are tiered by declared applicability: knob (the target's own weights and a knob family it can change), target (the target's own weights), lineup (this stack regime), sibling (same declared lineage, other weights or recipe; transfer unproven), then a separate device-scope group (host tier: device-only scope, no model; a ceiling, not about this model, never target evidence). Grade is the folded claim_tuple.grade() Q/T at ledger frontier 12, as of 2026-11-18T15:49:12.171967+00:00.
+### Loop-infrastructure facts (harness tier) -- tooling and source-dependency context for this consumer; not evidence about any model or for a proposal
+- clm_mi210_616199b8579ea3e850d41a41 [Judged/Located · verified] native serving diagnostic: lower TPOT is better; no model scope
+  native_request_tpot_ms: 39.5 ms/token (n=1). One native request from the captured launch; no protocol or paired effect.
+  /mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-published-20261118/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-01.json: NPD1-STEP3 p1/gpu_cpu request 0 native diagnostic native_request_tpot_ms
+- clm_mi210_6fb7a443ec5f6ecf020ee321 [Judged/Located · verified] native serving diagnostic: lower TPOT is better; no model scope
+  native_request_tpot_ms: 36.27 ms/token (n=1). One native request from the captured launch; no protocol or paired effect.
+  /mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-published-20261118/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-03.json: NPD1-STEP3 p2/cpu request 0 native diagnostic native_request_tpot_ms
+- clm_mi210_a9797ee562fe801f9a7f440c [Judged/Located · verified] native serving diagnostic: lower TPOT is better; no model scope
+  native_request_tpot_ms: 41.79 ms/token (n=1). One native request from the captured launch; no protocol or paired effect.
+  /mnt/raid0/llm/tmp/vidya-belief-substrate/npd1-canary-published-20261118/belief-7290a4a4fdfa47deb2b049031e42a89f/attempt-00.json: NPD1-STEP3 p1/cpu request 0 native diagnostic native_request_tpot_ms
+Shown 0 of 0 knob, 0 of 0 target, 0 of 0 lineup, 0 of 0 sibling, 0 of 0 device-scope (host) claim(s), 3 of 4 harness claim(s) (0 contested, 0 withdrawn, 0 refuted); tried index 0 of 0 mechanism(s); bounded at 30 claims / 14000 bytes.
+Optional reply field relies_on_claims: a list of the knob-, target-, lineup- or sibling-tier claim ids above that the proposal depends on; [] if none. Device-scope (host-tier) lines and contested, withdrawn or refuted claims are not evidence for a proposal.

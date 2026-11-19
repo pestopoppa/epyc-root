@@ -1,0 +1,60 @@
+{
+  "off": {
+    "slot_witnesses_match_raw_samples": [
+      {
+        "index": 0,
+        "sample_t": 1793777856.4057791,
+        "slot": 3,
+        "task": 3,
+        "processing": true,
+        "native_slot_fork": {
+          "n_fork_tokens": 0,
+          "src_kind": "none",
+          "src_slot": -1
+        }
+      },
+      {
+        "index": 1,
+        "sample_t": 1793777856.4057791,
+        "slot": 2,
+        "task": 4,
+        "processing": true,
+        "native_slot_fork": {
+          "n_fork_tokens": 0,
+          "src_kind": "none",
+          "src_slot": -1
+        }
+      }
+    ],
+    "checkpoint_matches_raw": false
+  },
+  "on": {
+    "slot_witnesses_match_raw_samples": [
+      {
+        "index": 0,
+        "sample_t": 1793777981.0714912,
+        "slot": 2,
+        "task": 52,
+        "processing": true,
+        "native_slot_fork": {
+          "n_fork_tokens": 3555,
+          "src_kind": "checkpoint",
+          "src_slot": 3
+        }
+      },
+      {
+        "index": 1,
+        "sample_t": 1793777981.0714912,
+        "slot": 3,
+        "task": 50,
+        "processing": true,
+        "native_slot_fork": {
+          "n_fork_tokens": 0,
+          "src_kind": "none",
+          "src_slot": -1
+        }
+      }
+    ],
+    "checkpoint_matches_raw": true
+  }
+}

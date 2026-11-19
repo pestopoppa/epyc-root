@@ -1,0 +1,31 @@
+{
+  "id": "cafe4-v10-native-lifecycle-20261104",
+  "owner": "h-speculative-decoding-mtp",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 600,
+  "min_window_s": 600,
+  "first_progress_s": 300,
+  "gib": 64,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Compile the exact prior source with load_mtp=true against source-bound headers and pinned libraries, then native lifecycle prerequisite only: LIFECYCLE_OBSERVED requires exactly one width 1..3 accepted 0..width MTP_LIFECYCLE marker, expected child rc2 plus explicit unimplemented rollback/fault marker, content-bound input/model identity, actual local mapped libraries, no cutoff and reaped child. This is no rollback, fault sensitivity, parity or performance conclusion; incomplete UNKNOWN.",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "dryrun_timeout_s": 360,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime/runtime.py predicate",
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe4-lifecycle-runtime",
+  "keep": [
+    "RESULT.json",
+    "runs/**",
+    "bin/**",
+    "*.json",
+    "*.py",
+    "*.sh",
+    "*.sha256",
+    "*.cpp",
+    "*.hpp"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "git",
+    "restore",
+    "--source=fcc89b474a0b9d906df5ea8e7cb9d4708ffeaeee",
+    "--staged",
+    "--worktree",
+    "--",
+    "scripts/vidya"
+  ],
+  "cwd": "/mnt/raid0/llm/tmp/vidya-belief-substrate/sync-worktree-current/official-hfrd2uge/native-run/seed",
+  "exit": 0
+}

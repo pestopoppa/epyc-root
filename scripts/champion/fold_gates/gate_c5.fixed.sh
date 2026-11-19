@@ -65,9 +65,15 @@ say "(a) test-backend-ops -b CPU -o ROPE rc=$rc: $(grep -E 'tests passed' "$HERE
 fi
 say "== (b) fold_gate.py vs $(basename "$BASE")"
 FG=$HERE/fold_gate_$KIND$SUFFIX.log
-/usr/bin/python3 -I "$HERE/fold_gate_src_v4/scripts/kernel_rnd/fold_gate/fold_gate.py" --base-image "$BASE/bin" --new-image "$NEW/bin" \
+FGPY="$HERE/fold_gate_src_v4/scripts/kernel_rnd/fold_gate/fold_gate.py"
+# Vidya source record: only a fold_gate.py that has --record-json (research >= the writer commit); the original pinned v4 copy lacks it.
+RUN=$HERE; REC=()
+if grep -q -e '--record-json' "$FGPY"; then REC=(--record-json "$RUN/fold_gate_record_$KIND$SUFFIX.json")
+else say "(b) WARNING: pinned fold_gate.py lacks --record-json; NO vidya record will be written (re-pin research >= the writer commit, VB-FOLDGATE-WRITE)"; fi
+/usr/bin/python3 -I "$FGPY" --base-image "$BASE/bin" --new-image "$NEW/bin" \
    --src-repo /mnt/raid0/llm/llama.cpp --base-commit $BASEC --cand-commit $CAND \
-   --expected-changed libllama.so > "$FG" 2>&1; rc=$?
+   --expected-changed libllama.so "${REC[@]}" > "$FG" 2>&1; rc=$?
+# Follow-up (once per run dir, after BOTH kinds): python3 scripts/vidya/cli.py ingest champion-fold-gate --path "$RUN" --as-of <ts> --only-new
 cat "$FG" >> "$OUT"; [ $rc = 0 ] || { say "(b) fold_gate rc=$rc FAIL"; fail=1; }
 if grep -E '^ *EXPECTED +libllama\.so' "$FG" >/dev/null; then say "(b) libllama.so reported EXPECTED (code differs): PASS"; else say "(b) FAIL: libllama.so not reported as changed (is the C5 change compiled in?)"; fail=1; fi
 if grep -E '^ *EXPECTED +libggml' "$FG" >/dev/null; then say "(b) FAIL: a ggml lib changed (C5 touches no ggml code)"; fail=1; fi
@@ -89,7 +95,7 @@ bad=[l.rstrip("\n") for l in open(sys.argv[2]) if l.split("\t",1)[1].rstrip("\n"
 print(len(bad)); [print("   unknown:", b, file=sys.stderr) for b in bad]' "$AJ" "$BL" 2>>"$OUT")
 if [ "$unk" = 0 ] && [ "$nb" -gt 0 ]; then verdict=PASS; else verdict=FAIL; fail=1; fi
 say "(d1) strings: $nb /tmp/qwen4exp-builds literal(s) in image libs ($(cut -f1 "$BL" | sort -u | tr '\n' ' ')), unknown-or-ungated=$unk $verdict"
-LL=$(ls "$NEW"/bin/libllama.so* 2>/dev/null | head -n1)
+LL=$(ls "$NEW"/bin/libllama.so* 2>/dev/null | sed -n 1p)
 for s in GGML_FUSED_DECODE_ON 'fused decode disabled for this model'; do
   if strings -a "$LL" | grep -F "$s" >/dev/null; then say "(d2) libllama has '$s': PASS"; else say "(d2) FAIL: '$s' not in $(basename "$LL")"; fail=1; fi
 done

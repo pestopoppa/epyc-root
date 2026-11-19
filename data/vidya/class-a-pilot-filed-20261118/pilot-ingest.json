@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/committed_conclusion.py",
+  "adapter_id": "vidya.adapters.committed_conclusion/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 438,
+  "frames_skipped": 0,
+  "missing": [],
+  "only_new": true,
+  "paths": [
+    "/mnt/raid0/llm/tmp/vidya-belief-substrate/class-a-fill/gold-register.jsonl"
+  ],
+  "refused": [],
+  "rows_projected": 146,
+  "source": "committed-conclusion",
+  "units_matched": 1,
+  "units_projected": 1
+}

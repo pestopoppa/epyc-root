@@ -1,0 +1,7 @@
+{
+  "row": "vb-fm2-coordinator-context-20261118",
+  "verdict": "pass",
+  "result_sha256": "fcc3bab02338149fee3e5973e35af9495715f44e8d6c2c33acd92189f305442b",
+  "scope": "Retained-native diagnostic context assembly only; no genuine coordinator review, suitable task-gate success, or measurement warrant.",
+  "rc": 0
+}

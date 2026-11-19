@@ -1,0 +1,46 @@
+{
+  "cas_definition": "epyc_v3_gt_ge2_partial_zero",
+  "chronological_awareness_score": 0.07042657698264104,
+  "cas_status": "defined",
+  "latest_state_score": 0.40751982063194875,
+  "chronological_order_score": -0.26666666666666666,
+  "chronological_eligible_questions": 15,
+  "chronological_excluded_zero_item_questions": 15,
+  "chronological_excluded_single_item_questions": 15,
+  "chronological_eligible_partial_coverage": 7,
+  "scorer_version": 3,
+  "run_id": "20260619_141212",
+  "kind": "historical_offline_diagnostic",
+  "metric_direction": "higher_better",
+  "source_repo": "epyc-inference-research",
+  "source_path": "benchmarks/results/runs/20260619_141212/tulving_score_rescored_20260914.json",
+  "source_commit": "a794f5b54bea1a1f0752e0e3514ce07fa14c5ff2",
+  "source_sha256": "c640f010c113744f3e4b9bde8c87362a3c6577cae1354dfca9fb697afa9c33fe",
+  "scorer_path": "proposed/m12f/payload/research/scripts/benchmark/score_tulving_run.py",
+  "scorer_sha256": "5f47a5db0747c110dddaf9f44111f3414dba04fe533fb66b28ef1d66ed7021db",
+  "simple_recall_score": 0.5684169470017096,
+  "simple_recall_questions": 366,
+  "simple_recall_bins": {
+    "0": {
+      "count": 150,
+      "avg_f1": 0.0
+    },
+    "1": {
+      "count": 150,
+      "avg_f1": 0.7339689571971232
+    },
+    "2": {
+      "count": 48,
+      "avg_f1": 0.7364756781453116
+    },
+    "3-5": {
+      "count": 18,
+      "avg_f1": 0.8032231526644044
+    },
+    "6+": {
+      "count": 0,
+      "avg_f1": 0.0
+    }
+  },
+  "belief_rows_emitted": 0
+}

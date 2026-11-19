@@ -1,0 +1,41 @@
+{
+ "decision_rule": "Accept only a complete pinned v10 plus target-bound diagnostic CPU build, compiled CAFE4_NEXT_COMPARISON and target markers and source/artifact digest proof; build-only synthetic fixture, no inference, MTP, fault sensitivity or CAFE-4 conclusion.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 900,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 1800,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-4",
+ "id": "cafe4-v10-finite-build-20261102",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row/launch.sh",
+  "sha256": "707bfd33f10c1c62ea63f7a1c29429c71bc37f5fea1df6c32133dba6f83ca3c5"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "published_at": "2026-11-02T11:51:46Z",
+ "published_from": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row",
+ "shape": "quarter",
+ "stop_file": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/speculative-decoding-mtp/cafe4-finite-build-row"
+}

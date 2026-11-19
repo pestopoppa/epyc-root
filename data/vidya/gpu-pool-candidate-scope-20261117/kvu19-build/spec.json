@@ -1,0 +1,14 @@
+{
+ "id": "handoff-vidya-kvu19a2-wire-20261117-r2",
+ "owner": "handoff-vidya-belief-substrate",
+ "launcher": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/row-launch.sh",
+ "lane": "gpu", "regions": "mi210_0,184-191", "shape": "gpu-q3", "ram_gib": 8,
+ "result_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/run-output/result.json",
+ "result_format": "json", "estimate_s": 2100, "min_window_s": 2100, "priority_rank": 30, "kind": "compute",
+ "scratch_root": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet",
+ "handoff_task": "handoffs/active/vidya-belief-substrate-program.md:VB-KVU19A2-WIRE",
+ "dryrun_native_result": true, "first_progress_s": 120,
+ "smoke_predicate": "/usr/bin/python3 /mnt/raid0/llm/tmp/vidya-belief-substrate/kvu19-successor/packet/smoke_predicate.py",
+ "decision_rule": "QUESTION: do five fresh exact-input launches per arm and case yield identical bytes on gfx90a? This new source-bound paired build is distinct from the earlier build. Stop on answer after all 20 launches; stop on STOP/deadline or failed custody; missing output or residency is UNKNOWN. Smoke is one real case80/base launch on four granted CPUs; no speed or promotion claim.",
+ "verdict_by": "agent", "keep": ["run-output/**", "*.py", "*.json", "*.md", "*.sh"]
+}

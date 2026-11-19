@@ -1,0 +1,7 @@
+rc=75 time=2026-11-04T21:23:49Z reason=disk-floor
+job_id=kpf60-checked-fixture-20261104-r7
+owner=h-kvfork
+step=job-run
+estimated_wall_s=300
+started=2026-11-04T21:23:48Z
+regions=0-23

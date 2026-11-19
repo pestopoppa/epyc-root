@@ -1,7 +1,7 @@
 # Archived Role Files — the pre-session-bus persona layer
 
 **Archived**: 2026-08-16 · **Authority**: Loop-Owned Fleet doctrine collapse, task P1-5 in
-[`handoffs/active/loop-owned-fleet-implementation.md`](../../handoffs/active/loop-owned-fleet-implementation.md) ·
+[`handoffs/active/coordination-and-churn-pipeline.md`](../../handoffs/active/coordination-and-churn-pipeline.md#track-loop-owned-fleet-implementation) ·
 **Plan of record**: `docs/design/loop-owned-fleet.html`
 
 ## What is here

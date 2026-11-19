@@ -1,0 +1,37 @@
+{
+  "schema": "epyc.agent_file_amendment.v1",
+  "gate_id": "RATIFY-AFC-DIRECTIVE-SCOPE-20261115",
+  "status": "ratified",
+  "ratified_at": "2026-11-15T19:53:54Z",
+  "operator": "Daniele",
+  "signature_channel": "operator-run script (--attest typed confirmation)",
+  "operator_decisions": {
+    "1": "2026-11-15 (decision tool): scope the a81fc882e section to local-model variants; remove it from the full file Claude sessions load (never measured on them)"
+  },
+  "evidence": {
+    "rows": [
+      "afc-v3d-q36_35b-tools-aggressive-reword-20261112",
+      "afc-v3d-q38_flash-tools-aggressive-reword-20261112"
+    ],
+    "q36_compliance_vs_v3c_aggressive": {
+      "d": 0.22,
+      "lb": 0.1525
+    },
+    "q38_compliance_vs_v3c_aggressive": {
+      "d": 0.08,
+      "lb": 0.0238
+    },
+    "regressions": "none (every pool LB > -0.10 vs v3c none for both models)"
+  },
+  "base_origin_main": "d76fdf3b22f4621a1bdc75b5126dd08970eff670",
+  "consolidated_receipt": "artifacts/operator/ratify_afc_directive_scope_20261115.receipt.json",
+  "state": {
+    "agents/shared/ENGINEERING_STANDARDS.md": {
+      "sha256_before": "ad5e8d5f433a514aab5e9f90674f5ca2a4e4a061240d2bd724981341120b2760",
+      "sha256_after": "f319dece71b2c9fde34e07aa56bcf82ea4eab61d79d85ba4c5cfbf37c9fe5db9"
+    }
+  },
+  "applied_by": "scripts/operator/ratify_afc_directive_scope_20261115.sh",
+  "ratify_script_sha256": "91146852431922c75a6adcdd462e3ec9fc5eec581e1365cf7cac721dd60cafec",
+  "processes_touched": []
+}

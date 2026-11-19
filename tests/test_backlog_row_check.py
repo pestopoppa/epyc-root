@@ -884,3 +884,11 @@ def test_every_id_inherits_every_upstream_stage_on_the_line(tmp_path) -> None:
     assert prereqs["HG-8"] == {"HG-1", "HG-2"}
     hit = brc.blocking_dependency_graph(p, 4, brc._boxes(p)[2][2])
     assert hit is not None and hit[1] == "HG-1"   # skips the CLOSED HG-2, finds open HG-1
+
+
+def test_boxes_counts_numbered_list_items(tmp_path: Path) -> None:
+    """engram-conditional-memory shape: `1. [x]` / `14. [ ]` are task boxes."""
+    p = tmp_path / "h.md"
+    p.write_text("## T\n1. [x] done\n- [ ] dash\n14. [ ] numbered open\n2) [X] paren\n", encoding="utf-8")
+    assert [(st, b) for _, st, b, _ in brc._boxes(p)] == [
+        ("x", "done"), (" ".strip(), "dash"), ("", "numbered open"), ("x", "paren")]

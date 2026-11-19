@@ -1,0 +1,149 @@
+{
+  "broad_pack_status": "incomplete",
+  "candidate_collected": false,
+  "checks": {
+    "architect-critic-bank-code": {
+      "actual_finish": "stop",
+      "completion_count": 82,
+      "content_sha256": "7d4ed540bb0d052f2652de75fbf90140039c320efb3d68d7f180ddf623b86e84",
+      "expected_finish": "stop",
+      "output_token_count": 82,
+      "problems": [],
+      "reasoning_sha256": "c5bb98d636ab22257dbda499dc19ae6c63f81c229b3350e51db5995e1030e276",
+      "semantic_matches": true
+    },
+    "architect-critic-bank-json": {
+      "actual_finish": "stop",
+      "completion_count": 227,
+      "content_sha256": "577c144306d4bcad129e5e80d3aa83ff5f389c054a42213906848b475e771ef1",
+      "expected_finish": "stop",
+      "output_token_count": 227,
+      "problems": [],
+      "reasoning_sha256": "3a3a405fc479a651626fbd25eceb409ce6b35a263f70c7bb4545bc340ca5ceab",
+      "semantic_matches": true
+    },
+    "architect-critic-bank-long-prose": {
+      "actual_finish": "length",
+      "completion_count": 768,
+      "content_sha256": "d4ee1ab505d4f077568b580374384abdb649b83b67fad5db54fa0fb648da2009",
+      "expected_finish": "length",
+      "output_token_count": 768,
+      "problems": [],
+      "reasoning_sha256": "8e99dbc3a3d8d920963026130402aafbe938d37b57ac256b4b96fb6330b0ea82",
+      "semantic_matches": true
+    },
+    "architect-critic-bank-reasoning": {
+      "actual_finish": "stop",
+      "completion_count": 160,
+      "content_sha256": "2acf1212422d4e85461e6d01ba5499f24eeed054ed98ad69ca78208a8fb043b5",
+      "expected_finish": "stop",
+      "output_token_count": 160,
+      "problems": [],
+      "reasoning_sha256": "94590f1549c6553a6229eebae0ad45ed13ccccc2e51d8607256003dce903aeab",
+      "semantic_matches": true
+    }
+  },
+  "files": {
+    "RESULT.json": {
+      "archive": "RESULT.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "e1afec69b1fe53ffc85a33eca6285030688bfcba986400b2fb76ce59af32b47b"
+    },
+    "filed-verdict.json": {
+      "archive": "filed-verdict.json",
+      "encoding": "raw",
+      "sha256": "f703a626ac655b67ebd8e448e06dc3138f805858de1978fe4797664aaa2d5b7c"
+    },
+    "native/production-capture.json": {
+      "archive": "native/production-capture.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "874753e3d32cc9fc930d38cd716bccd88bc7fb7671ffb68716b188aad3efd5ce"
+    },
+    "native/production-capture.sha256": {
+      "archive": "native/production-capture.sha256",
+      "encoding": "raw",
+      "sha256": "58a25999c50e9b92dbc41142d91bc250cc1f25b3515ba745e6ec4047ab3c2988"
+    },
+    "native/production/architect-critic-bank-code.request.json": {
+      "archive": "native/production/architect-critic-bank-code.request.json",
+      "encoding": "raw",
+      "sha256": "6b9bd9a50433e20f07ae2f8325b39381fcbf4bbf6d6c0fbbb8e72f5be28aae1a"
+    },
+    "native/production/architect-critic-bank-code.response.json": {
+      "archive": "native/production/architect-critic-bank-code.response.json",
+      "encoding": "raw",
+      "sha256": "7c7440c29c5799c871ec42296ae4640c321d028dc02b1e6746c8151bc8259fe8"
+    },
+    "native/production/architect-critic-bank-json.request.json": {
+      "archive": "native/production/architect-critic-bank-json.request.json",
+      "encoding": "raw",
+      "sha256": "a46833387b99ec4b482779c42234559ae3629e184fdfaece09e2b77a7b0fd86e"
+    },
+    "native/production/architect-critic-bank-json.response.json": {
+      "archive": "native/production/architect-critic-bank-json.response.json",
+      "encoding": "raw",
+      "sha256": "6824fd93bd44fa73709f3dbac596fa2697829cb22eeaea21b29a9899eeef310c"
+    },
+    "native/production/architect-critic-bank-long-prose.request.json": {
+      "archive": "native/production/architect-critic-bank-long-prose.request.json",
+      "encoding": "raw",
+      "sha256": "dd2789567d1fb9f5c2b2332f597693723de6b5184b8d3bce4fb88d8718db7b14"
+    },
+    "native/production/architect-critic-bank-long-prose.response.json": {
+      "archive": "native/production/architect-critic-bank-long-prose.response.json",
+      "encoding": "raw",
+      "sha256": "a2a02c70160bb0bbcf7d42537de6a7aa1b45f2020f16fe13aed5f79c6add4d5f"
+    },
+    "native/production/architect-critic-bank-reasoning.request.json": {
+      "archive": "native/production/architect-critic-bank-reasoning.request.json",
+      "encoding": "raw",
+      "sha256": "41403e2dff7cfcc6ca39c3f9fc3e953223c2b078e301c8d329cdf61477b600db"
+    },
+    "native/production/architect-critic-bank-reasoning.response.json": {
+      "archive": "native/production/architect-critic-bank-reasoning.response.json",
+      "encoding": "raw",
+      "sha256": "e0d7e15a075cbde84bdeb26a9a68c37db99b2ea39b2cc1d4f94438a14514200d"
+    },
+    "native/production/cleanup.json": {
+      "archive": "native/production/cleanup.json",
+      "encoding": "raw",
+      "sha256": "02b6d3af0db8061e00ed236c733b358c7dbe7a26ae3186987b4c46c8c50db2f3"
+    },
+    "native/production/server.json": {
+      "archive": "native/production/server.json",
+      "encoding": "raw",
+      "sha256": "2b5ccd2ac796febc38e65d8cf9de949e932b287522df6c133608a775588075b4"
+    },
+    "native/production/server.log": {
+      "archive": "native/production/server.log",
+      "encoding": "raw",
+      "sha256": "44cfdfefc593ac097ccba553f5e9d38a11caa1e7fded5f4b3dc73ed4363249b8"
+    },
+    "native/scheduler.grant": {
+      "archive": "native/scheduler.grant",
+      "encoding": "raw",
+      "sha256": "52833351cbcc62f6d7fa6cb2a1f637ed718a4abf5a1300004028ddd669aacd2d"
+    },
+    "owner-verdict.json": {
+      "archive": "owner-verdict.json",
+      "encoding": "raw",
+      "sha256": "8c489b4dfc3c9cf63129ca016bb68bac1d202ff87c5e087268a95b67508a8bab"
+    },
+    "row-manifest.json": {
+      "archive": "row-manifest.json.original-bytes.json",
+      "encoding": "base64-envelope",
+      "sha256": "2be1f02098f61d260cbe5b79669d9700e5a1221b159662198e96e27311cd10be"
+    },
+    "row.ended": {
+      "archive": "row.ended",
+      "encoding": "raw",
+      "sha256": "bc660cebc9081ac21bfc8cb4681504603024bfc6953b04d0829b4c46857c42d4"
+    }
+  },
+  "promotion_authorized": false,
+  "quality_transfer_authorized": false,
+  "rationale": "Four strict item checks pass with stop/stop/stop/length finishes and 227/82/160/768 output tokens. Captured PID881683 exited and listener closed; no candidate collected.",
+  "row": "handoff-vidya-quality-pack-architect-critic-bank-r2-20261118",
+  "status": "bank_admitted",
+  "verdict": "pass"
+}

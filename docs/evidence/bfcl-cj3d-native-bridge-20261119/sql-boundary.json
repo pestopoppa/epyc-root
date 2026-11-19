@@ -1,0 +1,23 @@
+{
+  "box": "CJ-3d",
+  "verdict": "SQL scoring unavailable in pinned official evaluator; no SQL verdict may be emitted",
+  "upstream_commit": "70b6a4a2144597b1f99d1f4d3185d35d7ee532a4",
+  "source": [
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl/eval_checker/eval_runner.py",
+      "blob": "1427f13bbadf5e452a61d94e35ca1aac1b846636",
+      "lines": "446-448",
+      "finding": "is_sql category skipped before scoring"
+    },
+    {
+      "path": "berkeley-function-call-leaderboard/bfcl/eval_checker/eval_runner_helper.py",
+      "blob": "e6988a2cebcad805703655d93aa9b6e0ea1357ce",
+      "lines": "65-66",
+      "finding": "sql category predicate covers selected sql_0 and sql_1"
+    }
+  ],
+  "controls": "24 existing tests PASS: 12 bridge integration and 12 response adapter; SQL remains refused",
+  "implementation_changes": 0,
+  "model_runs": 0,
+  "next_action": "Integrate official multi-turn state and execution path; SQL needs a separately approved scoring contract or upstream evaluator with SQL support."
+}

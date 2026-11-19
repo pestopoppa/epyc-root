@@ -1,0 +1,12 @@
+All preimage hashes verified
+checking file dist/core/ingestion/pipeline-phases/communities.js
+patching file dist/core/ingestion/pipeline-phases/communities.js
+All postimage hashes verified
+apply rc=0
+All preimage hashes verified
+checking file dist/core/ingestion/pipeline-phases/communities.js
+patching file dist/core/ingestion/pipeline-phases/communities.js
+All postimage hashes verified
+rollback rc=0
+preimage mismatch: dist/core/ingestion/pipeline-phases/communities.js: c350224eb78c72d7c1b26e1a52ab267bb7f1f9928a68185be2aac8f6ebdf7d45
+wrong-preimage rc=1 (refused, expected)

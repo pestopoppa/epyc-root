@@ -1,0 +1,20 @@
+{
+  "id": "kpf131-allocator-displacement-census-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-allocator-displacement-census-20261105/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-allocator-displacement-census-20261105/out/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Count syntactic register/displacement operands in the exact three previously captured sealed allocator bodies, requiring source hash match before and after, complete headers and at least one instruction line for each. This is an instruction census only; no register dataflow, object-field offset, live layout or historical control claim.",
+  "estimate_s": 300,
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-13.1-ALLOCATOR-DISPLACEMENTS",
+  "priority_rank": 100,
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-allocator-displacement-census-20261105",
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "keep": [
+    "**"
+  ],
+  "lineage": "kpf131-allocator-displacement-census"
+}

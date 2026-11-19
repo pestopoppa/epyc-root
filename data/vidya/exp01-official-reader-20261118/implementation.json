@@ -1,0 +1,46 @@
+{
+  "schema": "epyc.vidya.exp01_official_reader_implementation.v1",
+  "status": "software-verified",
+  "changes": [
+    "scripts/vidya/adapters/exp01_official.py",
+    "scripts/vidya/adapters/exp01_proxy_capture.py",
+    "scripts/vidya/ingest_sources.py",
+    "scripts/vidya/adapters/README.md",
+    "tests/vidya/test_exp01_official_reader.py"
+  ],
+  "entry": "vidya ingest exp01-proxy-capture --path <new-filing>",
+  "packager": "PYTHONPATH=scripts/vidya python3 -m adapters.exp01_official --ready <original-ready> --ended <original-ended> --complete <original-complete> --output <new-filing> [--grant <original-grant>]",
+  "filing": {
+    "marker": "official-completion-binding.json",
+    "binding_schema": "epyc.rowflow.completed_exp01_official_filing.v1",
+    "binding_fields": ["schema", "id", "run_id", "mode", "manifest_sha256", "artifacts", "grant_copy_source"],
+    "archive": "native-official.tar.gz",
+    "sidecar": "results.jsonl",
+    "required_originals": ["ready-manifest.json", "grant-ended.original", "allocator-complete.original", "grant.original", "RESULT.json", "RUN.json", "TERMINAL.json", "results.jsonl", "SUMMARY.json", "linkage.log", "SOURCE.json", "original-fixed-items.jsonl", "recovery-seal.json", "recovery-terminal.json", "tooling-manifest.json", "source/*", "launches/<unit>.{json,stdout,stderr}", "speed-<arm>-<ordinal>.{json,err}"],
+    "grant_sources": ["allocator-original", "RUN.grant.raw"],
+    "note": "The packager requires original ready/ended/complete records and uses original result, producer and pinned asset bytes from their recorded paths. An absent deleted grant can be copied byte-for-byte from the acquisition-time RUN grant capture. Publication of the marker follows successful strict replay."
+  },
+  "projection": {
+    "official_tuples": 8,
+    "metrics": ["official_proxy_pp512_native_tokens_per_s", "official_proxy_tg128_native_tokens_per_s"],
+    "reps": "2 or 3 actually scored independent launches per arm",
+    "paired_items_rederived": 24,
+    "paired_quality_scope": "Scoped tuple extra and original attestation. No independently applicable paired-quality tuple.",
+    "grade": "Judged/Located",
+    "protocol_id": "",
+    "existing_control_observations": 4
+  },
+  "validation": {
+    "focused_command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider --basetemp /mnt/raid0/llm/tmp/vidya-belief-substrate/official-reader-current/targeted tests/vidya/test_exp01_official_reader.py tests/vidya/test_exp01_proxy_capture.py tests/vidya/test_exp01_official_writer.py",
+    "focused_passed": 46,
+    "carrier_tuples_checked": 184,
+    "carrier_invariant_violations": 0,
+    "broad_ingest_passed": 145,
+    "broad_ingest_skipped": 1,
+    "broad_ingest_failed": 2,
+    "broad_ingest_failure": "System Python lacks NumPy imported by the unrelated UFH12 paired IRT adapter. Both failures are global registry import tests.",
+    "git_diff_check": "pass",
+    "gitnexus": "GitNexus status and impact attempted. No repository index available. Direct code search traced the registered adapter, CLI ingest source, and EXP01 planner canary."
+  },
+  "remaining": "The reader and packager are proven against a model-free test filing only. Complete actual R2 native output and allocator records are needed to file genuine evidence and run the planning-context canary. No inference, publication, historical warrant reconstruction, handoff/index edit, or commit performed in this task."
+}

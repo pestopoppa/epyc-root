@@ -1,0 +1,26 @@
+{
+  "id": "vb-ak-wire-canary-r1-20261104",
+  "owner": "handoff-vidya-belief-substrate",
+  "launcher": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/launch.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "result_path": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "Read RESULT.json: PASS iff status=PASS AND prepare_status=ready AND ingest_refused=0 AND rows_projected>0 AND proposition_visible=true AND canonical_unchanged=true. FAIL iff prepare_status=ready AND canonical_unchanged=true AND (proposition_visible=false OR ingest_refused>0 OR rows_projected=0). UNKNOWN on exception, prepare refusal or canonical hash change. Native proposition comes from actor-wire-final.json via unchanged adapter; no applicability invented. One real loop_beliefs.prepare; no model/backend/network calls; no timing or quality claim; stop first verdict, no in-run retry.",
+  "estimate_s": 900,
+  "min_window_s": 900,
+  "dryrun_timeout_s": 300,
+  "dryrun_native_result": true,
+  "admission_class": "block-correctness",
+  "handoff_task": "vidya-belief-substrate-program.md:VB-AK-WIRE-MATRIX-LIVE",
+  "scratch_root": "/mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104",
+  "lineage": "vb-ak-wire-canary",
+  "keep": [
+    "RESULT.json",
+    "evidence/**",
+    "state/ingest.json",
+    "state/prepared.json",
+    "state/planner-belief-section.txt"
+  ],
+  "smoke_predicate": "/usr/bin/python3 -B /mnt/raid0/llm/tmp/vb-ak-wire-canary-r1-20261104/progress.py"
+}

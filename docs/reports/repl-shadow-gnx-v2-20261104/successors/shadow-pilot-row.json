@@ -1,0 +1,7 @@
+{
+  "rc": 0,
+  "output": "WARN volatile-paths: the job runs /mnt/raid0/llm/epyc-orchestrator/.venv/bin/python from a lane/worktree path that can change or vanish before its grant; set \"snapshot\": true in the spec to freeze it (publish continues)\nLINT kind=compute\nSMOKE PASS ufh14-repl-emb23a-private-pilot-20261104 on 0-3: first progress: new record in /mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/out/*/*/results.jsonl (measurement field); rc=75 time=2026-11-04T07:35:45Z reason=partial-native-incomplete\nPUBLISHED ufh14-repl-emb23a-private-pilot-20261104 lane=cpu regions=any-cpu-quarter window_s=4260 min_window_s=3600 gib=64 ports=[19081, 19082, 19083] result=/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/out/*/*/results.jsonl (jsonl) -> /mnt/raid0/llm/tmp/compute-flags/ready/ufh14-repl-emb23a-private-pilot-20261104.json\n",
+  "id": "ufh14-repl-emb23a-private-pilot-20261104",
+  "spec": "/mnt/raid0/llm/tmp/agentic-serving-harness-fixes/shadow-pilot/spec.json",
+  "note": "smoke executes genuine BGE hybrid search on keeper qualification slice; official phase uses BGE + Granite plus private Qwen frontdoor; no quality claim"
+}

@@ -1,0 +1,10 @@
+{
+  "claim_close": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/claim-3f1ea83fa7b64591b4ed923ed07b6fc3.close.json",
+  "observation_only": true,
+  "reason": "usage: kernel_promotion_evidence.py [-h] [--seal-to SEAL_TO] capture\nkernel_promotion_evidence.py: error: 'fresh_capture'",
+  "runner_exit": 78,
+  "staging": "/mnt/raid0/llm/tmp/vidya-belief-substrate/lifecycle-native/out/.capture-3f1ea83fa7b64591b4ed923ed07b6fc3",
+  "status": "failed",
+  "unit_id": "vb-v9-8-lifecycle-native-20261118",
+  "verdict": "diagnostic_failure"
+}

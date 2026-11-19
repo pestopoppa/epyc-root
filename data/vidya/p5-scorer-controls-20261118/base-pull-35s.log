@@ -1,0 +1,26 @@
+docker.io/swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8593@sha256:bf09a4f64ca8a2dd3c9e2d252d640ed0239e6b2927fa524e40b6cde7aa0fafc0: Pulling from swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-8593
+39a945af8df2: Pulling fs layer
+fd3f01088aa8: Pulling fs layer
+079027039e9d: Pulling fs layer
+407de719c2d3: Pulling fs layer
+0ddda5039dab: Pulling fs layer
+53752545c9b2: Pulling fs layer
+93f45703f097: Pulling fs layer
+25213b801168: Pulling fs layer
+16929dc08de1: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+407de719c2d3: Waiting
+0ddda5039dab: Waiting
+53752545c9b2: Waiting
+93f45703f097: Waiting
+25213b801168: Waiting
+16929dc08de1: Waiting
+4f4fb700ef54: Waiting
+39a945af8df2: Download complete
+407de719c2d3: Verifying Checksum
+407de719c2d3: Download complete
+0ddda5039dab: Verifying Checksum
+0ddda5039dab: Download complete
+53752545c9b2: Verifying Checksum
+53752545c9b2: Download complete
+39a945af8df2: Pull complete

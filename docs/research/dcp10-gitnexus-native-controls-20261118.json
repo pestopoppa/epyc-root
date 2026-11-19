@@ -1,0 +1,85 @@
+{
+  "schema": "epyc.dcp10.gitnexus-native-controls.v1",
+  "status": "offline_preparation_only",
+  "files_sha256": {
+    "scripts/experiments/dcp10-discovery/gitnexus_native.py": "70bd8d01ba6f79e4dc23196941a1f7ff4e328a6abc4c0510c8a296395d748df6",
+    "scripts/experiments/dcp10-discovery/gitnexus_native_worker.mjs": "5b0c69935e4cd9ea68bb3e1db6951917ba295c36b0fdbc9c76a62cdef4ae96c2",
+    "scripts/experiments/dcp10-discovery/test_gitnexus_native.py": "80279d4b3d95c22cb45f7a611e5a8465898c8c815bcaf7b5286ebf503e8eb193",
+    "scripts/experiments/dcp10-discovery/gitnexus-native-README.md": "dccd9e0bda138d8f2f015ea3bad3cfcd24c6fa143cc1f2315c9d464527a5675c"
+  },
+  "original_request_sha256": "5a42163d7262dcbe1fa6e7ff6daf870c74070b58b9d7fc4da684981f292a37db",
+  "baseline_sha256": "64088e7ac17ea1f8228f69aa68465b48c171037311f1b4a14ec535b93f1d077a",
+  "gitnexus_source": {
+    "version": "1.6.1",
+    "existing_source_sha256": {
+      "package.json": "5c246850e33ab06f149d92c880557e8fad590c3c3679dab2fe50a272529a4e7c",
+      "dist/mcp/local/local-backend.js": "756d29b6b81ef35495385a5d394d0f101def333f51a976d05a4d2472a2a9bc4a",
+      "dist/core/lbug/schema.js": "2d91d17c6ed60fbaf6841a3c0dbbe0d713fe7c7cff2661a224c80a55b4f49dd9",
+      "dist/core/lbug/pool-adapter.js": "d37f8605286d8eb63c40e6fe49675c750395bac32507d8ffc9c27cdcda5a4b24",
+      "dist/core/run-analyze.js": "caf4c8b8b33578892ee2fbb458d1d04f3deb7da9ea49b64a882f3ac705226c2c",
+      "dist/storage/repo-manager.js": "f57bbf8c027ac1eab62c065e1c7ff4dd52e1c50d89f6e0209ccd006ed87a40a2"
+    },
+    "additional_writer_sha256": {
+      "dist/core/ingestion/parsing-processor.js": "2c2f9df97937757c2b28c286c5a0a65e6fd530487ca52d773f46c93088a1d006",
+      "dist/core/lbug/csv-generator.js": "25b6096fcccaf40f727786c2f12f277407716076d50d7328114741f034c2ddb1",
+      "dist/core/lbug/lbug-adapter.js": "36466a35a6fc77fae9329de3506f14e49aa206d5343e08e79371707bb53ad7c2",
+      "dist/_shared/index.js": "70c0b3a8abacaeca42f759f32c009755867e0e2a8bec39c59d70372f90b952a3"
+    }
+  },
+  "runtime": {
+    "image": "sha256:d9b8c34d61a9b9a3c44cab883d7d2f2619d674966ab520186f799cf32e3e0377",
+    "node_sha256": "94efd062ed066c1a0b332e18249859c905e920eeada5df55d24c99b919629a90",
+    "ladybug_version": "0.15.4",
+    "ladybug_sha256": {
+      "package.json": "babb4ec62940fe80167c8582e61ce48577ab563b598697718d4b7096b5848239",
+      "index.js": "7f01d0781f5bfef08e45d5b05a08deb0cf3b57598fea1123c473a7617f5ed3cb",
+      "connection.js": "8cc703f478f55beec45ef628c4609d28eaf54d56d043d05dadad9b550aad2f26",
+      "database.js": "95b826985a55ee114301300ae039c7b6818accbd8603e2e4d810ea686b1b83d0",
+      "query_result.js": "4e378d17817092029db486719de44756416865af02f415747a87da26c9abff49",
+      "prepared_statement.js": "59910c494bafe5162f5736922f4faa04bb91cdbd5875202387a3dbc14ef28999",
+      "lbug_native.js": "bf028ed690e7ad6c6f44cf01c6301eb402835de479335ed59d5eb337c2cebdf4",
+      "lbugjs.node": "4d2d045404f8e31cd6d5bd8aec0adac64ce5bef8c904ab79408a5a3dbc8dce56"
+    }
+  },
+  "query_sha256": "4c6d282663d4e3a29f0924e13abe11cf5422b94a59c41a5622a4397033960e70",
+  "upstream_gate": {
+    "allowed_rows": [
+      "dcp10-colgrep-native-20261118",
+      "dcp10-colgrep-native-20261118-r2"
+    ],
+    "r2_required_lineage": {
+      "revision": 2,
+      "reason": "qualification after native thread limit fix",
+      "prior_row": "dcp10-colgrep-native-20261118",
+      "prior_preparation_sha256": "66b9f45fc59be61c1f58a3082977718240e0f0f173aac943c2c7f5752ad20950",
+      "prior_result_path": "/mnt/raid0/llm/tmp/delegation-context-preassembly/dcp10-colgrep-native/native/RESULT.json",
+      "prior_result_sha256": "f4ba555150a489036d8b79de3f26dc8b92f9074ec60efdddd82204ec1d8fc0e6"
+    },
+    "current_original_result": "refused: all three builds failed; comparison_valid false",
+    "future_r2_result_sha256": null
+  },
+  "controls": [
+    "private request and original task/base/query/seed binding",
+    "sealed metadata and checkpointed database, no extra sidecars",
+    "parameterized stored one-hop edges with confidence >=0.9, no traversal fallback or fabricated spans",
+    "read-only pinned inputs, no home/registry/checkout/network fallback",
+    "pre/post base/index/source snapshots after success and failure",
+    "4096-edge, 4-MiB stdout, 64-KiB stderr, 20-second, 2-GiB and CPU limits",
+    "captured named-container cleanup on timeout, overflow, signal and stream I/O failure"
+  ],
+  "validation": {
+    "independent_main_suite": "49 discovery controls passed in 2.399 s",
+    "additional_main_regression": "stream I/O failure removes only its own named container: 1 passed",
+    "ruff": "passed",
+    "worker_syntax": "passed via offline control",
+    "native_graph_queries": 0,
+    "native_index_builds": 0,
+    "native_arm_scores": 0
+  },
+  "limitations": [
+    "No CLI caller or private-index build producer is supplied by this helper.",
+    "Shared writable RAID ancestor still refuses custody; native runtime ABI and read-only database open require separate isolated qualification.",
+    "Native graph capture/scoring require valid admitted sealed upstream output and original render provenance.",
+    "No trusted score, accepted verifier tuple, retrieval-quality claim or completed DCP-10. Existing VB-CONTEXTBENCH-DISCOVERY-WIRE applies; no reconstructed warrant."
+  ]
+}

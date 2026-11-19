@@ -1,0 +1,10 @@
+--- original.py
++++ corrected.py
+@@ -19,6 +19,7 @@
+   if start>=end:raise ValueError('grant interval')
+   if end<=now or start>=deadline:continue
+   if ident==own_id:
++   if start>now:raise ValueError('own grant not active yet')
+    if own_seen:raise ValueError('duplicate own grant')
+    own_seen=True;continue
+   matches=[r for r in rows if r.startswith('| '+ident+' |')]

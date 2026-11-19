@@ -1,0 +1,16 @@
+Temporary breakpoint 1 at 0x23d1
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Temporary breakpoint 1, 0x00005632317753d1 in main ()
+Hardware assisted breakpoint 2 at 0x76945715a280
+Catchpoint 3 (syscall 'exit_group' [231])
+READY 4148161
+RESULT DETECTED 0 1
+[New Thread 0x76934d1ff6c0 (LWP 4148346)]
+[New Thread 0x769247fff6c0 (LWP 4148347)]
+[Thread 0x769247fff6c0 (LWP 4148347) exited]
+[Thread 0x76934d1ff6c0 (LWP 4148346) exited]
+
+Thread 1 "fixture" hit Catchpoint 3 (call to syscall exit_group), 0x0000769456c27a18 in _exit () from /lib/x86_64-linux-gnu/libc.so.6
+[Inferior 1 (process 4148161) exited normally]

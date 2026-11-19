@@ -1,0 +1,26 @@
+{
+  "id": "triattention-s8c-float-v2-build-20261104",
+  "owner": "triattention",
+  "launcher": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/packet/launcher.sh",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "gib": 16,
+  "estimate_s": 1800,
+  "min_window_s": 1800,
+  "first_progress_s": 600,
+  "scratch_root": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104",
+  "result_path": "/mnt/raid0/llm/tmp/triattention-s8c-float-v2-build-20261104/results.jsonl",
+  "result_format": "jsonl",
+  "unit_key": "unit",
+  "decision_rule": "Build the experimental production-tip recency safety candidate with the pinned legacy float-rounding correction. Checkpoint ggml-base, retain binary and library digests, stop on compile error, stop request or deadline. Build only: no real-cache, server, model, quality or GPU claim.",
+  "handoff_task": "long-context-program.md:S8-C-ROUNDING-BUILD",
+  "priority_rank": 18,
+  "keep": [
+    "results.jsonl",
+    "base-unit.json",
+    "artifact-sha256.txt",
+    "out/**",
+    "packet/**"
+  ],
+  "kind": "compute"
+}

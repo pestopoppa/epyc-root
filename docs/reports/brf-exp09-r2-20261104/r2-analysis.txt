@@ -1,0 +1,35 @@
+# Independent EXP09 answer-budget R2 result analysis
+
+- Results: `/mnt/raid0/llm/tmp/brf-exp09-answerbudget-r2/out/results.jsonl`
+- Manifest: `/mnt/raid0/llm/tmp/compute-flags/ready/brf-exp09-answerbudget-r2-20261104.json`
+- Scope: exploratory/decision-support only; the scorer retains the original capped failed-ID reference and substring matching. Accuracy is the mean of recorded correctness facts (`score()`), not an estimate of full-log or general model accuracy. Retention is the recorded capped-reference substring retention score.
+
+## Run integrity and completion
+
+- One real preflight, one paired readout, 48 real cell records (12 distinct items × 4 arms), and one pass_complete record are present. Each arm has one cell per item.
+- Preflight reports `control_code_unchanged=true`, expected orchestrator pin `3a428cb3795b26251c5f111c9eaa887db0690994`, `linkage_ok=true`, and no foreign libraries. The preflight corpus digest is `f3a8342c24a32c05f5d93be54d5dbc7c85a75faf85a444e89686a2c36a2331e4`, matching the frozen corpus digest in the manifest.
+- The job source calls the evaluator with `max_tokens=1024`; no answer record reached the ceiling (largest completion was 500 tokens in shape_header). All 48 answers parsed.
+- The pass_complete row says `cells=48`, but `mechanism_fired=false` and `capture_complete=false`. Inspection of the runner shows it assigns `run_cell()` score objects into its in-memory `got` map, then tests those score objects for `evidence`, `view`, and `answer_raw`; those fields are absent there. These two aggregate booleans therefore do not agree with the emitted cell records and should not be treated as evidence that the mechanism failed or capture was incomplete. Cell-level evidence below is the direct record.
+
+## Arm results
+
+| Arm | Distinct cells | Parsed | Mean accuracy | Mean capped retention | Max answer tokens | At 1024 ceiling |
+|---|---:|---:|---:|---:|---:|---:|
+| control | 12 | 12/12 | 0.803 | 0.417 | 98 | 0 |
+| verified_quote | 12 | 12/12 | 0.868 | 0.750 | 398 | 0 |
+| shape_header | 12 | 12/12 | 1.000 | 1.000 | 500 | 0 |
+| pointer_only | 12 | 12/12 | 0.264 | 0.000 | 75 | 0 |
+
+- Paired accuracy vs control (same 12 items):
+
+  - `verified_quote`: 4 wins / 6 ties / 2 losses; mean paired delta +0.065.
+  - `shape_header`: 8 wins / 4 ties / 0 losses; mean paired delta +0.197.
+  - `pointer_only`: 0 wins / 0 ties / 12 losses; mean paired delta -0.540.
+
+## Quote verification and planted mismatch
+
+- All 12 verified_quote cells record `planted_mismatch_rejected=true`; the generated one-byte-mutated quote was rejected by the same verifier in each cell. Thus the planted-mismatch check fired at cell level.
+- Eleven of 12 verified_quote cells were accepted with all returned quotes verified (verification rate 1.0). Item-10 had one unverified quote (`unverified-quotes:1`, rate 0.857), so the arm rejected that proposed quote summary and used its static fallback. It still passed the separate planted-mismatch check.
+- Verified_quote accuracy averaged 0.868 versus control 0.803, with 4 wins, 6 ties, and 2 losses on paired cells. This meets the manifest’s numeric “at least control” condition for the complete corpus, subject to the aggregate-record defect above and the prescribed limited scorer scope. The preflight verifies control identity/linkage; no broader causal or operational claim follows.
+- `pass_complete.mechanism_fired=false` conflicts with all 12 cell-level planted mismatch flags. This report treats the cell-level flags as evidence of checks executed and flags the aggregate as inconsistent; an owner-facing decision should account for that bookkeeping defect rather than silently relying on the false aggregate.
+

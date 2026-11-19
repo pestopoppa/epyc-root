@@ -1,0 +1,33 @@
+{
+  "schema": "epyc.filler-spec.v1",
+  "id": "kpf50-window-validator-qual-20261105",
+  "owner": "h-heterogeneous-slot-fabric-residency",
+  "kind": "compute",
+  "lane": "cpu",
+  "regions": "any-cpu-quarter",
+  "ram_gib": 1,
+  "priority_rank": 50,
+  "estimate_s": 300,
+  "min_window_s": 300,
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-window-validator-qual-20261105/launch.sh",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-window-validator-qual-20261105",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf50-window-validator-qual-20261105/out/RESULT.json",
+  "result_format": "json",
+  "dryrun_native_result": true,
+  "smoke_timeout_s": 90,
+  "keep": [
+    "**"
+  ],
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-50.WINDOW-VALIDATOR-QUAL",
+  "decision_rule": "SYNTHETIC_REFUSAL_QUALIFIED only after exact retained validator bytes execute on every sealed full case, positive returns 0 SYNTHETIC_CONTROL_ONLY, every malformed/missing mutant returns 2 with refusal, native-unproved returns 3 UNKNOWN, unchanged seals and captured children confirmed drained. Smoke executes only three predeclared cases and can never complete full result. Any discrepancy/STOP/deadline/drift/cleanup failure is INVALID. No native PASS, performance result, physical truth or >=20% verdict.",
+  "lineage": "lineage.json",
+  "input_seals": "seals.json",
+  "reservation_rationale": "300-second admission reservation; bounded <=180-second total workload with <=5 seconds per serial validator and immediate stop on first discrepancy. No padding/sleep/repetition to fill reservation.",
+  "stop_on_answer": "All full cases satisfy predeclared outcomes; terminate immediately.",
+  "stop_on_futility": "First unexpected outcome, missing seal/input, drift, STOP, deadline or cleanup failure.",
+  "gate_class": "futility-only",
+  "published": false,
+  "ready": false,
+  "notes": "Prepared only, no validator/test/compute execution. Model-free offline synthetic qualification distinct from physical receipt custody/supervisor qualification; existing prep remains unqualified until this job succeeds. Real source/model/GPU inaccessible to job except local sealed fixture bytes. Publisher must supply CPU claim and separate FILLER_DRYRUN_RESULT_PATH outside out tree.",
+  "unit_key": "cases"
+}

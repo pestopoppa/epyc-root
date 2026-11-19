@@ -1,0 +1,37 @@
+{
+ "$schema": "epyc.filed.verdict.v1",
+ "agent_verdict": {
+  "rationale": "rc75 disk-floor in current 19:54 grant. The appended results include earlier records outside this grant; do not pool them. Within the grant p1 A0 has idle plus 8k/32k contended captures, p1 A1 has idle plus 8k contended; 32k A1 and all p2 ABBA captures are missing. Required two-pair mean and adopt/reject rule cannot be evaluated. Preserve all raw records with timestamps; no decision or PF1 gate claim.",
+  "verdict": "inconclusive"
+ },
+ "at": "2026-11-04T20:05:49+00:00",
+ "compute_burned": true,
+ "dry_run": false,
+ "end_line": "rc=75 time=2026-11-04T20:04:09Z reason=disk-floor",
+ "filed_at": "2026-11-04T20:05:49+00:00",
+ "filed_by": "agent",
+ "handoff_task": "handoffs/active/mi210-serving-program.md:NPD1-STEP2",
+ "id": "npd1-step2-a1-tpot-20261104",
+ "machine_checkable": false,
+ "manifest": "/mnt/raid0/llm/tmp/compute-flags/ready/npd1-step2-a1-tpot-20261104.json",
+ "native_result_path": "/mnt/raid0/llm/tmp/npd1-step2-a1-tpot-20261104/out/results.jsonl",
+ "outcome_class": "PARTIAL-VERDICT",
+ "owner": "ws58",
+ "phase": "filing",
+ "rc": 75,
+ "reason": "rc75 disk-floor in current 19:54 grant. The appended results include earlier records outside this grant; do not pool them. Within the grant p1 A0 has idle plus 8k/32k contended captures, p1 A1 has idle plus 8k contended; 32k A1 and all p2 ABBA captures are missing. Required two-pair mean and adopt/reject rule cannot be evaluated. Preserve all raw records with timestamps; no decision or PF1 gate claim.",
+ "result_exists": true,
+ "result_format": "jsonl",
+ "result_path": "/mnt/raid0/llm/tmp/npd1-step2-a1-tpot-20261104/out/results.jsonl",
+ "root_cause_family": null,
+ "row": "npd1-step2-a1-tpot-20261104",
+ "row_verdict": "inconclusive",
+ "rule": "NPD-1 step 2 (decision-support; gate-class futility-only; not a PF1 gate). Question: serving Q38FN UD-IQ4_XS + MTP (t48 bundle INF22-Q38-T48, np2, -c 69632, f16 KV, --load-threads 96) with A1 op-offload (181483cfc-lbt gpu store, -ngl 0 -ub 2048) instead of A0 CPU-only (cpu store, -dev none), how much is stream B's decode delayed while ONE long prompt (L=8192, 32768) prefills in the other slot, and what is the long prompt's TTFT? Design: ABBA over arms, 2 pairs (A0 A1 A1 A0), one launch per arm-pair; per launch an idle B baseline (512 greedy tokens, ignore_eos) then per L a contended trial (B streaming, long prompt arrives 3 s later). Metrics (out/results.jsonl, phase=contended): ttft_long_s (lower better); b_tpot_in_window_ms = window_s / B tokens delivered during the long prefill (lower better); tpot_inflation = that / idle B TPOT; b_max_gap_s. Per pair, ratio r = A1/A0 for each metric; decision on the mean of the 2 pairs (ABBA cancels the ~3% second-launch bias, m4-gpu-aa-noise). Noise floor: CPU decode within-cell +-3% (recipe r3), GPU A/A SD 2.5% (n=5); 2-pair mean noise ~ +-5%; threshold set at 2x that. ADOPT A1 iff ALL: (1) TTFT gain A0/A1 >= 1.5 at L=8192 AND L=32768 (the reopen rule's 1.5x; PF1 predicts ~2.1x); (2) b_tpot_in_window ratio A1/A0 <= 1.10 at both L (other streams not hurt more than noise); (3) idle B TPOT ratio A1/A0 <= 1.06 (the gpu store must not slow plain decode; 2 x 3% CPU noise). REJECT if (1) fails at L=8192 in both pairs or (3) exceeds 1.10 in both pairs. Otherwise INCONCLUSIVE: file it, no third pair without a new decision. Stop-on-answer: stop after launch 2 (pair 1) if the TTFT gain A0/A1 < 1.2 at both L (cannot reach 1.5 within noise: reject); otherwise run all 4 launches and stop. Stop-on-futility: load failure, A1 without own-PID KFD residency during the long prefill, B stream error, or STOP. Validity: A0 is CPU-only by -dev none; A1 residency sampled in-window. Est 35 min: 4 loads x ~0.7 min, per launch idle B 2x ~11 s, L=8192 + L=32768 contended trials ~4 min A0 / ~2 min A1 (32k CPU prefill ~3 min).",
+ "values": {},
+ "verdict": {
+  "kind": "science",
+  "native_result_sha256": "2d007be23f439e326eaaca67b7af84156b577c5a6216bcbb6ea790d9d9d842df",
+  "result": "inconclusive",
+  "status": "filed"
+ }
+}

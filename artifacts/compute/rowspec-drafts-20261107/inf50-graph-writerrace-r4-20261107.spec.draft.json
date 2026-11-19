@@ -1,0 +1,24 @@
+{
+ "id": "inf50-graph-writerrace-r4-20261107",
+ "owner": "operator-adhoc-ops-20261105",
+ "kind": "compute",
+ "draft": true,
+ "published": false,
+ "note": "DRAFT row spec, never published. launcher/result_path are placeholders until the owner builds the launcher and seals SOURCE.sha256; fields follow spec.json of c8-decode-x-sweep-20261107-r2.",
+ "lane": "cpu",
+ "shape": "cpu_quarter",
+ "regions": "q0 (CPUs 0-23, 19 parse workers)",
+ "ram_gib": 64,
+ "estimate_s": 3000,
+ "first_progress_s": 1500,
+ "handoff_task": "speculative-decoding.md:INF-50-GRAPH-WRITER-RACE",
+ "inputs": [
+  "/mnt/raid0/llm/tmp/codex-ni-inf50-writerrace-resume-20261028/ (pidfd writer, cache-resume witness, 16/16 tests; unarmed)",
+  "C5 tree c72ec82f5 with parse cache 6+1.6.8 key f52a0317...",
+  "scripts/coordination/job_templates/gitnexus_impact.py (analyze/scan split, ANALYZED.json skip)"
+ ],
+ "change_vs_r3": "r3 failed only its catalog guard (shared ~/.gitnexus/registry.json collision). r4 sets a private HOME (env {HOME: <row scratch>/gnhome}) so the registry is private, and the booking must not co-schedule another gitnexus analyze in its window.",
+ "decision_rule": "PASS iff analyze rc0, graph committed (nodes>=55,950, edges>=131,915 as in r3), cache summary shows every chunk hit / 0 miss / worker_pool_creations=0, writer exits with the captured child's status (no /proc exe refusal), zero incomplete-parser notices. Any other terminal = UNKNOWN with harness class named. Stop-on-answer at first terminal; stop-on-futility if the private registry is not the one written. Gate-class futility-only, diagnostic.",
+ "precondition_no_compute": "check the v8 index integrity read-only (meta.json.fileHashes 3,072 == walker output) as the box requires.",
+ "width_justification": "q0 only: r3 showed 2,166 s on 19 workers; nothing else packs in the same quarter."
+}

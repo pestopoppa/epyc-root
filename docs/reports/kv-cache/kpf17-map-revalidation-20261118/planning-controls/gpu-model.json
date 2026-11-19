@@ -1,0 +1,130 @@
+{
+  "alarm": {
+    "cleared": {
+      "belief-ledger-not-current-escalated.autokernel.planner": "not-active",
+      "belief-ledger-not-current.autokernel.planner": "not-active"
+    }
+  },
+  "as_of": "2026-11-18T19:09:41Z",
+  "banner": "No beliefs are scoped to Qwen3.8-27B-Q8_0.gguf (gpu). The lines below are sibling/host context only.",
+  "consumer": "autokernel.planner",
+  "detail": "",
+  "evidence": {
+    "as_of": "2026-11-18T19:09:41Z",
+    "banner": "No beliefs are scoped to Qwen3.8-27B-Q8_0.gguf (gpu). The lines below are sibling/host context only.",
+    "claim_ids": [],
+    "claims": [],
+    "contested_claim_ids": [],
+    "empty_targets": [
+      "Qwen3.8-27B-Q8_0.gguf"
+    ],
+    "flagged": {
+      "contested": [],
+      "refuted": [],
+      "withdrawn": []
+    },
+    "frontier": 3,
+    "host_claim_ids": [],
+    "nonempty_target": false,
+    "not_evidence_claim_ids": [],
+    "omitted": [],
+    "omitted_count": 0,
+    "reasons": [
+      "no_applicable_claims"
+    ],
+    "refuted_claim_ids": [],
+    "runs": [],
+    "section": "",
+    "section_bytes": 0,
+    "section_sha256": "",
+    "status": "omitted",
+    "tiers": {
+      "harness": 0,
+      "host": 0,
+      "knob": 0,
+      "lineup": 0,
+      "sibling": 0,
+      "target": 0
+    },
+    "tiers_shown": {
+      "harness": 0,
+      "host": 0,
+      "knob": 0,
+      "lineup": 0,
+      "sibling": 0,
+      "target": 0
+    },
+    "tried_index": [],
+    "tried_index_count": 0,
+    "withdrawn_claim_ids": []
+  },
+  "flag_counts": {
+    "contested": 0,
+    "withdrawn": 0
+  },
+  "known_good_error": null,
+  "known_good_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/context/gpu-model.known-good.json",
+  "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/context/ledger.jsonl",
+  "ledger_state": {
+    "frame_count": 3,
+    "fresh": true,
+    "freshness": {
+      "frames_emitted": 0,
+      "index_max_id": 0,
+      "index_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "index_source": "file:/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/context/index.yaml",
+      "last_sync": "2026-11-18T19:29:00Z",
+      "sources": [],
+      "sync_action": "already-fresh",
+      "sync_seconds": null,
+      "synced_max_id": 0,
+      "was_fresh": true
+    },
+    "head_hash": "sha256:f45dc8e3d18004d227cf9db37a608b00ae4d9e25394bc14fa9f464d319acc27f",
+    "head_seq": 2,
+    "ledger_path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/kpf17-planning-20261118.final.Y8jWpz/context/ledger.jsonl",
+    "schema": "epyc.vidya.ledger_state.v1",
+    "verified_at": "2026-11-18T19:29:00Z"
+  },
+  "ledger_state_digest": "sha256:d4bbdf74b1147030e8975962ff5c7d551f99bc82b117fed0d9c9503f9812a50e",
+  "policy": {
+    "floor": "Judged/Located",
+    "standard": "DV",
+    "use": "planner-context"
+  },
+  "reader_checkout": {
+    "behind": 1,
+    "current": true,
+    "error": null,
+    "head": "4795cb2dd93b5dc9a114889376d2ac365981b5f4",
+    "oldest_missing_age_s": 402.7,
+    "origin_main": "a6ffc6747db167b8d7a708efdd24d14c03cc32ea",
+    "root": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate",
+    "within_grace": true
+  },
+  "reason": null,
+  "schema": "epyc.vidya.loop_beliefs.v1",
+  "status": "ready",
+  "targets": [
+    {
+      "backend": "gpu",
+      "context_tokens": null,
+      "device": "gfx90a",
+      "focus_symbols": [],
+      "knob_families": [],
+      "label": "",
+      "model_file": "Qwen3.8-27B-Q8_0.gguf",
+      "model_sha256": "",
+      "quant": "",
+      "recipe": "",
+      "role": "",
+      "scope": "model",
+      "stack_regime": ""
+    }
+  ],
+  "tier_emptied": [],
+  "tier_emptied_alarm": {
+    "action": "not-active",
+    "key": "belief-target-tier-emptied.autokernel.planner"
+  }
+}

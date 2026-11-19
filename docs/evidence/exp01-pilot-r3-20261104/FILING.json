@@ -1,0 +1,45 @@
+{
+  "row": "brf-exp01-trellis-pilot-20261104-r3",
+  "box": "EXP01-PILOT",
+  "scope": "bounded exploratory proxy screen; no T2/T3 or port gate result",
+  "verdict": "inconclusive",
+  "rc": 0,
+  "files_sha256": {
+    "SUMMARY.json": "d8671aff2570a7ff47d549602bf9363e60e6d0f0a7880497b7ec7d258854f773",
+    "results.jsonl": "c6da14db7900d978ad511c442077355d87474018093509e4e141dd5fade09bff",
+    "speed-Q4KM-1.json": "e64c2b705fdd1fb511c97e97f8389c324eca1cea7a8281ae0b80f9859aef36d7",
+    "speed-Q4KM-2.json": "d41315cf97a5992eecb7cade797ea0460bcafb904ef98e149da147d88a804f40",
+    "speed-Q4KM-3.json": "2fcf46d94720fd2020a04b1be4c0d1fc65bbce10e391fffde4cceb3290711354",
+    "speed-IQ4KT-1.json": "22b53b54cd7aac519b557452f7c48d9d2c58fd86a822e3ab000c5f03a0e21d4f",
+    "speed-IQ4KT-2.json": "4855346251fef6e8bf44fa5df819abdb256e39b73e71e96175c0dbf82a241221",
+    "speed-IQ4KT-3.json": "d7142b14489df42591fa84b417c5c59c3051a08da44ec5e935124298143ad773",
+    "speed-IQ2XXS-1.json": "79f6db64a66cdb73f13614c39f0f88c03dcde3eb3f110942a2ed78f3b810584b",
+    "speed-IQ2XXS-2.json": "e5a77fbe6d6719f944246e36a127726d578557246341e45b4b718d6d7d9b3751",
+    "speed-IQ2XXS-3.json": "e68dde6917ba82cda16069633aa1b250b3348d1807fd3b142aa9dd4cc847a071",
+    "speed-IQ2KT-1.json": "315c581a61ff0039de1b0511d50dafb3e2962e6ca2a1126de966a68d06322532",
+    "speed-IQ2KT-2.json": "65a4f04c3ece518c2f65d9ca1b45eeee5d1759e7753f9ebf3e3e4a7c629eea9d",
+    "speed-IQ2KT-3.json": "7b3b7ff899186af7ee3dce7798ca2580bb5ae1c878c357ca8d377475dfec6021",
+    "ended.txt": "66517de02f80ff794b38b57c4dc6769dcfa1f2ca2a33abb9990560e6a02b8400"
+  },
+  "resource_check": {
+    "launches": 12,
+    "cpus": "0-23",
+    "threads": 24,
+    "native_threads_match": true,
+    "native_test_times_utc": [
+      "2026-11-04T07:20:31Z",
+      "2026-11-04T07:21:36Z"
+    ]
+  },
+  "quality_paired": {
+    "items": 24,
+    "q4km_correct": 12,
+    "iq4kt_correct": 14,
+    "both_correct": 12,
+    "both_wrong": 10,
+    "iq4kt_only": 2,
+    "q4km_only": 0,
+    "two_sided_exact_mcnemar_p": 0.5
+  },
+  "measurement_warrant": "Native original records retained; this filing does not retrofit ClaimTuples or original attestations."
+}

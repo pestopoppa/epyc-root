@@ -1,0 +1,7 @@
+rc=0 time=2026-11-18T19:31:24Z reason=complete
+job_id=ni-gpu-pool-matmul-20261117-v2
+owner=handoff-vidya-belief-substrate
+step=job-run
+estimated_wall_s=300
+started=2026-11-18T19:31:12Z
+regions=mi210_0,184-191

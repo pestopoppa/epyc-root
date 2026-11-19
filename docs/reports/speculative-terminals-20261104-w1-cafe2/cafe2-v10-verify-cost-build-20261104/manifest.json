@@ -1,0 +1,48 @@
+{
+ "decision_rule": "Accept only pinned v10 plus exact CAFE-2 candidate/bridge and CMake patch; full CPU cafe2-verify-cost executable, compiled CAFE2_VERIFY_RAW marker, content hashes and local llama-common linkage. Build-only prerequisite: no timing, expert union, MTP execution or CAFE-2 cost verdict. Stop on build failure, source mismatch, STOP or deadline; incomplete is UNKNOWN.",
+ "dryrun_native_result": true,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "492fbcec0b7e21e0f8fff7207049ec533275c26251da35d5cfed8ed0e3e9588c"
+ },
+ "estimate_s": 1800,
+ "first_progress_s": 300,
+ "gib": 48,
+ "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-2",
+ "id": "cafe2-v10-verify-cost-build-20261104",
+ "keep": [
+  "RESULT.json",
+  "runs/**",
+  "*.sh",
+  "*.py",
+  "*.cpp",
+  "*.hpp",
+  "*.json",
+  "*.sha256"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/launch.sh",
+  "sha256": "e3a55af998890959c434c9cac7715bede247890fb48bceaddc329059810f449c"
+ },
+ "min_window_s": 1800,
+ "owner": "h-speculative-decoding-mtp",
+ "ports": [],
+ "priority_rank": 45.0,
+ "publish_warnings": [
+  "speculative-decoding.md:462: identity fields incomplete: ['region', 'estimate'] \u2014 add region: where it runs (CPU quarter Q0-Q3, whole-host, GPU/MI210); estimate: `est <N> s`, or `est: provisional` plus a bounded `pilot:` (n=<k>, <k> prompts, <k> min)",
+  "speculative-decoding.md:462: untestable prose prerequisite: 'requires it. (intake-1935 claim 0) \u2014 Owner: workspace-ec (2026-10-06).\\n  - Model/build: intended Qwen3.6-35B-A3B-MTP-Q8_'"
+ ],
+ "published_at": "2026-11-04T14:12:44Z",
+ "published_from": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/spec.json",
+ "regions": "any-cpu-quarter",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe2-build-row",
+ "shape": "quarter",
+ "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe2-build-row/proof.py predicate",
+ "stop_file": "/mnt/raid0/llm/tmp/df2/cafe2-build-row/STOP",
+ "window_s": 2460,
+ "workdir": "/mnt/raid0/llm/tmp/df2/cafe2-build-row"
+}

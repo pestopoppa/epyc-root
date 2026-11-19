@@ -1,0 +1,15 @@
+# Prospective C5 comparison across the original 32 seeds
+
+The historical c463f601b elementwise capture recorded 544 unsupported observations: NORM 320, SUM 32 and SUM_ROWS 192 across seeds 2026102600 through 2026102631. The earlier C5 comparison at seed 2026102603 answered only 17 target descriptions. This packet repeats the exact historical target descriptions at every original seed, with one separate supported control per operator and seed: 544 targets plus 96 controls in 96 invocations.
+
+The C5 executable digest remains `dd9888f1a009dec291a3e3748b8e132ee9a9edf6dd3c9361f0dae10120270431`; the HIP DSO digest remains `23d39c91a82fad0a83743829dd59a10df91bfe0c4a933f0cce693fc7a831beb4`. All remaining DSOs, source/provenance, shim and producer inputs are pinned by the private packet. Its native writer records the request before launching any backend process and retains the ordered seeds, exact argv, terminal logs and in-window same-PID resource custody. The shared GPU-pool adapter and shared grade apply unchanged.
+
+Support is an observed disposition, so target passes, explicit unsupported outcomes and failures remain separate. A missing target, failed supported control or invalid custody prevents acceptance. Publisher smoke supplies readiness only; the official full capture and exact-candidate planning-context canary close the native comparison. Repeated seeds do not turn this selected-case census into a performance, population-error, production, promotion or RVP-C2-2 result. No old run receives a retrospective measurement warrant.
+
+The runnable packet lives at `/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/`. Its source snapshot, historical selection proof, input pins, specification and publication receipt are retained alongside this document when preparation completes.
+
+The native planning canary now validates complete ordered seed blocks and preserves single-seed receipts. Its candidate check accepts only authentic exact-scope claims presented by the existing bounded reader and keeps omitted claims ineligible for reliance. All 13 focused controls passed under a build claim on CPUs 88–91; `canary-preparation.json` and `canary-unittest.log` retain the original source and validation receipts. Native ingestion and planning acceptance remain pending.
+
+The first publisher smoke stopped during its offline controls. The official-completion assertion inherited the publisher’s dry-run environment and entered the smoke branch. The repaired control sets up the official assertion in an isolated environment. The repair receipt and original failure evidence are in [smoke-repair](smoke-repair/).
+
+At 21:12:32 UTC on 2026-11-18, the publisher accepted the repaired `ni-gpu-pool-elementwise-20261118-v6` under the same row ID and queued its smoke because the GPU was busy. Smoke qualification and official capture are pending. The scheduling envelope is a 330-second estimate and a 420–720-second window. [Publication receipt](publication.json)

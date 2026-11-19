@@ -1,0 +1,19 @@
+test_exact_historical_scope_and_pins (__main__.PacketTests.test_exact_historical_scope_and_pins) ... ok
+test_parser_preserves_target_statuses_and_checks_exit (__main__.PacketTests.test_parser_preserves_target_statuses_and_checks_exit) ... ok
+test_sealed_smoke_cannot_complete_official_row (__main__.PacketTests.test_sealed_smoke_cannot_complete_official_row) ... NORM-2026102603: native terminal and residency verified
+SUM-2026102603: native terminal and residency verified
+SUM_ROWS-2026102603: native terminal and residency verified
+FAIL
+
+======================================================================
+FAIL: test_sealed_smoke_cannot_complete_official_row (__main__.PacketTests.test_sealed_smoke_cannot_complete_official_row)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/test_run_elementwise.py", line 131, in test_sealed_smoke_cannot_complete_official_row
+    with self.assertRaisesRegex(ValueError, "prospective selection changed"):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.230s
+
+FAILED (failures=1)

@@ -1,0 +1,39 @@
+{
+  "custody": "Original untracked workspace files; not a durable native custody transfer.",
+  "files": [
+    {
+      "relative_path": "ch33-nonc-ubatch.patch",
+      "sha256": "d16b08ef623d4af2f2c9f73fd748ec1a32c72722867d441000ff810e9b5fa45c"
+    },
+    {
+      "relative_path": "fold-gate-cpu.log",
+      "sha256": "a3788f417ef926bb22b96d7269f046529947b5729ccb20b54d09fe47fd187657"
+    },
+    {
+      "relative_path": "linkage-cpu.log",
+      "sha256": "06cf13d00627f5e60172461d4046ee945389191f02ec76c73acdb14117f0dfa0"
+    },
+    {
+      "relative_path": "linkage-gpu.log",
+      "sha256": "d050f96cbeac3d0c093ae9a385bafe2e2bab2e8b9f0bc22dd1abae8c8959cf37"
+    },
+    {
+      "relative_path": "results.jsonl",
+      "sha256": "902002e67a288268b56eaf361d8d314b4690e5ed7212a395cfb29a41c1955cc7"
+    },
+    {
+      "relative_path": "source-check.json",
+      "sha256": "247add2a3ff6e728df19205c77c87c2c166ec8f6e0e1ac20b69141df2a677a2a"
+    },
+    {
+      "relative_path": "test-dca.log",
+      "sha256": "3799a5d93878159dd00eaa884b58866290a6c380e61bfa839700d77b56120e62"
+    },
+    {
+      "relative_path": "test-rope.log",
+      "sha256": "b6acbac9a0619764dd39a85f06d3767a79ac416c7e7c6e4e744863c5f80c9628"
+    }
+  ],
+  "kind": "selected original-data summary and raw file digest inventory",
+  "raw_evidence_root": "/workspace/artifacts/compute/inf65-ch33-build-20261102"
+}

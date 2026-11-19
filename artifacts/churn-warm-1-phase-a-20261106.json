@@ -1,0 +1,192 @@
+{
+ "estimate_is_lower_bound": true,
+ "median_saved_fraction_of_row_wall": 0.0669412066645529,
+ "n_rows": 20,
+ "rows": [
+  {
+   "end": 1793946309.0,
+   "id": "ak-asm-h9-gate-20261106",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 1244.0,
+   "rc": 0,
+   "run_wall_s": 1283.0,
+   "smoke_s": 132.0
+  },
+  {
+   "end": 1793947356.0,
+   "id": "fa-ck-hd256-gate-r3-20261105",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 1419.0,
+   "rc": 0,
+   "run_wall_s": 1036.0,
+   "smoke_s": 48.0
+  },
+  {
+   "end": 1793947927.0,
+   "id": "fa-ck-hd256-build-r5-20261105",
+   "lane": "cpu",
+   "publish_to_first_unit_s": 13.0,
+   "rc": 0,
+   "run_wall_s": 261.0,
+   "smoke_s": 10.0
+  },
+  {
+   "end": 1793949725.0,
+   "id": "kvu16g-overshoot-build-20261106",
+   "lane": null,
+   "publish_to_first_unit_s": null,
+   "rc": 0,
+   "run_wall_s": 313.0,
+   "smoke_s": 10.0
+  },
+  {
+   "end": 1793951177.0,
+   "id": "kvu16g-overshoot-build-r2-20261106",
+   "lane": "cpu",
+   "publish_to_first_unit_s": 13.0,
+   "rc": 0,
+   "run_wall_s": 61.0,
+   "smoke_s": 10.0
+  },
+  {
+   "end": 1793951574.0,
+   "id": "ak-asm-h8-build-r3-20261105",
+   "lane": "cpu",
+   "publish_to_first_unit_s": 10.0,
+   "rc": 0,
+   "run_wall_s": 292.0,
+   "smoke_s": 10.0
+  },
+  {
+   "end": 1793952208.0,
+   "id": "ak-asm-h9b-gate-20261106",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 1131.0,
+   "rc": 0,
+   "run_wall_s": 1082.0,
+   "smoke_s": 120.0
+  },
+  {
+   "end": 1793953007.0,
+   "id": "fa-ck-hd256-gate-r4-20261105",
+   "lane": null,
+   "publish_to_first_unit_s": null,
+   "rc": 0,
+   "run_wall_s": 489.0,
+   "smoke_s": 47.0
+  },
+  {
+   "end": 1793954251.0,
+   "id": "c7-asm-ports-build-20261106",
+   "lane": "cpu",
+   "publish_to_first_unit_s": 11.0,
+   "rc": 0,
+   "run_wall_s": 444.0,
+   "smoke_s": 10.0
+  },
+  {
+   "end": 1793955481.0,
+   "id": "kvu16g4-overshoot-ab-20261106",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 1078.0,
+   "rc": 0,
+   "run_wall_s": 2339.0,
+   "smoke_s": 35.0
+  },
+  {
+   "end": 1793956449.0,
+   "id": "c7-asm-ports-gate-20261106",
+   "lane": null,
+   "publish_to_first_unit_s": null,
+   "rc": 0,
+   "run_wall_s": 709.0,
+   "smoke_s": 71.0
+  },
+  {
+   "end": 1793958912.0,
+   "id": "kvu16g4-overshoot-ab-900-20261106",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 1114.0,
+   "rc": 0,
+   "run_wall_s": 2326.0,
+   "smoke_s": 35.0
+  },
+  {
+   "end": 1793959218.0,
+   "id": "ak-asm-t0-h3-gate-r3-20261105",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 1877.0,
+   "rc": 0,
+   "run_wall_s": 167.0,
+   "smoke_s": 17.0
+  },
+  {
+   "end": 1793983566.0,
+   "id": "ak-asm-h8-gate-r4-20261105",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 47.0,
+   "rc": 0,
+   "run_wall_s": 493.0,
+   "smoke_s": 52.0
+  },
+  {
+   "end": 1793983877.0,
+   "id": "lsa-quality-32k-20261106",
+   "lane": "cpu",
+   "publish_to_first_unit_s": 12.0,
+   "rc": 0,
+   "run_wall_s": 11.0,
+   "smoke_s": 138.0
+  },
+  {
+   "end": 1793987536.0,
+   "id": "c7-asm-ports-gate-r2-20261106",
+   "lane": null,
+   "publish_to_first_unit_s": null,
+   "rc": 0,
+   "run_wall_s": 4232.0,
+   "smoke_s": 227.0
+  },
+  {
+   "end": 1793997978.0,
+   "id": "c7-q38-ppl-bisect-20261106-r5",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 2240.0,
+   "rc": 0,
+   "run_wall_s": 2427.0,
+   "smoke_s": 79.0
+  },
+  {
+   "end": 1793998612.0,
+   "id": "lsa-h12-indexer-gate-20261106",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 4566.0,
+   "rc": 0,
+   "run_wall_s": 474.0,
+   "smoke_s": 48.0
+  },
+  {
+   "end": 1793999626.0,
+   "id": "ak-asm-aiter-vs-c6-timing-20261106-r2",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 948.0,
+   "rc": 0,
+   "run_wall_s": 851.0,
+   "smoke_s": 77.0
+  },
+  {
+   "end": 1794004225.0,
+   "id": "c7r-gate-20261106",
+   "lane": "gpu",
+   "publish_to_first_unit_s": 122.0,
+   "rc": 0,
+   "run_wall_s": 4070.0,
+   "smoke_s": 90.0
+  }
+ ],
+ "saved_seconds_median_per_row": 48.0,
+ "saved_seconds_total": 1266.0,
+ "schema": "epyc.churn_warm.phase_a.v1",
+ "stop_rule": "median saved per unit < 10%",
+ "verdict": "STOP: median saved fraction below 10% (smoke launch is not the dominant per-row cost)"
+}

@@ -1,0 +1,46 @@
+{
+  "affinity": [
+    24,
+    25,
+    26,
+    27
+  ],
+  "admission_classification": "owner-turn self-claim",
+  "grant_path": "/nonexistent/lsa-screen-1-cpu-parity-r3-20261103.grant",
+  "grant_text": null,
+  "lock_parent_pid": 2814612,
+  "lock_parent_fd_paths": [
+    "/dev/null",
+    "/mnt/raid0/llm/tmp/cpu_core.24.lock",
+    "/mnt/raid0/llm/tmp/cpu_core.25.lock",
+    "/mnt/raid0/llm/tmp/cpu_core.26.lock",
+    "/mnt/raid0/llm/tmp/cpu_core.27.lock",
+    "/mnt/raid0/llm/tmp/cpu_region.GLOBAL.q1.lock",
+    "/mnt/raid0/llm/tmp/cpu_region.build.q1.lock",
+    "/proc/2814612/fd/pipe:[701476112]",
+    "/proc/2814612/fd/pipe:[701476113]"
+  ],
+  "lock_parent_flock_lines": [
+    "95: FLOCK  ADVISORY  WRITE 2814612 09:7f:188876347 0 EOF",
+    "96: FLOCK  ADVISORY  WRITE 2814612 09:7f:188876346 0 EOF",
+    "97: FLOCK  ADVISORY  WRITE 2814612 09:7f:188876343 0 EOF",
+    "98: FLOCK  ADVISORY  WRITE 2814612 09:7f:188876342 0 EOF"
+  ],
+  "region_lock_rc": 0,
+  "region_lock_stdout": "  q0  free   \n  q1  HELD   \n  q2  free   \n  q3  free   \ngpu-quiet  free   \n",
+  "region_lock_stderr": "",
+  "candidate_seal": "0319ffdeb8e587cfb2c26098e161f3f8aa36fc7cac904e84ce45f148cef18b4d",
+  "launcher_sha256": "af8834614be79626e08ac95489be3ecf1b3107edd24358eeeab1c48797efee79",
+  "job_sha256": "63732d8ca5a6211e5a2f2bbb491953e0a2ce92d7fe5021fd5bea18b1b814c4f5",
+  "spec_sha256": "ba3e5381fb9caf7c925b44e958b105e115ee435d67d8941a027ce8b5bdfa871c",
+  "model_manifest": "/mnt/raid0/llm/tmp/rope-ctx-assessment/lsa-screen-20261103/root/artifacts/lsa-screen-20261103/parity-manifest.json",
+  "model_manifest_sha256": "405fcdf576a77f09792750fc894db5f51e162f6c9042cb7c7accb95c9f569e88",
+  "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "declared_model_sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+  "loaded_byte_proof": "manifest digest plus observed model path inode and size; no fresh model hash",
+  "model_stat": {
+    "inode": 96505457,
+    "size": 29047086048,
+    "device": 2431
+  }
+}

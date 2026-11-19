@@ -1,0 +1,13 @@
+setuptools==68.0.0
+setuptools_scm>=6.2
+wheel
+cython==0.29.22
+oldest-supported-numpy
+extension-helpers
+pytest-astropy>=0.9
+pytest-astropy-header!=0.2.0
+pytest-xdist
+numpy>=1.17
+pyerfa>=2.0
+PyYAML>=3.13
+packaging>=19.0

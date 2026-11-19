@@ -1,0 +1,40 @@
+{
+  "schema": "epyc.vidya.quality_pack_dflash_r3_preparation.v1",
+  "row": "handoff-vidya-quality-pack-dspark-dflash-20261118-r3",
+  "predecessor": "handoff-vidya-quality-pack-dspark-dflash-20261118-r2",
+  "predecessor_verdict": "fail",
+  "change": "request timeout 90 to 240 seconds; original requests/model/drafter/runtime/pair identities unchanged; explicit failure/partial custody and success-only completion",
+  "controls": "offline_controls.py PASS; reviewed by owning session",
+  "publisher": "SMOKE PASS on CPUs116-119 at 2026-11-18T01:56:53Z; PUBLISHED",
+  "scope": "readiness only; full sixteen-response capture and broad-pack acceptance remain open",
+  "file_sha256": {
+    "plan.json": "3b58fd9002757669d912fb3cb9389a451a2d00124b59a70abd790651897e7310",
+    "offline_controls.py": "9fdb54f468e23272055634a1b5f15ac8cfa203835ec5af50e30712c94cbf91ee",
+    "SOURCE.sha256": "b30732a61e17ad85b7ed9424377286a8e1e8cb33fd003491fc3f00341666aa45",
+    "row-launch.sh": "6ca3869d9bca4f573ad5d36f0d3efd5831da8819b1833cec923059dfae94d164",
+    "pair.py": "0ac62589f7630ed053366e2a7deb16d6f4f57840068197a09562dc282074abe2",
+    "row.spec.json": "d696daeef3fbde3cf2fae97c427b3ec62484a1968c7240be6029397a37c571fe",
+    "smoke-PASS.json": "310da416c60a04f129c2b1b53f9b4c7dbd4b397796d264bd91f0da309776db81",
+    "make_plan.py": "802536dd9e2f60abaeea8fc75025418b8d9235cb6573f03d5b0cf0fad952d561",
+    "capture.py": "d6ec3c5900c48d45d7258f6a1230159f7fa992715b9f1f421aca0eb2c7f9cfd2",
+    "complete_predicate.py": "3c600e97c75efb1f2635507035e203d109ebf7c6881a4b17fca6a11f80d0b326",
+    "smoke_predicate.py": "82c6237545c335decd7988a2517e072a135ddccc3c6625e6faba717fe6bfc451",
+    "requests/dflash2-prose-cap0.json": "b8127d72081f4e461ce709de78e23360f9f08b3f3696de75160c11725c544cd5",
+    "requests/dflash2-reasoning-cap0.json": "c032585900af99b849c92925fed538766399fefd348d986129337b0a8d77eb39",
+    "requests/dflash2-reasoning-cap7.json": "c0389da5d9ef0e9a6ba15e389686f81513af08cf53e440d7184e7b2bacb348d0",
+    "requests/dflash2-code-cap7.json": "c45179ddfbe304c4d0f534296e7c1ef8afe2b5ce117a9610f6352be76191dfd8",
+    "requests/dflash2-prose-cap7.json": "55683c8a45b7332850d79acdbfe24fbde7121d586d4cbd04b6ae0fc6c20f79cf",
+    "requests/dflash2-json-cap7.json": "e78bd9fb454645500d9bb4a07602ff14f4d3fb40b89f54ad8cae38ed937e3e63",
+    "requests/native-smoke.json": "672871ac0b1abece57f158d5b9a37545cc9178b5593b43ad43a7a2b1e67691ba",
+    "requests/dflash2-code-cap0.json": "9e7ef24c37adbfd2d077399e1b2f547c828a2384967b9ee6e6a8c5b8753c4f45",
+    "requests/dflash2-json-cap0.json": "2f29a289d363a19d839b09898a88d43e6f0dec15778dd427f2c0ee83727e44f1"
+  },
+  "archive_envelopes": {
+    "plan.json": {
+      "envelope": "data/vidya/quality-pack-dspark-dflash-20261118/successor-r3/plan.json.original-bytes.json",
+      "original_sha256": "3b58fd9002757669d912fb3cb9389a451a2d00124b59a70abd790651897e7310",
+      "envelope_sha256": "5300b9415626acaf1a2c69b65f4e9e306039d6493829db23096c0732df3216a7"
+    }
+  },
+  "archive_note": "Nanosecond stat witnesses triggered the account-number scanner. Original bytes remain unchanged inside base64 envelopes; decode envelope before replaying the original SOURCE.sha256. Live published packets are unchanged."
+}

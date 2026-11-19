@@ -1,0 +1,69 @@
+{
+  "task": "VB-SYNC-HOOK-INSTALL",
+  "verified_at": "2026-11-18T15:55:00.561241+00:00",
+  "primary_worktree": "/workspace",
+  "primary_branch": "main",
+  "primary_head": "8cfb28e54251c325c2451bd3ce07f4a42d140891",
+  "primary_origin_main_ref": "935c42fe284e35338bb7f286120b64a87c61fd1e",
+  "core_hooks_path_config": "file:.git/config\t/workspace/.git/hooks",
+  "resolved_hooks_path": "/workspace/.git/hooks",
+  "installer": {
+    "path": "/mnt/raid0/llm/worktrees/mains/h-vidya-belief-substrate/scripts/vidya/install_sync_hook.sh",
+    "sha256": "b0888a394168036436bd667eed4b4c5f86557cdb51549b3ff83b1e54f38ee4d6",
+    "mode": "0o755",
+    "uid": 1000,
+    "gid": 1000,
+    "bash_syntax": "pass"
+  },
+  "runtime": {
+    "path": "/workspace/scripts/vidya/hook_sync.sh",
+    "sha256": "af751d124b38e76cc53bbae49677daed6f5864ff4001c858da96a1e2a79da78c",
+    "mode": "0o755",
+    "uid": 1000,
+    "gid": 1000,
+    "bash_syntax": "pass"
+  },
+  "first_install_stdout": [
+    "installed vidya-sync block in /workspace/.git/hooks/post-commit",
+    "installed vidya-sync block in /workspace/.git/hooks/post-merge"
+  ],
+  "second_install_stdout": [],
+  "second_install_preserved_checksums_modes_owners_inodes_and_mtimes": true,
+  "hooks": {
+    "/workspace/.git/hooks/post-commit": {
+      "before": {
+        "sha256": "6e436f7bb007b5ba8687b3e57839608cabc66e75c1cfb293a4d4d65e1cfb460b",
+        "mode": "0o755",
+        "uid": 1000,
+        "gid": 1000
+      },
+      "after": {
+        "sha256": "1d2590ee29ea48069d088785bc3d9a1df683e4ab2299dd74717fb3c8824566c6",
+        "mode": "0o755",
+        "uid": 1000,
+        "gid": 1000
+      },
+      "original_bytes_preserved": true,
+      "vidya_block_count": 1,
+      "sh_syntax": "pass"
+    },
+    "/workspace/.git/hooks/post-merge": {
+      "before": {
+        "sha256": "95958a9acaf235f85391b5424971421bd67a56d86b617bd24199b3a077e7705f",
+        "mode": "0o755",
+        "uid": 1000,
+        "gid": 1000
+      },
+      "after": {
+        "sha256": "a1b87637d01d837833f11c9ae07a9f6c4b45c2e11e5c827509bc30b8078b6372",
+        "mode": "0o755",
+        "uid": 1000,
+        "gid": 1000
+      },
+      "original_bytes_preserved": true,
+      "vidya_block_count": 1,
+      "sh_syntax": "pass"
+    }
+  },
+  "end_to_end_zero_lag": "pending genuine qualifying main update"
+}

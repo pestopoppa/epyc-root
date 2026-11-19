@@ -1,0 +1,42 @@
+{
+ "decision_rule": "20 fresh processes; depth16384/65536; 5 per arm per depth; alternating HYBRID default versus GGML_FA_VKQ_F16=1 in exact C5 CPU binary; 48 threads on whole host. Higher tok/s better. Per-depth effect=100*(median(hybrid)/median(legacy)-1); floor=max(2 percent, hybrid range/median percent, legacy range/median percent). Record delta and noise, no production or MTP verdict.",
+ "dryrun_native_result": true,
+ "dryrun_timeout_s": 300,
+ "engine": {
+  "path": "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh",
+  "sha256": "b249a09259d9c29e2b533a244a43b47390cbd6830c466dc5a80bbe36cd5fff79"
+ },
+ "estimate_s": 14400,
+ "gib": 128,
+ "handoff_task": "kv-cache-program.md:CPU-FA-VKQ-2",
+ "id": "handoff-kvu-cpu-fa-vkq2-exact-20261102",
+ "keep": [
+  "RESULT.json",
+  "prepared.json",
+  "*.py",
+  "*.sh",
+  "row-spec.json",
+  "run/**"
+ ],
+ "lane": "cpu",
+ "launcher": {
+  "path": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102/launcher.sh",
+  "sha256": "fb12c92045ac86bca2a43010f19cfc0fa4b5ece000021b0053c90fbce4643e5e"
+ },
+ "min_window_s": 14400,
+ "notes": "UNPUBLISHED PREPARED DRAFT; native qualification not run. Full store manifest and all3 weight shard SHA256 verification must finish OUTSIDE grant through prepare.py. Existing C5 build independently contains HYBRID/F16 knob. No 086 or VKQ3 result reuse. Full20 launches; deterministic native llama-bench depth input; no transcript/dataset preparation. 100GiB peak estimate; 104GiB MemAvailable entry. Per-cell hard cap1800s; row4h bound conservative/unmeasured; interrupt yields no full verdict.",
+ "owner": "handoff-kv-unified-stack-rollout",
+ "ports": [],
+ "priority_rank": 100.0,
+ "published_at": "2026-11-02T11:53:36Z",
+ "published_from": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102/row-spec.json",
+ "regions": "q0,q1,q2,q3",
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102/RESULT.json",
+ "schema": "epyc.row.v3",
+ "scratch_root": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102",
+ "shape": "quiet-host",
+ "stop_file": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102/STOP",
+ "window_s": 17580,
+ "workdir": "/mnt/raid0/llm/tmp/kvu/cpu-fa-vkq2-exact-20261102"
+}

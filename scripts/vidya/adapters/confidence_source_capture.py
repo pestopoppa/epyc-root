@@ -25,7 +25,11 @@ Metrics per source (a row exists only where the report computed the value):
 ``prob=1.0`` with no top-k for every draft-accepted token, so under MTP the geomean saturates and
 every token-probability source is void. ``extra.spec`` records the resolved state (``on`` / ``off``
 / ``unknown``) and its evidence: the placeholder census from the report's ``token_trace``, plus the
-``/slots`` declaration from the serving identity. A contradiction refuses the write. An
+``/slots`` declaration from the serving identity. New captures require the probe to retain
+the raw endpoint result as ``serving.slots`` (``{"_list": [...]}``); the legacy
+``spec_declared`` summary alone cannot establish OFF because older probes coerced missing
+fields to false. Every slot must explicitly declare boolean false, with no endpoint error.
+A contradiction refuses the write. An
 ``A-specoff`` arm must resolve to ``off`` and a ``B-mtp`` arm to ``on``. A spec-on or
 spec-unknown row states the contamination in its claim text, because ``to_frames`` carries the
 claim, not ``extra``.
@@ -306,6 +310,26 @@ def validate_row(row: Any) -> list[str]:
 # ── write side ────────────────────────────────────────────────────────────
 
 
+def _slot_declaration(serving: Mapping[str, Any]) -> bool | None:
+    """Resolve the raw /slots response without trusting the probe's lossy summary."""
+    raw = serving.get("slots")
+    slots = raw.get("_list") if isinstance(raw, dict) else None
+    if not isinstance(slots, list) or not slots:
+        return None
+    values = [slot.get("speculative") if isinstance(slot, dict) else None for slot in slots]
+    if any(value is True for value in values):
+        state = True
+    elif (all(value is False for value in values)
+          and raw.get("_error") is None and serving.get("slots_error") is None):
+        state = False
+    else:
+        return None
+    summary = serving.get("spec_declared")
+    if isinstance(summary, bool) and summary is not state:
+        raise CaptureError("raw /slots contradicts spec_declared summary")
+    return state
+
+
 def _load_identity(identity_path: Path, arm: str) -> dict[str, Any]:
     data = json.loads(identity_path.read_text())
     segments = data.get("segments") if isinstance(data, dict) else None
@@ -325,7 +349,7 @@ def _load_identity(identity_path: Path, arm: str) -> dict[str, Any]:
         values = {((seg.get("serving") or {}).get("props") or {}).get(key) for seg in segments}
         if len(values) != 1 or not _text(next(iter(values))):
             raise CaptureError(f"{identity_path}: /props {key} missing or changed across segments")
-    declared = [(seg.get("serving") or {}).get("spec_declared") for seg in segments]
+    declared = [_slot_declaration(seg.get("serving") or {}) for seg in segments]
     return {"first": first, "segments": segments, "declared": declared}
 
 
