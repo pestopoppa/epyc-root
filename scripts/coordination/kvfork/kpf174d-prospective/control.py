@@ -8,9 +8,9 @@ from bound_custody import validate_custody, verify_mappings
 from pinned_harness import ROOT as RESEARCH_ROOT, load_harness, verify_sources
 D=Path(__file__).resolve().parent
 b,k=load_harness()
-BIN=Path('/mnt/raid0/llm/tmp/kvfork/kpf174d-prospective/bin/llama-server')
+BIN=Path(os.environ.get('KPF174_BIN', '/mnt/raid0/llm/tmp/kvfork/kpf174d-prospective/bin/llama-server'))
 ARGV=RESEARCH_ROOT/'scripts/benchmark/kpf13/argv.gpu-27b-dflash2.txt'
-OUT=Path('/mnt/raid0/llm/tmp/kvfork/kpf174d-prospective/out')
+OUT=D/'out'
 PORT=18443
 LIMIT=2*1024**3
 CONFIG='kpf174d_131b_prospective'
@@ -222,6 +222,14 @@ def judge(runs):
    margin=abs(tops[0][d][0][1]-tops[0][d][1][1]);outcomes.append({'verdict':'RESIDUAL' if margin>max(.031567,floor) else 'UNDETERMINED_NEAR_TIE','divergence_zero_based':d,'margin':margin})
  return {'verdict':'PROSPECTIVE_ONLY','results':outcomes,'aa_floor':floor,'layout_comparisons':comps}
 
+def eligible_cell(data, proof):
+ # Exposure is permanent: never select a substituted or previously exposed cell.
+ target = proof.get('declared_cell')
+ if target != 'g2-S2-B':raise k.Abort('only unexposed declared g2-S2-B is eligible')
+ cells = [c for c in data['cells'] if (c['group'], c['suffix_tokens'], c['original_failed_arm']) == (2, 2, 'B')]
+ if len(cells) != 1:raise k.Abort('declared cell missing or ambiguous')
+ return cells[0]
+
 def main():
  global OUT
  p=argparse.ArgumentParser();p.add_argument('--job',action='store_true');p.add_argument('--smoke',action='store_true');args=p.parse_args()
@@ -262,7 +270,8 @@ def main():
   original_boundary()
  ctx.check_boundary=boundary
  runner=Runner(ctx,{},None,{})
- OUT.mkdir(parents=True,exist_ok=True);data=json.loads((D/'exact-inputs.json').read_text())
+ data=json.loads((D/'exact-inputs.json').read_text());eligible_cell(data,proof)
+ OUT.mkdir(parents=True,exist_ok=True)
  cutoff={'tripped':False}
  def interrupt(signum,frame):
   cutoff['tripped']=True
@@ -280,7 +289,7 @@ def main():
   if runner.custody!=binding['custody']:raise k.Abort('custody changed during server start')
   status['mapped_custody']=runner.mapped_custody
   atomic(OUT/'STATE.json',status)
-  for cell in (data['cells'][:1] if args.smoke else data['cells']):
+  for cell in ([eligible_cell(data,proof)] if args.smoke else data['cells']):
    if time.time()>=end-(160 if args.smoke else 420) or Path(os.environ['FILLER_STOPFILE']).exists():rc=75;break
    arm=cell['original_failed_arm'];cid=f"g{cell['group']}-S{cell['suffix_tokens']}-{arm}"
    claim=OUT/'cells'/f'{cid}.started';claim.parent.mkdir(parents=True,exist_ok=True)

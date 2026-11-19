@@ -10,6 +10,19 @@ class Stub:
   hit=1984 if role.endswith('seed3') or cell.endswith('-B') else 2048
   return {'role':role,'response':{'timings':{'n_fork_tokens':hit if fork else 0,'fork_src_slot':3 if cell.endswith('-A') and not role.endswith('seed3') else 0,'cache_n':hit}},'witness':{}}
 class Tests(unittest.TestCase):
+ def test_exposed_cells_cannot_be_declared(self):
+  data={'cells':[{'group':g,'suffix_tokens':2,'original_failed_arm':'B'} for g in range(3)]}
+  for target in ('g0-S2-B','g1-S2-B',None,'g3-S2-B'):
+   with self.subTest(target=target),self.assertRaises(control.k.Abort):
+    control.eligible_cell(data,{'declared_cell':target})
+ def test_unexposed_selection_preserves_frozen_cell(self):
+  data={'cells':[{'group':g,'suffix_tokens':2,'original_failed_arm':'B'} for g in range(3)]}
+  self.assertIs(control.eligible_cell(data,{'declared_cell':'g2-S2-B'}),data['cells'][2])
+ def test_missing_or_duplicate_cell_refused(self):
+  cell={'group':2,'suffix_tokens':2,'original_failed_arm':'B'}
+  for cells in ([],[cell,cell]):
+   with self.assertRaises(control.k.Abort):control.eligible_cell({'cells':cells},{'declared_cell':'g2-S2-B'})
+
  def test_a_native_steps(self):
   s=Stub();cell={'trunk_ids':list(range(2048)),'suffix_ids':[8,9],'fork_tokens':2048,'group':3,'suffix_tokens':2}
   control.Runner.trial(s,cell,'A',1,'fork')
