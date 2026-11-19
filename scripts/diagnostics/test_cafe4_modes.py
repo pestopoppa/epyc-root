@@ -232,6 +232,107 @@ int main(int argc,char**argv) {
         with self.assertRaises(ValueError):
             port.materialize(source.replace('if(!oracle)return o;', 'if(!oracle){return o;return o;}'))
 
+    def test_native_token_witnesses_preserve_acceptance_and_early_exits(self):
+        source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)
+        generated = port.materialize(source)
+        start = generated.index(' common_speculative_begin(spec.get(),0,prompt);')
+        end = generated.index(' int keep=', start)
+        directory = Path(self.scratch.name)
+        cpp = directory / 'tokens.cpp'
+        cpp.write_text('''#include "cafe4_modes.hpp"
+#include <vector>
+#include <memory>
+#include <algorithm>
+#include <cstdlib>
+#include <cassert>
+#include <cstdint>
+using llama_tokens = std::vector<int>;
+struct Observation {
+ bool ok=false; int accepted=-1,sampled=-1;
+ unsigned long long selected=0,faulted=0;
+ llama_tokens draft;
+};
+int scenario=0,top_calls=0,process_calls=0;
+std::vector<int> queried;
+struct Draft { int* context() { static int c; return &c; } };
+void common_speculative_begin(int*,int,const llama_tokens&) {}
+int* llama_model_get_vocab(int* m) { return m; }
+int top(int*,int*,int index) {
+ ++top_calls; queried.push_back(index);
+ if(index==-1)return scenario==4?-1:20;
+ if(scenario==3)return -1;
+ if(scenario==1)return 90;
+ if(scenario==2 && index==1)return 91;
+ return 30+index;
+}
+bool cafe4_mtp_draft(int*,int,size_t,int,const llama_tokens&,int,llama_tokens& draft) {
+ draft=scenario==5?llama_tokens{30}:llama_tokens{30,31,32};
+ if(scenario==6){draft.resize(63);for(int i=0;i<63;++i)draft[i]=30+i;}
+ return true;
+}
+int* llama_get_memory(int* c) { return c; }
+bool llama_memory_seq_rm(int*,int,size_t,int) { return true; }
+bool llama_cafe4_target_counts(int*,uint64_t* selected,uint64_t* faulted) {
+ *selected=0;*faulted=0;return true;
+}
+bool process(int*,int*,const llama_tokens&,size_t) { ++process_calls;return true; }
+Observation run(int mode,int width) {
+ Observation o;llama_tokens prompt{10,11,12};int model=0;int* m=&model;
+ auto ctx=std::make_unique<int>(0),spec=std::make_unique<int>(0);
+ auto dft=std::make_unique<Draft>();
+''' + generated[start:end] + '''
+ o.ok=true;return o;
+}
+int main(int argc,char**argv) {
+ assert(argc==4);scenario=std::atoi(argv[1]);int mode=std::atoi(argv[2]);
+ int width=std::atoi(argv[3]);auto o=run(mode,width);
+ // Three matching drafts still cap at one; a first-token mismatch still
+ // fails before correction sampling, and invalid logits remain UNKNOWN.
+ assert(o.ok==(scenario==0 || scenario==2 || scenario==6));
+ if(o.ok) { assert(o.accepted==(scenario==6?31:1));assert(o.sampled==(scenario==6?61:(scenario==2?91:31))); }
+ if(scenario==0)assert((queried==std::vector<int>{-1,0,1,2,1}));
+ if(scenario==1 || scenario==3)assert((queried==std::vector<int>{-1,0}));
+ if(scenario==2)assert((queried==std::vector<int>{-1,0,1,1}));
+ if(scenario==4 || scenario==5)assert((queried==std::vector<int>{-1}));
+ if(scenario==6){assert(queried.size()==65);assert(queried.front()==-1 && queried.back()==31);
+  for(int i=0;i<63;++i)assert(queried[i+1]==i);}
+ assert(process_calls==((scenario==4 || scenario==5)?0:1));
+ assert(top_calls==(int)queried.size());
+}
+''')
+        binary = directory / 'tokens'
+        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror',
+                        '-I', str(HERE), str(cpp), '-o', str(binary)], check=True)
+        for mode in (0, 1, 2):
+            for scenario in range(7):
+                with self.subTest(mode=mode, scenario=scenario):
+                    width = 63 if scenario==6 else 3
+                    result = subprocess.run([str(binary), str(scenario), str(mode), str(width)],
+                                            check=True, capture_output=True, text=True)
+                    self.assertIn(f'CAFE4_BOUNDARY mode={mode} width={width} token={-1 if scenario==4 else 20}', result.stderr)
+                    if scenario==4:
+                        self.assertNotIn('CAFE4_PROPOSAL', result.stderr)
+                        self.assertIn('stage=boundary-logits ', result.stderr)
+                    else:
+                        tokens = ','.join(str(30+i) for i in range(63)) if scenario==6 else ('30' if scenario==5 else '30,31,32')
+                        self.assertIn(f'CAFE4_PROPOSAL mode={mode} width={width} count={len(tokens.split(","))} tokens={tokens}\n', result.stderr)
+                    if scenario==6:
+                        self.assertIn('index=62 proposed=92 predicted=92', result.stderr)
+                        self.assertEqual(result.stderr.count('CAFE4_VERIFY_TOKEN'), 63)
+                    if scenario in (1, 3):
+                        pred = 90 if scenario==1 else -1
+                        self.assertIn(f'CAFE4_VERIFY_TOKEN mode={mode} width=3 index=0 proposed=30 predicted={pred}', result.stderr)
+                        self.assertNotIn('index=1 ', result.stderr)
+                        self.assertIn('stage='+('strict-partial-acceptance' if scenario==1 else 'verify-logits'), result.stderr)
+                    if scenario==5:
+                        self.assertNotIn('CAFE4_VERIFY_TOKEN', result.stderr)
+                        self.assertIn('stage=draft-too-short ', result.stderr)
+        # New witness anchors also reject drift in the pinned base.
+        for anchor in ('int boundary=top(ctx.get(),v,-1);if(boundary<0)return o;',
+                       'int pred=top(ctx.get(),v,i);if(pred<0)return o;'):
+            with self.subTest(anchor=anchor), self.assertRaises(ValueError):
+                port.materialize(source.replace(anchor, 'BROKEN'))
+
 
 if __name__ == '__main__':
     unittest.main()

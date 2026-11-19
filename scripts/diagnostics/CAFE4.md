@@ -135,3 +135,54 @@ the generated-source/header digests and compiled failure markers; only then
 publish a native GPU row under the unchanged controls. The existing CPU R2 row
 remains independent. Existing CAFE-4 source registration applies.
 [no-belief: diagnostic source change and model-free tests only]
+
+Pre-rollback token provenance (2026-11-19)
+-----------------------------------------
+
+HIP R5 stopped at strict partial acceptance in modes1/2. Its matched-control
+messages record first draft token 248068 for off versus 32 for observe/fault;
+the receipt does not record the boundary token or each target prediction.
+The original UNKNOWN does not distinguish changed prefill from changed MTP
+proposal or target verification. No kernel root cause is established.
+Original RESULT (retained in place):
+`/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r5-20261119/RESULT.json`,
+SHA-256 `340863a393b964d58a72038cc584ed5bbcb7eb1e547e0b225a4dde75f4db6144`.
+
+The generator now prints three native token witnesses, tagged with mode/width:
+
+- `CAFE4_BOUNDARY`: the prompt's already-computed greedy boundary, including -1
+  when invalid, before the boundary failure guard.
+- `CAFE4_PROPOSAL`: every actual MTP draft token, before draft rewind and verify.
+- `CAFE4_VERIFY_TOKEN`: index, proposed token and actual target prediction at
+  each existing acceptance query, including the first mismatch or invalid -1.
+
+The records add no sampling or logits calls and do not substitute a proposal,
+force a prefix match, retry, or extend acceptance past its first mismatch.
+There are at most 63 proposal tokens and 63 verification records per trial.
+Strict positive partial acceptance, half-width cap, fixed **0.743863867** gate
+(lower is better), matched controls, 10x fault tests, and UNKNOWN/rc2 remain.
+These witnesses identify the first token-stage disagreement in a future run;
+they do not prove which component caused R5 or fix a demonstrated kernel bug.
+
+**9/9 model-free tests PASS**, including a compiled spy executing the actual
+generated boundary/proposal/verification block in 21 mode/scenario combinations:
+complete agreement, first mismatch, later mismatch, invalid logits, invalid
+boundary, too-short proposal and width63. Assertions verify the exact token-query
+sequence, early exits, accepted/correction tokens and complete witness output.
+The entire generated candidate also passes C++17 syntax checking against the
+existing detached v10 diagnostic tree. No native inference ran.
+
+Generated scratch source:
+`/mnt/raid0/llm/tmp/df2/cafe4-token-witness-20261119/candidate.cpp`, SHA-256
+`f11d4e31bbdebf1533d42136d900076124acd8a3b59ec572c7ad3ed5bb28fbdc`.
+Base source blob remains `53035f75429327e82454f7d26f7dd67f65c80c16`.
+Generator SHA-256 `d9b4c5f349c9b5cb157046d9e9e45d3d7fc22c56d1f9550c4322bb3035dbc3f3`;
+header SHA-256 `e4c7b544a72f21014d9d3999be4d8072f03c1aa779c936416b870e6978d33e70`.
+
+Existing R5 and earlier build inputs/binaries are unchanged and contain none
+of these three markers. Next publish a fresh HIP build row binding this candidate
+and header, requiring all three compiled witness markers, then qualify a fresh
+native diagnostic. Existing CAFE-4 source registration and VB-SERVING-DF2 wiring
+task apply; do not invent historical measurement warrants from the new logs.
+Parent CAFE-4 stays open.
+[no-belief: diagnostic source repair and model-free tests only]

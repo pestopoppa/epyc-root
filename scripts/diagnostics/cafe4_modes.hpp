@@ -60,6 +60,26 @@ inline int finish(bool nonfault_ok, bool fault_detected, bool injected) {
     return injected ? 1 : 0;
 }
 
+// These are the tokens already chosen by the native path. Printing them must
+// not call a sampler, substitute tokens, or change the acceptance decision.
+inline void boundary_witness(int mode, int width, int boundary) {
+    std::fprintf(stderr, "CAFE4_BOUNDARY mode=%d width=%d token=%d\n", mode, width, boundary);
+}
+
+template<class Tokens>
+void proposal_witness(int mode, int width, const Tokens & draft) {
+    std::fprintf(stderr, "CAFE4_PROPOSAL mode=%d width=%d count=%zu tokens=", mode, width, draft.size());
+    for (size_t i = 0; i < draft.size(); ++i) {
+        std::fprintf(stderr, "%s%d", i ? "," : "", (int)draft[i]);
+    }
+    std::fprintf(stderr, "\n");
+}
+
+inline void verification_witness(int mode, int width, size_t index, int proposed, int predicted) {
+    std::fprintf(stderr, "CAFE4_VERIFY_TOKEN mode=%d width=%d index=%zu proposed=%d predicted=%d\n",
+                 mode, width, index, proposed, predicted);
+}
+
 // Preserve UNKNOWN and report the last failed native operation before any
 // contexts are destroyed. No numerical or acceptance criterion changes here.
 template<class Observation>

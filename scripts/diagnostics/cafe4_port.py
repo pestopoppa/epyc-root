@@ -68,6 +68,16 @@ def materialize(source):
     replace('if(!cafe4_mtp_draft(spec.get(),0,prompt.size(),boundary,prompt,width,o.draft)||o.draft.size()<2)return o;',
             'if(!cafe4_mtp_draft(spec.get(),0,prompt.size(),boundary,prompt,width,o.draft))return o;\n'
             ' if(o.draft.size()<2)return o;')
+    # Witness the actual native tokens before the first rollback mutation.
+    # Do not re-sample, add top() calls, or force a matched proposal: a
+    # disagreement must retain its original strict-acceptance UNKNOWN.
+    replace('int boundary=top(ctx.get(),v,-1);if(boundary<0)return o;',
+            'int boundary=top(ctx.get(),v,-1);cafe4::boundary_witness(mode,width,boundary);if(boundary<0)return o;')
+    replace(' if(o.draft.size()<2)return o;',
+            ' cafe4::proposal_witness(mode,width,o.draft);\n'
+            ' if(o.draft.size()<2)return o;')
+    replace('int pred=top(ctx.get(),v,i);if(pred<0)return o;',
+            'int pred=top(ctx.get(),v,i);cafe4::verification_witness(mode,width,i,o.draft[i],pred);if(pred<0)return o;')
     replace('if(!llama_cafe4_target_counts(ctx.get(),&selected,&faulted)||selected||faulted)return o;',
             'if(!llama_cafe4_target_counts(ctx.get(),&selected,&faulted))return o;\n'
             ' if(selected||faulted)return o;')
