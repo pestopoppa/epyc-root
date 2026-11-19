@@ -97,3 +97,7 @@ Duplicate D64 parity event was already filed PASS with FILED receipt; no duplica
 ## 03:35Z — Consume replay of already-filed KPF-17 oracle-impact r2; no new result-bearing task from this event.
 
 Dispatched kpf17-oracle-impact-8952-20261105-r2 is already filed INCONCLUSIVE by operator-adhoc-takeover-20261105 at 2026-11-05T09:59:04Z, with FILED receipt present. Operator STOP interrupted analyze before native impact; retained native result SHA-256 fe102201d8561a2bbe81c37947555cb70d24a4d02492456fe6f5317603a65104. The KPF-17 handoff already records the later r2-q2-sq3b successor PASS. No verdict overwrite, recomputation or checkbox completion. No new result-bearing task is supplied by this replay. Preserve the prior checkpoint: kpf41-backend-gpu-qualification-r2-20261119 publisher smoke is queued, without a PASS claim; consume its dispatcher-delivered verdict next.
+
+## 03:36Z — Consume already-filed zero-skip qualification event; no new result possible from replay.
+
+Replay hsf1-coverage-zero-skip-qual-20261105 already has PASS verdict, FILED receipt and completed HSF-1.COVERAGE-ZERO-QUAL box dated 2026-11-05. Existing filing records 16 matched synthetic outcomes; result SHA-256 1cffbf1f78caaf8034c5fd2d9038a985fefc94c9cd3dc576d17f10f6b694b565. No native-impact or actual nonzero-skip clearance, new filing, rerun or completion claimed. No new result-bearing task is supplied by this replay. Prior checkpoint remains the queued publisher smoke for kpf41-backend-gpu-qualification-r2-20261119; consume its delivered verdict rather than polling or republishing.
