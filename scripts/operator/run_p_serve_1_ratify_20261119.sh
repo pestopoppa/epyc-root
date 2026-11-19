@@ -93,7 +93,8 @@ fi
 [ -f "$WT_DIR/$RATIFY_REL" ] || die "$RATIFY_REL is not on origin/main yet: the package branch that carries it must be pushed to main first"
 
 # Already committed? (resume after step 5)
-if G log -1 --format=%s | grep -qF "$SUBJECT"; then
+head_subject="$(G log -1 --format=%s)"
+if [ "$head_subject" = "$SUBJECT" ]; then
   hdr "already done"
   say "HEAD already carries the ratification commit."
   ROOT="$WT_DIR" bash "$WT_DIR/$RATIFY_REL" --verify || die "--verify failed on the committed state; read the output above"
