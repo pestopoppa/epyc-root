@@ -51,3 +51,7 @@ The dispatched vllm-aiter-gfx90a-gpu-20261111-r3 event was already filed on 2026
 ## 02:39Z — Resolve the dispatched C6 native residency run-end against its existing filing
 
 The dispatched c6-native-residency-20261109-r3 event was already filed and receipted on 2026-11-10, with INF48-C6-LIVE-PROOF already ticked. RESULT.json reports backend-matched ratio 1.0, CPU NMSE 0.000119933249, three bitwise-equal legs and KFD/VRAM residency for each; the pre-registered rule is PASS. The controller-level proof remains open after r8's untyped EvidenceProducerError.
+
+## 02:40Z — Acknowledge the replayed C4-7 run-end after confirming the already-filed verdict
+
+C4-7 replayed run-end acknowledged: full run rc=0, COLLECTED_ALL, nine counters present with 28,084 numeric rows each; SQ_LDS_BANK_CONFLICT total was zero. GPU residency was recorded. Existing handoff verdict is unchanged. Results SHA-256 c749f790c51306dd49ec3e43ec5ac3a3eadbcb7970f45186c048ce5623530840; CSV SHA-256 5347eb2f7c6429975c2f22e322abc19bd91a32c3667646f0c1cace6710f25f75. FILED receipt restored. [no-belief: previously filed row verdict]
