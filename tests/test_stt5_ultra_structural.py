@@ -33,6 +33,23 @@ class FixtureTests(unittest.TestCase):
    self.fixture(d); report=c.compare(d,'f32'); self.assertEqual(report['comparisons'][1]['state'],'UNALIGNED'); self.assertEqual(report['verdict'],'NOT_EVALUATED')
    (pathlib.Path(d)/'f32/encoder.f32').write_bytes(b'bad')
    with self.assertRaisesRegex(ValueError,'inventory mismatch'): c.compare(d,'f32')
+ def test_preflight_refuses_missing_originals_without_redraw(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d); key='a'*64; case=root/key; case.mkdir(); self.fixture(case)
+   (case/'torch-run.stderr').unlink(); (case/'f32/encoder.f32').unlink()
+   before={str(p.relative_to(root)):c.digest(p) for p in root.rglob('*') if p.is_file()}
+   report=c.preflight(root,[key])
+   self.assertFalse(report['ready']); self.assertEqual(report['arms_checked'],3)
+   self.assertEqual([e['arm'] for e in report['errors']],['torch','f32'])
+   self.assertIn('torch-run.stderr',report['errors'][0]['error'])
+   self.assertEqual(before,{str(p.relative_to(root)):c.digest(p) for p in root.rglob('*') if p.is_file()})
+ def test_preflight_requires_complete_inventories(self):
+  with tempfile.TemporaryDirectory() as d:
+   root=pathlib.Path(d); key='b'*64; case=root/key; case.mkdir(); self.fixture(case)
+   self.assertTrue(c.preflight(root,[key])['ready'])
+   (case/'q8/extra').write_text('unexpected')
+   report=c.preflight(root,[key]); self.assertFalse(report['ready'])
+   self.assertIn('inventory changed',report['errors'][0]['error'])
  def test_truncated_and_resealed(self):
   with tempfile.TemporaryDirectory() as d:
    self.fixture(d); root=pathlib.Path(d); f=root/'f32/encoder.f32'; f.write_bytes(b'\0'*12)

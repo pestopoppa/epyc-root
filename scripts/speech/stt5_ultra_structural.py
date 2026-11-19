@@ -43,6 +43,21 @@ def stats(name,a,b):
     d=np.abs(a.astype(np.float64)-b.astype(np.float64))
     return {'name':name,'state':'COMPARABLE','shape':list(a.shape),'max_abs':float(d.max()),'mean_abs':float(d.mean()),'rmse':float(np.sqrt(np.mean(d*d)))}
 
+def preflight(root, cases):
+    """Audit sealed inventories before publishing; never load tensors or emit comparisons."""
+    errors=[]
+    for case in cases:
+        if not re.fullmatch('[0-9a-f]{64}',case):
+            raise ValueError('invalid case identity')
+        for arm in ('torch','f32','q8'):
+            try:
+                validate(pathlib.Path(root)/case,arm)
+            except (ValueError, OSError) as error:
+                errors.append({'case':case,'arm':arm,'error':str(error)})
+    return {'schema':'ultra.inventory-preflight.v1','ready':not errors,
+            'cases':len(cases),'arms_checked':len(cases)*3,'errors':errors,
+            'verdict':'NOT_EVALUATED','inference_run':False}
+
 def compare(case,arm):
     case=pathlib.Path(case); ref=validate(case,'torch'); native=validate(case,arm)
     for key in ('clip_id','catalog_sha256','wav_sha256','pcm_s16_sha256','plan_sha256','input_manifest_sha256','processor_config_sha256','generation_config_sha256','ultra_model_sha256','native_library_sha256'):
@@ -86,13 +101,13 @@ def metadata_pins(root, cases):
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('--preflight',action='store_true',help='audit original sealed inventories before publication; no comparisons or output files')
     ap.add_argument('config',type=pathlib.Path); args=ap.parse_args()
     cfg=json.loads(args.config.read_text()); config_sha=digest(args.config)
     smoke=os.environ.get('FILLER_SMOKE')=='1'
     root=pathlib.Path(cfg['smoke_root'] if smoke else cfg['root']).resolve()
     output=pathlib.Path(cfg['smoke_output'] if smoke else cfg['output']).resolve()
     if output.is_relative_to(root): raise ValueError('output overlaps input')
-    output.mkdir(exist_ok=True)
     for path,expected in cfg['pins'].items():
         if digest(pathlib.Path(path)) != expected: raise ValueError('source/input drift '+path)
     cases=cfg['smoke_cases'] if smoke else cfg['cases']
@@ -102,6 +117,12 @@ def main():
     by_case={hashlib.sha256(row['clip_id'].encode()).hexdigest():row for row in manifest['records']}
     if not smoke and (len(by_case)!=25 or set(by_case)!=set(cases)):
         raise ValueError('original engineering cohort mismatch')
+    if args.preflight:
+        report=preflight(root,cases)
+        report.update(config_sha256=config_sha,driver_sha256=digest(pathlib.Path(__file__)),smoke=smoke)
+        print(json.dumps(report,sort_keys=True))
+        return 0 if report['ready'] else 2
+    output.mkdir(exist_ok=True)
     stopping=False
     def stop(*_):
         nonlocal stopping
