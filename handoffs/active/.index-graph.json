@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T00:55:25Z",
+  "generated_at": "2026-11-19T00:57:22Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1453,7 +1453,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 6054,
+          "line": 6056,
           "name": "agent-collab-rnd-harness",
           "open": 1,
           "readiness": "ready"
@@ -1462,7 +1462,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 6134,
+          "line": 6136,
           "name": "autokernel-restart-and-strip",
           "open": 2,
           "readiness": "ready"
@@ -1481,7 +1481,7 @@
             "INF-06#autokernel-restart-and-strip",
             "INF-65"
           ],
-          "line": 6431,
+          "line": 6433,
           "name": "autokernel-rebuild-program",
           "open": 14,
           "readiness": "blocked"
@@ -1498,7 +1498,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "line": 9668,
+          "line": 9670,
           "name": "autokernel-unified-surface-program",
           "open": 54,
           "readiness": "blocked"
@@ -1511,7 +1511,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14059,
+          "line": 14061,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1545,7 +1545,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14272,
+          "line": 14274,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
@@ -2321,7 +2321,7 @@
         "RTG-58#kv-prefix-fork-and-paged-attention",
         "RTG-58#kv-unified-stack-rollout"
       ],
-      "closed": 131,
+      "closed": 132,
       "dispatchable": 61,
       "domain": "inference-research",
       "guarded": 0,
