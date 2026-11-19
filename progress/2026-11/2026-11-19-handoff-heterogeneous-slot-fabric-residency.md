@@ -477,3 +477,7 @@ KPF-17.4d: published `kvu-kpf174-custody-r6-20261119` after four-CPU first-objec
 ## 08:11Z — Publish fresh full HIP build prerequisite with first-object publisher smoke PASS
 
 KPF-17.4d: published `kvu-kpf174-custody-r6-20261119` after four-CPU first-object smoke PASS, rc0, CPUs 116–119. Fresh detached 6ec877068 source / 84d0a316 parent, reviewed R5 recipe, new runtime pins and prepared source metadata. Fixed host chroot executable path after first smoke failed before compilation. Full HIP build and receipt/custody acceptance pending; no model loaded and historical verdicts stand. Recipe: `scripts/coordination/kvfork/kpf174d-build-r6/README.md`; publisher PASS SHA-256 3688912c34357c2b644dcbef6dde9890ec791d3cc91f5cb81d23140570d175f6.
+
+## 08:14Z — Qualify real captured-child cleanup paths with passing Linux process tests
+
+KPF-18.0d: added three passing real Linux process controls for unchanged digest-bound owned_drain.py: TERM/reap, TERM-ignore KILL/reap, and subreaper adoption/reap of an orphaned grandchild. Tests require empty child list and absent target /proc entry; KILL branch message asserted. See docs/reports/kv-cache/kpf18-owned-drain-live-20261119/README.md. No full-driver/native cancellation/server/GPU qualification. Alert cc308a80f43e259ada52edc1 acknowledged: earlier chroot failure already superseded by recorded PASS. Checkpoint r3 custody row remains STOP-held; r4 already completed; historical impact r5 also has completed successor, so neither was rerun. [no-belief: model-free software qualification]
