@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 215
+      "open": 216
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -517,7 +517,7 @@
     },
     "context-and-token-economy.md": {
       "blocked": 2,
-      "closed": 201,
+      "closed": 202,
       "guarded": 0,
       "last_advanced": "2026-11-18",
       "open": 38,
@@ -529,11 +529,11 @@
       },
       "row_id": "RTG-08",
       "state": "active",
-      "total": 241,
+      "total": 242,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 44,
+          "closed": 45,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -546,7 +546,7 @@
           "closed": 32,
           "gates": [],
           "guarded": 0,
-          "line": 367,
+          "line": 369,
           "markers": 1,
           "name": "delegation-context-preassembly",
           "open": 8
@@ -556,7 +556,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 599,
+          "line": 601,
           "markers": 1,
           "name": "memento-block-reasoning-compression",
           "open": 0
@@ -566,7 +566,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 865,
+          "line": 867,
           "markers": 1,
           "name": "per-request-reasoning-budget",
           "open": 4
@@ -576,7 +576,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1370,
+          "line": 1372,
           "markers": 1,
           "name": "rao-redel-substrate-spike",
           "open": 4
@@ -586,7 +586,7 @@
           "closed": 29,
           "gates": [],
           "guarded": 0,
-          "line": 1907,
+          "line": 1909,
           "markers": 1,
           "name": "reasoning-compression",
           "open": 2
@@ -596,7 +596,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2669,
+          "line": 2671,
           "markers": 1,
           "name": "reasoning-effort-levels",
           "open": 9
@@ -606,7 +606,7 @@
           "closed": 59,
           "gates": [],
           "guarded": 0,
-          "line": 3096,
+          "line": 3098,
           "markers": 1,
           "name": "tool-output-compression",
           "open": 3
@@ -616,7 +616,7 @@
           "closed": 2,
           "gates": null,
           "guarded": 0,
-          "line": 3753,
+          "line": 3755,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
@@ -2583,7 +2583,7 @@
       "closed": 475,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 112,
+      "open": 113,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 588
+      "total": 589
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
