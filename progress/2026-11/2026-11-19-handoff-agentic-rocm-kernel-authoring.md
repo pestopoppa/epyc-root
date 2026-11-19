@@ -219,3 +219,7 @@ INF48-C6-CONTROLLER-PROOF: r11 remains running per dispatcher state; no terminal
 ## 17:22Z — Filed c6-admission-live-proof-r11 as inconclusive under its futility rule
 
 Filed `c6-admission-live-proof-r11` **inconclusive (FUTILITY_CARRIER)**: job rc=0, trace and validation passed, but the controller completed after portfolio exhaustion with zero admission records and no typed C6 refusal; the two receipt reopenings are unproved. The controller proof remains open; stop on futility, no retry. Result SHA-256 `3027bb233b5d587752b6e90000c74279f0a8a6f7b6bd1a84ac8a91534a2aa992`. [belief: cc]
+
+## 17:52Z — File c6-admission-live-proof-r12 diagnostic typed refusal
+
+`c6-admission-live-proof-r12`: **PASS as diagnostic DROP**, `C6_ITERATION_C6SplitPolicyRefusal`; failed leg `precision_equivalence`, zero admission records. Trace and validation passed, with KFD present and 1,403,559,936 B peak VRAM. The refusal precedes sealing a successful new C6 correctness receipt; do not infer candidate admission or successful receipt reopening. The controller proof box remains open pending evidence for its receipt-reopening condition. Result SHA-256 `ae42d37b71fc6eba0d6343b945170abd7dc1f6ca5972e47bf4a1713c2ba626c0`. [belief: cc]
