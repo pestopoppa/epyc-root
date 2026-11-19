@@ -39,3 +39,7 @@ C15-EPI-Q8 row c15-epi-q8-gpu-20261118 rc=0; pre-registered verdict FAIL(tbo): 1
 ## 02:36Z — File c6-26-corpus-repin-20261109-r3 verdict
 
 Filed the previously recorded C6-26 re-pin result: rc=0, 26/26 runtime behaviours manifested on both ranked units; sensitivity 1.0 (11 planted), specificity 1.0 (15 clean). Receipt /mnt/raid0/llm/tmp/c6-26-corpus-repin-20261109-r3/out/receipt.json SHA-256 3dda28f7351d0e276fef0fb0f4f231f6cb0277314a211f8d002bf213ebc56bc3. The existing INF48-LIVE-1 finding already records this result; the parent remains open for other C6 work. [belief: cc]
+
+## 02:37Z — File rock-aiter-prebuild-r4-20261105 verdict
+
+Filed ROCK-AITER prebuild r4: rc=0, RESULT complete; 41 final modules built or cached, five build failures and one 7200 s timeout. Its ops_ready gate lists fused_moe_ck2stage, mha_varlen_ck and moe_sorting; build readiness alone does not establish runtime correctness. RESULT.json SHA-256 8373d0ad17643b98b2ba4c4ab620bf2d8c39eae7f9d765b093bc1e5baef66721; results.jsonl SHA-256 7a361491c365a628578198440d6668c6b9ebd655c6521cc1304e8fbd39261e36, under /mnt/raid0/llm/tmp/rock-aiter-gfx90a-20261105/rock-aiter-prebuild-20261105/out/. The existing ROCK-AITER-GFX90A box already records later runtime and timing verdicts and is closed. [belief: cc]
