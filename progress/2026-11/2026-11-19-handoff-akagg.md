@@ -19,3 +19,7 @@ CH-26b: consumed the run-end event for `ch26-cpu-sched-chain-20261105`; the func
 ## 02:11Z — Reconcile duplicate c6-targetshape-perf-successor-20261105 run-end with its existing filed verdict and receipt.
 
 C6-Q4-MMVQ-FIX: duplicate run-end already filed inconclusive on 2026-11-05: rc 1, 8 of 20 required pairs (16 rc0 invocations); RESULT.json SHA-256 58a6f69d6f95192719e2d2d6ffd8d2cc4300c948bc0856ec5feeab3da5f4dc90. Existing handoff line records the result and the FILED receipt exists. No performance or promotion verdict. [no-belief: duplicate event reconciliation]
+
+## 02:12Z — Correct the filed scheduler normalizer capture sample range against the retained result.
+
+CH-26b: corrected the previously filed scheduler-normalizer result: 24 windows and 96 captures contain 61–63 samples per capture, not 61–62. RESULT.json SHA-256 b166563abb5c3d784bd14b2e0898e96b053dc38831bc3f0834c2c3212c412a58. Its functional-only pass and existing receipt remain valid; this is not an admissible noise floor. [belief: cc]
