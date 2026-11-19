@@ -59,6 +59,18 @@ def command(cfg, context, mode, transcript):
             'auto' if mode == 'auto' else 'en-US', '3', str(transcript)]
 
 
+def worker_groups(cpus, physical=False):
+    if physical:
+        unique = {}
+        for cpu in sorted(cpus):
+            topology = Path(f'/sys/devices/system/cpu/cpu{cpu}/topology')
+            key = tuple((topology / field).read_text().strip()
+                        for field in ('physical_package_id', 'core_id'))
+            unique.setdefault(key, cpu)
+        cpus = list(unique.values())
+    return [cpus[i:i + 3] for i in range(0, len(cpus) - 2, 3)][:8]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('config', type=Path)
@@ -81,9 +93,11 @@ def main():
                   and 'smoke_output' in cfg else cfg['output'])
     output.mkdir(exist_ok=True)
     cpus = sorted(os.sched_getaffinity(0))
-    groups = [cpus[i:i + 3] for i in range(0, len(cpus) - 2, 3)][:8]
+    groups = worker_groups(cpus, cfg.get('distinct_physical_cores', False))
     if not groups:
         raise ValueError('requires three assigned CPUs')
+    if os.environ.get('FILLER_SMOKE') != '1' and len(groups) != cfg.get('required_workers', len(groups)):
+        raise ValueError('grant does not provide required physical worker topology')
     available = list(groups)
     lock = threading.Lock()
     stopping = threading.Event()
@@ -124,7 +138,7 @@ def main():
                      cpus=group, workers=len(groups), threads=3,
                      row_id=os.environ.get('FILLER_ID'), admitted_cpus=cpus,
                      model_sha256=cfg['model_sha256'], audio_sha256=cfg['pins'][cfg['audio']],
-                     started_epoch=time.time(), loaded_paths=[], native_sha256={})
+                     started_epoch=time.time(), loaded_paths=[], native_sha256={}, peak_sampled_rss_kib=0)
         write_new(exposure, value)
         child = None
         started = time.monotonic()
@@ -146,6 +160,9 @@ def main():
                             fields = line.split(None, 5)
                             if len(fields) == 6 and fields[5].startswith('/'):
                                 loaded.add(fields[5])
+                        for line in Path(f'/proc/{child.pid}/status').read_text().splitlines():
+                            if line.startswith('VmRSS:'):
+                                value['peak_sampled_rss_kib'] = max(value['peak_sampled_rss_kib'], int(line.split()[1]))
                     except FileNotFoundError:
                         pass
                     if stopping.is_set() or stopfile.exists() or time.time() >= deadline or time.monotonic() - started > 300:
