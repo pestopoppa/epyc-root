@@ -318,8 +318,13 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       argument/count controls, parser UNKNOWN and scripted HTTP-to-checker coverage.
       [Validation and source bindings](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/qualification.json).
       This is software-control evidence, not fleet scoring or representativeness.
-      Parent remains open: implement official Java/JavaScript/SQL and multi-turn
-      state/execution paths for the remaining 16 cases, then ready live fleet capture.
+      Java/JavaScript extension (2026-11-19): official OpenAI FC language preprocessing
+      and checker dispatch now cover all four selected language cases; **12 integration
+      + 12 adapter tests PASS**, including wrong-name/value/missing-argument controls,
+      native Boolean type rejection, exact reverse names and nonmutation. Source and
+      validation bindings: [language qualification](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/java-javascript.json).
+      Parent remains open: implement official SQL and multi-turn state/execution
+      paths for the remaining 12 cases, then ready live fleet capture.
       Prospective custody task: `VB-BFCL-NATIVE-WIRE`. [no-belief: model-free software controls]
   - [x] **CJ-3d-ADAPTER — Prepare the native tool-call response adapter.** Convert ordered OpenAI-compatible function calls into the upstream V3 checker input shape, retain absent/malformed calls as parse errors, and validate malformed JSON, duplicate keys and ordering without invoking a model or defining scoring. The parent remains open until the pinned official checker and live transport are integrated. [Proposed adapter](../../proposed/cj567/openai_tool_calls.py). ✅ 2026-11-04 [belief: cc]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the

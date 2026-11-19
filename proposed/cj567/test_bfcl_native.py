@@ -91,10 +91,58 @@ class OfficialControls(unittest.TestCase):
 
     def test_execution_categories_refused(self):
         for row in self.rows:
-            if row['category'] in {'simple', 'multiple', 'parallel', 'parallel_multiple'}:
+            if row['category'] in {'simple', 'multiple', 'parallel', 'parallel_multiple', 'java', 'javascript'}:
                 continue
             with self.subTest(category=row['category']), self.assertRaises(ValueError):
                 self.bridge.request(row['case'], row['category'], 'test')
+
+    def test_java_javascript_selected_controls(self):
+        controls = [
+            (10, {'controller': 'mapController', 'parent': 'mapArea'}),
+            (11, {'object': 'Customers', 'useShortName': 'true',
+                  'params': 'new HashMap<String, Object>() {{put("limit", 50); put("schemaFilter", "public");}}'}),
+            (12, {'inputField': '"userInputField"', 'isComplete': 'true'}),
+            (13, {'listElement': 'listElement', 'attribute': '"data-active"', 'value': 'true'}),
+        ]
+        for index, args in controls:
+            row = self.rows[index]
+            with self.subTest(case=row['case']['id']):
+                before = copy.deepcopy(row)
+                payload, reverse = self.bridge.request(row['case'], row['category'], 'test')
+                wire_name = next(iter(reverse))
+                self.assertEqual(len(reverse), 1)
+                self.assertEqual(payload['tools'][0]['function']['name'], wire_name)
+                self.assertEqual(reverse[wire_name], row['case']['function'][0]['name'])
+                properties = payload['tools'][0]['function']['parameters']['properties']
+                self.assertTrue(all(p['type'] == 'string' for p in properties.values()))
+                self.assertIn('syntax', payload['tools'][0]['function']['description'])
+                self.assertNotIn('ground_truth', json.dumps(payload))
+                self.assertIs(self.score(index, completion(wire_name, args))['valid'], True)
+                # Function name, required parameter and value errors stay failures.
+                self.assertIs(self.score(index, completion('wrong_function', args))['valid'], False)
+                self.assertIs(self.score(index, completion(wire_name, {}))['valid'], False)
+                wrong = dict(args)
+                required = row['case']['function'][0]['parameters']['required'][0]
+                wrong[required] = 'wrong_value'
+                self.assertIs(self.score(index, completion(wire_name, wrong))['valid'], False)
+                self.bridge.request(row['case'], row['category'], 'test')
+                self.assertEqual(row, before)
+
+    def test_language_boolean_types_are_not_coerced(self):
+        for index, name, args in [
+            (11, 'SQLCompletionAnalyzer_makeProposalsFromObject',
+             {'object': 'Customers', 'useShortName': True,
+              'params': 'new HashMap<String, Object>() {{put("limit", 50); put("schemaFilter", "public");}}'}),
+            (12, 'validateUserInput', {'inputField': 'userInputField', 'isComplete': True}),
+        ]:
+            with self.subTest(case=self.rows[index]['case']['id']):
+                verdict = self.score(index, completion(name, args))
+                self.assertIs(verdict['valid'], False)
+                self.assertIn('type_error:', verdict['official']['error_type'])
+
+    def test_language_category_mismatch_refused(self):
+        with self.assertRaises(ValueError):
+            self.bridge.request(self.rows[10]['case'], 'javascript', 'test')
 
     def test_http_transport_to_official_checker(self):
         seen = []

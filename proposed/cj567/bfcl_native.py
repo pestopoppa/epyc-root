@@ -1,6 +1,6 @@
-"""Single-turn Python BFCL V3 native-call bridge; scoring stays upstream.
+"""Single-turn Python/Java/JavaScript BFCL V3 bridge; scoring stays upstream.
 
-No gold is included in HTTP requests. Multi-turn, Java, JS and SQL require their
+No gold is included in HTTP requests. Multi-turn and SQL require their
 own upstream execution paths and are rejected here, never assigned a score.
 """
 import copy
@@ -14,7 +14,9 @@ from urllib.request import Request, urlopen
 from openai_tool_calls import adapt_openai_tool_calls
 
 UPSTREAM = '70b6a4a2144597b1f99d1f4d3185d35d7ee532a4'
-CATEGORIES = frozenset({'simple', 'multiple', 'parallel', 'parallel_multiple'})
+LANGUAGES = {'simple': 'Python', 'multiple': 'Python', 'parallel': 'Python',
+             'parallel_multiple': 'Python', 'java': 'Java', 'javascript': 'JavaScript'}
+CATEGORIES = frozenset(LANGUAGES)
 PACKAGE = 'berkeley-function-call-leaderboard'
 
 
@@ -47,11 +49,16 @@ class OfficialV3:
 
     def request(self, case, category, model):
         if category not in CATEGORIES or case['id'].rsplit('_', 1)[0] != category:
-            raise ValueError('requires a single-turn Python AST category')
+            raise ValueError('requires a supported single-turn AST category')
         questions = case['question']
         if len(questions) != 1:
             raise ValueError('multi-turn execution is not implemented by this bridge')
-        tools = self.utils.convert_to_tool(case['function'], self.mapping, self.style)
+        # Match the official OpenAI FC handler: language values are requested as
+        # strings, then interpreted only by the upstream language type converter.
+        # Keep the original schema intact for checking and repeat requests.
+        functions = self.utils.func_doc_language_specific_pre_processing(
+            copy.deepcopy(case['function']), category)
+        tools = self.utils.convert_to_tool(functions, self.mapping, self.style)
         reverse = {}
         for original, tool in zip(case['function'], tools, strict=True):
             wire_name = tool['function']['name']
@@ -76,7 +83,7 @@ class OfficialV3:
         # coerce argument types, reorder calls or repair unknown function names.
         calls = [{reverse.get(name, name): args} for call in parsed.calls for name, args in call.items()]
         verdict = self.checker(copy.deepcopy(case['function']), calls,
-                               copy.deepcopy(gold['ground_truth']), 'Python', category,
+                               copy.deepcopy(gold['ground_truth']), LANGUAGES[category], category,
                                'epyc-native-original-names')
         return {'status': 'scored', 'valid': verdict['valid'], 'official': verdict}
 
