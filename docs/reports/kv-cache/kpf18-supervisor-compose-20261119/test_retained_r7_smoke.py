@@ -37,7 +37,7 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
         assert args.fork_bin == str(fixture.native) and args.launch_prefix == ''
         assert driver.gate.ITEMS[3] is driver.item3_smoke is driver.item3
         assert driver.guard.attempt_root() == fixture.result.parent == driver.OUT
-        args.no_device_claim = 'private model-free R7 smoke integration'
+        assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
         return NS(args=args, own_children=[], open_runs=[], preempted=False,
                   client=NS(_req=request), check_boundary=driver.guard.boundary), [], []
 

@@ -77,7 +77,8 @@ class CurrentGuard(unittest.TestCase):
             self.assertEqual(self.driver.gate.main(), 23)
         for extra in (['--build-prompt-set'], ['--argv-out', '/foreign'],
                       ['--resume'], ['--cpu'], ['--out', '/foreign'],
-                      ['--fork-bin', '/foreign'], ['--out=/foreign']):
+                      ['--fork-bin', '/foreign'], ['--out=/foreign'],
+                      ['--no-device-claim', 'caller claim bypass']):
             with self.subTest(extra=extra), patch.object(sys, 'argv', argv + extra):
                 with self.assertRaises(ValueError): self.driver.gate.main()
         with patch.object(sys, 'argv', [argv[0], 'make-argv-file', *argv[2:]]):
@@ -118,10 +119,23 @@ class CurrentGuard(unittest.TestCase):
                     self.driver.gate.main()
         self.assertEqual(called, [])
 
+    def test_smoke_claim_delegation_refuses_provider_loss_before_parser(self):
+        argv = self.smoke_argv()
+        called = []
+        self.driver.gate.main = lambda: called.append(True)
+        _, bind = self.prepare(); bind(self.driver)
+        with patch.object(sys, 'argv', argv), patch.object(
+                self.captured[0], 'recheck', side_effect=ValueError('provider lost')):
+            with self.assertRaisesRegex(ValueError, 'provider lost'):
+                self.driver.gate.main()
+            self.assertIs(sys.argv, argv)
+        self.assertEqual(called, [])
+
     def test_smoke_launch_restores_argv_after_gate_failure(self):
         argv = self.smoke_argv()
         def gate_main():
-            self.assertEqual(sys.argv[-2:], ['--launch-prefix', ''])
+            self.assertEqual(sys.argv[-4:], ['--launch-prefix', '', '--no-device-claim',
+                                           'current captured keeper GPU writer; rechecked before gate entry'])
             raise RuntimeError('gate failed')
         self.driver.gate.main = gate_main
         _, bind = self.prepare(); bind(self.driver)
@@ -313,7 +327,7 @@ def worker():
                     def build_ctx(args, items):
                         assert items == [3]
                         assert args.launch_prefix == ''  # real retained parser, no CPU expansion
-                        args.no_device_claim = 'private model-free fixture'
+                        assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
                         ctx.args = args
                         ctx.host = 'fixture'
                         ctx.own_children = []

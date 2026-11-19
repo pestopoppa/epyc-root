@@ -190,6 +190,12 @@ def prepare(seal, admission, captured):
                 sys.argv = list(original_argv)
                 if '--launch-prefix' not in values:
                     sys.argv.extend(['--launch-prefix', ''])
+                # The keeper's exclusive GPU writer was captured before driver
+                # import and rechecked by boundary() above. The retained gate
+                # otherwise acquires a competing device claim of its own.
+                # Caller-supplied claim bypasses remain outside allowed argv.
+                sys.argv.extend(['--no-device-claim',
+                                 'current captured keeper GPU writer; rechecked before gate entry'])
                 return gate_main()
             finally:
                 sys.argv = original_argv

@@ -29,7 +29,7 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
         assert calls == ['witness'] and not args.dry_run and items == [3]
         assert args.out == str(output) and args.fork_bin == str(fixture.native)
         assert args.launch_prefix == '' and driver.gate.ITEMS[3] is driver.item3
-        args.no_device_claim = 'private model-free context integration'
+        assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
         context = NS(args=args, out=output, own_children=[], open_runs=[], preempted=False,
                      check_boundary=lambda: checks.append('underlying'))
         return context, [], []

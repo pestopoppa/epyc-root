@@ -891,3 +891,65 @@ SHA-256 identities:
 
 - `test_nondry_entry.py`: `0899f19d7a3f72430e1a665ebf7767007919338d1620dd639a7080791987f5b6`
 - `test_retained_r7_entry.py`: `225141d5e79e6a3a016affba09385fe18c9cd16f217f13592c2de24aeec0c0bb`
+
+
+## 2026-11-19 — delegate device claim to the captured keeper writer
+
+Publication preparation exposed a real integration defect: the retained gate
+acquires its own `autokernel.resource.device_claim` whenever parsed
+`no_device_claim` is `None`. Current admission already captures the keeper's
+exclusive GPU writer, but the restricted gate wrapper prohibited that option
+without supplying it. The earlier fixtures hid the omission by assigning the
+parsed field themselves. Removing that assignment reproduced three failures
+(valid, explicit empty prefix and work-error official controls).
+
+The current wrapper now adds a fixed `--no-device-claim` explanation only after
+current boundary/admission/provider recheck, inside the temporary argv scope.
+Caller-supplied bypass options remain refused. This applies to both explicitly
+sealed official and publisher-smoke modes. The retained gate and historical
+manifests are unchanged. The ordinary gate still acquires its device claim;
+only the current admitted wrapper delegates to its captured keeper writer.
+
+Official installed routing now covers fifteen isolated cases, including caller
+claim override and provider loss. The fifteen retained-R7 smoke cases and both
+combined non-dry execution suites now assert the actual parser-produced claim
+field instead of filling it in. Publisher-mode controls also require provider
+loss to refuse before parser entry and argv restoration on gate failure.
+Native work, context construction and provider admission remain private fixtures;
+no real lock, GPU execution, publisher smoke or mapped-DSO qualification follows.
+
+Source identities (SHA-256):
+
+- `execution_binding.py`: `5a75fabddb421d57772b4c56881531e35adedc70a07429642a0f4ab3b637a042`
+- `test_fullrun_gate.py`: `2eafd7105d0180e7f232cbea9c4dbff4efed041253698cc6343961bb53a80ef6`
+- `test_execution_binding.py`: `e03c7e6d20485925e269c75d2864e05aaae68d39fceeee332e01c721db6a8a36`
+- `test_retained_r7_smoke.py`: `6a88fe259b118edd8d8b3bb0462fe0f2b3db55705b5827b485acad1d19734c27`
+- Retained gate `/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/vendor/kpf18_gate.native.py`:
+  `76bc6e18c9b58d4270d091c2b9f42358e2225aa6481585fbf4bbb9970424f4c9`.
+
+Actual input locations resolved during this task, without copying or changing them:
+
+- Canonical export: `/mnt/raid0/llm/tmp/codex-ni-20261027-kpf18-native-control-r15/canonical-export-root`.
+  All three files equal `execution_binding.PROJECTION` pins.
+- Preload receipt: that retained R15 directory's `out/PRELOAD-MODEL-IDENTITY.json`.
+  The unchanged retained `load_preload_models()` accepts it with
+  `/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/ORIGINAL-MODELS.json`,
+  including both live model stat checks. Model contents were not hashed.
+- Prepared argv and prompts named by retained `config.sh`:
+  `/mnt/raid0/llm/tmp/overnight-20261020/argv.8083-gate.txt` and
+  `/mnt/raid0/llm/tmp/overnight-20261020/kpf18-run/prompt_set.jsonl`.
+  These are resolved references, not freshly verified content identities.
+- Current provider implementation: `docs/reports/kv-cache/kpf18-g3-current-lock-20261104/current_lock.py`;
+  its five `SOURCES` must be freshly pinned from its declared orchestrator tree.
+
+Next: use these actual prerequisites in an explicit retained-R7 successor seal,
+complete current artifact/provider custody and retained native launch integration,
+then publish the owned-native lifecycle row. No row was published this turn.
+GitNexus status and upstream impact both refuse because this lane has no index;
+manual inspection limits the change to current binding argv and its regression
+fixtures. No persistent installation, production tree or historical seal changed.
+
+Validation: all 82 unittest tests outside historical `test_supervisor.py` PASS
+(`python3 -B` unittest discovery per `test_*.py`, excluding that one module).
+That historical suite was not rerun; its previously documented unavailable R9
+inputs remain outside this successor's qualification. `git diff --check` PASS.

@@ -32,7 +32,7 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
         assert items == [3] and not args.dry_run and args.out == str(output)
         assert args.fork_bin == str(fixture.native) and args.launch_prefix == ''
         assert driver.gate.ITEMS[3] is driver.item3
-        args.no_device_claim = 'private model-free combined fixture'
+        assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
         return NS(args=args, own_children=[], open_runs=[], preempted=False), [], []
 
     def item3(ctx):
