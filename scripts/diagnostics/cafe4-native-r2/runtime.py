@@ -59,6 +59,52 @@ def controls(text, rc, width, fault):
                 off_observe=eo, fault_observe=delta, tolerance=tol)
 
 
+def diagnostics(text, rc, width, fault):
+    """Retain failed-run evidence separately from qualifying controls.
+
+    This record never participates in PASS, fault qualification, or retries.
+    Malformed/duplicate markers are retained as reasons, never selected by luck.
+    """
+    reasons = []
+    if rc != int(fault):
+        reasons.append('unexpected-exit')
+    matches = MARKER.findall(text)
+    measured = None
+    if len(matches) != 1:
+        reasons.append('rollback-marker-count')
+    else:
+        names = ('actual_width', 'accepted', 'selected', 'faulted', 'off_error',
+                 'observe_error', 'fault_error', 'off_observe', 'fault_observe', 'tolerance')
+        try:
+            values = [int(x) for x in matches[0][:4]] + [float(x) for x in matches[0][4:]]
+            if not all(math.isfinite(x) and x >= 0 for x in values):
+                reasons.append('invalid-numeric-values')
+            else:
+                measured = dict(zip(names, values))
+                w, a, selected, faulted, e0, e1, ef, eo, delta, tol = values
+                if not (2 <= w <= width and 0 < a < w and selected > 0 and faulted > 0 and tol > 0):
+                    reasons.append('acceptance-or-target-counts')
+                if max(e0, e1, eo) > tol:
+                    reasons.append('nonfault-numerical-control')
+                if min(ef, delta) <= 10 * tol:
+                    reasons.append('fault-sensitivity')
+        except ValueError:
+            reasons.append('invalid-numeric-values')
+    result_lines = [line for line in text.splitlines() if line.startswith('RESULT ')]
+    if result_lines != [FAULT if fault else PASS]:
+        reasons.append('result-witness')
+    for mode in (1, 2):
+        if not re.search(r'^CAFE4_TARGET_RS .* mode=' + str(mode) + r'$', text, re.M):
+            reasons.append('target-mode-' + str(mode))
+    for marker in ('CAFE4_MTP_LOAD_ENABLED', 'CAFE4_DRAFT_REWIND_V4'):
+        if marker not in text:
+            reasons.append('missing-' + marker)
+    return dict(measurements=measured, failed_predicates=reasons,
+                native_messages=[line for line in text.splitlines()
+                                 if line.startswith(('UNKNOWN ', 'CAFE4_TRIAL_FAILURE ',
+                                                     'CAFE4_CONTROL_FAILURE ', 'CAFE4_REFERENCE '))])
+
+
 def inputs():
     record = json.loads((D / 'inputs.json').read_text())
     for path, expected in record['artifacts'].items():
@@ -147,7 +193,7 @@ def run():
                     proc.wait(timeout=10)
         text = log.read_text(errors='replace')
         verdict = controls(text, rc, width, fault) if mapped and cutoff is None else None
-        case = dict(width=width, fault=fault, rc=rc, controls=verdict, mapped=mapped,
+        case = dict(width=width, fault=fault, rc=rc, controls=verdict, diagnostics=diagnostics(text, rc, width, fault), mapped=mapped,
                     mapped_libraries=libraries, cutoff=cutoff, child_reaped=proc.poll() is not None,
                     log=str(log), log_sha256=digest(log))
         atomic(work / f'case-{width}-{int(fault)}.json', case)
