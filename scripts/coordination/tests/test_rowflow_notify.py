@@ -92,7 +92,7 @@ class RowEnded(Base):
         os.environ["ROWFLOW_BUS_ROOT"] = bus
         os.environ["ROWFLOW_SESSION_BUS"] = os.path.join(_COORD, "session_bus.py")
         m = notify.row_ended(self.flags, "r1", self.ENDED.replace("owner=ws58", "owner=autokernel"))
-        self.assertTrue(m["bus"].startswith("sent:codex-ak-main-01a11473:"), m["bus"])
+        self.assertTrue(m["bus"].startswith("sent:autokernel:"), m["bus"])   # 2026-11-19: the owner roster id, no stale alias
 
     def test_failed_bus_send_is_retried_once_it_works(self):
         os.environ["ROWFLOW_BUS_ROOT"] = os.path.join(self.root, "nobus")

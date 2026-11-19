@@ -23,6 +23,9 @@ roster:
   - {id: rowflow-keeper, role: service, lanes: [none], endpoint: "monitor:file", drain: none, schedulable: false}
   # AutoKernel operator session 01a11473-3d55-7543-8830-0de817d87bbe; coordination only.
   - {id: codex-ak-main-01a11473, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
+  # 2026-11-19 (D9 "Fix all"): the AutoKernel rows' owner slug. Rows are authored owner=autokernel and rowflow notify routes
+  # smoke-fail / queued-smoke-dropped to the row owner when it is a roster id; the session-suffixed id above went stale.
+  - {id: autokernel, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Operator-authorized non-inference campaign, 2026-10-05; no fleet dispatch or compute authority.
   - {id: codex-ni-main, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Operator-authorized non-inference coordinator session, 2026-10-24; no fleet dispatch or compute authority.

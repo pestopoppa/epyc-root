@@ -126,7 +126,8 @@ class OwnerAlert(Base):
 
     def test_wait_is_not_a_silent_drop(self):
         self.queue("w1")
-        self.run_batch({"w1": ("WAIT", "state dryrun-running; nothing to do")})
+        for _ in range(pr.QUEUED_WAIT_MAX):   # 2026-11-19: a WAIT keeps the marker; the QUEUED_WAIT_MAX-th batch alerts
+            self.run_batch({"w1": ("WAIT", "state dryrun-running; nothing to do")})
         a = self.alerts()
         self.assertEqual([x["kind"] for x in a], ["queued-smoke-dropped"])
         self.assertEqual(a[0]["row_id"], "w1")
@@ -157,7 +158,8 @@ class OwnerAlert(Base):
         """The pre-fix batch (no alert_queued_nonpass) leaves a WAIT row with zero alerts and zero records: the silent drop."""
         self.queue("w2")
         with mock.patch.object(pr, "alert_queued_nonpass", lambda *a, **k: None):
-            self.run_batch({"w2": ("WAIT", "state failed; nothing to do")})
+            for _ in range(pr.QUEUED_WAIT_MAX):
+                self.run_batch({"w2": ("WAIT", "state failed; nothing to do")})
         self.assertEqual(self.alerts(), [])
         self.assertFalse(os.path.exists(os.path.join(rf.dry_dir(self.flags, "w2"), "QUEUED-DROPPED-1.json")))
         self.assertFalse(os.path.exists(pr.queued_path(self.flags, "w2")))   # marker gone: the row vanished

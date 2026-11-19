@@ -31,9 +31,10 @@ import sys
 SCHEMA = "rowflow.alert.v1"
 WRITER = "rowflow-keeper"           # roster service id (coordination/session-bus/config.yaml)
 FALLBACK_ASSIGNEE = "inference"     # resource_owner [cpu, gpu]
-# Row-owner names that are the human-facing slug of a session whose roster id carries a session suffix. The AutoKernel
-# session's genuine coordination identity is codex-ak-main-01a11473 (b835072eb); rows are authored `owner=autokernel`.
-OWNER_ALIASES = {"autokernel": "codex-ak-main-01a11473"}
+# Row-owner slug -> roster id, only for a slug that is NOT itself a roster id. Empty: 2026-11-19 the alias
+# autokernel -> codex-ak-main-01a11473 (ea54250f5) pinned alerts to a session-suffixed address that went stale; `autokernel`
+# is now its own roster row, so the row's owner IS the bus target. A roster id always wins over an alias.
+OWNER_ALIASES = {}
 NON_COMPLETE_HIGHLIGHT = ("disk-floor", "hard-end", "job-rc-", "cleanup-failed", "partial-native-incomplete",
                           "launcher-signalled", "grant-expired-unrun", "build-missing", "refused", "malformed-grant",
                           "regions-unusable", "window-")
@@ -321,7 +322,7 @@ def _bus_send(rec, owner, action, flags=LIVE_FLAGS):
         return "failed: session_bus.py not found"
     bus_root = _bus_root()
     roster = _roster(bus_root)
-    owner = OWNER_ALIASES.get(owner, owner)
+    owner = owner if owner in roster else OWNER_ALIASES.get(owner, owner)
     assignee = owner if roster.get(owner) not in (None, "", "retired") and owner != WRITER else FALLBACK_ASSIGNEE
     stamp = rec["ts"].replace("-", "").replace(":", "")
     msg = {"id": f"msg-{stamp}-{int(rec['key'][:8], 16)}-{WRITER}", "to": assignee,

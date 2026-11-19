@@ -148,6 +148,13 @@ def _wants_gpu(m):
     return any(t in blob for t in ("gpu", "mi210"))
 
 
+def gpu_smoke_expected_start(flags, rf):
+    """When a queued GPU smoke can start: the batch runs once the GPU is free, so = the end of the current GPU grant
+    (latest end among open grants holding the MI210); `now` when none holds it."""
+    ends = [str(g.get("end")) for g in rf.open_grants(flags) if rf.GPU in (g.get("holds") or ()) and g.get("end")]
+    return f"{max(ends)} (end of the current GPU grant)" if ends else "now (GPU free; next keeper tick)"
+
+
 def classify(flags, owner=None, now=None):
     now = now or datetime.now(timezone.utc)
     G = os.path.join(flags, "grants")
@@ -217,6 +224,29 @@ def classify(flags, owner=None, now=None):
         else:   # parked (arming/launch, precond or lineage) and anything unrunnable
             rec["arm_fails"] = st.get("arm_fails")
             out["PARKED"].append(rec)
+    # 2026-11-19: a queued GPU smoke's manifest is dryrun/<id>/unpublished.json (no ready/ file) until its batch runs, so the
+    # ready/ walk above never saw it (ak-gap-1-step1-gpu-20261119 vanished from this page). List every GPU-SMOKE-QUEUED marker.
+    seen = {x["id"] for k in ("RUNNING", "GRANTABLE", "SMOKE-QUEUED", "NEEDS-REPUBLISH", "FAILED", "PARKED", "BLOCKED",
+                              "NOT-A-ROW") for x in out[k]}
+    gstart = gpu_smoke_expected_start(flags, rf)
+    for qp in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json"))):
+        rid = os.path.basename(os.path.dirname(qp))
+        q = _load(qp) or {}
+        m = _load(os.path.join(os.path.dirname(qp), "unpublished.json")) or _load(os.path.join(flags, "ready", rid + ".json")) \
+            or q.get("spec") or {}
+        if owner and owner.lower() not in str(m.get("owner", "")).lower():
+            continue
+        rec = next((x for x in out["SMOKE-QUEUED"] if x["id"] == rid), None)
+        if rec is None:
+            if rid in seen:
+                continue
+            rec = {"id": rid, "owner": m.get("owner"), "shape": m.get("shape") or m.get("declared_shape"),
+                   "rank": m.get("priority_rank"), "regions": q.get("regions"), "handoff_task": m.get("handoff_task")}
+            out["SMOKE-QUEUED"].append(rec)
+        rec.update(kind="SMOKE-QUEUED (GPU)", queued_at=q.get("queued_at"), wait_attempts=q.get("wait_attempts") or 0,
+                   expected_start=gstart,
+                   reason=f"SMOKE-QUEUED (GPU) queued_at={q.get('queued_at')} expected start {gstart}"
+                          + (f" wait_attempts={q.get('wait_attempts')}" if q.get("wait_attempts") else ""))
     out["UNFILED-ENDED"] = unfiled
     out["keeper"] = keeper
     return out

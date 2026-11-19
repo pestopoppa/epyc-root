@@ -724,13 +724,14 @@ def gpu_busy(flags):
     return rf.gpu_batch_running(flags) or any(rf.GPU in g["holds"] for g in rf.open_grants(flags))
 
 
-def run_smoke(flags, rid, regions, smoke_s):
-    """THE dry run: (verdict, msg); the manifest survives only a PASS."""
+def run_smoke(flags, rid, regions, smoke_s, keep_on_wait=False):
+    """THE dry run: (verdict, msg); the manifest survives only a PASS - and a WAIT under keep_on_wait (the GPU batch: a
+    ready/ manifest it did not move there belongs to a live concurrent smoke, ak-gap-1-step1-gpu-20261119)."""
     v, msg = "FAIL", "smoke did not run"
     try:
         v, msg = rf.dryrun_run(flags, rid, regions, one_quarter=True, smoke_s=smoke_s)
     finally:
-        if v != "PASS":
+        if v != "PASS" and not (keep_on_wait and v == "WAIT"):
             unpublish(flags, rid)
     return v, msg
 
@@ -779,9 +780,32 @@ def alert_queued_nonpass(flags, rid, verdict, msg):
         return None
 
 
+# a queued GPU smoke that ends WAIT keeps its marker for this many batches (the CPU queue's bound), then queued-smoke-dropped
+QUEUED_WAIT_MAX = rf.SMOKE_MAX_WAITS
+
+
+def clear_stale_dryrun(flags, rid):
+    """dryrun/<id>/RUNNING.json whose launcher pid AND harness pid are both dead (/proc, never kill -0) is stale: remove it and
+    its private dry-run grant (what reconcile_dryruns would do on the next keeper tick) so status() stops reporting
+    dryrun-running and the queued smoke can run now. A live pid (another batch / --smoke-now smoking it) is left alone.
+    Returns True when it cleared something."""
+    rp = rf.running_path(flags, rid)
+    r = rf.load_json(rp)
+    if not r or rf.proc_alive(r.get("pid")) or rf.proc_alive(r.get("harness_pid")):
+        return False
+    rf._rm(rp)
+    rf._rm(r.get("grant") or os.path.join(rf.dry_dir(flags, rid), "grants", rid + ".grant"))
+    print(f"GPU-SMOKE STALE {rid}: RUNNING.json pid {r.get('pid')} / harness {r.get('harness_pid')} dead; cleared")
+    return True
+
+
 def run_gpu_queue(flags):
     """The allocator's detached batch: every queued GPU smoke, one after another, as publish_row would run it - in
-    priority_rank order (queue_order_key); every non-PASS reaches the owner (alert_queued_nonpass)."""
+    priority_rank order (queue_order_key); every non-PASS reaches the owner (alert_queued_nonpass).
+    2026-11-19 (ak-gap-1-step1-gpu-20261119): a stale RUNNING.json is cleared first (clear_stale_dryrun); a WAIT keeps the
+    marker with its `wait_attempts` count and puts the manifest back where it was (never steals a ready/ manifest a live
+    concurrent smoke is using, never leaves an unsmoked row in ready/); only the QUEUED_WAIT_MAX-th WAIT alerts
+    queued-smoke-dropped and removes the marker."""
     n = 0
     for q in sorted(glob.glob(os.path.join(flags, "dryrun", "*", "GPU-SMOKE-QUEUED.json")), key=lambda x: queue_order_key(flags, x)):
         qd = rf.load_json(q) or {}
@@ -792,10 +816,19 @@ def run_gpu_queue(flags):
             print(f"GPU-SMOKE SKIP {rid}: withdrawn-pending")
             os.remove(q)
             continue
+        try:
+            clear_stale_dryrun(flags, rid)
+        except Exception as e:  # noqa: BLE001 - a failed cleanup is reported, never stops the batch
+            print(f"GPU-SMOKE STALE-CLEAR {rid}: {type(e).__name__}: {e}", file=sys.stderr)
+        moved = False
         if os.path.exists(up):
             os.replace(up, rf.ready_path(flags, rid))
+            moved = True
         try:
-            v, msg = run_smoke(flags, rid, qd.get("regions") or "mi210_0,184-191", int(qd.get("smoke_s") or SMOKE_TIMEOUT_S))
+            regions, smoke_s = qd.get("regions") or "mi210_0,184-191", int(qd.get("smoke_s") or SMOKE_TIMEOUT_S)
+            # WAIT: a manifest we moved goes back to unpublished.json; one already in ready/ is left for its live smoke
+            v, msg = run_smoke(flags, rid, regions, smoke_s) if moved else \
+                run_smoke(flags, rid, regions, smoke_s, keep_on_wait=True)
             if v == "PASS" and os.path.exists(rf.withdraw_pending_path(flags, rid)):
                 unpublish(flags, rid)   # withdrawn during its smoke: a PASS never lands a withdrawn row in ready/
                 v, msg = "WITHDRAWN", "withdrawn-pending; PASS not published"
@@ -807,10 +840,17 @@ def run_gpu_queue(flags):
         except Exception as e:  # noqa: BLE001 - one smoke never stops the batch
             v, msg = "FAIL", f"{type(e).__name__}: {e}"
         print(f"GPU-SMOKE {v} {rid}: {msg}")
+        n += 1
+        if v == "WAIT":
+            k = int(qd.get("wait_attempts") or 0) + 1
+            if k < QUEUED_WAIT_MAX:
+                rf.atomic_json(q, dict(qd, wait_attempts=k, last_wait_at=rf.now_iso(), last_wait=str(msg)[:200]))
+                print(f"GPU-SMOKE REQUEUED {rid}: WAIT {k}/{QUEUED_WAIT_MAX}; marker kept")
+                continue
+            msg = f"{msg} (WAIT in {k} batches)"
         if v not in ("PASS", "WITHDRAWN"):
             alert_queued_nonpass(flags, rid, v, msg)
         os.remove(q)
-        n += 1
     return n
 
 
