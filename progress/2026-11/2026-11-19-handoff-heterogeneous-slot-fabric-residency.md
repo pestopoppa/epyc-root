@@ -197,3 +197,7 @@ Duplicate dispatcher run-end for `kvu-kpf17-sealed-elf-loader-20261105`: no new 
 ## 04:11Z — File full seven-control synthetic admission qualification verdict
 
 KPF-18-G3-ADMISSION: filed `kvu-kpf18-g3-admission-integrated-20261105` PASS (rc=0, 7/7 synthetic controls). Evidence: `/mnt/raid0/llm/tmp/kvu/kpf18-g3-admission-integrated-20261105/out/full-attempt/RESULT.json`, SHA-256 `261d19b5fc3a433abc6a9fff322c747981922fc6ce479e28fd01f7c97c52719c`. Replaced pending-controls note in the already checked box; no new checkbox. Candidate remains disabled; no live-provider or GPU conclusion. [no-belief: synthetic qualification only]
+
+## 04:14Z — File historical four-log CPU save-inclusive aggregate with scoped counts and rates
+
+HSF-4: consumed full `hsf4-cpu-save-aggregate-20261105` result, PASS rc=0: 86 total, 16 excluded, 70 eligible blocks across four exact-digest logs. Inclusive median GB/s by pass1-C/D, pass2-C/D: 7.159434 / 7.137308 / 7.644068 / 6.544608. Native `/mnt/raid0/llm/tmp/kvu/hsf4-cpu-save-aggregate-20261105/out/RESULT.json`, SHA-256 `4452f7d2038007fb3e81dec470d051f3484b12b85b054adc542e2654aa687341`. Full min/max retained in packet README, including extreme maxima; not pure copy bandwidth, restore speed, controlled timing or HSF-4 completion. Existing FILED receipt confirms pass; parent remains unchecked. Added prospective source registration and extended existing VB-SWAP-C task; no wired claim or retrospective warrant. [belief: cc]
