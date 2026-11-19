@@ -74,7 +74,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
   -p test_supervisor.py -k DependencyBinding -v
 ```
 
-Current supervisor SHA-256: `e14bc45590ca7eabf95146298fe68f488bed70c3b265705ab6fae2be851f8bed`.
+Preloaded-refusal revision SHA-256: `e14bc45590ca7eabf95146298fe68f488bed70c3b265705ab6fae2be851f8bed`.
 `qualification.json` describes the earlier implementation and is historical;
 the persistent disabled installation still contains that earlier version.
 This change does not update or enable it.
@@ -91,3 +91,45 @@ Next: recover all three files at their sealed digests, then bind current
 execution dependencies and official rowflow admission before installing and
 publishing a native lifecycle successor. Direct entries remain disabled (rc78);
 no GPU/native or execution-admission qualification follows from these tests.
+
+## 2026-11-19 — callable supervisor self-binding regression
+
+A normally imported `supervisor` registers itself in `sys.modules`. The
+preloaded-dependency check consequently rejected its own executing module,
+preventing `run_driver()` from reaching the driver. A new isolated-process
+test reproduced this failure through the actual `run_driver()` and real
+cleanup helper, using a minimal sealed synthetic driver without R9 inputs.
+
+The refusal gate now exempts only the module whose dictionary is this
+executing supervisor's exact globals object. A separate object registered as
+`foreign.supervisor`, including one with the same `__file__`, remains refused
+before driver entry. File names and origin matches grant no exemption.
+
+All six focused binding tests PASS: the four existing dependency controls
+and two new callable controls. The successful callable returns the synthetic
+driver's value and writes its entry marker; the refusal control requires
+that marker to remain absent. Before the fix, the positive callable control
+failed with `preloaded driver binding or dependency: supervisor`.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_supervisor.py -k Binding -v
+```
+
+Supervisor SHA-256: `83dac150737f8cd4b04d25bbb5dd64e3f44b26e9ecadb6a6e6f967a321144710`.
+Test SHA-256: `84dc695dfaacecb913ad51d12013bc5ad9eaea8378f59f9a1563e6102316d32b`.
+
+The exact R9 `evidence_view.py` bytes are retained in
+`/mnt/raid0/llm/tmp/kvu/g3-preload-integrated-20261105/candidate/evidence_view.py`
+at SHA-256 `434f97561317bd0a5f75f2bcee2c7ea56b362278958ff77959c7008085422212`.
+The scoped temporary/worktree/reachable-file-history search did not locate
+`normalize_bridge.py` at `d3fed4a89230f5b18e9ec38787175c4fee9112c3dfa9e364923e0fa4d8cf8f0c`
+or `test_real_grid.py` at `bcbb114cf72f5cc86b0672def2e805213c0910257670b9fcaa5bfe68d44e256e`.
+No original R9 path or seal was changed. The inherited suite still cannot
+initialize; it was not repeated. The persistent installation and historical
+`qualification.json` remain unchanged. These tests qualify the callable
+binding correction only, with no model, GPU, native lifecycle or current
+execution-admission claim. Current custody/admission integration can proceed
+independently with focused synthetic controls before the missing inputs are
+required for full inherited integration.

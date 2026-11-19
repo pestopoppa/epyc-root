@@ -48,13 +48,15 @@ def refuse_preloaded_dependencies(seal):
     Binding modules deliberately import peers under stable public names. Refuse
     those names before executing any binding code, including dotted aliases.
     The supervisor is an isolated entry, so even a matching origin is refused:
-    its module globals could have changed since the file was verified.
+    its module globals could have changed since the file was verified. Only
+    this executing module is exempt, identified by its actual globals object.
     """
     names = {Path(name).stem for name in seal['sources']
              if Path(name).suffix == '.py'} - {'__init__'}
     names.update({'composition', '_supervised_driver'})
-    conflicts = sorted(name for name in sys.modules
-                       if name.rsplit('.', 1)[-1] in names)
+    conflicts = sorted(name for name, module in sys.modules.items()
+                       if name.rsplit('.', 1)[-1] in names
+                       and getattr(module, '__dict__', None) is not globals())
     if conflicts:
         raise ValueError('preloaded driver binding or dependency: ' + ', '.join(conflicts))
 

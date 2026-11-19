@@ -236,6 +236,61 @@ class DependencyBinding(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'new_native_peer'):
                 supervisor.refuse_preloaded_dependencies(seal)
 
+
+class CallableBinding(unittest.TestCase):
+    """Exercise the real callable entry without the reclaimed R9 runtime."""
+
+    def case(self, foreign_peer):
+        with tempfile.TemporaryDirectory(dir=install.SCRATCH) as temporary:
+            root = Path(temporary)
+            subject = root / 'supervisor.py'
+            subject.write_bytes((HERE / 'supervisor.py').read_bytes())
+            driver = root / 'driver.py'
+            marker = root / 'driver-entered'
+            driver.write_text('from pathlib import Path\n'
+                              f'def main():\n    Path({str(marker)!r}).touch()\n    return 19\n')
+            sources = {str(path): install.digest(path)
+                       for path in (subject, driver, install.HELPER)}
+            (root / 'manifest.json').write_text(json.dumps({
+                'runtime_dispatch': False, 'sources': sources,
+                'helper': str(install.HELPER), 'driver': str(driver)}))
+            code = '''
+import importlib.util
+from pathlib import Path
+import sys
+import types
+spec = importlib.util.spec_from_file_location('supervisor', sys.argv[1])
+subject = importlib.util.module_from_spec(spec)
+sys.modules['supervisor'] = subject
+spec.loader.exec_module(subject)
+if sys.argv[2] == 'foreign':
+    peer = types.ModuleType('foreign.supervisor')
+    peer.__file__ = subject.__file__
+    sys.modules['foreign.supervisor'] = peer
+    try:
+        subject.run_driver()
+    except ValueError as exc:
+        assert 'foreign.supervisor' in str(exc), str(exc)
+    else:
+        raise AssertionError('foreign same-origin object accepted')
+    assert not Path(sys.argv[3]).exists()
+else:
+    assert subject.run_driver() == 19
+    assert Path(sys.argv[3]).is_file()
+print('CALLABLE-BINDING-PASS')
+'''
+            result = subprocess.run([sys.executable, '-I', '-B', '-c', code,
+                                     str(subject), 'foreign' if foreign_peer else 'self',
+                                     str(marker)], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('CALLABLE-BINDING-PASS', result.stdout)
+
+    def test_registered_supervisor_can_call_driver(self):
+        self.case(False)
+
+    def test_same_origin_foreign_supervisor_refused_before_driver(self):
+        self.case(True)
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['--worker']: worker(Path(sys.argv[2]), sys.argv[3])
     else: unittest.main()
