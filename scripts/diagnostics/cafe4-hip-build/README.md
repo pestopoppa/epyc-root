@@ -144,3 +144,24 @@ candidate/header/supervisor (verify existing bindings), then run
 `publish_row.py` on this spec and consume its smoke result. Keep the original
 CPU numerical threshold while diagnosing cold-prefix/reference geometry.
 [no-belief: validator code and model-free regression tests only]
+
+R3 publication (2026-11-19)
+---------------------------
+
+`df2-cafe4-modes-hip-build-r3-20261119` is now **PUBLISHED** after publisher's four-CPU
+smoke **PASS** on cores 140–143 at 06:42:20Z, clean STOP rc75. This
+supersedes the unpublished checkpoint above. Five small runtime inputs were
+hash-verified before publication; no model weights or builds were copied.
+Smoke requires the original/fixed Clang IQK syntax checks and all six compiled
+modes/control markers. The full HIP build and its exact-export validator run
+only under a scheduled grant.
+
+Receipt: `/mnt/raid0/llm/tmp/compute-flags/dryrun/df2-cafe4-modes-hip-build-r3-20261119/PASS.json`;
+SHA-256 `4dbdb2bafe74cdcd8baeef33e2b19b5cd44bba8fbdb6f94c83c02059dd676bc9`.
+Result path: `/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119/RESULT.json`.
+
+Next: file the full-build verdict when it lands; independently diagnose the
+CPU cold-prefix/reference geometry without changing its numerical threshold.
+No native GPU residency, rollback, fault or performance verdict is supplied
+by the smoke. Parent CAFE-4 remains open.
+[no-belief: compiled-object smoke and publication only]
