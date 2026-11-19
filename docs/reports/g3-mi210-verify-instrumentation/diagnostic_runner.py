@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Bounded one-server diagnostic capture; no scientific verdict is generated."""
 import argparse, datetime, hashlib, json, os, pathlib, signal, subprocess, sys, threading, time, urllib.request
+from environment_gates import sample_environment, assess_environment, policy_check
 from residency_evidence import analyze_residency
 from build_receipt_v4 import bind_v4_receipt
 from analyze_timed_run import analyze as analyze_timed_run
@@ -67,6 +68,13 @@ def main():
     ap.add_argument('config', type=pathlib.Path)
     a = ap.parse_args()
     c = json.loads(a.config.read_text())
+    if c.get('protocol_sources') is not None:
+        from native_protocol import verify_inputs
+        verify_inputs(c)
+    if c.get('environment_policy') is not None:
+        policy_check(c['environment_policy'])
+        if c['row_id'] != os.environ['FILLER_ID']:
+            raise ValueError('row identity mismatch')
     out = pathlib.Path(c['output']); out.mkdir(parents=True, exist_ok=False)
     bound, server, backend, build = resolve_build_binding(c)
     (out / 'build-binding.json').write_text(json.dumps(bound, indent=2) + '\n')
@@ -138,6 +146,8 @@ def main():
             with (out / 'residency.jsonl').open('w') as f:
                 while not done.is_set():
                     record = gpu_sample()
+                    if c.get('environment_policy') is not None:
+                        record['environment'] = sample_environment(row_id=c['row_id'], pid=proc.pid, device=device)
                     record.update(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), pid=proc.pid, alive=proc.poll() is None)
                     try: record['maps'] = pathlib.Path(f'/proc/{proc.pid}/maps').read_text()
                     except OSError: record['maps'] = None
@@ -167,6 +177,8 @@ def main():
                     try:
                         with urllib.request.urlopen(c['url'].rsplit('/', 1)[0] + '/health', timeout=2) as response:
                             if response.status == 200: break
+                    except InterruptedError:
+                        raise
                     except (OSError, ValueError): time.sleep(.5)
                 if stop.exists(): raise InterruptedError('STOP')
                 req = urllib.request.Request(c['url'], data=json.dumps(payload).encode(), headers={'Content-Type':'application/json'})
@@ -228,6 +240,14 @@ def main():
             result['residency'] = residency
             result['residency_scope'] = 'HTTP request window only; trace overlap and device isolation remain unproven'
             result['request_windows'] = request_windows
+            if c.get('environment_policy') is not None:
+                result['environment_context'] = {'pid': proc.pid, 'device': device}
+                result['environment_samples'] = [s.get('environment', {}) for s in samples]
+                result['environment_assessment'] = assess_environment(
+                    result['environment_samples'], request_windows, policy=c['environment_policy'],
+                    row_id=c['row_id'], pid=proc.pid, device=device)
+                if sample_error or sampler.is_alive():
+                    result['environment_assessment'] = {'status': 'UNKNOWN', 'reason': 'environment capture incomplete'}
             result.update(server_exit=proc.returncode, process_group_drained=drained)
             # The observations are diagnostic-only and fail closed when capture,
             # correlation or clock samples are incomplete. They do not authorize

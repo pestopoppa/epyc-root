@@ -5,14 +5,16 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from native_protocol import configs, negative_control, assess, execute, CELLS
+from native_protocol import configs, negative_control, assess, execute, CELLS, source_bindings, verify_inputs
 from test_invocation_trace_v3 import B, D, E
 
 
 def base():
     return {'server_args': ['--flash-attn', 'on', '-ctk', 'q8_0', '-ctv', 'q8_0',
                             '--spec-type', 'draft-mtp', '--spec-draft-n-max', '1'],
-            'requests': [{'n_predict': 128}], 'layer_manifest': 'unused'}
+            'requests': [{'n_predict': 128}], 'layer_manifest': 'unused',
+            'row_id': 'g3-test', 'protocol_sources': source_bindings(),
+            'environment_policy': {'sclk_mhz': [1000, 1700], 'mclk_mhz': [1500, 1700], 'max_gap_s': 2}}
 
 
 def capture():
@@ -39,6 +41,34 @@ def records():
 
 
 class NativeProtocolTest(unittest.TestCase):
+    def test_source_drift_and_missing_environment_policy_refused_before_process(self):
+        for defect in ('source', 'policy', 'row'):
+            b = base()
+            if defect == 'source': b['protocol_sources']['diagnostic_runner.py'] = '0'*64
+            if defect == 'policy': b['environment_policy'] = {}
+            if defect == 'row': b['row_id'] = '../foreign'
+            with self.assertRaises((ValueError, KeyError)):
+                verify_inputs(b)
+
+    def test_every_process_requires_independent_environment_gate(self):
+        r = records()
+        from test_environment_gates import samples, POLICY, DEVICE
+        for cell in r.values():
+            cell.update(row_id='g3-test', environment_policy=POLICY)
+            cell.setdefault('result', {}).update(
+                environment_assessment={'status': 'PASS'}, environment_samples=samples(),
+                request_windows=[[1, 2]], environment_context={'pid': 42, 'device': DEVICE})
+        self.assertEqual(assess(r)['status'], 'SCOPED_DISPATCH_OBSERVED')
+        changed = copy.deepcopy(r)
+        for sample in changed['q8_0-d4']['result']['environment_samples']:
+            sample['grant_sha256'] = 'b'*64
+        self.assertEqual(assess(changed)['status'], 'UNKNOWN')
+        for key in r:
+            broken = copy.deepcopy(r)
+            # Claimed PASS remains intact; raw evidence must fail independently.
+            broken[key]['result']['environment_samples'][0]['sclk_mhz'] = 0
+            self.assertEqual(assess(broken)['status'], 'UNKNOWN')
+
     def test_plan_separates_controls_and_preserves_four_cells(self):
         b = base()
         original = copy.deepcopy(b)
@@ -77,7 +107,7 @@ class NativeProtocolTest(unittest.TestCase):
     def test_full_protocol_cannot_certify_ownership(self):
         verdict = assess(records())
         self.assertEqual(verdict['dispatch_protocol'], 'PASS')
-        self.assertTrue(verdict['vec_observed'])
+        self.assertIsNone(verdict['vec_observed'])
         self.assertEqual(verdict['status'], 'UNKNOWN')
 
     def test_missing_controls_or_cell_never_yield_vec(self):

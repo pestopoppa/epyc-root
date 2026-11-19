@@ -2,19 +2,39 @@
 """Prospective six-process G3 capture. Run only under a scheduled GPU row.
 
 Two independent FA-on, MTP-off controls precede the retained four MTP cells.
-This module qualifies dispatch evidence only. Ownership must be established by
-an independent grant verifier before a final endpoint can be reported.
+Independent scheduler/KFD and GPU clock captures qualify the sampled environment.
+No continuous isolation, performance or production claim is made.
 """
 import argparse
 import copy
 import json
 import math
+import hashlib
 import re
 from pathlib import Path
 import subprocess
 import sys
 
 from invocation_trace_v5 import classify_invocation_trace_v5
+from environment_gates import policy_check, assess_environment
+
+SOURCES = ('native_protocol.py', 'diagnostic_runner.py', 'environment_gates.py',
+           'analyze_timed_run.py', 'sysfs_residency.py', 'residency_evidence.py',
+           'residency_correlation.py', 'invocation_trace_v5.py', 'invocation_trace_v4.py',
+           'invocation_trace_v3.py', 'invocation_trace_v2.py', 'build_receipt_v4.py')
+
+
+def source_bindings():
+    return {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in SOURCES}
+
+
+def verify_inputs(base):
+    policy_check(base['environment_policy'])
+    if not re.fullmatch(r'[A-Za-z0-9_-]+', base['row_id']):
+        raise ValueError('invalid row identity')
+    if base.get('protocol_sources') != source_bindings():
+        raise ValueError('native protocol source binding mismatch')
+
 
 CELLS = tuple((kv, width) for kv in ('q8_0', 'q4_0') for width in (1, 4))
 
@@ -94,8 +114,8 @@ def negative_control(trace, result, layers, count, kv):
 def _assess(records):
     """Fold all six captures; no partial existential result bypasses a control.
 
-    Final endpoint remains UNKNOWN here: this runner deliberately has no
-    authority to certify GPU grant ownership or GPU operating-clock stability.
+    Require independent sampled lease/allocation and operating-clock gates
+    for every process, including both MTP-off controls.
     """
     reasons, controls, observed = [], {}, []
     expected = {f'{kv}-mtp-off' for kv in ('q8_0', 'q4_0')} | {f'{kv}-d{w}' for kv, w in CELLS}
@@ -132,10 +152,26 @@ def _assess(records):
             reasons.append(f'{kv}-d{width} inconsistent observations')
         observed.extend(events)
     protocol_pass = not reasons
-    return {'status': 'UNKNOWN', 'dispatch_protocol': 'PASS' if protocol_pass else 'UNKNOWN',
-            'vec_observed': any(e['kernel'] == 100 for e in observed) if protocol_pass else None,
-            'controls': controls, 'reasons': reasons + ['independent GPU grant ownership and operating-clock assessment required'],
-            'scope': 'Observed dispatches only; no bandwidth or throughput conclusion'}
+    environment = {}
+    for ident in sorted(expected):
+        cell = records.get(ident, {})
+        result = cell.get('result', {})
+        context = result.get('environment_context', {})
+        environment[ident] = assess_environment(
+            result.get('environment_samples', []), result.get('request_windows', []),
+            policy=cell.get('environment_policy', {}), row_id=cell.get('row_id'),
+            pid=context.get('pid'), device=context.get('device', {}))
+        if result.get('environment_assessment', {}).get('status') != 'PASS':
+            environment[ident] = {'status': 'UNKNOWN', 'reason': 'native environment capture failed'}
+    environment_pass = (all(g.get('status') == 'PASS' for g in environment.values())
+                        and len({g.get('grant_sha256') for g in environment.values()}) == 1)
+    if not environment_pass:
+        reasons.append('independent GPU grant ownership and operating-clock assessment missing or failed')
+    return {'status': 'SCOPED_DISPATCH_OBSERVED' if protocol_pass and environment_pass else 'UNKNOWN',
+            'environment': environment, 'dispatch_protocol': 'PASS' if protocol_pass else 'UNKNOWN',
+            'vec_observed': any(e['kernel'] == 100 for e in observed) if protocol_pass and environment_pass else None,
+            'controls': controls, 'reasons': reasons,
+            'scope': 'Observed dispatches with sampled environment only; no continuous isolation, bandwidth or throughput conclusion'}
 
 
 def assess(records):
@@ -148,6 +184,7 @@ def assess(records):
 
 def execute(base, root, runner=None):
     """Each cell invokes the native runner in a fresh process; stop on failure."""
+    verify_inputs(base)
     root = Path(root)
     root.mkdir(parents=True, exist_ok=False)
     planned = configs(base, root)
@@ -158,8 +195,10 @@ def execute(base, root, runner=None):
     for ident, config in planned:
         path = root / (ident + '.json')
         path.write_text(json.dumps(config, indent=2) + '\n')
+        verify_inputs(config)
         rc = subprocess.run([sys.executable, str(runner), str(path)], check=False).returncode
-        cell = {'rc': rc, 'request_count': len(config['requests'])}
+        cell = {'rc': rc, 'request_count': len(config['requests']),
+                'row_id': config['row_id'], 'environment_policy': config['environment_policy']}
         try:
             out = Path(config['output'])
             cell['result'] = json.loads((out / 'result.json').read_text())
