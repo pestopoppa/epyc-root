@@ -1,4 +1,7 @@
 """Real pinned upstream checker plus local HTTP controls; no model runs."""
+import ast
+import inspect
+import importlib
 import copy
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
@@ -166,6 +169,78 @@ class OfficialControls(unittest.TestCase):
         self.assertEqual(set(payload), {'model', 'messages', 'tools', 'tool_choice', 'temperature', 'seed', 'max_tokens', 'stream'})
         self.assertNotIn('ground_truth', json.dumps(payload))
         self.assertIs(self.score(1, raw)['valid'], True)
+
+    def native_turns(self, row):
+        turns = []
+        for gold_turn in row['gold']['ground_truth']:
+            steps = []
+            for source in gold_turn:
+                call = ast.parse(source, mode='eval').body
+                args = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
+                if call.args:
+                    for class_name in row['case']['involved_classes']:
+                        module = importlib.import_module(self.bridge.execution.CLASS_FILE_PATH_MAPPING[class_name])
+                        method = getattr(getattr(module, class_name), call.func.id, None)
+                        if method:
+                            names = list(inspect.signature(method).parameters)[1:]
+                            args.update(zip(names, map(ast.literal_eval, call.args)))
+                            break
+                steps.append(completion(call.func.id, args))
+            turns.append(steps)
+        return turns
+
+    def multi_score(self, row, turns):
+        return self.bridge.score_multi_turn(row['case'], row['category'], row['gold'], turns)
+
+    def test_multi_turn_all_ten_gold_controls_and_isolation(self):
+        for row in self.rows[16:]:
+            with self.subTest(case=row['case']['id']):
+                before = copy.deepcopy(row)
+                turns = self.native_turns(row)
+                globals_before = set(vars(self.bridge.execution))
+                for _ in range(2):
+                    self.assertIs(self.multi_score(row, turns)['valid'], True)
+                    self.assertEqual(set(vars(self.bridge.execution)), globals_before)
+                self.assertEqual(row, before)
+
+    def test_multi_turn_missing_state_and_turn_count(self):
+        row = self.rows[16]
+        turns = self.native_turns(row)
+        turns[0] = []
+        verdict = self.multi_score(row, turns)
+        self.assertIs(verdict['valid'], False)
+        self.assertEqual(verdict['official']['state']['error_type'], 'multi_turn:empty_turn_model_response')
+        turns = self.native_turns(row)
+        turns[0] = [completion('ls', {})]
+        self.assertIs(self.multi_score(row, turns)['valid'], False)
+        verdict = self.multi_score(row, turns[:-1])
+        self.assertEqual(verdict['status'], 'parse_error')
+        self.assertIsNone(verdict['valid'])
+
+    def test_multi_turn_irrelevance_and_text_finish(self):
+        for row in self.rows[22:]:
+            with self.subTest(case=row['case']['id']):
+                turns = self.native_turns(row)
+                index = next(i for i, calls in enumerate(row['gold']['ground_truth']) if not calls)
+                turns[index] = [{'choices': [{'finish_reason': 'stop', 'message': {'content': 'Please clarify'}}]}]
+                self.assertIs(self.multi_score(row, turns)['valid'], True)
+                turns[index] = [completion('ls', {})]
+                verdict = self.multi_score(row, turns)
+                # Pinned upstream treats nested execution strings as empty.
+                # Preserve and disclose this blind spot rather than fixing scoring.
+                self.assertIs(verdict['valid'], True)
+                self.assertIs(verdict['official']['irrelevance']['valid'], True)
+
+    def test_multi_turn_malformed_and_code_injection_refused(self):
+        row = self.rows[16]
+        for name, args in [('__import__', {'name': 'os'}), ('ls', {'x);bad(': 1}), ('xargs', {'command': 'sh', 'file_name': 'log.txt'})]:
+            turns = self.native_turns(row)
+            turns[0] = [completion(name, args)]
+            verdict = self.multi_score(row, turns)
+            self.assertEqual(verdict['status'], 'parse_error')
+            self.assertIsNone(verdict['valid'])
+        turns[0] = [{'choices': [{}]}]
+        self.assertEqual(self.multi_score(row, turns)['status'], 'parse_error')
 
     def test_wrong_source_refused(self):
         with self.assertRaisesRegex(ValueError, 'source commit mismatch'):

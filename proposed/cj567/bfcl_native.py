@@ -1,11 +1,13 @@
-"""Single-turn Python/Java/JavaScript BFCL V3 bridge; scoring stays upstream.
+"""BFCL V3 native single-turn bridge and multi-turn replay; scoring stays upstream.
 
-No gold is included in HTTP requests. Multi-turn and SQL require their
-own upstream execution paths and are rejected here, never assigned a score.
+No gold is included in HTTP requests. Multi-turn replay uses official state
+and irrelevance checks. Live multi-turn requests and SQL remain unsupported.
 """
 import copy
 import importlib
 import json
+import keyword
+import uuid
 from pathlib import Path
 import subprocess
 import sys
@@ -42,6 +44,8 @@ class OfficialV3:
         try:
             self.utils = importlib.import_module('bfcl.model_handler.utils')
             self.checker = importlib.import_module('bfcl.eval_checker.ast_eval.ast_checker').ast_checker
+            self.multi = importlib.import_module('bfcl.eval_checker.multi_turn_eval.multi_turn_checker')
+            self.execution = importlib.import_module('bfcl.eval_checker.multi_turn_eval.multi_turn_utils')
             self.mapping = importlib.import_module('bfcl.model_handler.constant').GORILLA_TO_OPENAPI
             self.style = importlib.import_module('bfcl.model_handler.model_style').ModelStyle.OpenAI
         finally:
@@ -86,6 +90,71 @@ class OfficialV3:
                                copy.deepcopy(gold['ground_truth']), LANGUAGES[category], category,
                                'epyc-native-original-names')
         return {'status': 'scored', 'valid': verdict['valid'], 'official': verdict}
+
+
+    def score_multi_turn(self, case, category, gold, turns):
+        """Replay turn/substep/native completions with official state checks.
+
+        State persists across turns, but fresh namespaces isolate evaluations.
+        The pinned checker checks state and irrelevance, not response/order.
+        Live multi-turn requests are not constructed by this replay method.
+        """
+        categories = {'multi_turn_base', 'multi_turn_composite',
+                      'multi_turn_long_context', 'multi_turn_miss_func',
+                      'multi_turn_miss_param'}
+        if category not in categories or case['id'].rsplit('_', 1)[0] != category:
+            raise ValueError('requires a supported multi-turn category')
+        if gold['id'] != case['id']:
+            raise ValueError('case/gold ID mismatch')
+        if len(gold['ground_truth']) != len(case['question']):
+            raise ValueError('case/gold turn count mismatch')
+        if not isinstance(turns, list) or len(turns) != len(case['question']):
+            return {'status': 'parse_error', 'valid': None, 'error': 'turn count mismatch'}
+        allowed = set()
+        for class_name in case['involved_classes']:
+            module = importlib.import_module(self.execution.CLASS_FILE_PATH_MAPPING[class_name])
+            cls = getattr(module, class_name)
+            allowed.update(name for name in dir(cls)
+                           if not name.startswith('_') and callable(getattr(cls, name)))
+        decoded = []
+        for turn in turns:
+            if not isinstance(turn, list):
+                return {'status': 'parse_error', 'valid': None, 'error': 'turn must be a substep list'}
+            steps = []
+            for raw in turn:
+                choices = raw.get('choices') if isinstance(raw, dict) else None
+                if not isinstance(choices, list) or len(choices) != 1 or not isinstance(choices[0], dict):
+                    return {'status': 'parse_error', 'valid': None, 'error': 'expected exactly one choice'}
+                choice = choices[0]
+                message = choice.get('message')
+                if (choice.get('finish_reason') == 'stop' and isinstance(message, dict)
+                        and message.get('tool_calls') in (None, [])):
+                    continue
+                parsed = adapt_openai_tool_calls(choice)
+                if not parsed.ok:
+                    return {'status': 'parse_error', 'valid': None, 'error': parsed.error}
+                for call in parsed.calls:
+                    for name, args in call.items():
+                        # Official conversion interpolates names/keys into eval.
+                        if name not in allowed or name == 'xargs' or any(not key.isidentifier() or keyword.iskeyword(key) for key in args):
+                            return {'status': 'parse_error', 'valid': None, 'error': 'unsupported method or invalid keyword'}
+                steps.append(self.utils.convert_to_function_call([
+                    {name: json.dumps(args, allow_nan=False)}
+                    for call in parsed.calls for name, args in call.items()]))
+            decoded.append(steps)
+        namespace = 'epyc_replay_' + uuid.uuid4().hex
+        try:
+            state = self.multi.multi_turn_checker(
+                decoded, copy.deepcopy(gold['ground_truth']), copy.deepcopy(case), category, namespace)
+            irrelevance = (self.multi.multi_turn_irrelevance_checker(decoded, gold['ground_truth'])
+                           if category in {'multi_turn_miss_func', 'multi_turn_miss_param'}
+                           else {'valid': True})
+            return {'status': 'scored', 'valid': state['valid'] and irrelevance['valid'],
+                    'official': {'state': state, 'irrelevance': irrelevance}}
+        finally:
+            for name in list(vars(self.execution)):
+                if name.startswith(namespace + '_'):
+                    delattr(self.execution, name)
 
 
 def capture(endpoint, payload, timeout=60):

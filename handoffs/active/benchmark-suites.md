@@ -332,6 +332,14 @@ fleet models.** No inference runs without the standing region claim; no at-scale
       [Source finding](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/sql-boundary.json);
       24 existing controls PASS, including SQL refusal. Parent remains open; advance the
       official multi-turn execution path next. No SQL or fleet score claimed.
+  - [x] **CJ-3d-REPLAY — Bind official multi-turn state/execution replay with positive and negative controls.** ✅ 2026-11-19 [no-belief: model-free software controls]
+      Native completion replay passes all ten selected cases twice with isolated state;
+      **16 integration + 12 adapter tests PASS**. Missing/changed state fails; malformed
+      completions remain UNKNOWN. The pinned official irrelevance helper accepts extra
+      calls on all four clarification controls (nested execution strings treated as empty);
+      response/order checks are disabled upstream. Preserve these limits, no local grading fix.
+      [Source blobs, controls, environment and digests](../../docs/evidence/bfcl-cj3d-native-bridge-20261119/multi-turn.json).
+      Parent CJ-3d remains open for live multi-turn schema scheduling, feedback and capture.
   - [x] **CJ-3d-ADAPTER — Prepare the native tool-call response adapter.** Convert ordered OpenAI-compatible function calls into the upstream V3 checker input shape, retain absent/malformed calls as parse errors, and validate malformed JSON, duplicate keys and ordering without invoking a model or defining scoring. The parent remains open until the pinned official checker and live transport are integrated. [Proposed adapter](../../proposed/cj567/openai_tool_calls.py). ✅ 2026-11-04 [belief: cc]
 - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the
       set: the published BFCL evidence is **unrankable today** (122B reports `bfcl_v4` 0.722,
