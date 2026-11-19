@@ -178,7 +178,8 @@ def summarize(native, task_ids, n_samples, min_correct, temperature):
         raise ValueError("missing or unexpected native tasks")
     solved = profiled = passed = 0
     efficiency = []
-    for task in tasks.values():
+    task_scores = {}
+    for task_id, task in tasks.items():
         results = task["results"]
         if len(results) != n_samples or any(type(r.get("pass")) is not bool for r in results):
             raise ValueError("missing samples or invalid correctness flags")
@@ -222,6 +223,7 @@ def summarize(native, task_ids, n_samples, min_correct, temperature):
                 raise ValueError("efficiency summary disagrees with samples")
         profiled += 1
         efficiency.append(score)
+        task_scores[task_id] = score
     return {
         "tasks": len(tasks), "samples": len(tasks) * n_samples,
         "correct_samples": passed, "correctness_rate": passed / (len(tasks) * n_samples),
@@ -232,7 +234,32 @@ def summarize(native, task_ids, n_samples, min_correct, temperature):
         "conditional_harmonic_dps_norm": (
             statistics.harmonic_mean(efficiency) if profiled >= 30 else None
         ),
+        "profiled_dps_norm_by_task": task_scores,
         "claim_scope": "descriptive generated-code efficiency only",
+    }
+
+
+def compare_profiles(summaries):
+    """Compare validated scores on the same tasks, never separate solved sets.
+
+    Each map comes from summarize(), after native correctness/profile validation.
+    The 30-task floor is the pilot's working convention, not a significance gate.
+    """
+    scores = {role: summaries[role]["profiled_dps_norm_by_task"]
+              for role in ("coder", "architect")}
+    common = sorted(set(scores["coder"]) & set(scores["architect"]))
+    enough = len(common) >= 30
+    return {
+        "status": "DESCRIPTIVE" if enough else "INCONCLUSIVE",
+        "common_profiled_tasks": len(common),
+        "common_task_ids": common,
+        "minimum_common_tasks": 30,
+        "conditional_harmonic_dps_norm": {
+            role: statistics.harmonic_mean(values[task] for task in common)
+            if enough else None for role, values in scores.items()
+        },
+        "direction": "higher is better",
+        "claim_scope": "conditional on common correct/profiled tasks; no statistical separation",
     }
 
 
@@ -295,6 +322,7 @@ def run(config, output):
         summaries[arm["role"]]["native_sha256"] = hashlib.sha256(files[0].read_bytes()).hexdigest()
         (output / "checkpoint.json").write_text(json.dumps(summaries, indent=2) + "\n")
     return {"status": "COMPLETE", "source_commit": config["source_commit"], "arms": summaries,
+            "comparison": compare_profiles(summaries),
             "verdict": "descriptive only; no automatic instrument adoption or role change"}
 
 

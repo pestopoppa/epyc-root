@@ -176,6 +176,8 @@ def test_two_arm_runner_preserves_native_outputs_and_bounded_configuration(prepa
     assert len(commands) == 2
     assert result["status"] == "COMPLETE"
     assert set(result["arms"]) == {"coder", "architect"}
+    assert result["comparison"]["common_profiled_tasks"] == 30
+    assert result["comparison"]["status"] == "DESCRIPTIVE"
     assert len(result["arms"]["coder"]["native_sha256"]) == 64
     assert (output / "checkpoint.json").exists()
 
@@ -508,3 +510,35 @@ def test_owned_endpoint_and_native_child_both_reaped_on_cancellation(owned_arm, 
         with pytest.raises(ProcessLookupError):
             os.killpg(child.pid, 0)
     assert all(signal.getsignal(sig) == handler for sig, handler in handlers.items())
+
+
+@pytest.mark.parametrize("overlap", [0, 29, 30])
+def test_comparison_uses_shared_tasks_not_separate_solved_cohorts(overlap):
+    coder = native(40)
+    architect = native(40)
+    # Both arms have 40 profiled tasks; only the intersection may be compared.
+    remapped = {IDS[40 - overlap + i]: value
+                for i, value in enumerate(architect["eval"].values()) if i < 40}
+    for task in IDS:
+        if task not in remapped:
+            remapped[task] = copy.deepcopy(native(0)["eval"][task])
+    architect["eval"] = remapped
+    result = runner.compare_profiles({"coder": summary(coder),
+                                      "architect": summary(architect)})
+    assert result["common_profiled_tasks"] == overlap
+    assert result["common_task_ids"] == sorted(IDS[40 - overlap:40])
+    assert result["status"] == ("DESCRIPTIVE" if overlap >= 30 else "INCONCLUSIVE")
+    assert result["conditional_harmonic_dps_norm"] == {
+        role: 40 if overlap >= 30 else None for role in ("coder", "architect")}
+
+
+def test_comparison_excludes_unshared_scores_and_preserves_zero():
+    coder, architect = native(40), native(30)
+    for task_id, task in coder["eval"].items():
+        if task_id in IDS[30:40]:
+            task["dps_norm"] = task["results"][0]["dps_norm"] = 100
+    architect["eval"][IDS[0]]["dps_norm"] = 0
+    architect["eval"][IDS[0]]["results"][0]["dps_norm"] = 0
+    result = runner.compare_profiles({"coder": summary(coder),
+                                      "architect": summary(architect)})
+    assert result["conditional_harmonic_dps_norm"] == {"coder": 40, "architect": 0}

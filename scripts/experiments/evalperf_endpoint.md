@@ -76,7 +76,15 @@ validated arm, and final `RESULT.json`. Correctness uses every sample. Failed or
 unprofiled tasks receive no efficiency sentinel. The conditional harmonic mean
 of native normalized DPS appears only with at least 30 profiled tasks, following
 the handoff's working convention; it is not a ratified comparative protocol.
-There is no automatic significance, adoption or role-change verdict.
+Per-arm means use each arm's own solved/profiled cohort and must not be compared
+as if they used the same tasks. `comparison` intersects the validated per-task
+score maps and reports both harmonic means on exactly those common task IDs.
+Fewer than 30 common tasks yields `INCONCLUSIVE` with null comparative scores,
+even if both arms separately profiled 30 or more tasks. Zero is a valid native
+score and remains zero in the harmonic mean. The shared-task comparison is
+conditional on both arms being correct/profiled; it is descriptive and cannot
+establish statistical separation. There is no automatic significance, adoption
+or role-change verdict.
 
 `CONFIG.json OUTPUT_DIR --first-sample` is a read-only publisher smoke predicate.
 It requires matching first native raw and sanitized records in the configured
