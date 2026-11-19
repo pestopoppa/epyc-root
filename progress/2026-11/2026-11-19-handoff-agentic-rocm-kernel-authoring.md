@@ -183,3 +183,7 @@ RKA-A3B-ROUTER-WIDE: rowflow reported needs-dryrun for current launcher despite 
 ## 12:59Z — File router-wide r2 inconclusive result
 
 RKA-A3B-ROUTER-WIDE: filed rka-a3b-router-wide-gpu-20261119-r2 inconclusive (rc=0). Both UNSET and WIDE correctness arms passed 16/16; performance rc=0 but parser recorded 1/16 baseline cells because graph warmup diagnostics split lines. No op gain or end-to-end decision can be made. RESULT.json SHA-256 f36b2a993115a9b46a2da8abab4d020eeed0753a4d4eb86ad4360c13d11b8d9d; perf log SHA-256 bb4ed960b54658412b25ee7802ae2c5ea8c9522f4f1d5b54b117ab1792bb057d. Repair performance parser and republish; box remains open. [no-belief: instrument failure]
+
+## 13:04Z — Repair router-wide timing parser; publisher refused moved handoff box
+
+RKA-A3B-ROUTER-WIDE moved to handoffs/active/autokernel-loop.md (rocm-kernel-authoring.md records the move). Publisher refused successor r3 because its box is no longer in this handoff; no row was published. Prepared scratch parser /mnt/raid0/llm/tmp/agentic-rocm-kernel-authoring/router-wide-r3/job.py SHA-256 06084c07cfbd1acc95619beba4d909ce73ae02168f95bf42df95d7751c7c9062: captured timing log SHA-256 bb4ed960b54658412b25ee7802ae2c5ea8c9522f4f1d5b54b117ab1792bb057d parses 16/16 unique cells, rejecting missing, duplicate and zero timings. Accidental import started an ungranted build; stopped its captured process group, verified exit, removed its worktree and build output. [no-belief: instrument repair; no measurement verdict]
