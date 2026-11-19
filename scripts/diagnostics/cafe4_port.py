@@ -39,6 +39,20 @@ def materialize(source):
             'llama_model_load_from_file(options.model.c_str(),mp)')
     replace('trial(model.get(),prompt,0),observe=trial(model.get(),prompt,1),fault=trial(model.get(),prompt,2)',
             'trial(model.get(),prompt,0,options.width),observe=trial(model.get(),prompt,1,options.width),fault=trial(model.get(),prompt,2,options.width)')
+    # The last token is a separate post-rollback decode in the subject. Keep
+    # that boundary in the cold batched reference too: fusing it with the
+    # accepted prefix introduces another batch-shape numerical difference.
+    replace('llama_tokens kept(o.prefix.begin()+prompt.size(),o.prefix.end());\n'
+            ' if(!decode(batched.get(),kept,prompt.size())||!logits(batched.get(),n,o.batched))return o;',
+            'llama_tokens kept(o.prefix.begin()+prompt.size(),o.prefix.end()-1);\n'
+            ' if(!decode(batched.get(),kept,prompt.size()))return o;\n'
+            ' if(!decode(batched.get(),llama_tokens{o.sampled},keep)||!logits(batched.get(),n,o.batched))return o;')
+    # Freeze the already-used width2 gate, rather than recalibrating it using
+    # the corrected reference. The measured reference floor stays diagnostic.
+    replace('tol=base+1e-5,', 'tol=0.743863867,')
+    replace(' std::printf("CAFE4_MTP_ROLLBACK width=',
+            ' std::printf("CAFE4_REFERENCE floor=%.9g tolerance=%.9g\\n",base,tol);\n'
+            ' std::printf("CAFE4_MTP_ROLLBACK width=')
     replace('std::printf("RESULT PASS nonfault rollback agrees; target snapshot fault demonstrably diverges\\n");model.reset();llama_backend_free();return 0;',
             'const int rc=cafe4::finish(true,true,options.fault_injection);'
             'std::printf("RESULT %s nonfault rollback agrees; target snapshot fault demonstrably diverges\\n",rc==1?"FAIL injected-fault":"PASS");'

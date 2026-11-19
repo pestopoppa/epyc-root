@@ -96,6 +96,68 @@ int main() {
         with self.assertRaises(ValueError):
             port.materialize(source.replace('mp.n_gpu_layers=0;', ''))
 
+    def test_reference_decode_boundaries_and_failure_propagation(self):
+        source = subprocess.check_output(['git', '-C', str(port.ROOT), 'cat-file', 'blob', port.BASE_BLOB], text=True)
+        generated = port.materialize(source)
+        # Execute the actual generated reference block against a model-free
+        # decoder spy. The old fused final batch fails these assertions.
+        start = generated.index(' if(!decode(batched.get(),prompt,0))return o;')
+        end = generated.index(' o.ok=true;return o;', start)
+        block = generated[start:end]
+        directory = Path(self.scratch.name)
+        cpp = directory / 'reference.cpp'
+        cpp.write_text('''#include <vector>
+#include <cassert>
+#include <memory>
+using llama_tokens = std::vector<int>;
+struct Observation { bool ok=false; int sampled=99; llama_tokens prefix; std::vector<float> batched; };
+std::vector<llama_tokens> calls;
+std::vector<int> positions;
+int fail_at=0;
+bool decode(int*,const llama_tokens& t,int pos) {
+ calls.push_back(t); positions.push_back(pos);
+ return (int)calls.size()!=fail_at;
+}
+bool logits(int*,int,std::vector<float>& out) { out={1};return true; }
+Observation reference(int accepted) {
+ Observation o; llama_tokens prompt{10,11,12};
+ o.prefix=prompt; o.prefix.push_back(20);
+ for(int i=0;i<accepted;++i)o.prefix.push_back(30+i);
+ o.prefix.push_back(o.sampled);
+ int keep=prompt.size()+1+accepted,n=1;
+ auto batched=std::make_unique<int>(0);
+''' + block + '''
+ o.ok=true;return o;
+}
+int main() {
+ for(int accepted : {1,2,31}) {
+  calls.clear(); positions.clear();fail_at=0;
+  assert(reference(accepted).ok);
+  assert(calls.size()==3);
+  assert((calls[0]==llama_tokens{10,11,12}));
+  assert(calls[1].size()==(unsigned)accepted+1 && calls[1][0]==20);
+  for(int i=0;i<accepted;++i)assert(calls[1][i+1]==30+i);
+  assert((calls[2]==llama_tokens{99}));
+  assert((positions==std::vector<int>{0,3,4+accepted}));
+  for(int fail : {1,2,3}) {
+   calls.clear(); positions.clear();fail_at=fail;
+   assert(!reference(accepted).ok);
+   assert((int)calls.size()==fail);
+  }
+ }
+}
+''')
+        binary = directory / 'reference'
+        subprocess.run(['c++', '-std=c++17', '-Wall', '-Wextra', '-Werror', str(cpp), '-o', str(binary)], check=True)
+        subprocess.run([str(binary)], check=True)
+        self.assertIn('tol=0.743863867,', generated)
+        self.assertNotIn('tol=base+1e-5', generated)
+        self.assertIn('CAFE4_REFERENCE floor=%.9g tolerance=%.9g', generated)
+        # Reference and gate edits must fail closed if the pinned base drifts.
+        for anchor in ('o.prefix.end());', 'tol=base+1e-5,'):
+            with self.subTest(anchor=anchor), self.assertRaises(ValueError):
+                port.materialize(source.replace(anchor, 'BROKEN'))
+
 
 if __name__ == '__main__':
     unittest.main()
