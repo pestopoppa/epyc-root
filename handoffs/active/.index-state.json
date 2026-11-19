@@ -2336,7 +2336,7 @@
     },
     "speculative-decoding.md": {
       "blocked": 2,
-      "closed": 139,
+      "closed": 140,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 39,
@@ -2348,11 +2348,11 @@
       },
       "row_id": "INF-50",
       "state": "active",
-      "total": 180,
+      "total": 181,
       "tracks": [
         {
           "blocked": 1,
-          "closed": 85,
+          "closed": 86,
           "gates": [],
           "guarded": 0,
           "line": 13,
@@ -2368,7 +2368,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 780,
+          "line": 781,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 29
@@ -2406,7 +2406,7 @@
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 1015,
+          "line": 1016,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5
@@ -2632,7 +2632,7 @@
       "id": "INF-06",
       "index": "inference-research-index.md",
       "line": 15,
-      "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
+      "next_action": "AK-GAP-1-SAMPLE/IDSORT step-1 row; AK-PROF-SCLK-CAPT; AITER C13 ports; H10b dense defect; AA-bisect r4; GDN-SHARE-1",
       "track": "autokernel research loop"
     },
     "INF-45": {
@@ -2661,7 +2661,7 @@
       "id": "INF-50",
       "index": "inference-research-index.md",
       "line": 26,
-      "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
+      "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
       "track": "speculative decoding mtp refresh"
     },
     "INF-59": {
@@ -2737,7 +2737,7 @@
       "id": "INF-82",
       "index": "inference-research-index.md",
       "line": 17,
-      "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
+      "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
       "track": "autokernel akx program (keep gate + all dims)"
     },
     "INF-83": {

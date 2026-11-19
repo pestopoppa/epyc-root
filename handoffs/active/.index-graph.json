@@ -702,7 +702,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T21:11:05Z",
+  "generated_at": "2026-11-19T21:15:41Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1384,7 +1384,7 @@
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-19",
-      "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
+      "next_action": "AK-GAP-1-SAMPLE/IDSORT step-1 row; AK-PROF-SCLK-CAPT; AITER C13 ports; H10b dense defect; AA-bisect r4; GDN-SHARE-1",
       "open": 113,
       "priority": 0.896,
       "priority_basis": {
@@ -1772,14 +1772,14 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 139,
+      "closed": 140,
       "dispatchable": 39,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speculative-decoding.md",
       "id": "INF-50",
       "last_advanced": "2026-11-19",
-      "next_action": "DF2-13-CLASSIFY r3; EXL3 device gate; CAFE-3",
+      "next_action": "AK-DTREE: P2 27B/A3B rows, DTREE-0 trace, DTREE-2c/2d GPU rows; DF2-13-CLASSIFY r3; EXL3 gate; CAFE-3",
       "open": 41,
       "priority": 0.9769,
       "priority_basis": {
@@ -1828,7 +1828,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 780,
+          "line": 781,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 30,
           "readiness": "blocked"
@@ -2220,7 +2220,7 @@
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 1015,
+          "line": 1016,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -2306,7 +2306,7 @@
       "handoff": "autokernel-akx-program.md",
       "id": "INF-82",
       "last_advanced": "2026-11-19",
-      "next_action": "Fix C12 CPU mul_mat IQ3_XXS/Q6_K (QDEC r3) + QDEC judge; q81 r4 edge leg; EDGE-HIP-NONFINITE; LB4.9 per-route bar",
+      "next_action": "Q38FN-DRAFT-FA-WINDOW + INDEXER-TOPK-CPU; C12 IQ3_XXS/Q6_K QDEC r3 + judge; AKX-ALL-14 C14 done; q81 r4 edge; EDGE-HIP-NONFINITE",
       "open": 56,
       "priority": 0.0011,
       "priority_basis": {

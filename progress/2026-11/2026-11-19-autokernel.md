@@ -41,3 +41,33 @@ Other sessions' 2026-11-19 `[belief: cc]` ticks without register rows (kv-cache,
 1. OP-AK-CODEBUDGET-43: the 43 code-budget overruns.
 2. OP-W1-PR: open the W1 upstream PR via the web UI.
 3. OP-ROCM102-BUILD: ROCm 10.2 experimental build, only if AK-GAP-1 shows >= 3% launch/graph overhead.
+
+## Wrap-up 2 (later 2026-11-19): C6 proof, GAP-1, C14, SCLK, DTREE
+
+All commits verified on origin/main (root, research) or on the named fork branches.
+
+| Row / track | Verdict | Evidence |
+|---|---|---|
+| INF48-C6-CONTROLLER-PROOF r11 | FUTILITY_CARRIER | research `7946e2196` (symbol gate on truncated hunk headers; clean-completion typed); root `ea31eadd5` |
+| r12 | reached the C6 oracle, crashed on `C6SplitPolicyRefusal` | research `33041e70a` (typed sealed refusal, controller continues; q8_block precision bound for quantized MUL_MAT); root `6ba3a18fd`; r13 published (smoke queued) |
+| AK-GAP-1 | PASS: idle gap/fixup futile | root `891f3ab13`; ROCm 10.2 probe and AK-RESGRID-1 not triggered; new AK-GAP-1-SAMPLE / IDSORT; step-1 row `ak-gap-1-step1-gpu-20261119` (`54bff8218`) |
+| AKX-ALL-14 | v10 row PROVEN, reopened (`55b5733c1`); repeat on C14 champion PROVEN, ticked (`bc8cf3885`) | C14 recipe registered research `71a2ce3c1` + composite_build.py; note `2fc268b0a` |
+| AK-PROF-SCLK | PASS DELTA (`9b8de907a`): MI210 sclk operand/power dependent (MMQ -297 MHz / -21% TOPS, FA -248 MHz / -10%) | AK-PROF-SCLK-CAPT act_dump tool research `123ec088e`; row published (`8092f9a8e`, `7745e8808`) |
+| AK-LOO-CONFIRM-C14 | PASS `a5ab6dbd3`: keep all four C14 CPU keeps | dtree-build contamination window in row CONTAMINATION.json (lesson: builds need region-lock claims) |
+| Q38FN-CPU-PEROP-PROFILE | PASS `fdc6c8d04`: draft FLASH_ATTN = 60% of depth growth | new Q38FN-DRAFT-FA-WINDOW, Q38FN-INDEXER-TOPK-CPU (implementation in progress) |
+| AKX-P3a census | row filed pass, box open `f1cf92109` | |
+| AK-GDN-SPEC-SPLIT | measured futile `1501154bb` | |
+
+### AK-DTREE program (operator directive: tree-verified spec decode, 27B + A3B)
+- Plan P1-P6 `d69e53711`; intake-2705..2717 `c22b5b127` (DTREE-0/A/B added).
+- P1 on fork `llama.cpp-experimental-dtree-20261119` (`25e6fee9d`, `d5f1ca4ca` recurrent seq_cp rollback bug fix, `6ad10b3bc`); box `09c17e1b4`. P2 rows amended to a fresh-prefill oracle gate `5f9937f69`.
+- AK-DTREE-2 kernels on `llama.cpp-experimental-dtree-kernels-20261119` (`126b4dd26`, `4c95e2a87`, `cc2e450d8`, `9832d0330`, `a5ea53bbd`); CPU e2e gate 80/80 vs oracle; GPU rows queued behind the am-port EA ladder.
+
+### Pipeline
+Fixed: auto-filer filed a pass on a DROP/FUTILITY rationale (`bba1c010a`, `--correct` re-files; r12 mis-filed pass corrected). Open (reported to Pipeline): "smoke queued" rows are never smoked; local republish loops running. Index regen `827b40f6a`.
+
+### Wrap-up edits
+Next-action cells refreshed for INF-06, INF-82, INF-50 in `inference-research-index.md`. Checkbox state already synced by the per-result commits above (no new flips needed).
+
+### Open
+r13; P2/P5 dtree rows; DTREE-0 trace; SCLK-CAPT; kernel op-gate row; EA ladder (EA arms show n_beta_set 0, check at filing). Operator: W1 PR (web UI), OP-AK-CODEBUDGET-43 (both already in the master queue).
