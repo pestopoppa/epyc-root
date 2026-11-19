@@ -369,8 +369,9 @@ def _rule_severity(mode, rule):
     return {'off': 'off', 'warn': 'warn', 'enforce': 'enforce'}.get(mode) or DIFF_GATE_RULE_MODES.get(rule, 'warn')
 
 
-def added_lines(repo, base=None):
-    """{relpath: {new-file line numbers added/changed}} for handoff .md files. base=None -> staged diff."""
+def added_lines(repo, base=None, removed=None):
+    """{relpath: {new-file line numbers added/changed}} for handoff .md files. base=None -> staged diff.
+    If `removed` is a dict it is filled with {relpath: set of stripped removed line texts} (move detection)."""
     import subprocess
     cmd = ['git', '-C', str(repo), 'diff', '-U0', '--no-color', '--no-ext-diff', base or '--cached', '--', *DIFF_GATE_PATHS]
     # Keep GIT_INDEX_FILE: a pathspec commit / hook runs against a temporary index and the gate must judge THAT
@@ -382,10 +383,14 @@ def added_lines(repo, base=None):
         if l.startswith('+++ '):
             cur = l[6:] if l.startswith('+++ b/') and l.endswith('.md') else None
             if cur: res.setdefault(cur, set())
+        elif l.startswith('--- '):
+            cur = None
         elif l.startswith('@@') and cur:
             m = re.search(r'\+(\d+)(?:,(\d+))?', l)
             st, n = int(m.group(1)), int(m.group(2) if m.group(2) is not None else 1)
             res[cur].update(range(st, st + n))
+        elif l.startswith('-') and cur and removed is not None:
+            removed.setdefault(cur, set()).add(l[1:].strip())
     return res
 
 
@@ -395,15 +400,17 @@ def touched_box_findings(repo, base=None):
     adding a nested child, or appending a plain evidence line under a box, does not touch the parent. The literal
     `done when` is demanded only of a box whose first line is NEW in the diff; an edited legacy box is judged by
     rubric field a (the hint is still printed)."""
-    out = []
-    for rel, added in sorted(added_lines(repo, base).items()):
+    out, removed = [], {}
+    for rel, added in sorted(added_lines(repo, base, removed).items()):
         p = os.path.join(str(repo), rel)
         if not added or not os.path.exists(p): continue
         lines = open(p, encoding='utf-8', errors='replace').read().split('\n')
         for ln, txt, ch in boxes(p):
             _, own_nums = L1.own_block(lines, ln - 1)
-            field_nums = {n + 1 for n in own_nums[1:] if FIELD_RE.search(lines[n])}
-            head_new = ln in added
+            # migration annotations (class / roll-up / frozen / inputs-missing / section) never touch a box
+            field_nums = {n + 1 for n in own_nums[1:] if FIELD_RE.search(lines[n]) and not ANNOTATION_LINE.match(lines[n])}
+            # a first line that the same diff REMOVED elsewhere in the file is a MOVE (Backlog placement), not new
+            head_new = ln in added and lines[ln - 1].strip() not in removed.get(rel, set())
             if not head_new and not (field_nums & added): continue
             r = dispatch_result(txt, ch)
             bad = {DIFF_GATE_RULES[k] for k in r['fails'] if k in DIFF_GATE_RULES}

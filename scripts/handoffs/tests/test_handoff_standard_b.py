@@ -322,3 +322,12 @@ def test_generated_domain_table_is_not_a_hand_row(tmp_path, monkeypatch):
                                      "text": "- [ ] **A-1 — do the thing** now", "gate_open": False}])
     assert nxt == "**A-1** do the thing now"
     assert IS.generated_next_action([{"state": "frozen", "frozen_until": "OP-1", "text": "x"}]) == "FROZEN until OP-1"
+
+
+def test_moved_box_with_annotations_is_not_touched(repo):
+    f = repo / "handoffs" / "active" / "fx.md"
+    new, _ = HM.migrate_text(f.read_text())
+    f.write_text(new)
+    _git(repo, "add", ".")
+    lines, n = TL.diff_gate(repo, None, "enforce")
+    assert n == 0, lines
