@@ -15,7 +15,7 @@ import test_execution_admission as fixtures
 from test_execution_admission import load, sha
 
 
-def worker(mode, *, combined=False):
+def worker(mode, *, combined=False, retained=False):
     fixture = fixtures.ExecutionAdmission(); fixture.setUp()
     try:
         root = fixture.root
@@ -49,6 +49,16 @@ def worker(mode, *, combined=False):
         fixture.config.update(output_root=str(out), preload_receipt=str(receipt),
                               enrollment={'framing_result': str(framing),
                                           'canonical_export': str(canonical)})
+        if retained:
+            from test_retained_r7 import PATHS
+            fixture.config['enrollment'].update(
+                framing_mode='retained-r7-v1', **{k: str(p) for k, p in PATHS.items()})
+            fixture.seal['sources'].update({str(p): sha(p) for p in PATHS.values()})
+            if mode == 'r7missing':
+                del fixture.seal['sources'][str(PATHS['complete_marker'])]
+            if mode == 'r7wrong':
+                fixture.config['enrollment']['framing_result'] = str(framing)
+            if mode == 'unknown': fixture.config['enrollment']['framing_mode'] = 'r7'
         destination = root / 'installed'
         install.install(destination, binding_revision=install.REVISION,
                         guard_revision='current-guard-v3',
@@ -63,8 +73,10 @@ def worker(mode, *, combined=False):
         class PrivateBinding(types.ModuleType):
             def __getattribute__(self, name):
                 if name == 'prepare':
-                    self.__dict__.update(FRAMING_SHA=sha(framing), FRAMING_RAW_SHA='b' * 64,
-                                         PROJECTION={'projection.fixture': sha(projection)})
+                    self.__dict__['PROJECTION'] = {
+                        'projection.fixture': '0' * 64 if mode == 'projection' else sha(projection)}
+                    if not retained:
+                        self.__dict__.update(FRAMING_SHA=sha(framing), FRAMING_RAW_SHA='b' * 64)
                 return super().__getattribute__(name)
         calls = []
         class PrivateDriver(types.ModuleType):
@@ -106,13 +118,17 @@ def worker(mode, *, combined=False):
                         else:
                             expected_error = {'digest': 'receipt digest mismatch',
                                               'stat': 'stat tuple drift',
-                                              'metadata': 'metadata dflash.block_count mismatch'}[mode]
+                                              'metadata': 'metadata dflash.block_count mismatch',
+                                              'r7missing': 'unsealed current prerequisite',
+                                              'r7wrong': 'unsealed current prerequisite',
+                                              'unknown': 'unknown framing enrollment mode',
+                                              'projection': 'unsealed current prerequisite'}[mode]
                             try: original()
                             except verifier.VerificationError:
                                 raise AssertionError('unexpected fixture verifier class')
                             except Exception as error:
                                 # Exception originates from the real retained module.
-                                assert type(error).__name__ == 'VerificationError', repr(error)
+                                assert type(error).__name__ == ('ValueError' if mode in ('r7missing', 'r7wrong', 'unknown', 'projection') else 'VerificationError'), repr(error)
                                 assert expected_error in str(error), str(error)
                             else: raise AssertionError('accepted invalid preload')
                             assert not calls, calls

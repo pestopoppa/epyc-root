@@ -839,3 +839,16 @@ Evidence SHA-256:
 - test_retained_r7.py: `fbe46eb6f9a4087a4d0bfd447e6c09ca857947309f0e720e15a6ac952dd9efc8`
 
 [no-belief: model-free software regression tests]
+
+## 2026-11-19 — Installed retained R7 non-dry enrollment
+
+`test_retained_r7_entry.py` passes eight isolated installed-supervisor/real-driver non-dry controls. The positive control consumes the original accepted R7 result, completion marker and two source manifests at the paths in `test_retained_r7.PATHS`, with unchanged `execution_binding.R7_PINS` and framing raw identity. It invokes the real retained preload verifier and stat checks, writes the expected preload identity output, and reaches inert witness/gate peers. Seven negative controls (receipt digest, model stat, metadata, missing completion seal, wrong R7 result, unknown enrollment mode, wrong projection pin) refuse before identity output, witness and gate. No retained input file is modified or copied.
+
+Projection bytes/pins, tiny model stat files, receipt identity and current admission/provider remain explicit private fixtures; this proves enforcement and installed composition, not original projection recovery or native/GPU qualification. Historical R14 seals and persistent installations are unchanged. No model execution, X1 replay, actual publisher smoke or parent gate completion is claimed.
+
+Validation: `python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_retained_r7_entry.py -v` (one unittest, eight isolated controls); discovery for `test_nondry_entry.py` (4), `test_retained_r7.py` (7), and `test_combined*.py` (2) also PASS. Next: qualify sealed R7 enrollment with real parser/gate routing under publisher-smoke admission, then prepare publication using actual prerequisite locations.
+
+SHA-256 identities:
+
+- `test_nondry_entry.py`: `0899f19d7a3f72430e1a665ebf7767007919338d1620dd639a7080791987f5b6`
+- `test_retained_r7_entry.py`: `225141d5e79e6a3a016affba09385fe18c9cd16f217f13592c2de24aeec0c0bb`
