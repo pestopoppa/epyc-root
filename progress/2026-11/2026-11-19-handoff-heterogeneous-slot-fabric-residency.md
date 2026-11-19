@@ -341,3 +341,7 @@ Duplicate run-end `kpf131-native-binding-impact-a1f0-r5-20261105-q` already has 
 ## 05:07Z — Consume duplicate already-filed oracle impact run-end
 
 Duplicate run-end `kpf17-oracle-impact-8952-20261105-r2-q2` already has INCONCLUSIVE verdict and FILED receipt from 2026-11-05 (rc1, operator-stopped mid-analysis for sub-quarter reshape; no native impact or scan_complete). Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf17-oracle-impact-8952-20261105-r2-q2.verdict.json`, SHA-256 `76baac2a24c89d052a1c847a7d8712e6a391383625320deb7c2b2ca84292578b`. Handoff already records successor sq3b PASS. No new result-bearing task from this event; no repeat filing, tick or row replay. [no-belief: duplicate event acknowledgment, no new finding]
+
+## 05:08Z — Consume duplicate already-filed adjacency impact run-end
+
+Duplicate run-end `hsf3-adjacency-impact-3a09-20261105-r2-sq3` already has PASS verdict and FILED receipt from 2026-11-05 (rc0; native_call LOW 5, extract LOW 3, native_rows LOW 1; skipped files remain unknown). Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/hsf3-adjacency-impact-3a09-20261105-r2-sq3.verdict.json`, SHA-256 `455f1e751a415958f563b883e56c921c91e632e6f865c91932f9079779f6f3ec`. Handoff box already ticked with the verdict. No new result-bearing task from this event; no repeat filing, tick or row replay. [no-belief: duplicate event acknowledgment, no new finding]
