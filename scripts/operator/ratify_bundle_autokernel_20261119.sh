@@ -51,6 +51,7 @@ while [ "$#" -gt 0 ]; do
   shift
 done
 
+trap 'if [ "$BASH_COMMAND" != cleanup ]; then LAST_CMD="$BASH_COMMAND"; fi' DEBUG
 say() { printf '%s\n' "$*"; }
 die() { printf 'REFUSING: %s\n' "$*" >&2; exit 65; }
 hdr() { printf '\n==== %s ====\n' "$*"; }
@@ -75,6 +76,7 @@ g "$ROOT" fetch -q origin main || die "cannot fetch origin main in $ROOT"
 VWT="$(mktemp -d "$STAGE_PARENT/bundle-autokernel-ro.XXXXXX")"; VWT_ADDED=0
 cleanup() {
   local rc=$?
+  [ "$rc" -eq 0 ] || printf 'BUNDLE EXIT rc=%s; last command: %s\n' "$rc" "${LAST_CMD:-?}" >&2
   if [ "$VWT_ADDED" -eq 1 ]; then g "$ROOT" worktree remove "$VWT" >/dev/null 2>&1 || say "WARN: could not remove read-only worktree $VWT"; fi
   rmdir "$VWT" 2>/dev/null || true
   exit "$rc"
@@ -143,24 +145,16 @@ fi
 
 # ---- push helper for item 1 (the P-SERVE-1 script commits on a branch and never pushes)
 push_s1_branch() {
-  local tokdir tok prc=0 PUSHER="$ROOT/scripts/coordination/serialized_push.py"
-  g "$ROOT" fetch -q origin main || die "cannot fetch origin main"
-  if ! g "$S1_WT" merge-base --is-ancestor origin/main HEAD; then
-    say "origin/main moved; rebasing $S1_BRANCH onto it (never amend)"
-    g "$S1_WT" rebase -q origin/main || die "rebase of $S1_BRANCH failed; resolve by hand in $S1_WT"
-  fi
-  tokdir="$(mktemp -d "$STAGE_PARENT/bundle-push-token.XXXXXX")"; chmod 700 "$tokdir"; tok="$tokdir/lease.token"
-  "$SYS_PY" "$PUSHER" --agent "$LOCK_AGENT" --repo "$ROOT" --lock-name push --acquire --token-file "$tok" >/dev/null \
-    || die "could not take the push lock for $ROOT; re-run (item 1's commit is kept on $S1_BRANCH)."
-  AGENT_ID="$LOCK_AGENT" EPYC_PUSH_LOCK_HOLDER="$LOCK_AGENT" g "$S1_WT" push -q origin HEAD:refs/heads/main || prc=$?
-  "$SYS_PY" "$PUSHER" --agent "$LOCK_AGENT" --repo "$ROOT" --lock-name push --release --token-file "$tok" >/dev/null \
-    || say "WARN: push lock release failed"
-  rm -f "$tok"; rmdir "$tokdir" 2>/dev/null || true
-  [ "$prc" -eq 0 ] || die "push of $S1_BRANCH rejected (rc=$prc). Re-run; the commit is kept and will be re-pushed."
+  local PUSHER="$ROOT/scripts/coordination/serialized_push.py" lib="$HERE/lib/push_retry.sh"
+  # shellcheck source=/dev/null
+  source "$lib"
+  ratify_push_main_retry "$ROOT" "$S1_WT" "$LOCK_AGENT" "$PUSHER" "$STAGE_PARENT" \
+    || die "push of item 1 ($S1_BRANCH) refused or failed after retries (see above). Nothing forced; the commit is kept on $S1_BRANCH and a re-run re-pushes it."
   g "$ROOT" fetch -q origin main
-  g "$ROOT" merge-base --is-ancestor "$(g "$S1_WT" rev-parse HEAD)" origin/main || die "item 1 commit is not on origin/main after the push"
+  g "$ROOT" merge-base --is-ancestor "$RATIFY_PUSHED_SHA" origin/main || die "item 1 commit $RATIFY_PUSHED_SHA is not on origin/main after the push"
   g "$ROOT" worktree remove "$S1_WT" >/dev/null 2>&1 || say "WARN: could not remove $S1_WT (plain remove)"
-  g "$ROOT" branch -d "$S1_BRANCH" >/dev/null 2>&1 || say "WARN: branch $S1_BRANCH not deleted (inspect by hand)"
+  g "$ROOT" branch -D "$S1_BRANCH" >/dev/null 2>&1 || say "WARN: branch $S1_BRANCH not deleted (inspect by hand)"
+  say "item 1 on origin/main: $RATIFY_PUSHED_SHA"
 }
 
 # ---- apply phase

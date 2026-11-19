@@ -221,16 +221,12 @@ if [ "$MODE" = "review" ]; then
   exit 0
 fi
 
-push_main() {  # repo-for-lock worktree
-  local tokdir tok prc=0
-  tokdir="$(mktemp -d "$STAGE/push-token.XXXXXX")"; chmod 700 "$tokdir"; tok="$tokdir/lease.token"
-  "$SYS_PY" "$PUSHER" --agent "$LOCK_AGENT" --repo "$1" --lock-name push --acquire --token-file "$tok" >/dev/null \
-    || die "could not take the push lock for $1; re-run."
-  AGENT_ID="$LOCK_AGENT" EPYC_PUSH_LOCK_HOLDER="$LOCK_AGENT" g "$2" push -q origin HEAD:refs/heads/main || prc=$?
-  "$SYS_PY" "$PUSHER" --agent "$LOCK_AGENT" --repo "$1" --lock-name push --release --token-file "$tok" >/dev/null \
-    || say "WARN: push lock release failed for $1"
-  rm -f "${tok:?}"; rmdir "${tokdir:?}" 2>/dev/null || true
-  [ "$prc" -eq 0 ] || die "push rejected in $2 (rc=$prc; origin/main probably moved). Re-run; applied items are skipped."
+push_main() {  # repo-for-lock worktree  (retrying, rebasing, never forced: lib/push_retry.sh)
+  local lib; lib="$(dirname "$SCRIPT_PATH")/lib/push_retry.sh"; [ -f "$lib" ] || lib="$ROOT/scripts/operator/lib/push_retry.sh"
+  # shellcheck source=/dev/null
+  source "$lib"
+  ratify_push_main_retry "$1" "$2" "$LOCK_AGENT" "$PUSHER" "$STAGE" \
+    || die "push of $2 refused or failed after retries (see above). Nothing forced; re-run, applied items are skipped."
 }
 
 # ---- research commit (+ push)
@@ -242,7 +238,7 @@ g "$RWT" commit -q -m "autokernel: loop code budget baseline, $(wc -l <"$STAGE/p
   -m "Operator-Ratified: yes" || die "research commit failed (hook?). Nothing pushed; re-run."
 RES_COMMIT="$(g "$RWT" rev-parse HEAD)"; ok "research committed ${RES_COMMIT:0:12}"
 if [ "$DO_PUSH" -eq 1 ]; then
-  push_main "$RES" "$RWT"
+  push_main "$RES" "$RWT"; RES_COMMIT="$RATIFY_PUSHED_SHA"
   g "$RES" fetch -q origin main
   g "$RES" merge-base --is-ancestor "$RES_COMMIT" origin/main || die "research $RES_COMMIT is not on origin/main after fetch"
   ok "research main $RES_COMMIT"
@@ -285,7 +281,7 @@ g "$WT" commit -q -m "RATIFIED $GATE_ID: loop code-budget baseline for new modul
   -m "Operator-Ratified: yes" || die "root commit failed (hook?); re-run."
 ROOT_COMMIT="$(g "$WT" rev-parse HEAD)"; ok "root committed ${ROOT_COMMIT:0:12}"
 if [ "$DO_PUSH" -eq 1 ]; then
-  push_main "$ROOT" "$WT"
+  push_main "$ROOT" "$WT"; ROOT_COMMIT="$RATIFY_PUSHED_SHA"
   g "$ROOT" fetch -q origin main
   g "$ROOT" merge-base --is-ancestor "$ROOT_COMMIT" origin/main || die "root $ROOT_COMMIT is not on origin/main after fetch"
 fi
