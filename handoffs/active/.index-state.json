@@ -4,7 +4,7 @@
       "blocked": 51,
       "handoffs": 14,
       "oldest_advance": "2026-11-07",
-      "open": 504
+      "open": 505
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 220
+      "open": 224
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -28,7 +28,7 @@
       "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 460
+      "open": 458
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
@@ -104,7 +104,7 @@
       "closed": 870,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 114,
+      "open": 115,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -113,7 +113,7 @@
       },
       "row_id": "INF-06",
       "state": "active",
-      "total": 986,
+      "total": 987,
       "tracks": [
         {
           "blocked": 2,
@@ -177,7 +177,7 @@
           "line": 9702,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 47
+          "open": 48
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14108,
+          "line": 14110,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14321,
+          "line": 14323,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 684,
+          "line": 716,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 996,
+          "line": 1028,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1203,
+          "line": 1235,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1529,
+          "line": 1561,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1764,
+          "line": 1796,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -1502,10 +1502,10 @@
     },
     "memory-program.md": {
       "blocked": 1,
-      "closed": 132,
+      "closed": 135,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 38,
+      "open": 36,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1514,34 +1514,34 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 171,
+      "total": 172,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 61,
+          "closed": 62,
           "gates": [],
           "guarded": 0,
           "line": 36,
           "markers": 1,
           "name": "memory-program",
-          "open": 12
+          "open": 11
         },
         {
           "blocked": 0,
-          "closed": 22,
+          "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 934,
+          "line": 936,
           "markers": 1,
           "name": "repl-session-memory-maturity",
-          "open": 10
+          "open": 9
         },
         {
           "blocked": 1,
           "closed": 40,
           "gates": [],
           "guarded": 0,
-          "line": 1408,
+          "line": 1411,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 9
@@ -1555,7 +1555,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1875,
+          "line": 1878,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -1593,7 +1593,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 903,
+          "line": 911,
           "markers": 1,
           "name": "angelslim-techniques-evaluation",
           "open": 0
@@ -1603,7 +1603,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 928,
+          "line": 936,
           "markers": 1,
           "name": "delta-mem-reproduction",
           "open": 4
@@ -1613,7 +1613,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 954,
+          "line": 962,
           "markers": 1,
           "name": "ernie-image-turbo-evaluation",
           "open": 2
@@ -1623,7 +1623,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1053,
+          "line": 1061,
           "markers": 1,
           "name": "gpu-cot-scaffold-sidecar",
           "open": 0
@@ -1633,7 +1633,7 @@
           "closed": 3,
           "gates": [],
           "guarded": 0,
-          "line": 1079,
+          "line": 1087,
           "markers": 1,
           "name": "lightning-attention-port",
           "open": 0
@@ -1643,7 +1643,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1150,
+          "line": 1158,
           "markers": 1,
           "name": "minddr-deep-research-mode",
           "open": 1
@@ -1653,7 +1653,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1212,
+          "line": 1220,
           "markers": 1,
           "name": "minimax-h3-video-generation-evaluation",
           "open": 1
@@ -1663,7 +1663,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1235,
+          "line": 1243,
           "markers": 1,
           "name": "qwen-mtp-llamacpp-port",
           "open": 1
@@ -1673,7 +1673,7 @@
           "closed": 2,
           "gates": [],
           "guarded": 0,
-          "line": 1252,
+          "line": 1260,
           "markers": 1,
           "name": "strand-rust-coder-rustevo2-verification",
           "open": 1
@@ -1683,7 +1683,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1265,
+          "line": 1273,
           "markers": 1,
           "name": "summary-token-attention-readiness",
           "open": 0
@@ -1693,7 +1693,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 1279,
+          "line": 1287,
           "markers": 1,
           "name": "tidar-one-pass-variant-b",
           "open": 0
@@ -1703,7 +1703,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 1291,
+          "line": 1299,
           "markers": 1,
           "name": "meq-carve-gpu-serving-tie-in-program",
           "open": 2
@@ -1713,7 +1713,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 1302,
+          "line": 1310,
           "markers": 1,
           "name": "meq-carve-gpu-acceleration-path",
           "open": 0
@@ -1723,7 +1723,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1311,
+          "line": 1319,
           "markers": 1,
           "name": "meq-carve-eval-tower-verification",
           "open": 0
@@ -1733,7 +1733,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1319,
+          "line": 1327,
           "markers": 1,
           "name": "meq-carve-multiscreen-attention-evaluation",
           "open": 0
@@ -1743,7 +1743,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1326,
+          "line": 1334,
           "markers": 1,
           "name": "meq-carve-speculative-decoding-mtp-refresh",
           "open": 0
@@ -1755,7 +1755,7 @@
             "INF-77"
           ],
           "guarded": 0,
-          "line": 1334,
+          "line": 1342,
           "markers": 1,
           "name": "meq-carve-glm52-reviewer-capability-gates",
           "open": 1
@@ -1765,7 +1765,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1348,
+          "line": 1356,
           "markers": 1,
           "name": "meq-carve-typed-decision-plane",
           "open": 1
@@ -1777,7 +1777,7 @@
             "UFH-01#agentic-serving-harness-fixes"
           ],
           "guarded": 0,
-          "line": 1355,
+          "line": 1363,
           "markers": 1,
           "name": "meq-carve-routing-intelligence",
           "open": 0
@@ -1787,7 +1787,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1365,
+          "line": 1373,
           "markers": 1,
           "name": "meq-carve-memento-block-reasoning-compression",
           "open": 0
@@ -1797,7 +1797,7 @@
           "closed": 1,
           "gates": [],
           "guarded": 0,
-          "line": 1379,
+          "line": 1387,
           "markers": 1,
           "name": "meq-carve-frontier-f3-data-flywheel",
           "open": 0
@@ -1807,7 +1807,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1387,
+          "line": 1395,
           "markers": 1,
           "name": "meq-carve-tq3-quantization-evaluation",
           "open": 0
@@ -1817,7 +1817,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1394,
+          "line": 1402,
           "markers": 1,
           "name": "meq-carve-multimodal-pipeline",
           "open": 0
@@ -1827,7 +1827,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1401,
+          "line": 1409,
           "markers": 1,
           "name": "meq-carve-opendataloader-pipeline-integration",
           "open": 0
@@ -1837,7 +1837,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1408,
+          "line": 1416,
           "markers": 1,
           "name": "meq-carve-document-parser-table-bench",
           "open": 0
@@ -1847,7 +1847,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1415,
+          "line": 1423,
           "markers": 1,
           "name": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 1
@@ -1869,7 +1869,7 @@
             "RTG-34#handoff-index-and-backlog-graph"
           ],
           "guarded": 0,
-          "line": 1432,
+          "line": 1440,
           "markers": 1,
           "name": "meq-carve-reboot-gated-inventory-and-staging",
           "open": 1
@@ -1879,7 +1879,7 @@
           "closed": 0,
           "gates": [],
           "guarded": 0,
-          "line": 1443,
+          "line": 1451,
           "markers": 1,
           "name": "meq-carve-repl-turn-efficiency",
           "open": 1
@@ -1889,7 +1889,7 @@
           "closed": 10,
           "gates": [],
           "guarded": 0,
-          "line": 1450,
+          "line": 1458,
           "markers": 1,
           "name": "gpu-candidates-surface-qwen38-update",
           "open": 0
@@ -1901,7 +1901,7 @@
             "EVL-08"
           ],
           "guarded": 0,
-          "line": 1606,
+          "line": 1614,
           "markers": 1,
           "name": "paw-compiled-specialists",
           "open": 3
@@ -2567,7 +2567,7 @@
       "closed": 476,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 117,
+      "open": 121,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2576,7 +2576,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 594
+      "total": 598
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,

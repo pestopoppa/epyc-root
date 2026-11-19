@@ -701,7 +701,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T10:14:35Z",
+  "generated_at": "2026-11-19T11:10:52Z",
   "nodes": [
     {
       "age_days": 9,
@@ -746,7 +746,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 903,
+          "line": 911,
           "name": "angelslim-techniques-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -755,7 +755,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 928,
+          "line": 936,
           "name": "delta-mem-reproduction",
           "open": 4,
           "readiness": "ready"
@@ -764,7 +764,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 954,
+          "line": 962,
           "name": "ernie-image-turbo-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -773,7 +773,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1053,
+          "line": 1061,
           "name": "gpu-cot-scaffold-sidecar",
           "open": 0,
           "readiness": "no_open"
@@ -782,7 +782,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1079,
+          "line": 1087,
           "name": "lightning-attention-port",
           "open": 0,
           "readiness": "no_open"
@@ -791,7 +791,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1150,
+          "line": 1158,
           "name": "minddr-deep-research-mode",
           "open": 2,
           "readiness": "ready"
@@ -800,7 +800,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1212,
+          "line": 1220,
           "name": "minimax-h3-video-generation-evaluation",
           "open": 1,
           "readiness": "ready"
@@ -809,7 +809,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1235,
+          "line": 1243,
           "name": "qwen-mtp-llamacpp-port",
           "open": 1,
           "readiness": "ready"
@@ -818,7 +818,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1252,
+          "line": 1260,
           "name": "strand-rust-coder-rustevo2-verification",
           "open": 1,
           "readiness": "ready"
@@ -827,7 +827,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1265,
+          "line": 1273,
           "name": "summary-token-attention-readiness",
           "open": 0,
           "readiness": "no_open"
@@ -836,7 +836,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1279,
+          "line": 1287,
           "name": "tidar-one-pass-variant-b",
           "open": 0,
           "readiness": "no_open"
@@ -845,7 +845,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1291,
+          "line": 1299,
           "name": "meq-carve-gpu-serving-tie-in-program",
           "open": 2,
           "readiness": "ready"
@@ -854,7 +854,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1302,
+          "line": 1310,
           "name": "meq-carve-gpu-acceleration-path",
           "open": 0,
           "readiness": "no_open"
@@ -863,7 +863,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1311,
+          "line": 1319,
           "name": "meq-carve-eval-tower-verification",
           "open": 0,
           "readiness": "no_open"
@@ -872,7 +872,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1319,
+          "line": 1327,
           "name": "meq-carve-multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -881,7 +881,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1326,
+          "line": 1334,
           "name": "meq-carve-speculative-decoding-mtp-refresh",
           "open": 0,
           "readiness": "no_open"
@@ -894,7 +894,7 @@
           "gates": [
             "INF-77"
           ],
-          "line": 1334,
+          "line": 1342,
           "name": "meq-carve-glm52-reviewer-capability-gates",
           "open": 1,
           "readiness": "blocked"
@@ -903,7 +903,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1348,
+          "line": 1356,
           "name": "meq-carve-typed-decision-plane",
           "open": 1,
           "readiness": "ready"
@@ -916,7 +916,7 @@
           "gates": [
             "UFH-01#agentic-serving-harness-fixes"
           ],
-          "line": 1355,
+          "line": 1363,
           "name": "meq-carve-routing-intelligence",
           "open": 0,
           "readiness": "no_open"
@@ -925,7 +925,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1365,
+          "line": 1373,
           "name": "meq-carve-memento-block-reasoning-compression",
           "open": 0,
           "readiness": "no_open"
@@ -934,7 +934,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1379,
+          "line": 1387,
           "name": "meq-carve-frontier-f3-data-flywheel",
           "open": 0,
           "readiness": "no_open"
@@ -943,7 +943,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1387,
+          "line": 1395,
           "name": "meq-carve-tq3-quantization-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -952,7 +952,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1394,
+          "line": 1402,
           "name": "meq-carve-multimodal-pipeline",
           "open": 0,
           "readiness": "no_open"
@@ -961,7 +961,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1401,
+          "line": 1409,
           "name": "meq-carve-opendataloader-pipeline-integration",
           "open": 0,
           "readiness": "no_open"
@@ -970,7 +970,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1408,
+          "line": 1416,
           "name": "meq-carve-document-parser-table-bench",
           "open": 0,
           "readiness": "no_open"
@@ -979,7 +979,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1415,
+          "line": 1423,
           "name": "meq-carve-fable5-window2-findings-05c-mi210-lever-category-matrix",
           "open": 1,
           "readiness": "ready"
@@ -1009,7 +1009,7 @@
             "RTG-34#dashboard-architecture-restructure",
             "RTG-34#handoff-index-and-backlog-graph"
           ],
-          "line": 1432,
+          "line": 1440,
           "name": "meq-carve-reboot-gated-inventory-and-staging",
           "open": 1,
           "readiness": "blocked"
@@ -1018,7 +1018,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 1443,
+          "line": 1451,
           "name": "meq-carve-repl-turn-efficiency",
           "open": 1,
           "readiness": "ready"
@@ -1027,7 +1027,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1450,
+          "line": 1458,
           "name": "gpu-candidates-surface-qwen38-update",
           "open": 0,
           "readiness": "no_open"
@@ -1040,7 +1040,7 @@
           "gates": [
             "EVL-08"
           ],
-          "line": 1606,
+          "line": 1614,
           "name": "paw-compiled-specialists",
           "open": 3,
           "readiness": "blocked"
@@ -1092,7 +1092,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 684,
+          "line": 716,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1101,7 +1101,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 996,
+          "line": 1028,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1110,7 +1110,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1203,
+          "line": 1235,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1119,7 +1119,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1529,
+          "line": 1561,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1128,7 +1128,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1764,
+          "line": 1796,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1139,15 +1139,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 132,
-      "dispatchable": 38,
+      "closed": 135,
+      "dispatchable": 36,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "memory-program.md",
       "id": "EVL-10",
       "last_advanced": "2026-11-19",
       "next_action": "Write M-12f scoring-validity note (absorbs M-12i; model-free); next re-embed is EG2 swap with EPD-3 folded",
-      "open": 39,
+      "open": 37,
       "priority": 0.815,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): VB-SKILLBANK-AB-WRITE producer call (owed, filed 2026-10-21): the M-23 A/B runner calls `s",
@@ -1167,27 +1167,27 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 12,
+          "dispatchable": 11,
           "gates": [],
           "line": 36,
           "name": "memory-program",
-          "open": 12,
-          "readiness": "ready"
-        },
-        {
-          "blocked_by": [],
-          "dispatchable": 10,
-          "gates": [],
-          "line": 934,
-          "name": "repl-session-memory-maturity",
-          "open": 10,
+          "open": 11,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 9,
           "gates": [],
-          "line": 1408,
+          "line": 936,
+          "name": "repl-session-memory-maturity",
+          "open": 9,
+          "readiness": "ready"
+        },
+        {
+          "blocked_by": [],
+          "dispatchable": 9,
+          "gates": [],
+          "line": 1411,
           "name": "unified-trace-memory-service",
           "open": 10,
           "readiness": "ready"
@@ -1204,7 +1204,7 @@
             "EVL-10#repl-session-memory-maturity",
             "EVL-10#unified-trace-memory-service"
           ],
-          "line": 1875,
+          "line": 1878,
           "name": "dev-harness-trace-mining",
           "open": 7,
           "readiness": "blocked"
@@ -1338,14 +1338,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 476,
-      "dispatchable": 117,
+      "dispatchable": 121,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 118,
+      "open": 122,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -1381,14 +1381,14 @@
       "blocked": 2,
       "blocked_by": [],
       "closed": 870,
-      "dispatchable": 114,
+      "dispatchable": 115,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-19",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 116,
+      "open": 117,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1480,7 +1480,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 47,
+          "dispatchable": 48,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1488,7 +1488,7 @@
           ],
           "line": 9702,
           "name": "autokernel-unified-surface-program",
-          "open": 47,
+          "open": 48,
           "readiness": "blocked"
         },
         {
@@ -1499,7 +1499,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14108,
+          "line": 14110,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1533,7 +1533,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14321,
+          "line": 14323,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
