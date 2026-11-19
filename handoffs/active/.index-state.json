@@ -3,8 +3,8 @@
     "inference-research-index.md": {
       "blocked": 50,
       "handoffs": 15,
-      "oldest_advance": "2026-11-03",
-      "open": 510
+      "oldest_advance": "2026-11-07",
+      "open": 509
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 642,
+          "line": 664,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 954,
+          "line": 976,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1161,
+          "line": 1183,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1487,
+          "line": 1509,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1722,
+          "line": 1744,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -1104,7 +1104,7 @@
           "closed": 35,
           "gates": [],
           "guarded": 0,
-          "line": 391,
+          "line": 395,
           "markers": 1,
           "name": "repl-turn-efficiency",
           "open": 15
@@ -1114,7 +1114,7 @@
           "closed": 34,
           "gates": [],
           "guarded": 0,
-          "line": 801,
+          "line": 805,
           "markers": 1,
           "name": "qwen-chat-template-evaluation",
           "open": 8
@@ -1126,7 +1126,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 1567,
+          "line": 1571,
           "markers": 1,
           "name": "harness-improvement-loop",
           "open": 15
@@ -1138,7 +1138,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2248,
+          "line": 2252,
           "markers": 1,
           "name": "opencode-shell-integration",
           "open": 2
@@ -1154,7 +1154,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2331,
+          "line": 2335,
           "markers": 1,
           "name": "repl-embedding-retrieval",
           "open": 17
@@ -1167,7 +1167,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 2781,
+          "line": 2785,
           "markers": 1,
           "name": "agentic-serving-harness-fixes",
           "open": 25
@@ -1177,7 +1177,7 @@
           "closed": 7,
           "gates": null,
           "guarded": 0,
-          "line": 3651,
+          "line": 3655,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1
@@ -1426,7 +1426,7 @@
           "closed": 24,
           "gates": [],
           "guarded": 0,
-          "line": 1755,
+          "line": 1759,
           "markers": 1,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 8
@@ -1439,7 +1439,7 @@
             "INF-79"
           ],
           "guarded": 0,
-          "line": 2178,
+          "line": 2182,
           "markers": 1,
           "name": "kv-unified-stack-rollout",
           "open": 41
@@ -1479,7 +1479,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 629,
+          "line": 640,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1489,7 +1489,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1007,
+          "line": 1019,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1623,
+          "line": 1635,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1770,
+          "line": 1782,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -2403,7 +2403,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 745,
+          "line": 751,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 17
@@ -2412,10 +2412,10 @@
     },
     "speech-and-multimodal.md": {
       "blocked": 41,
-      "closed": 120,
+      "closed": 121,
       "guarded": 0,
-      "last_advanced": "2026-11-03",
-      "open": 30,
+      "last_advanced": "2026-11-19",
+      "open": 29,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2428,20 +2428,20 @@
       "tracks": [
         {
           "blocked": 41,
-          "closed": 75,
+          "closed": 76,
           "gates": null,
           "guarded": 0,
           "line": 0,
           "markers": 0,
           "name": "(untracked)",
-          "open": 25
+          "open": 24
         },
         {
           "blocked": 0,
           "closed": 45,
           "gates": [],
           "guarded": 0,
-          "line": 986,
+          "line": 988,
           "markers": 1,
           "name": "multimodal-pipeline",
           "open": 5

@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T05:44:22Z",
+  "generated_at": "2026-11-19T06:58:39Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1104,7 +1104,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 642,
+          "line": 664,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1113,7 +1113,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 954,
+          "line": 976,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1122,7 +1122,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1161,
+          "line": 1183,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1131,7 +1131,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1487,
+          "line": 1509,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1140,7 +1140,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1722,
+          "line": 1744,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -1850,7 +1850,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 745,
+          "line": 751,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18,
           "readiness": "blocked"
@@ -1904,7 +1904,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 629,
+          "line": 640,
           "name": "attention-matching-kv-compaction",
           "open": 4,
           "readiness": "ready"
@@ -1913,7 +1913,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1007,
+          "line": 1019,
           "name": "multiscreen-attention-evaluation",
           "open": 0,
           "readiness": "no_open"
@@ -1922,7 +1922,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1623,
+          "line": 1635,
           "name": "streaming-llm-baseline",
           "open": 0,
           "readiness": "no_open"
@@ -1931,7 +1931,7 @@
           "blocked_by": [],
           "dispatchable": 12,
           "gates": [],
-          "line": 1770,
+          "line": 1782,
           "name": "triattention-kv-selection",
           "open": 13,
           "readiness": "ready"
@@ -2200,18 +2200,18 @@
       "track": "deepseek v41 flash evaluation"
     },
     {
-      "age_days": 16,
+      "age_days": 0,
       "blocked": 41,
       "blocked_by": [],
-      "closed": 120,
-      "dispatchable": 30,
+      "closed": 121,
+      "dispatchable": 29,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "speech-and-multimodal.md",
       "id": "INF-79",
-      "last_advanced": "2026-11-03",
+      "last_advanced": "2026-11-19",
       "next_action": "Qualify the repaired STT5 offline scorer, retain filed WER, then finish STT3 acceptance and STT7 predictions",
-      "open": 71,
+      "open": 70,
       "priority": 0.948,
       "priority_basis": {
         "basis": "T0 inference-prep best open item (P): inference-prep codex-ni-parakeet-observed-canary-20261027: harness fix",
@@ -2231,18 +2231,18 @@
       "tracks": [
         {
           "blocked_by": [],
-          "dispatchable": 25,
+          "dispatchable": 24,
           "gates": null,
           "line": 0,
           "name": "(untracked)",
-          "open": 66,
+          "open": 65,
           "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 5,
           "gates": [],
-          "line": 986,
+          "line": 988,
           "name": "multimodal-pipeline",
           "open": 5,
           "readiness": "ready"
@@ -3626,7 +3626,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1755,
+          "line": 1759,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3641,7 +3641,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2178,
+          "line": 2182,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
@@ -3714,7 +3714,7 @@
           "blocked_by": [],
           "dispatchable": 15,
           "gates": [],
-          "line": 391,
+          "line": 395,
           "name": "repl-turn-efficiency",
           "open": 15,
           "readiness": "ready"
@@ -3723,7 +3723,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 801,
+          "line": 805,
           "name": "qwen-chat-template-evaluation",
           "open": 8,
           "readiness": "ready"
@@ -3736,7 +3736,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 1567,
+          "line": 1571,
           "name": "harness-improvement-loop",
           "open": 16,
           "readiness": "blocked"
@@ -3749,7 +3749,7 @@
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2248,
+          "line": 2252,
           "name": "opencode-shell-integration",
           "open": 2,
           "readiness": "blocked"
@@ -3770,7 +3770,7 @@
             "UFH-01#qwen-chat-template-evaluation",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2331,
+          "line": 2335,
           "name": "repl-embedding-retrieval",
           "open": 19,
           "readiness": "blocked"
@@ -3785,7 +3785,7 @@
             "INF-77",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 2781,
+          "line": 2785,
           "name": "agentic-serving-harness-fixes",
           "open": 25,
           "readiness": "blocked"
@@ -3796,7 +3796,7 @@
           ],
           "dispatchable": 1,
           "gates": null,
-          "line": 3651,
+          "line": 3655,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 1,
           "readiness": "blocked"
