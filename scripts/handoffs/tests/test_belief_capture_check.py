@@ -315,3 +315,16 @@ class ReceiptStateVerdictPrefix(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+def test_unified_suffix_fixture_line():
+    """Handoff standard decision 1: the unified `✅ date [belief] verdict` form keeps task identity and evidence."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("bcc", CHECKER)
+    bcc = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bcc)
+    body_open = "**DEMO-9 — measure decode t/s.**"
+    body_done = "**DEMO-9 — measure decode t/s.** ✅ 2026-11-19 [belief: clm_u1] KEEP +3.1% decode"
+    assert bcc.same_task(bcc.identity(body_open), bcc.identity(body_done))
+    assert "KEEP" in bcc.completion_evidence(body_done)
+    assert bcc.TAG_ANY.search(body_done).group(2) == "clm_u1"

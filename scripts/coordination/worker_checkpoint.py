@@ -314,8 +314,9 @@ def _update_handoff(path: Path, req: Request, checkpoint_id: str, day: str) -> N
     marked = [(i, m) for i, m in boxes if marker in m.group("body")]
     if req.outcome == "completed":
         expected = _done_body(req, day, checkpoint_id)
-        legacy = _legacy_done_body(req, day, checkpoint_id)
-        exact_done = [(i, m) for i, m in marked if m.group("body") in (expected, legacy)]
+        # idempotency keys on task_text + marker only; the summary between them may differ on replay (review S3)
+        exact_done = [(i, m) for i, m in marked
+                      if m.group("body").startswith(req.task_text + " ✅ ") and m.group("body").endswith(marker)]
         if len(exact_done) == 1 and not opens:
             return
         if marked and not exact_done:

@@ -429,3 +429,10 @@ class DailyFlowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class UnifiedSuffixTests(unittest.TestCase):
+    def test_unified_tick_suffix_matches_plain(self):
+        # handoff standard decision 1: `✅ date [belief] verdict` is a flip decoration too
+        self.assertEqual(bt._task_key("**S1: instrument relevance logging**"),
+                         bt._task_key("**S1: instrument relevance logging** ✅ 2026-11-19 [belief: clm_u1] KEEP +3.1% decode"))

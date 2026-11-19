@@ -571,3 +571,9 @@ class ServerActivityLoaderTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class UnifiedSuffixCountTests(unittest.TestCase):
+    def test_unified_tick_counts_done(self):
+        done, total, source, tasks = hp.count_tasks("- [x] **A-1** measure ✅ 2026-11-19 [belief: clm_u1] KEEP +3.1% decode\n- [ ] **A-2** next\n")
+        self.assertEqual((done, total, source), (1, 2, "checkboxes"))

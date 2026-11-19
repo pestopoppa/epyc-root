@@ -646,3 +646,15 @@ def test_done_body_unified_and_legacy_recognised() -> None:
     assert fc.parse_tick("- [x] " + body)["form"] == "unified"
     assert wc._legacy_done_body(req, "2026-11-19", "wcp-abc").endswith("✅ 2026-11-19 <!-- worker-checkpoint:wcp-abc -->")
 
+
+def test_replay_with_changed_summary_is_idempotent(tmp_path: Path) -> None:
+    h = tmp_path / "h.md"
+    task = "**X-2** do it"
+    h.write_text(f"- [ ] {task}\n", encoding="utf-8")
+    base = dict(agent="mainA", task_id="t", task_text=task, handoff="h.md", outcome="completed", spec_ref="",
+                boundary_reason="", next_context="", major_checkpoint=False, validations=())
+    wc._update_handoff(h, wc.Request(summary="first summary", **base), "wcp-x", "2026-11-19")
+    once = h.read_text(encoding="utf-8")
+    wc._update_handoff(h, wc.Request(summary="a different summary", **base), "wcp-x", "2026-11-19")
+    assert h.read_text(encoding="utf-8") == once and "first summary" in once
+

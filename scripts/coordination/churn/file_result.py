@@ -452,8 +452,8 @@ def main(argv=None):
         hpath, token = task.rsplit(":", 1)
         try:
             flip_checkbox.flip(handoff_path(a.lane, hpath), token, datetime.date.today().isoformat(),
-                               f"rc={rc} {verdict}; {tick}", dry_run=False,
-                               belief=f"no-belief: row {rid} filed by file_result")
+                               f"{verdict} rc={rc}; {tick}; result {result_path or 'n/a'}", dry_run=False,
+                               belief="cc")   # review S2: a filed row result is a result tick, result path on the line
             print(f"TICKED {token} in {hpath}")
         except (flip_checkbox.CheckboxFlipError, ValueError) as e:
             print(f"ERROR tick failed: {e}", file=sys.stderr); return 5

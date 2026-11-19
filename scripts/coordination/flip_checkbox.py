@@ -18,10 +18,16 @@ TICK SUFFIX (handoff standard Rev 1 §2.2, operator decision 1, 2026-11-19): ONE
 ``✅ <date> [belief: cc|clm_<id>] <verdict>`` or ``✅ <date> [no-belief: <reason>] <verdict>``.
 ``tick_suffix()`` is the only writer of it and ``parse_tick()`` the shared reader; ``parse_tick`` also
 accepts the legacy forms (``✅ date (note)`` from this module before 2026-11-19, ``✅ date [belief: x]``
-from churn/wrapup.py, ``✅ date <!-- worker-checkpoint:… -->`` from /log). This module is the INTERNAL
-primitive of ``churn/wrapup.py`` (and /log, ``worker_checkpoint.py``): agents tick through wrapup.py,
-never by calling ``flip`` directly. ``flip(..., evidence_note=...)`` without a ``belief`` records
-``[no-belief: unrecorded]`` so the suffix stays parseable.
+from churn/wrapup.py, ``✅ date <!-- worker-checkpoint:… -->`` from /log), and a tag
+placed elsewhere on the line (``form='tag-elsewhere'``).
+
+SINGLE WRITER — allow-list. Ticks are written only by these callers of this module, and by nothing else:
+  * ``scripts/coordination/churn/wrapup.py``   (agents and the dispatcher: ``flip_line``)
+  * ``scripts/coordination/worker_checkpoint.py`` (/log: ``tick_suffix``; the only ``allow_unrecorded`` user)
+  * ``scripts/coordination/churn/file_result.py`` (row filing: ``flip`` with ``belief="cc"`` + result path)
+  * the batch loop (``entry_verdict.py`` / ``compile_inference_batch.py``) reads anchors only
+    (``_find_anchor_lines``) and never flips.
+A belief is required: ``flip()`` / ``flip_line()`` without one raise ``CheckboxFlipError``.
   * ``dry_run`` defaults to True: the diff is computed and returned but the file
     is never written unless the caller passes ``dry_run=False`` explicitly.
 
@@ -45,11 +51,17 @@ class CheckboxFlipError(RuntimeError):
 
 
 BELIEF_RX = re.compile(r"^(cc|clm_[A-Za-z0-9_-]+|no-belief: \S.*)$")
-NO_BELIEF_DEFAULT = "no-belief: unrecorded"
+UNRECORDED = "no-belief: unrecorded"   # only with allow_unrecorded=True (reserved for /log checkpoints)
 # `✅ <date>` then optional `[belief: x]` / `[no-belief: x]`, then the verdict (legacy `(note)` accepted).
 _TICK_RX = re.compile(r"✅\s*(?P<date>\d{4}-\d{2}-\d{2})(?P<rest>.*)$")
 _TAG_RX = re.compile(r"^\s*\[(?:belief:\s*(?P<b>[^\]]+)|(?P<nb>no-belief:\s*[^\]]*))\]")
 _MARKER_RX = re.compile(r"\s*<!--.*?-->\s*")
+TAG_ANY = re.compile(r"\[(no-belief|belief):\s*([^\]]*)\]", re.I)   # same shape as belief_capture_check.TAG_ANY
+
+
+def _tag_value(t: re.Match) -> str:
+    kind, val = t.group(1).lower(), t.group(2).strip()
+    return f"no-belief: {val}" if kind == "no-belief" else val
 
 
 def belief_tag(belief: str) -> str:
@@ -60,42 +72,71 @@ def belief_tag(belief: str) -> str:
     return f"[{b}]" if b.startswith("no-belief:") else f"[belief: {b}]"
 
 
-def tick_suffix(date: str, belief: str | None = None, verdict: str = "") -> str:
-    """The ONE tick suffix: `✅ <date> [belief: …|no-belief: …] <verdict>` (no leading space)."""
+def tick_suffix(date: str, belief: str | None = None, verdict: str = "", allow_unrecorded: bool = False) -> str:
+    """The ONE tick suffix: `✅ <date> [belief: …|no-belief: …] <verdict>` (no leading space).
+
+    A belief is REQUIRED (review S2): None raises unless allow_unrecorded=True (/log only). A result tick
+    (`cc` / `clm_*`) must carry a verdict."""
     if not re.match(r"^\d{4}-\d{2}-\d{2}$", date or ""):
         raise CheckboxFlipError(f"tick date must be YYYY-MM-DD, got {date!r}")
-    out = f"✅ {date} {belief_tag(belief or NO_BELIEF_DEFAULT)}"
+    if not belief:
+        if not allow_unrecorded:
+            raise CheckboxFlipError("tick needs a belief: cc | clm_<id> | 'no-belief: <reason>'")
+        belief = UNRECORDED
+    if not belief.startswith("no-belief:") and not (verdict or "").strip():
+        raise CheckboxFlipError(f"result tick [belief: {belief}] needs a verdict on the line")
+    out = f"✅ {date} {belief_tag(belief)}"
     v = " ".join((verdict or "").split())
     return f"{out} {v}" if v else out
 
 
 def parse_tick(line: str) -> dict | None:
-    """{date, belief, verdict, form} for a ticked line's suffix, or None when it carries no `✅ <date>`.
+    """{date, belief, verdict, form} for a ticked line's suffix, or None when it carries neither a `✅ <date>` nor a
+    belief tag.
 
-    form: `unified` (`✅ d [belief|no-belief] verdict`), `belief-only` (wrapup.py before 2026-11-19, no verdict),
-    `note` (`✅ d (note)`, flip_checkbox before 2026-11-19), `marker` (worker_checkpoint `<!-- … -->`), `bare`.
-    `belief` is `cc` / `clm_<id>` / `no-belief: <reason>` / None.
+    form: `unified` (`✅ d [belief|no-belief] verdict`), `belief-only` (tag right after the date, no verdict),
+    `tag-elsewhere` (a legacy tag NOT right after the date: after a note, before the `✅`, or on a line with no `✅`
+    at all — file_result's old auto-tick; date may then be None), `note` (`✅ d (note)` / `✅ d — text`, no tag),
+    `marker` (worker_checkpoint `<!-- … -->` only), `bare`.
+    The LAST `✅ <date>` on the line is the tick (a parenthesised `(✅ date)` or a `✅` quoted in the task text is
+    history). With several tags the one after the last `✅` wins. A same-line HTML comment is stripped from the
+    verdict; the verdict is the text after the date with the chosen tag removed.
     """
     m = re.match(r".*" + _TICK_RX.pattern, line)   # greedy prefix: the LAST `✅ date` is the tick
-    if not m:
+    tags = list(TAG_ANY.finditer(line))
+    if not m and not tags:
         return None
+    if not m:
+        t = tags[-1]
+        return {"date": None, "belief": _tag_value(t), "verdict": "", "form": "tag-elsewhere"}
     raw = m.group("rest")
     rest = _MARKER_RX.sub(" ", raw)
-    belief, form = None, None
     t = _TAG_RX.match(rest)
     if t:
         belief = (t.group("b") or t.group("nb")).strip()
-        rest = rest[t.end():]
+        verdict = " ".join(rest[t.end():].split())
+        return {"date": m.group("date"), "belief": belief, "verdict": verdict,
+                "form": "unified" if verdict else "belief-only"}
+    after = [x for x in tags if x.start() >= m.start("rest")]
+    chosen = after[-1] if after else (tags[-1] if tags else None)
+    if chosen is not None:
+        if chosen.start() >= m.start("rest"):
+            off = m.start("rest")
+            rest = _MARKER_RX.sub(" ", raw[:chosen.start() - off] + raw[chosen.end() - off:])
+        verdict = " ".join(rest.split())
+        if re.match(r"^\(.*\)$", verdict):
+            verdict = verdict[1:-1].strip()
+        return {"date": m.group("date"), "belief": _tag_value(chosen), "verdict": verdict, "form": "tag-elsewhere"}
     verdict = " ".join(rest.split())
-    if t:
-        form = "unified" if verdict else "belief-only"
-    elif verdict:
+    if verdict.startswith(")"):                    # `(✅ date)`: the closing paren of a quoted tick is not a verdict
+        verdict = verdict[1:].strip()
+    if verdict:
         form = "note"
         if re.match(r"^\(.*\)$", verdict):
             verdict = verdict[1:-1].strip()
     else:
         form = "marker" if "<!--" in raw else "bare"
-    return {"date": m.group("date"), "belief": belief, "verdict": verdict, "form": form}
+    return {"date": m.group("date"), "belief": None, "verdict": verdict, "form": form}
 
 
 # ``- [ ]`` then a bold token ``**<token>`` with a right boundary so that
@@ -122,22 +163,25 @@ def _find_anchor_lines(lines: list[str], token: str) -> list[int]:
     return [i for i, line in enumerate(lines) if pat.match(line)]
 
 
-def flip_line(line: str, date: str, belief: str | None = None, verdict: str = "", trailer: str = "") -> str:
+def flip_line(line: str, date: str, belief: str | None = None, verdict: str = "", trailer: str = "",
+              allow_unrecorded: bool = False) -> str:
     """Flip ONE open box line: `[ ]` -> `[x]` and append `tick_suffix(...)` (+ an optional trailer such as an
     HTML marker). Preserves indentation and the existing text; refuses a line that is not an open box."""
     if not re.match(r"^\s*[-*] \[ \]", line):
         raise CheckboxFlipError(f"not an open checkbox line: {line[:80]!r}")
     flipped = re.sub(r"^(\s*[-*]) \[ \]", r"\1 [x]", line, count=1)
-    out = flipped.rstrip() + " " + tick_suffix(date, belief, verdict)
+    out = flipped.rstrip() + " " + tick_suffix(date, belief, verdict, allow_unrecorded)
     return out + (" " + trailer.strip() if trailer and trailer.strip() else "")
 
 
-def _flip_line(line: str, date: str, evidence_note: str, belief: str | None = None) -> str:
+def _flip_line(line: str, date: str, evidence_note: str, belief: str | None = None,
+               allow_unrecorded: bool = False) -> str:
     """Back-compat wrapper: the evidence note becomes the verdict of the unified suffix."""
-    return flip_line(line, date, belief, evidence_note)
+    return flip_line(line, date, belief, evidence_note, allow_unrecorded=allow_unrecorded)
 
 
-def _apply_one(text: str, token: str, date: str, evidence_note: str, belief: str | None = None) -> tuple[str, str]:
+def _apply_one(text: str, token: str, date: str, evidence_note: str, belief: str | None = None,
+               allow_unrecorded: bool = False) -> tuple[str, str]:
     """Apply one flip to ``text``. Returns ``(new_text, changed_line_preview)``.
 
     Raises :class:`CheckboxFlipError` on 0 or >1 anchor matches.
@@ -165,7 +209,7 @@ def _apply_one(text: str, token: str, date: str, evidence_note: str, belief: str
     elif original_line.endswith("\n"):
         newline = "\n"
     body = original_line[: len(original_line) - len(newline)]
-    new_body = _flip_line(body, date, evidence_note, belief)
+    new_body = _flip_line(body, date, evidence_note, belief, allow_unrecorded)
     lines[i] = new_body + newline
     return "".join(lines), new_body
 
@@ -188,6 +232,7 @@ def flip(
     evidence_note: str = "",
     dry_run: bool = True,
     belief: str | None = None,
+    allow_unrecorded: bool = False,
 ) -> str:
     """Flip a single ``- [ ] **<token>`` checkbox to ``- [x] ... ✅ <date> [belief|no-belief] <note>``.
 
@@ -200,7 +245,7 @@ def flip(
     except FileNotFoundError as exc:
         raise CheckboxFlipError(f"handoff file not found: {path}") from exc
 
-    after, _ = _apply_one(before, checkbox_token, date, evidence_note, belief)
+    after, _ = _apply_one(before, checkbox_token, date, evidence_note, belief, allow_unrecorded)
     diff = _unified_diff(before, after, str(path))
     if not dry_run:
         path.write_text(after)

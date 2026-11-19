@@ -94,8 +94,8 @@ class WrapupTests(unittest.TestCase):
         self.assertEqual(ho.count("- [x]"), 2)
         line = [ln for ln in ho.splitlines() if "D-1" in ln][0]
         self.assertTrue(line.startswith("- [x]") and "✅ 20" in line and "[no-belief: conformance only]" in line, line)
-        # handoff standard decision 1: ONE suffix `✅ date [belief] verdict`; verdict defaults to the message's first sentence
-        self.assertRegex(line, r"✅ \d{4}-\d{2}-\d{2} \[no-belief: conformance only\] Finish D-1$")
+        # handoff standard decision 1: ONE suffix `✅ date [belief] verdict`; a no-belief tick may omit the verdict
+        self.assertRegex(line, r"✅ \d{4}-\d{2}-\d{2} \[no-belief: conformance only\]$")
         prog = [f for f in files if f.startswith("progress/")][0]
         ptxt = open(os.path.join(self.lane, prog)).read()
         self.assertTrue(ptxt.startswith("# "), ptxt)
@@ -294,7 +294,14 @@ class TestTickVerdicts(unittest.TestCase):
     def test_explicit_verdict_str_and_list(self):
         self.assertEqual(wu.tick_verdicts({"ticks": ["a", "b"], "verdict": "KEEP +3%", "message": "m"}), ["KEEP +3%"] * 2)
         self.assertEqual(wu.tick_verdicts({"ticks": ["a", "b"], "verdict": ["PASS", "FAIL"]}), ["PASS", "FAIL"])
-        self.assertEqual(wu.tick_verdicts({"ticks": ["a"], "message": "Land X. More detail."}), ["Land X."])
+        self.assertEqual(wu.tick_verdicts({"ticks": ["a"], "message": "Land X. More detail."}), [""])   # never the message
+
+    def test_result_tick_requires_verdict(self):
+        rec = {"slug": "s", "state": "progress", "task_text": "t", "ticks": ["a"], "progress_md": "p", "paths": [],
+               "belief": "clm_x1", "message": "m"}
+        with self.assertRaises(wu.WrapupError):
+            wu.validate(rec)
+        wu.validate(dict(rec, verdict="KEEP +3%"))
 
     def test_bad_verdict_shape_refused(self):
         rec = {"slug": "s", "state": "progress", "task_text": "t", "ticks": ["a", "b"], "progress_md": "p", "paths": [],
