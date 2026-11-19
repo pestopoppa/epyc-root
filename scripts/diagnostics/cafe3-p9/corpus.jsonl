@@ -1,0 +1,3 @@
+{"id": "code", "prompt": "Write a Python implementation of a bounded least recently used cache with get and put operations. Include clear invariants, a short explanation and several usage examples. Do not end before the implementation and examples are complete."}
+{"id": "prose", "prompt": "Explain in detail how a database write-ahead log makes transactions durable. Describe normal writes, checkpoints, crash recovery, partial records and ordering constraints, with concrete examples."}
+{"id": "reasoning", "prompt": "Design a deterministic scheduler for tasks with dependencies, deadlines and resource requirements. Work through a concrete example with six tasks, explain the algorithm, and provide pseudocode and failure handling."}

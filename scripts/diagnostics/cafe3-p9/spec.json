@@ -1,0 +1,26 @@
+{
+  "id": "df2-cafe3-p9-cpu-20261119",
+  "owner": "handoff-df2",
+  "launcher": "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/launch.sh",
+  "lane": "cpu",
+  "estimate_s": 3600,
+  "min_window_s": 3600,
+  "result_path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/RESULT.json",
+  "result_format": "json",
+  "decision_rule": "P9 PASS iff all tokens match static-0 (100%), adaptive aggregate request-wall tokens/s >=1.01 times the fastest static width 0..3, and same-request post-exploration zero-to-positive probe recovery occurs within 128 completed rounds. Missing recovery is inconclusive; late recovery or identity/speed threshold violation fails. Malformed/incomplete custody refuses assessment. Descriptive whole-arm timing only; no significance claim.",
+  "verdict_by": "agent",
+  "handoff_task": "handoffs/active/speculative-decoding.md:CAFE-3",
+  "priority_rank": 45,
+  "kind": "compute",
+  "dryrun_native_result": true,
+  "scratch_root": "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119",
+  "keep": [
+    "cafe3-p9/**",
+    "cafe3-adaptive/*.py",
+    "cafe3-build/*.py",
+    "cafe3-hip-build/*.py"
+  ],
+  "first_progress_s": 300,
+  "smoke_predicate": "python3 /mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/runtime.py predicate fe6598567dfe2c13d641c4cf8f4ff237492c7bd8907c8e467d7a1da9856d5827",
+  "notes": "Smoke qualifies sealed real inputs, qualified full CPU build and actual compiled server --help without model load. No smoke inference or P9 verdict. Native grant seals dynamic placement/contexts before model processes. All five arms share command/build/models. Capture and offline assessment only; no production changes."
+}

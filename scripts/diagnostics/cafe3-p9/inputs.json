@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.cafe3.p9-inputs.v1",
+  "row": "df2-cafe3-p9-cpu-20261119",
+  "port": 18793,
+  "prepared": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/prepared.json",
+    "sha256": "477284c4da1366a63670a05afcc58bbf3f4e6a3f51f983f50df523996bb8b40b"
+  },
+  "protocol": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/protocol.json",
+    "sha256": "dc4307b5f19b985d2bf9fcff220a248f19bd621b3be4557a8d94afbded7a7816"
+  },
+  "build": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-cpu-build-r3-20261119/RESULT.json",
+    "sha256": "5a75e3d994b485143c86b13b8abb1b4b2b87de1e801be222169f4f9671910978"
+  },
+  "runtime": {
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-adaptive/launch_context.py": "68540c853cc9ecf73a69712f7848ad301b49d06e2b34f73eca77e39af61a7938",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-adaptive/multi_arm.py": "1ff9ad1b4a0823770ba99a61afedf750c65e7a28f9a01a8090ac9aada055878e",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-adaptive/native_runner.py": "3842b427715b3f5fc3235aecd6eed11e4e3e87ae4c43a684767892d876045754",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-adaptive/p9_grade.py": "eff6be2529472a21268dc7011e6bdd4488f92515e8ed00473632ed320a198660",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-adaptive/protocol_requests.py": "ebbf8a18c9862986f0d74af4e2ef3a6d5106e3d57474bb98fc5548722834984c",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-build/driver.py": "4205a4af38aee964aa20ca217cf4897095144922d5c5b1bb319d1f5f33dc89b0",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-hip-build/driver.py": "6d209ff939a063c2a0746040e9e84d43da37987be5b83617f5f514645b6d2b7e",
+    "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/runtime.py": "86301fd05cd714fab84fdc942127b42f9021662c86b7fcb46d490059a48e0261"
+  }
+}

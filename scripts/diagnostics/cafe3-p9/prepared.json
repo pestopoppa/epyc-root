@@ -1,0 +1,38 @@
+{
+  "schema": "epyc.cafe3.prepared.v1",
+  "models": {
+    "target": {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "sha256": "a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348",
+      "identity": {
+        "device": 2431,
+        "inode": 96505457,
+        "size": 29047086048,
+        "mtime_ns": 1786727071030792493,
+        "ctime_ns": 1786727071283192651
+      }
+    },
+    "draft": {
+      "path": "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "sha256": "7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751",
+      "identity": {
+        "device": 2431,
+        "inode": 96211175,
+        "size": 2056414752,
+        "mtime_ns": 1787172135435655139,
+        "ctime_ns": 1787174924804276376
+      }
+    }
+  },
+  "corpus": {
+    "path": "/mnt/raid0/llm/tmp/df2/cafe3-p9-cpu-20261119/cafe3-p9/corpus.jsonl",
+    "sha256": "28fe6166386a25b548d5529db02df31a4b7f3e24e5180e92982f7bc69ebdcd31",
+    "identity": {
+      "device": 2431,
+      "inode": 200342166,
+      "size": 737,
+      "mtime_ns": 1795123063659981263,
+      "ctime_ns": 1795123063659981263
+    }
+  }
+}
