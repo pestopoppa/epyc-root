@@ -47,3 +47,7 @@ Filed ROCK-AITER prebuild r4: rc=0, RESULT complete; 41 final modules built or c
 ## 02:38Z — Inspect the dispatched AITER run-end and the C6 controller fix checkpoint
 
 The dispatched vllm-aiter-gfx90a-gpu-20261111-r3 event was already filed on 2026-11-12 with its receipt and ROCK-AITER-GFX90A-VLLM tick. The existing verdict records attention KEEP (prefill 1.109x/1.103x), GEMM and RMS NO_GAIN; result SHA-256 cb663f174e9e7c98c538c088ebed0b1d6cfb8763b3ce4f82bbf11b051baeb52c. The operator parked the vLLM track. INF48-LIVE-1's typed EvidenceProducerError fix resides in epyc-inference-research; this dispatch limits edits and commits to the epyc-root lane, so that fix cannot be implemented under the current lane restriction.
+
+## 02:39Z — Resolve the dispatched C6 native residency run-end against its existing filing
+
+The dispatched c6-native-residency-20261109-r3 event was already filed and receipted on 2026-11-10, with INF48-C6-LIVE-PROOF already ticked. RESULT.json reports backend-matched ratio 1.0, CPU NMSE 0.000119933249, three bitwise-equal legs and KFD/VRAM residency for each; the pre-registered rule is PASS. The controller-level proof remains open after r8's untyped EvidenceProducerError.
