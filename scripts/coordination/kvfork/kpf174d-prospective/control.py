@@ -4,6 +4,7 @@ import argparse, hashlib, importlib.util, json, math, os, shutil, signal, sys, t
 from pathlib import Path
 from types import SimpleNamespace
 from layout_witness import parse, witness, compare, Invalid
+from bound_custody import validate_custody, verify_mappings
 D=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('prior', '/mnt/raid0/llm/tmp/cal-1026/kpf174d-c1-layout-source/run.py')
 prior=importlib.util.module_from_spec(spec);spec.loader.exec_module(prior)
@@ -41,6 +42,7 @@ def resume_binding(expected,proof,model,smoke):
   if hashlib.sha256(Path(name.strip()).read_bytes()).hexdigest()!=digest:
    raise k.Abort('source pin mismatch: '+name)
  return {'schema':'kpf174d-cell-binding/v1','binary_sha256':expected,
+         'custody':validate_custody(D, BIN.parent, proof),
          'build_proof':digest_json(proof),'sources_sha256':hashlib.sha256(manifest.read_bytes()).hexdigest(),
          'inputs_sha256':hashlib.sha256((D/'exact-inputs.json').read_bytes()).hexdigest(),
          'argv_sha256':hashlib.sha256(ARGV.read_bytes()).hexdigest(),'model':model,'smoke':smoke}
@@ -117,7 +119,9 @@ class Runner(b.Runner):
   if env.get('LLAMA_KPF_LAYOUT_TRACE')!='1' or env.get('LLAMA_KPF_ITEM4_TRACE')!='1':raise k.Abort('native trace env mismatch')
   if self.srv.readback.get('runtime_threads_unpinned_count')!=0:raise k.Abort('escaped CPU affinity')
   maps=Path(f'/proc/{pid}/maps').read_text()
-  if not any(str(BIN.parent) in ln and 'libggml-hip.so' in ln for ln in maps.splitlines()):raise k.Abort('native HIP mapping absent')
+  proof=json.loads((D/'BUILD-PROOF.json').read_text())
+  self.custody=validate_custody(D, BIN.parent, proof)
+  self.mapped_custody=verify_mappings(D, BIN.parent, maps)
  def _vram_loop(self):
   pid=self.srv.proc.pid
   with open(self.vram_file,'a') as fh:
@@ -273,6 +277,9 @@ def main():
  rc=0
  try:
   atomic(OUT/'STATE.json',status);runner.start()
+  if runner.custody!=binding['custody']:raise k.Abort('custody changed during server start')
+  status['mapped_custody']=runner.mapped_custody
+  atomic(OUT/'STATE.json',status)
   for cell in (data['cells'][:1] if args.smoke else data['cells']):
    if time.time()>=end-(160 if args.smoke else 420) or Path(os.environ['FILLER_STOPFILE']).exists():rc=75;break
    arm=cell['original_failed_arm'];cid=f"g{cell['group']}-S{cell['suffix_tokens']}-{arm}"
