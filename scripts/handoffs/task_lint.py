@@ -317,7 +317,7 @@ def run_dispatch(paths, as_json=False):
 # HANDOFF_BOX_GATE overrides: default (per-rule table below) | warn (everything warns) | off | enforce (a and f fail).
 # ---------------------------------------------------------------------------------------------------------------------
 DIFF_GATE_ENV = 'HANDOFF_BOX_GATE'
-DIFF_GATE_DEFAULT = 'default'
+DIFF_GATE_DEFAULT = 'warn'  # 2026-11-19: S1 review - gate over-matches (nested children); warn until Stage B fix, then back to 'default'
 DIFF_GATE_RULE_MODES = {'a': 'enforce', 'f': 'warn'}      # per-rule severity in `default` mode
 DIFF_GATE_RULES = {'a': 'a', 'g-done-when': 'a', 'f': 'f', 'g-inputs': 'f'}
 DIFF_GATE_PATHS = ('handoffs/active/', 'handoffs/blocked/')
