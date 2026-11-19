@@ -1,5 +1,7 @@
 """Offline controls for row ownership and refusal; never loads a model."""
 import json
+import hashlib
+import os
 import signal
 from pathlib import Path
 import subprocess
@@ -11,6 +13,43 @@ import live_proof_job as job
 
 
 class LiveProofTests(unittest.TestCase):
+    @unittest.skipUnless((job.STORE/'bin/llama-server').exists(), 'pinned v10 store absent')
+    def test_full_argv_parses_on_content_pinned_v10_without_loading_model(self):
+        # Bind the parser to content, not a directory or a version string.
+        expected = {
+            'llama-server': '2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b',
+            'libllama-common.so.0.0.10303': '0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb',
+            'libllama-server-impl.so': 'd9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f',
+        }
+        for name, digest in expected.items():
+            with (job.STORE/'bin'/name).open('rb') as stream:
+                self.assertEqual(hashlib.file_digest(stream, 'sha256').hexdigest(), digest)
+        env = dict(os.environ, LD_LIBRARY_PATH=f'{job.STORE}/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib')
+        with tempfile.TemporaryDirectory() as slots:
+            command = job.argv('/nonexistent/model.gguf', Path(slots), 4)
+            self._assert_v10_parser(command, env)
+
+    def _assert_v10_parser(self, command, env):
+        # Help at the END still parses every preceding option, without loading
+        # weights. The negative control proves unsupported flags cannot hide.
+        bad = subprocess.run(command + ['--load-threads', '4', '--help'], env=env,
+                             capture_output=True, text=True, timeout=15)
+        self.assertNotEqual(bad.returncode, 0)
+        self.assertIn('invalid argument: --load-threads', bad.stdout+bad.stderr)
+        good = subprocess.run(command + ['--help'], env=env, capture_output=True,
+                              text=True, timeout=15)
+        self.assertEqual(good.returncode, 0, good.stdout+good.stderr)
+        self.assertIn('--rope-scaling', good.stdout)
+
+    def test_v10_argv_retains_proof_settings_without_new_loader_flag(self):
+        command = job.argv('unused.gguf', Path('/unused/slots'), 4)
+        self.assertNotIn('--load-threads', command)
+        for flag, value in (('-t', '4'), ('-tb', '4'), ('-c', '524288'),
+                            ('-np', '1'), ('--rope-scaling', 'yarn'),
+                            ('--verbosity', '4'), ('-ctk', 'q8_0'), ('-ctv', 'q8_0')):
+            self.assertEqual(command[command.index(flag)+1], value)
+        self.assertIn('--no-mmap', command)
+
     def test_keeper_stop_before_launch_retains_interrupted_result(self):
         with tempfile.TemporaryDirectory() as directory:
             d = Path(directory)

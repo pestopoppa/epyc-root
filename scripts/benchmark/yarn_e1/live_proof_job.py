@@ -30,10 +30,12 @@ def request_stop(signum, _frame):
 
 
 def argv(model, slots, threads):
+    # This row pins production v10, which predates --load-threads. Keep its
+    # native loader; generation and batch thread counts remain explicit.
     return [str(STORE/'bin/llama-server'), '-m', model, '--host', '127.0.0.1',
             '--port', str(PORT), '-np', '1', '-t', str(threads), '-tb', str(threads),
             '-ub', '2048', '--flash-attn', 'on', '--jinja', '-ctk', 'q8_0',
-            '-ctv', 'q8_0', '--no-mmap', '--load-threads', str(threads),
+            '-ctv', 'q8_0', '--no-mmap',
             '-ngl', 'all', '--cache-ram', '0', '--chat-template-file', TEMPLATE,
             '--device', 'ROCm0', '--slot-save-path', str(slots), '--verbosity', '4',
             '-c', '524288', '--rope-scaling', 'yarn', '--rope-scale', '2',
