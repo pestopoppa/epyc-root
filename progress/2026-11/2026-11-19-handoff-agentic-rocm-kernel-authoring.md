@@ -75,3 +75,7 @@ C15-GV-BW: row c15-gv-bw-gpu-20261118 ended rc=0, but its DROP(FUTILITY_OP) verd
 ## 03:18Z — Repair C15 GV bandwidth aggregate parser and publish continuation for smoke
 
 C15-GV-BW continuation: original parser matched kv=4 inside nh_kv=4, making every aggregate null and wrongly stopping. In scratch row c15-gv-bw-gpu-20261119-r2, anchor kv to the comma-delimited key and make missing aggregates FUTILITY_INSTRUMENT, never DROP; replay of original result units yields 128k geometric means pd2 1.02765, pd3 1.02050, al 1.60832, al2 1.59587. The row repeats the registered protocol, with the wiki prompt tokenized once before publication using C14 llama-tokenize. Published via publish_row.py; GPU busy, smoke queued, no PASS yet. The box remains open. Original row RESULT SHA-256 9ca85f68f8b5813b20373ac1f3c987fbf05e5632f6db28259a0abe07296a2fbb; continuation scripts and inputs sealed in /mnt/raid0/llm/tmp/c15-gv-bw-gpu-20261119-r2/SOURCE.sha256. [belief: cc]
+
+## 03:32Z — Reconcile duplicate run-end event for previously filed INF48-EQV-FA-RESCALE
+
+Duplicate run-end event for inf48-eqv-fa-rescale-gpu-20261116-r2: rc=0; existing FILED receipt and verdict dated 2026-11-16 already acknowledge it. The handoff already records the subsequent offline rescore, KEEP(CAUGHT), with six mutant-only MMA failures; RESCORE-r2.json SHA-256 232dd23a4d22290a4aa7dd5e72fe67956562089a416613954c6f11f77aaf1ef3. Original filed verdict remains inconclusive on instrumentation, including missed per-case residency; preserve that limitation when interpreting the rescore. No new measurement.
