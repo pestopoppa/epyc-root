@@ -325,3 +325,7 @@ Duplicate dispatcher event `kpf182-component-impact-8952-20261105-r3-q2`: existi
 ## 05:03Z — Consume duplicate run-end event for already-filed KPF-62.5 source-impact row
 
 Duplicate run-end event for `kpf625-server-impact-8952-20261105-r2-q`: existing verdict and FILED receipt already record rc=1 / INCONCLUSIVE (guard refusal before analyze; source-reference scan partial only). No new result-bearing task in this event; no box tick, repeat filing, or row replay. Existing verdict evidence: `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf625-server-impact-8952-20261105-r2-q.verdict.json`, SHA-256 `4cb5430994a3844cc4682ca01864bd610aab6d7272ba27c437c88d4f2f4c4608`. KPF-62.5 remains open for server wiring; its successor impact PASS is already recorded. [no-belief: duplicate event acknowledgment, no new finding]
+
+## 05:04Z — Consume duplicate already-filed KPF-62.5 successor run-end
+
+Duplicate run-end `kpf625-server-impact-8952-20261105-r2-q2-sq3` already has PASS verdict and FILED receipt from 2026-11-05; handoff already records the three LOW impacts and nonpartial scan. No new result-bearing task from this event; no tick, repeat filing or compute. Existing verdict `/mnt/raid0/llm/tmp/compute-flags/filing-done/kpf625-server-impact-8952-20261105-r2-q2-sq3.verdict.json`, SHA-256 `6fcd9bfdb4a8f86105a7d8966f523d8a5895d7d416962108c6ab7b4414d152a2`. KPF-62.5 remains open for server wiring. [no-belief: duplicate event acknowledgment, no new finding]
