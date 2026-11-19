@@ -175,3 +175,7 @@ RKA-A3B-ROUTER-WIDE: The r2 smoke build failed when the requested deletion of ou
 ## 07:41Z — Check router-wide smoke availability and clear resolved C6 alerts
 
 RKA-A3B-ROUTER-WIDE r2 remains in smoke; out/src is a detached worktree at bb3294c71b9d02fb8040a4d71dfec75f5522b4dc. Acknowledged five C6 smoke alerts superseded by the documented r3 hardware results (residency backend match 1.0, NMSE 1.2e-4; corpus 26/26, sensitivity and specificity 1.0). Other mailbox alerts remain. [no-belief: operational status]
+
+## 08:54Z — Submit router-wide current launcher for qualification
+
+RKA-A3B-ROUTER-WIDE: rowflow reported needs-dryrun for current launcher despite earlier SMOKE_OK; submitted spec to publish_row.py for fresh qualification. Outcome pending. Historical alerts not acknowledged without resolution. [no-belief: qualification pending]
