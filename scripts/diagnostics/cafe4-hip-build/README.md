@@ -113,3 +113,34 @@ Existing evidence, referenced in place:
 
 Filing record: `/mnt/raid0/llm/tmp/compute-flags/filing-done/df2-cafe4-modes-hip-build-r2-20261119.verdict.json`.
 [no-belief: build qualification failure only; no native measurement]
+
+R3 export-validator repair (2026-11-19)
+--------------------------------------
+
+The driver now requires exact defined text exports `iqk_mul_mat` and
+`ggml_iqk_try_mul_mat` in the hash-bound CPU library, and
+`ggml_backend_cuda_reg` in the hash-bound HIP library. `nm -D --defined-only
+--format=posix` excludes undefined imports; exact symbol names exclude substring
+false positives. Existing local linkage, artifact hashes, Clang compatibility,
+HIP configuration and gfx90a image checks remain required. The digest reader
+now closes its input stream. No kernel or numerical threshold changes.
+
+Eight regression tests PASS via
+`python3 -m unittest discover -s scripts/diagnostics/cafe4-hip-build -p test_driver.py -v`.
+Tests compile small ELF fixtures and exercise the full receipt validator with
+controlled input bindings: actual export names pass; undefined IQK imports,
+similarly named HIP exports, the old incorrect HIP name, either unbound
+library, missing gfx90a and nonlocal linkage fail. These fixtures establish
+validator behavior only, not full-build or GPU qualification.
+
+Driver SHA-256 `4df295a2f19413d2abe2cfc4cef9df48ebcdb0f24559fba056710f02c186b2aa`.
+Regression source SHA-256 `502b47a1466d78d27ec3fe4da0d4b1ce290a649cfa040c7c4af62fa98425b15e`.
+
+The checked-in spec, launcher and input bindings now describe R3
+`df2-cafe4-modes-hip-build-r3-20261119`; it is **not published**.
+Next: materialize its small runtime inputs under
+`/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119` from the retained R2
+candidate/header/supervisor (verify existing bindings), then run
+`publish_row.py` on this spec and consume its smoke result. Keep the original
+CPU numerical threshold while diagnosing cold-prefix/reference geometry.
+[no-belief: validator code and model-free regression tests only]

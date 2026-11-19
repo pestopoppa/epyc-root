@@ -9,7 +9,7 @@ import sys
 import tempfile
 import time
 
-D = Path('/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r2-20261119')
+D = Path('/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r3-20261119')
 S = Path('/mnt/raid0/llm/tmp/df2/cafe4-modes-source')
 COMMIT = 'ffc1bac82eeca6f9099e1ccd9ba49703c460a115'
 PATCH = '351a431702613a5cad8d165c6959dbcde12a928963b8833bfa4668abb743e4dd'
@@ -21,7 +21,8 @@ MARKERS = (b'CAFE4_MTP_LOAD_ENABLED', b'CAFE4_MTP_ROLLBACK',
 
 
 def digest(path):
-    return hashlib.file_digest(Path(path).open('rb'), 'sha256').hexdigest()
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
 def inputs():
@@ -36,6 +37,17 @@ def inputs():
     if subprocess.check_output(['git', '-C', str(S), 'ls-files', '--others', '--exclude-standard']):
         raise ValueError('untracked experimental source')
     return record
+
+
+def require_exports(library, required):
+    """Require exact, defined code exports, never imports or substring matches."""
+    output = subprocess.check_output(
+        ['nm', '-D', '--defined-only', '--format=posix', str(library)], text=True)
+    defined = {fields[0] for line in output.splitlines()
+               if len(fields := line.split()) >= 2 and fields[1] in ('T', 'W')}
+    missing = set(required) - defined
+    if missing:
+        raise ValueError(f'compiled exports missing from {library}: {sorted(missing)}')
 
 
 def validate(record):
@@ -70,16 +82,16 @@ def validate(record):
         if IQK_COMPAT not in cache or CLANGXX not in cache:
             raise ValueError('missing Clang IQK compatibility configuration')
         cpu_lib = (run / 'build/bin/libggml-cpu.so').resolve(strict=True)
-        if str(cpu_lib) not in record['files'] or b'iqk_convert_repack' not in subprocess.check_output(['nm', '-D', str(cpu_lib)]):
-            raise ValueError('compiled IQK implementation missing')
+        if str(cpu_lib) not in record['files']:
+            raise ValueError('IQK library not hash-bound')
+        require_exports(cpu_lib, ('iqk_mul_mat', 'ggml_iqk_try_mul_mat'))
         if 'GGML_HIP:BOOL=ON' not in cache or 'CMAKE_HIP_ARCHITECTURES:UNINITIALIZED=gfx90a' not in cache and 'CMAKE_HIP_ARCHITECTURES:STRING=gfx90a' not in cache:
             raise ValueError('missing HIP/gfx90a build configuration')
         hip_lib = (run / 'build/bin/libggml-hip.so').resolve(strict=True)
         if str(hip_lib) not in record['files']:
             raise ValueError('HIP library not hash-bound')
-        symbols = subprocess.check_output(['nm', '-D', str(hip_lib)])
-        if b'ggml_backend_hip_reg' not in symbols:
-            raise ValueError('compiled HIP backend registration missing')
+        # v10 HIP uses the CUDA API registration name, in libggml-hip.
+        require_exports(hip_lib, ('ggml_backend_cuda_reg',))
         if b'gfx90a' not in subprocess.check_output(['strings', str(hip_lib)]):
             raise ValueError('compiled gfx90a image marker missing')
     elif mode == 'smoke':
