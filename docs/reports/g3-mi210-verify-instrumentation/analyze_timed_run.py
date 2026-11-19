@@ -31,6 +31,7 @@ def clocks_stable(samples, tolerance_s=0.05):
 def analyze(*, trace, expected_layer_ids, baseline, samples, card, pid, backend, backend_sha256,
             complete, drained, device, pid_birth, topology_stable):
     result = {'status': 'UNKNOWN', 'reasons': [], 'trace': None, 'correlations': [],
+              'coverage': None,
               'scope': 'Observed dispatches only; KFD VRAM is per captured PID and card VRAM is device-wide; no bandwidth or performance conclusion.'}
     if complete is not True or drained is not True or topology_stable is not True:
         result['reasons'].append('incomplete capture, unverified drain or changed device topology')
@@ -48,7 +49,14 @@ def analyze(*, trace, expected_layer_ids, baseline, samples, card, pid, backend,
         calls = [v for c in candidates for v in c['native_timing']]
         joins = correlate_residency(calls=calls, samples=samples, pid=pid, birth=pid_birth, gpu_id=device['gpu_id'])
         result['correlations'] = joins
-        if not any(j['status'] == 'BOUNDED_OBSERVATION' for j in joins):
+        if len(joins) != len(calls):
+            raise ValueError('residency correlation count differs from native dispatch count')
+        bounded = sum(j['status'] == 'BOUNDED_OBSERVATION' for j in joins)
+        result['coverage'] = {'expected_dispatches': len(calls),
+                              'bounded_dispatches': bounded,
+                              'unknown_dispatches': len(calls) - bounded,
+                              'complete': bounded == len(calls)}
+        if not bounded:
             result['reasons'].append('no in-invocation dispatch overlaps a complete residency observation')
             return result
         # Restrict any VEC observation to calls with at least one matched dispatch;
@@ -61,7 +69,12 @@ def analyze(*, trace, expected_layer_ids, baseline, samples, card, pid, backend,
                 if (c['invocation'], timing['native_dispatch']) in matches:
                     observed.append({'invocation': c['invocation'], 'kernel': dispatch['kernel'],
                                      'draft_length': c['draft_length'], 'layer': dispatch['layer']})
-        result['status'] = 'SCOPED_DISPATCH_OBSERVED'
+        if result['coverage']['complete']:
+            result['status'] = 'SCOPED_DISPATCH_OBSERVED'
+        else:
+            result['status'] = 'PARTIAL_SCOPED_DISPATCH_OBSERVED'
+            result['reasons'].append('residency coverage incomplete: '
+                                     f'{bounded}/{len(calls)} native dispatches bounded')
         result['observed'] = observed
         result['vec_observed'] = any(x['kernel'] == 100 for x in observed)
         return result
