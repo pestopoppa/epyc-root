@@ -37,7 +37,8 @@ GQA query heads belonging to this KV head are pooled on the query row axis.
 Do not mix distinct KV heads or layers. The native cell carrier shares retained
 positions across heads **and layers**, so the capture/selection stage must supply
 the same indices to every shard. Independent per-head top-k selection cannot be
-loaded into that carrier. Selection itself is not implemented here.
+loaded into that carrier. `convert.py` now supplies a common deterministic uniform
+selection with both prefix endpoints; it does not optimize the selection.
 
 The sidecar JSON requires `source_commit`, `model_identity`, `capture_id`, integer
 `layer`, integer `kv_head`, positive `attention_scale`, `coordinates: "post_rope"`,
@@ -147,9 +148,9 @@ used the AM-PORT-2 BUILD.json source pin above and verified its CPU-library dige
 `1cdfde8202836f92cf0ed115c37a1540cf0dc880154b8ee6a1f50d37d75b48ec`
 before linking. Original evidence remains in
 `/mnt/raid0/llm/tmp/triattention-kv-selection/am-port3-native/`; no binaries or
-source trees are vendored here. Real-model capture, NPZ conversion with original
-position/query IDs, shared selection, end-to-end fitted carrier loading and
-decode remain unimplemented.
+source trees are vendored here. The driver/converter below implement the capture,
+original-position/query-ID conversion, shared selection and fitted loading paths.
+Executing the fully linked patched build on a model remains a row task.
 
 ## Native beta mask and C2 loading primitives
 
@@ -273,3 +274,84 @@ context-install/default-off decode checks, calibration driver/NPZ conversion,
 native compact-output quality, 36 GiB residency and 32K decode still require a
 published row. Multi-head HIP FA support and default-off throughput/KLD remain
 unmeasured; syntax and model-free tests cannot close those gates.
+
+## Calibration/append driver and frozen-prefix conversion
+
+`driver.cpp` supplies two separate native invocations against `integration.patch`:
+
+* `capture`: decode prepared prefix token IDs in bounded batches, save its native
+  sequence state (including recurrent state), then capture exactly one suffix
+  ubatch. Persist the actual native physical-row/original-position map and split
+  suffix positions into alternating fit/eval sets. Every GQA head at a position
+  stays in the same split. Model tokenization/preparation happens before the row.
+* `reload`: restore that saved prefix and verify the saved token IDs; prune only
+  the attention cache to the common original selection, install head-specific
+  beta/C2, then run a bounded greedy append probe. The first token is supplied
+  from full-prefix logits; EOS does not shorten the fixed stability probe. This
+  probe records completed steps and refuses nonfinite logits. It does not score
+  quality or compare default-off performance/KLD.
+
+Capture `RESULT.json` records `prefix_greedy_token` before evaluating the suffix;
+use that value as reload's `first_decode_token`.
+
+Use `run_driver.py` from an admitted row launcher. It seals successful capture
+outputs with state/completion SHA-256 and verifies state/carrier/identity bindings
+before reload. Invoking the C++ executable directly bypasses these content checks.
+The row must additionally prove the linked binary contains the exact patch and
+headers, and bind model/prepared inputs to their approved identities. A config's
+`source_commit` string alone is not a binary freshness proof.
+
+Compile the driver with C++17, **installed patched `src` first in the include
+search order**, then the lane AM-PORT-3 directory, `include`, `ggml/include`, and
+`vendor`. It uses the kernel's vendored nlohmann header and internal context API.
+Link the complete patched llama/ggml libraries and set that build's own
+`LD_LIBRARY_PATH`. Merely linking the original AM-PORT-2 library cannot supply
+`am_install`. No full patched link/model execution has been verified yet.
+
+Config common fields: `mode`, new `out` directory, `model`, `model_identity`,
+`source_commit` (the exact pin above), `capture_id`, `prefix_tokens` (prepared ID
+array, 2..32768), `n_ctx` (<=36864), `n_gpu_layers`, and `threads`. Capture adds
+`calibration_tokens` (2..512 IDs fitting the context). Reload adds `prefix_state`,
+`carrier`, `decode_steps` (1..32768, within remaining context capacity), and
+`first_decode_token`. F16 K/V, ordinary FA, sequence zero and disabled PORT-1 beta
+are required. Callback and its bounded capture remain disabled during reload.
+There is no serving deployment or quantized-KV fallback.
+
+After a completed capture wrapper invocation:
+
+```bash
+python scripts/benchmark/am_port3/convert.py --capture <capture-out>/native \
+  --provenance <capture-out>/PROVENANCE.json --keep <ceil(prefix_tokens/5)> \
+  --out <new-fit-directory>
+python scripts/benchmark/am_port3/run_driver.py --driver <patched-build>/am-driver \
+  --config <reload-config.json> --converted <new-fit-directory>
+```
+
+Conversion crops **all calibration tokens and padding** from K/V, resolves original
+prefix order through the native row map and requires every captured query to see
+every prefix key with zero mask bias. It recomputes reference outputs on the
+frozen prefix. Thus held-out fitter cosines compare a mathematical prefix view;
+they are not the native causal suffix outputs (which also attend suffix keys).
+The saved recurrent prefix state must be restored before install; leaving the
+post-calibration recurrent state would pair incompatible histories. Native
+reload-output agreement still requires a separate captured compact attention
+check in the model row; the current append probe alone cannot close AM-PORT-3.
+
+Conversion writes per-head NPZ/metadata/FIT records and `carrier.bin`, followed
+last by `CONVERT.json` with capture/provenance/carrier hashes. A partial directory
+without this manifest is refused by the wrapper. The native reader accepts only
+the bounded little-endian `EPYCAM03` format: uint32 layer count/kept count, shared
+int64 positions, then each layer's uint32 layer/head/value-width fields followed
+by head-major float32 beta and C2. It validates shared positions, dimensions,
+finiteness, duplicate layers, truncation and trailing bytes before installation.
+Fits that overflow F16 C2 or the native beta bounds refuse conversion.
+
+The model-free tests exercise a two-layer, 4Q/2KV-head 5x duplicate-cache fixture
+with deliberately permuted physical rows, unused padding and extreme suffix
+values; conversion excludes the suffix and recovers beta=log(5), C2 and held-out
+cosine >0.999999. The compiled C++ reader independently checks all carrier axes
+and malformed-file refusals. Run with `AM_BUNDLE_TEST=<compiled
+test_native_bundle.cpp executable>` alongside the unittest command above. There
+are 19 Python tests, including the native-reader invocation when this variable
+is set. The driver passes patched-source syntax checks; full CPU/HIP builds,
+GPU capture/reload agreement, default-off controls and residency remain row work.
