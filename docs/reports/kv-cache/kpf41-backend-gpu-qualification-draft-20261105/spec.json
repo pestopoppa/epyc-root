@@ -1,7 +1,7 @@
 {
-  "id": "kpf41-backend-gpu-qualification-20261105",
-  "state": "DRAFT_AWAITING_CHECKBOX_AND_PUBLISHER_SMOKE",
-  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41.BACKEND-GPU-QUALIFICATION",
+  "id": "kpf41-backend-gpu-qualification-r3-20261119",
+  "state": "PENDING_PUBLISHER_SMOKE",
+  "handoff_task": "handoffs/active/kv-cache-program.md:KPF-41.BACKEND-GPU-R3-QUALIFICATION",
   "source_commit": "15caecbbf4cb27452dbd87fa1a68a0e75098388e",
   "build_receipt": "docs/reports/kv-cache/kpf41-backend-build-result-20261105/RESULT.json",
   "build_files_sha256": {
@@ -28,22 +28,24 @@
   "ram_gib": 4,
   "estimate_s": 3600,
   "smoke": "four-CPU synthetic parser/cleanup and publisher GPU residency witness; no target corpus",
-  "status_note": "Draft launcher prepared; publisher smoke not run and explicit open checkbox absent.",
+  "status_note": "Corrected interleaved-output parser; retained r2 remains INCONCLUSIVE; fresh before/after custody required.",
   "owner": "h-heterogeneous-slot-fabric-residency",
-  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-20261105/launch.sh",
+  "launcher": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-r3-20261119/launch.sh",
   "lane": "gpu",
   "regions": "mi210_0,184-187",
-  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-20261105/out/RESULT.json",
+  "result_path": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-r3-20261119/out/RESULT.json",
   "result_format": "json",
   "priority_rank": 35,
   "kind": "compute",
   "smoke_timeout_s": 300,
   "dryrun_native_result": true,
-  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-20261105",
+  "scratch_root": "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-gpu-qualification-r3-20261119",
   "keep": [
     "**"
   ],
   "unit_key": "progress",
   "lineage": "kpf41-backend-gpu-qualification",
-  "notes": "Publisher smoke executes synthetic parser/cleanup and pinned bounded 192 MiB model-free GPU witness; no target corpus."
+  "notes": "Same-lineage parser repair with offline retained-log replay, malformed/missing-status negative controls and post-parse-error custody check. No kernel changes.",
+  "supersedes": "kpf41-backend-gpu-qualification-r2-20261119",
+  "verdict_by": "agent"
 }

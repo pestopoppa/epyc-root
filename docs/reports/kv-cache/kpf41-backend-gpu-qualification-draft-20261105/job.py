@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import ctypes, hashlib, json, os, pathlib, re, signal, subprocess, sys, time
 D=pathlib.Path(__file__).resolve().parent
-BUILD=pathlib.Path('/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build'); ID='kpf41-backend-gpu-qualification-20261105'; OWNED={}; SIGNALS=[]; STOP=False
+BUILD=pathlib.Path('/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf41-backend-tests-build-20261105/build'); ID='kpf41-backend-gpu-qualification-r3-20261119'; OWNED={}; SIGNALS=[]; STOP=False
 libc=ctypes.CDLL(None,use_errno=True)
 def sha(p):
  h=hashlib.sha256()
@@ -70,7 +70,7 @@ def close_owned():
 def signal_stop(*_):
  global STOP
  STOP=True
-SOURCE=BUILD.parent/'source'
+SOURCE=D/'source'
 COMMIT='15caecbbf4cb27452dbd87fa1a68a0e75098388e'
 def check():
  r=json.loads((D/'receipt.json').read_text())
@@ -80,28 +80,16 @@ def check():
  def git(*args):return subprocess.check_output(['git','-C',str(SOURCE),*args],text=True).strip()
  if git('rev-parse','HEAD')!=COMMIT or git('status','--porcelain','--untracked-files=no'):raise RuntimeError('source drift')
  if subprocess.run(['git','-C',str(SOURCE),'symbolic-ref','-q','HEAD'],stdout=subprocess.DEVNULL).returncode==0:raise RuntimeError('source not detached')
- env={'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(BUILD/'bin')+':/opt/rocm/lib'}
+ env={'FILLER_ID':os.environ['FILLER_ID'],'PATH':'/usr/bin:/bin','LD_LIBRARY_PATH':str(BUILD/'bin')+':/opt/rocm/lib'}
  linkage=subprocess.check_output(['ldd',str(BUILD/'bin/test-backend-ops')],env=env,text=True)
  for name in ('libggml.so','libggml-base.so','libggml-cpu.so'):
   if not re.search(r'^\s*'+re.escape(name)+r'\S*\s*=>\s*'+re.escape(str(BUILD/'bin'))+r'/',linkage,re.M):raise RuntimeError('linkage mismatch: '+name)
  return linkage
-def parse_corpus(text):
- text=re.sub(r'\x1b\[[0-9;]*m','',text)
- cases=[]
- for line in text.splitlines():
-  if not line.startswith('  FLASH_ATTN_EXT('):continue
-  m=re.fullmatch(r'  FLASH_ATTN_EXT\((.*)\): (OK|FAIL|not supported \[ROCm0\])\s*',line)
-  if not m:raise ValueError('malformed case: '+line[:180])
-  params,status=m.groups();shared=re.search(r'(?:^|,)\s*n_shared=([0-9]+)(?:,|$)',params)
-  cases.append({'params':params,'status':status,'shared':bool(shared and int(shared.group(1))>0)})
- summaries=re.findall(r'^\s*(\d+)/(\d+) tests passed\s*$',text,re.M)
- backends=re.findall(r'^(\d+)/(\d+) backends passed\s*$',text,re.M)
- if len(summaries)!=1 or len(backends)!=1 or (int(backends[0][0])<1 or backends[0][0]!=backends[0][1]) or not re.search(r'^  Backend ROCm0: OK\s*$',text,re.M) or not re.search(r'\nOK\s*$',text):raise ValueError('missing/invalid summary')
- supported=[c for c in cases if c['status']!='not supported [ROCm0]'];shared=[c for c in cases if c['shared']]
- if not supported or tuple(map(int,summaries[0]))!=(len(supported),len(supported)) or any(c['status']!='OK' for c in supported):raise ValueError('nonzero case/summary mismatch')
- if len(shared)!=25 or any(c['status']!='OK' for c in shared):raise ValueError('shared-trunk missing or unsupported')
- return {'cases':cases,'selected':len(cases),'supported':len(supported),'unsupported':len(cases)-len(supported),'shared_trunk':len(shared)}
+from corpus_parser import parse_corpus
 def smoke_test():
+ import unittest, test_corpus_parser
+ suite=unittest.defaultTestLoader.loadTestsFromModule(test_corpus_parser)
+ if not unittest.TextTestRunner().run(suite).wasSuccessful():raise RuntimeError('parser regression controls failed')
  prefix='  FLASH_ATTN_EXT(n_shared=2048): OK\n'*25
  good=prefix+'  25/25 tests passed\n  Backend ROCm0: OK\n1/1 backends passed\nOK\n'
  assert parse_corpus(good)['shared_trunk']==25
@@ -129,7 +117,7 @@ def gpu_smoke():
  if sha(exe)!='c79d3f6069abd42c334b0203b1e621dc175582779b5c33e8c49018f22cb17076':raise RuntimeError('witness binary drift')
  stop=pathlib.Path(os.environ['FILLER_STOPFILE']);deadline=min(float(os.environ['FILLER_DEADLINE'])-5,time.time()+90)
  if STOP or stop.exists() or time.time()>=deadline:raise RuntimeError('STOP/deadline')
- env={'PATH':'/usr/bin:/bin','HOME':os.environ.get('HOME','/tmp'),'LD_LIBRARY_PATH':'/opt/rocm/lib','HIP_VISIBLE_DEVICES':'0','ROCR_VISIBLE_DEVICES':'0'}
+ env={'FILLER_ID':os.environ['FILLER_ID'],'PATH':'/usr/bin:/bin','HOME':os.environ.get('HOME','/tmp'),'LD_LIBRARY_PATH':'/opt/rocm/lib','HIP_VISIBLE_DEVICES':'0','ROCR_VISIBLE_DEVICES':'0'}
  log=out.parent/'gpu-witness.log';samples=[];p=None
  try:
   with log.open('xb') as f:
@@ -151,45 +139,56 @@ def gpu_smoke():
   cleanup()
   if p is not None:p.wait()
   close_owned()
-if '--check' in sys.argv:check();sys.exit(0)
-smoke=os.environ.get('FILLER_DRYRUN')=='1';out=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']) if smoke else D/'out/RESULT.json'
-if out.exists():raise SystemExit('result exists')
-out.parent.mkdir(parents=True,exist_ok=True);result={'id':ID,'status':'INVALID','progress':0,'smoke':smoke};p=None
-for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,signal_stop)
-try:
- result['linkage_before']=check()
- if smoke:
-  smoke_test();result['gpu_witness']=gpu_smoke();check();result.update(status='SMOKE_PASS',progress=1,scope='synthetic parser, owned-descendant cleanup and bounded model-free GPU residency witness; no corpus execution')
- else:
-  subreaper()
-  if children(os.getpid()):raise RuntimeError('unexpected child')
-  stop=pathlib.Path(os.environ['FILLER_STOPFILE']);deadline=float(os.environ['FILLER_DEADLINE'])
-  if STOP or stop.exists() or time.time()>=deadline-5:raise RuntimeError('STOP/deadline')
-  env={'PATH':'/usr/bin:/bin','HOME':os.environ.get('HOME','/tmp'),'LD_LIBRARY_PATH':str(BUILD/'bin')+':/opt/rocm/lib','HIP_VISIBLE_DEVICES':'0','ROCR_VISIBLE_DEVICES':'0','OMP_NUM_THREADS':'4'}
-  log=out.parent/'corpus.log';samples=[]
-  with log.open('xb') as f:
-   p=subprocess.Popen([str(BUILD/'bin/test-backend-ops'),'test','-b','ROCm0','-o','FLASH_ATTN_EXT'],stdout=f,stderr=subprocess.STDOUT,env=env);pid=p.pid;capture(pid)
-   if pid not in OWNED:raise RuntimeError('child vanished before capture')
-   while True:
-    capture_tree(pid);rc=p.poll()
-    if rc is not None:break
-    if STOP or stop.exists() or time.time()>=deadline-5:raise RuntimeError('STOP/deadline')
-    try:
-     kfd=pathlib.Path('/sys/class/kfd/kfd/proc')/str(pid);vs={x.name:int(x.read_text()) for x in kfd.glob('vram_*')};maps=pathlib.Path(f'/proc/{pid}/maps').read_text();samples.append({'t':time.time_ns(),'vram':vs,'hip_mapping':str((BUILD/'bin/libggml-hip.so').resolve()) in maps})
-    except (OSError,ValueError):pass
-    time.sleep(.05)
-   cleanup();p.wait();p=None
-  result.update(pid=pid,rc=rc,samples=samples,log=str(log),log_sha256=sha(log),cleanup_signals=SIGNALS)
-  if rc or SIGNALS or not any(sum(s['vram'].values())>0 and s['hip_mapping'] for s in samples):raise RuntimeError('execution/residency/cleanup failed')
-  result['corpus']=parse_corpus(log.read_text(errors='replace'));result['linkage_after']=check();result.update(status='QUALIFICATION_PASS',progress=1)
-except Exception as e:result['reason']=str(e)
-finally:
- if not smoke:
-  try:
-   cleanup()
-   if p is not None:p.wait()
-   if children(os.getpid()):raise RuntimeError('surviving child')
-  except Exception as e:result['status']='INVALID';result['reason']='cleanup failure: '+str(e)
-  close_owned()
- tmp=out.with_suffix('.tmp');tmp.write_text(json.dumps(result,indent=2)+'\n');tmp.replace(out)
-sys.exit(0 if result['status'] in ('QUALIFICATION_PASS','SMOKE_PASS') else 1)
+def record_corpus(result,text):
+ try:
+  result['corpus']=parse_corpus(text)
+ finally:
+  result['linkage_after']=check()
+
+def main():
+ global out
+ if '--check' in sys.argv:check();sys.exit(0)
+ smoke=os.environ.get('FILLER_DRYRUN')=='1';out=pathlib.Path(os.environ['FILLER_DRYRUN_RESULT_PATH']) if smoke else D/'out/RESULT.json'
+ if out.exists():raise SystemExit('result exists')
+ out.parent.mkdir(parents=True,exist_ok=True);result={'id':ID,'status':'INVALID','progress':0,'smoke':smoke};p=None
+ for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,signal_stop)
+ try:
+  result['linkage_before']=check()
+  if smoke:
+   smoke_test();result['gpu_witness']=gpu_smoke();check();result.update(status='SMOKE_PASS',progress=1,scope='synthetic parser, owned-descendant cleanup and bounded model-free GPU residency witness; no corpus execution')
+  else:
+   subreaper()
+   if children(os.getpid()):raise RuntimeError('unexpected child')
+   stop=pathlib.Path(os.environ['FILLER_STOPFILE']);deadline=float(os.environ['FILLER_DEADLINE'])
+   if STOP or stop.exists() or time.time()>=deadline-5:raise RuntimeError('STOP/deadline')
+   env={'FILLER_ID':os.environ['FILLER_ID'],'PATH':'/usr/bin:/bin','HOME':os.environ.get('HOME','/tmp'),'LD_LIBRARY_PATH':str(BUILD/'bin')+':/opt/rocm/lib','HIP_VISIBLE_DEVICES':'0','ROCR_VISIBLE_DEVICES':'0','OMP_NUM_THREADS':'4'}
+   log=out.parent/'corpus.log';samples=[]
+   with log.open('xb') as f:
+    p=subprocess.Popen([str(BUILD/'bin/test-backend-ops'),'test','-b','ROCm0','-o','FLASH_ATTN_EXT'],stdout=f,stderr=subprocess.STDOUT,env=env);pid=p.pid;capture(pid)
+    if pid not in OWNED:raise RuntimeError('child vanished before capture')
+    while True:
+     capture_tree(pid);rc=p.poll()
+     if rc is not None:break
+     if STOP or stop.exists() or time.time()>=deadline-5:raise RuntimeError('STOP/deadline')
+     try:
+      kfd=pathlib.Path('/sys/class/kfd/kfd/proc')/str(pid);vs={x.name:int(x.read_text()) for x in kfd.glob('vram_*')};maps=pathlib.Path(f'/proc/{pid}/maps').read_text();samples.append({'t':time.time_ns(),'vram':vs,'hip_mapping':str((BUILD/'bin/libggml-hip.so').resolve()) in maps})
+     except (OSError,ValueError):pass
+     time.sleep(.05)
+    cleanup();p.wait();p=None
+   result.update(pid=pid,rc=rc,samples=samples,log=str(log),log_sha256=sha(log),cleanup_signals=SIGNALS)
+   if rc or SIGNALS or not any(sum(s['vram'].values())>0 and s['hip_mapping'] for s in samples):raise RuntimeError('execution/residency/cleanup failed')
+   record_corpus(result,log.read_text(errors='replace'))
+   result.update(status='QUALIFICATION_PASS',progress=1)
+ except Exception as e:result['reason']=str(e)
+ finally:
+  if not smoke:
+   try:
+    cleanup()
+    if p is not None:p.wait()
+    if children(os.getpid()):raise RuntimeError('surviving child')
+   except Exception as e:result['status']='INVALID';result['reason']='cleanup failure: '+str(e)
+   close_owned()
+  tmp=out.with_suffix('.tmp');tmp.write_text(json.dumps(result,indent=2)+'\n');tmp.replace(out)
+ sys.exit(0 if result['status'] in ('QUALIFICATION_PASS','SMOKE_PASS') else 1)
+
+if __name__=='__main__':main()
