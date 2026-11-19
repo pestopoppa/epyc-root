@@ -221,7 +221,7 @@
       "blocked": 2,
       "closed": 296,
       "guarded": 0,
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-19",
       "open": 80,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2243,7 +2243,7 @@
       "blocked": 1,
       "closed": 182,
       "guarded": 0,
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-19",
       "open": 68,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -2403,7 +2403,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 737,
+          "line": 739,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 17
