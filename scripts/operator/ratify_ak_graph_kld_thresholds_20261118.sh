@@ -43,7 +43,11 @@ LOCK_AGENT="operator-ratify-ak-graph-kld-thresholds"
 SYS_PY="/usr/bin/python3"
 GATE_ID="RATIFY-AK-GRAPH-KLD-THRESHOLDS-20261118"
 TARGET="measurement/protocols/kernel-research.md"
-PRE_SHA="c086e4ee9f7bffd3e25f6f88636a780ca0aa1827589bc115a5ddafe749559315"
+# Pre-state = kernel-research.md AFTER the P-SERVE-1 Annex K ratification (ratify_p_serve_1_20261119.sh K_POST_SHA256).
+# Re-pinned 2026-11-19 (operator: "Re-pin, keep RATIFY prompt"): both amendments append to this file, so this one
+# applies second. The original pre-state (before P-SERVE-1) is OLD_PRE_SHA.
+OLD_PRE_SHA="c086e4ee9f7bffd3e25f6f88636a780ca0aa1827589bc115a5ddafe749559315"
+PRE_SHA="c5bd00d760bb70e1f300930268913b0cb002c6d05fe3712937ae320d5175dc4e"
 ANCHOR="## P-AK-SEARCH-1-A5a"
 PROTOCOL_ID="P-AK-SEARCH-1-A5a"
 CHECKER_REL="scripts/validate/check_ratification_receipts.py"
@@ -131,6 +135,7 @@ say "== preflight (mode=$MODE) =="
 if [ "$ITEM2" != "already" ]; then
   [ ! -e "$WT/$RECEIPT_REL" ] || die "$RECEIPT_REL exists without the index (half state); not touching it"
   ! grep -qF -- "$ANCHOR" "$WT/$TARGET" || die "$ANCHOR already present without a receipt; reconcile by hand"
+  [ "$(sha "$WT/$TARGET")" != "$OLD_PRE_SHA" ] || die "P-SERVE-1 (Annex K) is not on origin/main yet: apply run_p_serve_1_ratify_20261119.sh first (this amendment applies second)"
   [ "$(sha "$WT/$TARGET")" = "$PRE_SHA" ] || die "$TARGET changed since this script was prepared; re-derive, do not overwrite"
   ok "$TARGET at pre-state ${PRE_SHA:0:12}"
   "$SYS_PY" "$WT/$CHECKER_REL" --repo-root "$WT" >/dev/null 2>&1 && ok "receipt checker exits 0 before the amendment" \

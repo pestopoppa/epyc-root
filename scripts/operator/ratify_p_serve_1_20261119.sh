@@ -181,7 +181,26 @@ PYEOF
 meas_now="$(sha "$ROOT/$MEAS_REL")"
 k_now="$(sha "$ROOT/$K_REL")"
 meas_post=0; [ "$meas_now" = "$MEAS_POST_SHA256" ] && meas_post=1
-k_post=0;    [ "$k_now"    = "$K_POST_SHA256"    ] && k_post=1
+# A LATER amendment may be appended after the annex (the AutoKernel bundle appends P-AK-SEARCH-1-A5a). So
+# "post-state" is: the file, or its prefix ending exactly at the single staged-annex occurrence, hashes to the pin.
+K_VIEW="$ROOT/$K_REL"; K_VIEW_TMP=""; k_eff="$k_now"
+if [ "$k_now" != "$K_POST_SHA256" ]; then
+  K_VIEW_TMP="$(mktemp)"; trap 'rm -f "$K_VIEW_TMP"' EXIT
+  k_eff="$(python3 - "$ROOT/$K_REL" "$ROOT/$STAGED_ANNEX_REL" "$K_VIEW_TMP" <<'PYEOF'
+import hashlib, sys
+q = open(sys.argv[1], "rb").read(); a = open(sys.argv[2], "rb").read()
+i = q.find(a)
+if i < 0 or q.find(a, i + 1) >= 0:
+    print("none")
+else:
+    pre = q[: i + len(a)]
+    open(sys.argv[3], "wb").write(pre)
+    print(hashlib.sha256(pre).hexdigest())
+PYEOF
+)"
+  [ "$k_eff" = "$K_POST_SHA256" ] && K_VIEW="$K_VIEW_TMP"
+fi
+k_post=0;    [ "$k_eff"    = "$K_POST_SHA256"    ] && k_post=1
 
 # ---------------------------------------------------------------- --verify (read-only)
 if [ "$MODE" = "verify" ]; then
@@ -190,8 +209,8 @@ if [ "$MODE" = "verify" ]; then
   vpin() { if [ "$2" != "$3" ]; then printf '  FAIL  %-48s expected %s found %s\n' "$1" "$2" "$3"; vf=1
            else printf '  ok    %-48s (%s)\n' "$1" "${3:0:12}"; fi; }
   vpin "MEASUREMENT.md post-state hash" "$MEAS_POST_SHA256" "$meas_now"
-  vpin "kernel-research.md post-state hash" "$K_POST_SHA256" "$k_now"
-  check_landed "$ROOT/$MEAS_REL" "$ROOT/$K_REL" - || vf=1
+  vpin "kernel-research.md post-state hash (annex prefix)" "$K_POST_SHA256" "$k_eff"
+  check_landed "$ROOT/$MEAS_REL" "$K_VIEW" - || vf=1
   for f in "$RECEIPT" "$INDEX" "$CONSOLIDATED"; do
     if [ -f "$f" ]; then printf '  ok    %-48s\n' "present: ${f#"$ROOT"/}"
     else printf '  FAIL  %-48s\n' "present: ${f#"$ROOT"/}"; vf=1; fi
@@ -305,7 +324,7 @@ fi
 APPLIED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 OPERATOR="$RATIFY_OPERATOR"
 TMPD="$(mktemp -d)"
-trap 'rm -rf "$TMPD"' EXIT
+trap 'rm -rf "$TMPD" "$K_VIEW_TMP"' EXIT
 cp "$ROOT/$MEAS_REL" "$TMPD/MEASUREMENT.md.bak"
 cp "$ROOT/$K_REL"    "$TMPD/kernel-research.md.bak"
 PRE="$TMPD/pre.json"
