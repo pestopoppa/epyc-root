@@ -1,0 +1,45 @@
+{
+  "verdict": "pass",
+  "rationale": "Official sealed Q38 capture complete: four C/B/B/C launches, five requests per launch, all native checks true, errors empty, original declaration and linked terminal retained. Capture rule passes only; registered native ingest and actual exact-weight planning canary remain outstanding. No ratio, causal, serving or historical-image-equivalence verdict; parent remains open.",
+  "filed_by": "handoff-vidya-belief-substrate",
+  "row": "vidya-mi210-q38-native-wire-20261117",
+  "box": "VB-MI210-PAIRED-DIAG-WIRE",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/vidya-mi210-q38-native-wire-20261117.json",
+      "sha256": "546ea49386d81f9e2e054d3f9e00da3b252acea2bc13ec0b3adbff3f030d5ed4"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/RESULT.json",
+      "sha256": "b7c27dc26fac365e7c5d14caba48f230ece6836e75623b5690685df69b7ca746"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/vidya-mi210-q38-native-wire-20261117.ended",
+      "sha256": "a347a214ed25e591a0874ce248413c0878ab705e52adc6db5f8bf85c249e7528"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/captures/measurement-biqslz18/belief-bc629eba36a547669711591d1f36e686/attempt-00.json",
+      "sha256": "dfd54752607cded813aa0691016cdcccabd569f4641074b19fe56a83a782bf92"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/captures/measurement-biqslz18/belief-bc629eba36a547669711591d1f36e686/attempt-01.json",
+      "sha256": "53091033638b92c90c96d1ff659b684f28b557ec431af0f91e4e18fb02db823e"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/captures/measurement-biqslz18/belief-bc629eba36a547669711591d1f36e686/attempt-02.json",
+      "sha256": "bda80835c595cdc171266605159b2f564b87f1a28036c7d30b1696d66b3700ce"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/captures/measurement-biqslz18/belief-bc629eba36a547669711591d1f36e686/attempt-03.json",
+      "sha256": "d76d9246a912cfd535421f1b54837e119eb4e8f3ed0fca15afabb1398f867f8a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/captures/measurement-biqslz18/belief-bc629eba36a547669711591d1f36e686/declaration.json",
+      "sha256": "ff2c7b14d50c00fb16311ef80ba77272fdedc5f0d833ea9ced141c63e25fd5b6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/mi210-native-20261117/q38p3a/captures/measurement-biqslz18/belief-bc629eba36a547669711591d1f36e686/terminal.json",
+      "sha256": "57281fdc0219f26fa5c8aad3fc7a4e96a95c36bbe4c6484742ccbbb2a8e1d339"
+    }
+  ]
+}

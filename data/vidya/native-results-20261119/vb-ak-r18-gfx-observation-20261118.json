@@ -1,0 +1,29 @@
+{
+  "verdict": "pass",
+  "rationale": "GFX official acceptance: two valid original boundary samples, one fixed request, exact-weight planner eligible=1/refused=0/frames=3, CPU/other weights/same filename wrong digest excluded. Activity-weighted estimate 0.4206 s; binary busy time, per-process attribution and full-claim utilization remain UNKNOWN. Publisher PASS is separately bound.",
+  "filed_by": "handoff-vidya-belief-substrate",
+  "row": "vb-ak-r18-gfx-observation-20261118",
+  "box": "VB-AK-R18-GFX-OBSERVATION",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/vb-ak-r18-gfx-observation-20261118.json",
+      "sha256": "5967484a19225d86d7bb6201d11f9aaa5139c6b2ef12668422d6be2b9fe11436"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/official-RESULT.json",
+      "sha256": "706c1b11bcbb55c1a69f370ae118baa0b9c1d0c11cb14810a06b62f809be9e96"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/vb-ak-r18-gfx-observation-20261118.ended",
+      "sha256": "a23d637df586e8a89c02749078e360aeacbb90191464334bd6b1d4cc38e9e312"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/vb-ak-r18-gfx-observation-20261118/PASS.json",
+      "sha256": "708bb43d25632869a26a2aa5e4c1bf2d2d0e099ddd0c80f44288709b0cb0761c"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/gfx-observation-20261118/native-a40a340ef29b4a3ba476546c3fb13c60/observation.json",
+      "sha256": "0fa48d2199f26c8eb45ee29813267c36b0e985edcb355dd35eee961b02a69a61"
+    }
+  ]
+}

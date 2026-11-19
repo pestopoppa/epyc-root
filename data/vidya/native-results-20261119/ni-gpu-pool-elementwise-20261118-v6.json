@@ -1,0 +1,21 @@
+{
+  "verdict": "pass",
+  "rationale": "Official finite census complete: 544/544 target dispositions all UNSUPPORTED, 96/96 separate controls PASS, 640 observations, 96 projections/refused=0; 1414 residency samples, minimum 11 per invocation. Row capture rule passes; exact-candidate planning-context acceptance remains outstanding, so parent box remains open. No promotion/performance verdict.",
+  "filed_by": "handoff-vidya-belief-substrate",
+  "row": "ni-gpu-pool-elementwise-20261118-v6",
+  "box": "SC18-GPU-POOL-C5-HISTORICAL544",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/ni-gpu-pool-elementwise-20261118-v6.json",
+      "sha256": "ee0bc3a8f7288e0a613b8904aee68558de31d0ddba1877d909f366c8ae10978a"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/c5-historical544/native/RESULT.json",
+      "sha256": "0438cef682b1d010914815e7cede152084b7923c4999f7e726c8aafc428d1df6"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-gpu-pool-elementwise-20261118-v6.ended",
+      "sha256": "d49831aa4352a4454a1e72d56e86075dc8e8d964bf94cb762d880633c52a6785"
+    }
+  ]
+}

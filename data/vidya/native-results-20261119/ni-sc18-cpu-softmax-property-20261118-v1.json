@@ -1,0 +1,21 @@
+{
+  "verdict": "pass",
+  "rationale": "Official native SOFT_MAX PASS; completed=true, projected=1, refused=0, retry_frames=0, Judged/Located; journal akj-000000000001-444cd0ed43b8. One shape/seed transport observation, no population, performance or evaluator adoption claim.",
+  "filed_by": "handoff-vidya-belief-substrate",
+  "row": "ni-sc18-cpu-softmax-property-20261118-v1",
+  "box": "SC18-PROPERTY-LIVE",
+  "evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/ready/ni-sc18-cpu-softmax-property-20261118-v1.json",
+      "sha256": "aa327963a25274fd770d4bdf5089bbc4646cdd739fbd0bdf36f6ea976580533b"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/vidya-belief-substrate/property-current/native/RESULT.json",
+      "sha256": "61c80ddbee0b8592c2f35a69c1662dcc9dc4b4c5d44d8e43ff16fc21db592aa7"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/grants/ni-sc18-cpu-softmax-property-20261118-v1.ended",
+      "sha256": "64ad4b01fcc450ea2e8a7bb34aef12db89669441d31e9f8c9069d0b14529d3eb"
+    }
+  ]
+}
