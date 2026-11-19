@@ -107,3 +107,7 @@ INF48-FAVEC-TAIL run-end was already filed with receipt on 2026-11-18. The compl
 ## 04:26Z — Resolve duplicate run-end event for already filed RKA-VERIFY-TILE GPU result
 
 RKA-VERIFY-TILE GPU run-end was already filed and its box ticked on 2026-11-18; the existing FILED receipt and verdict are present. Native results SHA-256 e5f01894564654543c37bcf43e77fa2709f6b6be01d5d0866f97e9fc94c50d79; preregistered boundary verdict MIXED, 27B D=7 aligned, A3B has an unpredicted n=3 to 4 step at 32k. Subsequent A3B end-to-end work is already recorded in the handoff. No duplicate tick.
+
+## 04:27Z — Resolve duplicate run-end event for already filed A3B GPU D-length result
+
+RKA-VERIFY-TILE-A3B-GPU-E2E was already ticked and filed on 2026-11-18, including its FILED receipt. The preregistered verdict RECOMMEND_D2 found median 32k ms/token D2 9.89 versus D4 11.87, and 4k D2 9.36 versus D4 11.86. Native result SHA-256 4e5ebd79dd218d0367dcaaf27135e655658e30dc807f2c26cbd44ec92a996734. No duplicate tick.
