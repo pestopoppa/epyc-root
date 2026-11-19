@@ -16,7 +16,7 @@
       "blocked": 4,
       "handoffs": 4,
       "oldest_advance": "2026-11-03",
-      "open": 219
+      "open": 220
     },
     "reviewer-control-plane-index.md": {
       "blocked": 8,
@@ -25,16 +25,16 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 16,
+      "blocked": 15,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 461
+      "open": 460
     },
     "user-facing-harness-index.md": {
       "blocked": 15,
       "handoffs": 2,
       "oldest_advance": "2026-10-03",
-      "open": 103
+      "open": 101
     }
   },
   "duplicates": {},
@@ -1066,10 +1066,10 @@
     },
     "harness-program.md": {
       "blocked": 15,
-      "closed": 246,
+      "closed": 248,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 96,
+      "open": 94,
       "owner_index": "user-facing-harness-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1082,7 +1082,7 @@
       "tracks": [
         {
           "blocked": 12,
-          "closed": 26,
+          "closed": 27,
           "gates": [
             "RTG-09#routing-program",
             "RTG-09#internal-interaction-lifecycle",
@@ -1097,7 +1097,7 @@
           "line": 16,
           "markers": 1,
           "name": "harness-selection-and-integration",
-          "open": 12
+          "open": 11
         },
         {
           "blocked": 0,
@@ -1121,7 +1121,7 @@
         },
         {
           "blocked": 1,
-          "closed": 41,
+          "closed": 42,
           "gates": [
             "UFH-01#harness-selection-and-integration"
           ],
@@ -1129,7 +1129,7 @@
           "line": 1567,
           "markers": 1,
           "name": "harness-improvement-loop",
-          "open": 16
+          "open": 15
         },
         {
           "blocked": 0,
@@ -1392,11 +1392,11 @@
       ]
     },
     "kv-cache-program.md": {
-      "blocked": 8,
-      "closed": 416,
+      "blocked": 7,
+      "closed": 418,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 96,
+      "open": 95,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1408,8 +1408,8 @@
       "total": 520,
       "tracks": [
         {
-          "blocked": 7,
-          "closed": 252,
+          "blocked": 6,
+          "closed": 254,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
@@ -1419,7 +1419,7 @@
           "line": 34,
           "markers": 1,
           "name": "kv-prefix-fork-and-paged-attention",
-          "open": 47
+          "open": 46
         },
         {
           "blocked": 1,
@@ -1479,7 +1479,7 @@
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 628,
+          "line": 629,
           "markers": 1,
           "name": "attention-matching-kv-compaction",
           "open": 4
@@ -1489,7 +1489,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1006,
+          "line": 1007,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1499,7 +1499,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1622,
+          "line": 1623,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1509,7 +1509,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1769,
+          "line": 1770,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
@@ -1518,7 +1518,7 @@
     },
     "memory-program.md": {
       "blocked": 1,
-      "closed": 131,
+      "closed": 132,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 37,
@@ -1530,7 +1530,7 @@
       },
       "row_id": "EVL-10",
       "state": "active",
-      "total": 169,
+      "total": 170,
       "tracks": [
         {
           "blocked": 0,
@@ -1544,7 +1544,7 @@
         },
         {
           "blocked": 0,
-          "closed": 22,
+          "closed": 23,
           "gates": [],
           "guarded": 0,
           "line": 933,
@@ -1557,7 +1557,7 @@
           "closed": 39,
           "gates": [],
           "guarded": 0,
-          "line": 1406,
+          "line": 1407,
           "markers": 1,
           "name": "unified-trace-memory-service",
           "open": 9
@@ -1571,7 +1571,7 @@
             "EVL-10#unified-trace-memory-service"
           ],
           "guarded": 0,
-          "line": 1871,
+          "line": 1872,
           "markers": 1,
           "name": "dev-harness-trace-mining",
           "open": 7
@@ -2403,7 +2403,7 @@
             "INF-50#speculative-decoding-mtp-refresh"
           ],
           "guarded": 0,
-          "line": 741,
+          "line": 745,
           "markers": 1,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 17
@@ -2583,7 +2583,7 @@
       "closed": 475,
       "guarded": 0,
       "last_advanced": "2026-11-18",
-      "open": 116,
+      "open": 117,
       "owner_index": "research-evaluation-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -2592,7 +2592,7 @@
       },
       "row_id": "EVL-47",
       "state": "active",
-      "total": 592
+      "total": 593
     },
     "workspace-58-champion-calibration.md": {
       "blocked": 0,
