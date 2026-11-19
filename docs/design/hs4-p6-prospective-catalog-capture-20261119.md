@@ -29,6 +29,37 @@ these pins and declared serving identity before OpenCode starts. An exposed tria
 cannot be rerun in place. Long runs require a keeper row and publisher smoke;
 this command does not authorize running its generated `run.sh` outside a grant.
 
+For an isolated row-owned server, add `--mcp-launch-spec /path/to/arm-launch.json`.
+This requires MCP enabled and prospective catalog binding. The launch JSON has
+exactly three fields:
+
+```json
+{
+  "command": ["/absolute/venv/bin/python", "/absolute/row/server.py"],
+  "cwd": "/absolute/row",
+  "files": {
+    "/absolute/venv/bin/python": "<SHA-256 of executable bytes>",
+    "/absolute/row/server.py": "<SHA-256 of declared source bytes>"
+  }
+}
+```
+
+The original comparison manifest must also contain `mcp_launch_specs`, mapping
+each overridden arm to the SHA-256 of its original launch JSON bytes. Preparation
+changes only the existing `mcp.orchestrator.command` and `cwd` fields; provider,
+plugin, permissions, prompts and autonomy settings retain their template values.
+No server is imported or started during preparation. The executable must be an
+absolute executable file, cwd an existing absolute directory, and file pins must
+match before preparation. Environment/file interpolation in argv or cwd is
+refused. The original launch JSON and its declared file inputs are rechecked by
+`check-catalog` before exposure and again during verification. Existing callers
+without an override retain their previous config and binding behavior.
+
+These are declared input pins, not proof of the complete import/native dependency
+closure, inherited environment, a stable cwd's contents, or mapped process bytes.
+The row still needs to capture live tools/list and serving custody. A passing
+configuration test supplies no inference or catalog-growth acceptance evidence.
+
 Verification consumes the prepared binding; it has no catalog identity override.
 Unbound historical records cannot gain catalog identities at verification.
 `catalog-record.json` is created exclusively, preserving its first finalization.

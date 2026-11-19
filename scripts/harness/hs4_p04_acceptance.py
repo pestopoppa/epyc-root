@@ -38,6 +38,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -216,8 +217,61 @@ def render_config(template_text: str, enable_mcp: bool) -> str:
     return template_text.replace(needle, '"enabled": true')
 
 
+def load_mcp_launch_spec(path: Path) -> dict[str, Any]:
+    """Validate a row-owned launch declaration without importing/starting its server.
+
+    The file map pins declared inputs, not the complete runtime dependency closure
+    or a running process. Live catalog and serving custody are still row duties.
+    """
+    spec = json.loads(path.read_bytes())
+    if not isinstance(spec, dict) or set(spec) != {'command', 'cwd', 'files'}:
+        raise ValueError('MCP launch spec requires exactly command, cwd and files')
+    command, cwd, files = spec['command'], spec['cwd'], spec['files']
+    if not isinstance(command, list) or not command or any(
+            not isinstance(v, str) or not v or '\x00' in v
+            or any(marker in v for marker in ('{env:', '{file:')) for v in command):
+        raise ValueError('MCP command must be a nonempty literal argv list')
+    if not isinstance(cwd, str) or any(marker in cwd for marker in ('{env:', '{file:')) \
+            or not Path(cwd).is_absolute() \
+            or not Path(cwd).is_dir():
+        raise ValueError('MCP cwd must be an existing absolute directory')
+    executable = Path(command[0])
+    if not executable.is_absolute() or not executable.is_file() \
+            or not os.access(executable, os.X_OK):
+        raise ValueError('MCP executable must be an existing absolute executable file')
+    if not isinstance(files, dict) or not files or command[0] not in files:
+        raise ValueError('MCP files must pin the executable and declared source inputs')
+    for name, digest in files.items():
+        if not isinstance(name, str) or not Path(name).is_absolute() \
+                or not isinstance(digest, str) or len(digest) != 64 \
+                or any(c not in '0123456789abcdef' for c in digest):
+            raise ValueError('MCP file pins require absolute paths and SHA-256 digests')
+        if hashlib.sha256(Path(name).read_bytes()).hexdigest() != digest:
+            raise ValueError(f'MCP launch input drift: {name}')
+    return spec
+
+
+def render_mcp_launch(config: str, spec: dict[str, Any]) -> str:
+    """Replace only the existing orchestrator MCP command and cwd."""
+    defaults = {
+        'command': '["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"]',
+        'cwd': '"{env:EPYC_ORCHESTRATOR_REPO}"',
+    }
+    for key, value in defaults.items():
+        needle = f'"{key}": {value}'
+        if config.count(needle) != 1:
+            raise ValueError(f'expected exactly one default MCP {key}')
+        config = config.replace(needle, f'"{key}": {json.dumps(spec[key])}')
+    return config
+
+
 def cmd_prepare(args: argparse.Namespace) -> int:
     config = render_config(TEMPLATE.read_text(), args.enable_mcp)
+    launch_path = getattr(args, 'mcp_launch_spec', None)
+    if launch_path is not None:
+        if not args.enable_mcp or not args.catalog_manifest:
+            raise ValueError('--mcp-launch-spec requires --enable-mcp and catalog binding')
+        config = render_mcp_launch(config, load_mcp_launch_spec(Path(launch_path)))
     binding = prepare_catalog_binding(args, config)
     out = Path(args.out).resolve()
     repo, evidence = out / "repo", out / "evidence"
@@ -309,7 +363,7 @@ def prepare_catalog_binding(args: argparse.Namespace, config: str) -> dict[str, 
     catalog = hashlib.sha256(snapshot.read_bytes()).hexdigest()
     if catalog != catalogs[args.catalog_arm]:
         raise ValueError('catalog snapshot digest mismatch')
-    return {
+    binding = {
         'schema': 'hs4-p6-binding/v1',
         'comparison': {'task': 'calc-add-fix', 'arm': args.catalog_arm,
                        'trial': args.catalog_trial, 'fixture': task_suite_fingerprint(),
@@ -322,6 +376,22 @@ def prepare_catalog_binding(args: argparse.Namespace, config: str) -> dict[str, 
         'producer_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'identity_basis': 'prospective declarations; live catalog/model/build custody required separately',
     }
+    launch_path = getattr(args, 'mcp_launch_spec', None)
+    if launch_path is not None:
+        path = Path(launch_path).resolve()
+        launch_raw = path.read_bytes()
+        spec = load_mcp_launch_spec(path)
+        if config != render_mcp_launch(render_config(TEMPLATE.read_text(), True), spec):
+            raise ValueError('MCP launch configuration drift during preparation')
+        # The original manifest chooses each arm's launch input prospectively.
+        if manifest.get('mcp_launch_specs', {}).get(args.catalog_arm) \
+                != hashlib.sha256(launch_raw).hexdigest():
+            raise ValueError('manifest MCP launch spec digest mismatch')
+        binding['mcp_launch'] = {
+            'path': str(path), 'sha256': hashlib.sha256(launch_raw).hexdigest(),
+            'spec': spec,
+        }
+    return binding
 
 
 def load_catalog_binding(evid: Path, model_role: str, build_info: str) -> dict[str, Any] | None:
@@ -345,6 +415,12 @@ def load_catalog_binding(evid: Path, model_role: str, build_info: str) -> dict[s
             (Path(__file__), binding['producer_sha256']))
     if any(hashlib.sha256(path.read_bytes()).hexdigest() != digest for path, digest in pins):
         raise ValueError('catalog input drift')
+    if 'mcp_launch' in binding:
+        launch = binding['mcp_launch']
+        path = Path(launch['path'])
+        if hashlib.sha256(path.read_bytes()).hexdigest() != launch['sha256'] \
+                or load_mcp_launch_spec(path) != launch['spec']:
+            raise ValueError('MCP launch declaration drift')
     identity = comparison['identity']
     if identity['plugin'] != plugin_sha256() or comparison['fixture'] != task_suite_fingerprint():
         raise ValueError('catalog producer/fixture drift')
@@ -791,6 +867,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument('--catalog-arm', choices=['baseline', 'candidate'])
     p.add_argument('--catalog-trial', type=int, choices=[1, 2])
     p.add_argument('--catalog-snapshot', help='catalog bytes whose SHA-256 is the arm identity')
+    p.add_argument('--mcp-launch-spec', help='prospective row-owned MCP argv/cwd/file pins JSON')
     p = sub.add_parser('check-catalog')
     p.add_argument('--evidence', required=True)
     p.add_argument('--model-role', required=True)

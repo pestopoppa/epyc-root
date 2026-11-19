@@ -202,6 +202,117 @@ def _catalog_inputs(tmp_path, arm='candidate', trial=1):
             '--catalog-trial', str(trial), '--catalog-snapshot', str(snapshots[arm])]
 
 
+def _launch_inputs(tmp_path):
+    options = _catalog_inputs(tmp_path)
+    source = tmp_path / 'row-owned server.py'
+    source.write_text('raise RuntimeError("must never execute during preparation")\n')
+    spec = {'command': [sys.executable, str(source)], 'cwd': str(tmp_path),
+            'files': {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                      for p in (Path(sys.executable), source)}}
+    path = tmp_path / 'launch.json'
+    path.write_text(json.dumps(spec))
+    manifest_path = tmp_path / 'catalog-manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['mcp_launch_specs'] = {'candidate': hashlib.sha256(path.read_bytes()).hexdigest()}
+    manifest_path.write_text(json.dumps(manifest))
+    return [*options, '--enable-mcp', '--mcp-launch-spec', str(path)], path, source
+
+
+def test_row_owned_mcp_launch_preserves_shell_and_passes_existing_linter(tmp_path):
+    options, path, _ = _launch_inputs(tmp_path)
+    out = tmp_path / 'p04'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    spec = json.loads(path.read_text())
+    evid = out / 'evidence'
+    config = (evid / 'opencode.jsonc').read_text()
+    # Replacing only these two fields recovers the existing MCP-enabled template.
+    restored = config.replace(json.dumps(spec['command']),
+                              '["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"]')
+    restored = restored.replace(f'"cwd": {json.dumps(spec["cwd"])}',
+                                '"cwd": "{env:EPYC_ORCHESTRATOR_REPO}"')
+    assert restored == m.render_config(m.TEMPLATE.read_text(), True)
+    lint = subprocess.run(['node', str(m.PLUGIN_DIR / 'scripts/lint-config.ts'),
+                           str(evid / 'opencode.jsonc'), str(m.ENV_FILE)], capture_output=True)
+    assert lint.returncode == 0, lint.stderr.decode()
+    assert m.main(['check-catalog', '--evidence', str(evid), '--model-role', 'frontdoor',
+                   '--build-info', '10125 (0db32c06)']) == 0
+
+
+@pytest.mark.parametrize('drift', [False, True])
+def test_row_launch_pins_also_gate_native_finalization(tmp_path, drift):
+    options, _, source = _launch_inputs(tmp_path)
+    _, evid, tap = _simulate_run(tmp_path, prepare_extra=options)
+    if drift:
+        source.write_text('changed after exposure')
+    rc = m.main(['verify', '--evidence', str(evid), '--user-id', USER,
+                 '--tap-events', str(tap), *IDENTITY])
+    assert rc == (2 if drift else 0)
+    assert (evid / 'catalog-record.json').exists() is not drift
+
+
+@pytest.mark.parametrize('target', ['spec', 'source', 'executable', 'cwd'])
+def test_row_owned_launch_drift_refused_before_exposure(tmp_path, target):
+    options, path, source = _launch_inputs(tmp_path)
+    # Use an owned executable so the negative control never modifies Python.
+    executable = tmp_path / 'python'
+    executable.write_bytes(b'#!/bin/bash\nexit 99\n')
+    executable.chmod(0o755)
+    spec = json.loads(path.read_text())
+    spec['files'].pop(spec['command'][0])
+    spec['command'][0] = str(executable)
+    spec['files'][str(executable)] = hashlib.sha256(executable.read_bytes()).hexdigest()
+    cwd = tmp_path / 'server-root'
+    cwd.mkdir()
+    spec['cwd'] = str(cwd)
+    path.write_text(json.dumps(spec))
+    manifest_path = tmp_path / 'catalog-manifest.json'
+    manifest = json.loads(manifest_path.read_text())
+    manifest['mcp_launch_specs']['candidate'] = hashlib.sha256(path.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps(manifest))
+    out = tmp_path / 'p04'
+    assert m.main(['prepare', '--out', str(out), *options]) == 0
+    if target == 'cwd':
+        cwd.rmdir()
+    else:
+        {'spec': path, 'source': source, 'executable': executable}[target].write_text('changed')
+    assert m.main(['check-catalog', '--evidence', str(out / 'evidence'),
+                   '--model-role', 'frontdoor', '--build-info', '10125 (0db32c06)']) == 2
+    assert not (out / 'evidence/window-start.txt').exists()
+
+
+@pytest.mark.parametrize('defect', ['disabled', 'unbound', 'unpinned', 'manifest',
+                                   'relative', 'shell', 'environment', 'file-expansion',
+                                   'stale', 'extra'])
+def test_invalid_row_launch_refused_without_workspace(tmp_path, defect):
+    options, path, source = _launch_inputs(tmp_path)
+    spec = json.loads(path.read_text())
+    if defect == 'disabled':
+        options.remove('--enable-mcp')
+    elif defect == 'unbound':
+        options = ['--enable-mcp', '--mcp-launch-spec', str(path)]
+    elif defect == 'unpinned':
+        spec['files'] = {}
+    elif defect == 'manifest':
+        pass  # Keep the launch valid but change its original bytes after manifest pinning.
+    elif defect == 'relative':
+        spec['cwd'] = '.'
+    elif defect == 'shell':
+        spec['command'] = 'python server.py'
+    elif defect == 'environment':
+        spec['command'].append('{env:UNPINNED}')
+    elif defect == 'file-expansion':
+        spec['command'].append('{file:UNPINNED}')
+    elif defect == 'stale':
+        source.write_text('changed')
+    elif defect == 'extra':
+        spec['environment'] = {'UNPINNED': 'value'}
+    path.write_text(json.dumps(spec) + '\n')
+    out = tmp_path / 'p04'
+    with pytest.raises((ValueError, OSError)):
+        m.main(['prepare', '--out', str(out), *options])
+    assert not out.exists()
+
+
 def test_catalog_records_pair_directly_with_comparator(tmp_path):
     spec = importlib.util.spec_from_file_location('p6_gate', SCRIPT.with_name('hs4_p6_catalog_gate.py'))
     gate = importlib.util.module_from_spec(spec)
