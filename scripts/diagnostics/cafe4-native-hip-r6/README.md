@@ -42,3 +42,24 @@ Publisher returned **GPU busy: smoke queued** (rc0). No smoke PASS or native
 verdict is claimed. Consume the delivered smoke verdict before proceeding;
 do not republish while queued or in flight. Result path:
 `/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r6-20261119/RESULT.json`.
+
+Scheduled native verdict (2026-11-19)
+-------------------------------------
+
+Filed **INCONCLUSIVE / UNKNOWN**, scheduled rc2 at 23:32:14Z. Width2 normal
+mode1 proposed `32,16106` and accepted zero; modes0/2 proposed `248068,271`,
+matching the first target prediction and mismatching the second (`198`).
+Boundary token was `271` in all modes. Observe lifecycle and matched prefix/draft
+controls failed. Controls/measurements are null; other three cases unexecuted.
+The fixed **0.743863867** gate remains unevaluated. This localizes the symptom
+to the mode1 proposal/control path; it does not establish its root cause.
+
+Model and all six local libraries mapped; two live child KFD samples each
+reported **37,525,798,912 VRAM bytes**. No cutoff; child reaped. Original result:
+`/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r6-20261119/RESULT.json`,
+SHA-256 `197f30cda373d574a1b06a5c395bbb5c366e472d8f39fdaebef025c09fa452a4`.
+Native log SHA-256 `4a32d90a1969bf43288f472513c0845511bf4fb0cdcf65aa3bf9c23e1f3fefb9`.
+No threshold change or retry published. Diagnose mode1 state/proposal isolation
+before another native attempt. Parent CAFE-4 remains open.
+
+[no-belief: inconclusive single-prompt diagnostic; existing producer registration applies]
