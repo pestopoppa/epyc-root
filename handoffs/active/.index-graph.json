@@ -713,7 +713,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T02:38:11Z",
+  "generated_at": "2026-11-19T02:56:57Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1850,7 +1850,7 @@
             "INF-06#autokernel-research-loop",
             "INF-50#speculative-decoding-mtp-refresh"
           ],
-          "line": 737,
+          "line": 739,
           "name": "dflash2-block-drafter-experimental-build",
           "open": 18,
           "readiness": "blocked"
@@ -2695,7 +2695,7 @@
       ]
     },
     {
-      "age_days": 2,
+      "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
       "closed": 296,
@@ -2704,7 +2704,7 @@
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
-      "last_advanced": "2026-11-17",
+      "last_advanced": "2026-11-19",
       "next_action": "Decide selector-menu location (AP-DGM-PROV, rec. A); at hold-lift re-review AP-HOLD-RELEASE-REVIEW; new era via ratify script",
       "open": 82,
       "priority": 0.6763,
@@ -3037,7 +3037,7 @@
       ]
     },
     {
-      "age_days": 10,
+      "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
       "closed": 182,
@@ -3046,7 +3046,7 @@
       "guarded": 0,
       "handoff": "routing-program.md",
       "id": "RTG-09",
-      "last_advanced": "2026-11-09",
+      "last_advanced": "2026-11-19",
       "next_action": "DAR-SPLIT-1 re-run on fresh snapshot, then RTG-DUR-1 baseline refresh; EG2 boundary in RTG-EG2-1",
       "open": 69,
       "priority": 0.1445,
