@@ -1215,3 +1215,79 @@ GitNexus status and upstream impact both refused in this unindexed sparse lane;
 manual review bounds changes to current execution custody, opt-in native
 startup and tests. Session-bus drain refused unregistered roster id `kvu`;
 no other outbox was used. [no-belief: model-free software regression tests]
+
+### 2026-11-19 — deployed publisher lock pair and native lifecycle publication
+
+The deployed `filler_run15.sh` deliberately changes publisher GPU smoke to a
+**shared** GPU-quiet claim (lines 124–131 and 558–560), then its inner shell
+holds the exclusive `gpu_device.mi210_0.lock` through fd9 (lines 426–432).
+The existing preparation required an exclusive GPU-quiet writer in both modes.
+A negative control passes the actual shared observation shape to the unchanged
+retained validator and reproduces `exclusive canonical GPU lock absent`.
+No shared claim was acquired on the official host for that control.
+
+New `publisher_provider.py` is selected only in the publisher-smoke successor;
+the official successor retains the original exclusive provider unchanged.
+Smoke requires its real inherited namespace and row identity, exactly one
+kernel-attributed shared GPU-quiet owner, the same-UID ancestor's matching
+role/tag/birth record, and a closer ancestor running this row's exact inner
+engine invocation with the canonical exclusive device lock on fd9. It reads
+fdinfo ownership, rather than treating the exited `flock(1)` PID as the live
+owner. Device numbers, inode, descriptor target and WRITE-lock record must
+agree across the capture. Source, process-birth and lock-file identities are
+rechecked, and subsequent boundaries must retain the same pair. It acquires,
+upgrades, releases and signals nothing. Shared ownership is recorded as shared.
+
+Twelve provider tests PASS: actual old-provider refusal, correct pair/recheck,
+mode and namespace refusal, ambiguous/foreign/unattributed holder refusal,
+wrong inner engine/row/birth, missing/READ/waiter/wrong-device/wrong-inode locks,
+descriptor replacement during capture, quiet-file replacement and source drift.
+Private proc and attribution fixtures exercise the capture; two real temporary
+lock controls check the kernel fdinfo format and inherited lock after
+`flock(1)` exits. Those temporary locks are test-owned and do not touch either
+canonical host lock. These tests establish software behavior, not live keeper
+admission or native GPU execution.
+
+`prepare_lifecycle.py` verifies the retained R7 and canonical projection pins,
+accepted preload receipt and both current model stat tuples without reading
+model bytes. It seals twelve actual execution artifacts, the five current
+orchestrator provider sources, prepared argv/prompts and prerequisite paths,
+then installs separate official and publisher successors. Sources remain
+referenced at their existing paths. The publisher prohibits sealing its
+redeployed engine; its PASS record will bind that engine identity instead.
+The installed successors' own direct launch scripts remain disabled; only the
+current rowflow launcher reaches their admitted supervisor.
+
+`lifecycle.py` chooses the sealed mode, calls the actual supervisor, and writes
+its progress result only after owned-child drain has returned and native work
+exists. Smoke additionally requires a returned token and own-VRAM samples;
+full execution preserves the existing group-3 conformance record, including
+an INVALID verdict. It never translates that verdict into parent completion.
+Four inert-supervisor wrapper tests PASS for ordering, failed native work,
+refusal, cleanup exception, mode drift and existing-result refusal. The existing
+93 scoped tests also PASS (103-test suite with the initial ten provider tests;
+the expanded twelve provider and four wrapper tests pass separately).
+Historical `test_supervisor.py` remains excluded for its documented missing R9
+inputs. `git diff --check` PASS.
+
+Publication: `publish_row.py` initially refused the handoff's absent stop rule;
+the owned parent now states its lifecycle question and answer/futility rules.
+The second preflight refused an engine digest in the execution seal; the
+superseded private attempt was removed and recreated without engine pins.
+Neither refusal ran a smoke. Final publish accepted
+`kvu-kpf18-native-lifecycle-r1-20261119` and queued its GPU smoke because the GPU
+was busy. **No smoke PASS, ready GPU row, native cleanup, GPU residency,
+cancellation/release or layout verdict is claimed.** There is no in-turn wait.
+The accepted spec requests the existing full group-3 recipe in a 9000-second
+window, on `mi210_0,184-191`; publisher smoke uses its four assigned CPUs and
+one native request. Parent KPF-18.0d stays open.
+
+[Source, installed-manifest, launcher and spec SHA-256 identities](lifecycle-qualification.json)
+bind the existing files without copying logs, binary bytes or source trees.
+The publisher warned about lane-relative code; these committed files retain
+fixed paths and their seals refuse drift. Consume the smoke PASS/FAIL event
+when dispatched; independently advance the remaining CPU inference tasks.
+GitNexus status/upstream impact were unavailable in this unindexed sparse lane;
+manual review bounds changes to new opt-in provider/launcher code and tests.
+The session bus rejected the unregistered kvu slug; no other outbox was used.
+[no-belief: model-free software regression tests; GPU smoke queued]

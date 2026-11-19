@@ -1,0 +1,21 @@
+{
+  "scope": "model-free software qualification; publisher GPU smoke queued, not PASS; no native or layout verdict",
+  "existing_regression_tests_passed": 93,
+  "publisher_provider_tests_passed": 12,
+  "lifecycle_wrapper_tests_passed": 4,
+  "source_sha256": {
+    "docs/reports/kv-cache/kpf18-supervisor-compose-20261119/publisher_provider.py": "00af9a7ac0b6a51e396e5b95233a0bc816122e83d9a9141b7f15f5c613a357af",
+    "docs/reports/kv-cache/kpf18-supervisor-compose-20261119/test_publisher_provider.py": "1202f9363c57f25610800860904ccb8e7a85984c878beb9c8ec06409bef9b1b9",
+    "docs/reports/kv-cache/kpf18-supervisor-compose-20261119/lifecycle.py": "e78d6821ef7a0f88e528c918c494a9b4b859c6c3119c6805bdb7f75380c43874",
+    "docs/reports/kv-cache/kpf18-supervisor-compose-20261119/test_lifecycle.py": "1a675768ef4a2615230763014b026d7a30cfc920d7170315c81b9c936c6753f2",
+    "docs/reports/kv-cache/kpf18-supervisor-compose-20261119/prepare_lifecycle.py": "cd019267c421c268524f42119d0a4ba780c85601b94170b49ce0e818d028c2e8",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu-kpf18-native-lifecycle-r1-20261119/official/manifest.json": "25b1dba493d3db8b787e10be83570aeb5792277ca00dcecfefc03185fbbeb7d9",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu-kpf18-native-lifecycle-r1-20261119/publisher-smoke/manifest.json": "4c1d7c3e0e28749fd079f3a5c642663dbe351361109510d3d817804e1606b4c9",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu-kpf18-native-lifecycle-r1-20261119/launch.sh": "5801726cb4398864c24c63d323bcb9dcc4d2d446151d218622fdbc4314d5148b",
+    "/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kvu-kpf18-native-lifecycle-r1-20261119/spec.json": "0a752a2b090fd5ea7ea4b2fadcee02b6d07216c6b9110e10dd908e3bd6b4f1d4",
+    "/mnt/raid0/llm/tmp/compute-flags/bin/rowflow/filler_run15.sh": "65e2a38ef563c4aa5598b068e3cc55c94f128c09c2be2d5fa8dcbd80869c795a"
+  },
+  "row_id": "kvu-kpf18-native-lifecycle-r1-20261119",
+  "publication": "publisher accepted and GPU-SMOKE-QUEUED; no source engine pin in execution seal",
+  "next": "Consume publisher smoke event; independently ready remaining CPU tasks. Official group3 row waits for smoke PASS."
+}
