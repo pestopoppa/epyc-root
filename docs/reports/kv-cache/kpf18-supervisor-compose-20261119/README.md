@@ -689,3 +689,45 @@ Evidence SHA-256:
 - test_fullrun_gate.py: `0d3f0f9d2ab0c7de6e7823bf877d12f398befdf8c684738bd269f4c9666b7355`
 
 [no-belief: model-free software regression tests]
+
+
+### 2026-11-19 — Combined installed non-dry prerequisites and gate loop
+
+PASS: one combined integration test with 10 isolated-process cases. The installed
+supervisor reaches unchanged non-dry driver main, current enrollment checks,
+retained preload receipt verifier and both model-stat checks, identity output,
+and the real official gate wrapper/parser/execution loop in the same invocation.
+The successful control requires item3, dry_run=false, the admitted output/server,
+empty launch prefix, run metadata and one completion marker. Inert execution
+failure returns rc4 with no completion marker. Digest, stat, metadata and false
+framing controls refuse before identity output, witness or parser context. A
+nonempty prefix, foreign server, STOP introduced at witness installation and
+prepared-input drift introduced there refuse before parser context or work;
+these preserve only the earlier preload identity output. No gate.main replacement
+is used in the combined controls. The existing non-dry worker supplies shared
+fixtures via an opt-in combined argument; its four original controls still pass.
+
+Validation: 52 admission/binding/prerequisite tests, 4 original non-dry tests,
+2 full-run context/routing tests and 1 combined test PASS (59 unittest tests;
+the combined test contains 10 subprocess cases). git diff --check PASS.
+
+```bash
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_combined_entry.py -v
+```
+
+Scope remains private model-free software qualification: scientific input pins
+are explicitly replaced in memory, the grant/provider/artifact fixtures are
+private, and context construction, item3 work and witness installation are inert.
+The full RowflowContext and native controller/server/GPU lifecycle are not
+exercised by this combined test. Historical pins and persistent installation are
+unchanged. KPF-18 remains open; no parent checkbox is completed. Next recover the
+exact historical framing result required for real publication, without replacing
+its digest with a newly generated result. GitNexus status and impact unavailable
+in the unindexed sparse lane; manual inspection limits changes to test harnesses.
+Bus drain refuses this slug because it is not a roster id; no foreign outbox used.
+
+Evidence SHA-256:
+- test_combined_entry.py: `2536ab02df17d134d316f4e1e20c341bc3ea57d6ce7adb0a1ee60ef50cc3a2b8`
+- test_nondry_entry.py: `0928e918418320fb9ce8e2f12a6467da03c4489ec03330833efe0e4ebfe64ee3`
+
+[no-belief: model-free software regression tests]

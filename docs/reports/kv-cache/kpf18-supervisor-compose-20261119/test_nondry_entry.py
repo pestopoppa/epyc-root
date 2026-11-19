@@ -15,7 +15,7 @@ import test_execution_admission as fixtures
 from test_execution_admission import load, sha
 
 
-def worker(mode):
+def worker(mode, *, combined=False):
     fixture = fixtures.ExecutionAdmission(); fixture.setUp()
     try:
         root = fixture.root
@@ -36,9 +36,14 @@ def worker(mode):
         receipt = root / 'receipt.json'; receipt.write_text(json.dumps(models))
         manifest = base / 'ORIGINAL-MODELS.json'; manifest.write_text(json.dumps(models))
         framing = root / 'framing.json'
-        framing.write_text(json.dumps({'framing_pass': True, 'raw_sha256': 'b' * 64}))
+        framing.write_text(json.dumps({'framing_pass': mode != 'framing', 'raw_sha256': 'b' * 64}))
         canonical = root / 'canonical'; canonical.mkdir()
         projection = canonical / 'projection.fixture'; projection.write_text('private projection')
+        prepared = []
+        for option, leaf in (('--argv-file', 'argv.txt'), ('--prompt-set', 'prompts.jsonl')):
+            path = root / leaf; path.write_text('private prepared input\n')
+            fixture.seal['sources'][str(path)] = sha(path)
+            prepared.extend([option, str(path)])
         inputs = (receipt, manifest, framing, projection)
         fixture.seal['sources'].update({str(p): sha(p) for p in inputs})
         fixture.config.update(output_root=str(out), preload_receipt=str(receipt),
@@ -76,6 +81,10 @@ def worker(mode):
                     expected = '0' * 64 if mode == 'digest' else sha(receipt)
                     if mode == 'stat':
                         Path(models['target']['path']).write_bytes(b'changed stat fixture')
+                    if combined:
+                        from test_combined_entry import combined_main
+                        return combined_main(driver, original, fixture, out, mode,
+                                             preload_integration, gpu_witness, expected, calls)
                     def gate_main():
                         calls.append('gate')
                         assert driver.PRELOAD_MODELS['draft_cache_shape']['draft_swa_layers'] == 5
@@ -116,7 +125,12 @@ def worker(mode):
             if cls: loaded.__class__ = cls
             return loaded
         sys.modules.pop('install', None)
-        with patch.object(sys, 'argv', ['driver.py', 'item3', '--out', str(out)]), \
+        argv = ['driver.py', 'item3', '--out', str(out)]
+        if combined:
+            argv.extend(['--fork-bin', str(fixture.native), *prepared])
+            if mode == 'prefix': argv.extend(['--launch-prefix', '/bin/false'])
+            if mode == 'server': argv[argv.index('--fork-bin') + 1] = str(root / 'foreign')
+        with patch.object(sys, 'argv', argv), \
              patch.object(outer.importlib.util, 'module_from_spec', side_effect=module):
             assert outer.run_driver() == 0
     finally:
