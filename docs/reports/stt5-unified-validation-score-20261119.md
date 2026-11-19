@@ -21,3 +21,24 @@ Prepared records (kept at their original locations; no source, binary, log or ev
 Publisher smoke runs the actual pinned scorer on a synthetic, noncohort two-word deletion control and checks both the deletion count and categorical FAIL. It has a separate output path and a fresh-attempt time predicate. It contributes no validation score, corpus exposure or measurement verdict. Grant verdict pending; the parent STT5 screen remains open.
 
 Publisher qualification: `publish_row.py --smoke-now` reported **SMOKE PASS** on CPUs 116–119 at 2026-11-19T14:44:36Z, fresh synthetic scorer result and rc0 complete. The first attempt refused a placeholder digest in the synthetic row before scoring validation; the repaired control binds declared synthetic PCM bytes. The grant result remains pending. This is row admission only, with no new validation measurement or arm verdict.
+
+## Filed grant result
+
+Row `stt5-unified-offline-score-r1-20261119` ended rc0, reason=complete at 2026-11-19T14:45:23Z. Verdict: **INCONCLUSIVE**, settings selection **UNKNOWN**. All 12 declared cells completed, with 394 English utterances per setting, 2,370 original paired chunk receipts and 11 categorical empty-decode failures (c1r0: 9; c1r1: 1; c2r4: 1). Those failures remain full-utterance deletions in campaign WER and categorical FAIL separately; all eleven native processes returned zero, so process success does not establish decode correctness. No unknown/missing receipts were reported.
+
+WER is lower-better; intervals are the declared 95% utterance-bootstrap intervals. These are descriptive validation columns, with no paired baseline difference or test verdict.
+
+| Setting | v1 WER % (95% CI) | v2 candidate WER % (95% CI) | Categorical taxonomy |
+|---|---|---|---|
+| c1r0 | 20.063 (18.079–22.122) | 20.034 (18.053–22.090) | FAIL |
+| c1r1 | 10.687 (9.395–11.980) | 10.630 (9.355–11.922) | FAIL |
+| c2r2 | 8.455 (7.401–9.544) | 8.397 (7.334–9.495) | PASS |
+| c2r4 | 7.872 (6.647–9.229) | 7.815 (6.596–9.165) | FAIL |
+| c7r7 | 7.048 (6.052–8.050) | 7.002 (5.994–8.005) | PASS |
+| c13r13 | 6.659 (5.685–7.649) | 6.613 (5.633–7.615) | PASS |
+
+c13r13 has the lowest observed pooled validation WER in both columns; this does not select a setting. Every repetition check and normalizer-route check is COULD_NOT_CHECK. All v1 contracts PASS, all v2 candidate contracts FAIL; normalizer properties PASS throughout. The final summary reports complete native UNK counting and zero observed native UNKs in every cell, superseding the conservative preparation-time incompleteness statement for this result only. Scorer text classes still include unknown_marker (25–26) and numeral_uncovered (44–46) per setting; these are separate from native token UNKs. Each v1 cell has 8,244 reference tokens, each v2 cell 8,241.
+
+The result answers the scoped offline reporting question. No fresh inference, redraw, test verdict, synthetic-smoke contribution, timing comparison, advancement or promotion follows. Parent CS-8.STT5 remains open.
+
+Original summary: `/mnt/raid0/llm/tmp/stt5/unified-score-20261119/score-output/summary.json`, SHA-256 `64af8e9a619fbc240da760aa962d8489a0f9a60364f146c3ba9991ef473adebc`; completion marker `score-output/COMPLETE.json` binds this same digest and 12 cells. The summary retains scorer commit `99301fa149af86a6f9743d2b0405c9234ba39586`, config SHA-256 `a510706a304d0029e471cf12ac05585662bae2ea2881c5c1897bcb476e13b60d` and ledger fingerprint `dae5b68745edf4b67866bd237805e5652ff7e7d30bcec7a95bf169c3dfce04bd` / 12,253 files. Original per-utterance cells remain beside the summary; no native files are copied here. This filed conclusion is a committed observation, with no retrospective measurement warrant. Existing source registration and `VB-SPEECH-STT5-RAW` already cover this producer; no second ladder or new wiring task is added.
