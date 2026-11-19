@@ -431,7 +431,18 @@ our own harness and score offline.
       strict and loose prompt outcomes. Incomplete pairing means no cross-model delta.
       2026-11-19: second arm published; native four-CPU smoke PASS (140–143, rc=0).
       [Input hashes, predeclared uncertainty and smoke receipt](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification.json).
-      Full-arm scores and paired discrimination remain unrun; CJ-6e stays open.
+      Full second-arm run `codex-ifbench-cj6e-35b-20261119` ended
+      2026-11-19T07:13:09Z, rc=1: `worker.py` raised `RuntimeError: grant missing`
+      before generation. Observed coverage: **0/300 valid responses, 0 exposure records**
+      (`run/` empty). Strict/loose scores **UNKNOWN**; paired overlap with CJ-6a **0/300**,
+      paired delta **UNCOMPUTED**; no discrimination or adoption claim.
+      Verdict: **inconclusive (infrastructure failure)**. The predeclared uncertainty
+      bounds do not measure repeatability; CJ-6e stays open for complete capture and
+      paired scoring. Repair full-mode grant lookup/propagation before successor rows.
+      Evidence: `/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/ws58-launcher.out`
+      SHA-256 `63fff0cb8aa43209b687ab551db6387949c664e9cacd96072361863d71ab8c19`; grant end record
+      `/mnt/raid0/llm/tmp/compute-flags/grants/codex-ifbench-cj6e-35b-20261119.ended`
+      SHA-256 `91d9b428120bc70e8fa46ef9cf8e6f9eee07437bd75c694c968caf03703b1e4e`. [no-belief: failed before any benchmark exposure]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until
