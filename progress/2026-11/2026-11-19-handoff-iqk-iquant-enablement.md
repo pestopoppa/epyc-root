@@ -1,0 +1,5 @@
+# 2026-11-19 — handoff iqk-iquant-enablement
+
+## 09:22Z — Implement direct MMVQ/MMQ experimental diagnostic source with compiled host conformance tests
+
+EXL3-LB1c: implemented scripts/fillers/v11/lb1c_direct.py (blob 7339d98a12d3d3f25ee2252f67ba6c80e4d8ac8d) plus compiled host conformance tests (blob be6bf85f281566a003fad8cdc79ca2e97d1030bb) and usage instructions. Generator reads frozen v10 git objects and emits a source-hashed diagnostic patch: explicit MMVQ/MMQ dispatch, gfx90a/wave64/type/layout/width refusals, same seven-type and width-4–9 matrices in correctness/perf for supplied DS41/Q38FN shape inventories. 40 new tests / 80 relevant tests passed; generated patch applies against production commit ffc1bac82eeca6f9099e1ccd9ba49703c460a115 via isolated temporary index. Production tree/index untouched; no HIP build, device correctness, performance or crossover claim. Parent stays open. GitNexus status/impact had no lane index; wrapper reindex refused CPU admission, so no graph-derived blast-radius claim. Bus drain refused unregistered handoff roster ID; no other session identity was used.
