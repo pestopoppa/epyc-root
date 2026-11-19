@@ -207,6 +207,118 @@ def _activation(folder: Path, cell: dict) -> dict:
             "protected_zone_witness": "source-pinned policy; no separate native receipt"}
 
 
+# Profile recognition is native grant identity, never a directory-name inference.
+_ACTIVE_GRANT = "cf3c-active-evidence-20261118"
+_ACTIVE_POLICY = "703eca6437f75d328998ed2636a1e3bf3d59f10abc542f634e59618b64ca83b2"
+
+
+def _active_packet(path: Path, window: dict, result: dict) -> dict | None:
+    if window.get("grant") != _ACTIVE_GRANT:
+        if window.get("grant") != "cf3c-pilot-20261118":
+            _refuse("unrecognized native producer profile")
+        return None
+    packet = path.parent.parent / "packet"
+    inputs_path = packet / "inputs.json"
+    if _sha(inputs_path) != result["packet_sha256"]:
+        _refuse("active-evidence packet inputs digest mismatch")
+    inputs = _load(inputs_path)
+    if inputs != window.get("inputs") or inputs.get("source") != result["source"]:
+        _refuse("active-evidence packet/window inputs disagree")
+    _verify_seal(packet, {**inputs.get("packet_sha256", {}), "inputs.json": result["packet_sha256"]})
+    pins = inputs.get("packet_sha256", {})
+    if pins.get("policies.py") != _ACTIVE_POLICY or not pins.get("protocol.md"):
+        _refuse("active-evidence unrecognized policy or missing motivating protocol")
+    cases = _load(packet / "cases.json")
+    dimensions = [("old-deep", "tool-tail"), ("old-head", "tool-head"),
+                  ("old-reasoning", "assistant-reasoning")]
+    if (not isinstance(cases, list) or len(cases) != 3
+            or any(not isinstance(c, dict) for c in cases)
+            or [(c.get("id"), c.get("location")) for c in cases] != dimensions
+            or any(c.get("steps") != 10 or c.get("target") != 2 for c in cases)):
+        _refuse("active-evidence equal-length fixture dimensions disagree")
+    if any(not isinstance(c.get("decoys"), list) or not ns.nonneg_int(c.get("seed")) for c in cases):
+        _refuse("active-evidence malformed fixture seeds or decoys")
+    if len({c["seed"] for c in cases}) != 3:
+        _refuse("active-evidence paired seeds must be distinct")
+    values = [v for c in cases for v in [c.get("answer"), *c.get("decoys", [])]]
+    if (any(not isinstance(v, str) or len(v) != 16 or any(x not in "0123456789abcdef" for x in v)
+            for v in values) or len(values) != 33 or len(set(values)) != 33
+            or any(len(c.get("decoys", [])) != 10 for c in cases)):
+        _refuse("active-evidence fixture receipts malformed or duplicated")
+    arms = ("A0", "A1-k4", "A1-k8", "A1-k12", "A2", "A3")
+    expected = []
+    for i, c in enumerate(cases):
+        for arm in arms[i:] + arms[:i]:
+            expected.append(dict(case=c["id"], arm=arm, seed=c["seed"],
+                                 unit=f"{c['id']}/{arm}", ordinal=len(expected)))
+    if window.get("schedule") != expected:
+        _refuse("active-evidence paired all-threshold schedule disagrees with fixtures")
+    return {"producer": "cf3c-active-evidence", "cases": {c["id"]: c for c in cases},
+            "packet_path": str(packet), "packet_sha256": pins,
+            "interpretation": "equal-length development fixtures; no task-level adoption margin"}
+
+
+def _active_witness(folder: Path, cell: dict, receipt: dict, profile: dict) -> dict:
+    case = profile["cases"][cell["case"]]
+    if cell["seed"] != case["seed"]:
+        _refuse("active-evidence fixture seed mismatch")
+    if "unavailable" in receipt:
+        return {"unavailable": receipt["unavailable"]}
+    original = _load(folder / "original-messages.json")
+    request = _load(folder / "template.request.body")
+    if request.get("seed") != cell["seed"]:
+        _refuse("active-evidence native request seed mismatch")
+    selected = request["messages"]
+    policy = receipt["policy"]
+    arm = cell["arm"]
+    observations = [i for i, m in enumerate(original) if m.get("role") == "tool"]
+    assistants = [i for i, m in enumerate(original) if m.get("role") == "assistant"]
+    if len(original) != 23 or len(observations) != 10 or len(assistants) != 10:
+        _refuse("active-evidence fixture history length mismatch")
+    # The pinned compressor aligns the protected prefix past the first tool pair.
+    expected_tools = observations[1:7] if arm.startswith("A1-") else observations[:7] if arm == "A2" else []
+    expected_assistants = assistants[:7] if arm == "A3" else []
+    if (policy.get("changed_observations") != expected_tools
+            or policy.get("changed_assistant_entries") != expected_assistants
+            or policy.get("pairs_fixed") != 0 or policy.get("compaction_model_calls") != 0):
+        _refuse("active-evidence all-threshold activation or tool-pair custody mismatch")
+    if arm.startswith("A1-") and (policy.get("production_stubbed") != 6
+            or policy.get("production_threshold") != int(arm.split("-k")[1])):
+        _refuse("active-evidence threshold receipt mismatch")
+    reasoning = case["location"] == "assistant-reasoning"
+    position, field = (4, "reasoning_content") if reasoning else (5, "content")
+    exposed = not (arm == "A3" if reasoning else
+                   arm.startswith("A1-") or (arm == "A2" and case["location"] == "tool-tail"))
+    for messages, visible in ((original, True), (selected, exposed)):
+        for i, message in enumerate(messages):
+            for key, value in message.items():
+                count = json.dumps(value, ensure_ascii=False).count(case["answer"])
+                if count != int(visible and i == position and key == field):
+                    _refuse("active-evidence target receipt placement mismatch")
+        if reasoning and "receipt=" in messages[5].get("content", ""):
+            _refuse("active-evidence reasoning-only receipt leaked into tool")
+    names = cell["evidence_sha256"]
+    if "template.response.body" not in names:
+        if cell["status"] != "UNKNOWN":
+            _refuse("active-evidence missing native rendered prompt")
+        return {"fixture": case, "unavailable": "native render", "selected_target_exposed": exposed}
+    rendered = _load(folder / "template.response.body").get("prompt")
+    if (not isinstance(rendered, str) or rendered.count(case["answer"]) != int(exposed)
+            or cell.get("target_exposed") is not exposed):
+        _refuse("active-evidence native rendered target exposure mismatch")
+    for index, (tool, assistant) in enumerate(zip(observations, assistants), 1):
+        for marker, text in ((f"ObservationHead{index:02}", selected[tool].get("content", "")),
+                             (f"ObservationTail{index:02}", selected[tool].get("content", "")),
+                             (f"ReasoningTrace{index:02}", selected[assistant].get("reasoning_content", ""))):
+            if (marker in rendered) != (marker in text):
+                _refuse("active-evidence native rendered marker mismatch")
+    if "tokenize.request.body" in names and _load(folder / "tokenize.request.body").get("content") != rendered:
+        _refuse("active-evidence tokenizer prompt differs from native render")
+    return {"fixture": case, "original_target_exposed": True, "selected_target_exposed": exposed,
+            "native_rendered_target_exposed": exposed, "policy_sha256": _ACTIVE_POLICY,
+            "motivating_protocol_sha256": profile["packet_sha256"]["protocol.md"]}
+
+
 def _deltas(cells: list[dict]) -> dict:
     """Per-case paired differences, treatment minus A0; unavailable pairs stay null."""
     controls = {(c["case"], c["seed"]): c for c in cells if c["arm"] == "A0"}
@@ -247,6 +359,7 @@ def read_unit(result_path: str | Path) -> dict:
         _refuse("smoke window is not a measurement")
     if wjson.get("packet_sha256") != result["packet_sha256"] or wjson.get("source") != result.get("source"):
         _refuse("WINDOW.json packet/source disagree with RESULT")
+    profile = _active_packet(path, wjson, result)
     schedule = wjson.get("schedule")
     if not isinstance(schedule, list) or len(schedule) != result["scheduled"] or not schedule:
         _refuse("sealed schedule does not match the scheduled count")
@@ -307,6 +420,9 @@ def read_unit(result_path: str | Path) -> dict:
         if (paired.get(cell["case"], {}).get("arms", {}).get(cell["arm"])) != cell:
             _refuse(f"{rel}: RESULT.paired disagrees with the sealed trajectory")
         witnesses[cell["unit"]] = _activation(window / prefix, cell)
+        if profile:
+            witnesses[cell["unit"]]["active_evidence"] = _active_witness(
+                window / prefix, cell, witnesses[cell["unit"]], profile)
         cells.append(cell)
     recorded = sum(c["status"] != "unattempted" for c in cells)
     completed = sum(c["status"] in {"graded", "abstained", "NA"} for c in cells)
@@ -331,6 +447,7 @@ def read_unit(result_path: str | Path) -> dict:
     return {"result_path": str(path), "result_sha256": ns.file_sha256(path), "result": result,
             "window": str(window), "derived": derived, "cells": cells,
             "activation_witnesses": witnesses, "paired_deltas": _deltas(cells),
+            "profile": profile,
             "scope": _scope(window, wjson.get("inputs") or {}, wjson.get("argv"))}
 
 
@@ -367,7 +484,9 @@ def project(native: Any) -> ClaimTuple:
     cases = sorted(c["case"] for c in unit["cells"] if c["arm"] == arm)
     ident = ns.content_hash({"packet": r["packet_sha256"], "result": unit["result_sha256"],
                              "arm": arm, "metric": metric})[:24]
-    head = (f"cf3c deterministic-policy pilot (diagnostic_only; n={d['scheduled']} cells for arm "
+    producer = unit["profile"]["producer"] if unit["profile"] else PRODUCER
+    label = "active-evidence development fixtures" if unit["profile"] else "deterministic-policy pilot"
+    head = (f"cf3c {label} (diagnostic_only; n={d['scheduled']} cells for arm "
             f"{arm}, one per case {cases}; no adoption claim)")
     if metric == M_ACC:
         value, unit_name, direction = d["accuracy_over_scheduled"], "fraction_correct", "higher_better"
@@ -389,7 +508,7 @@ def project(native: Any) -> ClaimTuple:
     claim += (f"; recorded {d['attempted']}/{d['scheduled']}; window error={r.get('error')!r}; "
               f"cost denominators tokens={d['tokens_cases']}, wall={d['wall_cases']}; "
               "cost means cover observed cells only")
-    locator = f"cf3c-live:{r['packet_sha256'][:16]}:{arm}:{PurePath(native['result_path']).name}"
+    locator = f"{producer}:{r['packet_sha256'][:16]}:{arm}:{PurePath(native['result_path']).name}"
     return ClaimTuple(
         measurement_id=f"cf3c_{ident}", metric=metric, value=value, date="",
         category=r["category"], claim=claim, metric_direction=direction, protocol_id="",
@@ -398,7 +517,7 @@ def project(native: Any) -> ClaimTuple:
         # RESULT.json was re-opened and hashed now, but the producer recorded no external digest of
         # it, so "verified against a recorded digest" is not claimable; the 223 sealed files ARE.
         attestation_present=True, attestation_verified=None, source_kind=SOURCE_KIND,
-        extra={"schema": SCHEMA, "producer": PRODUCER, "arm": arm,
+        extra={"schema": SCHEMA, "producer": producer, "arm": arm, "profile": unit["profile"],
                "packet_sha256": r["packet_sha256"], "source": r["source"],
                "diagnostic_only": r.get("diagnostic_only"), "instrument_class": r.get("instrument_class"),
                "sealed_files_verified": len(r["window_sha256"]), "n_cells": d["scheduled"],
