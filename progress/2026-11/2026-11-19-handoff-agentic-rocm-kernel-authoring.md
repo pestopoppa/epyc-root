@@ -103,3 +103,7 @@ Dispatched RKA-VERIFY-TILE-A3B48-E2E event was already filed on 2026-11-18 with 
 ## 04:25Z — INF48-FAVEC-TAIL run-end was already filed and its box completed on 2026-11-18; no duplicate filing.
 
 INF48-FAVEC-TAIL run-end was already filed with receipt on 2026-11-18. The completed handoff records clean 3103/3103 correctness and no consistent useful op-level gain; identity was inconclusive because the control also diverged. Native result SHA-256 f825d7772bdd7dab040dc7879715b2571042a817d05917dbfa25608a9cb07b19.
+
+## 04:26Z — Resolve duplicate run-end event for already filed RKA-VERIFY-TILE GPU result
+
+RKA-VERIFY-TILE GPU run-end was already filed and its box ticked on 2026-11-18; the existing FILED receipt and verdict are present. Native results SHA-256 e5f01894564654543c37bcf43e77fa2709f6b6be01d5d0866f97e9fc94c50d79; preregistered boundary verdict MIXED, 27B D=7 aligned, A3B has an unpredicted n=3 to 4 step at 32k. Subsequent A3B end-to-end work is already recorded in the handoff. No duplicate tick.
