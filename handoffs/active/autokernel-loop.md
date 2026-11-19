@@ -11077,7 +11077,8 @@ Source of truth for the classification of all 31 `fork/rescued-*` refs:
         are unchanged, so this is an A/B candidate, not a claim. The hoist is also the principled way to lower
         `MIN_BLOCKS_PER_SM`.
         Sources: intake-1434#record (supersedes intake-1430#record's hoist line), intake-1430#record.
-- [ ] **QUANT-RECIP-9f85ba2fb — Quantize reciprocal — `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`** (`ggml/src/ggml-cuda/quantize.cu`
+- [x] **QUANT-RECIP-9f85ba2fb — Quantize reciprocal — `rescued-ak-discovery-7e8da8ea-attempt1` @ `9f85ba2fb`** (`ggml/src/ggml-cuda/quantize.cu`
+  - ✅ 2026-11-19 (autokernel) row `ak-quant-recip-gpu-20261119` DROP: 27B KLD 0.0 / top-1 100% (harmless), GPU tg128 12 ABBA geomean 1.0025 [0.9964, 1.0087], no measurable gain. Not carried into any composite. (Commit 47f336d63 carried only index regen; this is the actual tick.) [belief: cc]
       +4/−1: reciprocal-multiply + `__shfl_sync` broadcast replacing per-lane `roundf(xi/d)`; the champion still does
       `roundf(xi / d)`). Gate: tg128, 20 pairs vs anchor.
   - 2026-11-19 (autokernel, bulk P2 pass; box stays OPEN): not in any champion (`experimental/champion-llg-fold-20261105` quantize.cu still has `roundf(xi / d)`; candidate `9f85ba2fb` is the 4+/1- reciprocal-multiply hunk). The reciprocal multiply is NOT bit-identical to the divide at rounding ties, so the gate needs a correctness pair (Q8_1 quantize output vs anchor) before the tg128 20-pair A/B; both need a HIP build of C14 + this hunk and a GPU window. Row not published in this pass (in-row dual HIP build design; next in queue). [no-belief: triage]

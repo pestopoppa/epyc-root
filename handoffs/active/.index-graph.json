@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T12:39:33Z",
+  "generated_at": "2026-11-19T12:40:36Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1371,15 +1371,15 @@
       "age_days": 0,
       "blocked": 2,
       "blocked_by": [],
-      "closed": 870,
-      "dispatchable": 115,
+      "closed": 871,
+      "dispatchable": 114,
       "domain": "inference-research",
       "guarded": 0,
       "handoff": "autokernel-loop.md",
       "id": "INF-06",
       "last_advanced": "2026-11-19",
       "next_action": "Land AITER topksoftmax/i8gemm C13 ports; H10b dense defect; AA-bisect r4 (GPU suspects); GPU exact lane waits on A/A fix; GDN-SHARE-1",
-      "open": 117,
+      "open": 116,
       "priority": 0.896,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): AK-HR-2.2 \u2014 compare the next DS41/Q38FN campaign's keep yield, repeat-null and abstain rat",
@@ -1471,7 +1471,7 @@
             "INF-65",
             "INF-70#cpu-decode-roofline-program"
           ],
-          "dispatchable": 48,
+          "dispatchable": 47,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -1479,7 +1479,7 @@
           ],
           "line": 9702,
           "name": "autokernel-unified-surface-program",
-          "open": 48,
+          "open": 47,
           "readiness": "blocked"
         },
         {
@@ -1490,7 +1490,7 @@
           "gates": [
             "INF-06#autokernel-unified-surface-program"
           ],
-          "line": 14110,
+          "line": 14111,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3,
           "readiness": "blocked"
@@ -1524,7 +1524,7 @@
             "RTG-09#x-mas-text-routing",
             "UFH-01#harness-selection-and-integration"
           ],
-          "line": 14323,
+          "line": 14324,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11,
           "readiness": "blocked"
