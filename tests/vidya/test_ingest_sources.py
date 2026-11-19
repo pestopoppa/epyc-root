@@ -445,6 +445,7 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "quality-pack-comparison",  # Native comparison capture and refusal controls: test_kernel_promotion_quality_parity.py.
         "kernel-promotion-lifecycle",  # Sealed fixture, strict replay refusals and CLI retry: test_kernel_promotion_evidence.py.
         "autopilot-rotation",  # AP-70 strict reader CLI, refusals and planning-context canary: test_autopilot_rotation_canary.py.
+        "toc-ab-cf3c",  # cf3c-live sealed-window reader: fixture from real cells, refusals, canary: test_toc_ab_cf3c.py.
     }
 
 

@@ -603,7 +603,7 @@ _FILE_SOURCES = (
     "ak-actor-seat",
     "ak-actor-wire",
     "ds41-1017-validation",
-    "toc-ab", "skillbank-ab", "harness-improvement", "ak-history",
+    "toc-ab", "toc-ab-cf3c", "skillbank-ab", "harness-improvement", "ak-history",
     "injection-fixture", "chunk-kv",
     "conversation-stack-measurement", "speech-ggml-optest",
     "speech-cpu-measurement", "speech-listen-rating",
