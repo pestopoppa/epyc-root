@@ -9,6 +9,8 @@ try:
     result=json.loads((D/'out/RESULT.json').read_text());binding=json.loads((D/'binding.json').read_text())
     assert result['schema']=='kpf17.oracle-test.v1' and result['sealed'] and not result['smoke']
     assert result['status'] in ('PASS','INVALID') and result['process_verified_dead']
+    assert result['adopted_cleanup']['verified_dead']
+    if result['status']=='PASS': assert not result['adopted_cleanup']['children']
     assert result['build']==binding['build'] and result['model']==binding['model']
     assert all(custody.digest(p)==h for p,h in result['files'].items())
 except (OSError,ValueError,KeyError,TypeError,AssertionError):sys.exit(1)

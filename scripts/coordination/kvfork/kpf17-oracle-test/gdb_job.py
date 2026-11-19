@@ -93,6 +93,25 @@ def stop_debugger(proc, timeout_s=8, *, verify_absent=cleanup.absent):
     if proc.poll() is None or not verify_absent(proc.pid):
         raise RuntimeError('captured debugger death not verified')
 
+
+def finish_debugger(proc, timeout_s=8):
+    """Stop/reap captured GDB before discovering its adopted inferiors."""
+    stop_debugger(proc,timeout_s=timeout_s)
+    return cleanup.drain_adopted()
+
+
+def supervise_debugger(proc, stop_requested, timeout_s=8):
+    interrupted=False
+    try:
+        while proc.poll() is None:
+            if stop_requested():
+                interrupted=True
+                break
+            time.sleep(.1)
+    finally:
+        adopted=finish_debugger(proc,timeout_s=timeout_s)
+    return interrupted,adopted
+
 def main():
     binding=json.loads((D/'binding.json').read_text()); build=custody.build_identity(); model=custody.model_identity(D/'model.json')
     if build!=binding['build'] or model!=binding['model']: raise SystemExit('INVALID: build/model changed')
@@ -106,23 +125,19 @@ def main():
     out.mkdir(parents=True,exist_ok=True);attempt=out/('attempt-'+uuid.uuid4().hex);attempt.mkdir()
     config={**build,'model_path':str(Path(model['path']).resolve(strict=True)),'model_sha256':model['sha256']};atomic(attempt/'config.json',config)
     stop=Path(os.environ['FILLER_STOPFILE']);deadline=float(os.environ['FILLER_DEADLINE']);cpus=os.environ['FILLER_CPUS'];threads=os.environ['FILLER_THREADS']
-    if stop.exists() or time.time()>=deadline: raise SystemExit(75)
+    if stop.exists() or stop.is_symlink() or time.time()>=deadline: raise SystemExit(75)
     env=dict(os.environ,LD_LIBRARY_PATH=str(Path(build['binary']).parent),KPF17_WITNESS_CONFIG=str(attempt/'config.json'),KPF17_WITNESS_OUTPUT=str(attempt/'witness.json'))
     env.pop('GGML_BACKEND_PATH',None)
     argv=['taskset','-c',cpus,GDB,'--batch','-nx','-ex','set confirm off','-ex','set startup-with-shell off','-ex','set auto-load python-scripts off','-ex','set disable-randomization off','-ex','set debuginfod enabled off','-ex','handle SIGTERM nostop noprint pass','-ex','source '+str(D/'witness.py'),'-ex','run','-ex','quit $_exitcode','--args',build['binary'],'-m',model['path'],'-ngl','0','-t',threads,'-b','32','-c','1024','-n','8','--seed','1234']
-    interrupted=False
+    cleanup.prepare_adoption()
     with (attempt/'test.log').open('wb') as log:
         proc=subprocess.Popen(argv,cwd=attempt,env=env,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
-        with open(os.environ['FILLER_PIDFILE'],'a') as f:f.write(str(proc.pid)+'\n');f.flush()
         try:
-            while proc.poll() is None:
-                if stop.exists() or time.time()>=deadline:
-                    interrupted=True;stop_debugger(proc)
-                    break
-                time.sleep(.1)
-        finally:
-            if proc.poll() is None:
-                stop_debugger(proc)
+            with open(os.environ['FILLER_PIDFILE'],'a') as f:f.write(str(proc.pid)+'\n');f.flush()
+        except BaseException:
+            finish_debugger(proc)
+            raise
+        interrupted,adopted=supervise_debugger(proc,lambda: stop.exists() or stop.is_symlink() or time.time()>=deadline)
     try:witness=json.loads((attempt/'witness.json').read_text())
     except (OSError,ValueError):witness={'error':'missing native in-test witness'}
     verdict=judge((attempt/'test.log').read_text(errors='replace'),witness,proc.returncode)
@@ -132,13 +147,15 @@ def main():
         verdict['status']='INVALID'; verdict['runtime_custody_error']=type(exc).__name__+': '+str(exc)
     # A survivor is an invalid execution, even if cleanup succeeds.
     inferior=apply_cleanup(verdict,witness,interrupted)
+    if adopted['children']: verdict['status']='INVALID'
     try:
         if custody.build_identity()!=build or custody.model_identity(D/'model.json')!=model:verdict['status']='INVALID'
     except Exception as exc:
         verdict['status']='INVALID';verdict['postrun_custody_error']=type(exc).__name__+': '+str(exc)
     result={'schema':'kpf17.oracle-test.v1',**verdict,'build':build,'model':model,'argv':argv,'gdb_sha256':binding['gdb_sha256'],
       'cpus':cpus,'threads':threads,'smoke':smoke,'witness':witness,'inferior_cleanup':inferior,
-      'process_verified_dead':inferior['verified_dead'] and proc.poll() is not None,
+      'adopted_cleanup':adopted,
+      'process_verified_dead':inferior['verified_dead'] and adopted['verified_dead'] and proc.poll() is not None,
       'mutation':'restore checkpoint one prefix token stale after same-destination valid control and reset',
       'files':{str(p):custody.digest(p) for p in (attempt/'test.log',attempt/'config.json')},'sealed':True,
       'scope':'native Test 6 with in-function mappings; no kernel or production verdict'}
