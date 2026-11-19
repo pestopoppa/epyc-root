@@ -11,9 +11,64 @@ import json
 import math
 import os
 from pathlib import Path
+import signal
 import statistics
 import subprocess
 import urllib.request
+
+
+def run_native(argv, **kwargs):
+    """Reap the owned native process and stop its group on every exit path.
+
+    The row's TERM must reach correctness/profiling workers even when the
+    orchestrating Python process is the only PID signalled by the launcher.
+    Defer cancellation while spawning until Popen returns its PID. Call from
+    the main thread on Linux.
+    """
+    cancellations = {signal.SIGTERM, signal.SIGINT}
+    previous_mask = signal.pthread_sigmask(signal.SIG_BLOCK, set())
+    previous_handlers = {sig: signal.getsignal(sig) for sig in cancellations}
+    process = None
+    pending = []
+
+    def interrupted(signum, _frame):
+        pending.append(signum)
+        if process is not None:
+            raise InterruptedError(f"native EvalPerf cancelled by signal {signum}")
+
+    try:
+        for sig in cancellations:
+            signal.signal(sig, interrupted)
+        process = subprocess.Popen(argv, start_new_session=True, **kwargs)
+        if pending:
+            raise InterruptedError(f"native EvalPerf cancelled by signal {pending[0]}")
+        rc = process.wait()
+        if rc:
+            raise subprocess.CalledProcessError(rc, argv)
+    finally:
+        # A second cancellation cannot interrupt cleanup or leave an unreaped
+        # child. Signal only the new session whose leader PID we captured.
+        signal.pthread_sigmask(signal.SIG_BLOCK, cancellations)
+        try:
+            if process is not None:
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
+                # The leader may have exited while a worker ignored TERM.
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.wait()
+        finally:
+            for sig, handler in previous_handlers.items():
+                signal.signal(sig, handler)
+            signal.pthread_sigmask(signal.SIG_SETMASK, previous_mask)
 
 
 def bounded_number(value, low, high):
@@ -151,8 +206,7 @@ def run(config, output):
         argv = ["timeout", "--kill-after=5s", str(config["arm_timeout_s"]), *argv]
         (role_dir / "command.json").write_text(json.dumps(argv) + "\n")
         with (role_dir / "native.log").open("w") as log:
-            subprocess.run(argv, cwd=source, env=env, stdout=log, stderr=subprocess.STDOUT,
-                           check=True)
+            run_native(argv, cwd=source, env=env, stdout=log, stderr=subprocess.STDOUT)
         files = list(role_dir.rglob("*_evalperf_results.json"))
         if len(files) != 1:
             raise ValueError("expected exactly one full native result")

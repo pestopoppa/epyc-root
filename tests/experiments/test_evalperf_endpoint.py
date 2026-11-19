@@ -171,7 +171,7 @@ def test_two_arm_runner_preserves_native_outputs_and_bounded_configuration(prepa
         assert kwargs["env"]["PYTHONPATH"] == config["source"]
         root = Path(argv[argv.index("--root") + 1])
         (root / "model_evalperf_results.json").write_text(json.dumps(native()))
-    monkeypatch.setattr(runner.subprocess, "run", invoke)
+    monkeypatch.setattr(runner, "run_native", invoke)
     result = runner.run(config, output)
     assert len(commands) == 2
     assert result["status"] == "COMPLETE"
@@ -185,7 +185,125 @@ def test_wrong_endpoint_identity_stops_before_generation(prepared, monkeypatch):
     config["arms"][0]["model"] = "wrong-model"
     def forbidden(*args, **kwargs):
         pytest.fail("generation must not start")
-    monkeypatch.setattr(runner.subprocess, "run", forbidden)
+    monkeypatch.setattr(runner, "run_native", forbidden)
     with pytest.raises(ValueError, match="identity mismatch"):
         runner.run(config, output)
     assert not output.exists()
+
+
+def test_native_nonzero_exit_is_reaped_and_fails_closed():
+    import subprocess
+    import sys
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        runner.run_native([sys.executable, "-c", "raise SystemExit(7)"])
+    assert exc.value.returncode == 7
+
+
+@pytest.mark.parametrize("sig_name", ["SIGTERM", "SIGINT"])
+def test_native_cancellation_reaps_owned_child_and_restores_handlers(monkeypatch, sig_name):
+    import os
+    import signal
+    import sys
+
+    original = runner.subprocess.Popen
+    children = []
+    def capture(*args, **kwargs):
+        child = original(*args, **kwargs)
+        children.append(child)
+        return child
+    monkeypatch.setattr(runner.subprocess, "Popen", capture)
+    previous = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
+    # The native child signals its parent once running, then waits for cleanup.
+    code = ("import os,signal; "
+            f"os.kill(os.getppid(), signal.{sig_name}); signal.pause()")
+    with pytest.raises(InterruptedError, match="cancelled by signal"):
+        runner.run_native([sys.executable, "-c", code])
+    assert children[0].returncode is not None
+    with pytest.raises(ProcessLookupError):
+        os.killpg(children[0].pid, 0)
+    assert all(signal.getsignal(sig) == handler for sig, handler in previous.items())
+
+
+def test_signal_during_spawn_is_deferred_until_pid_is_captured(monkeypatch):
+    import os
+    import signal
+    import sys
+
+    original = runner.subprocess.Popen
+    children = []
+    def interrupted_spawn(*args, **kwargs):
+        child = original(*args, **kwargs)
+        children.append(child)
+        os.kill(os.getpid(), signal.SIGTERM)
+        return child
+    monkeypatch.setattr(runner.subprocess, "Popen", interrupted_spawn)
+    with pytest.raises(InterruptedError, match="cancelled by signal"):
+        runner.run_native([sys.executable, "-c", "import signal; signal.pause()"])
+    assert children[0].returncode is not None
+    with pytest.raises(ProcessLookupError):
+        os.killpg(children[0].pid, 0)
+
+
+def test_spawn_failure_restores_signal_state(monkeypatch):
+    import signal
+
+    handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
+    mask = signal.pthread_sigmask(signal.SIG_BLOCK, set())
+    def fail(*args, **kwargs):
+        raise FileNotFoundError("missing native executable")
+    monkeypatch.setattr(runner.subprocess, "Popen", fail)
+    with pytest.raises(FileNotFoundError):
+        runner.run_native(["missing"])
+    assert signal.pthread_sigmask(signal.SIG_BLOCK, set()) == mask
+    assert all(signal.getsignal(sig) == handler for sig, handler in handlers.items())
+
+
+def test_cleanup_escalates_even_when_group_leader_has_exited(monkeypatch):
+    import signal
+    import subprocess
+
+    class Child:
+        pid = 123456789
+        calls = 0
+        def wait(self, timeout=None):
+            self.calls += 1
+            if self.calls == 1:
+                return 0  # leader exited, but its worker can still exist
+            if timeout is not None:
+                raise subprocess.TimeoutExpired("native", timeout)
+            return 0
+    child = Child()
+    signals = []
+    monkeypatch.setattr(runner.subprocess, "Popen", lambda *a, **kw: child)
+    monkeypatch.setattr(runner.os, "killpg", lambda pid, sig: signals.append((pid, sig)))
+    runner.run_native(["native"])
+    assert signals == [(child.pid, signal.SIGTERM), (child.pid, signal.SIGKILL)]
+    assert child.calls == 3
+
+
+def test_native_deadline_failure_propagates():
+    import subprocess
+    import sys
+
+    with pytest.raises(subprocess.CalledProcessError) as exc:
+        runner.run_native(["timeout", "--kill-after=0.1s", "0.05s", sys.executable,
+                           "-c", "import signal; signal.pause()"])
+    assert exc.value.returncode == 124
+
+
+@pytest.mark.parametrize("failure", [InterruptedError("cancelled"), RuntimeError("native failed")])
+def test_second_arm_failure_keeps_first_checkpoint_without_complete(prepared, monkeypatch, failure):
+    config, output = prepared
+    calls = []
+    def invoke(argv, **kwargs):
+        calls.append(argv)
+        if len(calls) == 2:
+            raise failure
+        root = Path(argv[argv.index("--root") + 1])
+        (root / "model_evalperf_results.json").write_text(json.dumps(native()))
+    monkeypatch.setattr(runner, "run_native", invoke)
+    with pytest.raises(type(failure)):
+        runner.run(config, output)
+    assert set(json.loads((output / "checkpoint.json").read_text())) == {"coder"}
+    assert not (output / "RESULT.json").exists()

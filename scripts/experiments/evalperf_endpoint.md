@@ -53,6 +53,12 @@ of native normalized DPS appears only with at least 30 profiled tasks, following
 the handoff's working convention; it is not a ratified comparative protocol.
 There is no automatic significance, adoption or role-change verdict.
 
+Each native invocation runs in an owned process group. SIGTERM or SIGINT to the
+runner stops that group, escalates to SIGKILL after the cleanup grace period,
+and reaps the direct child before propagating cancellation. Failed, timed out or
+cancelled arms never produce COMPLETE; a previously validated arm checkpoint
+remains on disk.
+
 Before the first measurement row, register this producer in the belief adapter
 source table and its owning substrate handoff. Publish only after endpoint
 custody, prepared datasets and the native profiler are available for the smoke.
