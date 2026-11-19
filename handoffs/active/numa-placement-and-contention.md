@@ -433,6 +433,30 @@ the machine.
       `ingest_long_context` have no anchor, so
       `P-BENCH-PLACEMENT-1`'s **mandatory anchor gate has nothing to gate
       against**. Derive them the same way — not from a bench invocation.
+      - **2026-11-19 eligibility verdict: no eligible anchor; box remains open.**
+        The bounded serving-call audit scanned 205 records: architect_general had
+        9 attributed calls, 6 positive successful decode timings, **0 identity-eligible**;
+        worker_general had 2 failed/timeout calls, **0 eligible**; ingest_long_context
+        had 0 attributed calls. All attributed architect/worker records lacked
+        `server.model_path` and `server.argv_sha256` (`identity_source=absent`).
+        Caller path/class also did not establish a non-benchmark production population.
+        The ratified rule requires >=50 production samples per role, same-model/recipe
+        attribution; the anchor is the median with a +/-10% band. No median or band
+        can be established here. July n=3 prodopt medians and llama-bench ingest
+        figures remain ineligible; a new benchmark cannot supply production anchors.
+        Missing launch identity cannot be reconstructed from today's sidecars.
+        Resume this box when provenance-bearing ordinary production calls are available;
+        first ensure launch sidecars and production-population/depth attribution are captured,
+        then extract >=50 qualifying samples for each role. Do not relax the gate.
+        Evidence: existing audit SHA-256 `ec6152b529918e50daa402652e20ee84162024164866b4662a842f9e5fc7b468`;
+        metadata audit `86c450d97ba4d6a099529fcc6897985624a074da66c279ab081ac48ca21e54ae`;
+        protocol audit `2d3de67758272917941b10a6a44094f45d0cfcc29f5f414c1ee73079a17669de`,
+        all at `/mnt/raid0/llm/tmp/compute-flags/handoff-sessions/numa-topology-cutover-resume/p22-{existing,metadata,protocol}-20261119.txt`.
+        Identity producer: orchestrator `src/backends/serving_calls.py`, blob
+        `eeb700373c1e14620d6defeba6a6122c884e64b9`. Protocol:
+        `measurement/protocols/bench-cpu.md` SHA-256
+        `0279771fe0eaecd4e5b401bc5a8437e9e8fe3247041a36fb74f3b011c3c4c9a8`.
+        This is an eligibility finding, not a throughput measurement. [belief: cc]
 - [x] **P2-3. Ratify the 14 TBDs in
   - *(pipeline-mgmt 2026-11-11.)* RATIFIED by operator: RATIFY-INF45-P23-TBDS-20261111, root `70ba71701` (TBDs 3,4,5,7,8,9,10,13,14; 1,2,6,11,12 previously ratified or closed). [no-belief: governance ratification, not a measurement]
       [`../../artifacts/operator/ratification_queue_20260730.md`](../../artifacts/operator/ratification_queue_20260730.md).**
