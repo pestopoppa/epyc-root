@@ -581,3 +581,58 @@ Next independent work: qualify the full-run RowflowContext adapter against curre
 official grant/output admission with model-free controls. GitNexus status and
 prepare impact unavailable because this sparse lane is unindexed; manual upstream
 inspection limits the change to current publisher-smoke entry and its tests.
+
+
+### 2026-11-19 — Current official full-run work context
+
+The opt-in current-guard-v3 binding now subclasses the retained RowflowContext
+for official execution. Each work boundary rechecks the captured current
+admission/provider, source custody, output directory and reserve, requires the
+underlying context output to equal the admitted output, then calls the unchanged
+ContextBoundary (including its own context and HWM checks). Missing retained
+context refuses binding. The inherited delegation, EntryRefused type, controller
+wrapper and abort/refusal-record path remain intact. A latched terminal refusal
+cannot resume work if STOP subsequently disappears. The historical rowflow
+adapter is not invoked by this bound context; its original bytes are unchanged.
+Publisher-smoke selection and the retained standalone wrapper are unchanged.
+
+The new isolated-process regression installs a private successor and traverses
+real supervisor capture/import/bind/main, retained full-run item3 cell,
+run_with_rowflow_boundary and abort_terminal_refusal. Eleven controls PASS:
+valid two-boundary execution; STOP; grant-byte mutation; captured provider loss;
+reserve failure; context output redirection; underlying context failure; HWM
+limit; source drift; deadline; and sticky STOP refusal. Each negative control
+requires the second work marker to remain absent and checks its specific reason
+in the retained diagnostic-refusal path. The historical adapter is replaced
+with a raising sentinel in these tests, proving it is not consulted.
+
+Model-free fixtures use private official-format grants, synthetic artifact and
+provider inputs, controlled time/affinity/disk readings, inert setup/controller/
+server/witness peers and an in-memory refusal ledger. Real driver main runs its
+--dry-run branch; non-dry prerequisites are covered separately by existing tests.
+This does not qualify actual official grants, gate CLI/output/launch-prefix
+routing, native execution, GPU residency, controller numerics or publisher smoke.
+Persistent installation and all historical pins remain unchanged; KPF-18 stays
+open. No parent gate box is ticked by this software-only result.
+
+PASS: 19 binding, 25 admission, 8 prerequisite, 4 non-dry entry, 12 successor,
+6 supervisor Binding, and 1 new full-run test with 11 isolated cases: 75 unittest
+tests total. Run the new controls with:
+
+```bash
+python3 -B -m unittest discover -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_fullrun_context.py -v
+```
+
+Git diff --check PASS. GitNexus status/impact unavailable in this unindexed sparse
+lane; manual caller inspection confines the change to opt-in official binding
+and its tests. Bus drain refuses the handoff slug because it is not a roster id;
+no other session's outbox was used. [no-belief: model-free software regression tests]
+
+Next: qualify full-run gate command/output/launch-prefix routing under current
+official admission before any native full-run publication. Exact historical
+framing-result recovery remains necessary before actual publisher smoke.
+
+Evidence SHA-256:
+- `execution_binding.py`: `bfee63924c5675536bf8a9d9874386f8daf6f17494ff9ce26dfda29875905810`
+- `test_execution_binding.py`: `1bd9cb6aa8f4348dbe9a0b9616a992ceb9d987fd5f33af922e07ce9d34e98f8d`
+- `test_fullrun_context.py`: `115e8fa1486dac03da99f724ae41e0d8d925b375166907090428cd4a4964335f`

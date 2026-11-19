@@ -67,6 +67,25 @@ def prepare(seal, admission, captured):
             guard.output_reserve.check(guard.shutil.disk_usage(root).free,
                                        guard.output_reserve.owned_bytes(root))
             return int(os.environ['FILLER_END'])
+        if config.get('mode', 'official') == 'official':
+            retained_context = getattr(driver, 'RowflowContext', None)
+            if not isinstance(retained_context, type):
+                raise ValueError('retained full-run context required')
+            class CurrentRowflowContext(retained_context):
+                def check_boundary(self):
+                    # Keep the retained terminal exception/latch, delegation,
+                    # controller wrapper and unwind path. Only admission moves
+                    # from the historical adapter to the captured current gate.
+                    if self.terminal_refusal is not None:
+                        self._refuse(self.terminal_refusal)
+                    try:
+                        boundary()
+                        if self._original.out != output_root():
+                            raise ValueError('context output differs from admitted output')
+                        self._original.check_boundary()
+                    except Exception as error:
+                        self._refuse(f'current boundary refusal: {type(error).__name__}: {error}', error)
+            driver.RowflowContext = CurrentRowflowContext
         # ContextBoundary resolves boundary/attempt_root through the retained
         # guard globals, so its original context checks and HWM cap survive.
         # Select the existing smoke function before main selects gate.ITEMS.

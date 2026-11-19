@@ -140,11 +140,19 @@ class CurrentGuard(unittest.TestCase):
     def test_official_mode_keeps_full_item_selection(self):
         # Selection is sealed configuration, never an environment switch.
         original = self.driver.item3
+        self.driver.RowflowContext = type('RetainedContext', (), {})
         self.config['mode'] = 'official'
         with patch.object(self.gate, 'recheck'):
             self.config['output_root'] = str(self.result.parent)
             _, bind = self.prepare(); bind(self.driver)
         self.assertIs(self.driver.item3, original)
+
+    def test_official_refuses_missing_fullrun_context(self):
+        self.config.update(mode='official', output_root=str(self.result.parent))
+        with patch.object(self.gate, 'recheck'):
+            _, bind = self.prepare()
+            with self.assertRaisesRegex(ValueError, 'retained full-run context required'):
+                bind(self.driver)
 
     def test_source_drift_and_provider_loss_refuse_guard_checks(self):
         _, bind = self.prepare(); bind(self.driver)
