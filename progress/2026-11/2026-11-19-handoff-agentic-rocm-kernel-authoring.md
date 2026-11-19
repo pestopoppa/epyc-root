@@ -91,3 +91,7 @@ Filed c10-fold-build-20261109: BUILD_OK (grant rc=0), source 7f1bd044b1e49a88b33
 ## 04:13Z — Resolve duplicate C10/C6 dispatch reprofile run-end event
 
 Duplicate run-end event c10-c6-dispatch-reprofile-20261110-r2: verdict and FILED receipt already recorded 2026-11-10; C6-C10-REPIN is already ticked. Results SHA-256 72f949e598efe40269d9e82bd5c0d2c483633ce1f9c98cfd95a48d192436d25c: zero new C10 failures vs v10, supported/passed MUL_MAT 1202/1201, FLASH_ATTN_EXT 3094/3094, ROPE 428/428, RMS_NORM 21/21, SET_ROWS 159/159. No new result claimed.
+
+## 04:20Z — Resolve duplicate CPU verify-tile run-end event
+
+Duplicate event rka-verify-tile-cpu-20261117: verdict and FILED receipt already exist from 2026-11-17 and RKA-VERIFY-TILE is ticked. Five-round result SHA-256 d8cccc8eec7f9b885d8e34444b3f6ea2a61a3bb0680220d809cf42b1812bcbf2; A3B 48t 32k n3 to n4 rose about 63%; the contention-controlled follow-up is already armed. No new result claimed.
