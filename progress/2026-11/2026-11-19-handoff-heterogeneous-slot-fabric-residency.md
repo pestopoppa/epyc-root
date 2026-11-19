@@ -525,3 +525,7 @@ KPF-17.4d: implemented scripts/benchmark/kpf174d_build_r7.py and published kvu-k
 ## 14:27Z — Consume R7 native smoke verdict: KV object and UI embedding PASS
 
 KPF-17.4d: consumed kvu-kpf174-custody-r7-20261119 native smoke PASS, rc0, CPUs 116–119. Eight-file receipt includes KV object, UI embed log and ui.cpp/ui.h. Evidence paths and SHA-256 pins in docs/reports/kv-cache/kpf174d-build-r7-20261119/README.md. Full row running; no full-build or historical verdict. [no-belief: build qualification only]
+
+## 14:30Z — Complete retained historical partial-impact capture from existing R3 verdict
+
+Completed KPF-17.4D-HISTORICAL-IMPACT-PARTIAL from existing operator-filed R3 rc0 INCONCLUSIVE = PARTIAL_CAPTURE. Two LOW upstream impacts, three returned records each, pagination verified, retained graph binding and native skip census meet the scoped capture rule. Existing native digest b8f2fc3ac606061a91c4a5f763282d6f94a924814dfbdbeddd69f0b9d6a4f83a; existing filing digest 643b67a9554f9837422404aa0218de64b916ebead9076aff0976d3c1072ab620. Evidence paths in docs/reports/kv-cache/kpf131-native-binding-impact-r3-20261105/README.md. Broader non-closure and INCONCLUSIVE preserved: no original Python skip identity, full coverage, edit safety, historical binding or control verdict. R5 STOP retained; no rerun or duplicate filing. [belief: cc]
