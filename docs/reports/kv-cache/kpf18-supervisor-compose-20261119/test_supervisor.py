@@ -249,11 +249,17 @@ class CallableBinding(unittest.TestCase):
             marker = root / 'driver-entered'
             driver.write_text('from pathlib import Path\n'
                               f'def main():\n    Path({str(marker)!r}).touch()\n    return 19\n')
+            # Binding-only fixture: no claim of execution admission. The real
+            # admission module is covered separately by test_execution_admission.py.
+            admission = root / 'synthetic_admission.py'
+            admission.write_text('def capture(seal): return None\n'
+                                 'def recheck(seal, witness): pass\n')
             sources = {str(path): install.digest(path)
-                       for path in (subject, driver, install.HELPER)}
+                       for path in (subject, driver, install.HELPER, admission)}
             (root / 'manifest.json').write_text(json.dumps({
                 'runtime_dispatch': False, 'sources': sources,
-                'helper': str(install.HELPER), 'driver': str(driver)}))
+                'helper': str(install.HELPER), 'driver': str(driver),
+                'admission': str(admission)}))
             code = '''
 import importlib.util
 from pathlib import Path

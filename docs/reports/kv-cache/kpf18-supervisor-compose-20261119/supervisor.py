@@ -28,7 +28,7 @@ def run(entry):
         raise RuntimeError('single-threaded isolated supervisor required')
     spec = importlib.util.spec_from_file_location('_owned_cleanup', seal['helper'])
     helper = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(helper)
+    exec(compile(Path(seal['helper']).read_bytes(), seal['helper'], 'exec'), helper.__dict__)
     if helper.children():
         raise RuntimeError('preexisting children refused')
     helper.enable()
@@ -66,10 +66,18 @@ def run_driver():
         seal = verify()
         driver_path = Path(seal['driver'])
         refuse_preloaded_dependencies(seal)
+        admission_path = Path(seal['admission'])
+        if str(admission_path) not in seal['sources']:
+            raise ValueError('unsealed execution admission')
+        spec = importlib.util.spec_from_file_location('_execution_admission', admission_path)
+        admission = importlib.util.module_from_spec(spec)
+        exec(compile(admission_path.read_bytes(), str(admission_path), 'exec'), admission.__dict__)
+        witness = admission.capture(seal)
         sys.path.insert(0, str(driver_path.parent))
         spec = importlib.util.spec_from_file_location('_supervised_driver', driver_path)
         driver = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(driver)
+        exec(compile(driver_path.read_bytes(), str(driver_path), 'exec'), driver.__dict__)
+        admission.recheck(seal, witness)
         return driver.main()
     return run(entry)
 

@@ -133,3 +133,75 @@ binding correction only, with no model, GPU, native lifecycle or current
 execution-admission claim. Current custody/admission integration can proceed
 independently with focused synthetic controls before the missing inputs are
 required for full inherited integration.
+
+## 2026-11-19 — current execution custody and official full-run entry gate
+
+`run_driver()` now loads a sealed `execution_admission.py` before importing the
+driver, captures admission, then rechecks it after import and before `main()`.
+Missing execution configuration fails closed. The installer optionally accepts
+explicit reviewed identities; it never learns native identities at execution
+and refuses conflicting inherited pins. Existing installations are unchanged.
+
+The execution manifest requires eight artifact roles (`python`, `shell`,
+`flock`, `server`, `ggml`, `ggml_base`, `ggml_cpu`, `ggml_hip`), the provider
+module, and its exact provider-source inventory. All require sealed file
+identities. The running interpreter path must match. The whole source inventory
+is checked again before driver main; GGUF entries are refused before reading
+weights. Supervisor helper, admission, driver and provider source are compiled
+from their verified source bytes rather than accepting cached bytecode.
+
+The read-only gate checks the canonical flags/grants namespace, exact sealed
+row/STOP identity, active declared window, the current keeper grant schema
+(including mandatory `holds=`), GPU token, grant-derived CPU/thread/deadline
+fields and process affinity. STOP, terminal receipts, active exact-name HOLDs,
+symlinked namespaces/grants and malformed/duplicate/unknown grant fields refuse
+entry. Renamed historical HOLD files do not block. Smoke, dry-run and direct
+contexts are deliberately refused by this full-run-only gate.
+
+The bound provider must supply its complete source inventory. Its existing
+`capture` contract requires an exclusive canonical GPU lock held by a captured,
+same-UID ancestor attributed to the current row, with birth identity and inode
+retained; `recheck` must succeed again before main. Preloaded `src` provider
+peers are refused. The gate acquires no grant or lock. Historical flock or
+provider identity alone grants no authority.
+
+Fifteen new focused tests and six existing binding tests PASS (21 total).
+All new grant/provider tests use a private flags namespace and synthetic
+provider/artifact bytes, with no official host lock or native artifact executed.
+A positive test traverses actual supervisor capture/import/recheck/main with
+only namespace/provider fixtures; another mutates a sealed artifact during
+driver import and proves main remains unentered. A separate canonical-namespace
+refusal traverses real `run_driver()` and proves driver import remains unentered.
+The binding-only fixture explicitly seals an inert synthetic admission module;
+its two real cleanup-boundary controls remain binding tests only.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_execution_admission.py -v
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover \
+  -s docs/reports/kv-cache/kpf18-supervisor-compose-20261119 \
+  -p test_supervisor.py -k Binding -v
+```
+
+SHA-256 identities:
+
+| File | SHA-256 |
+| --- | --- |
+| `execution_admission.py` | `24185aaba431336fff57765aaa6e3bd44016bf7920f0e5da7e99f129d4fb0b75` |
+| `test_execution_admission.py` | `c5527efadc563c2211380a5046d809a5c7706d7c29624d893362bde03d90befb` |
+| `supervisor.py` | `f0b08f5842d6c8dab8b96ebcf0acc1c26f62d839a02efb9f919766f01a46359d` |
+| `install.py` | `044155bd634844b30bb9cd2cab35edf2cb6ff0c7f26713279baf76b4692422ad` |
+| `test_supervisor.py` | `2ab1ef29461f4d9d45c58adacc9aa2a100456a0da7f4a52abb9a7fe9d2f997a0` |
+
+These are model-free entry-gate regressions, not live official admission,
+installed inherited integration, native cancellation/release or GPU results.
+File custody does not prove which native DSOs a future server maps. The gate
+checks entry and pre-main boundaries only, without continuous supervision or
+output-reserve enforcement. Direct entries still return rc78. No persistent
+installation, original R9 source path, historical pin or qualification record
+was changed. The inherited suite was not rerun: its two missing exact R9 inputs
+remain prerequisite to full installation. Next: recover those identities and
+qualify the composed installation; separately qualify a publisher-smoke path
+before publishing any native lifecycle successor. The retained driver's own
+historical guards have not been bypassed or represented as current authority.

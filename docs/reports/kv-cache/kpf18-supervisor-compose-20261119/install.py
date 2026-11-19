@@ -16,7 +16,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def install(destination):
+def install(destination, *, execution=None):
     destination = Path(destination)
     if (not destination.is_absolute() or destination.exists() or destination.is_symlink()
             or not destination.resolve().is_relative_to(SCRATCH)):
@@ -37,6 +37,15 @@ def install(destination):
             raise ValueError('inherited source drift: ' + name)
         sources[str(path)] = expected
     sources.update({str(path): expected for path, expected in PINS.items()})
+    # Explicit reviewed identities only; never learn native identities at entry.
+    if execution is not None:
+        for name, expected in execution['sources'].items():
+            if Path(name).suffix.lower() == '.gguf' or digest(Path(name)) != expected:
+                raise ValueError('current execution identity mismatch: ' + name)
+            if name in sources and sources[name] != expected:
+                raise ValueError('execution identity conflicts with inherited seal: ' + name)
+            sources[name] = expected
+        execution = {key: value for key, value in execution.items() if key != 'sources'}
     destination.mkdir()
     marker = destination / 'INCOMPLETE'
     marker.touch()
@@ -51,13 +60,16 @@ def install(destination):
     (destination / 'composition.py').write_bytes((BASE / 'composition.py').read_bytes())
     (destination / 'driver.py').symlink_to(BASE / 'driver.py')
     (destination / 'supervisor.py').write_bytes((HERE / 'supervisor.py').read_bytes())
+    (destination / 'execution_admission.py').write_bytes((HERE / 'execution_admission.py').read_bytes())
     (destination / 'launch.sh').write_text('#!/bin/bash\nset -euo pipefail\nexit 78\n')
-    for path in (HERE / 'install.py', HERE / 'supervisor.py', destination / 'supervisor.py', destination / 'launch.sh',
+    for path in (HERE / 'install.py', HERE / 'supervisor.py', HERE / 'execution_admission.py',
+                 destination / 'execution_admission.py', destination / 'supervisor.py', destination / 'launch.sh',
                  destination / 'composition.py', binding / 'composition.py', binding / 'manifest.json'):
         sources[str(path)] = digest(path)
     seal = {'schema': 'kpf18.disabled-supervisor.v1', 'runtime_dispatch': False,
             'driver': str(destination / 'driver.py'), 'helper': str(HELPER), 'sources': sources,
             'predecessor': str(binding), 'boundary_path': str(HELPER.parent),
+            'admission': str(destination / 'execution_admission.py'), 'execution': execution,
             'relocations': relocations}
     (destination / 'manifest.json').write_text(json.dumps(seal, indent=2) + '\n')
     marker.unlink()
