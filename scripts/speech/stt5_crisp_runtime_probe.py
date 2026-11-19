@@ -32,8 +32,14 @@ def write_new(path, value):
         os.fsync(out.fileno())
 
 
-def matrix():
-    return [(context, mode) for context in PRESETS for mode in ('auto', 'forced')]
+def matrix(cfg=None):
+    cases = [(context, mode) for context in PRESETS for mode in ('auto', 'forced')]
+    if cfg is None or 'cases' not in cfg:
+        return cases
+    selected = [tuple(case) for case in cfg['cases']]
+    if not selected or len(set(selected)) != len(selected) or any(case not in cases for case in selected):
+        raise ValueError('cases must be a nonempty unique subset of the native matrix')
+    return selected
 
 
 def drain(child):
@@ -59,6 +65,7 @@ def main():
     args = ap.parse_args()
     cfg = json.loads(args.config.read_text())
     config_sha = sha(args.config)
+    cases = matrix(cfg)
     # Only small source/library/public-audio pins: model bytes were checked once
     # by the owner. Retain the prepared model stat identity, not a grant-time hash.
     for path, digest in cfg['pins'].items():
@@ -70,7 +77,8 @@ def main():
     spec = importlib.util.spec_from_file_location('matched_tokens', cfg['parser'])
     parser = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(parser)
-    output = Path(cfg['output'])
+    output = Path(cfg['smoke_output'] if os.environ.get('FILLER_SMOKE') == '1'
+                  and 'smoke_output' in cfg else cfg['output'])
     output.mkdir(exist_ok=True)
     cpus = sorted(os.sched_getaffinity(0))
     groups = [cpus[i:i + 3] for i in range(0, len(cpus) - 2, 3)][:8]
@@ -178,9 +186,9 @@ def main():
                 available.append(group)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(groups)) as pool:
-        results = list(pool.map(run, matrix()))
+        results = list(pool.map(run, cases))
     terminal = [r for r in results if r is not None]
-    if len(terminal) != 8:
+    if len(terminal) != len(cases):
         return 75
     summary = dict(schema='stt5-crisp-public-runtime/v1', config_sha256=config_sha,
                    cases=terminal, complete=True, workers=len(groups),

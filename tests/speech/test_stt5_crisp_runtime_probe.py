@@ -24,6 +24,12 @@ class RuntimeProbeTests(unittest.TestCase):
                 self.assertEqual(probe.command(cfg, context, mode, Path('txt')),
                                  ['runner', 'model', 'audio', preset, language, '3', 'txt'])
 
+    def test_scoped_repetition_rejects_invalid_or_duplicate_cases(self):
+        self.assertEqual(probe.matrix({'cases': [['r0', 'forced']]}), [('r0', 'forced')])
+        for cases in ([], [['r1', 'auto']], [['r0', 'forced']] * 2):
+            with self.assertRaises(ValueError):
+                probe.matrix({'cases': cases})
+
     def test_drain_reaps_owned_child_that_ignores_term(self):
         code = 'import signal,sys,time; signal.signal(signal.SIGTERM,signal.SIG_IGN); print("ready",flush=True); time.sleep(60)'
         child = subprocess.Popen([sys.executable, '-c', code], stdout=subprocess.PIPE, text=True)
@@ -38,38 +44,42 @@ class RuntimeProbeTests(unittest.TestCase):
             child.stdout.close()
 
     def test_exposed_missing_results_are_unknown_without_redraw(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            base = Path(tmp)
-            model = base / 'model'
-            model.write_bytes(b'model-free fixture')
-            parser = base / 'parser.py'
-            parser.write_text('def parse(*args): raise AssertionError("no native call")\n')
-            output = base / 'output'
-            output.mkdir()
-            st = model.stat()
-            config = base / 'config.json'
-            config.write_text(json.dumps(dict(model=str(model), parser=str(parser),
-                model_stat=[st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns],
-                pins={}, output=str(output), expected_maps=[])))
-            digest = hashlib.sha256(config.read_bytes()).hexdigest()
-            for context, mode in probe.matrix():
-                probe.write_new(output / (context + '-' + mode + '.exposure.json'),
-                                dict(config_sha256=digest))
-            old_handlers = {s: signal.getsignal(s) for s in (signal.SIGTERM, signal.SIGINT)}
-            try:
-                with mock.patch.object(sys, 'argv', ['probe', str(config)]), mock.patch.object(
-                        probe.os, 'sched_getaffinity', return_value=set(range(24))), mock.patch.object(
-                        probe.subprocess, 'Popen', side_effect=AssertionError('redraw forbidden')) as spawn:
-                    self.assertEqual(probe.main(), 0)
-                    spawn.assert_not_called()
-            finally:
-                for signum, handler in old_handlers.items():
-                    signal.signal(signum, handler)
-            summary = json.loads((output / 'summary.json').read_text())
-            self.assertEqual(summary['verdict'], 'INCONCLUSIVE')
-            self.assertEqual(len(summary['cases']), 8)
-            self.assertTrue(all(c['status'] == 'UNKNOWN' for c in summary['cases']))
-            self.assertFalse(summary['validation_exposed'])
+        for scoped in (False, True):
+            with tempfile.TemporaryDirectory() as tmp:
+                base = Path(tmp)
+                model = base / 'model'
+                model.write_bytes(b'model-free fixture')
+                parser = base / 'parser.py'
+                parser.write_text('def parse(*args): raise AssertionError("no native call")\n')
+                output = base / ('smoke' if scoped else 'output')
+                output.mkdir()
+                st = model.stat()
+                config = base / 'config.json'
+                config.write_text(json.dumps(dict(model=str(model), parser=str(parser),
+                    model_stat=[st.st_dev, st.st_ino, st.st_size, st.st_mtime_ns],
+                    pins={}, output=str(base / 'output'), expected_maps=[],
+                    **({'cases': [['r0', 'forced']], 'smoke_output': str(output)} if scoped else {}))))
+                digest = hashlib.sha256(config.read_bytes()).hexdigest()
+                for context, mode in probe.matrix({'cases': [['r0', 'forced']]} if scoped else None):
+                    probe.write_new(output / (context + '-' + mode + '.exposure.json'),
+                                    dict(config_sha256=digest))
+                old_handlers = {s: signal.getsignal(s) for s in (signal.SIGTERM, signal.SIGINT)}
+                try:
+                    with mock.patch.dict(probe.os.environ, {'FILLER_SMOKE': '1' if scoped else '0'}), mock.patch.object(sys, 'argv', ['probe', str(config)]), mock.patch.object(
+                            probe.os, 'sched_getaffinity', return_value=set(range(24))), mock.patch.object(
+                            probe.subprocess, 'Popen', side_effect=AssertionError('redraw forbidden')) as spawn:
+                        self.assertEqual(probe.main(), 0)
+                        spawn.assert_not_called()
+                finally:
+                    for signum, handler in old_handlers.items():
+                        signal.signal(signum, handler)
+                summary = json.loads((output / 'summary.json').read_text())
+                self.assertEqual(summary['verdict'], 'INCONCLUSIVE')
+                self.assertEqual(len(summary['cases']), 1 if scoped else 8)
+                if scoped:
+                    self.assertFalse((base / 'output').exists())
+                self.assertTrue(all(c['status'] == 'UNKNOWN' for c in summary['cases']))
+                self.assertFalse(summary['validation_exposed'])
 
     def test_exposure_write_never_overwrites(self):
         import tempfile
