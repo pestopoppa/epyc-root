@@ -75,3 +75,7 @@ Duplicate event `afc-v3b-q36_35b-tools-medium-r2-20261111`: existing FILED recei
 ## 03:58Z — Acknowledge already-filed AFC v3 Q36 mild event
 
 Duplicate event `afc-v3-q36_35b-tools-mild-20261111`: existing FILED receipt dated 2026-11-11 04:02 UTC; AFC-P5.E3-Q36-TOOLS-V3 complete. No duplicate verdict or tick. No result-bearing task possible within current brief: remaining work requires missing evidence, operator/owner actions, or forbidden keeper/gate changes. [no-belief: duplicate event acknowledgement only]
+
+## 03:59Z — Acknowledge already-filed AFC Flash r9 event
+
+Duplicate event `afc-p5e3-n30-q38_flash-tools-r9-20261110`: FILED receipt exists from 2026-11-10 12:15 UTC; AFC-P5.E3-FLASH-TOOLS complete. No duplicate verdict or tick. No result-bearing task possible within this brief: remaining boxes require missing evidence, operator/owner actions, or forbidden keeper/gate changes. [no-belief: duplicate event acknowledgement only]
