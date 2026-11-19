@@ -69,7 +69,8 @@ def box_states(text: str) -> dict[str, set[str]]:
 def scan(active: pathlib.Path = ACTIVE) -> list[tuple[str, str, list[str], str]]:
     findings = []
     for index in sorted(active.glob("*index*.md")):
-        for line in index.read_text().split("\n"):
+        text = re.sub(r"<!-- generated:start -->.*?<!-- generated:end -->", "", index.read_text(), flags=re.S)
+        for line in text.split("\n"):
             if not line.startswith("| ") or line.startswith("| ID"):
                 continue
             cells = [c.strip() for c in line.strip("|").split("|")]

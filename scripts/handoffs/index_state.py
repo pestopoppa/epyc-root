@@ -538,9 +538,14 @@ def parse_index_rows(index: Path) -> list[dict]:
     """Rows in the thin schema. Files not yet migrated simply yield nothing."""
     if not index.exists():
         return []
-    rows = []
+    rows, gen = [], False
     for lineno, line in enumerate(index.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-        if not _ROW_ID.match(line):
+        if "<!-- generated:start -->" in line:
+            gen = True                         # the generated table (I.2) is a view, never a hand-written row
+        if "<!-- generated:end -->" in line:
+            gen = False
+            continue
+        if gen or not _ROW_ID.match(line):
             continue
         cells = [c.strip() for c in _SPLIT.split(line.strip())]
         # leading/trailing empties from the outer pipes
@@ -632,6 +637,102 @@ def render_block(state: dict) -> str:
                      f"{a['oldest_advance'] or '—'} |")
     lines.append(END)
     return "\n".join(lines)
+
+
+GEN_START, GEN_END = "<!-- generated:start -->", "<!-- generated:end -->"
+GEN_HEAD = ("| ID | Handoff | Next action (generated) | Deps | Rank | Open/Blocked/Frozen | Last advanced |\n"
+            "|---|---|---|---|---|---|---|")
+_ROW_REF = re.compile(r"^[A-Z]{3}-\d+$")
+_DEPENDS_ON = re.compile(r"^\*\*Depends on\*\*:\s*(.*)$")
+
+
+def _cell(text: str) -> str:
+    return " ".join(str(text).replace("|", "/").split())
+
+
+def generated_next_action(boxes: list[dict]) -> str:
+    """Handoff standard I.2(c): the top dispatchable box, else BLOCKED / FROZEN / NEEDS-OWNER."""
+    live = [b for b in boxes if b.get("state") != "done"]
+    live.sort(key=lambda b: (b.get("pos_in_backlog") is None, b.get("pos_in_backlog") or 0, b.get("line", 0)))
+    for b in live:
+        if b.get("state") == "open" and not b.get("gate_open") and b.get("class") in ("non-inference", "inference"):
+            body = re.sub(r"^\s*[-*] \[.\]\s*", "", b.get("text", ""))
+            if b.get("id"):
+                body = re.sub(r"^\*\*\s*(?:❄\s*)?" + re.escape(b["id"]) + r"\s*[—:–-]?\s*", "", body)
+                return _cell(f"**{b['id']}** {body.replace('**', '').strip()[:110]}")
+            return _cell(body.replace("**", "").strip()[:110])
+    gated = sorted({g for b in live if b.get("gate_open") for g in b.get("gate") or []})
+    if gated:
+        return _cell("BLOCKED: " + ", ".join(gated[:6]))
+    frozen = [b for b in live if b.get("state") == "frozen"]
+    if frozen:
+        return _cell(f"FROZEN until {frozen[0].get('frozen_until') or '?'}"[:140])
+    owners = sum(1 for b in live if b.get("state") == "needs-owner")
+    if owners:
+        return f"NEEDS-OWNER: {owners} boxes"
+    return "—"
+
+
+def render_domain_tables(state: dict, bdoc: dict, prio: dict) -> dict[str, str]:
+    """{domain index file: generated table} — handoff standard I.2(c), emitted BESIDE the hand-written rows (Stage B).
+    Next action = top dispatchable box (.box-index.json); Deps = the row's hand Deps ∪ `gate:` row refs in its
+    boxes ∪ the handoff header `**Depends on**` row ids; Rank = backlog-priority.json."""
+    by_file: dict[str, list[dict]] = defaultdict(list)
+    for b in (bdoc.get("boxes") or {}).values():
+        by_file[Path(b.get("file", "")).name].append(b)
+    prows = (prio or {}).get("rows", {}) if isinstance(prio, dict) else {}
+    out: dict[str, list[str]] = {i: [] for i in DOMAIN_INDICES}
+    for rid, r in sorted(state["rows"].items()):
+        idx, hname = r.get("index"), r.get("handoff")
+        if idx not in out or not hname:
+            continue
+        boxes = by_file.get(hname, [])
+        deps = set(r.get("deps") or [])
+        deps |= {g.split("#")[0] for b in boxes for g in (b.get("gate") or []) if _ROW_REF.match(g.split("#")[0])}
+        hp = ACTIVE / hname
+        if hp.exists():
+            for line in hp.read_text(encoding="utf-8", errors="replace").split("\n")[:60]:
+                m = _DEPENDS_ON.match(line.strip())
+                if m:
+                    deps |= set(re.findall(r"\b[A-Z]{3}-\d+\b", m.group(1)))
+        deps.discard(rid)
+        h = state["handoffs"].get(hname, {})
+        rank = (prows.get(rid) or {}).get("rank")
+        out[idx].append((rank is None, rank or 0, rid,
+                         f"| {rid} | [{hname}]({hname}) | {generated_next_action(boxes)} | "
+                         f"{', '.join(sorted(deps)) or '—'} | {rank if rank is not None else '—'} | "
+                         f"{h.get('open', 0)}/{h.get('blocked', 0)}/{h.get('frozen', 0)} | {h.get('last_advanced') or '—'} |"))
+    return {i: "\n".join([GEN_START, GEN_HEAD] + [x[3] for x in sorted(rows)] + [GEN_END])
+            for i, rows in out.items()}
+
+
+def splice_domain_table(text: str, block: str) -> str:
+    if GEN_START in text and GEN_END in text:
+        pre, rest = text.split(GEN_START, 1)
+        _, post = rest.split(GEN_END, 1)
+        return pre + block + post
+    section = ("## Rows (generated)\n\nGenerated by `scripts/handoffs/index_state.py` from `.box-index.json`, the handoff "
+               "headers and `backlog-priority.json` (handoff standard I.2). Do not edit; the hand-written rows above stay "
+               "authoritative until Stage C.\n\n" + block + "\n\n")
+    if "\n## Cross-domain" in text:
+        pre, post = text.split("\n## Cross-domain", 1)
+        return pre.rstrip("\n") + "\n\n" + section + "## Cross-domain" + post
+    return text.rstrip("\n") + "\n\n" + section
+
+
+def domain_table_updates(state: dict, bdoc: dict) -> dict[str, str]:
+    """{index file: new text} for indices whose generated table differs from what is on disk."""
+    prio, _ = load_priority_file(PRIORITY_FILE)
+    upd = {}
+    for idx, block in render_domain_tables(state, bdoc, prio).items():
+        p = ACTIVE / idx
+        if not p.exists():
+            continue
+        old = p.read_text(encoding="utf-8")
+        new = splice_domain_table(old, block)
+        if new != old:
+            upd[idx] = new
+    return upd
 
 
 def write_block(state: dict) -> bool:
@@ -1475,6 +1576,9 @@ def box_index_check(state: dict, diff_base: str | None, gate_mode: str | None) -
         finally:
             sys.path.pop(0)
         doc = box_index_doc(state)
+        stale = sorted(domain_table_updates(state, doc))
+        if stale:   # AK audit B10: generated surfaces warn, never fail a commit that did not touch them
+            warns.append(f"GENERATED ROWS: stale in {', '.join(stale)} — run index_state.py")
         n_out = doc["counts"].get("outside_backlog", 0)
         if n_out:
             warns.append(f"BOX-INDEX: {n_out} open box(es) sit outside `### Backlog` in files that have one")
@@ -1567,6 +1671,9 @@ def main(argv: list[str] | None = None) -> int:
     tmp.write_text(box_index.dumps(bdoc), encoding="utf-8")
     os.replace(tmp, BOX_INDEX)
     print(f"wrote {BOX_INDEX.relative_to(REPO_ROOT)} ({bdoc['counts']['total']} boxes; gitignored, regenerated on read)")
+    for idx, text in domain_table_updates(state, bdoc).items():
+        (ACTIVE / idx).write_text(text, encoding="utf-8")
+        print(f"wrote generated rows in {idx}")
     changed = write_block(state)
     print(f"wrote {SIDECAR.relative_to(REPO_ROOT)}")
     rc = graph["readiness_counts"]

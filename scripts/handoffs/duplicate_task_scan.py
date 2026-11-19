@@ -153,8 +153,14 @@ def _index_rows() -> list[tuple[str, int, str, str, str | None]]:
         p = ACTIVE / index
         if not p.exists():
             continue
+        gen = False
         for lineno, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
-            if not _ROW_ID.match(line):
+            if "<!-- generated:start -->" in line:
+                gen = True                                      # generated rows (handoff standard I.2) are a view
+            if "<!-- generated:end -->" in line:
+                gen = False
+                continue
+            if gen or not _ROW_ID.match(line):
                 continue
             cells = _SPLIT.split(line)[1:6]                     # id | track | handoff | action | deps
             if len(cells) < 4:

@@ -301,3 +301,24 @@ def test_annotations_never_change_the_rubric():
     box = "- [ ] **Z-1 — fix the scorer** tests pass"
     ann = box + "\n      · section: Deferred until after the parked thing lands\n      · class: non-inference"
     assert TL.dispatch_result(box)["fails"] == TL.dispatch_result(ann)["fails"]
+
+
+def test_headers_added_once_after_status():
+    new, st = HM.migrate_text(MIG, "RTG-1", "routing-and-optimization", boxes=False)
+    lines = new.split("\n")
+    assert lines[2:4] == ["**Row**: RTG-1", "**Domain**: routing-and-optimization"] and st["headers"] == 2
+    assert HM.migrate_text(new, "RTG-9", "x", boxes=False)[0] == new      # an existing key is never rewritten
+
+
+def test_generated_domain_table_is_not_a_hand_row(tmp_path, monkeypatch):
+    import index_state as IS
+    p = tmp_path / "x-index.md"
+    p.write_text("| ID | Track | Handoff | Next action | Deps |\n|---|---|---|---|---|\n"
+                 "| RTG-1 | t | [a.md](a.md) | do it | — |\n\n"
+                 + IS.GEN_START + "\n" + IS.GEN_HEAD + "\n| RTG-1 | [a.md](a.md) | x | — | 1 | 1/0/0 | — |\n" + IS.GEN_END + "\n")
+    rows = IS.parse_index_rows(p)
+    assert len(rows) == 1 and not rows[0].get("malformed")
+    nxt = IS.generated_next_action([{"state": "open", "class": "non-inference", "id": "A-1", "pos_in_backlog": 1,
+                                     "text": "- [ ] **A-1 — do the thing** now", "gate_open": False}])
+    assert nxt == "**A-1** do the thing now"
+    assert IS.generated_next_action([{"state": "frozen", "frozen_until": "OP-1", "text": "x"}]) == "FROZEN until OP-1"

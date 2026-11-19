@@ -203,13 +203,43 @@ def move_to_backlog(lines, stats):
     return kept
 
 
-def migrate_text(text):
+def add_headers(lines, row, domain):
+    """Indexes I.2(b)/(d): `**Row**` / `**Domain**` header keys from the current rows -> handoff map. Inserted after
+    the `**Status**` line (else after the title) in the first 60 lines; an existing key is never rewritten."""
+    head = lines[:60]
+    add = []
+    if row and not any(l.startswith("**Row**:") for l in head):
+        add.append(f"**Row**: {row}")
+    if domain and not any(l.startswith("**Domain**:") for l in head):
+        add.append(f"**Domain**: {domain}")
+    if not add:
+        return lines, 0
+    at = next((i + 1 for i, l in enumerate(head) if l.startswith("**Status**")), None)
+    if at is None:
+        at = next((i + 1 for i, l in enumerate(head) if l.startswith("# ")), 0)
+    return lines[:at] + add + lines[at:], len(add)
+
+
+def row_map(root):
+    """{handoff file name: (row id, domain)} from .index-state.json."""
+    try:
+        st = json.loads((Path(root) / "handoffs/active/.index-state.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return {r["handoff"]: (rid, (r.get("index") or "").replace("-index.md", ""))
+            for rid, r in st.get("rows", {}).items() if r.get("handoff")}
+
+
+def migrate_text(text, row=None, domain=None, boxes=True):
     eol = "\r\n" if "\r\n" in text else "\n"
     lines = text.replace("\r\n", "\n").split("\n")
     stats = dict(moved=0, left_nested=0, left_section=0, backlogs_created=0, **{"class": 0}, frozen=0, rollup=0, inputs=0)
     before_open, before_first = open_shas(lines), first_lines(lines)
-    out = annotate(lines, stats)
-    out = move_to_backlog(out, stats)
+    out = lines
+    if boxes:
+        out = annotate(out, stats)
+        out = move_to_backlog(out, stats)
+    out, stats["headers"] = add_headers(out, row, domain)
     if open_shas(out) != before_open or first_lines(out) != before_first:
         raise MigrateError("first-line invariant violated; refusing to write")
     return eol.join(out), stats
@@ -220,12 +250,15 @@ def main(argv=None):
     ap.add_argument("files", nargs="+")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--headers-only", action="store_true", help="only add **Row**/**Domain** header keys")
     a = ap.parse_args(argv)
     res = {}
+    rmap = row_map(Path(__file__).resolve().parents[2])
     for f in a.files:
         p = Path(f)
         raw = p.read_bytes().decode("utf-8", errors="surrogateescape")
-        new, stats = migrate_text(raw)
+        row, dom = rmap.get(p.name, (None, None))
+        new, stats = migrate_text(raw, row, dom, boxes=not a.headers_only)
         res[f] = stats
         if not a.dry_run and new != raw:
             tmp = p.with_suffix(p.suffix + ".tmp")
