@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 511
+      "open": 510
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -25,7 +25,7 @@
       "open": 18
     },
     "routing-and-optimization-index.md": {
-      "blocked": 17,
+      "blocked": 16,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
       "open": 462
@@ -42,10 +42,10 @@
   "handoffs": {
     "autokernel-akx-program.md": {
       "blocked": 1,
-      "closed": 135,
+      "closed": 136,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 58,
+      "open": 57,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -82,7 +82,7 @@
         },
         {
           "blocked": 1,
-          "closed": 83,
+          "closed": 84,
           "gates": [
             "INF-06#autokernel-unified-surface-program",
             "INF-82#autokernel-cross-workload-keep-gate",
@@ -92,10 +92,10 @@
             "RTG-58#kv-prefix-fork-and-paged-attention"
           ],
           "guarded": 0,
-          "line": 964,
+          "line": 966,
           "markers": 1,
           "name": "autokernel-all-devices-all-dimensions",
-          "open": 51
+          "open": 50
         }
       ]
     },
@@ -1392,10 +1392,10 @@
       ]
     },
     "kv-cache-program.md": {
-      "blocked": 9,
-      "closed": 414,
+      "blocked": 8,
+      "closed": 415,
       "guarded": 0,
-      "last_advanced": "2026-11-06",
+      "last_advanced": "2026-11-19",
       "open": 97,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
@@ -1408,8 +1408,8 @@
       "total": 520,
       "tracks": [
         {
-          "blocked": 8,
-          "closed": 250,
+          "blocked": 7,
+          "closed": 251,
           "gates": [
             "RTG-58#kv-unified-stack-rollout",
             "EVL-14",
