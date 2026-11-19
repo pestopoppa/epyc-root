@@ -111,3 +111,7 @@ RKA-VERIFY-TILE GPU run-end was already filed and its box ticked on 2026-11-18; 
 ## 04:27Z — Resolve duplicate run-end event for already filed A3B GPU D-length result
 
 RKA-VERIFY-TILE-A3B-GPU-E2E was already ticked and filed on 2026-11-18, including its FILED receipt. The preregistered verdict RECOMMEND_D2 found median 32k ms/token D2 9.89 versus D4 11.87, and 4k D2 9.36 versus D4 11.86. Native result SHA-256 4e5ebd79dd218d0367dcaaf27135e655658e30dc807f2c26cbd44ec92a996734. No duplicate tick.
+
+## 04:29Z — Resolve duplicate run-end event for already filed gate/up CPU profile
+
+INF48-GATEUP-PROBE was already ticked and filed on 2026-11-18 with receipt present. NO_CANDIDATE: CPU paired-launch upper bound 1.52% at depth 0 and 1.25% at 8192, below 2%; proxy profiler and perf caveats are recorded in the verdict. Native result SHA-256 6e12809eb65ad3af378a720975f8e8935f8457471ea936da86f897283ceb1dfe. No duplicate tick.
