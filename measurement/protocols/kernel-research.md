@@ -1107,3 +1107,30 @@ names the serving instrument they already govern and says what its implementatio
 new protocol needs annex text, which is the same trust boundary. Evidence cited by the rules above:
 `epyc-inference-research/data/inf70-retest1-2026-09-08/` and
 `epyc-inference-research/data/ak-r2358-shim-serving-2026-09-08/` (research main `7020bb94`).
+
+## P-AK-SEARCH-1-A5a — graph-level KLD thresholds, 27B-anchored (AK-FUSE-GRAPH-KLD-1, RATIFIED 2026-11-18; GPU Q38FN top-1 clause 2026-11-19)
+
+Operator ruling 2026-11-18 (amended 2026-11-19: GPU Q38FN-hybrid top-1 clause) sets the values A5 left unset. A keep candidate that touches graph-fusion,
+ggml-alloc or graph-matcher files (`gates.touches_graph_fusion`) passes the graph-level gate only if:
+
+- **GPU:** Qwen3.8-27B Q8_0 decides: mean KLD <= 0.003 and |dPPL| <= 0.5% for the same change.
+  Q38FN (Qwen3.8-Flash-Next UD-IQ4_XS) KLD and PPL are reported only; **amended by operator decision
+  2026-11-19:** the keep is also refused if Q38FN top-1 (same-top) < 93.0%. Q38FN is not served on GPU, so
+  the GPU gate runs it hybrid (`-ngl 999 --n-cpu-moe 48`, the H13b keep-run recipe) as the test vehicle.
+  Reason: the known-bad H13b replay is clean on the 27B and caught only by Q38FN. The 27B still decides
+  KLD and dPPL.
+- **CPU:** the same 27B clause, plus Q38FN |dPPL| <= 0.5% and top-1 (same-top) >= 93%.
+
+|dPPL| is |PPL(candidate)/PPL(champion) - 1|, from llama-perplexity's mean ln(PPL(Q)/PPL(base)). The
+measurement is the A5 one: wikitext-2, `-c 4096 --chunks 16`, f16 KV, the champion's base logits saved once
+per champion commit, each binary on its own build's libraries.
+
+The values live in research `scripts/kernel_rnd/autokernel/loop/graph_kld_policy.json`, written by this
+ratification; that file is their only input, and changing it needs a new operator amendment. A missing or
+malformed policy, an unparsed decisive metric, or a decisive clause without a limit refuses the keep
+(`threshold_unset` / `kld_unparsed`); a failed run is `oracle_unavailable`. Neither is a pass. The known-bad
+C7/H13b Q38FN replay (KLD 0.1865, same-top 88.6%) fails the Q38FN top-1 clause on both CPU and GPU.
+
+Enforcement: `gates.graph_kld_keep_check` is called from the correctness gate in `loop/run.py` for every
+graph-fusion candidate on both legs, and every promoted champion builds `llama-perplexity`. This supersedes
+A5's "Enforcement state at ratification" paragraph.

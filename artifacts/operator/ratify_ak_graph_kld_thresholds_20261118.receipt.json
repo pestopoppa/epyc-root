@@ -1,0 +1,125 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-11-19T08:48:54Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "203ad93a7ef73314705cce3b1b0a884e7f8f03cc942a1d4395233ea7af55f159"
+  },
+  "git_head_at_emit": "2f416e26e6ac1c74b14b523494beec50ab222273",
+  "git_head_before": "2f416e26e6ac1c74b14b523494beec50ab222273",
+  "operator": "Daniele",
+  "protocol_id": "P-AK-SEARCH-1-A5a",
+  "ratification_id": "RATIFY-AK-GRAPH-KLD-THRESHOLDS-20261118",
+  "ratify_script": {
+    "exists": true,
+    "path": "/mnt/raid0/llm/worktrees/ratify-bundle-run-1119-084724-3050677/scripts/operator/ratify_ak_graph_kld_thresholds_20261118.sh",
+    "sha256": "c0b5990b9936d7196b0a3dbf8c6b24f186222bbaa8c37a3f8ec52d12cc4b43cc"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/tmp/ratify-ak-graph-kld.uR0lGP/root",
+  "sections": {
+    "coherence": {
+      "data": {
+        "measurement/protocols/kernel-research.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: operator-chosen thresholds (ruling 2026-11-18, amended 2026-11-19), not a measured claim; the gate's own runs are the evidence per keep"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: Daniele"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id P-AK-SEARCH-1-A5a is a clause reference, not a registered protocol name; verified via 1 anchor(s) instead",
+        "anchor present in measurement/protocols/kernel-research.md: ## P-AK-SEARCH-1-A5a"
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 27,
+      "lines_after": 1137,
+      "lines_before": 1110,
+      "lines_removed": 0,
+      "path": "measurement/protocols/kernel-research.md",
+      "sha256_after": "3665781ed9331bea1acf556d8750cfad571fd2a1c8283b9c44f652eed6638b58",
+      "sha256_before": "c5bd00d760bb70e1f300930268913b0cb002c6d05fe3712937ae320d5175dc4e",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/measurement/protocols/kernel-research.md",
+        "+++ b/measurement/protocols/kernel-research.md",
+        "@@ -1108,3 +1108,30 @@",
+        " `epyc-inference-research/data/inf70-retest1-2026-09-08/` and",
+        " `epyc-inference-research/data/ak-r2358-shim-serving-2026-09-08/` (research main `7020bb94`).",
+        " ",
+        "+## P-AK-SEARCH-1-A5a \u2014 graph-level KLD thresholds, 27B-anchored (AK-FUSE-GRAPH-KLD-1, RATIFIED 2026-11-18; GPU Q38FN top-1 clause 2026-11-19)",
+        "+",
+        "+Operator ruling 2026-11-18 (amended 2026-11-19: GPU Q38FN-hybrid top-1 clause) sets the values A5 left unset. A keep candidate that touches graph-fusion,",
+        "+ggml-alloc or graph-matcher files (`gates.touches_graph_fusion`) passes the graph-level gate only if:",
+        "+",
+        "+- **GPU:** Qwen3.8-27B Q8_0 decides: mean KLD <= 0.003 and |dPPL| <= 0.5% for the same change.",
+        "+  Q38FN (Qwen3.8-Flash-Next UD-IQ4_XS) KLD and PPL are reported only; **amended by operator decision",
+        "+  2026-11-19:** the keep is also refused if Q38FN top-1 (same-top) < 93.0%. Q38FN is not served on GPU, so",
+        "+  the GPU gate runs it hybrid (`-ngl 999 --n-cpu-moe 48`, the H13b keep-run recipe) as the test vehicle.",
+        "+  Reason: the known-bad H13b replay is clean on the 27B and caught only by Q38FN. The 27B still decides",
+        "+  KLD and dPPL.",
+        "+- **CPU:** the same 27B clause, plus Q38FN |dPPL| <= 0.5% and top-1 (same-top) >= 93%.",
+        "+",
+        "+|dPPL| is |PPL(candidate)/PPL(champion) - 1|, from llama-perplexity's mean ln(PPL(Q)/PPL(base)). The",
+        "+measurement is the A5 one: wikitext-2, `-c 4096 --chunks 16`, f16 KV, the champion's base logits saved once",
+        "+per champion commit, each binary on its own build's libraries.",
+        "+",
+        "+The values live in research `scripts/kernel_rnd/autokernel/loop/graph_kld_policy.json`, written by this",
+        "+ratification; that file is their only input, and changing it needs a new operator amendment. A missing or",
+        "+malformed policy, an unparsed decisive metric, or a decisive clause without a limit refuses the keep",
+        "+(`threshold_unset` / `kld_unparsed`); a failed run is `oracle_unavailable`. Neither is a pass. The known-bad",
+        "+C7/H13b Q38FN replay (KLD 0.1865, same-top 88.6%) fails the Q38FN top-1 clause on both CPU and GPU.",
+        "+",
+        "+Enforcement: `gates.graph_kld_keep_check` is called from the correctness gate in `loop/run.py` for every",
+        "+graph-fusion candidate on both legs, and every promoted champion builds `llama-perplexity`. This supersedes",
+        "+A5's \"Enforcement state at ratification\" paragraph.",
+        "+"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "grep -qF 'P-AK-SEARCH-1-A5a' measurement/protocols/kernel-research.md",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}
