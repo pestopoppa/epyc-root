@@ -167,3 +167,7 @@ RKA-A3B-ROUTER-WIDE: repaired split-line correctness parser in scratch job.py SH
 ## 07:36Z — Triage resolved row alerts and inspect router-wide smoke
 
 RKA-A3B-ROUTER-WIDE r2 GPU smoke was running on inspection; qualification remains pending. Triaged historical alerts using filed receipts and the recorded ATT and AITER successor verdicts; ParEval r2 smoke remains unresolved and capture is partial, so its alert was not acknowledged as fixed. [no-belief: operational triage]
+
+## 07:39Z — Repair router-wide smoke source checkout after deletion interrupted its build
+
+RKA-A3B-ROUTER-WIDE: The r2 smoke build failed when the requested deletion of out/src overlapped its build (missing rwkv7.cpp / llama-memory-recurrent.h). Replaced the archive checkout with a detached worktree at bb3294c71b9d02fb8040a4d71dfec75f5522b4dc; updated job.py to verify commit and tree and use git worktree add --detach if absent, refreshed SOURCE.sha256, and invoked publish_row.py again. Qualification remains pending. C15-EPI-Q8 r2 smoke passed. [no-belief: operational repair]
