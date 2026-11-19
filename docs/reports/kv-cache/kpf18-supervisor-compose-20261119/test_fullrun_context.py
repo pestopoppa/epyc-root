@@ -116,7 +116,7 @@ def worker(mode):
                         return 29
                     with patch.object(driver.gate, 'Server', return_value=NS(sampler=None)), \
                          patch.object(driver.gate, 'start_steps', return_value=[]), \
-                         patch.object(driver.gate, 'stop_step', return_value=None), \
+                         patch.object(driver.gate, 'stop_step', return_value=driver.gate.Step('inert stop', 0, None)), \
                          patch.object(driver, 'setup', side_effect=setup), \
                          patch.object(driver, 'run', side_effect=controller), \
                          patch.object(driver.guard.shutil, 'disk_usage', return_value=NS(free=1024**4)), \

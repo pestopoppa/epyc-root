@@ -998,3 +998,49 @@ GitNexus status/impact are unavailable in this unindexed sparse lane; manual
 review limits the runtime change to the admitted gate's recipe environment.
 Bus drain refuses the unregistered kvu slug; no other outbox was used.
 [no-belief: model-free software regression tests]
+
+
+## 2026-11-19 — current admission at retained recipe step boundaries
+
+The current wrapper previously rechecked before gate parser entry. The retained
+execution loop then called each Step directly. Its startup steps did not call
+current admission; the smoke request checked it later and converted a late
+STOP into generic rc4. Thus admission could change during context construction
+and native startup would still be attempted before the later request refused.
+
+Both official and smoke item3 recipes now wrap every step action with the
+current boundary. A refusal becomes the retained gate Abort (rc3), before the
+action or its done marker. Empty steps are checked too. The gate retains its
+existing finally cleanup and partial-record finalizers, and the outer supervisor
+still drains owned children. This checks between steps; it does not interrupt an
+already executing action or establish a native cancellation/release result.
+
+The installed non-dry retained-R7 test now includes an inert startup step and
+three late mutations injected by context construction: STOP, prepared-input drift
+and grant change. All refuse before startup/request, produce rc3, and leave no
+smoke request or successful done marker. Its 18 isolated cases PASS. Eight
+additional direct controls exercise official/smoke recipe selection with valid
+ordering or STOP/provider/reserve refusal between actions, including empty steps.
+Two older inert fixtures now return actual empty Step objects instead of None,
+as required by the real gate's step contract.
+
+Validation: 83 scoped unittest tests PASS (all test_*.py modules here except
+historical test_supervisor.py, whose unavailable R9 sources remain outside this
+successor's scope). Reproduce with python3 -B unittest discovery per module.
+Git diff whitespace validation PASS. Source SHA-256 identities:
+
+- execution_binding.py: `c763ee7db16b13a5f42de820a43645b01599553fdc4a75589a517e7d74ed8306`
+- test_execution_binding.py: `4f85eed65097a54bedcf5a5a7807ed03583c3e36e89cdfcf01577df0c309446f`
+- test_retained_r7_smoke.py: `78ee118629c0fd99becbffaae4d238e1b38c19cb02b16200e7de8c9afe1e5931`
+- test_fullrun_context.py: `70cb97a65e45b733d0a73a77e130d6aa78f0d3bf58d40330782f13e2f143b8d9`
+
+This is model-free software qualification with private admission and inert native
+peers. No publisher invocation, native launch, GPU residency, cancellation,
+release or parent completion is claimed. Persistent installations, production
+and historical seals are unchanged. Next seal retained-R7 with the actual input
+locations above and current artifact/provider identities; qualify real native
+context integration and publish the owned-native lifecycle row.
+GitNexus status/impact refuse in this unindexed sparse lane. Manual inspection
+bounds the change to current recipe action wrappers and regression fixtures.
+The session bus refuses the unregistered kvu slug; no other outbox was used.
+[no-belief: model-free software regression tests]

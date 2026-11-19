@@ -159,7 +159,47 @@ class CurrentGuard(unittest.TestCase):
         with patch.object(self.gate, 'recheck'):
             self.config['output_root'] = str(self.result.parent)
             _, bind = self.prepare(); bind(self.driver)
-        self.assertIs(self.driver.item3, original)
+        self.assertIs(self.driver.item3.__wrapped__, original)
+
+    def test_each_recipe_step_rechecks_before_action_including_empty_steps(self):
+        for official in (False, True):
+            for refusal in ('stop', 'provider', 'reserve', None):
+                with self.subTest(official=official, refusal=refusal):
+                    # Independent fixture per sticky STOP/binding mutation.
+                    fixture = CurrentGuard(); fixture.setUp()
+                    try:
+                        actions = []
+                        def recipe(ctx):
+                            return [NS(fn=lambda: actions.append('first')),
+                                    NS(fn=lambda: actions.append('second')), NS(fn=None)]
+                        fixture.driver.item3 = recipe
+                        fixture.driver.item3_smoke = recipe
+                        fixture.driver.gate.Abort = type('Abort', (Exception,), {})
+                        if official:
+                            fixture.config.update(mode='official', output_root=str(fixture.result.parent))
+                            fixture.driver.RowflowContext = type('RetainedContext', (), {})
+                        # Fixture grants remain publisher grants; only mode
+                        # selection is varied, not the real contract's authority.
+                        with patch.object(fixture.gate, 'recheck') as recheck:
+                            _, bind = fixture.prepare(); bind(fixture.driver)
+                            steps = fixture.driver.item3(NS())
+                            steps[0].fn()
+                            if refusal == 'stop':
+                                recheck.side_effect = ValueError('STOP or terminal row')
+                            elif refusal == 'provider':
+                                recheck.side_effect = ValueError('provider lost')
+                            elif refusal == 'reserve':
+                                fixture.guard.output_reserve.check = lambda *args: (_ for _ in ()).throw(RuntimeError('reserve exhausted'))
+                            if refusal:
+                                for step in steps[1:]:
+                                    with self.assertRaisesRegex(fixture.driver.gate.Abort, 'current step admission refusal'):
+                                        step.fn()
+                                self.assertEqual(actions, ['first'])
+                            else:
+                                steps[1].fn(); steps[2].fn()
+                                self.assertEqual(actions, ['first', 'second'])
+                    finally:
+                        fixture.doCleanups()
 
     def test_official_refuses_missing_fullrun_context(self):
         self.config.update(mode='official', output_root=str(self.result.parent))
@@ -309,7 +349,7 @@ def worker():
                              check_boundary=lambda: None)
                     with patch.object(driver.gate, 'Server', return_value=srv), \
                          patch.object(driver.gate, 'start_steps', return_value=[]), \
-                         patch.object(driver.gate, 'stop_step', return_value=None), \
+                         patch.object(driver.gate, 'stop_step', return_value=driver.gate.Step('inert stop', 0, None)), \
                          patch.object(driver.gate, 'G', return_value={'trunk': list(range(40))}), \
                          patch.object(driver.guard.shutil, 'disk_usage', return_value=NS(free=1024**4)):
                         steps = driver.item3_smoke(ctx)

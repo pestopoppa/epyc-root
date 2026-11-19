@@ -143,8 +143,31 @@ def prepare(seal, admission, captured):
         # guard globals, so its original context checks and HWM cap survive.
         # Select the existing smoke function before main selects gate.ITEMS.
         # No environment flag is created and no driver bytes are rewritten.
+        def admitted_recipe(recipe):
+            def steps(ctx):
+                result = recipe(ctx)
+                for step in result:
+                    action = step.fn
+                    def checked(action=action):
+                        try:
+                            boundary()
+                        except Exception as error:
+                            # The real gate catches Abort and runs its existing
+                            # server cleanup/partial finalizers. Never retry a
+                            # refused step or emit its successful done marker.
+                            raise driver.gate.Abort(
+                                f'current step admission refusal: {type(error).__name__}: {error}') from error
+                        if action is not None:
+                            return action()
+                    step.fn = checked
+                return result
+            steps.__wrapped__ = recipe
+            return steps
+        driver.item3_smoke = admitted_recipe(driver.item3_smoke)
         if config.get('mode', 'official') == 'publisher-smoke':
             driver.item3 = driver.item3_smoke
+        else:
+            driver.item3 = admitted_recipe(driver.item3)
         gate_main = driver.gate.main
         def gate_entry():
             label = "publisher smoke" if config.get("mode", "official") == "publisher-smoke" else "current official gate"

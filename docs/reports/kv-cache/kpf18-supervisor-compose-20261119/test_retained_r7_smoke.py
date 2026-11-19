@@ -15,7 +15,7 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
                   expected_receipt, calls):
     from test_fullrun_gate import check_server_environment
     real_server = driver.gate.Server
-    visited, requests, stopped = [], [], []
+    visited, requests, stopped, started = [], [], [], []
     identity = output / 'PRELOAD-MODEL-IDENTITY.json'
     request_path = output / 'SMOKE-REQUEST.json'
 
@@ -41,6 +41,10 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
         assert driver.guard.attempt_root() == fixture.result.parent == driver.OUT
         assert args.no_device_claim == 'current captured keeper GPU writer; rechecked before gate entry'
         check_server_environment(real_server, args, output, fixture.native)
+        if mode == 'late-stop': Path(fixture.config['stop_file']).touch()
+        if mode == 'late-drift': Path(sys.argv[sys.argv.index('--prompt-set') + 1]).write_text('drift')
+        if mode == 'late-grant':
+            fixture.grant.write_text(fixture.grant.read_text() + ' cpus=184-187')
         return NS(args=args, own_children=[], open_runs=[], preempted=False,
                   client=NS(_req=request), check_boundary=driver.guard.boundary), [], []
 
@@ -52,15 +56,17 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
                'projection': 'unsealed current prerequisite',
                'prefix': 'launch prefix', 'server': 'server mismatch',
                'stop': 'STOP', 'drift': 'source drift'}
+    late_refusal = mode in ('late-stop', 'late-drift', 'late-grant')
     runtime_failure = mode in ('http', 'tokens', 'residency')
-    reaches_gate = mode == 'pass' or runtime_failure
+    reaches_gate = mode == 'pass' or runtime_failure or late_refusal
     srv = NS(sampler=NS(n_own_nonzero=0 if mode == 'residency' else 1))
     with patch.object(preload, 'EXPECTED_RECEIPT_SHA256', expected_receipt), \
          patch.object(witness, 'install', side_effect=install_witness), \
          patch.object(driver.gate, 'build_ctx', side_effect=build_ctx), \
          patch.object(driver.gate, 'print_plan'), \
          patch.object(driver.gate, 'Server', return_value=srv), \
-         patch.object(driver.gate, 'start_steps', return_value=[]), \
+         patch.object(driver.gate, 'start_steps', side_effect=lambda *args: [
+             driver.gate.Step('inert native startup', 0, lambda: started.append(True))]), \
          patch.object(driver.gate, 'stop_step', side_effect=lambda server: driver.gate.Step(
              'inert smoke stop', 0, lambda: stopped.append(True))), \
          patch.object(driver.gate, 'G', return_value={'trunk': list(range(40))}), \
@@ -73,21 +79,22 @@ def combined_main(driver, original, fixture, output, mode, preload, witness,
                 'VerificationError' if mode in ('digest', 'stat', 'metadata') else 'ValueError')
         else:
             assert reaches_gate, ('accepted invalid smoke entry', mode)
-            assert rc == (4 if runtime_failure else 0), rc
+            assert rc == (3 if late_refusal else 4 if runtime_failure else 0), rc
     if reaches_gate:
-        assert calls == ['witness'] and visited == [True] and len(requests) == 1
+        assert calls == ['witness'] and visited == [True] and len(requests) == (0 if late_refusal else 1)
         meta = json.loads((output / 'run_meta.json').read_text())
         assert meta['items'] == [3] and not meta['args']['dry_run']
         assert meta['args']['launch_prefix'] == ''
-        if runtime_failure:
+        if runtime_failure or late_refusal:
             assert not request_path.exists() and not stopped
-            assert not list((output / 'done').iterdir())
+            assert started == ([] if late_refusal else [True])
+            assert len(list((output / 'done').iterdir())) == (0 if late_refusal else 1)
         else:
-            assert stopped == [True]
+            assert stopped == [True] and started == [True]
             assert json.loads(request_path.read_text()) == {
                 'scope': 'one native gate request; no group3 verdict',
                 'first_request_ok': True, 'gpu_samples': 1, 'tokens': 1}
-            assert len(list((output / 'done').iterdir())) == 2
+            assert len(list((output / 'done').iterdir())) == 3
     else:
         assert not visited and not requests and not stopped
         before_witness = mode in ('digest', 'stat', 'metadata', 'r7missing',
@@ -105,7 +112,7 @@ class RetainedR7Smoke(unittest.TestCase):
     def test_installed_nondry_r7_smoke_recipe_and_refusals(self):
         for mode in ('pass', 'http', 'tokens', 'residency', 'digest', 'stat',
                      'metadata', 'r7missing', 'r7wrong', 'unknown', 'projection',
-                     'prefix', 'server', 'stop', 'drift'):
+                     'prefix', 'server', 'stop', 'drift', 'late-stop', 'late-drift', 'late-grant'):
             with self.subTest(mode=mode):
                 result = subprocess.run([sys.executable, '-I', '-B', __file__, '--worker', mode],
                                         capture_output=True, text=True, timeout=45)
