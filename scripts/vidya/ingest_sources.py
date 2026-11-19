@@ -308,7 +308,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="tool-output-compression A/B arms from the trajectory-artifact finalize boundary; "
                 "runs with no sidecar decline",
            task="VB-TOC-AB-WRITE"),
-    Source("toc-ab-cf3c", "toc_ab_cf3c", _files("RESULT.json", "*/RESULT.json"),
+    Source("toc-ab-cf3c", "toc_ab_cf3c", _files("RESULT.json", "*/RESULT.json", "PARTIAL.json", "*/PARTIAL.json"),
            note="cf3c-live epyc.cf3c.native.v1 window: every sealed file re-hashed, per-arm summary "
                 "re-derived from per-cell trajectories, one tuple per arm x {accuracy, tokens, wall}; "
                 "any mismatch refuses the whole unit; non-cf3c RESULT.json declines",

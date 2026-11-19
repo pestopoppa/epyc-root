@@ -164,10 +164,12 @@ def test_tampered_trajectory_resealed_still_refuses(fx):
         cf.native_rows(path)
 
 
-def test_incomplete_and_errored_windows_refuse(fx):
+def test_false_coverage_counts_and_live_server_refuse(fx):
     path, _ = fx
     base = json.loads(path.read_text())
-    for patch, why in (({"coverage_complete": False}, "incomplete"), ({"error": "boom"}, "error")):
+    for patch, why in (({"coverage_complete": False}, "counts/coverage"),
+                       ({"recorded": 0}, "counts/coverage"),
+                       ({"server_exited": False}, "server still running")):
         path.write_text(json.dumps({**base, **patch}))
         with pytest.raises(ct.ProjectionError, match=why):
             cf.native_rows(path)
@@ -239,3 +241,156 @@ def test_planning_context_canary_on_scratch_ledger(fx, tmp_path, capsys):
     assert other["tiers"]["target"] == 0
     print("CANARY", json.dumps({"tiers": ev["tiers"], "nonempty_target": ev["nonempty_target"],
                                 "claims": [c.get("claim_id") for c in ev["claims"]][:3]}))
+
+
+def _partial(fx):
+    """A producer-shaped failure: one UNKNOWN record, one unattempted cell, scheduled unchanged."""
+    path, window = fx
+    result = json.loads(path.read_text())
+    schedule = json.loads((window / "WINDOW.json").read_text())["schedule"]
+    unknown, absent = [e for e in schedule if e["arm"] == "A1-k4"][:2]
+    folder = window / f"cell-{unknown['ordinal']:02d}"
+    cell = json.loads((folder / "TRAJECTORY.json").read_text())
+    for name in list(cell["evidence_sha256"]):
+        if name.startswith("completion."):
+            del cell["evidence_sha256"][name]
+            (folder / name).unlink()
+    cell.update(status="UNKNOWN", correct=None, error="native request failed", non_termination=None)
+    cell.pop("usage", None)
+    (folder / "TRAJECTORY.json").write_text(json.dumps(cell))
+    result["paired"][cell["case"]]["arms"][cell["arm"]] = cell
+    shutil.rmtree(window / f"cell-{absent['ordinal']:02d}")
+    result["paired"][absent["case"]]["arms"][absent["arm"]] = {"status": "unattempted", "correct": None}
+    # Reproduce native summary semantics independently, including all recorded attempts.
+    for arm in KEEP_ARMS:
+        entries = [v["arms"][arm] for v in result["paired"].values()
+                   if v["arms"][arm]["status"] != "unattempted"]
+        summary = result["arms"][arm]
+        graded = [e for e in entries if e["status"] == "graded"]
+        correct = sum(e["correct"] is True for e in graded)
+        tokens = [e["usage"]["total_tokens"] for e in entries if "usage" in e]
+        summary.update(attempted=len(entries), graded=len(graded), correct=correct,
+                       abstained=sum(e["status"] == "abstained" for e in entries),
+                       UNKNOWN=sum(e["status"] == "UNKNOWN" for e in entries),
+                       NA=sum(e["status"] == "NA" for e in entries),
+                       non_termination=sum(e["non_termination"] == 1 for e in entries),
+                       tokens_cases=len(tokens), mean_total_tokens=sum(tokens)/len(tokens) if tokens else None,
+                       mean_wall_s=sum(e["wall_s"] for e in entries)/len(entries),
+                       accuracy_among_graded=correct/len(graded) if graded else None,
+                       accuracy_over_attempted=correct/len(entries))
+    result.update(recorded=5, completed=4, coverage_complete=False, error="native request failed")
+    partial = path.with_name("PARTIAL.json")
+    _seal(path.parent, window, result).rename(partial)
+    return partial, window
+
+
+def test_partial_unknown_preserves_denominators_and_missing_pairs(fx):
+    path, _ = _partial(fx)
+    unit = cf.read_unit(path)
+    d = unit["derived"]["A1-k4"]
+    assert (d["scheduled"], d["attempted"], d["UNKNOWN"], d["unattempted"]) == (3, 2, 1, 1)
+    assert (d["tokens_cases"], d["wall_cases"]) == (1, 2)
+    assert d["accuracy_over_scheduled"] == d["correct"] / 3
+    pairs = unit["paired_deltas"]["A1-k4"]
+    assert len(pairs) == 3
+    for pair in pairs[:2]:
+        assert pair["correct"] is None and pair["total_tokens"] is None
+    tuples = [cf.project(n) for n in cf.native_rows(path)]
+    assert len(tuples) == 6
+    acc = next(t for t in tuples if t.metric == cf.M_ACC and t.extra["arm"] == "A1-k4")
+    assert acc.reps == 3 and "UNKNOWN 1" in acc.claim and "unattempted 1" in acc.claim
+    assert acc.extra["window_error"] == "native request failed"
+    assert ct.grade(acc)[:2] == ("Judged", "Located")
+
+
+def test_partial_cli_discovery_and_planning_canary(fx, tmp_path, capsys):
+    path, _ = _partial(fx)
+    rc, ledger = _ingest(tmp_path, path.parent)
+    report = json.loads(capsys.readouterr().out)
+    assert rc == 0 and report["rows_projected"] == 6 and report["refused"] == []
+    ev = _prepare(tmp_path, ledger, {"model_file": MODEL, "quant": "Q8_0", "backend": "cpu"})
+    assert ev["nonempty_target"] is True
+    assert "UNKNOWN 1" in json.dumps(ev) and "unattempted 1" in json.dumps(ev)
+
+
+def test_activation_receipts_and_paired_differences_are_carried(fx):
+    path, _ = fx
+    unit = cf.read_unit(path)
+    for cell in unit["cells"]:
+        receipt = unit["activation_witnesses"][cell["unit"]]
+        assert receipt["policy"]["arm"] == cell["arm"]
+        assert "original-messages.json" in receipt["evidence_sha256"]
+    for pair in unit["paired_deltas"]["A1-k4"]:
+        arms = unit["result"]["paired"][pair["case"]]["arms"]
+        assert pair["total_tokens"] == arms["A1-k4"]["usage"]["total_tokens"] - arms["A0"]["usage"]["total_tokens"]
+        assert pair["wall_s"] == arms["A1-k4"]["wall_s"] - arms["A0"]["wall_s"]
+    assert any(w["policy"]["changed_observations"] for w in unit["activation_witnesses"].values())
+
+
+@pytest.mark.parametrize("tamper", ["activation", "duplicate", "seed", "missing", "unsupported"])
+def test_resealed_native_custody_refusals(fx, tamper):
+    path, window = fx
+    result = json.loads(path.read_text())
+    wpath = window / "WINDOW.json"
+    w = json.loads(wpath.read_text())
+    if tamper == "duplicate":
+        w["schedule"][1] = w["schedule"][0]
+        wpath.write_text(json.dumps(w))
+    elif tamper == "seed":
+        result["paired"][w["schedule"][0]["case"]]["seed"] += 1
+    elif tamper == "missing":
+        shutil.rmtree(window / f"cell-{w['schedule'][0]['ordinal']:02d}")
+    else:
+        entry = w["schedule"][0]
+        folder = window / f"cell-{entry['ordinal']:02d}"
+        traj = json.loads((folder / "TRAJECTORY.json").read_text())
+        if tamper == "activation":
+            policy = json.loads((folder / "policy.json").read_text())
+            policy["changed_observations"] = [999]
+            (folder / "policy.json").write_text(json.dumps(policy))
+            traj["evidence_sha256"]["policy.json"] = _sha(folder / "policy.json")
+        else:
+            traj["status"] = "rendered"
+        (folder / "TRAJECTORY.json").write_text(json.dumps(traj))
+        result["paired"][entry["case"]]["arms"][entry["arm"]] = traj
+    _seal(path.parent, window, result)
+    with pytest.raises(ct.ProjectionError):
+        cf.native_rows(path)
+
+
+def test_unattempted_arm_emits_no_fabricated_cost_metrics(fx):
+    path, window = _partial(fx)
+    result = json.loads(path.read_text())
+    for case in result["paired"].values():
+        cell = case["arms"]["A1-k4"]
+        if "ordinal" in cell:
+            shutil.rmtree(window / f"cell-{cell['ordinal']:02d}")
+        case["arms"]["A1-k4"] = {"status": "unattempted", "correct": None}
+    result["arms"]["A1-k4"] = dict(scheduled=3, attempted=0, graded=0, correct=0,
+        abstained=0, UNKNOWN=0, NA=0, non_termination=0, tokens_cases=0,
+        mean_total_tokens=None, mean_wall_s=None, accuracy_among_graded=None,
+        accuracy_over_attempted=None)
+    result.update(recorded=3, completed=3)
+    path = _seal(path.parent, window, result)
+    rows = [n for n in cf.native_rows(path) if n["arm"] == "A1-k4"]
+    assert [n["metric"] for n in rows] == [cf.M_ACC]
+    claim = cf.project(rows[0])
+    assert claim.reps == 3 and claim.reps_basis == "scheduled:cells"
+    assert "unattempted 3" in claim.claim and "recorded 0/3" in claim.claim
+
+
+def test_na_is_terminal_but_not_a_graded_or_cost_observation(fx):
+    path, window = _partial(fx)
+    result = json.loads(path.read_text())
+    cell = next(v["arms"]["A1-k4"] for v in result["paired"].values()
+                if v["arms"]["A1-k4"]["status"] == "UNKNOWN")
+    cell.update(status="NA", non_termination=1, finish_reason="context_budget")
+    cell.pop("error")
+    (window / f"cell-{cell['ordinal']:02d}" / "TRAJECTORY.json").write_text(json.dumps(cell))
+    result["completed"] += 1
+    result["arms"]["A1-k4"].update(UNKNOWN=0, NA=1, non_termination=1)
+    path = _seal(path.parent, window, result)
+    d = cf.read_unit(path)["derived"]["A1-k4"]
+    assert (d["NA"], d["UNKNOWN"], d["attempted"], d["tokens_cases"]) == (1, 0, 2, 1)
+    t = cf.project({"result_path": str(path), "arm": "A1-k4", "metric": cf.M_ACC})
+    assert "NA 1" in t.claim and t.extra["outcomes"]["NA"] == 1
