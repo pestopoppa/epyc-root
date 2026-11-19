@@ -21,6 +21,16 @@ class NativeContext(unittest.TestCase):
             capture_output=True, text=True, timeout=45)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
+    def test_installed_startup_interruptions(self):
+        for mode in ('official', 'publisher-smoke'):
+            for event in ('valid', 'linkage', 'prelaunch', 'health', 'healthy',
+                          'readback', 'residency', 'provider'):
+                with self.subTest(mode=mode, event=event):
+                    result = subprocess.run(
+                        [sys.executable, '-I', '-B', __file__, '--worker', mode, 'startup-' + event],
+                        capture_output=True, text=True, timeout=45)
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     def test_installed_native_context_current_and_retained_refusals(self):
         for admission_mode in ('official', 'publisher-smoke'):
             for mutation in ('valid', 'stop', 'provider', 'grant', 'deadline',
@@ -107,6 +117,86 @@ def worker(admission_mode, mutation):
                             assert original() == 0
                         assert len(visited) == 1
                         assert not list(output.iterdir())
+                        return 0
+                    if mutation.startswith('startup-'):
+                        event = mutation.removeprefix('startup-')
+                        args = NS(out=str(output), card='/private/unread-card', budget_min=30,
+                                  port=18486, vram_free_max_gib=1, vram_ceiling_gib=30,
+                                  load_timeout_s=20)
+                        ctx = gate.Ctx(args, None, [], [], {})
+                        srv = object.__new__(gate.Server)
+                        srv.ctx, srv.label = ctx, 'owned'
+                        srv.binary, srv.log = Path('/inert/server'), output / 'logs/server.log'
+                        srv.proc, srv.sampler, srv.env = None, None, {}
+                        seen = []
+                        def stop():
+                            Path(fixture.config['stop_file']).touch()
+                        def linkage():
+                            seen.append('linkage')
+                            if event == 'linkage': stop()
+                            return {'pass': True}
+                        def health():
+                            seen.append('health')
+                            if event in ('health', 'healthy'): stop()
+                            if event == 'provider':
+                                captured['provider'].recheck = lambda _: (_ for _ in ()).throw(ValueError('provider lost'))
+                            return event != 'health'
+                        def sleep(seconds):
+                            seen.append(('sleep', seconds))
+                            if event == 'prelaunch' and seconds == 2.0: stop()
+                        def readback():
+                            seen.append('readback')
+                            if event == 'readback': stop()
+                            return {'checked': True}
+                        def residency():
+                            seen.append('residency')
+                            if event == 'residency': stop()
+                        sampler = NS(abort=NS(is_set=lambda: False), stop=lambda: seen.append('sampler-stop'))
+                        sampler.start = lambda: sampler
+                        proc = NS(pid=123456, poll=lambda: None)
+                        from contextlib import ExitStack
+                        with ExitStack() as stack:
+                            for obj, name, kwargs in (
+                                (gate, 'CPU_MODE', {'new': False}),
+                                (gate, 'port_listening', {'return_value': False}),
+                                (gate, 'kfd_pids', {'return_value': {}}),
+                                (gate, 'card_vram', {'return_value': (0, 1)}),
+                                (gate, 'window_status', {'return_value': {}}),
+                                (gate, 'Sampler', {'return_value': sampler}),
+                                (gate, 'Client', {'return_value': NS(health=health)}),
+                                (gate.threading, 'Thread', {'return_value': NS(start=lambda: None)}),
+                                (gate.time, 'sleep', {'side_effect': sleep}),
+                                (srv, 'run_linkage', {'side_effect': linkage}),
+                                (srv, 'full_cmd', {'return_value': ['/inert/server']}),
+                                (srv, 'read_back', {'side_effect': readback}),
+                                (srv, 'check_residency', {'side_effect': residency}),
+                            ):
+                                stack.enter_context(patch.object(obj, name, **kwargs))
+                            launch = stack.enter_context(patch.object(gate.subprocess, 'Popen', return_value=proc))
+                            if event == 'valid':
+                                srv.start()
+                                assert srv.readback == {'checked': True}
+                                assert ctx.client is not None
+                            else:
+                                with self_test.assertRaisesRegex(gate.Abort, 'provider lost' if event == 'provider' else 'STOP'):
+                                    srv.start()
+                            if event in ('linkage', 'prelaunch'):
+                                launch.assert_not_called()
+                                assert not ctx.own_children
+                                assert 'health' not in seen
+                                assert ('sampler-stop' in seen) == (event == 'prelaunch')
+                            else:
+                                launch.assert_called_once()
+                                assert ctx.own_children == [srv], 'cleanup lost the captured server'
+                                assert srv.sampler.own_pid == proc.pid
+                            if event in ('health', 'healthy', 'provider'):
+                                assert seen.count('health') == 1
+                                assert 'readback' not in seen
+                            if event != 'valid' and event != 'residency':
+                                assert 'residency' not in seen
+                            if event != 'valid':
+                                Path(fixture.config['stop_file']).unlink(missing_ok=True)
+                                with self_test.assertRaises(gate.Abort): ctx.check_boundary()
                         return 0
                     # Ctx is the actual constructor used by unmodified build_ctx.
                     args = NS(out=str(output), card='/private/unread-card', budget_min=30)

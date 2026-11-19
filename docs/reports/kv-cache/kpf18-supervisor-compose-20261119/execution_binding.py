@@ -2,6 +2,7 @@
 import json
 import hashlib
 import os
+import shlex
 import sys
 from pathlib import Path
 
@@ -160,6 +161,86 @@ def prepare(seal, admission, captured):
                         f'current native boundary refusal: {type(error).__name__}: {error}')
                     raise driver.gate.Abort(self._current_terminal_refusal) from error
         driver.gate.Ctx = CurrentNativeContext
+        # Preserve the retained startup recipe while checking admission around
+        # each bounded blocking operation. Cleanup stays with the gate finally
+        # and outer owned-child supervisor; never signal from this method.
+        retained_server = getattr(driver.gate, 'Server', None)
+        if retained_server is not None:
+            gate = driver.gate
+            class CurrentServer(retained_server):
+                def start(self):
+                    try:
+                        return self._start_current()
+                    except BaseException:
+                        # Before Popen there is no captured child for gate
+                        # cleanup to visit; stop the prelaunch sampler here.
+                        if self.proc is None and self.sampler is not None:
+                            try:
+                                self.sampler.stop()
+                            except Exception:
+                                pass  # retain the original terminal refusal
+                        raise
+
+                def _start_current(self):
+                    ctx = self.ctx
+                    ctx.check_boundary()
+                    if gate.port_listening(ctx.args.port):
+                        raise gate.Abort(f'port {ctx.args.port} already listening')
+                    if not gate.CPU_MODE:
+                        if gate.port_listening(8083):
+                            raise gate.Abort('production :8083 is listening')
+                        foreign = {p: v for p, v in gate.kfd_pids().items() if v > 0}
+                        if foreign:
+                            raise gate.Abort(f'foreign KFD processes hold VRAM: {foreign}')
+                        used, _ = gate.card_vram(ctx.card)
+                        if used is not None and used > ctx.args.vram_free_max_gib * gate.GIB:
+                            raise gate.Abort('card VRAM used before launch exceeds free limit')
+                    self.linkage = self.run_linkage()
+                    ctx.check_boundary()
+                    if not self.linkage['pass']:
+                        raise gate.Abort(f'verify_ggml_linkage.sh FAILED for {self.binary}')
+                    self.log.parent.mkdir(parents=True, exist_ok=True)
+                    (ctx.out / 'slot-save' / self.label).mkdir(parents=True, exist_ok=True)
+                    if not gate.CPU_MODE:
+                        self.sampler = gate.Sampler(
+                            ctx.out / 'vram' / f'{self.label}.jsonl', ctx.card,
+                            ctx.args.vram_ceiling_gib, ctx.smi_cmd).start()
+                        gate.time.sleep(2.0)
+                    ctx.check_boundary()
+                    print(f'[kpf18] launch {self.label}: {shlex.join(self.full_cmd())}', flush=True)
+                    self.t_start = gate.time.time()
+                    self.proc = gate.subprocess.Popen(
+                        self.full_cmd(), stdout=gate.subprocess.PIPE,
+                        stderr=gate.subprocess.STDOUT, env=self.env, start_new_session=True)
+                    ctx.own_children.append(self)
+                    if self.sampler:
+                        self.sampler.own_pid = self.proc.pid
+                    gate.threading.Thread(target=self._pump, daemon=True).start()
+                    t0 = gate.time.time()
+                    client = gate.Client(f'http://127.0.0.1:{ctx.args.port}')
+                    while gate.time.time() - t0 < ctx.args.load_timeout_s:
+                        ctx.check_boundary()
+                        if self.proc.poll() is not None:
+                            raise gate.Abort(f'server {self.label} exited before healthy')
+                        if self.sampler and self.sampler.abort.is_set():
+                            raise gate.Abort(f'VRAM ceiling during load: {self.sampler.abort_reason}')
+                        healthy = client.health()
+                        ctx.check_boundary()
+                        if healthy:
+                            break
+                        gate.time.sleep(2.0)
+                    else:
+                        raise gate.Abort(f'server {self.label} not healthy after {ctx.args.load_timeout_s} s')
+                    ctx.check_boundary()
+                    self.readback = self.read_back()
+                    ctx.check_boundary()
+                    ctx.client = client
+                    if not gate.CPU_MODE:
+                        gate.time.sleep(2.5)
+                        ctx.check_boundary()
+                        self.check_residency()
+                        ctx.check_boundary()
+            gate.Server = CurrentServer
         # ContextBoundary resolves boundary/attempt_root through the retained
         # guard globals, so its original context checks and HWM cap survive.
         # Select the existing smoke function before main selects gate.ITEMS.

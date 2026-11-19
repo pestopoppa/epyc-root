@@ -1102,3 +1102,50 @@ GitNexus status/impact refuse in the unindexed sparse lane; manual review bounds
 the change to the opt-in native context and its tests. Session-bus drain refuses
 unregistered kvu; no other session's outbox was used.
 [no-belief: model-free software regression tests]
+
+
+## 2026-11-19 — interrupt admission loss during retained native startup
+
+The retained `Server.start()` health loop never checked its current context.
+An isolated negative control invoked that unchanged method with inert native
+peers and created STOP in a successful health response: it returned without
+Abort. The corrected opt-in binding installs a Server subclass alongside the
+current native Ctx. It preserves the startup recipe and checks the context
+before launch, after linkage and prelaunch sampling, on each health iteration,
+after the HTTP response, around read-back and after residency sampling. Refusal
+uses the existing sticky native Abort. It does not retry or signal a process.
+Captured children remain in `ctx.own_children` for existing gate/supervisor
+cleanup. Before a child exists, refusal stops the prelaunch sampler; a secondary
+sampler-stop exception cannot replace the original refusal.
+
+`test_native_context.py` passes 16 installed startup controls (eight in each
+admission mode): valid startup, STOP during linkage, prelaunch sampling, false
+and true health responses, read-back and residency, plus provider loss during
+health. No real child, sampler, HTTP call, sleep or model/GPU work is used.
+Controls assert launch suppression, absence of later stages, retained child
+registration, sampler ownership, prelaunch sampler stop and sticky refusal.
+The existing 24 native-context controls and actual-input read-only preflight
+also pass. Reproduce with `python3 -B -m unittest discover -s
+docs/reports/kv-cache/kpf18-supervisor-compose-20261119 -p test_native_context.py -v`.
+The startup method itself performs the real retained orchestration with inert
+peers; this is software qualification, not actual native cleanup or admission.
+
+SHA-256 identities:
+
+- `execution_binding.py`: `19d2063ad8bdaba0e90fcd132f603c11d26ec89b83c0c0b55bf9521e4c52608a`
+- `test_native_context.py`: `07d4d2715490334899efa22a15463becb915a9dd49576070d36efcf95824c8cb`
+
+Checks occur around bounded operations; they do not interrupt the retained
+120-second linkage subprocess or five-second health request mid-call. Existing
+bounded sleeps remain. No persistent installation, historical seal or production
+source is changed. Current artifact/provider sealing and publisher smoke remain
+required before scheduling native lifecycle qualification; no GPU row or parent
+completion is claimed. GitNexus status/upstream impact are unavailable because
+the sparse lane has no index. Manual review bounds the change to the opt-in
+Server binding and its tests. No new measurement producer is introduced.
+[no-belief: model-free software regression tests]
+
+Broader validation: all 86 unittest tests outside historical `test_supervisor.py`
+PASS; its previously documented unavailable R9 inputs remain excluded.
+`git diff --check` PASS. Session-bus drain refuses the unregistered kvu slug;
+no other session outbox was used.
