@@ -83,3 +83,7 @@ Duplicate event `afc-p5e3-n30-q38_flash-tools-r9-20261110`: FILED receipt exists
 ## 04:00Z — Consume duplicate Flash suite-v3 medium run-end; original row verdict and FILED receipt already exist.
 
 Duplicate run-end for `afc-v3-q38_flash-tools-medium-20261110`: AFC-P5.E3-FLASH-TOOLS-V3 is already checked, with its verdict and FILED receipt present from 2026-11-11. No new result, tick, or re-decision. No result-bearing task was available: NIB2-77 needs the exact approved roster/completed acceptance run; NIB2-83 needs a genuine post-E17 cohort; NIB2-94 needs operator token rotation; NIB2-102 and LR-8 need owning-session runtime boundaries; NIB2-98, GAP-POOL-1 and NI-IDLE-REFILL-WATCHER require keeper/gate scope authorization. Existing AFC decision remains unchanged.
+
+## 04:03Z — Consume already-filed Q36 suite-v3 aggressive run-end.
+
+Duplicate run-end `afc-v3-q36_35b-tools-aggressive-20261111`: existing verdict and FILED receipt date to 2026-11-11; AFC-P5.E3-Q36-TOOLS-V3 is already complete. No new verdict or tick. No result-bearing task is possible from this event. Existing open-task dependencies remain unchanged.
