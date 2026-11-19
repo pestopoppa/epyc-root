@@ -31,3 +31,7 @@ Duplicate run-end for rock-aiter-timing-c9-r2-20261109: previously filed PORT_CA
 ## 02:19Z — Resolve duplicate run-end for inf48-race2-fixtures-20261116-r2, already filed
 
 Duplicate run-end inf48-race2-fixtures-20261116-r2: previously filed and ticked FIXTURES_READY 7/7, rc=0; existing FILED receipt dated 2026-11-16. RESULT.json SHA-256 2a14f98c5d97c95d70eaffd554e451b1253489e8b09cc2100ebe22ce578ac1f5. Fixture capture is ungraded and is not a race measurement. [no-belief: duplicate event, existing verdict]
+
+## 02:32Z — File c15-epi-q8-gpu-20261118 test-count failure
+
+C15-EPI-Q8 row c15-epi-q8-gpu-20261118 rc=0; pre-registered verdict FAIL(tbo): 16/16 passed in both arms, expected exactly 14, zero test failures, residency proven. Decode timing and identity were not run; box remains open. RESULT.json SHA-256 edef3786d5abad18f456474fd28f61c395bae789bcf90136311bdf46f2ac41a8. [no-belief: row verdict filed]
