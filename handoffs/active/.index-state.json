@@ -4,7 +4,7 @@
       "blocked": 50,
       "handoffs": 15,
       "oldest_advance": "2026-11-03",
-      "open": 526
+      "open": 522
     },
     "pipeline-integration-index.md": {
       "blocked": 0,
@@ -101,10 +101,10 @@
     },
     "autokernel-loop.md": {
       "blocked": 1,
-      "closed": 858,
+      "closed": 862,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 118,
+      "open": 114,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -167,7 +167,7 @@
         },
         {
           "blocked": 0,
-          "closed": 212,
+          "closed": 216,
           "gates": [
             "INF-06#autokernel-rebuild-program",
             "INF-65",
@@ -177,7 +177,7 @@
           "line": 9671,
           "markers": 1,
           "name": "autokernel-unified-surface-program",
-          "open": 54
+          "open": 50
         },
         {
           "blocked": 0,
@@ -186,7 +186,7 @@
             "INF-06#autokernel-unified-surface-program"
           ],
           "guarded": 0,
-          "line": 14062,
+          "line": 14070,
           "markers": 1,
           "name": "autokernel-concurrent-target-coordination",
           "open": 3
@@ -210,7 +210,7 @@
             "UFH-01#harness-selection-and-integration"
           ],
           "guarded": 0,
-          "line": 14275,
+          "line": 14283,
           "markers": 1,
           "name": "autokernel-orchestrator-actor-backend",
           "open": 11
