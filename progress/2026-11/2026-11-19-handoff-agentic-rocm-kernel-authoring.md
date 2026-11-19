@@ -159,3 +159,7 @@ C15-GV-BW row c15-gv-bw-gpu-20261119-r2 filed rc=0, registered DROP(clauses): al
 ## 07:31Z — Correct source-defined C15 epilogue test count and initiate fresh row publication
 
 C15-EPI-Q8: source e0b5d2637858411bfb8b27609a2e7e199dc6f38c tests/test-backend-ops.cpp:14194 defines 2 weight types x (4 norm + 4 gate) = 16 cases, explaining prior 16/16 against erroneously registered 14; both prior arms passed and no decode was measured. Fresh row c15-epi-q8-gpu-20261119-r2 corrects count to 16 while retaining pre-registered performance and identity criteria. Publication and smoke initiated; qualification remains to be confirmed. [no-belief: source inspection]
+
+## 07:34Z — Repair router-wide correctness parser and initiate fresh GPU smoke
+
+RKA-A3B-ROUTER-WIDE: repaired split-line correctness parser in scratch job.py SHA-256 29d1456447605dc81589c9e8680e4c5fddee79efb5e4f8598553195d04d3db87; on the original tbo-test-UNSET.log it counts 16/16 and rejects absent or inconsistent summaries. Fresh row rka-a3b-router-wide-gpu-20261119-r2 submitted with unchanged decision thresholds; GPU smoke queued, qualification not yet established. C15-EPI-Q8 r2 smoke is also queued. [no-belief: instrument repair; no benchmark verdict]
