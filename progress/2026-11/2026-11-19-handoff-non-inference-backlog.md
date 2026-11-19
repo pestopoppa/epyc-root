@@ -79,3 +79,7 @@ Duplicate event `afc-v3-q36_35b-tools-mild-20261111`: existing FILED receipt dat
 ## 03:59Z — Acknowledge already-filed AFC Flash r9 event
 
 Duplicate event `afc-p5e3-n30-q38_flash-tools-r9-20261110`: FILED receipt exists from 2026-11-10 12:15 UTC; AFC-P5.E3-FLASH-TOOLS complete. No duplicate verdict or tick. No result-bearing task possible within this brief: remaining boxes require missing evidence, operator/owner actions, or forbidden keeper/gate changes. [no-belief: duplicate event acknowledgement only]
+
+## 04:00Z — Consume duplicate Flash suite-v3 medium run-end; original row verdict and FILED receipt already exist.
+
+Duplicate run-end for `afc-v3-q38_flash-tools-medium-20261110`: AFC-P5.E3-FLASH-TOOLS-V3 is already checked, with its verdict and FILED receipt present from 2026-11-11. No new result, tick, or re-decision. No result-bearing task was available: NIB2-77 needs the exact approved roster/completed acceptance run; NIB2-83 needs a genuine post-E17 cohort; NIB2-94 needs operator token rotation; NIB2-102 and LR-8 need owning-session runtime boundaries; NIB2-98, GAP-POOL-1 and NI-IDLE-REFILL-WATCHER require keeper/gate scope authorization. Existing AFC decision remains unchanged.
