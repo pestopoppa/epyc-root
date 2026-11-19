@@ -390,6 +390,11 @@ our own harness and score offline.
       scorers finish. Stop-on-futility on an unresolved exposed request or insufficient remaining
       time for the next request and cleanup. Gate-class = futility-only at interim looks; the
       single arm is descriptive and has no formal promotion gate.
+      2026-11-19 qualification: `codex-ifbench-cj6a-27b-v4-20261104` published after
+      four-CPU native smoke PASS (140–143, rc=0). Restored the pinned source worktree,
+      bound model verification before the grant, refreshed runtime seals, and preserved
+      the required smoke environment through sudo. [Qualification hashes and patch](../../docs/evidence/ifbench-cj6a-readiness-20261104/qualification-20261119.json).
+      Full 300-prompt generation and official scoring remain unrun; parent stays open.
   - [x] **CJ-6a-CORPUS — Acquire and bind the original IFBench corpus.** Preserve the root `data/IFBench_test.jsonl` from `allenai/IFBench` commit `1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d`, verify its upstream blob and SHA-256, confirm 300 unique prompts / 344 constraints / 58 IDs, and retain license/source provenance and the fixed input manifest. The parent remains open for its generation-to-official-scorer wiring. [Pinned corpus](../../data/benchmarks/ifbench-1c40f0c/README.md). ✅ 2026-11-04 [belief: cc]
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a]** **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and
