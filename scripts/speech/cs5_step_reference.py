@@ -152,12 +152,14 @@ def write_turn(out_dir, result, *, run_id, subject):
     if result['error'] is not None:
         return path, None
     sidecar = write_belief_measurements(out, run_id=run_id,
-        producer='scripts/speech/cs5_step_reference.py', results_path=path,
+        producer=result.get('producer', 'scripts/speech/cs5_step_reference.py'), results_path=path,
         records=[dict(record_kind='generic', subject=subject,
             metric='turn_latency_ms', value=result['completion_ms'], unit='ms',
             metric_direction='lower_better', protocol_id=None, reps=1,
             reps_basis='scored:completed_nonstreaming_turns', harness=result['harness'],
             fields=dict(timing_scope=result['timing_scope'],
-                        encoder_calls=result['encoder_calls'],
-                        upstream_commit=UPSTREAM, upstream_files=PINS))])
+                        encoder_calls=result.get('encoder_calls'),
+                        input_audio_features_present=result.get('input_audio_features_present'),
+                        upstream_commit=result['upstream_commit'],
+                        upstream_files=result['upstream_files']))])
     return path, sidecar
