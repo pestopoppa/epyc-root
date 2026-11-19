@@ -390477,19 +390477,66 @@
   authors:
   - AMD
   key_claims:
-  - HIP 7.17.0 reports reduced update overhead for executable graph launch and fixes a segfault in hipStreamEndCapture during multi-stream capture.
-  - MI210 (gfx90a) remains listed as supported hardware; no gfx90a deprecation in the portion read.
-  - Component bumps include hipBLASLt 1.4.1 to 1.5.0 and rocBLAS 5.7.0 to 5.8.0; visible changelog entries name no gfx90a-specific kernel change.
+  - "HIP 7.17.0 in ROCm 10.2.0 reduces graph execution update overhead and removes quadratic scaling in some graph update cases."
+  - "Fixes a hipStreamEndCapture segfault during multi-stream capture."
+  - "MI210 (gfx90a, CDNA 2) is listed in the ROCm 10.2.0 supported hardware table; the upcoming-changes section names only LLVM symbolic links, not a gfx90a deprecation."
   techniques:
   - HIP graph exec update overhead reduction
   reported_results: []
   credibility_score: null
   contradicting_evidence: []
   handoffs_updated: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - "ROCm 10.2 supports gfx90a; production stays on 6.2; bounded experimental probe recommended to operator (rocm-upgrade-checklist.md)."
   handoffs_created: []
-  read_depth: DIGEST
-  verification: stage1-unverified
+  read_depth: FULL
+  verification: dive-verified
   notes: 'Stage-1 WebFetch digest 2026-11-19; only the first 100k of 205k chars read (upcoming-changes section unread, so gfx90a deprecation not ruled out). Our stack runs ROCm 6.2; any gain here is gated on a toolkit upgrade for the frozen-ABI MI210 build.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "HIP 7.17.0 Optimized"
+    quote: "Enhanced graph execution update performance and scalability by reducing update overhead and eliminating quadratic scaling behavior in certain graph update scenarios."
+    quote_sha256: ecc1b7030dfb3ff4afd553680b81f657cc10913f3dc7609037ead616dc1a3ffb
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a, found: true}
+    source_revision: https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html
+    source_artifact:
+      entry_url: "https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html"
+      requested_url: "https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html"
+      effective_url: "https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html"
+      retrieved_at_utc: "2026-11-19T08:55:48.711819Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a"
+      relative_path: sha256/a4/a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a.raw
+      raw_sha256: a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a
+      byte_length: 520257
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "HIP 7.17.0 Resolved issues"
+    quote: "Resolved a segmentation fault in hipStreamEndCapture during multi-stream capture"
+    quote_sha256: 43f6b6f2bd6f05190abe81f3c29ec3831c0b852f7b160bb20e9a21d99d20f736
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a, found: true}
+    source_revision: https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html
+    source_artifact:
+      entry_url: "https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html"
+      requested_url: "https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html"
+      effective_url: "https://rocm.docs.amd.com/en/docs-10.2.0/about/release-notes.html"
+      retrieved_at_utc: "2026-11-19T08:55:48.711819Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a"
+      relative_path: sha256/a4/a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a.raw
+      raw_sha256: a4e8c22d41ecffad12e0a558b7bf959ef5be7e2eb04e53cd3f5406f27ab57b8a
+      byte_length: 520257
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  dive_corrections: "2026-11-19 Stage-2 full read (whole page from disk): gfx90a support CONFIRMED in the hardware table; no deprecation in upcoming changes (it lists only LLVM symbolic links). The vLLM 0.32 row of the AI ecosystem table lists no gfx90a. Prior exploration: docs/runbooks/rocm-upgrade-checklist.md (unroll and offload-LTO flag contract), wiki intake-1944 (10.1 supports gfx90a), intake-1962 (TheRock gfx90a release-ready), intake-969/1414 (ROCm 7 unroll regression). No ROCm 7+ build of llama.cpp has been measured on our MI210. Recommendation to the operator: stay on 6.2 for production; at most one bounded experimental probe."
 - id: intake-2695
   arxiv_id: null
   url: https://github.com/vllm-project/vllm/releases/tag/v0.34.0
@@ -390507,9 +390554,8 @@
   authors:
   - vLLM project
   key_claims:
-  - ROCm decode monokernels written in FlyDSL for several MoE models, with interactivity gains reported on MI355X.
-  - Spec-decode kernel work includes fused Markov sampling, a faster resample kernel and adaptive verification draft budgets on a Triton kernel.
-  - CPU items include faster GDN spec-decode state updates and zentorch integration for Zen.
+  - "vLLM 0.34 ships faster CPU GDN spec-decode updates (PR #64829)."
+  - "vLLM 0.34 ships fused Markov sampling with 42-50% less sampling time (PR #64476, GB300)."
   techniques:
   - FlyDSL decode monokernel
   - fused spec-decode sampling
@@ -390518,11 +390564,59 @@
   reported_results: []
   credibility_score: null
   contradicting_evidence: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Box AK-GDN-SPEC-SPLIT; sampling share measured in AK-GAP-1 (d)."
   handoffs_created: []
-  read_depth: DIGEST
-  verification: stage1-unverified
+  read_depth: PARTIAL
+  verification: dive-verified
   notes: 'Stage-1 WebFetch digest 2026-11-19 (100k of 120k chars). No gfx90a mention. Faster GDN spec-decode updates on CPU bears on Qwen3.8 hybrid GDN verify; not yet compared against our gdn-snapshot-update work.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Highlights, CPU"
+    quote: "Faster GDN spec-decode updates ( #64829 )"
+    quote_sha256: b6d1815a5416ac7c4cc688c3465a3deae340f90a3e7b93c5793d56bbe09f5f81
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f, found: true}
+    source_revision: https://github.com/vllm-project/vllm/releases/tag/v0.34.0
+    source_artifact:
+      entry_url: "https://github.com/vllm-project/vllm/releases/tag/v0.34.0"
+      requested_url: "https://github.com/vllm-project/vllm/releases/tag/v0.34.0"
+      effective_url: "https://github.com/vllm-project/vllm/releases/tag/v0.34.0"
+      retrieved_at_utc: "2026-11-19T08:58:51.264203Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f"
+      relative_path: sha256/3c/3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f.raw
+      raw_sha256: 3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f
+      byte_length: 563599
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Highlights, spec decode"
+    quote: "fused Markov sampling, 42–50% less sampling time ( #64476 )"
+    quote_sha256: 037c20d6579ad8164a9a676f1d956b33a5e1214b2428e759de78e6bbb7dc6448
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: 3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f, found: true}
+    source_revision: https://github.com/vllm-project/vllm/releases/tag/v0.34.0
+    source_artifact:
+      entry_url: "https://github.com/vllm-project/vllm/releases/tag/v0.34.0"
+      requested_url: "https://github.com/vllm-project/vllm/releases/tag/v0.34.0"
+      effective_url: "https://github.com/vllm-project/vllm/releases/tag/v0.34.0"
+      retrieved_at_utc: "2026-11-19T08:58:51.264203Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f"
+      relative_path: sha256/3c/3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f.raw
+      raw_sha256: 3c3aa6397010fa3f5fc172a74573ac6e3069b705fea990430883db549d6d5a1f
+      byte_length: 563599
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  dive_corrections: "2026-11-19 Stage-2: release body plus PRs #64829 (merge b4dffa50) and #64476 (merge 339017c3) read from disk. PR #64829 (unanchored here; its own page): work split over (sequence, value head, 64-column block) instead of (sequence, value head), 64 work items instead of 32 at batch 1 for Qwen3.6, state block kept in cache across draft tokens. Upstream e2e Qwen3.6-35B-A3B + DFlash2 on a 48-vCPU GCP host: median ITL 127.85 to 120.08 ms. Our C14 GDN CPU kernel (ops.cpp L12278-L12390 @ eee3da8) splits only by (head, seq), so the gap is CONFIRMED; filed as AK-GDN-SPEC-SPLIT. The dual-store snapshot part is already in C14. #64476 and #65100 are GPU sampling kernels for non-greedy DSpark or top-p; for llama.cpp the sampling share is measured first in AK-GAP-1 (d)."
 - id: intake-2696
   arxiv_id: null
   url: https://github.com/ROCm/aiter/releases/tag/v0.1.29
@@ -390539,9 +390633,8 @@
   authors:
   - AMD ROCm
   key_claims:
-  - Release wheels are built for gfx942 and gfx950 only; most new kernels name gfx950 or gfx1250.
-  - Arch-unstated additions include fused reduce-add-RMSNorm, split-K A8W8 BMM with fused reduce-quant, and a single-kernel MegaMoE (dispatch, GEMM1, GEMM2, combine).
-  - No benchmark numbers are given in the release text.
+  - "AITER v0.1.29 wheels are built for gfx942 and gfx950 only."
+  - "AITER v0.1.29 adds fused_reduce_add_rmsnorm (PR #6678), folding split-K partial reduction into residual add + RMSNorm."
   techniques:
   - fused reduce-add-RMSNorm
   - MegaMoE single-kernel fusion
@@ -390549,11 +390642,59 @@
   reported_results: []
   credibility_score: null
   contradicting_evidence: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Box AK-GAP-1 (b) measures the stream-K fixup + norm boundary."
   handoffs_created: []
-  read_depth: DIGEST
-  verification: stage1-unverified
+  read_depth: PARTIAL
+  verification: dive-verified
   notes: 'Stage-1 WebFetch digest 2026-11-19. Prior gfx90a op map: artifacts/analysis/aiter-gfx90a-ops-20261105.md. None of the new kernels names gfx90a.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Release header"
+    quote: "GPU_ARCHS=gfx942;gfx950"
+    quote_sha256: 77eba88d3d85c07c64354c746a80100a8ff9fe934175da9d9f6454de9286c91d
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf, found: true}
+    source_revision: https://github.com/ROCm/aiter/releases/tag/v0.1.29
+    source_artifact:
+      entry_url: "https://github.com/ROCm/aiter/releases/tag/v0.1.29"
+      requested_url: "https://github.com/ROCm/aiter/releases/tag/v0.1.29"
+      effective_url: "https://github.com/ROCm/aiter/releases/tag/v0.1.29"
+      retrieved_at_utc: "2026-11-19T08:58:53.336209Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf"
+      relative_path: sha256/d1/d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf.raw
+      raw_sha256: d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf
+      byte_length: 322322
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Changelog"
+    quote: "Add fused_reduce_add_rmsnorm"
+    quote_sha256: e195cef592a592d5bf5500ff6f95dae614c2ec7e4a0c243d3c38c5869e588778
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf, found: true}
+    source_revision: https://github.com/ROCm/aiter/releases/tag/v0.1.29
+    source_artifact:
+      entry_url: "https://github.com/ROCm/aiter/releases/tag/v0.1.29"
+      requested_url: "https://github.com/ROCm/aiter/releases/tag/v0.1.29"
+      effective_url: "https://github.com/ROCm/aiter/releases/tag/v0.1.29"
+      retrieved_at_utc: "2026-11-19T08:58:53.336209Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf"
+      relative_path: sha256/d1/d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf.raw
+      raw_sha256: d16671c221418465586af4f725b567f546824270012068a317d81f4c3fc888bf
+      byte_length: 322322
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  dive_corrections: "2026-11-19 Stage-2: release body and PR #6678 (merge ed7374d0) read from disk; the PR states both small kernels are launch-latency bound at decode sizes and ships configs for gfx942 and gfx950 only. Plain add+RMSNorm fusion is already in C14 (ggml_cuda_op_rms_norm_fused_add); what carries over to gfx90a is folding the MMQ stream-K fixup into the norm, measured first in AK-GAP-1 (b). MegaMoEV2 and window-aware split-KV are gfx950 multi-GPU or sliding-window-verify specific; knowledge-only under the reverse-engineering lens recorded in AK-GAP-1."
 - id: intake-2697
   arxiv_id: null
   url: https://rocm.blogs.amd.com/software-tools-optimization/flydsl-mono-atom/README.html
@@ -390580,14 +390721,19 @@
   credibility_score: 1
   contradicting_evidence:
   - Vendor blog; single runs, synthetic acceptance, one test without an off baseline.
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Box AK-GAP-1 (a) bounds the monokernel share on gfx90a."
   handoffs_created: []
   read_depth: DIGEST
   verification: stage1-unverified
   notes: Stage-1 WebFetch digest 2026-11-19. GPU megakernel family is already triaged in autokernel-loop.md G2 (conditional) and the CPU fused-decoder A-gate failed 2026-09-02.
+  dive_corrections: "2026-11-19 reverse-engineering lens: relies on gfx950 and cross-GPU reduction overlap; the gfx90a substitute is single-GPU cross-stage weight prefetch via buffer loads (no direct-to-LDS async on CDNA2); the share that survives is bounded by the inter-kernel idle gap, measured in AK-GAP-1 (a). Not dived."
 - id: intake-2698
   arxiv_id: '2611.07496'
-  url: https://arxiv.org/abs/2611.07496
+  url: https://arxiv.org/abs/2611.07496v1
   source_type: paper
   title: 'ZYFA: Speed and Accuracy of FP8 FlashAttention on AMD CDNA4'
   categories:
@@ -390604,9 +390750,9 @@
   - Praneeth Medepalli
   - Stephen Ebert
   key_claims:
-  - On CDNA4 the vector-unit softmax, not matrix work, bounds FP8 attention.
-  - Replacing exp with a bit-trick probability (lean P) and a two-wave ping-pong schedule overlapping softmax with MFMA raises throughput over AITER.
-  - Operand-value-dependent clocks make random-input benchmarks unreliable predictors.
+  - "In AITER's FP8 kernel on MI355X, thread traces show the matrix unit idle 31.7% of cycles while softmax runs."
+  - "Lean P lowers vector cycles per block from 896 to 384."
+  - "On MI300X (FNUZ e4m3, no scaled MFMA) lean P needs a different offset and per-block scaling costs extra vector work."
   techniques:
   - lean P approximate exponent
   - ping-pong wave schedule
@@ -390615,10 +390761,78 @@
   credibility_score: 2
   contradicting_evidence: []
   handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "Ping-pong gain mostly does not survive on gfx90a f16; approx exp is seed S8; trigger in AK-GAP-1 lens prose."
   handoffs_created: []
-  read_depth: DIGEST
-  verification: stage1-unverified
+  read_depth: PARTIAL
+  verification: dive-verified
   notes: Stage-1 WebFetch digest of html v1 2026-11-19. CDNA4/FP8; gfx90a has no FP8 MFMA, but the softmax-bound and ping-pong ideas may transfer to f16 FA. Approx-exp in FA is already seed S8 (AKX M13).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Section I"
+    quote: "we see the matrix unit idle for 31.7% of cycles while the softmax runs"
+    quote_sha256: f0bb13962a366fa8020c39e35ad4373b3e9a8bde1d5fbc057c051562f1fd4828
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20, found: true}
+    source_revision: https://arxiv.org/html/2611.07496v1
+    source_artifact:
+      entry_url: "https://arxiv.org/abs/2611.07496v1"
+      requested_url: "https://arxiv.org/html/2611.07496v1"
+      effective_url: "https://arxiv.org/html/2611.07496v1"
+      retrieved_at_utc: "2026-11-19T08:55:38.200486Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20"
+      relative_path: sha256/aa/aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20.raw
+      raw_sha256: aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20
+      byte_length: 780346
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Section III-B"
+    quote: "lowers the vector cycles per block from 896 to 384"
+    quote_sha256: ef2f021bfb9d94b36c286c97d470f8c6919e2d0871b472ec1601731b8bf4ebb2
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20, found: true}
+    source_revision: https://arxiv.org/html/2611.07496v1
+    source_artifact:
+      entry_url: "https://arxiv.org/abs/2611.07496v1"
+      requested_url: "https://arxiv.org/html/2611.07496v1"
+      effective_url: "https://arxiv.org/html/2611.07496v1"
+      retrieved_at_utc: "2026-11-19T08:55:38.200486Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20"
+      relative_path: sha256/aa/aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20.raw
+      raw_sha256: aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20
+      byte_length: 780346
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: "Section III footnote"
+    quote: "On the MI300X, which uses the FNUZ variant of e4m3 and has no scaled MFMA, lean P needs a different offset"
+    quote_sha256: b61234ecf42f60dff0ff5f39ef55deace9ba4ea5aa8f39c48e3b79e3137210d4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20, found: true}
+    source_revision: https://arxiv.org/html/2611.07496v1
+    source_artifact:
+      entry_url: "https://arxiv.org/abs/2611.07496v1"
+      requested_url: "https://arxiv.org/html/2611.07496v1"
+      effective_url: "https://arxiv.org/html/2611.07496v1"
+      retrieved_at_utc: "2026-11-19T08:55:38.200486Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20"
+      relative_path: sha256/aa/aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20.raw
+      raw_sha256: aad83700fa04770575231bcda4a17523ec07d7042367f603ffe12b7ca50efa20
+      byte_length: 780346
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  dive_corrections: "2026-11-19 Stage-2 (html v1 read from disk): mechanisms CONFIRMED. gfx90a lens: no FP8 MFMA; the f16 MFMA leaves more slack relative to VALU, so most of the ping-pong gain does not survive, and only prefill FA is affected. Approximate exp is already seed S8. Re-open trigger recorded in the AK-GAP-1 lens prose; no new box."
 - id: intake-2699
   arxiv_id: '2611.15951'
   url: https://arxiv.org/abs/2611.15951
@@ -390647,10 +390861,14 @@
   credibility_score: 2
   contradicting_evidence: []
   handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "MI210 has no compute partitioning; NPS analogue belongs to NUMA placement work."
   handoffs_created: []
   read_depth: DIGEST
   verification: stage1-unverified
   notes: Stage-1 WebFetch digest of html v1 2026-11-19. MI300X/MI355X partition modes; MI210 is a single GCD with no compute partitioning. Flagged for operator review, not dismissed; CPU NUMA (EPYC NPS) analogue is the only transfer path.
+  dive_corrections: "2026-11-19 reverse-engineering lens: relies on MI300/MI355 compute partitioning; MI210 is a single GCD with no partitions, so nothing survives on the GPU; the only analogue is EPYC NPS sharding. Flagged to the operator as knowledge-only."
 - id: intake-2700
   arxiv_id: null
   url: https://github.com/sgl-project/sglang/releases/tag/v0.5.23
@@ -390667,20 +390885,67 @@
   authors:
   - SGLang project
   key_claims:
-  - Qwen3 fused QK-norm, RoPE and KV-cache write for dense decode on ROCm.
-  - Small-batch MoE sort using a histogram plus bitonic sort.
-  - Parallelized EAGLE spec-decode KV index building.
+  - "SGLang 0.5.23 adds an AMD small-batch MoE sort (histogram + bitonic) for 32 < P <= 256, about 4% lower decode step."
+  - "SGLang 0.5.23 fuses QK-norm + RoPE + KV-cache write for dense Qwen3 decode on AMD."
   techniques:
   - fused qk-norm rope kv write
   - histogram bitonic MoE sort
   reported_results: []
   credibility_score: null
   contradicting_evidence: []
-  handoffs_updated: []
+  handoffs_updated:
+  - handoffs/active/autokernel-loop.md
+  integration_disposition: integrated
+  disposition_evidence:
+  - "Box AK-GAP-1 (c); qk-norm fusion already AK-ASM-H14 DROP."
   handoffs_created: []
-  read_depth: DIGEST
-  verification: stage1-unverified
+  read_depth: PARTIAL
+  verification: dive-verified
   notes: Stage-1 WebFetch digest 2026-11-19 (100k of 125k chars). Fused qk-norm+rope+kv already tried on gfx90a as AK-ASM-H14 (DROP, e2e within noise).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Perf, AMD moe"
+    quote: "small-batch sort with histogram + bitonic sort for 32 < P <= 256 (3/8) (decode step about 4% lower)"
+    quote_sha256: d31b11de4d85607a52699da96ab12c77a7ecb924a72d8ce46becc86589859785
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de, found: true}
+    source_revision: https://github.com/sgl-project/sglang/releases/tag/v0.5.23
+    source_artifact:
+      entry_url: "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+      requested_url: "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+      effective_url: "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+      retrieved_at_utc: "2026-11-19T08:58:52.447564Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de"
+      relative_path: sha256/fa/fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de.raw
+      raw_sha256: fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de
+      byte_length: 375658
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: "Perf, AMD qwen3"
+    quote: "Fuse QK-norm + RoPE + KV cache write for dense Qwen3 decode"
+    quote_sha256: bd2631b45728f7d295fd8e0791ba1328a3c1ecc8dc6a34833942528792e696d4
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de, found: true}
+    source_revision: https://github.com/sgl-project/sglang/releases/tag/v0.5.23
+    source_artifact:
+      entry_url: "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+      requested_url: "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+      effective_url: "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+      retrieved_at_utc: "2026-11-19T08:58:52.447564Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de"
+      relative_path: sha256/fa/fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de.raw
+      raw_sha256: fa4476f8e650c394a8ae1a7be749ca74294ba274d9259981817b60a2477484de
+      byte_length: 375658
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  dive_corrections: "2026-11-19 Stage-2: release body and PR #44004 (merge 9fde8bcc; bit-identical output; sort launch at P=133-252 14.8 to 5.2 us on E=385 top-7) read. Fused qk-norm+rope+kv is already AK-ASM-H14 (DROP, e2e within noise). For the sort: llama.cpp batch-1 decode goes through mmvq with ids directly and does not hit mm_ids_helper; the only exposure is verify or prefill batches, measured in AK-GAP-1 (c)."
 - id: intake-2701
   arxiv_id: null
   url: https://github.com/flashinfer-ai/flashinfer/releases/tag/v0.7.5
@@ -390697,18 +390962,43 @@
   authors:
   - FlashInfer project
   key_claims:
-  - Targets NVIDIA SM90/SM100/SM120/Rubin only; no ROCm content.
-  - Adds tree-structured speculative verification on the Gated DeltaNet kernel with accepted-path commits.
+  - "FlashInfer 0.7.5 adds parent-indexed tree verify for Gated DeltaNet on an NVIDIA tcgen05 kernel (PR #6155), with accept_paths tree commits (PR #6257)."
   techniques:
   - GDN tree speculative verification
   reported_results: []
   credibility_score: null
   contradicting_evidence: []
   handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "NVIDIA kernel; tree verify only matters with a tree drafter, not used today."
   handoffs_created: []
-  read_depth: DIGEST
-  verification: stage1-unverified
+  read_depth: PARTIAL
+  verification: dive-verified
   notes: Stage-1 WebFetch digest 2026-11-19. Vendor-only is not a decline; the GDN tree-verify algorithm is the one transferable item (Qwen3.8 hybrid with DFlash2 drafter).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: "Changelog"
+    quote: "parent-indexed tree verify on the ReplaySSM tcgen05 kernel"
+    quote_sha256: 013a37a12338ee8be418fa57b9b3aeeaaf449f90e4bdd960a7cda01a23c52b75
+    anchor_mark: {verifier: validate_intake.py/check-anchors/v1, source_raw_sha256: f16063c0b8e1494f7fd3132db057bbae2cf98039bbd7b6d818d737fcd0318633, found: true}
+    source_revision: https://github.com/flashinfer-ai/flashinfer/releases/tag/v0.7.5
+    source_artifact:
+      entry_url: "https://github.com/flashinfer-ai/flashinfer/releases/tag/v0.7.5"
+      requested_url: "https://github.com/flashinfer-ai/flashinfer/releases/tag/v0.7.5"
+      effective_url: "https://github.com/flashinfer-ai/flashinfer/releases/tag/v0.7.5"
+      retrieved_at_utc: "2026-11-19T08:58:54.371445Z"
+      media_type: text/html
+      extractor_id: vidya/machine_anchor-html-text/v1
+      extractor_sha256: f2e5fa9126053893650aef5ea98dc77b76b5c1cf0eac89f8e043dd35e2661b92
+      schema_version: 1
+      snapshot_id: "sha256:f16063c0b8e1494f7fd3132db057bbae2cf98039bbd7b6d818d737fcd0318633"
+      relative_path: sha256/f1/f16063c0b8e1494f7fd3132db057bbae2cf98039bbd7b6d818d737fcd0318633.raw
+      raw_sha256: f16063c0b8e1494f7fd3132db057bbae2cf98039bbd7b6d818d737fcd0318633
+      byte_length: 519156
+    verified_by: research-intake/stage2 (integrator, source read from disk 2026-11-19)
+  dive_corrections: "2026-11-19 Stage-2: release body and PR #6155 read. The kernel is NVIDIA-only. The algorithm (tree verify over recurrent state) only matters if DFlash2 moves to tree drafts; today it uses linear block drafts. Knowledge-only; reopen if a tree drafter is adopted."
 - id: intake-2702
   arxiv_id: null
   url: https://github.com/triton-lang/triton/releases/tag/v3.9.0
@@ -390731,7 +391021,11 @@
   credibility_score: null
   contradicting_evidence: []
   handoffs_updated: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - "No gfx90a content; llama.cpp serving does not use Triton."
   handoffs_created: []
   read_depth: DIGEST
   verification: stage1-unverified
   notes: Stage-1 WebFetch digest 2026-11-19. Our serving path is llama.cpp HIP, not Triton; relevance only through AITER Triton kernels.
+  dive_corrections: "2026-11-19: no gfx90a content; knowledge-only."
