@@ -1074,6 +1074,60 @@ def stale_event(flags, st, rid, queued=()):
     return None
 
 
+HUB_VIEW = "/mnt/raid0/llm/views/epyc-root-main"
+
+
+def handoff_text(e, cache):
+    """The session's handoff as on origin/main (hub view), else the local clone; '' when unreadable."""
+    hf = os.path.basename(str(e.get("handoff") or ""))
+    if not hf:
+        return ""
+    if hf not in cache:
+        cache[hf] = ""
+        for root in (HUB_VIEW, ROOT):
+            try:
+                cache[hf] = open(os.path.join(root, "handoffs", "active", hf), errors="replace").read()
+                break
+            except OSError:
+                continue
+    return cache[hf]
+
+
+_RESULT_WORD = re.compile(r"\b(filed|verdict|result|PASS(ED)?|FAIL(ED)?|KEEP|NO-GO|futility|inconclusive|"
+                          r"superseded|withdrawn|consumed|acknowledged)\b", re.I)
+
+
+def result_recorded(rid: str, text: str) -> bool:
+    """True only when a line naming `rid` also records its outcome (a verdict word or a number in the measurement
+    sense) - a 'published / RUNNING / in flight' mention is NOT the owner having seen the result (operator 2026-11-18)."""
+    for ln in text.splitlines():
+        if rid in ln and not re.search(r"\b(RUNNING|in flight|awaiting|queued|published)\b", ln.split(rid, 1)[1][:80], re.I) \
+                and (_RESULT_WORD.search(ln) or tg._VERDICT_RX.search(ln)):
+            return True
+    return False
+
+
+def purge_filed_events(flags, st, S):
+    """D9 2026-11-19 (EVENT-STALE-DROP): a queued run end whose row is already filed (filing-done receipt) AND already
+    referenced in the owning session's handoff on origin/main costs no turn and wakes no parked session: the owner has
+    already seen it, so the 2026-11-18 "a filed row is still delivered once" rule is met. Dropped events are marked
+    delivered so a replay cannot re-queue them."""
+    cache, keep, n = {}, [], 0
+    for ev in st.get("queue") or []:
+        e = S.get(ev.get("slug"))
+        rid = ev.get("rid") or ""
+        if ev.get("kind") == "run-end" and e and rid and filed(flags, rid) and result_recorded(rid, handoff_text(e, cache)):
+            mark_delivered(st, rid)
+            log(flags, f"EVENT-STALE-DROP {rid} -> {ev['slug']}: filed and already referenced in "
+                       f"{os.path.basename(str(e.get('handoff')))}; no turn")
+            n += 1
+            continue
+        keep.append(ev)
+    if n:
+        st["queue"] = keep
+    return n
+
+
 def escalate_filing(flags, slug, ev):
     d = os.path.join(flags, "operator-escalations")
     os.makedirs(d, exist_ok=True)
@@ -1849,6 +1903,7 @@ def dispatch_once(flags, runner=None, now=None, seed=False, repo=None, priority=
     if not adm_ok:
         log(flags, f"ADMIT-REFUSED work: {adm_why}")
     if not paused:
+        purge_filed_events(flags, st, S)
         q, rest, lcache, launched = st.get("queue") or [], [], {}, set()
         free = cap - live
         for slug, e in S.items():  # R2: a guard park whose wait is over auto-unparks (bounded by free slots and 2/24 h)

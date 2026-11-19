@@ -303,3 +303,23 @@ def test_productive_turn_resets_auto_unpark_cap():
     assert not tg.auto_unpark_eligible(e, 2), "2 fruitless unparks hit the cap"
     tg.note_auto_unpark_progress(e)
     assert tg.auto_unpark_eligible(e, 3), "a productive turn clears the count"
+
+
+def test_purge_filed_events_drops_only_filed_and_referenced(tmp_path, monkeypatch):
+    flags = str(tmp_path)
+    os.makedirs(os.path.join(flags, "filing-done"))
+    for rid in ("row-a", "row-b"):
+        open(os.path.join(flags, "filing-done", rid + ".FILED"), "w").close()
+    hub = tmp_path / "hub" / "handoffs" / "active"
+    hub.mkdir(parents=True)
+    (hub / "h.md").write_text("- [x] box row-a PASS\n- row-b published, RUNNING\n")
+    monkeypatch.setattr(hs, "HUB_VIEW", str(tmp_path / "hub"))
+    monkeypatch.setattr(hs, "log", lambda *a, **k: None)
+    st = {"queue": [{"slug": "s", "rid": "row-a", "kind": "run-end"},   # filed + referenced -> drop
+                    {"slug": "s", "rid": "row-b", "kind": "run-end"},   # filed, mentioned only as RUNNING -> keep (deliver once)
+                    {"slug": "s", "rid": "row-c", "kind": "run-end"},   # not filed -> keep
+                    {"slug": "s", "rid": "aw-1", "kind": "awaiting"}]}
+    S = {"s": {"handoff": "handoffs/active/h.md"}}
+    assert hs.purge_filed_events(flags, st, S) == 1
+    assert [x["rid"] for x in st["queue"]] == ["row-b", "row-c", "aw-1"]
+    assert "row-a" in st["delivered"]
