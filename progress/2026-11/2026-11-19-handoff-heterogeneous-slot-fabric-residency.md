@@ -221,3 +221,7 @@ Duplicate run-end for `kpf131-ubatch-decoder-20261105`: the box already records 
 ## 04:24Z — Reconcile the already-filed full-driver import PASS with the stale group-3 handoff note.
 
 Reconciled `kvu-kpf18-g3-full-import-20261105` under KPF-18.0d: existing full-row PASS, rc0, 20 imported modules and callable main/setup/gate.Run; sealed job enforces pre/post custody and attempt cleanup. Native result SHA-256 `8daac03993890adb94f108c8eb387ef1373d3942db07ecf9cc4f736553ffef8c` matches the existing 2026-11-05 verdict; FILED receipt already exists. Updated the report and replaced the pending handoff statement. Import qualification only, no native/model/GPU or historical-control verdict; group-3 localisation remains open. [no-belief: scoped model-free software qualification]
+
+## 04:26Z — Consume duplicate run-end event: host-ASan build already filed PASS and both build boxes completed.
+
+Duplicate run-end event `kvu11c-host-asan-build-r4-20261105` consumed: existing verdict PASS and `.FILED` receipt present; KVU-11c-ASAN-BUILD and KVU-11c-ASAN-BUILD-R4 already completed with retained build evidence. No new result-bearing work for this event; no rerun or handoff change. [no-belief: duplicate event acknowledgement only]
