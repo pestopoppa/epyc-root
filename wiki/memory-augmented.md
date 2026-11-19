@@ -367,7 +367,9 @@ describe code that was never committed.
     ([CME instrument](../handoffs/completed/conversational-memory-eval-instrument.md),
     [sub-memeval](../progress/2026-09/2026-09-16-sub-memeval.md)).
 - **M-12e re-verified.** The June Tulving run re-scores to SRS 0.5530 under the pre-fix scorer and
-  0.5684 (366 questions) under v2. CAS is 0.1593 under both, with 37 partial. The fresh v2 summary is
+  0.5684 (366 questions) under v2. Historical CAS v1/v2 is 0.1593; approved EPYC
+  **CAS v3 is 0.0704** (15 eligible, 7 eligible partials at zero, 30 short-gold
+  exclusions; [definition and evidence](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md)). The fresh v2 summary is
   byte-identical to the committed rescore, and three leftover unannotated 0.5530 quotes in
   bulk-inference-campaign were corrected. One finding weakens the SC67 doctrine: all 456 stored
   prompts carry the `Book narrative:` header, so the arm *is* recoverable from producer-authored
@@ -520,13 +522,14 @@ window. Three durable consequences of M-12e that the numbers above do not carry 
   run `20260619_141212` never recorded which arm it was (memory-off / retrieved / full book), so it
   stays pre-hook and emits zero claim rows. The corrected numbers are compiled knowledge on this
   page; they are deliberately *not* belief-kernel claims.
-- **Chronological Awareness is a diagnostic, not a headline, and the reason is construction rather
-  than model quality.** Beyond the 37 of 45 chronological questions now labelled `partial` (which is
-  why CAS `0.1593` is unchanged — the tau defect is latent on this run, not harmless), **30 of the 45
-  have fewer than two ground-truth items** (15 have zero), so ordering is undefined for them and they
-  contribute 0.0 to the tau leg by construction. Two thirds of that leg is structurally zero. CAS is
-  reported as a diagnostic until the metric's own construction is settled; the 200-chapter set, with
-  ground-truth lists up to 9 items, is where the latent defect will actually bite.
+- **EPYC Chronological Awareness v3 remains diagnostic on the 20ch set.** OP-M12F
+  (2026-11-11) selects gold≥2 and zero credit for eligible partial retrieval.
+  CAS v3 is **0.0704**: latest F1 0.4075, order -0.2667 over 15 eligible questions
+  (7 partial at zero, 8 fully scored), excluding 15 empty and 15 singleton gold
+  lists. Historical v2 CAS 0.1593 included all 45 ordering questions and is
+  superseded for prospective EPYC reporting. Paper equivalence is unverified.
+  The ROOT scorer payload defaults to v3; research deployment and SC67 admission
+  remain separate. [Scoring note and reproducible diagnostic](../docs/reference/tulving-scoring-validity-m12f-2026-11-09.md).
 - **Why the attribution split above is load-bearing rather than bookkeeping**: the two fixes move the
   headline in *opposite* directions on run `20260619_141212` (20 chapters / 456 QA) — the subset fix
   raises SRS, the bin-basis fix lowers it — so quoting either one in isolation, or reporting only the
