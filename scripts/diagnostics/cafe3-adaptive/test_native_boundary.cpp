@@ -37,6 +37,7 @@ struct DraftParams {
     uint32_t seed = 12;
     std::function<int(int,int,double)> cafe3_select;
     bool cafe3_selected = false;
+    std::function<void(int,bool)> cafe3_prepare;
 };
 using common_speculative_draft_params_vec = std::vector<DraftParams>;
 int decodes = 0, samples = 0, accepts = 0, fail_decode = 0;
@@ -134,7 +135,13 @@ int main() {
             common_speculative_draft_params_vec dp(2, DraftParams{});
             dp[0].result = &out;
             dp[1].drafting = false;
-            int callbacks = 0;
+            int callbacks = 0, prepares = 0;
+            dp[0].cafe3_prepare = [&](int impl, bool selector) {
+                assert(decodes == 0 && accepts == 0);
+                assert(impl == (mode == 0 ? 1 : 2) && selector == (mode == 2));
+                ++prepares;
+            };
+            dp[1].cafe3_prepare = [](int,bool) {assert(false);};
             dp[0].cafe3_select = [&](int impl, int cap, double p0) {
                 ++callbacks;
                 assert(impl == (mode == 0 ? 1 : 2) && cap == 3);
@@ -144,7 +151,7 @@ int main() {
             };
             decodes = samples = accepts = 0;
             model.draft(dp);
-            assert(callbacks == 1 && dp[0].cafe3_selected);
+            assert(prepares == 1 && callbacks == 1 && dp[0].cafe3_selected);
             assert(out.size() == size_t(width));
             assert(decodes == (mode == 0 ? std::max(1,width) : 1));
             assert(accepts == (mode == 2 ? 0 : width));

@@ -220,3 +220,38 @@ SHA-256 bindings:
 - `run_tests.sh`: `8b991d866a77367c0c43a6e635810955c4f91f801b1ec0adbdefededcf3d7d21`
 
 [no-belief: compiled server source port and model-free tests only]
+
+
+Request attachment and model preparation source port (2026-11-19)
+---------------------------------------------------------------
+
+The v10 source port now attaches a request lifecycle immediately after task
+assignment, sampling `LLAMA_CAFE3_ADAPTIVE` once. Off requests stay unattached.
+`server_slot::cafe3_factory` must return a lifecycle with its writer installed;
+enabling without a factory, or with a null result, throws. A candidate builder
+must install that factory before accepting adaptive requests. This change does
+not supply a durable sink or claim an executable adaptive server.
+
+Fresh server draft parameters receive prepare/select callbacks. The actual
+MTP and DFlash methods invoke preparation before their draft work, including
+confidence decoding. Inactive sequences and DSpark are excluded. Preparation
+cancels an unselected prior implementation's pending timing; the matching
+confidence selection retains the original start time. DFlash2 shares DFlash's
+native enum but passes its selector variant explicitly, preserving separate
+policy state. A selection without matching preparation throws. Existing native
+completion, replay cancellation and request release hooks remain in use.
+
+Validation: both controller/lifecycle C++17 ASan/UBSan suites pass; **2 native
+boundary tests and 3 server port tests pass**, including full transformed
+`speculative.cpp` and `server-context.cpp` translation-unit syntax checks.
+Native method spies prove exactly one preparation before any decode for all
+three model variants at widths 0..3 and none for inactive sequences. Executed
+slot methods cover default-off attachment, missing-factory refusal, callback
+binding, a 50+10=60 us synthetic zero round and distinct DFlash2 records.
+These are model-free software controls against production git
+`ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; no native measurement, identity,
+speed or P9 verdict. Next: implement the durable native sink, register its
+write-time source and wiring task, install the factory in the full fresh
+production-based experimental builder, then publish build/P9 rows.
+
+[no-belief: compiled request/model source port and synthetic controls only]

@@ -1,7 +1,8 @@
 """Fail-closed v10 server completion port; no production edits or model runs.
 
-Request setup must begin an assigned lifecycle and attach it to cafe3_rounds.
-Selection and durable writer installation are intentionally separate seams.
+Request setup attaches a lifecycle through the required factory. Model calls
+prepare before confidence acquisition; durable factory installation remains a
+separate seam and enabling without one fails closed.
 """
 from native_port import replace_once
 
@@ -14,6 +15,40 @@ def server_context(source):
     // Empty preserves legacy behavior. Request setup must call begin(id, ...)
     // before attaching; release detaches so recycled slots cannot train it.
     std::shared_ptr<cafe3::round_lifecycle> cafe3_rounds;
+    cafe3::implementation cafe3_impl = cafe3::implementation::other;
+    // Factory installation is mandatory before enabling native execution.
+    // A missing factory fails closed instead of silently losing observations.
+    std::function<std::shared_ptr<cafe3::round_lifecycle>(int)> cafe3_factory;
+    void cafe3_attach(std::uint64_t request, int cap, const char * env) {
+        cafe3_release();
+        if (!cafe3::enabled(env)) return;
+        if (!cafe3_factory) throw std::logic_error("CAFE3 durable lifecycle factory required");
+        auto rounds = cafe3_factory(cap);
+        if (!rounds) throw std::logic_error("CAFE3 null lifecycle factory");
+        rounds->begin(id, request, env);
+        cafe3_rounds = std::move(rounds);
+    }
+    template<class Params> void cafe3_bind(Params & dp) {
+        if (!cafe3_rounds) return;
+        dp.cafe3_selected = false;
+        dp.cafe3_prepare = [this](common_speculative_type type, bool selector) {
+            cafe3_cancel(); // discard failed/unselected earlier implementation
+            cafe3_impl = type == COMMON_SPECULATIVE_TYPE_DRAFT_MTP
+                ? cafe3::implementation::mtp
+                : type == COMMON_SPECULATIVE_TYPE_DRAFT_DFLASH
+                    ? (selector ? cafe3::implementation::dflash2 : cafe3::implementation::dflash)
+                    : cafe3::implementation::other;
+            cafe3_rounds->prepare(id, cafe3_impl);
+        };
+        const int static_width = dp.n_max;
+        dp.cafe3_select = [this, static_width](common_speculative_type type, int cap, double p) {
+            const bool matching = (type == COMMON_SPECULATIVE_TYPE_DRAFT_MTP && cafe3_impl == cafe3::implementation::mtp)
+                || (type == COMMON_SPECULATIVE_TYPE_DRAFT_DFLASH &&
+                    (cafe3_impl == cafe3::implementation::dflash || cafe3_impl == cafe3::implementation::dflash2));
+            if (!matching) throw std::logic_error("CAFE3 selection without matching preparation");
+            return cafe3_rounds->select(id, cafe3_impl, cap, static_width, p).width;
+        };
+    }
     void cafe3_cancel() {
         if (cafe3_rounds) cafe3_rounds->cancel(id);
     }
@@ -52,4 +87,10 @@ def server_context(source):
             for (size_t i = 0; i < ids.size(); ++i) {'''
     source = replace_once(source, anchor, anchor.replace('\n\n            for',
                           '\n\n            slot.cafe3_finish((int) n_draft, (int) ids.size() - 1);\n\n            for'))
+    source = replace_once(source, '        slot.task = std::make_unique<const server_task>(std::move(task));',
+                          '        slot.task = std::make_unique<const server_task>(std::move(task));\n'
+                          '        slot.cafe3_attach(slot.task->id, slot.task->params.speculative.draft.n_max, std::getenv("LLAMA_CAFE3_ADAPTIVE"));')
+    source = replace_once(source, '                        drafting.push_back(&slot);',
+                          '                        slot.cafe3_bind(common_speculative_get_draft_params(spec.get(), slot.id));\n\n'
+                          '                        drafting.push_back(&slot);')
     return source

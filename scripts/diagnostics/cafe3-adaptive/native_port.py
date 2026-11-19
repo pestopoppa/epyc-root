@@ -21,7 +21,8 @@ def header(source):
     // the round timer. Empty preserves legacy behavior. Selection of zero
     // terminates this chain, rather than falling through to another drafter.
     std::function<int(common_speculative_type, int, double)> cafe3_select = {};
-    bool cafe3_selected = false;''')
+    bool cafe3_selected = false;
+    std::function<void(common_speculative_type, bool)> cafe3_prepare = {};''')
 
 
 def implementation(source):
@@ -73,6 +74,22 @@ def implementation(source):
 
 ''' + anchor)
     dflash = dflash[:pos] + tail
+    # Time the full native draft call, including confidence acquisition. DFlash2
+    # shares the DFlash enum, so carry its selector variant explicitly.
+    for name, variant in (("mtp", "false"), ("dflash", "is_dflash2")):
+        body = mtp if name == "mtp" else dflash
+        start = body.index('    void draft(')
+        brace = body.index('{', start) + 1
+        prep = """
+        for (auto & cafe3_dp : dparams) {
+            if (cafe3_dp.drafting && cafe3_dp.cafe3_prepare%s) {
+                cafe3_dp.cafe3_prepare(type, %s);
+            }
+        }
+""" % (" && !is_dspark" if name == "dflash" else "", variant)
+        body = body[:brace] + prep + body[brace:]
+        if name == "mtp": mtp = body
+        else: dflash = body
     source = before + dflash + mtp + after
     return replace_once(source, '            // a new draft has been sampled', '''            // A selected model round owns this sequence even if its width is
             // zero or confidence truncation produced no tokens. No fallback
