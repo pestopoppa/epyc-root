@@ -217,3 +217,7 @@ KPF-18-G3-SUPERVISOR: corrected stale full-controls-pending text using the exist
 ## 04:22Z — Consume already-filed ubatch decoder run-end event
 
 Duplicate run-end for `kpf131-ubatch-decoder-20261105`: the box already records full rc0 FIXTURE_PASS, and pass verdict plus FILED receipt already exist. No new result-bearing task for this event; no rerun, retick, evidence copy or changed verdict. Existing native result `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-ubatch-decoder-20261105/out/full/RESULT.json`, SHA-256 `11705c995cdc140422109a3fe9ab73d9211b47e7c19c75c01bb61d7dd99c82f6`. Retain previous next action. [no-belief: duplicate event acknowledgement only]
+
+## 04:24Z — Reconcile the already-filed full-driver import PASS with the stale group-3 handoff note.
+
+Reconciled `kvu-kpf18-g3-full-import-20261105` under KPF-18.0d: existing full-row PASS, rc0, 20 imported modules and callable main/setup/gate.Run; sealed job enforces pre/post custody and attempt cleanup. Native result SHA-256 `8daac03993890adb94f108c8eb387ef1373d3942db07ecf9cc4f736553ffef8c` matches the existing 2026-11-05 verdict; FILED receipt already exists. Updated the report and replaced the pending handoff statement. Import qualification only, no native/model/GPU or historical-control verdict; group-3 localisation remains open. [no-belief: scoped model-free software qualification]
