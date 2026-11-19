@@ -15,3 +15,7 @@ RKA-A3B-ROUTER-WIDE: replacement rka-a3b-router-wide-gpu-20261119-r2 published; 
 ## 09:11Z — Check queued router-wide replacement smoke
 
 RKA-A3B-ROUTER-WIDE: replacement rka-a3b-router-wide-gpu-20261119-r2 remains queued for a GPU smoke; publisher intentionally retains its manifest as unpublished until PASS. No measurement or smoke verdict exists yet. Registered outcome paths for PASS, FAIL, and dropped smoke. The unrelated mailbox alerts remain unacknowledged because their underlying rows have not been repaired.
+
+## 09:13Z — Identify the C15 case-count mismatch and replacement row
+
+C15-EPI-Q8: source e0b5d2637 tests/test-backend-ops.cpp defines 16 cases: two weight types each with four norm and four gate cases. The existing c15-epi-q8-gpu-20261119-r2 corrected the expected count to 16 before decode, preserved performance and identity thresholds, and passed smoke at 07:34:33Z; rowflow reports grantable. No decode verdict yet. Router-wide r2 remains queued for GPU smoke. Unrelated mailbox alerts remain unacknowledged because their underlying failures have not been repaired.
