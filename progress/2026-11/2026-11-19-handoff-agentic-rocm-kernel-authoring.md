@@ -119,3 +119,7 @@ INF48-GATEUP-PROBE was already ticked and filed on 2026-11-18 with receipt prese
 ## 04:31Z — File completed RKA-A3B-N4-STEP GPU result
 
 Filed rka-a3b-n4-step-gpu-20261118 (rc=0): FUTILITY under the preregistered rule. At 32k n=4, B4R2/UNSET ratios by round were 0.9604, 1.0076, 0.9880; median 0.9880 (1.2% reduction, below 5% threshold). All four correctness processes passed; all timing processes proved HIP residency. Result SHA-256 0e923c1c55ebac4976c07fa6fefe7f3613df72613e84124669507b4b8c6cd42d. The handoff already records this result, its subsequent attribution and the completed box; filed the missing receipt. [belief: cc]
+
+## 04:32Z — File c6-admission-live-proof-r8 result
+
+Filed c6-admission-live-proof-r8 (launcher rc=0): FUTILITY_CARRIER; validate and GPU trace passed, but the supervised controller reached the native C6 oracle and exited with untyped EvidenceProducerError, with zero admission records. The existing handoff records the inconclusive verdict; box remains open. Result SHA-256 5b7f21ddf0498445e2d2a9e6a2c3cd72c97113fd5a34b7a8b1c6c5daf414f177. Filed missing receipt. [belief: cc]
