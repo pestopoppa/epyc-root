@@ -684,7 +684,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T11:14:17Z",
+  "generated_at": "2026-11-19T11:31:37Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1028,16 +1028,16 @@
       ]
     },
     {
-      "age_days": 15,
+      "age_days": 0,
       "blocked": 0,
       "blocked_by": [],
-      "closed": 67,
+      "closed": 68,
       "dispatchable": 32,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "benchmark-suites.md",
       "id": "EVL-08",
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-19",
       "next_action": "Coordinate CJ-13 live agreement/cost acceptance with its MI210 owner; retain CJ-16's separate cascade evaluation",
       "open": 32,
       "priority": 0.7283,
@@ -1072,7 +1072,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 716,
+          "line": 730,
           "name": "agent-world-env-synthesis",
           "open": 4,
           "readiness": "ready"
@@ -1081,7 +1081,7 @@
           "blocked_by": [],
           "dispatchable": 3,
           "gates": [],
-          "line": 1028,
+          "line": 1042,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3,
           "readiness": "ready"
@@ -1090,7 +1090,7 @@
           "blocked_by": [],
           "dispatchable": 4,
           "gates": [],
-          "line": 1235,
+          "line": 1249,
           "name": "multi-file-coding-completion-capability",
           "open": 4,
           "readiness": "ready"
@@ -1099,7 +1099,7 @@
           "blocked_by": [],
           "dispatchable": 2,
           "gates": [],
-          "line": 1561,
+          "line": 1575,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2,
           "readiness": "ready"
@@ -1108,7 +1108,7 @@
           "blocked_by": [],
           "dispatchable": 7,
           "gates": [],
-          "line": 1796,
+          "line": 1810,
           "name": "tool-use-eval-contract",
           "open": 7,
           "readiness": "ready"
@@ -3346,7 +3346,7 @@
             "RTG-34#handoff-index-and-backlog-graph",
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
-          "line": 5768,
+          "line": 5769,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0,
           "readiness": "no_open"
@@ -3355,7 +3355,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": null,
-          "line": 6324,
+          "line": 6325,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0,
           "readiness": "no_open"

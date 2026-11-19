@@ -423,9 +423,9 @@
     },
     "benchmark-suites.md": {
       "blocked": 0,
-      "closed": 67,
+      "closed": 68,
       "guarded": 0,
-      "last_advanced": "2026-11-04",
+      "last_advanced": "2026-11-19",
       "open": 32,
       "owner_index": "research-evaluation-index.md",
       "prune": {
@@ -435,11 +435,11 @@
       },
       "row_id": "EVL-08",
       "state": "active",
-      "total": 99,
+      "total": 100,
       "tracks": [
         {
           "blocked": 0,
-          "closed": 19,
+          "closed": 20,
           "gates": null,
           "guarded": 0,
           "line": 0,
@@ -452,7 +452,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 716,
+          "line": 730,
           "markers": 1,
           "name": "agent-world-env-synthesis",
           "open": 4
@@ -462,7 +462,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1028,
+          "line": 1042,
           "markers": 1,
           "name": "mathsmith-hc-formalizer-eval",
           "open": 3
@@ -472,7 +472,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 1235,
+          "line": 1249,
           "markers": 1,
           "name": "multi-file-coding-completion-capability",
           "open": 4
@@ -482,7 +482,7 @@
           "closed": 4,
           "gates": [],
           "guarded": 0,
-          "line": 1561,
+          "line": 1575,
           "markers": 1,
           "name": "rlm-contested-claims-self-evaluation",
           "open": 2
@@ -492,7 +492,7 @@
           "closed": 27,
           "gates": [],
           "guarded": 0,
-          "line": 1796,
+          "line": 1810,
           "markers": 1,
           "name": "tool-use-eval-contract",
           "open": 7
@@ -737,7 +737,7 @@
             "RTG-34#coordinator-role-failure-modes-and-refactor"
           ],
           "guarded": 0,
-          "line": 5768,
+          "line": 5769,
           "markers": 1,
           "name": "wrap-up-division-of-labor-policy",
           "open": 0
@@ -747,7 +747,7 @@
           "closed": 5,
           "gates": null,
           "guarded": 0,
-          "line": 6324,
+          "line": 6325,
           "markers": 0,
           "name": "research-intake-harness-inference-2026-11-06",
           "open": 0
