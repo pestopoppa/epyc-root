@@ -696,7 +696,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-19T13:16:51Z",
+  "generated_at": "2026-11-19T13:28:21Z",
   "nodes": [
     {
       "age_days": 9,
@@ -1328,15 +1328,15 @@
       "age_days": 0,
       "blocked": 1,
       "blocked_by": [],
-      "closed": 476,
-      "dispatchable": 121,
+      "closed": 480,
+      "dispatchable": 118,
       "domain": "research-evaluation",
       "guarded": 0,
       "handoff": "vidya-belief-substrate-program.md",
       "id": "EVL-47",
       "last_advanced": "2026-11-19",
       "next_action": "Run proof r4 (ready) in a whole-host window for NONEMPTY-READ-PROOF; two-CPU-model smoke; Canary B assertion; republish R23-4",
-      "open": 122,
+      "open": 119,
       "priority": 0.8902,
       "priority_basis": {
         "basis": "T5 inference-ready best open item (I): VB-HSF5P-NEXT-TRACE-WRITE \u2014 HSF-5.P native profiler trace write side (filed 2026-10-26, wo",
@@ -3484,7 +3484,7 @@
       "age_days": 0,
       "blocked": 7,
       "blocked_by": [],
-      "closed": 424,
+      "closed": 426,
       "dispatchable": 94,
       "domain": "routing-and-optimization",
       "guarded": 0,
@@ -3533,7 +3533,7 @@
           "blocked_by": [],
           "dispatchable": 8,
           "gates": [],
-          "line": 1771,
+          "line": 1773,
           "name": "heterogeneous-slot-fabric-residency",
           "open": 9,
           "readiness": "ready"
@@ -3548,7 +3548,7 @@
             "RTG-36",
             "INF-79"
           ],
-          "line": 2194,
+          "line": 2196,
           "name": "kv-unified-stack-rollout",
           "open": 41,
           "readiness": "blocked"
