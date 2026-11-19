@@ -39,3 +39,7 @@ No result-bearing task completed; no boxes ticked. AFC-P5.E3-Q36-TOOLS-V3 is com
 ## 03:39Z — Duplicate Flash medium run-end already acknowledged
 
 Dispatched afc-v3c-q38_flash-tools-medium-20261111 already has its 2026-11-12 verdict and FILED receipt; AFC-V3C-PROD-TOOLS is complete. Existing filing left unchanged; no remeasurement, re-filing, or boxes ticked. No result-bearing task currently available: NIB2-77 needs the original exact 16-path approval roster; NIB2-94 requires operator token rotation; NIB2-98, NIB2-102 and LR-8 require owning-session runtime/canary boundaries; NIB2-83 requires a qualifying post-E17 cohort beyond the two historical journal shards checked in the previous turn; GAP-POOL-1 and NI-IDLE-REFILL-WATCHER require keeper/gate changes prohibited to this lane. No new verdict asserted.
+
+## 03:40Z — Duplicate Flash aggressive run-end already acknowledged
+
+Dispatched afc-v3c-q38_flash-tools-aggressive-20261111 already has its 2026-11-12 verdict and FILED receipt; AFC-V3C-PROD-TOOLS is complete. Filing left unchanged; no result-bearing task completed and no boxes ticked. Existing checkpoint remains: NIB2-77 needs the original exact 16-path approval roster, NIB2-94 operator token rotation, NIB2-98/NIB2-102/LR-8 owning-session runtime actions, NIB2-83 a genuine post-E17 cohort, and GAP-POOL-1/NI-IDLE-REFILL-WATCHER keeper or gate edits prohibited to this lane. No readied-row dependency exists, so next=blocked does not apply.
