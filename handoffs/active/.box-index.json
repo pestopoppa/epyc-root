@@ -525,40 +525,6 @@
    "tier": null,
    "track": "autokernel-research-loop"
   },
-  "AKX-ALL-31.NATIVE-C14": {
-   "class": "inference",
-   "class_basis": "explicit",
-   "cont_lines": 1,
-   "done_when": null,
-   "file": "handoffs/active/autokernel-akx-program.md",
-   "frozen_until": null,
-   "gate": [],
-   "gate_open": false,
-   "gate_unknown": [],
-   "holds": [],
-   "id": "AKX-ALL-31.NATIVE-C14",
-   "inputs": [],
-   "inputs_missing": [],
-   "line": 1807,
-   "lint": {
-    "fails": [
-     "d",
-     "e",
-     "f"
-    ],
-    "ok": false
-   },
-   "owner": null,
-   "pos_in_backlog": null,
-   "row": "INF-82",
-   "row_rank": null,
-   "standard": false,
-   "state": "open",
-   "text": "- [ ] **AKX-ALL-31.NATIVE-C14** [inference] re-run the AKX-ALL-31.NATIVE CPU leg on champion C14 `eee3da838` (operator 2026-11-18). Model: none (ggml test binary test-akx-numerics, CPU backend); build: fork `llama.cpp-experimental-c14-akx31",
-   "text_sha": "d55f411393ded277",
-   "tier": null,
-   "track": "autokernel-all-devices-all-dimensions"
-  },
   "AM-DECISIVE-1": {
    "class": "inference",
    "class_basis": "advisory-regex",
@@ -3405,7 +3371,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1935,
+   "line": 1936,
    "lint": {
     "fails": [
      "c",
@@ -3643,7 +3609,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1944,
+   "line": 1945,
    "lint": {
     "fails": [
      "a",
@@ -3714,7 +3680,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1816,
+   "line": 1817,
    "lint": {
     "fails": [
      "b",
@@ -3850,7 +3816,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2083,
+   "line": 2084,
    "lint": {
     "fails": [
      "c",
@@ -4052,7 +4018,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2072,
+   "line": 2073,
    "lint": {
     "fails": [
      "e",
@@ -4086,7 +4052,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1921,
+   "line": 1922,
    "lint": {
     "fails": [
      "e",
@@ -4155,7 +4121,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1834,
+   "line": 1835,
    "lint": {
     "fails": [
      "d",
@@ -4395,7 +4361,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1859,
+   "line": 1860,
    "lint": {
     "fails": [
      "b",
@@ -4430,7 +4396,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2087,
+   "line": 2088,
    "lint": {
     "fails": [
      "e",
@@ -4598,7 +4564,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2079,
+   "line": 2080,
    "lint": {
     "fails": [
      "e",
@@ -4666,7 +4632,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2205,
+   "line": 2206,
    "lint": {
     "fails": [
      "c",
@@ -4688,7 +4654,7 @@
   "handoffs/active/autokernel-akx-program.md#b9466db0746b1d97": {
    "class": "non-inference",
    "class_basis": "deliverable",
-   "cont_lines": 9,
+   "cont_lines": 10,
    "done_when": null,
    "file": "handoffs/active/autokernel-akx-program.md",
    "frozen_until": null,
@@ -4766,7 +4732,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 2193,
+   "line": 2194,
    "lint": {
     "fails": [
      "h"
@@ -4966,7 +4932,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1818,
+   "line": 1819,
    "lint": {
     "fails": [
      "b",
@@ -5001,7 +4967,7 @@
    "id": null,
    "inputs": [],
    "inputs_missing": [],
-   "line": 1864,
+   "line": 1865,
    "lint": {
     "fails": [
      "d",
@@ -45932,8 +45898,8 @@
   "blocked": 0,
   "frozen": 24,
   "lint_ok": 289,
-  "open": 1386,
-  "total": 1410
+  "open": 1385,
+  "total": 1409
  },
  "holds_source": null,
  "include_done": false,
@@ -45944,8 +45910,8 @@
   "box handoffs/active/autokernel-akx-program.md:1448 has 70 continuation lines > 24",
   "box handoffs/active/autokernel-akx-program.md:1620 has 41 continuation lines > 24",
   "box handoffs/active/autokernel-akx-program.md:1737 has 28 continuation lines > 24",
-  "box handoffs/active/autokernel-akx-program.md:1818 has 25 continuation lines > 24",
-  "box handoffs/active/autokernel-akx-program.md:1864 has 75 continuation lines > 24",
+  "box handoffs/active/autokernel-akx-program.md:1819 has 25 continuation lines > 24",
+  "box handoffs/active/autokernel-akx-program.md:1865 has 75 continuation lines > 24",
   "box handoffs/active/autokernel-loop.md:5374 has 36 continuation lines > 24",
   "box handoffs/active/autokernel-loop.md:5630 has 208 continuation lines > 24",
   "box handoffs/active/autokernel-loop.md:7533 has 30 continuation lines > 24",
