@@ -135,3 +135,7 @@ Filed rka-a3b-mmvf8-e2e-gpu-20261118-r2 (rc=0): KEEP under its preregistered rul
 ## 04:35Z — File router-wide GPU run-end verdict
 
 Filed rka-a3b-router-wide-gpu-20261118 (rc=0): job reports FUTILITY_CORRECTNESS but baseline test rc=0 and its parser missed four cases when CUDA graph diagnostics interrupted output; handoff already records INCONCLUSIVE / FUTILITY_INSTRUMENT. WIDE and timings did not run; repair parser and republish. results.jsonl SHA-256 509caa396ba7eade01f4dbad46f769f718b22cc767563dccdf855828353c0ac5. [no-belief: instrument failure]
+
+## 04:36Z — File A3B GPU D and concurrency sweep result
+
+Filed rka-a3b-gpu-d-np-sweep-20261118-r3 (rc=0): RECOMMEND_D2 at np4/8/16, with D2 aggregate throughput 10.15–13.91% above D4 in each unset-arm round; DROP_MULTI because D2 knob gains were +0.91%, -0.72%, -0.18%. All 36 cells present. Completed handoff box already records the result. results.jsonl SHA-256 4a6ecaa9e1c8e47707af75b19549d2fa19c55410122e0b79fcb3ae170fbab8b0. [belief: cc]
