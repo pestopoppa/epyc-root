@@ -7394,6 +7394,7 @@ on measurement, D3 approved and shipped.** Detail in each entry.
       total *under*-stated. `held` uses `time.time()` and `busy` uses `time.monotonic()`: two
       clocks in one ratio.
   - 2026-11-01 source preparation: Research `26d89b6ea20f21675d9cc4bc07a8db11ec42199e` instruments monotonic gate verdicts, publishes active pooled-tail time and retains claim-scoped ROCm cumulative GFX counter observations with native raw samples, phase markers, library digest/BDF and refusal reasons. Guarded synthetic tests exercise claim acquisition and release, oracle/benchmark warmup paths, reset/clock/identity/error cases and missing trace. A single read-only ROCm capability query established API availability only. Full-claim busy/idle remain UNKNOWN; the observed-window GFX activity-weighted estimate is not binary device busy or per-process attribution. Source carrier/reader and real planning canary are OPEN under `VB-AK-R18-GFX-OBSERVATION`; qualifying physical validation has not been run. R18-E stays OPEN.
+  - 2026-11-19 R18-E: source parts 1-2 and the retained GFX observation are on research main (26d89b6ea); the remaining step is the qualifying physical validation under `VB-AK-R18-GFX-OBSERVATION` (a GPU window; busy/idle stays UNKNOWN until it runs). No code left to write.
 - [x] **R18-F — the loop code budget is freed, not bumped.** ✅ 2026-08-31 (research `33715a7e` →
       `f2c05dc1` → `95eeb0ae`). The guards now bound **code** and compute the prose share instead
       of remembering it wrong (`check_regrowth_guards.py`: `LOOP_CODE_BUDGET = 2100` enforced;
@@ -7511,6 +7512,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
         blind rebase). Either ratify that posture as the standing answer or set a periodic
         delta-sweep cadence (e.g. per upstream release, reusing sweep (b)'s method).
         OPERATOR DECISION 2026-11-18: port-as-hypothesis is the standing answer (no periodic delta-sweep, no blind rebase): an upstream change is ported only when a box needs it, gated on its own instrument; CH-35 and CH-36 stay gated on theirs. Census on C14: artifacts/analysis/ch32-upstream-census-c14-20261118.md. ✅ 2026-11-18 [no-belief: operator decision]
+  - 2026-11-19 R21-5: STANDING by design. All pilot sub-items are done and the upstream-rebase cadence was decided 2026-11-18 (port-as-hypothesis is the standing answer); the row stays open only as the standing pipeline, with nothing left to build.
 - [x] **OP-34 RESOLVED 2026-08-31** (minted as OP-32; renumbered 2026-09-01 — the queue reconciliation reassigned OP-32 to the uniform-IQ4_XS decision and this lane's third minted ID was missed) — operator: "pre-authorize run 22 if all boundary steps are green." The boundary driver launches run 22 iff the exact all-green conjunction holds (run 21 dead · flag A/B clean exit either verdict · all three dec-b* calibrations written · serving bundle sealed · final-champion --dry-run verified); any single non-green holds for morning. ✅ 2026-08-31
 - [x] ~~**R21-6 — BOUNDARY tonight, 2026-08-31 22:00Z (operator-ordered).** Driver~~ (closed 2026-10-29 audit: OBSOLETE → R23-63 note (autokernel-rebuild-program.md:2440) lists R21-6 stale by event (boundary 2026-08-31 22:00Z passed; driver scripts/benchmark/boundary_20260831.sh exists; later runs 22-30 superseded it))
       `scripts/benchmark/boundary_20260831.sh` (research lane; being written + stub-tested by the
@@ -7575,6 +7577,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       stratification unnecessary, only the span (2.4x measured) needs reporting. H5 (calibratable
       ~13% instrument gap) folds into R23-3: measure 3-4 arms on both instruments; wide ratio
       variance → cross-instrument claims stay banned rather than corrected.
+  - 2026-11-19 R23-6: it piggybacks R23-3's instrument work, and R23-3 was declined 2026-11-03 (its consumer, mi210 P3-4, was retired by the 27B-ALWAYS-DFlash2 rule). The premise is gone; the same content review should decline this row. Needs the operator or ws58 to confirm; nothing to build.
 - [x] **R23-4 — One-factor sweep: config vs draft acceptance and run-over-run stability** ✅ 2026-11-04 (rc=0 inconclusive; Complete v10 descriptive sweep63/63; attribution INCONCLUSIVE (18/18 treatment/prompt metric ranges overlap adjacent baselines). Native evidence: docs/reports/autokernel-r23-4-v10-sweep-20261104/README.md. Historical9e18beb0 attribution remains unestablished; streaming events are not verified tokens and acceptance is window-correlated. [belief: cc])
       (from the peer's 2026-09-01 seam; feeds INF-22 P3-4 and INF-62). Two findings need
       attribution: (a) P3 decays monotonically across repeated requests at the verbatim c1
@@ -7600,6 +7603,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       slice-extraction as belt regardless. **Operator decision attached: file the fix upstream?**
       v9-era llama.cpp carries the same defect for anyone running llama-cli non-interactively.
   - 2026-11-02 operator decision: File upstream (decisions-batch2-4-20261102.json)
+  - 2026-11-19 R23-1 finding: upstream llama.cpp already fixed this independently, `b04642061` "cli: exit on stdin EOF ..." (#29722, 2026-09-30), so there is nothing to file; the recorded decision "File upstream" is moot. That commit is in neither frozen v10 (`ffc1bac82`) nor the experimental branch (`experimental-v9-autokernel-t1-integrity-v2`). Admission into the lineage is therefore "carry the peer patch (`artifacts/operator/llama-cli-eof-fix-20260901.patch`) or take upstream's commit" on the next fresh-production pull of `llama.cpp-experimental`; that is a kernel-tree change and stays with the champion lineage owner. The harness's `-st` belt stays.
 - [ ] **R22-5 — Boundary-length correctness matrix in the oracle (screen upgrade, from the
   - 2026-11-04 PARTIAL: `autokernel-r225-hip-build-only-20261104` PASS rc0 at `8f26e4f3`: test-backend-ops.cpp object (sha 6d6b1ee3) and gfx90a acc.cu HIP object (sha 52af2f65) built, binary sha 5e6928f0, HIP lib sha 541f4fda, build-only boundary marker present. Closes the 'complete claimed clean build' step; no execution, no numerical validation. Box stays open. Next: run the selected boundary corpus (M in 33..2048) on CPU and gfx90a against the ggml reference. [no-belief: build-only]
       M4-prefill intake relay, H5).** Validate kernels at M ∈ {33, 127, 128, 129, 512, 1023,
@@ -7609,6 +7613,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
       dominant defect class that kernel-isolated perf tests miss. Cheap; loop-budget cost is
       near zero if the case list lives in controller/. Source: intake-1295#record.
   - 2026-11-02 proposed source only: experimental kernel `8f26e4f3a46cb79a09ed796b82f16daed3ecda63` ([proposal branch](https://github.com/pestopoppa/llama.cpp/tree/codex/r22-5-boundary-proposal-20261102)) and research `fa620eaa32677745fafdb062ed133d3838941241` ([proposal branch](https://github.com/pestopoppa/epyc-inference-research/tree/codex/r22-5-boundary-proposal-20261102)). Six op families have proposed case generators and an explicitly selected gate; unmapped CPU graph operations refuse explicit matrix requests and legacy gates remain unchanged. No complete build or test ran: two CPU builds were stopped after their region owners reported live workloads behind lost lock wrappers. No binary freshness proof, CPU/GPU numerical validation or universal coverage exists. R22-5 remains OPEN; review source, complete claimed clean build and validate the selected corpus before adoption. [no-belief: unvalidated source proposal]
+  - 2026-11-19 R22-5: the gate source (`boundary_matrix_correctness`, explicit requests only, unmapped ops refuse `oracle_unavailable`) was rebased onto research main as `d2f84e997` (conflict was one `strip_ansi` line; `test_r22_5_boundary.py` 6 passed, `test_gates*.py` 169 passed). Still open: run the M in {33..2048} corpus on CPU and gfx90a against the ggml reference on the experimental build `8f26e4f3` (needs a CPU region claim and a GPU window).
 - [x] **R22-3 — Guard robustness, post-trim (spec from R21-10, budget-gated on R21-7):** ✅ 2026-10-29 (audit: research 3e895c4bd (2026-09-01) "R22-3: anchor-guard robustness triad - hash pre-check, persisted evidence, heal-once" (controller/anchor_integrity.py) covers (1)(2)(3)) [no-belief: audit-reconciliation]
       (1) persist the guard's full `Comparison` in the AnchorVerdict archive row — the abort's
       samples/drift/clocks died with the process; (2) **hash pre-check as the primary fix**:
@@ -7641,6 +7646,7 @@ Full session record: `progress/2026-08/2026-08-31-ak-rebuild-20260828.md`.
   - **[declined: ws58 2026-11-03 content-review: merged into R22-2]** **R22-2-CUSTODY-QUAL — finish the guarded native calibration.** Review and integrate the source-bound custody-fence repair in `artifacts/compute/codex3-r22-custody-fence-review-20261101/`, rerun the complete project CI on final bytes, establish managed predecessor exclusion and drain, activate versioned keeper routing at its single-writer boundary, then obtain real normal/cutoff keeper qualification. The 71 qualifier controls pass; no GPU floor or qualification is claimed. The older full-CI candidate had belief/index/dashboard green and one existing main ratification-check failure; it does not validate the revised guard. Preserve every started or incomplete shape as UNKNOWN and do not redraw.
   - **[declined: ws58 2026-11-03 content-review: merged into R22-2]** **R22-2-CI-RATIFICATION — resolve the existing main-branch receipt-check failure before source publication.** The full local run on base `216abe3679857941bb90bfdd8ef15355b65004d3` failed the trust-boundary scanner on the pinned `artifacts/engineering/pbqcost-deadline-contract-20261101/candidate-source/kpf18_gate.py`: its docstring names a boundary path and its caller-selected output is writable. Determine the correct treatment while preserving detection of real boundary writes and the byte-pinned source evidence; do not weaken the checker, edit protected documents, or invent a receipt. Re-run the exact workflow on the final revised patch.
     - 2026-11-02: the original docstring case is fixed on root main `b7e4a225c`; with both custody patches applied, the exact gate reported 66 passed / 1 failed on two newer byte-pinned, actively consumed source snapshots containing boundary references and caller-directed writes. Archiving their executable bytes to evade the scanner would weaken its invariant. The protected exemption list was not changed; resolve those findings under the existing human-only boundary, then rerun the gate. Log: `/mnt/raid0/llm/tmp/inf66-ci-ratification-check.log`. [no-belief: test result only]
+  - 2026-11-19 R22-2: still needs the `--calibrate-surface` floor calibration of `llama-batched-bench` (a GPU window) before any verdict may cite it; the CUSTODY-QUAL and CI-RATIFICATION children are merged here and sit behind the human-only boundary exemption list. No code left to write.
 - [x] **R21-1 — refresh the champion headline at STARTUP, not only per-advance.** ✅ 2026-10-30 <!-- evidence-integrity: Research `bebe42b9a56d9cf6c951fc75a227c8666a194080`; artifact: artifacts/compute/task-evidence-repair-20261031/r21-1/EVIDENCE.json; hygiene, not quota -->
       Research main `bebe42b9a56d9cf6c951fc75a227c8666a194080` accepted the two-file closure
       (`scripts/kernel_rnd/autokernel/loop/run.py` + `test_startup_headline.py`; accepted patch
@@ -8210,6 +8216,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         rocm-smi/hwmon DURING every window by doctrine. A/A on the canonical tg128 anchor: current rate vs
         1 Hz vs off (residency proven once before the window), 20 pairs. If >0.638% floor, lower the
         cadence — "sample DURING" stays, the rate changes.
+        - 2026-11-19 R23-46: needs the A/A run on the canonical tg128 anchor (current residency-sampler rate vs 1 Hz vs off, 20 pairs) in a GPU window; nothing buildable remains.
       - [ ] **R23-47 — P-KLD: distil `rtx6kpro/kld/README.md` into a divergence-protocol annex** (we have
         NO ratified KLD/PPL/coherence protocol — MEASUREMENT.md §2 has zero divergence terms): full-vocab
         only, fp64 sums, declared estimand, bootstrap by document cluster, no universal bands, fail-closed
@@ -8243,6 +8250,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         *2026-09-23 intake jev-exl3 (PREPARE-only, not a tick):* drafted annex wording proposals from 9 dived sources are in
         `docs/research-intake/p-kld-annex-proposals-20260923.md` for the operator to fold into the OP-38 package or reject.
         No conflicts with the staged annex were found; the proposals are refinements.
+        - 2026-11-19 R23-47: package prepared (annex, ratifier, decision package listed above); ratification is the operator running `ratify_p_kld_divergence_protocol_20260915.sh` (human-only trust boundary). No session edit possible.
       - **[declined: ws58 2026-11-03 content-review: duplicate — cpu-decode-roofline REGIONLOCK-1 (builds under the bench lock, operator decision A)]** **R23-49 — CPU CO-TENANCY: our builds, not our bench, are the contention (INF-70 relay 2026-09-07)**.
         INF-70 flagged `bench.py:34 CPU_LIST="184-191"` (8 GPU host threads) as contending with their 0-95
         bench region. Verified true but it is the SMALLEST of three. Kernel-verified sibling map
@@ -9007,6 +9015,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         second stack sub-additive). Not applicable: page-cache eviction (models are VRAM-resident) and
         hot-server arm switching (reload is cheap on GPU). Evidence: `handoffs/active/cpu-decode-roofline-
         program.md` (CHAMP-2, SYNC-15), `wiki/benchmark-methodology.md` → *Measure the stack, not the parts*.
+        - 2026-11-19 R23-48: the pure half is on research main (`a4eec04cb`: `controller/loo_arms.py` plans one arm per accumulated keep per promotion, a floor-gated judge where no floor or no effect is INCONCLUSIVE never a drop, and the `retracted_by_loo` row carrying both sample vectors; 10 tests). Open: the driver that does `git revert --no-commit <keep>` in a detached worktree, builds, and runs the paired A/B (needs builds and a GPU window), then runs it at the next champion-of-record advance.
       - [x] **Run 30 launched** ✅ 2026-09-07 16:31Z — run 29 stopped (opencode `event` change-feed grew the
         actor DB to 236 GB); defaults switched to codex planner + Fable@medium critic (`e371788d`), no
         opencode actor; same measurement config; accumulator restarts at 0 keeps (run 29's 2 keeps are on
@@ -9162,6 +9171,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       provenance mismatch (rc=2) and uncalibrated surface (rc=3, proven against dec-b8 while its
       calibration was still running). Baseline reuses the cached `v9v-build-base` (no rebuild).
       SEAM ORDER: DFlash2 smoke first (~10 min, gating for run 24), then this (~1 h, dec-b4).
+  - 2026-11-19 R23-25: the classification is on research main (`531cea64a`: `controller/rung_routing.py`, size-dependent families launch geometry / occupancy / tiling go to the confirm rung, size-independent screen first, UNCLASSIFIED keeps today's screen-first; 8 tests). Not yet wired: the screen-rung selector in `loop/run.py` does not call `rung_routing.skips_screen`; wiring it spends loop-code budget (guard already reports a baseline violation) and needs the confirm-rung-only path exercised on a GPU window.
 - [x] **R23-19a — the confirm-rung headline instrument built and proven** ✅ 2026-09-02 —
       `scripts/benchmark/headline_on_confirm_rung.py`: dry-run resolves the 27B keyed floor
       (0.949% @20 pairs) and the dec-b4 shape (pp=512 tg=0 ub=4); BOTH fail-closed paths
@@ -9278,6 +9288,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       **Warrant:** the auto-gpu-kernel loop's research agent fired on exactly these conditions and produced 4 of its
       largest late wins. That evidence is uncontrolled: 6/19 keeps is about the base rate (intake-1425#record).
       Zero compute.
+  - 2026-11-19 R24-7: the detector is on research main (`4322ddb85`: `controller/keep_drought.py` K=10 pre-registered, consecutive non-keeps or window-best inside the floor, read-only experiments.db loader, plan-artifact validator, mechanical half of the 20-non-keep retrodiction bound; 10 tests). The exit criterion is NOT met: no run-18 or run-24 store is on disk (only synthetic fixtures), so the real retrodiction and the defect-naming half stay open, and no actor call is built. Resume: point `retrodict` at those stores' experiments.db.
 - [x] **R24-8 — no-measurement streak alarm and keep-rate alarm, beside `MAX_CONSECUTIVE_ERRORS`.** ✅ 2026-11-17 CLOSED (autokernel, INF-06 sweep). Both alarms landed (research `991033729`: `NO_MEASUREMENT_ALARM_N`, `KEEP_RATE_ALARM_WINDOW`, planner evidence line; ROOT `844689e0a` /loop render). Retrodicted on run 18 (both alarms cross at outcome 68) and run 9 (rows lack `comparison`, read as UNKNOWN). The run 5-8 retrodiction cannot be executed: their per-run native records do not exist (capsule `artifacts/compute/r24-8-alarms-20261031/README.md`). The box closes on everything executable. [no-belief: tooling + retrodiction capsule] The pool
       breaker (`pipeline.py:70-76`) counts only errored iterations; refusals and nulls are excluded by design. That is
       how run 9 spent 10 iterations / 149 min with zero measurements (:250-252).
@@ -9306,6 +9317,7 @@ R24-1/2/3/5/8/9 must trim to fit or raise the budget with a reason. Code citatio
       record a mismatch rate. A 3-draw oracle misses a p=0.015 failure 95.6 % of the time. LLM-CUDA's agent-assisted
       top-k passed its 3-trial check and then failed 2 workloads in the contest's own evaluation (intake-1427#record).
       This is the same defect class as our `-funsafe-math` greedy-argmax flip (:1021-1023). Cost: test-backend-ops scale.
+  - 2026-11-19 R24-10: the arithmetic and per-case runner are on research main (`27e2d6221`: `controller/multi_draw.py`, seed schedule, miss probability (3 draws miss p=0.015 95.6% of the time), draws-needed, mismatch rate with an upper bound, refusal-safe; 7 tests). Open: the physical run through `test-backend-ops --suite-seed/--repeat-suite` on ARGMAX/TOP_K at N>=100 draws per boundary case (needs the R22-5 corpus run first).
 - **[declined: ws58 2026-11-03 content-review: its own text: fold into R23-13/R23-43, do not open a new row]** **R24-11 — production dispatch-shape census rendered to the planner.** Fold this into R23-13 / R23-43; do not
       open a new program. R23-13 already produces production dispatch tables.
       1. Check whether those tables carry (op, quant, ne11 bucket, n_embd, call share); if not, extend them.
@@ -10687,6 +10699,7 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
         the current planner deterministically enumerates declared one-factor runtime dimensions and has no
         TPE/classical/LLM knob-box sampler to constrain, so adding a detached policy module now would be
         dead code rather than enforcement. Focused `test_unified_planner.py`: 31 passed.
+  - 2026-11-19 U3-SEED: no code possible until OP-AKU-U3 is decided (variance estimand/test, alpha/N/multiplicity, mean-throughput guard); `_spread()` stays reporting-only. The recommended narrow rule above stands as the proposal.
 - [x] **U3-DEFAULTS — RESOLVED 2026-09-08: NOT APPLICABLE. R23-58 did NOT confirm the shim on the GPU
       serving path, so it does NOT go into the loop's recipe defaults.** ✅ 2026-09-08. The conditional this
       task was written under evaluated **false**: bounded null, T0/D0, registered action "do not adopt".
@@ -10744,6 +10757,7 @@ unit, direction only, no fold). The *recipe change* is INF-70's recommendation t
       one recipe per champion, which is now demonstrably under-specified. Extend the record to key the
       recipe by surface, and make the gate refuse a measurement whose (surface, recipe_hash) pair does not
       match. Ties to R23-59 and R23-55 (`unit`). Blocked on nothing.
+  - 2026-11-19 U3-DEFAULTS-b: partial. `controller/surface_recipes.py` on research main (`0b12baae7`): `SurfaceRecipes` keys the recipe hash by surface (CPU shim ON vs GPU not set), canonical digest, and refuses a mismatched (surface, recipe_hash) pair, an unknown surface or a missing pin; 9 tests. Not yet done: carrying it on the champion record / Bundle schema (journal `LOOP_BUNDLE_SNAPSHOT_SCHEMA`) and calling `require_match` at the measurement gate.
 
 ##### 3.4 Track U4 — resource broker and per-surface budgets
 
@@ -14218,6 +14232,7 @@ Still subject to review: the staged concurrency proposal, its FIFO admission beh
 The previously reported LOW GitNexus impact on `_drive`, `hold_cpu` and `publish_intervals` is only a static callgraph observation. Closure callbacks and runtime claim consumers above show why it is not a correctness assurance. Re-index the implementation checkout and review these consumers before editing.
 
 - [ ] GPUQUIET-WRITER-PREFERENCE: gpu-quiet EXCLUSIVE starves under AK lanes' back-to-back shared claims (timed out at 600 s on 2026-10-07 02:42Z, FIFO off). Needs FIFO default-on or writer preference. Owner: workspace-ec, coordinate with workspace-89. Done when an EXCLUSIVE acquire succeeds within its timeout while AK shared lanes are running.
+  - 2026-11-19 GPUQUIET-WRITER-PREFERENCE: writer preference already exists (orchestrator `11e6d86`, `gpu_quiet_lock.py`) and passes `TestGpuQuietFifoOrdering::test_writer_preference` (re-run 2026-11-19: passed), but only under `EPYC_LOCK_FIFO=1`, default OFF. The remaining step is the sibling box at the FIFO section ("Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops have restarted on the new code", because old clients barge); the named event is that loop restart. The done condition (EXCLUSIVE succeeds within its timeout under live AK shared lanes) is a live check after the flip.
 
 ##### 2026-10-28 INF-74 / RUN14 joint gate result - no deployment
 
@@ -14254,6 +14269,7 @@ metric), RTG-56 (TD-21 repair ladder), UFH-01 (MCP tool convergence, opencode sh
 #### NI18 source-correlated fixture route — 2026-10-05
 
 - [ ] **OAB-NI18-FIXTURES** — Review the two enrollment modules for declared command-builder/template/backend inputs, exact two-repository context and original skip reason. Implementation belongs at the active AutoKernel owner boundary; preserve synthetic and actual enrollment evidence separately. No fabricated artifacts or receipts. Modules: `test_autokernel_enrollment.py`, `test_autokernel_enrollment_cross_repo.py`.
+  - 2026-11-19 OAB-NI18-FIXTURES review (2026-11-19, orchestrator main): with both repo roots on PYTHONPATH the two modules give 33 passed / 1 failed. `test_autokernel_enrollment.py` passes entirely; `test_autokernel_enrollment_cross_repo.py` fails inside the real master-registry compile with `DrafterSelectionError` (roles `architect_critic`, `coder_escalation`, `ingest_long_context` still hand-carry `spec_type/draft_model/draft_max/k/n_gpu_layers_draft` although `roles.qwen38_27b_q8_local` declares `drafters`; the compiler wants them deleted, DRAFT-SEL-1). So the original skip was a standalone-checkout `importorskip`, and the actual defect is a registry migration, not a fixture input. No AutoKernel-side fixture to add; the fix is the registry migration under the stack-lifecycle owner, then re-run the cross-repo test with both roots. Synthetic (module 1) and actual-enrollment (module 2) evidence stay separate.
 
 #### Objective
 
@@ -14396,6 +14412,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   N KB before rendering; measure prompt tokens before/after on one DS41 planner prompt (the seat's
   trims took the run-7 prompt 95.7k → 75.9k chars). Acceptance: byte-identical output when nothing
   repeats; a unit test on the DS41 prompt shows the reduction. Zero inference.
+  - 2026-11-19 OAB-6: the utility is on orchestrator main (`10556542`: `src/prompt_builders/json_diet.py`, dedupe >=200-char repeated subtrees to `<same as $.path>`, clip prose at 500 chars, drop id fields; identity when under 4 KB or nothing repeats; 5 tests). Open: apply it where the orchestrator renders JSON context blocks (inline sections in the root prompt) and measure before/after on the DS41 planner prompt (fixture `loop/fixtures/ds41-run8-planner-prompt.txt` in research). The renderer call site is a behaviour change, so it was not flipped here.
 
 - [ ] **OAB-7 — the context bundle is a REPL variable, not an inlined prompt.** The rendered context is ~38k tokens
   of the 98k slot before step 1 (75.9k chars after the seat's diet). In the orchestrator REPL it becomes a `context`
@@ -14424,6 +14441,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   (`1d0ab2f5`; only when `final_schema_validation` is on); the proactive stage answered COMPLEX prompts before the
   REPL even for scoped or bundle requests; the REPL sandbox now refuses frame attributes, `cell_contents`,
   `operator.attrgetter`/`methodcaller` and dunder-reaching `str.format` for every REPL execution (`86cdeaf3`).
+  - 2026-11-19 OAB-7: built and deployed 2026-09-25 (above); the open acceptance is OAB-4's `orch` arm measuring first-step and max context with no compaction, which is an inference run.
 - [ ] **OAB-8 — fan-out is the orchestrator's decision, not the model's.** Offered an allowed `task` tool plus
   fan-out guidance, the 27B never delegated once in 69 bounded steps (DS41-C20c). Splitting is orchestration: for a
   proposal, the orchestrator (`repl_environment/parallel_dispatch.py`) runs one read-only scout per top profile
@@ -14734,6 +14752,7 @@ Not measured:
   each section, and `context_pull_budget_bytes` is the per-call cap. Still open: the seat exporter's per-section
   pull bytes.
   - PARKED 2026-09-27 (operator): the orchestrator half is done (`88e22777`: `ChatResponse.context_pulls` with per-section offered and pulled bytes, plus the `context_pull_budget_bytes` cap). The seat exporter (`actor_call_metrics.v1`) still carries only `bundle_tool_calls`, with no per-section pull bytes; resume by deriving per-section pull counts and bytes from the export's `read`/`grep` tool parts in the seat metrics exporter.
+  - 2026-11-19 OAB-12 (2026-11-19): the exporter extension is on research main (6a3981e4). Acceptance still cannot be met: the four OAB-9 exports are not on disk (`artifacts/autokernel_ctx_ab_20260925/result-*.json` carry driver metrics, no tool parts), and no historical bytes are reconstructed. Resume on the next orchestrator-arm run, whose export will carry per-section pull bytes.
 
 ##### Tasks filed 2026-09-25 (integration, opencode store, planner timeline)
 
@@ -14767,6 +14786,7 @@ Not measured:
   accounting. Emit one tap record per scout call (role, slot, prompt/decoded tokens, wall), tagged with the parent
   request id. Acceptance: an OAB-4 `orch`-arm call shows its scout calls in the tap next to the planner turn.
   - PARKED 2026-09-27 (operator): not started. OAB-8 scouts still bypass `LLMPrimitives`, and no tap record exists for a scout call; resume by emitting one inference-tap record per scout call (role, slot, prompt and decoded tokens, wall, parent request id) from the orchestrator scout stage, then checking it on an OAB-4 `orch`-arm call.
+  - 2026-11-19 OAB-16 (2026-11-19): scouts already write one `serving_call.v1` record per call (role scout, slot via timings, tokens, wall; UFH14-LB6.2). The missing piece was the parent id: `run_scouts(parent_request_id=...)` now stamps `notes.parent_request_id` on every scout record (chat.py passes `request.request_id`; contextvar copied into the scout threads); orchestrator `c84de235`, `test_oab16_scout_tap_parent.py` 3 passed. Open: the acceptance check on a live OAB-4 `orch`-arm call.
 - [ ] **OAB-17 — triage the unfixed second-review items F8-F11, F15, F16 and R2-R4.** F1-F7 and F12-F14 landed in
   `86cdeaf3` / `b9e004e3`. Items (Fable review, 2026-09-25 ~12:50Z, file:line against 7d0ce447):
   - F8 MED: scout `/slots` cap is a one-shot snapshot from a 1.5 s-TTL process-wide cache (`scout_stage.py:719-723`,
@@ -14789,17 +14809,20 @@ Not measured:
   - R4 INFO: `_sealed` seals without `role`; per-call files under `<workspace>/../actor-orchestrator/` never cleaned.
   Fix or decline each in writing. Acceptance: every item has a disposition.
   - PARKED 2026-09-27 (operator): F1-F7 and F12-F14 landed (`86cdeaf3`/`b9e004e3`). F8-F11, F15, F16 and R2-R4 have neither a fix nor a written disposition; resume by writing a fix-or-decline disposition for each item here, starting with the two MED items, F8 (the `/slots` snapshot race) and F9 (the shared thread pool).
+  - 2026-11-19 OAB-17 dispositions (2026-11-19, orchestrator main): F8 FIXED in-process `bdb8e5bb` (admitted scouts are reserved against free slots atomically with the cap decision, released on every exit; cross-worker needs a shared counter, so multi-worker deployments keep the race: declined for now, single worker only). F9 FIXED `46be2371` (dedicated 16-thread scout executor, contextvars copied). F10 FIXED `ab47b6e6` (anchored; `context[:5000]` no longer matches). F11 FIXED `b92d4c2c` (merge past 1000 spans, union unchanged). F15 FIXED for read_denial in `definitions()`, S_ISREG, per-thread `_last_alternatives`, block cap 48k chars, evidence scan bound (`d6398e10`, `ca94032d`); the "augmented prompt feeds `_select_mode`" sub-item is NOT fixed. R2 FIXED research `2ff736c1a` (off-words and integral floats accepted, junk refused with the contract named). STILL WITHOUT A DISPOSITION: F16 (all six sub-items), R3 (no inline fallback for `orchestrator-variable`), R4 (per-call files never cleaned). Box stays open until those three have a fix or a written decline.
 - [ ] **OAB-18 — turn on `PREFIX_STABLE_ORDER` for scoped REPL calls, or measure why not.** With the prod default
   (off), each turn's state block precedes the task, so the whole task is re-prefilled every turn: measured on the
   DS41 control prompt, 27,803 → 6,555 uncached tokens per turn with the bundle, and 122 → 1,201 with the flag on
   (`88e22777`). On :8083 that is ~92 s of prefill per turn. Acceptance: a scoped OAB-4 call shows per-turn
   uncached prefill near the flag-on number, with unchanged replies on the REPL suites.
   - PARKED 2026-09-27 (operator): `PREFIX_STABLE_ORDER` is still OFF in production (`src/features.py`, `prefix_stable_order` defaults to False). The only data is the `88e22777` DS41 control-prompt measurement quoted above. No scoped OAB-4 call and no REPL-suite reply check has run; resume by enabling the flag for scoped REPL calls and verifying per-turn uncached prefill and unchanged REPL-suite replies.
+  - 2026-11-19 OAB-18: needs the run: enable `prefix_stable_order` for scoped REPL calls, run one scoped OAB-4 call to read per-turn uncached prefill, and compare the REPL-suite replies flag-on vs off. No code is missing; the flag exists in `src/features.py`.
 - [ ] **OAB-19 — the compaction worker summarizes text no prompt shows.** Compaction measures and summarizes
   `TaskState.context`, which no turn prompt renders (the same root cause as the schema-preamble bug fixed in
   `1d0ab2f5`). Point it at what the root prompt actually carries, or retire it for REPL turns. Acceptance: a test
   where compaction fires changes the next root prompt.
   - PARKED 2026-09-27 (operator): not started. Compaction still summarizes `TaskState.context`, which no turn prompt renders; resume by pointing the compaction worker at what the root prompt actually carries, or retiring it for REPL turns, with a test in which compaction fires and the next root prompt changes.
+  - 2026-11-19 OAB-19 (2026-11-19): UFH14-B1 already retired the worker summarisation by default (`session_compaction_llm_index` off, deterministic index), so the compaction no longer spends a model call on text no prompt shows. The acceptance test (compaction fires and the next root prompt changes) still cannot pass: `TaskState.context` is not rendered into any turn prompt (`graph/helpers._execute_turn` rebuilds from prompt + REPL state + last output). Remaining choice is the one the box names, point it at what the root prompt carries (REPL state / last output) or retire it for REPL turns; it needs the compaction target decided before the test can be written.
 - [x] **OAB-20 — planner timeline audit (why a planner call takes 30-60 min).** ✅ 2026-09-25 — from the :8083 logs
   of the trimmed call: decode 87% of wall, prefill 13%, gaps 0.3%. One 30k-token reasoning turn (step 6) was 68% of
   the call. `--planner-effort high` maps to opencode `--variant high`, which is inert for this server and model.
@@ -14896,6 +14919,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
     16,384 → 32,000 (research `9a64aec8`, opencode's own ceiling). This changes OAB-34's premise for the
     planner role — its default output cap is no longer 16,384 — but the cap-hit-rate measurement and the
     cross-role disposition called for above are still open.
+  - 2026-11-19 OAB-34 (2026-11-19): `actor_metrics` summaries now carry `output_capped_empty_rate` and `output_capped_steps_total` per role (research `a8171c0ea`). Measured on the four actor-calls logs still on disk: 0 capped of 14 calls (planner 7, author 4, critic 3). Too sparse to pick a fix; the DS41 logs behind the original report are not retained. Planner cap is already 32,000 (DS41-C70). Resume after the next batches, using `python3 -m autokernel.loop.actor_metrics <state_dir>`.
 - [x] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** (research 93c01b3c7; 106 units + 15/15 native PASS on current main a5310d94; code-budget guard pre-existing FAIL carried, see INF78-CODE-BUDGET-RATCHET) [no-belief: verifier/correctness, native-wire belief wiring tracked as VB-AK-NATIVE-WIRE-WRITE] Add a scripted
   OpenAI-compatible stub server, with a test harness that drives the EXACT actor invocation: CLI, flags, per-call
   config, env and stdin prompt. Build on the fake server used to root-cause `b8d6a046`.
@@ -14932,12 +14956,13 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   - [x] **OAB-31-NEXT-01a16fc3:** prepared and delivered the q0 validation packet; source-bound two-core preflight passed, NEXT receipt `298f90d5-6ffe-45aa-a1c1-79b968ddc54b`. The assertion fix remains unvalidated and growth guard red; OAB-31 remains open. ✅ 2026-10-27 [no-belief: packet preparation]
   - *(2026-10-27 21:35Z, ws58 results filing, OAB-31 validation.)* `refactor-oab31-discard-cpu-q0-20261027` rc0 at 19:06:37Z (q0, model-free focused tests): `suite_rc=0 seal_rc=0`, pytest `418 passed, 48 subtests passed in 32.85s` (`/mnt/raid0/llm/tmp/refactor-01a16fc3/oab31-cpu-ready-1728/results/run-20261027T190601874516470/{pytest.log,status.txt}`). This validates the assertion fix candidate on the focused suite only; the growth-guard status and merge are not shown by this run, and OAB-31 stays open (not ticked). [no-belief: model-free test pass, no measurement]
   - 2026-10-29 (ws58 filer A): `codex-oab31-gitnexus-index-20261029` rc0 00:59:47Z, CPUs 24-47, infrastructure only (rule: index the pinned research commit and verify the indexed metadata and analyzer result; no inference or measurement claim) -> met: GitNexus indexed `epyc-inference-research` at `f9dfa4ca7` (branch `codex/oab31-discard-invariant-20261029`, worktree `/mnt/raid0/llm/worktrees/codex-oab31-20261029`) in 109 s: 26,265 files, 120,346 nodes, 213,273 edges; index meta sha256 `4b2eee38…` is in `RESULT.json`. This enables the OAB-31 impact analysis; OAB-31 stays open. Side effect: this run and its fixtures wrote entries to the shared `~/.gitnexus/registry.json` during INF-50 r3's window, which tripped r3's catalog guard (see INF-50-GRAPH-WRITER-RACE). Evidence `/mnt/raid0/llm/tmp/oab31-gnx-index-20261029/runs/run-1793235473*/RESULT.json`. [no-belief: index build, no measurement]
-- [ ] **OAB-32 — default per-call budgets on every backend and every role.** OAB-23 bounded the opencode
+- [x] **OAB-32 — default per-call budgets on every backend and every role.** ✅ 2026-11-19 (research `3fc496fa3`: `loop/call_budget.py`, `AgentPlanner`/`AgentCritic.default_budgets` turned on in `run.py` for planner, author and critic; `test_call_budget.py` 24 passed incl. a never-finishing fake cut at the default for all 3 roles x 4 kinds as `budget_exhausted`, never retried, and a local backend with no wall bound refusing; actor suites match the origin/main baseline failures exactly) [no-belief: code] OAB-23 bounded the opencode
   planner only. Give critic, author and planner calls on every backend kind a default per-call decoded-token cap
   and a wall budget. On exhaustion, record a `budget_exhausted` abstention, never a transient retry. A local
   backend with no configured budget refuses to start instead of running unbounded.
   - Acceptance: a fake backend that never finishes is cut at the default budget, and recorded once, for each
     role × kind.
+  - 2026-11-19 scope note: the decoded-token cap is enforced only where the backend takes an output limit (opencode `limit.output`); for codex/claude/orchestrator the wall budget is the enforced bound. Default is 90% of the hard `--actor-timeout-s`; `AK_ACTOR_DEFAULT_BUDGET=off` restores the old path.
 
 ##### Tasks filed 2026-10-01 (OAB-7 `context` API in production)
 
