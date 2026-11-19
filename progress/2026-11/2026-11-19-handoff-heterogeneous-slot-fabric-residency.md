@@ -213,3 +213,7 @@ Duplicate run-end for `kpf131-cells-abi-decoder-r4-20261105`: existing verdict i
 ## 04:20Z — Replace stale pending supervisor controls with the existing filed full PASS
 
 KPF-18-G3-SUPERVISOR: corrected stale full-controls-pending text using the existing `h-kvu` filing from 2026-11-05. Full row `kvu-kpf18-g3-supervisor-integrated-20261105` rc=0, PASS, 4/4 source-sealed synthetic controls. Native result `/mnt/raid0/llm/tmp/kvu/kpf18-g3-supervisor-integrated-20261105/out/full-attempt/RESULT.json`, SHA-256 `5ffa37777142ddae40846d775503027ff776ee808113004200f44929add7df5e`; existing verdict and FILED receipt preserved. No replay, new tick or evidence copy. Candidate remains disabled; no native lifecycle, GPU admission or hard-quota conclusion. Validation: exact stale sentence replaced once; native result digest matches filed verdict. [no-belief: build and synthetic qualification only]
+
+## 04:22Z — Consume already-filed ubatch decoder run-end event
+
+Duplicate run-end for `kpf131-ubatch-decoder-20261105`: the box already records full rc0 FIXTURE_PASS, and pass verdict plus FILED receipt already exist. No new result-bearing task for this event; no rerun, retick, evidence copy or changed verdict. Existing native result `/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency/kpf131-ubatch-decoder-20261105/out/full/RESULT.json`, SHA-256 `11705c995cdc140422109a3fe9ab73d9211b47e7c19c75c01bb61d7dd99c82f6`. Retain previous next action. [no-belief: duplicate event acknowledgement only]
