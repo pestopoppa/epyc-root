@@ -229,3 +229,7 @@ Duplicate run-end event `kvu11c-host-asan-build-r4-20261105` consumed: existing 
 ## 04:27Z — Consume duplicate native-custody run-end; existing INCONCLUSIVE verdict and completed R1 filing already cover it.
 
 Duplicate event `kvu19b-native-custody-qual-20261105` acknowledged. Existing filed verdict is INCONCLUSIVE despite native QUALIFIED: profiler GPU-ID/BDF and child-birth bindings were not independently established. KVU-19b-NATIVE-CUSTODY-R1 already records that verdict; parent attribution remains open. Existing result and handoff retained without rerun or new ticks. [no-belief: duplicate event acknowledgement only]
+
+## 04:29Z — Consume supervisor descendant-control run-end and reconcile its already-filed scoped PASS into the owning handoff.
+
+Consumed repeated run-end for `kvu-kpf18-g3-supervisor-desc-r2-20261105`: existing h-kvu verdict and FILED receipt date to 2026-11-05. PASS rc0, 4/4 copied-supervisor direct-child/descendant controls, expected exits 0/7/75/75 and captured-process absence. Result SHA-256 `abff3912d3c556cd5dc835cd09978fbeb1a28cd970bced972a58ef1a7d6a90bd`; log SHA-256 `5999069901fd7e1f477f792d80dbf0e08c6fd19e32b8c7f5470472dd731919ec`. Added missing evidence to KPF-18.0d(item 3, group 3); no duplicate filing, rerun or preparation tick. Mocked admission/STOP/deadline qualify only this software fixture; native lifecycle, GPU and localisation remain open. GitNexus status/impact unavailable because lane has no index; documentation-only edit. [no-belief: scoped model-free software qualification]
