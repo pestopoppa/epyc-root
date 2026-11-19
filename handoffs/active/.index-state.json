@@ -828,10 +828,10 @@
     },
     "deepseek-v41-flash-evaluation.md": {
       "blocked": 1,
-      "closed": 108,
+      "closed": 109,
       "guarded": 0,
-      "last_advanced": "2026-11-11",
-      "open": 119,
+      "last_advanced": "2026-11-19",
+      "open": 118,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1173,7 +1173,7 @@
       "closed": 229,
       "guarded": 0,
       "last_advanced": "2026-11-19",
-      "open": 24,
+      "open": 25,
       "owner_index": "inference-research-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -1182,7 +1182,7 @@
       },
       "row_id": "INF-65",
       "state": "active",
-      "total": 255,
+      "total": 256,
       "tracks": [
         {
           "blocked": 2,
@@ -1197,14 +1197,14 @@
           "line": 20,
           "markers": 1,
           "name": "autokernel-champion-aggregate",
-          "open": 22
+          "open": 23
         },
         {
           "blocked": 0,
           "closed": 8,
           "gates": [],
           "guarded": 0,
-          "line": 1771,
+          "line": 1772,
           "markers": 1,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0
@@ -1214,7 +1214,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 1895,
+          "line": 1896,
           "markers": 1,
           "name": "cpu-fused-decoder-blocks",
           "open": 2
@@ -1224,7 +1224,7 @@
           "closed": 11,
           "gates": [],
           "guarded": 0,
-          "line": 2227,
+          "line": 2228,
           "markers": 1,
           "name": "laguna-s21-cpu-port",
           "open": 0
@@ -1234,7 +1234,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2366,
+          "line": 2367,
           "markers": 1,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0
@@ -1244,7 +1244,7 @@
           "closed": 7,
           "gates": [],
           "guarded": 0,
-          "line": 2928,
+          "line": 2929,
           "markers": 1,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0
@@ -1254,7 +1254,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3066,
+          "line": 3067,
           "markers": 0,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0
@@ -1264,7 +1264,7 @@
           "closed": 0,
           "gates": null,
           "guarded": 0,
-          "line": 3073,
+          "line": 3074,
           "markers": 0,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0
@@ -1416,7 +1416,7 @@
     },
     "long-context-program.md": {
       "blocked": 1,
-      "closed": 109,
+      "closed": 110,
       "guarded": 0,
       "last_advanced": "2026-11-19",
       "open": 38,
@@ -1428,7 +1428,7 @@
       },
       "row_id": "INF-59",
       "state": "active",
-      "total": 148,
+      "total": 149,
       "tracks": [
         {
           "blocked": 0,
@@ -1444,7 +1444,7 @@
         },
         {
           "blocked": 0,
-          "closed": 8,
+          "closed": 9,
           "gates": [],
           "guarded": 0,
           "line": 641,
@@ -1457,7 +1457,7 @@
           "closed": 6,
           "gates": [],
           "guarded": 0,
-          "line": 1027,
+          "line": 1030,
           "markers": 1,
           "name": "multiscreen-attention-evaluation",
           "open": 0
@@ -1467,7 +1467,7 @@
           "closed": 5,
           "gates": [],
           "guarded": 0,
-          "line": 1643,
+          "line": 1646,
           "markers": 1,
           "name": "streaming-llm-baseline",
           "open": 0
@@ -1477,7 +1477,7 @@
           "closed": 30,
           "gates": [],
           "guarded": 0,
-          "line": 1790,
+          "line": 1793,
           "markers": 1,
           "name": "triattention-kv-selection",
           "open": 12
