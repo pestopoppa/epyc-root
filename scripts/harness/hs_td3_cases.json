@@ -1,0 +1,278 @@
+[
+  {
+    "id": "context-00",
+    "task": "For gateway, what is the active timeout? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"gateway\", \"active_profile\": \"blue\"}",
+      "blue.json": "{\"service\": \"gateway\", \"profile\": \"blue\", \"timeout\": 17}",
+      "green.json": "{\"service\": \"gateway\", \"profile\": \"green\", \"timeout\": 20}",
+      "canary.json": "{\"service\": \"gateway\", \"profile\": \"canary\", \"timeout\": 23}",
+      "notes.txt": "Archived migration note for gateway: timeout=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"gateway\", \"profile\": \"blue\", \"timeout\": 17}",
+      "canary.json": "{\"service\": \"gateway\", \"profile\": \"canary\", \"timeout\": 23}",
+      "green.json": "{\"service\": \"gateway\", \"profile\": \"green\", \"timeout\": 20}",
+      "notes.txt": "Archived migration note for gateway: timeout=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"gateway\", \"active_profile\": \"blue\"}"
+    },
+    "gold_ids": [
+      "blue.json",
+      "routing.json"
+    ],
+    "reference_value": 17
+  },
+  {
+    "id": "context-01",
+    "task": "For billing, what is the active retries? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"billing\", \"active_profile\": \"green\"}",
+      "blue.json": "{\"service\": \"billing\", \"profile\": \"blue\", \"retries\": 24}",
+      "green.json": "{\"service\": \"billing\", \"profile\": \"green\", \"retries\": 27}",
+      "canary.json": "{\"service\": \"billing\", \"profile\": \"canary\", \"retries\": 30}",
+      "notes.txt": "Archived migration note for billing: retries=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"billing\", \"profile\": \"blue\", \"retries\": 24}",
+      "canary.json": "{\"service\": \"billing\", \"profile\": \"canary\", \"retries\": 30}",
+      "green.json": "{\"service\": \"billing\", \"profile\": \"green\", \"retries\": 27}",
+      "notes.txt": "Archived migration note for billing: retries=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"billing\", \"active_profile\": \"green\"}"
+    },
+    "gold_ids": [
+      "green.json",
+      "routing.json"
+    ],
+    "reference_value": 27
+  },
+  {
+    "id": "context-02",
+    "task": "For search, what is the active limit? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"search\", \"active_profile\": \"canary\"}",
+      "blue.json": "{\"service\": \"search\", \"profile\": \"blue\", \"limit\": 31}",
+      "green.json": "{\"service\": \"search\", \"profile\": \"green\", \"limit\": 34}",
+      "canary.json": "{\"service\": \"search\", \"profile\": \"canary\", \"limit\": 37}",
+      "notes.txt": "Archived migration note for search: limit=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"search\", \"profile\": \"blue\", \"limit\": 31}",
+      "canary.json": "{\"service\": \"search\", \"profile\": \"canary\", \"limit\": 37}",
+      "green.json": "{\"service\": \"search\", \"profile\": \"green\", \"limit\": 34}",
+      "notes.txt": "Archived migration note for search: limit=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"search\", \"active_profile\": \"canary\"}"
+    },
+    "gold_ids": [
+      "canary.json",
+      "routing.json"
+    ],
+    "reference_value": 37
+  },
+  {
+    "id": "context-03",
+    "task": "For cache, what is the active ttl? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"cache\", \"active_profile\": \"blue\"}",
+      "blue.json": "{\"service\": \"cache\", \"profile\": \"blue\", \"ttl\": 38}",
+      "green.json": "{\"service\": \"cache\", \"profile\": \"green\", \"ttl\": 41}",
+      "canary.json": "{\"service\": \"cache\", \"profile\": \"canary\", \"ttl\": 44}",
+      "notes.txt": "Archived migration note for cache: ttl=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"cache\", \"profile\": \"blue\", \"ttl\": 38}",
+      "canary.json": "{\"service\": \"cache\", \"profile\": \"canary\", \"ttl\": 44}",
+      "green.json": "{\"service\": \"cache\", \"profile\": \"green\", \"ttl\": 41}",
+      "notes.txt": "Archived migration note for cache: ttl=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"cache\", \"active_profile\": \"blue\"}"
+    },
+    "gold_ids": [
+      "blue.json",
+      "routing.json"
+    ],
+    "reference_value": 38
+  },
+  {
+    "id": "context-04",
+    "task": "For worker, what is the active batch? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"worker\", \"active_profile\": \"green\"}",
+      "blue.json": "{\"service\": \"worker\", \"profile\": \"blue\", \"batch\": 45}",
+      "green.json": "{\"service\": \"worker\", \"profile\": \"green\", \"batch\": 48}",
+      "canary.json": "{\"service\": \"worker\", \"profile\": \"canary\", \"batch\": 51}",
+      "notes.txt": "Archived migration note for worker: batch=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"worker\", \"profile\": \"blue\", \"batch\": 45}",
+      "canary.json": "{\"service\": \"worker\", \"profile\": \"canary\", \"batch\": 51}",
+      "green.json": "{\"service\": \"worker\", \"profile\": \"green\", \"batch\": 48}",
+      "notes.txt": "Archived migration note for worker: batch=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"worker\", \"active_profile\": \"green\"}"
+    },
+    "gold_ids": [
+      "green.json",
+      "routing.json"
+    ],
+    "reference_value": 48
+  },
+  {
+    "id": "context-05",
+    "task": "For upload, what is the active size? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"upload\", \"active_profile\": \"canary\"}",
+      "blue.json": "{\"service\": \"upload\", \"profile\": \"blue\", \"size\": 52}",
+      "green.json": "{\"service\": \"upload\", \"profile\": \"green\", \"size\": 55}",
+      "canary.json": "{\"service\": \"upload\", \"profile\": \"canary\", \"size\": 58}",
+      "notes.txt": "Archived migration note for upload: size=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"upload\", \"profile\": \"blue\", \"size\": 52}",
+      "canary.json": "{\"service\": \"upload\", \"profile\": \"canary\", \"size\": 58}",
+      "green.json": "{\"service\": \"upload\", \"profile\": \"green\", \"size\": 55}",
+      "notes.txt": "Archived migration note for upload: size=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"upload\", \"active_profile\": \"canary\"}"
+    },
+    "gold_ids": [
+      "canary.json",
+      "routing.json"
+    ],
+    "reference_value": 58
+  },
+  {
+    "id": "context-06",
+    "task": "For auth, what is the active expiry? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"auth\", \"active_profile\": \"blue\"}",
+      "blue.json": "{\"service\": \"auth\", \"profile\": \"blue\", \"expiry\": 59}",
+      "green.json": "{\"service\": \"auth\", \"profile\": \"green\", \"expiry\": 62}",
+      "canary.json": "{\"service\": \"auth\", \"profile\": \"canary\", \"expiry\": 65}",
+      "notes.txt": "Archived migration note for auth: expiry=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"auth\", \"profile\": \"blue\", \"expiry\": 59}",
+      "canary.json": "{\"service\": \"auth\", \"profile\": \"canary\", \"expiry\": 65}",
+      "green.json": "{\"service\": \"auth\", \"profile\": \"green\", \"expiry\": 62}",
+      "notes.txt": "Archived migration note for auth: expiry=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"auth\", \"active_profile\": \"blue\"}"
+    },
+    "gold_ids": [
+      "blue.json",
+      "routing.json"
+    ],
+    "reference_value": 59
+  },
+  {
+    "id": "context-07",
+    "task": "For queue, what is the active depth? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"queue\", \"active_profile\": \"green\"}",
+      "blue.json": "{\"service\": \"queue\", \"profile\": \"blue\", \"depth\": 66}",
+      "green.json": "{\"service\": \"queue\", \"profile\": \"green\", \"depth\": 69}",
+      "canary.json": "{\"service\": \"queue\", \"profile\": \"canary\", \"depth\": 72}",
+      "notes.txt": "Archived migration note for queue: depth=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"queue\", \"profile\": \"blue\", \"depth\": 66}",
+      "canary.json": "{\"service\": \"queue\", \"profile\": \"canary\", \"depth\": 72}",
+      "green.json": "{\"service\": \"queue\", \"profile\": \"green\", \"depth\": 69}",
+      "notes.txt": "Archived migration note for queue: depth=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"queue\", \"active_profile\": \"green\"}"
+    },
+    "gold_ids": [
+      "green.json",
+      "routing.json"
+    ],
+    "reference_value": 69
+  },
+  {
+    "id": "context-08",
+    "task": "For mail, what is the active delay? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"mail\", \"active_profile\": \"canary\"}",
+      "blue.json": "{\"service\": \"mail\", \"profile\": \"blue\", \"delay\": 73}",
+      "green.json": "{\"service\": \"mail\", \"profile\": \"green\", \"delay\": 76}",
+      "canary.json": "{\"service\": \"mail\", \"profile\": \"canary\", \"delay\": 79}",
+      "notes.txt": "Archived migration note for mail: delay=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"mail\", \"profile\": \"blue\", \"delay\": 73}",
+      "canary.json": "{\"service\": \"mail\", \"profile\": \"canary\", \"delay\": 79}",
+      "green.json": "{\"service\": \"mail\", \"profile\": \"green\", \"delay\": 76}",
+      "notes.txt": "Archived migration note for mail: delay=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"mail\", \"active_profile\": \"canary\"}"
+    },
+    "gold_ids": [
+      "canary.json",
+      "routing.json"
+    ],
+    "reference_value": 79
+  },
+  {
+    "id": "context-09",
+    "task": "For proxy, what is the active port? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"proxy\", \"active_profile\": \"blue\"}",
+      "blue.json": "{\"service\": \"proxy\", \"profile\": \"blue\", \"port\": 80}",
+      "green.json": "{\"service\": \"proxy\", \"profile\": \"green\", \"port\": 83}",
+      "canary.json": "{\"service\": \"proxy\", \"profile\": \"canary\", \"port\": 86}",
+      "notes.txt": "Archived migration note for proxy: port=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"proxy\", \"profile\": \"blue\", \"port\": 80}",
+      "canary.json": "{\"service\": \"proxy\", \"profile\": \"canary\", \"port\": 86}",
+      "green.json": "{\"service\": \"proxy\", \"profile\": \"green\", \"port\": 83}",
+      "notes.txt": "Archived migration note for proxy: port=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"proxy\", \"active_profile\": \"blue\"}"
+    },
+    "gold_ids": [
+      "blue.json",
+      "routing.json"
+    ],
+    "reference_value": 80
+  },
+  {
+    "id": "context-10",
+    "task": "For metrics, what is the active interval? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"metrics\", \"active_profile\": \"green\"}",
+      "blue.json": "{\"service\": \"metrics\", \"profile\": \"blue\", \"interval\": 87}",
+      "green.json": "{\"service\": \"metrics\", \"profile\": \"green\", \"interval\": 90}",
+      "canary.json": "{\"service\": \"metrics\", \"profile\": \"canary\", \"interval\": 93}",
+      "notes.txt": "Archived migration note for metrics: interval=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"metrics\", \"profile\": \"blue\", \"interval\": 87}",
+      "canary.json": "{\"service\": \"metrics\", \"profile\": \"canary\", \"interval\": 93}",
+      "green.json": "{\"service\": \"metrics\", \"profile\": \"green\", \"interval\": 90}",
+      "notes.txt": "Archived migration note for metrics: interval=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"metrics\", \"active_profile\": \"green\"}"
+    },
+    "gold_ids": [
+      "green.json",
+      "routing.json"
+    ],
+    "reference_value": 90
+  },
+  {
+    "id": "context-11",
+    "task": "For backup, what is the active retention? Follow routing.json. Return only JSON with one integer field value.",
+    "candidates": {
+      "routing.json": "{\"service\": \"backup\", \"active_profile\": \"canary\"}",
+      "blue.json": "{\"service\": \"backup\", \"profile\": \"blue\", \"retention\": 94}",
+      "green.json": "{\"service\": \"backup\", \"profile\": \"green\", \"retention\": 97}",
+      "canary.json": "{\"service\": \"backup\", \"profile\": \"canary\", \"retention\": 100}",
+      "notes.txt": "Archived migration note for backup: retention=999; this note is not active configuration."
+    },
+    "baseline": {
+      "blue.json": "{\"service\": \"backup\", \"profile\": \"blue\", \"retention\": 94}",
+      "canary.json": "{\"service\": \"backup\", \"profile\": \"canary\", \"retention\": 100}",
+      "green.json": "{\"service\": \"backup\", \"profile\": \"green\", \"retention\": 97}",
+      "notes.txt": "Archived migration note for backup: retention=999; this note is not active configuration.",
+      "routing.json": "{\"service\": \"backup\", \"active_profile\": \"canary\"}"
+    },
+    "gold_ids": [
+      "canary.json",
+      "routing.json"
+    ],
+    "reference_value": 100
+  }
+]
