@@ -7,3 +7,7 @@ Advanced GPQA full198 box L237 with a code result: scripts/benchmark/gpqa_curren
 ## 10:13Z — Refresh GPQA 27B process-custody driver and republish native smoke
 
 L237: refreshed prepared GPQA 27B driver from commit 681d1e9744e75e78a4c20540ac3bb40e7865020a and its source seal (driver SHA256 99a56509e90adc17e18aaaae952f9eafa1e3f59bfef8f4ac305aecfb61143313). prepare() validated 198 pinned inputs. publish_row.py returned rc0 but GPU busy: native smoke queued, NOT PASS and NOT ready. Done-when cannot be met this turn because native smoke requires a free GPU; no waiting or cohort claim. Updated protocol report with current exact-file hashes; registered PASS event. GitNexus status/impact unavailable because repository is unindexed; edits limited to evidence documentation. No checkbox completion or new boxes. [no-belief: row preparation and publication only]
+
+## 10:15Z — Refresh GPQA Flash-Next driver seal and publish native smoke
+
+L237: refreshed prepared Flash-Next GPQA driver from commit 681d1e9744e75e78a4c20540ac3bb40e7865020a, SHA256 99a56509e90adc17e18aaaae952f9eafa1e3f59bfef8f4ac305aecfb61143313, and its config source seal. prepare() validated 198 pinned inputs. publish_row.py returned rc0, GPU busy / native smoke queued; NOT PASS or ready. Done-when is blocked this turn by unavailable GPU; no waiting, ticks or cohort verdict. Updated exact-file report pins and registered PASS event. GitNexus status/impact unavailable (unindexed); edits confined to documentation. No new boxes. [no-belief: row preparation and publication only]

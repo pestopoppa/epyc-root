@@ -3,12 +3,12 @@
   "box": "L237",
   "row": "meq-gpqa-flash-next-cot-20261119",
   "status": "published_gpu_smoke_queued",
-  "readiness": "GPU busy; native smoke queued, NOT PASS and NOT ready. No inference measurement or cohort verdict.",
-  "offline_tests": "python3 -m pytest -q tests/benchmark/test_gpqa_current_arm.py: 33 passed",
+  "readiness": "Refreshed process-custody driver and config source seal on 2026-11-19; prepare() validated 198 pinned items. Republished rc0; GPU busy, native smoke queued. NOT PASS or ready; no cohort verdict. files.publish.txt records the earlier publication only.",
+  "offline_tests": "Prior current-driver focused validation: 37 passed, recorded by commit 681d1e9744e75e78a4c20540ac3bb40e7865020a; not rerun this turn.",
   "files": {
     "config.json": {
       "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/config.json",
-      "sha256": "81bc5331a065359ac23054e2e18a1d75e5a5d4e052ef683425055932c985108e"
+      "sha256": "61e28064d463dfe0dc25d2c7e05d68c57f3e2ab6c650a8eec1a6b072e2a0e867"
     },
     "row.spec.json": {
       "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/row.spec.json",
@@ -20,7 +20,7 @@
     },
     "driver.py": {
       "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/driver.py",
-      "sha256": "f4c780d06c969e595e6766d6622fe4024b39ebd3db0ef22a6f87affe4df25c66"
+      "sha256": "99a56509e90adc17e18aaaae952f9eafa1e3f59bfef8f4ac305aecfb61143313"
     },
     "prepare.py": {
       "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/prepare.py",
@@ -89,109 +89,89 @@
     "weights": [
       {
         "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
-        "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4",
-        "size_bytes": 10946624
+        "sha256": "5ce89370720f8bf90890f439361282104c1aa1482d4013bb9a50923e758e71a4"
       },
       {
         "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
-        "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7",
-        "size_bytes": 49835229856
+        "sha256": "577a38a2392b40ca2193cea502e1d92f60b8cd370675d308e0ec21885d9daaa7"
       },
       {
         "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00003-of-00003.gguf",
-        "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833",
-        "size_bytes": 43836407744
+        "sha256": "d4634e6d84f0ebb0940be15c90d3790bf6464e3dea3a1cddc567dc0e83ad8833"
       },
       {
         "path": "/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf",
-        "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6",
-        "size_bytes": 2786568256
+        "sha256": "5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0",
-        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a",
-        "size_bytes": 939848
+        "sha256": "92cc3dfd7e1119b7bcc83c18f758099c47363073013a896ee76efcd6ad19145a"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0",
-        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0",
-        "size_bytes": 2982176
+        "sha256": "3f4edd2fc0f1e78003735be59db987d43c4bc0e6a8f821bc419d7b6f492346c0"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
-        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
-        "size_bytes": 68250624
+        "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0",
-        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639",
-        "size_bytes": 59440
+        "sha256": "8709bbacc79b0d4faf43d66370a5db73d9ab378995f1f0964c03df8af6422639"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-batched-bench-impl.so",
-        "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850",
-        "size_bytes": 44144
+        "sha256": "7c9cdc42f62c89aaab2793c2b42bffeebeb80ec33eccb0ba249a9fb9b8f35850"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-bench-impl.so",
-        "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24",
-        "size_bytes": 511656
+        "sha256": "0b7d16945e7d1d4379100751130d7374a2272a9632772caa2b522558b9a5af24"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-cli-impl.so",
-        "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4",
-        "size_bytes": 460944
+        "sha256": "37aef2003cce81fdccc703e135514c2fa0be6bda9643698fb45ec0ee849321b4"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303",
-        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb",
-        "size_bytes": 6067360
+        "sha256": "0f33ec5cc9967c14c8eeb2d560d6d827301c50cf42dfd701cc1752cc4a7bf9cb"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-completion-impl.so",
-        "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4",
-        "size_bytes": 106880
+        "sha256": "a2c30ac9f85857cee0032894999fb0d4ffef55fdb70a574594a61521bd804fc4"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-fit-params-impl.so",
-        "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3",
-        "size_bytes": 34824
+        "sha256": "4b2da5ccd953a2eea7ca30cbf379433a0a112aace97d7614e5e0efe953f922c3"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-perplexity-impl.so",
-        "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47",
-        "size_bytes": 163688
+        "sha256": "faa780af6275c74aa3e87ee45482ee4a2f1d2da7e7c9701226cee81708425b47"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-quantize-impl.so",
-        "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b",
-        "size_bytes": 84048
+        "sha256": "c3311e0f4dc436268c56c9120b536249d7ee4b4c93ccd8cbd86d152c7414846b"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so",
-        "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f",
-        "size_bytes": 7181064
+        "sha256": "d9f143d7b056c0bc24a1822fb309ddd01c96df2b63b1b1bc61791e97f519e96f"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303",
-        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a",
-        "size_bytes": 4513808
+        "sha256": "808a4de5ad3f9754f1c3c70bdd87da3418aa73b3b39d26e4dc38ba4c75b5c60a"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303",
-        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05",
-        "size_bytes": 1460072
+        "sha256": "e244e0054e255698a57da7ffab2c4b4d42f98716f543c2388c4e923464743b05"
       },
       {
         "path": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server",
-        "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b",
-        "size_bytes": 17984
+        "sha256": "2b49713f0e3c022132393bf302dab954a1e2c1974b91c28d01ce2d192abdfa7b"
       }
     ],
     "sources": [
       {
         "path": "/mnt/raid0/llm/tmp/architect-model-selection-bench/gpqa-flash-next-20261119/driver.py",
-        "sha256": "f4c780d06c969e595e6766d6622fe4024b39ebd3db0ef22a6f87affe4df25c66"
+        "sha256": "99a56509e90adc17e18aaaae952f9eafa1e3f59bfef8f4ac305aecfb61143313"
       },
       {
         "path": "/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/v7_quality_gate_runner.py",
@@ -231,8 +211,8 @@
     "residency_mode": "hybrid"
   },
   "source_blobs": {
-    "scripts/benchmark/gpqa_current_arm.py": "4ed0fd694630ab4fcbdf303877be58eb802e15c9",
-    "tests/benchmark/test_gpqa_current_arm.py": "fd30c324b3d534df8d736012634c1ab542928bdb"
+    "scripts/benchmark/gpqa_current_arm.py": "f775b80410e30deb4311d0cd9697a73bced0a827",
+    "tests/benchmark/test_gpqa_current_arm.py": "610befba80a702e9272e3983224a33fcef828161"
   },
   "prepared_config_projection": "Runtime stat tuples omitted; original config is bound by files.config.json.sha256. Prepared weights were hashed once outside the grant. Kernel pins reuse the previously content-verified v10 assets after unchanged-stat checks.",
   "placement_contract": "New hybrid surface: target -ngl24 includes output layer per frozen source semantics; remaining target layers CPU, external shared MTP head -ngld99. Require positive CPU/ROCm0 target model buffers from first load block, excluding draft buffers, plus per-item active-slot process-specific HIP/KFD/VRAM proof. No claim of measured GPU fraction, speed or an optimal placement.",
