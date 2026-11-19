@@ -60,3 +60,35 @@ Evidence retained in place:
   SHA-256 `b8551e496a86dada7a78fa464896f52c4e292f827d297e4f4395e463a869baeb`.
 
 [no-belief: native smoke qualification only; no rollback verdict]
+
+Scheduled native verdict (2026-11-19)
+-------------------------------------
+
+Filed **INCONCLUSIVE / UNKNOWN**, scheduled rc2 at 22:22:01Z. Width-2
+normal stopped at the first failed native control. Both target mode1 and
+mode2 reported `stage=strict-partial-acceptance draft=2 accepted=0 sampled=-1
+selected=0 faulted=0`. Observe/fault lifecycle controls failed; off/observe
+and off/fault prefixes and draft tokens differed. Qualifying controls and
+diagnostic measurements are null. These messages locate the failure stage;
+they do not establish why the trials diverged. The other three cases did not
+execute, including both explicit injected-fault exit controls.
+
+The model and all six local libraries were mapped. Two live child KFD samples
+each recorded **37,525,798,912 VRAM bytes**; no cutoff, child reaped.
+The **0.743863867** error gate (lower is better) is unchanged and unevaluated.
+No rollback, fault-sensitivity, performance or full CAFE-4 conclusion follows.
+Parent remains open. Diagnose the mode-specific trial/prefix construction and
+strict partial-acceptance selection before publishing another native attempt;
+do not relax the gate or count internal fault messages as explicit rc1 controls.
+
+Evidence retained in place (no copied native artifacts):
+
+- `/mnt/raid0/llm/tmp/df2/cafe4-modes-native-hip-r5-20261119/RESULT.json`,
+  SHA-256 `340863a393b964d58a72038cc584ed5bbcb7eb1e547e0b225a4dde75f4db6144`.
+- `/mnt/raid0/llm/tmp/compute-flags/grants/df2-cafe4-modes-native-hip-r5-20261119.ended`,
+  SHA-256 `6d9f07ed80ecf816d64ff589eecb232baa4cd19f85c50cc93fa6769ad8a5cd07`.
+- Native case log path is recorded in RESULT; log SHA-256
+  `11452aad40b7eb269b35bbb5e283b199b94d65eaf560799b46cb57def233fa21`.
+
+Existing CAFE-4 source registration and VB-SERVING-DF2 wiring task apply.
+[no-belief: inconclusive single-prompt diagnostic; producer not belief-wired]
