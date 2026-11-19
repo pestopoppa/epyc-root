@@ -1,0 +1,12 @@
+{
+  "files": {
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119/candidate.cpp": "f11d4e31bbdebf1533d42136d900076124acd8a3b59ec572c7ad3ed5bb28fbdc",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119/driver.py": "0cfc58613ef91aa8a3ce18fe1eff843509c77d6d08e730631a930e7c0cedd754",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119/cafe4_modes.hpp": "e4c7b544a72f21014d9d3999be4d8072f03c1aa779c936416b870e6978d33e70",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119/mtp_draft_bridge.hpp": "9688a97c3ad30e5aa008650d29a7b4d463109220b7dc48a136f9324aa2cf3919",
+    "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119/supervise.py": "ab378fc8bd635da299c0dbe7371cfc8d42842c864473755d905fbaa9931871c2"
+  },
+  "supervisor": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119/supervise.py",
+  "modes_include": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119",
+  "bridge_include": "/mnt/raid0/llm/tmp/df2/cafe4-modes-hip-r6-20261119"
+}
