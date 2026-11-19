@@ -131,3 +131,7 @@ Filed rka-a3b-n4-trace-gpu-20261118 (rc=0): INCONCLUSIVE by preregistered covera
 ## 04:34Z — File completed rka-a3b-mmvf8-e2e-gpu-20261118-r2 verdict and acknowledge its run end
 
 Filed rka-a3b-mmvf8-e2e-gpu-20261118-r2 (rc=0): KEEP under its preregistered rule, 16/16 valid pairs in each cell and AA-calibrated identity passed. At 32k D4 K8 reduced median latency from 12.452 to 10.761 ms/token (13.58%); D2 remained faster at 9.921 ms/token. The finding and completed box were already recorded in handoffs/active/rocm-kernel-authoring.md. Results SHA-256 aaa26d5268d57ebef9353013dcc1ecd0eb00dff070a584f79a471d72f81dfb9f. Filed receipt created. [belief: cc]
+
+## 04:35Z — File router-wide GPU run-end verdict
+
+Filed rka-a3b-router-wide-gpu-20261118 (rc=0): job reports FUTILITY_CORRECTNESS but baseline test rc=0 and its parser missed four cases when CUDA graph diagnostics interrupted output; handoff already records INCONCLUSIVE / FUTILITY_INSTRUMENT. WIDE and timings did not run; repair parser and republish. results.jsonl SHA-256 509caa396ba7eade01f4dbad46f769f718b22cc767563dccdf855828353c0ac5. [no-belief: instrument failure]
