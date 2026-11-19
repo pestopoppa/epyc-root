@@ -227,3 +227,7 @@ Filed `c6-admission-live-proof-r11` **inconclusive (FUTILITY_CARRIER)**: job rc=
 ## 18:04Z — Assess r12 C6 receipt reopening boundary
 
 The r12 typed `C6SplitPolicyRefusal` was raised while evaluating candidate outputs, before `_validate_c6_correctness_receipt` runs in the split execution path. This establishes that a newly produced successful C6 correctness receipt was not reopened in that iteration; it does not establish whether both historical native PASS receipts were reopened elsewhere. The controller proof box remains open. Execution closure `gpu_source_evidence.py` SHA-256 `57d846611a4fe9148164775449d668b20adeddc28bec74a9c0e723793d307f21` binds the source; result SHA-256 `ae42d37b71fc6eba0d6343b945170abd7dc1f6ca5972e47bf4a1713c2ba626c0`. [belief: cc]
+
+## 18:05Z — Assess authorization boundary for C6-26 content-hash-memo corpus implementation
+
+INF48-LIVE-1 C6-26 implementation cannot be performed under the current lane-only edit and commit restriction: reward_hack_corpus.py belongs to the separate epyc-inference-research repository and is absent from this root lane. The prior checkpoint requests a permitted research worktree, but the current dispatch explicitly permits edits and commits only in the root lane. No corpus or re-pin change was made. [no-belief: scope constraint]
