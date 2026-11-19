@@ -87,3 +87,7 @@ Duplicate run-end for `afc-v3-q38_flash-tools-medium-20261110`: AFC-P5.E3-FLASH-
 ## 04:03Z — Consume already-filed Q36 suite-v3 aggressive run-end.
 
 Duplicate run-end `afc-v3-q36_35b-tools-aggressive-20261111`: existing verdict and FILED receipt date to 2026-11-11; AFC-P5.E3-Q36-TOOLS-V3 is already complete. No new verdict or tick. No result-bearing task is possible from this event. Existing open-task dependencies remain unchanged.
+
+## 04:14Z — Consume already-filed Flash suite-v3 aggressive run-end.
+
+Duplicate run-end `afc-v3-q38_flash-tools-aggressive-20261110`: verdict and FILED receipt already exist from 2026-11-11, and AFC-P5.E3-FLASH-TOOLS-V3 is complete. No new result, re-decision or tick. No result-bearing task is available from this event; open-task dependencies are unchanged.
