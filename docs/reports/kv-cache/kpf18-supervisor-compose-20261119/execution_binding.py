@@ -1,5 +1,6 @@
 """Opt-in current guard bindings. Does not replace native boundary checks."""
 import json
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -13,6 +14,58 @@ PROJECTION = {
     'scripts/vidya/claim_tuple.py': '6ae969f7029c1a6356593fd2432eca2320931f22aa4a8c4e3a388a72b81944e7',
 }
 SCRATCH = Path('/mnt/raid0/llm/tmp/heterogeneous-slot-fabric-residency')
+R7_ID = 'kpf18-g3-r12-integration-cpu-r7'
+R7_PINS = {
+    'framing_result': '2b7eae2083bd5a116c8bd60db07a9a398154e8eb2d3b6098924a14d2eeeb8edf',
+    'complete_marker': '2ebad10619e3a90c58bcc9e636205381ebc6beef7e76c4dec556a68e5e7f4691',
+    'source_manifest': '4998ee152cedd2dd5079e8442b51293c9201bb0f1d655fe5ce92e47b331bbd1d',
+    'root_source_manifest': 'e6beebeaeb9b996437fcfaef2dac56bc178e601a1bc6ea77cd6cfedd8cc5c19b',
+}
+
+
+def retained_r7(inputs, sealed_input):
+    """Consume accepted metadata only; never replay X1 or claim live native custody."""
+    records = {}
+    for key, expected in R7_PINS.items():
+        path = sealed_input(inputs.get(key, ''), expected)
+        data = path.read_bytes()
+        if hashlib.sha256(data).hexdigest() != expected:
+            raise ValueError('retained R7 prerequisite drift: ' + key)
+        records[key] = data
+    result = json.loads(records['framing_result'])
+    complete = json.loads(records['complete_marker'])
+    bridge = result.get('bridge_result', {})
+    expected_result = {
+        'schema': 'kpf18.r7.scheduled-result.v1', 'id': R7_ID,
+        'status': 'COMPLETE', 'rc': 0, 'child_rc': 0,
+        'cleanup_verified': True, 'work_started': True, 'partial': False,
+        'controlled_cutoff': False, 'controlled_deadline': False,
+        'controlled_storage_cutoff': False,
+        'source_manifest_sha256': R7_PINS['source_manifest'],
+        'root_source_manifest_sha256': R7_PINS['root_source_manifest'],
+        'raw_sha256': FRAMING_RAW_SHA,
+        'ledger_sha256': 'a6b18b1b96bc773fa74559c9bfc28248287c1dfcf08deb7ef07278d95d9f304a',
+    }
+    expected_bridge = {
+        'framing_pass': True, 'grid_count': 1128, 'event_count': 8,
+        'raw_sha256': expected_result['raw_sha256'],
+        'ledger_sha256': expected_result['ledger_sha256'],
+        'source_seal_sha256': R7_PINS['root_source_manifest'],
+        'layouts_sha256': '546cd4eab6d500235b0702cf448f444cb0cbf3b564adefb018e430d3295ab39e',
+        'fork_bindings_sha256': 'eacbebf58017d8f44da91df7db08cff8291e3a1b947448aa599fae6b067c2de7',
+        'historical_r6_verdict': 'INVALID unchanged',
+        'stages': ['draft_first_decode', 'draft_initial', 'target_prefix', 'target_suffix'],
+    }
+    expected_complete = {'schema': 'kpf18.r7.complete.v1', 'id': R7_ID,
+                         'result_path': str(Path(inputs['framing_result'])),
+                         'result_sha256': R7_PINS['framing_result']}
+    for actual, expected in ((result, expected_result), (bridge, expected_bridge),
+                             (complete, expected_complete)):
+        if not isinstance(actual, dict) or any(
+                type(actual.get(k)) is not type(v) or actual.get(k) != v
+                for k, v in expected.items()):
+            raise ValueError('retained R7 framing not valid')
+    return {'framing_mode': 'retained-r7-v1', 'accepted_result_sha256': R7_PINS['framing_result']}
 
 
 def prepare(seal, admission, captured):
@@ -152,18 +205,25 @@ def prepare(seal, admission, captured):
         def enrollment():
             boundary()
             inputs = config.get('enrollment', {})
-            replay = sealed_input(inputs.get('framing_result', ''), FRAMING_SHA)
+            mode = inputs.get('framing_mode', 'historical-r14')
+            receipt = {}
+            if mode == 'retained-r7-v1':
+                receipt = retained_r7(inputs, sealed_input)
+            elif mode == 'historical-r14':
+                replay = sealed_input(inputs.get('framing_result', ''), FRAMING_SHA)
+                result = json.loads(replay.read_text())
+                if result.get('framing_pass') is not True or result.get('raw_sha256') != FRAMING_RAW_SHA:
+                    raise ValueError('historical framing not valid')
+            else:
+                raise ValueError('unknown framing enrollment mode')
             canonical = Path(inputs.get('canonical_export', ''))
             for name, expected in PROJECTION.items():
                 sealed_input(str(canonical / name), expected)
             # Preserve the retained framing/projection contract, with explicit
             # sealed locations instead of vanished historical directories.
-            result = json.loads(replay.read_text())
-            if result.get('framing_pass') is not True or result.get('raw_sha256') != FRAMING_RAW_SHA:
-                raise ValueError('historical framing not valid')
             boundary()
             return {'canonical_export': str(canonical),
-                    'scope': 'diagnostic; no new enrollment receipt'}
+                    'scope': 'diagnostic; no new enrollment receipt', **receipt}
 
         preload = getattr(driver, 'load_preload_models', None)
         def load_preload(receipt, manifest):

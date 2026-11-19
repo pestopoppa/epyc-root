@@ -792,3 +792,50 @@ Evidence SHA-256:
 - test_nondry_entry.py: `78602c4986e8503cef19f7a770f75d5b6205804e13c0f83230c22a5dd25f9313`
 
 [no-belief: model-free software regression tests]
+
+
+### 2026-11-19 — Explicit retained-R7 successor framing enrollment
+
+The disabled current-guard-v3 entry now accepts sealed enrollment
+`framing_mode: retained-r7-v1`. Omitted mode retains historical-r14 and its
+original result/raw digest requirements; unknown modes refuse without fallback.
+R7 mode requires `framing_result`, `complete_marker`, `source_manifest` and
+`root_source_manifest` absolute locations in the current source inventory. Their
+code-owned pins are the identities accepted in
+`artifacts/compute/results-filing-20261030-1752.json` (git blob
+52472ec228019aca93e58ddb02065e9b8e363aca).
+The retained result/marker/manifests were read at their original paths under
+`/mnt/raid0/llm/tmp/codex-ni-kpf18-native-segfault-r7-20261030/`; nothing was
+copied or replayed. The completion marker must still name the exact result path.
+
+The entry independently checks bytes against those pins, then checks completed,
+nonpartial rc0/child-rc0 execution, captured-child cleanup, original source/raw/
+ledger/layout/fork identities, all four stages, 1,128 grids and eight events.
+The marker must bind that result identity. Original R6 INVALID remains explicit.
+Projection pins, current admission/provider/STOP/reserve checks and post-entry
+boundary checks remain required. Returned metadata names the R7 mode/result digest
+and retains the diagnostic scope with no new enrollment receipt.
+
+Validation: seven new tests PASS (including the actual retained metadata and
+15 synthetic result-field mutations plus four completion-marker mutations),
+52 execution admission/binding/prerequisite regressions PASS, and both combined
+installed non-dry entry/context tests PASS (61 unittest tests total).
+`git diff --check` PASS. Tests use private admission, tiny synthetic projection
+files and inert native peers. R7 source-manifest bytes establish historical
+source identities; this does not revalidate every historical transitive source
+or the absent Micron payloads. No native-control/model/GPU equivalence, runtime
+publication, persistent installation or parent completion is claimed.
+
+Manual blast radius is the disabled enrollment branch and its tests; no graph
+index exists in this sparse lane, so GitNexus status/impact cannot establish a
+graph radius. Source-table wiring is unchanged: this consumes accepted metadata
+and introduces no measurement producer. Next qualify the R7 mode through the
+installed non-dry entry with unchanged retained preload/projection checks before
+preparing a publisher-smoke seal. Bus drain rejected the unregistered session
+slug; no other session outbox was used.
+
+Evidence SHA-256:
+- execution_binding.py: `def1b67113f5920e5271431068d173f3c342f28f9a63f7613be37162fc5757f2`
+- test_retained_r7.py: `fbe46eb6f9a4087a4d0bfd447e6c09ca857947309f0e720e15a6ac952dd9efc8`
+
+[no-belief: model-free software regression tests]
