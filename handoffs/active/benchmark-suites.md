@@ -406,6 +406,23 @@ our own harness and score offline.
       the same 300 prompts via `scripts/autopilot/paired_stats.py` (McNemar already unified in
       [`eval-tower-verification.md`](eval-tower-program.md) ✅ 2026-07-29), or report no delta at
       all.
+      Second fleet arm [inference]: Qwen3.6-35B-A3B-MTP-Q8_0, model SHA-256
+      `c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131`, CPU,
+      row `codex-ifbench-cj6e-35b-20261119`; identical original 300 prompts, source commit,
+      temperature 0, seed 20261031, reasoning off, max 4096 tokens and pinned offline scorer
+      as CJ-6a. Higher strict/loose pass rates are better. Stop at 300 accounted prompts,
+      STOP/deadline or the first unresolved exposure; never redraw. Stop-on-answer: complete
+      exact-joined 300-prompt official strict/loose scores; stop-on-futility: unresolved exposure
+      or insufficient remaining request/cleanup budget. Estimate 14400 s is provisional.
+      Predeclared worst-case normal 95% halfwidths: single-arm 5.658pp, independent-arm
+      difference 8.002pp; one prompt 0.333333pp. These describe sampling uncertainty,
+      not measured generation repeatability. No interim efficacy gate or adoption claim.
+      Pair only after both full arms finish, joining exact prompts and applying the existing
+      `epyc-orchestrator/scripts/autopilot/paired_stats.py` McNemar separately to official
+      strict and loose prompt outcomes. Incomplete pairing means no cross-model delta.
+      2026-11-19: second arm published; native four-CPU smoke PASS (140–143, rc=0).
+      [Input hashes, predeclared uncertainty and smoke receipt](../../docs/evidence/ifbench-cj6e-paired-readiness-20261119/qualification.json).
+      Full-arm scores and paired discrimination remain unrun; CJ-6e stays open.
 - **[declined: ws58 2026-11-03 content-review: merged into CJ-6a as preconditions]** **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases
       exist, so the name alone is not a reproducible referent. Pre-seed the NLTK data directory and
       assert no network during scoring (the only network touch is an NLTK bootstrap at import; until

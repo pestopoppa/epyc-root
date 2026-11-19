@@ -1,0 +1,45 @@
+{
+  "box": "CJ-6e",
+  "row": "codex-ifbench-cj6e-35b-20261119",
+  "paired_with": "codex-ifbench-cj6a-27b-v4-20261104",
+  "source_commit": "1c40f0c10d9b5c5c2f10a175a28007ebb64f7f4d",
+  "runtime_paths_independent_of_first_arm": true,
+  "input_files": {
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/PLAN.json": "3f1d343a32552f92ecd5ee713b70852b855dd6b5fbc673b6a4b03f302ceb2c65",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/COHORT.json": "cd8ae46fe28978ca57aff1b1a4178221d9001fffedcc1bb94c9c442e39e38183",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/MODEL-PREVERIFIED.json": "7749241093e353c98e16eaa0219cae44a3e9d02f88dbf6503ec1180c419b7502",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/launch.sh": "bad9761db13e9905b41c7f3878bdefdff589511eb061fb6d9bbe6db2101d392e",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/worker.py": "f8c2fc6627718cf2afa3ad27ee25e2edf9e40ce3de367455f69cde89758dc490",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/V3-INPUTS.sha256": "6a2a8cd0804b49bf390e6e023f149a209d5e40b06aa6b5c52e0d7ab28c286fdb",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/SOURCE-SHA256SUMS": "f7244e13cd031e1a0469795d8bc79bff3d59c3d0690772e4321a24d71066b2c9",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/RUNTIME-INPUTS.sha256": "a606bbe847f86de262194e7eaeff1657d416d0d5ab0ba3772575298eb5021d27",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/SCORE-RUNTIME.sha256": "ab3117516f61eb09964cf17a34c7cfee0ce7366e77b971066fadcc3a51b24c70",
+    "/mnt/raid0/llm/tmp/canonical-judge-suite-revamp/ifbench-cj6e-35b-20261119/spec.json": "928e9d8a3377a22671b71207ad1155d85f3fbf9cf26a34f91fad24f113ed50ee"
+  },
+  "sampling_uncertainty_not_repeatability": {
+    "n": 300,
+    "one_prompt_pp": 0.3333333333333333,
+    "worst_case_normal_95_single_arm_halfwidth_pp": 5.658032638058333,
+    "worst_case_normal_95_independent_difference_halfwidth_pp": 8.001666493091715
+  },
+  "paired_delta": "UNCOMPUTED",
+  "adoption": "UNCLAIMED",
+  "full_cohort": "UNRUN",
+  "alert_consumed": {
+    "key": "24ee665c8c1a323e5786fde6",
+    "acknowledged": true,
+    "FAIL-1.json": "absent at event consumption",
+    "later_PASS": {
+      "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6a-27b-v4-20261104/PASS.json",
+      "sha256": "c1bda149dac56f0091a9f48700870f173bedc9823db86cf5c574bc57f0b108e1"
+    }
+  },
+  "smoke": {
+    "path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6e-35b-20261119/PASS.json",
+    "sha256": "af7af38ed42ac8997b9ff6acc48d0182b01c235540736e53b7c5ae122749eb2c",
+    "ended": "rc=0 time=2026-11-19T06:28:30Z reason=complete",
+    "regions": "140-143",
+    "result_path": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ifbench-cj6e-35b-20261119/native-attempts/attempt-h4ou1wgj/native-result.json",
+    "full_job_complete": false
+  }
+}
