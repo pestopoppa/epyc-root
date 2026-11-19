@@ -1,0 +1,5 @@
+# 2026-11-19 — handoff routing-intelligence
+
+## 12:14Z — Complete checked EG2 routing artifact ownership boundary
+
+RTG-EG2-1 acceptance PASS: 8/8 named routing boxes mapped to artifacts, regeneration owners and before/after-v11 ordering; 5/5 R1-R5 owner families accounted for. Source inventory pinned to orchestrator scripts/migration/reembed_stores_eg2.py blob 9defbbd43f16ade62ea1dbe99255a81f269cbb03 at c1df9962c919562ce02bebb5608451093fe6bf6c; owner contract harness-program.md blob 49c559e7b6b35ca87b7baf6fc12fd4048d3c73a8. Corrected scope distinctions: heuristic bilinear and text factual-risk calibration are not dimension-invalidated; TF-IDF is not dimension-invalidated either. Consumer migrations, retraining and promotion gates remain owned by their existing boxes. Structural checks passed: eight unique table rows, five owner families, git diff --check. Pre-tick handoff SHA-256 e5e8fc0f77cf4c4f3455a0367b22212711a5220290683511fc385c29fc330485. No inference, live changes, era changes or generated-index writes.
